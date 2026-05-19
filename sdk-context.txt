@@ -18448,6 +18448,133 @@ Since the `default` attribute is set to `True`, it will mark this pharmacy as th
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-create-patient-preferred-pharmacies/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-data-integration/
+The Canvas SDK allows you to manage documents in the Data Integration queue.
+##  Categorizing a Document 
+To categorize a document in the Data Integration queue into a specific document type, import the `CategorizeDocument` class from `canvas_sdk.effects.data_integration` and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+document_id | required | string | The ID of the IntegrationTask document to categorize.  
+document_type | required | DocumentType | Document type information for categorizing the document.  
+annotations | optional | list | List of annotations for display in the UI. See Annotations.  
+source_protocol | optional | string | Identifier for the protocol/plugin that generated this effect.  
+###  DocumentType 
+The `document_type` parameter is a dictionary with the following fields:
+Key |  | Type | Description  
+---|---|---|---  
+key | required | string | The unique key identifying the document type.  
+name | required | string | The human-readable name of the document type.  
+report_type | required | string | The type of report. Must be `"CLINICAL"` or `"ADMINISTRATIVE"`.  
+template_type | optional | string | The template type. Can be `"LabReportTemplate"`, `"ImagingReportTemplate"`, `"SpecialtyReportTemplate"`, or `null` for administrative documents.  
+###  Annotations 
+The `annotations` parameter accepts a list of dictionaries with the following keys:
+Key | Type | Description  
+---|---|---  
+text | string | The annotation text to display (e.g., "AI 95%").  
+color | string | Hex color code (e.g., "#4CAF50" for green).  
+An example of categorizing a clinical document:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import CategorizeDocument
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class CategorizeDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            document_id = self.event.context.get("document", {}).get("id")
+            categorize = CategorizeDocument(
+                document_id=document_id,
+                document_type={
+                    "key": "cbc-panel",
+                    "name": "Complete Blood Count",
+                    "report_type": "CLINICAL",
+                    "template_type": "LabReportTemplate",
+                },
+            )
+            return [categorize.apply()]
+    ```
+An example of categorizing an administrative document:
+    ```python
+    from canvas_sdk.effects.data_integration import CategorizeDocument
+    categorize = CategorizeDocument(
+        document_id="d2194110-5c9a-4842-8733-ef09ea5ead11",
+        document_type={
+            "key": "insurance-eob",
+            "name": "Insurance Explanation of Benefits",
+            "report_type": "ADMINISTRATIVE",
+            "template_type": None,
+        },
+    )
+    ```
+An example of categorizing with annotations and source protocol:
+    ```python
+    from canvas_sdk.effects.data_integration import CategorizeDocument
+    categorize = CategorizeDocument(
+        document_id="d2194110-5c9a-4842-8733-ef09ea5ead11",
+        document_type={
+            "key": "cbc-panel",
+            "name": "Complete Blood Count",
+            "report_type": "CLINICAL",
+            "template_type": "LabReportTemplate",
+        },
+        annotations=[
+            {"text": "AI Categorized", "color": "#4CAF50"},
+        ],
+        source_protocol="my_categorization_plugin",
+    )
+    ```
+##  Removing a Document from a Patient 
+To remove or unlink a document from a patient in the Data Integration queue, import the `RemoveDocumentFromPatient` class and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+document_id | required | string | The ID of the IntegrationTask document to unlink from the patient.  
+patient_id | optional | string | The patient ID to specify which patient link to remove. If not provided, removes the current patient association.  
+An example of removing a document from a patient:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import RemoveDocumentFromPatient
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class RemoveDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_LINKED_TO_PATIENT)
+        def compute(self) -> list[Effect]:
+            document_id = self.event.target.id
+            remove_document = RemoveDocumentFromPatient(
+                document_id=document_id,
+            )
+            return [remove_document.apply()]
+    ```
+If a document could be linked to multiple patients, you can specify which patient to unlink:
+    ```python
+    from canvas_sdk.effects.data_integration import RemoveDocumentFromPatient
+    remove_document = RemoveDocumentFromPatient(
+        document_id="d2194110-5c9a-4842-8733-ef09ea5ead11",
+        patient_id="patient-uuid-here",
+    )
+    ```
+##  Marking a Document as Junk 
+To mark a document in the Data Integration queue as junk (spam), import the `JunkDocument` class and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+document_id | required | string | The ID of the IntegrationTask document to mark as junk  
+An example of marking a document as junk:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import JunkDocument
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class JunkDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            document_id = self.event.target.id
+            junk_document = JunkDocument(
+                document_id=document_id,
+            )
+            return [junk_document.apply()]
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-data-integration/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-event-validation-error/
 ##  Overview 
 The `EventValidationError` effect is used to block the creation of an event (such as a NoteStateChangeEvent create) when custom validation fails. If this effect is returned by a protocol in response to an event (e.g., `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`), the event is aborted and the provided error message is surfaced to the user.
@@ -20941,7 +21068,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -21176,6 +21303,13 @@ Effect | Description
 SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request.  
 SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request.  
 SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request.  
+###  Data Integration 
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+Effect | Description  
+---|---  
+CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type.  
+JUNK_DOCUMENT | Mark a document in the Data Integration queue as junk (spam).  
+REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.  
 ###  Commands 
 Check out the [Commands documentation](/sdk/commands/) for full details.
 Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COMMAND`. The available actions are:
