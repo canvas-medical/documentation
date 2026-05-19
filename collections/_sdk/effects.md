@@ -493,6 +493,7 @@ Check out the [Data Integration Effects](/sdk/effect-data-integration/) document
 
 | Effect | Description |
 |---|---|
+| CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type. |
 | REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue. |
 
 
