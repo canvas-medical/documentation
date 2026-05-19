@@ -487,6 +487,16 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
 
 
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect | Description |
+|---|---|
+| CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type. |
+| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue. |
+
+
 ### Commands
 
 Check out the [Commands documentation](/sdk/commands/) for full details.

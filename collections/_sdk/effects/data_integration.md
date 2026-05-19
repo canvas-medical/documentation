@@ -102,6 +102,48 @@ categorize = CategorizeDocument(
 )
 ```
 
+## Removing a Document from a Patient
+
+To remove or unlink a document from a patient in the Data Integration queue, import the `RemoveDocumentFromPatient` class and create an instance of it.
+
+| Attribute   |          | Type          | Description                                                                                                       |
+|-------------|----------|---------------|-------------------------------------------------------------------------------------------------------------------|
+| document_id | required | string        | The ID of the IntegrationTask document to unlink from the patient.                                                |
+| patient_id  | optional | string        | The patient ID to specify which patient link to remove. If not provided, removes the current patient association. |
+
+An example of removing a document from a patient:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.data_integration import RemoveDocumentFromPatient
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class RemoveDocumentHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.DOCUMENT_LINKED_TO_PATIENT)
+
+    def compute(self) -> list[Effect]:
+        document_id = self.event.target.id
+
+        remove_document = RemoveDocumentFromPatient(
+            document_id=document_id,
+        )
+
+        return [remove_document.apply()]
+```
+
+If a document could be linked to multiple patients, you can specify which patient to unlink:
+
+```python
+from canvas_sdk.effects.data_integration import RemoveDocumentFromPatient
+
+remove_document = RemoveDocumentFromPatient(
+    document_id="d2194110-5c9a-4842-8733-ef09ea5ead11",
+    patient_id="patient-uuid-here",
+)
+```
+
 <br/>
 <br/>
 <br/>
