@@ -18605,6 +18605,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18632,6 +18633,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18659,6 +18661,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18707,6 +18710,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18734,6 +18738,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18761,6 +18766,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18788,6 +18794,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18815,6 +18822,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18842,6 +18850,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18869,6 +18878,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18896,6 +18906,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18923,6 +18934,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -18950,6 +18962,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
