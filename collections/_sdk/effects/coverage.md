@@ -7,8 +7,6 @@ hidden: false
 
 The `Coverage` effects let a plugin manage a patient's insurance coverages — create new coverages, update existing ones, expire or remove a coverage, reorder the rank of a patient's coverages, and remove a previously uploaded card photo. Card images are attached via S3 keys; Canvas performs a server-side copy into the coverage's image storage, so no file bytes pass through your plugin.
 
-Prefer these effects over Canvas's FHIR `Coverage` endpoints when you have the choice — the FHIR endpoints don't support card-image attachment.
-
 ## Common Attributes
 
 These attributes are shared across the create / update effects. Required-ness depends on which effect is being applied; see the per-effect sections below.
