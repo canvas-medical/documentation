@@ -1217,7 +1217,7 @@ MedicalHistoryCommand(
 The `fdb_code` parameter accepts either:
 - **String (FDB code)**: Looks up the medication in the FDB system
 - **Coding object**: Allows structured or unstructured coding
-  - Supported systems: `FDB`, `UNSTRUCTURED`
+  - Supported systems: `FDB`, `UNSTRUCTURED`, `FULLSCRIPT`
   - Required fields: `system`, `code`
   - Optional field: `display`
 
@@ -1252,6 +1252,17 @@ medication_statement_unstructured = MedicationStatementCommand(
         system=CodeSystems.UNSTRUCTURED,
         code='Herbal supplement for joint health'
     )
+)
+
+# Using a Fullscript supplement
+medication_statement_fullscript = MedicationStatementCommand(
+    note_uuid='rk786p',
+    fdb_code=Coding(
+        system=CodeSystems.FULLSCRIPT,
+        code='fullscript-12345',
+        display='Pure Encapsulations - Magnesium Glycinate - 90 capsules'
+    ),
+    sig='Take one capsule daily with food'
 )
 ```
 
@@ -1477,6 +1488,7 @@ command.set_test_value("pH", "6.8")
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
 - For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
+- Prescriptions whose coding system is `CodeSystems.FULLSCRIPT` cannot be transmitted electronically. Fullscript supplements are dispensed through Fullscript's own checkout flow, not through eRx — attempts to `send()` such a prescription return the validation error: _"Fullscript supplements are not sent electronically. Use 'Send supplements to patient' to dispense via Fullscript."_
 
 These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
 
