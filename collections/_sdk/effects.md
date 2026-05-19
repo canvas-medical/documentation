@@ -387,6 +387,15 @@ Check out the [External Event Effects](/sdk/effect-external-event/) documentatio
 | UPDATE_EXTERNAL_EVENT | Update an external event. |
 
 
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect | Description |
+|---|---|
+| CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type. |
+
+
 ### CCDA
 
 Check out the [C-CDA Export](/sdk/effect-create-ccda-export/) documentation.
@@ -538,7 +547,6 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
-
 
 
 <br/>
