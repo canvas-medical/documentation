@@ -32,7 +32,12 @@ window.addEventListener('load', () => {
             showLoadingIndicator: true,
             queryHook(query, refine) {
                 clearTimeout(timerId);
-                timerId = setTimeout(() => refine(query), 500);
+                timerId = setTimeout(() => {
+                    refine(query);
+                    if (query && window.posthog) {
+                        window.posthog.capture('docs_search', { query: query });
+                    }
+                }, 500);
             },
         }),
     );
