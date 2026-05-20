@@ -172,6 +172,8 @@ class MyHandler(BaseHandler):
 
 ## Related Events
 
+### Validation Events
+
 The command validation effect can be used with command validation events. All command types support `__POST_VALIDATION` events following the naming pattern:
 
 `{COMMAND_KEY}_COMMAND__POST_VALIDATION`
@@ -180,6 +182,47 @@ For example:
 - `PLAN_COMMAND__POST_VALIDATION`
 - `PRESCRIBE_COMMAND__POST_VALIDATION`
 - `DIAGNOSE_COMMAND__POST_VALIDATION`
+
+### Pre-Command Events (Blocking Operations)
+
+You can also use `CommandValidationErrorEffect` with `PRE_DELETE` and `PRE_COMMIT` events to block command deletions or commits. If a handler returns this effect for a pre-command event, the operation is aborted and the error messages are shown to the user.
+
+**Supported pre-command events:**
+
+- `{COMMAND_KEY}_COMMAND__PRE_DELETE` — Block command deletions
+- `{COMMAND_KEY}_COMMAND__PRE_COMMIT` — Block command commits
+
+#### Example: Blocking a Prescribe Deletion
+
+This example prevents deletion of a prescribe command while an order is being processed by an external pharmacy:
+
+```python
+from canvas_sdk.commands.validation import CommandValidationErrorEffect
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class BlockPrescribeDeletionHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PRESCRIBE_COMMAND__PRE_DELETE)
+
+    def compute(self) -> list[Effect]:
+        command_id = self.target
+        
+        # Check external system state (e.g., pharmacy verification status)
+        if self.is_order_in_flight(command_id):
+            effect = CommandValidationErrorEffect()
+            effect.add_error("Cannot delete this prescription while it is being processed by the pharmacy")
+            return [effect.apply()]
+        
+        return []
+    
+    def is_order_in_flight(self, command_id: str) -> bool:
+        # Your logic to check external state
+        ...
+```
+
+When the user attempts to delete the command, the deletion is blocked and the error message is displayed in the UI.
 
 For more information about command events and their context objects, see the [Events documentation](/sdk/events/).
 
