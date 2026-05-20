@@ -336,6 +336,17 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 | PATIENT_GROUP__DEACTIVATE_MEMBER | Deactivate a member from a patient group. |
 
 
+### Staff
+
+| Effect | Description |
+|---|---|
+| [UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member. |
+| [DELETE_STAFF_METADATA](/sdk/effect-staff-metadata/) | Remove a key/value metadata entry from a staff member. |
+| [CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Create a new external identifier on a staff member. |
+| [UPDATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Update fields on an existing external identifier. |
+| [DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member. |
+
+
 ### Messages
 
 Check out the [Message Effects](/sdk/effect-messages/) documentation.

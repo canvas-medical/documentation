@@ -137,6 +137,8 @@ url = staff.signature_url
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
 | teams                      | [Team](/sdk/data-team/#team)[]                                  |
 | telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
+| external_identifiers       | [StaffExternalIdentifier](#staffexternalidentifier)[]           |
+| metadata                   | [StaffMetadata](#staffmetadata)[]                               |
 
 ### StaffContactPoint
 
@@ -217,6 +219,62 @@ url = staff.signature_url
 
 
 ## Enumeration types
+
+### StaffExternalIdentifier
+
+| Field Name      | Type            |
+| --------------- | --------------- |
+| id              | UUID            |
+| dbid            | Integer         |
+| created         | DateTime        |
+| modified        | DateTime        |
+| staff           | [Staff](#staff) |
+| use             | String          |
+| identifier_type | String          |
+| system          | String          |
+| value           | String          |
+| issued_date     | Date            |
+| expiration_date | Date            |
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+from logger import log
+
+staff_id = "4150cd20de8a470aa570a852859ac87e"
+staff = Staff.objects.get(id=staff_id)
+
+for identifier in staff.external_identifiers.all():
+    log.info(f"Staff external identifier: {identifier.system}, {identifier.value}")
+    # https://www.example.com - employee-001
+```
+
+### StaffMetadata
+
+| Field Name | Type            |
+| ---------- | --------------- |
+| id         | UUID            |
+| dbid       | Integer         |
+| created    | DateTime        |
+| modified   | DateTime        |
+| staff      | [Staff](#staff) |
+| key        | String          |
+| value      | String          |
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+from logger import log
+
+staff_id = "4150cd20de8a470aa570a852859ac87e"
+staff = Staff.objects.get(id=staff_id)
+
+for metadata in staff.metadata.all():
+    log.info(f"{metadata.key}={metadata.value}")
+```
+
+`StaffMetadata` is a free-form key/value store on a staff member, mirroring
+`PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
+one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
+to upsert it from a plugin.
 
 ### License Type
 
