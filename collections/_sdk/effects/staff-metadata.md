@@ -5,7 +5,7 @@ excerpt: "Effects for staff metadata management"
 hidden: false
 ---
 
-The `StaffMetadata` effect provides a flexible key-value storage system for staff-specific data within the Canvas system. It mirrors the [`PatientMetadata` effect](/sdk/effect-patient-metadata/) but operates against staff records, letting plugins attach extensible information beyond the standard staff data model.
+The `StaffMetadata` effect provides a flexible key-value storage system for staff-specific data within the Canvas system, letting plugins attach extensible information beyond the standard staff data model.
 
 ## Overview
 
@@ -30,106 +30,14 @@ Creates or updates a metadata entry for the specified staff and key combination.
 |-----------|-------|-----------------------------|----------|
 | `value`   | `str` | The metadata value to store | Yes      |
 
-#### Returns
-
-An `Effect` object configured for upserting staff metadata.
-
 #### Behavior
 
 - If a metadata entry with the specified key already exists for the staff member, it will be updated with the new value.
 - If no entry exists, a new metadata entry will be created.
-- The operation is idempotent — repeated calls with the same key and value will not change the row.
+- Metadata entries are isolated per staff member — the same key can hold different values for different staff members.
+- Values are stored as strings with no schema enforcement; the plugin is responsible for validating its own values.
 
-### delete() → Effect
-
-Removes the metadata entry identified by `(staff_id, key)`.
-
-#### Returns
-
-An `Effect` object configured for deleting staff metadata.
-
-#### Behavior
-
-- Removes the row that matches both `staff_id` and `key`. Returns success even if no row was present (idempotent).
-- Does not affect other metadata entries for the same staff member with different keys.
-
-## Implementation Details
-
-### Validation
-
-The effect performs validation before execution:
-
-1. **Staff Existence Validation**: queries the staff database to confirm the `staff_id` corresponds to an existing staff record. Returns a descriptive error if the staff member is not found.
-2. **Field Validation**: ensures all required fields are provided. `staff_id` and `key` must be non-empty strings, and the `value` parameter passed to `.upsert(...)` must be provided.
-
-### Data Structure
-
-The effect payload is structured as JSON:
-
-```json
-{
-  "data": {
-    "staff_id": "staff-id",
-    "key": "metadata-key",
-    "value": "metadata-value"
-  }
-}
-```
-
-## Example Usage
-
-### Basic Usage
-
-```python
-from canvas_sdk.effects.staff_metadata import StaffMetadata
-
-# Tag a provider with their primary department
-metadata = StaffMetadata(
-    staff_id="4150cd20de8a470aa570a852859ac87e",
-    key="department",
-)
-
-effect = metadata.upsert("cardiology")
-```
-
-### Removing an Entry
-
-```python
-from canvas_sdk.effects.staff_metadata import StaffMetadata
-
-# Clear the department tag for a staff member
-effect = StaffMetadata(
-    staff_id="4150cd20de8a470aa570a852859ac87e",
-    key="department",
-).delete()
-```
-
-### Mirroring an HR System
-
-```python
-from canvas_sdk.effects.staff_metadata import StaffMetadata
-from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.events import EventType
-
-
-class StaffHRSync(BaseHandler):
-    """Sync select fields from an HR webhook payload onto Canvas staff."""
-
-    RESPONDS_TO = EventType.Name(EventType.STAFF_UPDATED)
-
-    def compute(self):
-        staff_id = self.context["staff"]["id"]
-        hr_record = self.context.get("fields", {}).get("hr_record", {})
-
-        return [
-            StaffMetadata(staff_id=staff_id, key=f"hr.{key}").upsert(str(value))
-            for key, value in hr_record.items()
-        ]
-```
-
-## Best Practices
-
-### Key Naming Conventions
+#### Key Naming Conventions
 
 1. **Use descriptive names**. Choose keys that clearly indicate the purpose of the metadata.
    - Good: `department`, `cost_center`, `external_employee_id`
@@ -137,7 +45,7 @@ class StaffHRSync(BaseHandler):
 2. **Namespace your keys**. Prefix keys for integrations or modules to avoid collisions.
    - Example: `hr.employee_id`, `payroll.cost_center`
 
-### Value Storage
+#### Value Storage
 
 1. **String serialization**. All values are stored as strings. For complex data:
    ```python
@@ -153,11 +61,70 @@ class StaffHRSync(BaseHandler):
    ```
 2. **Boolean values**. Store as `"true"` or `"false"` strings for consistency.
 
-## Notes
+#### Examples
 
-- Metadata entries are staff-specific and isolated — the same key can have different values for different staff members.
-- There is no built-in versioning; upserting a key overwrites the previous value.
-- The system does not enforce any schema on metadata values — validation is the responsibility of the implementing code.
+```python
+from canvas_sdk.effects.staff_metadata import StaffMetadata
+
+# Tag a provider with their primary department
+metadata = StaffMetadata(
+    staff_id="4150cd20de8a470aa570a852859ac87e",
+    key="department",
+)
+
+effect = metadata.upsert("cardiology")
+```
+
+Mirroring an HR system from a handler:
+
+```python
+from canvas_sdk.effects.staff_metadata import StaffMetadata
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.events import EventType
+
+
+class StaffHRSync(BaseHandler):
+    """Sync select fields from an HR webhook payload onto Canvas staff."""
+
+    RESPONDS_TO = EventType.Name(EventType.STAFF_UPDATED)
+
+    def compute(self):
+        staff_id = self.event.context["staff"]["id"]
+        hr_record = self.event.context.get("fields", {}).get("hr_record", {})
+
+        return [
+            StaffMetadata(staff_id=staff_id, key=f"hr.{key}").upsert(str(value))
+            for key, value in hr_record.items()
+        ]
+```
+
+### delete() → Effect
+
+Removes the metadata entry identified by `(staff_id, key)`.
+
+#### Behavior
+
+- Removes the row that matches both `staff_id` and `key`. Returns success even if no row was present (idempotent).
+- Does not affect other metadata entries for the same staff member with different keys.
+
+#### Example
+
+```python
+from canvas_sdk.effects.staff_metadata import StaffMetadata
+
+# Clear the department tag for a staff member
+effect = StaffMetadata(
+    staff_id="4150cd20de8a470aa570a852859ac87e",
+    key="department",
+).delete()
+```
+
+## Validation
+
+The effect validates before execution:
+
+- **Staff existence**: the `staff_id` must correspond to an existing Staff record, or the effect raises a descriptive error.
+- **Required fields**: `staff_id` and `key` must be non-empty strings, and `.upsert(...)` requires a `value`.
 
 <br/>
 <br/>

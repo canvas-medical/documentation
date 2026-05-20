@@ -7,32 +7,35 @@ hidden: false
 
 Manage external identifiers on a staff member from a plugin. `StaffExternalIdentifier` is a single effect class with three methods — `.create()`, `.update()`, and `.delete()` — and which fields are required depends on the operation.
 
-## Attributes
-
-| Name       | Type           | Description                                                                  |
-|------------|----------------|------------------------------------------------------------------------------|
-| `id`       | `str` / `UUID` | The identifier's existing UUID. Required for `update()` and `delete()`.      |
-| `staff_id` | `str` / `UUID` | UUID of the [Staff](/sdk/data-staff/) record. Required for `create()`.       |
-| `system`   | `str`          | The system the identifier belongs to (typically a URL).                      |
-| `value`    | `str`          | The identifier value. Required for `create()`.                               |
-
 ## Methods
 
 ### create() → Effect
 
-Creates a new external identifier on the specified staff member. Requires `staff_id` and `value`; `system` is optional but recommended.
+Creates a new external identifier on the specified staff member.
 
-### update() → Effect
+#### Attributes
 
-Updates fields on an existing external identifier. Requires `id`. Any of `value` or `system` that you supply will be written; unset fields are left alone.
+| Attribute  | Type           | Required | Description                                             |
+|------------|----------------|----------|---------------------------------------------------------|
+| `staff_id` | `str` / `UUID` | Yes      | UUID of the [Staff](/sdk/data-staff/) record.           |
+| `value`    | `str`          | Yes      | The identifier value (e.g. an employee ID).             |
+| `system`   | `str`          | No       | The system the identifier belongs to (typically a URL). |
 
-### delete() → Effect
+#### Validation
 
-Deletes the external identifier identified by `id`. Requires `id`.
+- `staff_id` must reference an existing Staff record, or the effect raises a descriptive error.
+- `id` must not be set on `create()` — the UUID is assigned server-side. Supplying it fails validation.
+- `value` and `staff_id` are required.
 
-## Examples
+#### Server-side defaults
 
-### Create
+The home-app interpreter applies these defaults on `create()`:
+
+- `use` → `"usual"`
+- `issued_date` → `"1970-01-01"`
+- `expiration_date` → `"2100-12-31"`
+
+#### Example
 
 ```python
 from canvas_sdk.effects.staff import StaffExternalIdentifier
@@ -44,7 +47,23 @@ effect = StaffExternalIdentifier(
 ).create()
 ```
 
-### Update
+### update() → Effect
+
+Updates fields on an existing external identifier. Only the fields you set on the effect are written; unset fields keep their existing values.
+
+#### Attributes
+
+| Attribute | Type           | Required | Description                                     |
+|-----------|----------------|----------|-------------------------------------------------|
+| `id`      | `str` / `UUID` | Yes      | UUID of the identifier to update.               |
+| `value`   | `str`          | No       | New identifier value. Only written if supplied. |
+| `system`  | `str`          | No       | New system value. Only written if supplied.    |
+
+#### Validation
+
+- `id` is required and must reference an existing StaffExternalIdentifier record, or the effect raises a descriptive error.
+
+#### Example
 
 ```python
 from canvas_sdk.effects.staff import StaffExternalIdentifier
@@ -55,7 +74,21 @@ effect = StaffExternalIdentifier(
 ).update()
 ```
 
-### Delete
+### delete() → Effect
+
+Deletes the external identifier identified by `id`.
+
+#### Attributes
+
+| Attribute | Type           | Required | Description                       |
+|-----------|----------------|----------|-----------------------------------|
+| `id`      | `str` / `UUID` | Yes      | UUID of the identifier to delete. |
+
+#### Validation
+
+- `id` is required and must reference an existing StaffExternalIdentifier record, or the effect raises a descriptive error.
+
+#### Example
 
 ```python
 from canvas_sdk.effects.staff import StaffExternalIdentifier
@@ -64,16 +97,6 @@ effect = StaffExternalIdentifier(
     id="00000000-0000-0000-0000-000000000001",
 ).delete()
 ```
-
-## Defaults populated server-side
-
-The SDK effect only exposes `value`, `system`, `staff_id`, and `id`. On `create()`, the home-app interpreter populates the remaining fields with these defaults:
-
-- `use` → `"usual"`
-- `issued_date` → `"1970-01-01"`
-- `expiration_date` → `"2100-12-31"`
-
-`update()` only mutates the fields you set on the effect; unset fields keep their existing values.
 
 <br/>
 <br/>

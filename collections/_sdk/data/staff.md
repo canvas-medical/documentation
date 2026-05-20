@@ -217,9 +217,6 @@ url = staff.signature_url
 | permissions            | JSON                       |
 | role_type              | [RoleType](#role-type)     |
 
-
-## Enumeration types
-
 ### StaffExternalIdentifier
 
 | Field Name      | Type            |
@@ -275,6 +272,8 @@ for metadata in staff.metadata.all():
 `PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
 one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
 to upsert it from a plugin.
+
+## Enumeration types
 
 ### License Type
 

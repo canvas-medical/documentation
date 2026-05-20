@@ -493,11 +493,14 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
 
-| Effect                       | Description                                                                        |
-|------------------------------|------------------------------------------------------------------------------------|
-| CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type. |
-| JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                      |
-| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.          |
+| Effect                       | Description                                                                                                 |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member as reviewer to a document in the Data Integration queue.                              |
+| CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
+| JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
+| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |
+| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.                                   |
+| UPDATE_DOCUMENT_FIELDS       | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  |
 
 
 ### Commands

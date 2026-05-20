@@ -35,6 +35,28 @@ from canvas_sdk.v1.data.patient import Patient
 patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
 ```
 
+## Accessing the patient photo
+
+The `photo_url` property returns a presigned S3 URL for securely accessing the patient's uploaded avatar photo. If the patient has no uploaded avatar, the property returns a default avatar URL instead — so the value is always safe to render without a null check.
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+# Returns a presigned S3 URL (valid for 1 hour), or the default avatar URL when no photo is on file
+url = patient.photo_url
+```
+
+If you need the underlying [`PatientPhoto`](#patientphoto) record (for example, to read the original `url` or `title`), use the `photo` property:
+
+```python
+photo = patient.photo  # PatientPhoto or None
+
+if photo:
+    print(photo.title)
+```
+
 ## Attributes
 
 ### Patient
