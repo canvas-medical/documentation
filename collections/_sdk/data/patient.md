@@ -51,6 +51,10 @@ url = patient.photo_url
 If you need the underlying [`PatientPhoto`](#patientphoto) record (for example, to read the original `url` or `title`), use the `photo` property:
 
 ```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
 photo = patient.photo  # PatientPhoto or None
 
 if photo:
