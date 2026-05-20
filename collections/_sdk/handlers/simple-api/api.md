@@ -390,7 +390,9 @@ Files never enter the plugin runner, which keeps your plugin light, fast, and ou
 business of buffering binary data.
 
 ```python?partial=true
-from canvas_sdk.handlers.simple_api import api, JSONResponse, Response, UploadedFilePart
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import UploadedFilePart, api
+
 
 class AttachmentApi(api.SimpleAPI):
     PREFIX = "/attachments"
@@ -421,22 +423,39 @@ short-lived presigned URL on read.
 
 If a caller posts with a non-multipart content type to an endpoint declared with
 `upload_files=True`, the request is rejected with **400 Bad Request** before the handler
-runs. If the S3 write fails, the caller receives **502 Bad Gateway** and the handler is not
-invoked. The default for `upload_files` is `False`, so existing endpoints are not affected
-by this feature.
+runs. The default for `upload_files` is `False`, so existing endpoints are not affected by
+this feature.
+
+##### Handling partial failures
+
+S3 uploads happen per file. A failure on one file does not prevent the rest of the batch
+from reaching your handler — only when **every** file in the request fails does Canvas
+return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, successful
+files are exposed through `request.form_data()` and failed files are exposed through
+`request.upload_failures()`. Each failure entry carries `name`, `filename`, `content_type`,
+`size`, and a stable `error` code (for example, `"s3_upload_failed"`). If your endpoint
+needs atomic semantics, inspect `upload_failures()` and either delete the successful keys
+or return a 4xx/5xx response from the handler.
+
+##### Using `SimpleAPIRoute`
 
 For routes defined as `SimpleAPIRoute` subclasses, set `UPLOAD_FILES = True` as a class
 attribute to opt in:
 
 ```python?partial=true
-class UploadRoute(api.SimpleAPIRoute):
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute, UploadedFilePart
+
+
+class UploadRoute(SimpleAPIRoute):
     PATH = "/upload"
     UPLOAD_FILES = True
 
-    def authenticate(self, credentials):
-        return True
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
 
-    def post(self) -> list[Response]:
+    def post(self) -> list[Response | Effect]:
         form = self.request.form_data()
         attachment: UploadedFilePart = form["file"]
         return [JSONResponse({"key": attachment.key})]
