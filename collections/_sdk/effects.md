@@ -495,7 +495,7 @@ Check out the [Data Integration Effects](/sdk/effect-data-integration/) document
 
 | Effect                       | Description                                                                                                 |
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
-| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member as reviewer to a document in the Data Integration queue.                              |
+| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member or team as reviewer to a document in the Data Integration queue.                      |
 | CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
 | JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
 | LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |

@@ -29,7 +29,7 @@ Creates a new external identifier on the specified staff member.
 
 #### Server-side defaults
 
-The home-app interpreter applies these defaults on `create()`:
+Canvas applies these defaults on `create()`:
 
 - `use` → `"usual"`
 - `issued_date` → `"1970-01-01"`
