@@ -43,7 +43,7 @@ from canvas_sdk.effects.widgets import PortalWidget
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
 
     def compute(self):
@@ -264,7 +264,7 @@ from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data import Patient
 
 
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
 
     def compute(self):

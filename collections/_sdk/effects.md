@@ -171,7 +171,7 @@ The following effects are available to be applied in Canvas.
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
-| REDIRECT_CONTEXT                            | Can be used to redirect the user to a different context. Check out [Layout Effects](/sdk/handlers-applications/#context-change-events). |
+| REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 
 
 ### Search Results
@@ -232,19 +232,21 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 
 Check out the [Note Effects](/sdk/effect-notes/) documentation.
 
-| Effect | Description |
-|---|---|
-| CREATE_NOTE | Create a note. |
-| UPDATE_NOTE | Update a note. |
-| LOCK_NOTE | Lock a note. |
-| UNLOCK_NOTE | Unlock a note. |
-| SIGN_NOTE | Sign a note. |
-| CHECK_IN_NOTE | Check in a note. |
-| NO_SHOW_NOTE | Mark a note as no-show. |
-| FAX_NOTE | Fax a note to an external recipient. |
-| PUSH_NOTE_CHARGES | Push note charges for billing. |
-| UPSERT_NOTE_METADATA | Add or update metadata on a note. |
-| GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient. |
+| Effect                    | Description                                                                                                                                                                                           |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CREATE_NOTE               | Create a note.                                                                                                                                                                                        |
+| UPDATE_NOTE               | Update a note.                                                                                                                                                                                        |
+| LOCK_NOTE                 | Lock a note.                                                                                                                                                                                          |
+| UNLOCK_NOTE               | Unlock a note.                                                                                                                                                                                        |
+| SIGN_NOTE                 | Sign a note.                                                                                                                                                                                          |
+| CHECK_IN_NOTE             | Check in a note.                                                                                                                                                                                      |
+| NO_SHOW_NOTE              | Mark a note as no-show.                                                                                                                                                                               |
+| FAX_NOTE                  | Fax a note to an external recipient.                                                                                                                                                                  |
+| PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
+| UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
+| GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
+| NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 
 
 ### Appointments
