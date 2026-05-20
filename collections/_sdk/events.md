@@ -16179,16 +16179,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16211,16 +16204,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16243,16 +16229,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16275,16 +16254,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16307,16 +16279,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16339,16 +16304,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16371,16 +16329,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16403,16 +16354,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16435,16 +16379,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16467,16 +16404,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16519,16 +16449,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16551,16 +16474,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16583,16 +16499,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16615,16 +16524,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "prescribe": dict
-  "indications": list[dict]
-  "sig": str
-  "days_supply": int
-  "quantity_to_dispense": int
-  "type_to_dispense": dict
   "refills": int
-  "substitutions": str
-  "pharmacy": dict
-  "prescriber": dict
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16648,8 +16550,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16671,8 +16576,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16694,8 +16602,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16717,8 +16628,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16740,8 +16654,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16763,8 +16680,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16786,8 +16706,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16809,8 +16732,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16832,8 +16758,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16855,8 +16784,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16898,8 +16830,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16921,8 +16856,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16944,8 +16882,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
@@ -16967,8 +16908,11 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"id": command_uuid
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
-  "reason": str
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
   "note_to_pharmacist": str
+  "refill_request": int
 "note":
   "uuid": note_id
 "patient":
