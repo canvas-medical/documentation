@@ -23,9 +23,13 @@ Navigation path:
 The UI lets you:
 - Filter by **source** (e.g., `plugin-runner`, `effect-interpreter`)
 - Filter by **level** (`ERROR`, `WARN`, `INFO`, `DEBUG`)
+- Filter by **plugin** — multi-select; the dropdown is pre-populated with plugins seen in the last 7 days, and accepts free-text entries for older or yet-to-log plugins
+- Filter by **handler** — multi-select on the fully-qualified handler class; works the same as plugin (last 7 days + free-text)
 - Filter by **time** (start/end)
 - Inspect **full JSON** of a log entry in a modal
 - **Load more** results without leaving the page
+
+The results table shows columns for `@timestamp`, `level`, `source`, `plugin`, and `message`. Click a row to open the full log entry as JSON.
 
 {% include alert.html type="info" content="The UI defaults to showing the most recent logs first (sorted by <code>@timestamp desc</code>)." %}
 
@@ -57,6 +61,21 @@ $ canvas logs --level ERROR
 
 # Errors and warnings:
 $ canvas logs --level ERROR --level WARN
+```
+
+##### Filter by plugin / handler (repeatable)
+```console
+# One plugin:
+$ canvas logs --plugin my_plugin
+
+# Multiple plugins:
+$ canvas logs --plugin my_plugin --plugin other_plugin
+
+# A specific handler (fully qualified class name):
+$ canvas logs --handler my_plugin.handlers.foo.MyHandler
+
+# Multiple handlers:
+$ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
 ```
 
 ##### Time windows: since / start / end
@@ -108,7 +127,7 @@ More available. To load the next page, run:
   --cursor <TOKEN>
 ```
 
-{% include alert.html type="warning" content="<code>--cursor</code> is <b>mutually exclusive</b> with filters (<code>--since</code>, <code>--start/--end</code>, <code>--level</code>, <code>--source</code>) to enforce consistency. Use the token alone to resume" %}.
+{% include alert.html type="warning" content="<code>--cursor</code> is <b>mutually exclusive</b> with filters (<code>--since</code>, <code>--start/--end</code>, <code>--level</code>, <code>--source</code>, <code>--plugin</code>, <code>--handler</code>) to enforce consistency. Use the token alone to resume" %}.
 
 ---
 
