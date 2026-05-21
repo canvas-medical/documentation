@@ -11,10 +11,7 @@ received outside Canvas — for example, by a partner on its own Health
 Gorilla tenant or any upstream lab interface. It is the inbound
 counterpart to [`HealthGorillaLabOrderIngest`](/sdk/effects/).
 
-The home-app interpreter is equivalent to what
-`LabEngineInboundService.process_and_store_report` does for HG-pull
-ingest, minus the HG fetch — the partner provides the PDF and Canvas
-stores it through the existing S3 + `ElectronicLabIntegrationTask` path.
+Canvas's ingest path is equivalent to a standard Health Gorilla pull, minus the HG fetch — the partner provides the PDF and Canvas stores it through the existing inbound-lab pipeline.
 
 ## Dedup
 
@@ -26,16 +23,11 @@ Reports are deduped server-side on `(external_id, version)`:
 | Same `external_id`, higher `version`               | Replace values, bump version on existing record, re-store PDF. |
 | Same `external_id`, same or lower `version`        | No-op; existing record kept, no PDF fetch.              |
 
-This matches the version-bump contract in
-`LabEngineInboundService.process_and_store_report`, so partners can
-safely replay events.
+This matches Canvas's standard inbound-lab version-bump contract, so partners can safely replay events.
 
 ## PDF handling
 
-Exactly one of `pdf_url` or `pdf_base64` must be set. The home-app
-interpreter fetches the PDF (or decodes the inline base64) **outside**
-the `LabReport` transaction so a slow partner bucket cannot hold row
-locks. Limits:
+Exactly one of `pdf_url` or `pdf_base64` must be set. Canvas fetches the PDF (or decodes the inline base64) **outside** the `LabReport` transaction so a slow partner bucket cannot hold row locks. Limits:
 
 - `pdf_base64` capped at 1 MB encoded (~750 KB binary). Use `pdf_url`
   for larger PDFs.
@@ -52,7 +44,7 @@ locks. Limits:
 | status           | str            | no       | Report status; defaults to `"final"`.                                                                                            |
 | date_performed   | datetime       | yes      | When the report was generated on the partner side.                                                                               |
 | lab_values       | list[dict]     | yes      | Per-test results. Each entry: `ontology_test_code`, `ontology_test_name`, `value`, `units`, `reference_range`, `abnormal_flag`, `observation_status`, `comment`. |
-| pdf_url          | str            | one of   | URL the home-app interpreter can GET the PDF from (typically a partner's presigned URL).                                          |
+| pdf_url          | str            | one of   | URL Canvas will GET the PDF from (typically a partner's presigned URL).                                                          |
 | pdf_base64       | str            | one of   | PDF bytes inline as base64. Use only for small PDFs.                                                                              |
 
 ## Example
