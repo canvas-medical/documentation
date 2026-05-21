@@ -338,6 +338,17 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 | PATIENT_GROUP__DEACTIVATE_MEMBER | Deactivate a member from a patient group. |
 
 
+### Staff
+
+| Effect | Description |
+|---|---|
+| [UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member. |
+| [DELETE_STAFF_METADATA](/sdk/effect-staff-metadata/) | Remove a key/value metadata entry from a staff member. |
+| [CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Create a new external identifier on a staff member. |
+| [UPDATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Update fields on an existing external identifier. |
+| [DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member. |
+
+
 ### Messages
 
 Check out the [Message Effects](/sdk/effect-messages/) documentation.
@@ -480,6 +491,20 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
 
 
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect                       | Description                                                                                                 |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member or team as reviewer to a document in the Data Integration queue.                      |
+| CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
+| JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
+| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |
+| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.                                   |
+| UPDATE_DOCUMENT_FIELDS       | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  |
+
+
 ### Commands
 
 Check out the [Commands documentation](/sdk/commands/) for full details.
@@ -540,7 +565,6 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
-
 
 
 <br/>
