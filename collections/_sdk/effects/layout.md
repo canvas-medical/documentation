@@ -504,6 +504,8 @@ To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, 
 - **Allowing custom scripts**: If you need to load scripts from an external source, the URL for the script must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` and `'SCRIPTS'` must be in the permissions list.
 - **Requesting microphone access**: If the site in your modal or widget needs microphone access, `'MICROPHONE'` must be in the URL's permissions list.
 - **Requesting camera access**: If the site in your modal or widget needs camera access, `'CAMERA'` must be in the URL's permissions list.
+- **Requesting clipboard read access**: If the site in your modal or widget needs to read from the user's clipboard, `'CLIPBOARD_READ'` must be in the URL's permissions list.
+- **Requesting clipboard write access**: If the site in your modal or widget needs to write to the user's clipboard, `'CLIPBOARD_WRITE'` must be in the URL's permissions list.
 - **Allowing browser access to cookies from the iframe's origin**: If you want the loaded URL to access cookies for its domain, `'ALLOW_SAME_ORIGIN'` must be in the URL's permissions list. If the URL you're loading requires authentication, this will prevent your user from having to log in each time the modal is launched.
 
 The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
@@ -517,7 +519,7 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
   "url_permissions": [
     {
       "url": "https://example.com/info",
-      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA"]
+      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
     },
     {
       "url": "https://d3js.org/d3.v4.js",
