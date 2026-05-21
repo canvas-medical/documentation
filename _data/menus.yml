@@ -832,6 +832,9 @@ effects_module:
   - title: "Custom HTML and Django Templates"
     url: /sdk/layout-effect/#custom-html-and-django-templates/
     description: Render custom HTML using Django templates.
+  - title: "Data Integration"
+    url: /sdk/effect-data-integration/
+    description: Manage documents in the Data Integration queue.
   - title: "Default Homepage"
     url: /sdk/default-homepage-effect/
     description: Set a provider's default homepage in Canvas.
@@ -904,9 +907,19 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+<<<<<<< HEAD
   - title: "Surescripts"
     url: /sdk/effect-surescripts/
     description: Query insurance eligibility, medication history, and benefits through Surescripts.
+||||||| f0b7ded8
+=======
+  - title: "Staff External ID"
+    url: /sdk/effect-staff-external-identifier/
+    description: Create, update, or delete an external identifier for a staff member.
+  - title: "Staff Metadata"
+    url: /sdk/effect-staff-metadata/
+    description: Interact with staff metadata.
+>>>>>>> main
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
