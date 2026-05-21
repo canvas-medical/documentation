@@ -18,8 +18,7 @@ a standing or recurring order on their side.
 
 ## Behavior
 
-The effect targets the home-app `HealthGorillaLabOrderIngest` interpreter,
-which in a single transaction:
+Canvas processes the effect in a single transaction:
 
 1. Resolves `Patient` (by `key`), `Staff` (by NPI), and `Note` (by external id).
 2. Creates a `LabOrder` with `hg_request_result` set non-empty so the
@@ -36,7 +35,7 @@ orders are past the Canvas send pipeline.
 | ------------------------ | ----------- | -------- | ---------------------------------------------------------------------------------------------------- |
 | patient_id               | str         | yes      | Canvas Patient `key` (uuid).                                                                         |
 | ordering_provider_npi    | str         | yes      | NPI used to look up the Staff record.                                                                |
-| note_id                  | str         | yes      | Canvas Note `externally_exposable_id` (uuid). LabOrders require a Note FK in home-app.               |
+| note_id                  | str         | yes      | Canvas Note `externally_exposable_id` (uuid). LabOrders require an associated Note.                  |
 | ontology_lab_partner     | str         | yes      | Ontology lab partner name (e.g. `"Quest Diagnostics"`, `"LabCorp"`).                                 |
 | date_ordered             | datetime    | yes      | When the order was authored on the partner side.                                                     |
 | hg_request_result        | str         | yes      | Skip-send marker. Convention is the partner's HG `RequestGroup` URL or id so Canvas can correlate later. Any non-empty value works. |
