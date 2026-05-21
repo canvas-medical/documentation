@@ -41,9 +41,15 @@ The actor is available in the following contexts:
 - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
 - [**Application**](/sdk/handlers-applications/) handlers
 - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
 - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+- **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
+- **Homepage events** — `GET_HOMEPAGE_CONFIGURATION`
+- **Command additional-fields events** — `COMMAND__FORM__GET_ADDITIONAL_FIELDS`
+- **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
 - **Claim events** — `CLAIM__CONDITIONS`
+- **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
@@ -1129,6 +1135,31 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM__CONDITIONS</th></tr>
+    <tr><td colspan="2">Fires when the conditions list is loaded inside the claim summary view. Plugins can use this event to surface plugin-specific diagnosis information alongside the existing diagnosis codes on the claim.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>[
+  "id": str,
+  "codings": [
+    "code": str,
+    "system": str,
+    "display": str
+  ]
+]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
@@ -1169,6 +1200,34 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Patient Payments
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PAYMENT_PROCESSED</th></tr>
+    <tr><td colspan="2">Occurs when a patient payment is processed in Canvas.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"patient_id": str
+"total_amount_cents": str
+"timestamp": str
+"payment_method_and_description": str
+"claim_payments": [
+    {
+        "claim_id": str,
+        "allocated_cents": str
+    }
+]</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 #### Clinical Documents
 
@@ -1332,7 +1391,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_REVIEWED</th></tr>
-    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Review or Imaging Review command is completed.</td></tr>
+    <tr><td colspan="2">Occurs when a clinical document is marked as reviewed. This fires when the Data Integration task status changes to reviewed, or when a Lab Results Review, Imaging Report Review, Consult Report Review, or Uncategorized Document Review command is committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2504,6 +2563,24 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">GET_NOTE_RESTRICTIONS</th></tr>
+    <tr><td colspan="2">Fires every time a note is opened or its restrictions are refetched. Plugins respond with a <a href="/sdk/effect-note-restrictions/"><code>NoteRestrictionsEffect</code></a> to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. If no plugin responds, the note is unrestricted by default.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note.id
+"type": <a href="/sdk/data-note/">Note</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Letters
 
 <table>
@@ -2940,6 +3017,124 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"id": staff_id
 "type": <a href='/sdk/data-staff/#staff'>Staff</a></pre></td>
       <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Staff External Identifier
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier is created for a staff member.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a staff member is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_EXTERNAL_IDENTIFIER_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when an external identifier for a staff member is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffexternalidentifier_id
+"type": <a href='/sdk/data-staff/#staffexternalidentifier'>StaffExternalIdentifier</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Staff Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">STAFF_METADATA_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a staff member's metadata is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": staffmetadata_id
+"type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
+      <td><pre>"staff":
+    "id": staff_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10715,6 +10910,59 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "uuid": note_id
 "patient":
   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_COMMAND__PRE_SEND</th></tr>
+    <tr><td colspan="2">Fires from Canvas right before a lab order's FHIR <code>RequestGroup</code> is built and POSTed to Health Gorilla. Plugins may respond with one or more <a href='/sdk/effect-health-gorilla-lab-order-override/'>HealthGorillaLabOrderOverride</a> effects to inject account numbers, bill-to, performer organization, sub-tenant, or location into the outbound payload.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": laborder_id
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
+      <td><pre>"lab_order":
+  "id": laborder_id
+  "uuid": laborder_id
+"lab_partner": str
+"note":
+  "id": note_id
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">HEALTH_GORILLA_LAB_ORDER_PREPARED</th></tr>
+    <tr><td colspan="2">Fires from Canvas right after the outbound Health Gorilla FHIR <code>RequestGroup</code> dict is constructed and right before it is POSTed to Health Gorilla. Read-only — any effects returned by handlers are discarded. Complements <code>LAB_ORDER_COMMAND__PRE_SEND</code>, which fires before the build and accepts override effects.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": laborder_id
+"type": <a href='/sdk/data-labs/#laborder'>LabOrder</a></pre></td>
+      <td><pre>"lab_order":
+  "id": laborder_id
+  "uuid": laborder_id
+"lab_partner": str
+"note":
+  "id": note_id
+  "uuid": note_id
+"patient":
+  "id": pt_id
+"request_group": dict</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19867,6 +20115,364 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+#### Visual Exam Finding
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VISUAL_EXAM_FINDING_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "title": str
+  "narrative": str
+  "image": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Vitals Command
 
 <table>
@@ -21130,6 +21736,31 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 </table>
 
 
+### SSO Events
+
+For more information on these events, see <a href="/sdk/sso/" target="_blank">SSO Capabilities</a>.
+
+<table>
+  <colgroup>
+    <col width="30%"/>
+    <col width="70%"/>
+  </colgroup>
+  <thead>
+    <th>Event</th>
+    <th>Occurs when</th>
+  </thead>
+  <tbody>
+    <tr>
+      <td>SSO__PROCESS_ADDITIONAL_REQUEST_DATA</td>
+      <td>A user has just authenticated via SAML SSO. Read-only access to the SAML response. See <a href="/sdk/sso/#sso__process_additional_request_data">SSO Capabilities</a>.</td>
+    </tr>
+    <tr>
+      <td>SSO__GET_POST_LOGIN_REDIRECT</td>
+      <td>A user has just authenticated via SAML SSO and Canvas is deciding where to send them. Return a <a href="/sdk/effects/#redirect_context">REDIRECT_CONTEXT</a> effect to override the destination. See <a href="/sdk/sso/#sso__get_post_login_redirect">SSO Capabilities</a>.</td>
+    </tr>
+  </tbody>
+</table>
+
 ### Other Events
 
 <table>
@@ -21149,10 +21780,6 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>CRON</td>
       <td>This event fires regularly and can be used for scheduled tasks. See <a href='/sdk/handlers-crontask/'>CronTask</a>.</td>
-    </tr>
-    <tr>
-      <td>CLAIM__CONDITIONS</td>
-      <td>The conditions are loaded within the claim summary.</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
@@ -21195,6 +21822,15 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     <tr>
       <td>GET_HOMEPAGE_CONFIGURATION</td>
       <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
+    </tr>
+    <tr>
+      <td>COMMAND__FORM__GET_ADDITIONAL_FIELDS</td>
+      <td>Command is originated. See <a href="{% link _sdk/effects/command_metadata_create_form.md %}" target="_blank">Command metadata Create Form</a> for how to use this event.
+      <br />Target:
+      <pre>"command_uuid": str</pre>
+Context object:
+      <pre>"schema_key": str
+"purpose": "form" | "print"</pre></td>
     </tr>
   </tbody>
 </table>

@@ -199,6 +199,9 @@ The `scope` attribute determines where your application is visible within Canvas
 | `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
 | `provider_menu_item` | Displayed as a menu item in the provider menu |
 | `portal_menu_item` | Displayed as a menu item in the patient portal |
+| `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page |
+| `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
+| `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
 
 ### Full Chart Scope
 
@@ -396,7 +399,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
   "url_permissions": [
     {
       "url": "https://example.com/",
-      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA"]
+      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
     }
   ],
   "components": {
@@ -417,7 +420,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     "effects": [],
     "views": []
   },
-  "secrets": [],
+  "variables": [],
   "tags": {},
   "references": [],
   "license": "",

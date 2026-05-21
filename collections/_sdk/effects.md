@@ -75,6 +75,43 @@ class CustomChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
+### Async Execution
+
+By default, effects returned from a plugin's `compute` method are executed inline as part of the request that triggered them. Any `Effect` can be opted into asynchronous execution by chaining `.set_async()` on it, in which case the platform will run the effect as an asynchronous task instead of inline. This is useful for effects that should run on a delay, that are tolerant of retries, or that you don't want to block the originating request.
+
+```python
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self):
+        claim_id = self.event.context["claim_id"]
+        return [
+            ClaimEffect(claim_id=claim_id)
+            .add_comment("Reviewed by automation.")
+            .set_async(delay_seconds=60, max_retries=3)
+        ]
+```
+
+`set_async()` returns the same `Effect` so it can be chained directly off any effect-producing call (e.g. `ClaimEffect(...).add_comment(...)`, `Response(...).apply()`, or a manually-constructed `Effect(...)`).
+
+#### Parameters
+
+| Parameter       | Type  | Description                                                                                                                                                                                  | Required |
+| --------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `delay_seconds` | `int` | Number of seconds to wait before running the effect. Must be non-negative. `0` schedules the effect to run asynchronously as soon as possible.                                              | No       |
+| `max_retries`   | `int` | Maximum number of retry attempts on failure. Must be non-negative. When omitted, the platform default is applied. Pass `0` to explicitly disable retries.                                   | No       |
+
+Both parameters are keyword-only. Calling `.set_async()` with neither argument is a no-op and returns the effect unchanged.
+
+#### Implementation Details
+
+- Negative values or non-integer values for `delay_seconds` or `max_retries` raise `TypeError` / `ValueError`.
+
 ### Disallowed Effect/Event Combinations
 
 Canvas prevents certain combinations of events and effects to avoid infinite loops that could occur when an effect triggers the same event that generated it. The following combinations are specifically disallowed:
@@ -134,7 +171,7 @@ The following effects are available to be applied in Canvas.
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
-| REDIRECT_CONTEXT                            | Can be used to redirect the user to a different context. Check out [Layout Effects](/sdk/handlers-applications/#context-change-events). |
+| REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 
 
 ### Search Results
@@ -181,32 +218,35 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 
 ### Command Metadata & Validation
 
-| Effect | Description |
-|---|---|
-| UPSERT_COMMAND_METADATA | Add or update metadata on a command. Check out [Command Metadata](/sdk/effect-command-metadata/). |
-| COMMAND_AVAILABLE_ACTIONS_RESULTS | Sort or filter command available actions. Check out [Command Actions](/sdk/commands/#command-actions). |
-| COMMAND_VALIDATION_ERRORS | Return validation errors for commands. Check out [Command Validation](/sdk/effect-command-validation/). |
-| EVENT_VALIDATION_ERROR | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/). |
-| BATCH_ORIGINATE_COMMANDS | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/). |
+| Effect                                  | Description                                                                                                                                                                 |
+|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| UPSERT_COMMAND_METADATA                 | Add or update metadata on a command. Check out [Command Metadata](/sdk/effect-command-metadata/).                                                                           |
+| COMMAND_AVAILABLE_ACTIONS_RESULTS       | Sort or filter command available actions. Check out [Command Actions](/sdk/commands/#command-actions).                                                                      |
+| COMMAND_VALIDATION_ERRORS               | Return validation errors for commands. Check out [Command Validation](/sdk/effect-command-validation/).                                                                     |
+| EVENT_VALIDATION_ERROR                  | Return validation errors for events. Check out [Event Validation Error](/sdk/effect-event-validation-error/).                                                               |
+| BATCH_ORIGINATE_COMMANDS                | Originate multiple commands in a note at once. Check out [Batch Originate](/sdk/effect-batch-originate/).                                                                   |
+| COMMAND__FORM__CREATE_ADDITIONAL_FIELDS | Returns additional fields to be displayed on a command and stored as command metadata. Check out [Command Metadata Create Form](/sdk/command-metadata-create-form-effect/). |
 
 
 ### Notes
 
 Check out the [Note Effects](/sdk/effect-notes/) documentation.
 
-| Effect | Description |
-|---|---|
-| CREATE_NOTE | Create a note. |
-| UPDATE_NOTE | Update a note. |
-| LOCK_NOTE | Lock a note. |
-| UNLOCK_NOTE | Unlock a note. |
-| SIGN_NOTE | Sign a note. |
-| CHECK_IN_NOTE | Check in a note. |
-| NO_SHOW_NOTE | Mark a note as no-show. |
-| FAX_NOTE | Fax a note to an external recipient. |
-| PUSH_NOTE_CHARGES | Push note charges for billing. |
-| UPSERT_NOTE_METADATA | Add or update metadata on a note. |
-| GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient. |
+| Effect                    | Description                                                                                                                                                                                           |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CREATE_NOTE               | Create a note.                                                                                                                                                                                        |
+| UPDATE_NOTE               | Update a note.                                                                                                                                                                                        |
+| LOCK_NOTE                 | Lock a note.                                                                                                                                                                                          |
+| UNLOCK_NOTE               | Unlock a note.                                                                                                                                                                                        |
+| SIGN_NOTE                 | Sign a note.                                                                                                                                                                                          |
+| CHECK_IN_NOTE             | Check in a note.                                                                                                                                                                                      |
+| NO_SHOW_NOTE              | Mark a note as no-show.                                                                                                                                                                               |
+| FAX_NOTE                  | Fax a note to an external recipient.                                                                                                                                                                  |
+| PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
+| UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
+| GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
+| NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 
 
 ### Appointments
@@ -294,6 +334,17 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 |---|---|
 | PATIENT_GROUP__ADD_MEMBER | Add a member to a patient group. |
 | PATIENT_GROUP__DEACTIVATE_MEMBER | Deactivate a member from a patient group. |
+
+
+### Staff
+
+| Effect | Description |
+|---|---|
+| [UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member. |
+| [DELETE_STAFF_METADATA](/sdk/effect-staff-metadata/) | Remove a key/value metadata entry from a staff member. |
+| [CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Create a new external identifier on a staff member. |
+| [UPDATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Update fields on an existing external identifier. |
+| [DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member. |
 
 
 ### Messages
@@ -408,6 +459,15 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 | SIMPLE_API_WEBSOCKET_BROADCAST | Broadcast a message to WebSocket connections. |
 
 
+### HTTP Requests
+
+Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
+
+| Effect | Description |
+|---|---|
+| HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
+
+
 ### Revenue / Payment Processor
 
 | Effect | Description |
@@ -427,6 +487,20 @@ Check out the [HTTP](/sdk/handlers-simple-api-http/) and [WebSocket](/sdk/handle
 | SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. |
 | SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. |
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
+
+
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect                       | Description                                                                                                 |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member or team as reviewer to a document in the Data Integration queue.                      |
+| CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
+| JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
+| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |
+| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.                                   |
+| UPDATE_DOCUMENT_FIELDS       | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  |
 
 
 ### Commands
@@ -489,7 +563,6 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
-
 
 
 <br/>

@@ -110,6 +110,8 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 **Options**:
 
 - `--secret TEXT`:  Secrets to set, e.g. Key=value
+- `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+- `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
@@ -234,6 +236,8 @@ $ canvas logs [OPTIONS]
 -  `--no-follow`:          Historical only; do not stream live logs.
 -  `--level TEXT`:         Repeatable. --level ERROR --level WARN
 -  `--source TEXT`:        Filter by source/service.
+-  `--plugin TEXT`:        Repeatable. --plugin foo --plugin bar.
+-  `--handler TEXT`:       Repeatable. Qualified handler name (e.g. my_plugin.handlers.Foo).
 -  `--page-size INTEGER`:  Fetch size per page (historical).  \[default: 200]
 -  `--limit INTEGER`:      Max historical logs to print.
 -  `--all`:                Fetch all pages until exhausted (historical).
@@ -244,7 +248,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-List all secrets from a plugin.
+List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 
 **Usage**:
 
@@ -252,9 +256,17 @@ List all secrets from a plugin.
 $ canvas config list [OPTIONS] PLUGIN
 ```
 
+**Example output**:
+
+```console
+$ canvas config list my_plugin
+  API_TOKEN  [set]  (sensitive)
+  LOG_LEVEL  [not set]
+```
+
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to list secrets for
+ - `PLUGIN`:  Plugin name to list variables for
 
 **Options**:
 
@@ -264,20 +276,36 @@ $ canvas config list [OPTIONS] PLUGIN
 
 ### `canvas config set`
 
-Configure plugin secrets.
+Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
 ```console
-$ canvas config set [OPTIONS] PLUGIN
+$ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+```
+
+**Examples**:
+
+Set a single variable:
+
+```console
+$ canvas config set my_plugin API_TOKEN=your_api_token_value
+```
+
+Set multiple variables in one call:
+
+```console
+$ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
 ```
 
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to list secrets for
- - `SECRETS...`: Secrets to set, e.g. Key=value 
+ - `PLUGIN`:  Plugin name to configure
+ - `KEY=value ...`: One or more variables to set
 
 **Options**:
 
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
+
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.

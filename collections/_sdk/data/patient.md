@@ -35,6 +35,32 @@ from canvas_sdk.v1.data.patient import Patient
 patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
 ```
 
+## Accessing the patient photo
+
+The `photo_url` property returns a presigned S3 URL for securely accessing the patient's uploaded avatar photo. If the patient has no uploaded avatar, the property returns a default avatar URL instead — so the value is always safe to render without a null check.
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+# Returns a presigned S3 URL (valid for 1 hour), or the default avatar URL when no photo is on file
+url = patient.photo_url
+```
+
+If you need the underlying [`PatientPhoto`](#patientphoto) record (for example, to read the original `url` or `title`), use the `photo` property:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+photo = patient.photo  # PatientPhoto or None
+
+if photo:
+    print(photo.title)
+```
+
 ## Attributes
 
 ### Patient
@@ -99,6 +125,7 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 | medications              | [Medication](/sdk/data-medication/#medication)[]                          |
 | metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
+| photos                   | [PatientPhoto](#patientphoto)[]                                           |
 | preferred_pharmacy       | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
 | settings                 | [PatientSetting](#patientsetting)                                         |
@@ -235,6 +262,29 @@ for metadata in patient_metadata:
    log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
 ```
 
+### PatientPhoto
+
+Represents a patient's uploaded avatar photo.
+
+| Field Name | Type                |
+|------------|---------------------|
+| dbid       | Integer             |
+| created    | DateTime            |
+| modified   | DateTime            |
+| patient    | [Patient](#patient) |
+| url        | String              |
+| title      | String              |
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+
+for photo in patient.photos.all():
+    log.info(f"Photo: {photo.title}, stored at: {photo.url}")
+```
+
 ### PatientIdentificationCard
 
 Represents a patient identification card image (e.g., driver's license, insurance card).
@@ -289,6 +339,8 @@ for card in patient.identification_cards.filter(active=True):
 - `preferred_full_name`: The patient's preferred full name, if different from the legal name.
 - `preferred_first_name`: The patient's preferred first name, if different from the legal first name.
 - `primary_phone_number`: The patient's primary contact number.
+- `photo`: The patient's first uploaded avatar [PatientPhoto](#patientphoto), if any.
+- `photo_url`: A presigned URL for the patient's avatar photo, or the default avatar URL when no photo is set.
 
 <br/>
 <br/>
