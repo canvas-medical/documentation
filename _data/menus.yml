@@ -1004,6 +1004,9 @@ data_module:
   - title: "Immunization"
     url: /sdk/data-immunization/
     description: A record of a vaccination that is being administered to a patient, either now, in the past, or in the future.
+  - title: "Instruction"
+    url: /sdk/data-instruction/
+    description: An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions.
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
