@@ -25,11 +25,9 @@ Canvas configures every staging-enabled dev instance with the same canonical pre
 
 When you sign a NewRx in staging, **sign as Wayne Best**, not as your own user. The SPI on the outgoing message has to match the prescriber Canvas has mapped at the pharmacy gateway, or the inbound RxRenewalRequest will not route back to your instance.
 
-## Canonical test patients
+## Canonical test patient
 
-Surescripts staging will only return medication history and refill responses for a small fixed set of canonical test patients with pre-built demographics and clinical scenarios. Arbitrary fresh patients you create on your dev instance will not return responses.
-
-The most-commonly used canonical test patient is:
+Surescripts staging will only return medication history and refill responses for canonical test patients whose demographics it recognizes; arbitrary fresh patients you create on your dev instance will not return responses. The canonical test patient Canvas uses for staging is:
 
 | Field   | Value                                                |
 | ------- | ---------------------------------------------------- |
@@ -40,17 +38,17 @@ The most-commonly used canonical test patient is:
 | Weight  | 62 lb                                                |
 | Height  | 51 in                                                |
 
-Create this patient on your dev instance with the demographics **exactly as listed** &mdash; address mismatches (especially ZIP code) are the most common cause of failed routing on the return refill request. If you need additional canonical test patients beyond Zachary, [Canvas support](https://portal.usepylon.com/canvas-medical/forms/standard){:target="_blank"} can share the rest.
+Create this patient on your dev instance with the demographics **exactly as listed** &mdash; address mismatches (especially ZIP code) are the most common cause of failed routing on the return refill request.
 
 ## Canonical test pharmacy
 
-Set the patient's preferred pharmacy to one of the canonical Surescripts test pharmacies rather than picking from Canvas's general pharmacy directory. For Zachary Delaplaine, the canonical pharmacy is:
+Set the patient's preferred pharmacy to the canonical pharmacy paired with this patient rather than picking from Canvas's general pharmacy directory:
 
 - **Name:** Shollenberger Pharmacy
 - **NCPDP:** `1655458`
 - **Address:** 2002 S. McDowell Blvd Ext, Petaluma, CA 94954
 
-Each canonical test patient has a paired canonical pharmacy; using a pharmacy outside that set will produce a NewRx that looks accepted but never closes the refill loop. Canvas support can share the pairing for any additional patient.
+Using a pharmacy outside the canonical pairing will produce a NewRx that looks accepted but never closes the refill loop.
 
 ## Surescripts staging service hours
 
@@ -67,8 +65,8 @@ A few behaviors are normal in Surescripts staging but do not reproduce in produc
 
 If you have configured the patient, the pharmacy, and the prescriber as above and a NewRx still does not produce an inbound refill response, the most likely causes are:
 
-- The patient you used has demographics that do not exactly match one of the canonical test patients (re-check ZIP, street suffix, exact name spelling)
-- The preferred pharmacy is not the canonical pharmacy paired with that patient
+- The patient's demographics do not exactly match the canonical test patient above (re-check ZIP, street suffix, exact name spelling)
+- The preferred pharmacy is not the canonical pharmacy paired with this patient
 - You signed the NewRx as your own user rather than as Wayne Best
 - The message was sent outside Surescripts staging service hours (M-F 8am-6pm ET)
 
