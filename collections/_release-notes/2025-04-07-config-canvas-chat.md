@@ -5,4 +5,4 @@ layout: productupdates
 date: 2025-04-07
 ---
 
-A new constance config ENABLE_CANVAS_CHAT allows organizations to enable or disable Canvas Chat for their EMR instance. By default, the setting is set to TRUE.
+A new constance config ENABLE_CANVAS_CHAT allows organizations to enable or disable Canvas Chat for their EMR instance. By default, the setting is set to TRUE. See [Constance: Config (runtime configuration)](/documentation/constance-config/) for where to find this setting in the admin and which role can change it.
