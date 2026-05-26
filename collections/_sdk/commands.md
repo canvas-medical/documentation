@@ -219,6 +219,38 @@ def compute():
     return [existing_plan.upsert_metadata(key="priority", value="high")]
 ```
 
+#### set_custom_html
+
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+
+The `command_uuid` field must be set on the command object before calling `set_custom_html`.
+
+| Parameter     | Type              | Description                                                      |
+|---------------|-------------------|------------------------------------------------------------------|
+| `custom_html` | _string_ or _None_ | The HTML content to set on the command, or `None` to clear it.  |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.set_custom_html("<div class='highlight'>Important note</div>")]
+```
+
+To clear existing custom HTML from a command:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.set_custom_html(None)]
+```
+
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
