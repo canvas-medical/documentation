@@ -146,6 +146,9 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |
+| custom_html        | String (optional)                     |
+
+The `custom_html` field stores base64-encoded HTML content that is rendered alongside the command. This field is optional and defaults to `None`.
 
 ### CommandMetadata
 
