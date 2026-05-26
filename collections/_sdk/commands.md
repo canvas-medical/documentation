@@ -223,7 +223,7 @@ def compute():
 
 Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
 
-The `command_uuid` field must be set on the command object before calling `set_custom_html`.
+The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
 
 | Parameter     | Type              | Description                                                      |
 |---------------|-------------------|------------------------------------------------------------------|
