@@ -544,6 +544,13 @@ Custom commands are different from standard commands:
 - They support both display and print versions of content
 - They are designed for displaying formatted data, not for capturing user input
 
+The following effects are supported on custom commands:
+
+| Method | Description |
+|:-------|:------------|
+| `originate()` | Inserts the custom command into a note |
+| `enter_in_error()` | Marks a committed custom command as entered in error |
+
 Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 
 ---

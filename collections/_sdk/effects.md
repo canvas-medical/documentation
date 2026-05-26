@@ -530,7 +530,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Change Medication | `*_CHANGE_MEDICATION_COMMAND` | |
 | Chart Section Review | `*_CHART_SECTION_REVIEW_COMMAND` | ORIGINATE only |
 | Close Goal | `*_CLOSE_GOAL_COMMAND` | |
-| Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE only |
+| Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE, ENTER_IN_ERROR |
 | Diagnose | `*_DIAGNOSE_COMMAND` | |
 | Exam | `*_EXAM_COMMAND` | |
 | Family History | `*_FAMILY_HISTORY_COMMAND` | |
