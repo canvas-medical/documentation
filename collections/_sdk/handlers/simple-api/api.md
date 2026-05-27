@@ -378,20 +378,23 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
-#### File uploads (`upload_files=True`)
+#### File uploads (`file_uploads="stored"`)
 
-For endpoints that accept file uploads, declare the route with `upload_files=True`. Canvas
+For endpoints that accept file uploads, declare the route with `file_uploads="stored"`. Canvas
 will intercept `multipart/form-data` requests on these endpoints, write each file part to S3
-*before* invoking your plugin, and pass your handler an `UploadedFilePart` for each file
-field instead of the raw bytes.
+*before* invoking your plugin, and pass your handler a `StoredFilePart` for each file field
+instead of the raw bytes.
 
 This is the recommended pattern for any endpoint that accepts files larger than a few KB.
 Files never enter the plugin runner, which keeps your plugin light, fast, and out of the
 business of buffering binary data.
 
+`file_uploads="stored"` is only supported on `POST` and `PUT` routes. The other verbs (`GET`,
+`DELETE`, `PATCH`) do not accept this option.
+
 ```python?partial=true
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import UploadedFilePart, api
+from canvas_sdk.handlers.simple_api import StoredFilePart, api
 
 
 class AttachmentApi(api.SimpleAPI):
@@ -400,10 +403,10 @@ class AttachmentApi(api.SimpleAPI):
     def authenticate(self, credentials):
         return True
 
-    @api.post("/upload", upload_files=True)
+    @api.post("/upload", file_uploads="stored")
     def upload(self) -> list[Response]:
         form = self.request.form_data()
-        attachment: UploadedFilePart = form["attachment"]
+        attachment: StoredFilePart = form["attachment"]
         # attachment.key:          "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
         # attachment.filename:     original filename (sanitized)
         # attachment.content_type: MIME type from the multipart part
@@ -412,7 +415,7 @@ class AttachmentApi(api.SimpleAPI):
         return [JSONResponse({"key": attachment.key, "filename": attachment.filename})]
 ```
 
-The `UploadedFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
+The `StoredFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
 `size`, and `key`. Plain string fields in the same multipart request are returned as
 `StringFormPart` instances with `name` and `value`, just like in a non-upload endpoint.
 
@@ -422,42 +425,59 @@ on a custom data record). When the file later needs to be served, Canvas generat
 short-lived presigned URL on read.
 
 If a caller posts with a non-multipart content type to an endpoint declared with
-`upload_files=True`, the request is rejected with **400 Bad Request** before the handler
-runs. The default for `upload_files` is `False`, so existing endpoints are not affected by
-this feature.
+`file_uploads="stored"`, the request is rejected with **400 Bad Request** before the handler
+runs. The default for `file_uploads` is `"passthrough"` (file bytes flow through to the
+plugin as before), so existing endpoints are not affected by this feature.
 
 ##### Handling partial failures
 
 S3 uploads happen per file. A failure on one file does not prevent the rest of the batch
 from reaching your handler — only when **every** file in the request fails does Canvas
-return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, successful
-files are exposed through `request.form_data()` and failed files are exposed through
-`request.upload_failures()`. Each failure entry carries `name`, `filename`, `content_type`,
-`size`, and a stable `error` code (for example, `"s3_upload_failed"`). If your endpoint
-needs atomic semantics, inspect `upload_failures()` and either delete the successful keys
-or return a 4xx/5xx response from the handler.
+return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, both
+successful and failed files are exposed through `request.form_data()` in the same MultiDict:
+successes as `StoredFilePart` (with a `key`), failures as `FailedFilePart` (with an `error`
+code, for example `"s3_upload_failed"`). Both variants return `True` from `is_file()`, so an
+`if part.is_file():` loop sees failures alongside successes — discriminate with
+`isinstance(part, FailedFilePart)` before reading `part.key`.
+
+```python?partial=true
+from canvas_sdk.handlers.simple_api import FailedFilePart, StoredFilePart
+
+form = self.request.form_data()
+for name, part in form.multi_items():
+    if isinstance(part, FailedFilePart):
+        log.error(f"upload failed for {part.filename}: {part.error}")
+        continue
+    if isinstance(part, StoredFilePart):
+        # part.key is safe to use
+        ...
+```
+
+If your endpoint needs atomic semantics, fail the request when any `FailedFilePart` is
+present (and optionally delete the successful keys before responding).
 
 ##### Using `SimpleAPIRoute`
 
-For routes defined as `SimpleAPIRoute` subclasses, set `UPLOAD_FILES = True` as a class
-attribute to opt in:
+For routes defined as `SimpleAPIRoute` subclasses, set `FILE_UPLOADS = "stored"` as a class
+attribute to opt in. The setting applies only to the `post` and `put` methods on the class;
+`get`, `delete`, and `patch` methods on the same class register normally.
 
 ```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute, UploadedFilePart
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute, StoredFilePart
 
 
 class UploadRoute(SimpleAPIRoute):
     PATH = "/upload"
-    UPLOAD_FILES = True
+    FILE_UPLOADS = "stored"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
         ...
 
     def post(self) -> list[Response | Effect]:
         form = self.request.form_data()
-        attachment: UploadedFilePart = form["file"]
+        attachment: StoredFilePart = form["file"]
         return [JSONResponse({"key": attachment.key})]
 ```
 
