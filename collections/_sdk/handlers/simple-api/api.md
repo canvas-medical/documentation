@@ -410,13 +410,13 @@ class AttachmentApi(api.SimpleAPI):
         # attachment.key:          "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
         # attachment.filename:     original filename (sanitized)
         # attachment.content_type: MIME type from the multipart part
-        # attachment.size:         number of bytes
+        # attachment.content_length: number of bytes
         # NOTE: there is no `.content` attribute. Bytes live in S3 only.
         return [JSONResponse({"key": attachment.key, "filename": attachment.filename})]
 ```
 
 The `StoredFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
-`size`, `key`, and `error`. For successful uploads, `key` is the S3 key and `error` is
+`content_length`, `key`, and `error`. For successful uploads, `key` is the S3 key and `error` is
 `None`. For failures (see the next section), `key` is `None` and `error` is set. Plain
 string fields in the same multipart request are returned as `StringFormPart` instances
 with `name` and `value`, just like in a non-upload endpoint.
