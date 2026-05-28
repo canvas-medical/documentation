@@ -416,8 +416,10 @@ class AttachmentApi(api.SimpleAPI):
 ```
 
 The `StoredFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
-`size`, and `key`. Plain string fields in the same multipart request are returned as
-`StringFormPart` instances with `name` and `value`, just like in a non-upload endpoint.
+`size`, `key`, and `error`. For successful uploads, `key` is the S3 key and `error` is
+`None`. For failures (see the next section), `key` is `None` and `error` is set. Plain
+string fields in the same multipart request are returned as `StringFormPart` instances
+with `name` and `value`, just like in a non-upload endpoint.
 
 The S3 key your plugin receives is a stable, customer-scoped relative path. Reference it in
 subsequent effects (for example, by passing it to a message-attachment effect or storing it
@@ -434,33 +436,37 @@ plugin as before), so existing endpoints are not affected by this feature.
 S3 uploads happen per file. A failure on one file does not prevent the rest of the batch
 from reaching your handler — only when **every** file in the request fails does Canvas
 return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, both
-successful and failed files are exposed through `request.form_data()` in the same MultiDict:
-successes as `StoredFilePart` (with a `key`), failures as `FailedFilePart` (with an `error`
-code, for example `"s3_upload_failed"`). Both variants return `True` from `is_file()`, so an
-`if part.is_file():` loop sees failures alongside successes — discriminate with
-`isinstance(part, FailedFilePart)` before reading `part.key`.
+successful and failed files are exposed through `request.form_data()` in the same MultiDict
+as `StoredFilePart` instances. Successes have `key` set and `error=None`; failures have
+`key=None` and `error` set to a stable code (for example `"s3_upload_failed"`). Failures
+are surfaced alongside successes so an `if part.is_file():` loop can't accidentally ignore
+them — check `part.error` before reading `part.key`.
 
 ```python?partial=true
-from canvas_sdk.handlers.simple_api import FailedFilePart, StoredFilePart
+from canvas_sdk.handlers.simple_api import StoredFilePart
 
 form = self.request.form_data()
 for name, part in form.multi_items():
-    if isinstance(part, FailedFilePart):
+    if not part.is_file():
+        continue
+    assert isinstance(part, StoredFilePart)
+    if part.error:
         log.error(f"upload failed for {part.filename}: {part.error}")
         continue
-    if isinstance(part, StoredFilePart):
-        # part.key is safe to use
-        ...
+    # part.key is safe to use
+    ...
 ```
 
-If your endpoint needs atomic semantics, fail the request when any `FailedFilePart` is
-present (and optionally delete the successful keys before responding).
+If your endpoint needs atomic semantics, fail the request when any part has a non-`None`
+`error` (and optionally delete the successful keys before responding).
 
 ##### Using `SimpleAPIRoute`
 
 For routes defined as `SimpleAPIRoute` subclasses, set `FILE_UPLOADS = "stored"` as a class
 attribute to opt in. The setting applies only to the `post` and `put` methods on the class;
-`get`, `delete`, and `patch` methods on the same class register normally.
+`get`, `delete`, and `patch` methods on the same class register normally. Setting
+`FILE_UPLOADS = "stored"` on a class that defines no `post` or `put` method raises
+`PluginError` at class-definition time — the setting would otherwise silently do nothing.
 
 ```python?partial=true
 from canvas_sdk.effects import Effect
