@@ -21930,6 +21930,29 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
+    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "staff":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a>
+  "patient":
+    "id": str
+    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Patient Chart Configuration
 
 <table>

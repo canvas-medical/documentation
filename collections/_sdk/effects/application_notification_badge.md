@@ -1,0 +1,113 @@
+---
+title: "Application Notification Badge"
+slug: "effect-application-notification-badge"
+excerpt: "Display and update a notification badge count on an application icon."
+hidden: false
+---
+
+Notification badges let your plugin surface a count on an
+[application](/sdk/handlers-applications/) icon — the small number that
+indicates, for example, how many unread items are waiting. Badges appear on the
+application icon both in the app drawer and on panel icons.
+
+There are two ways a badge is set:
+
+- **On load** — override `compute_notification_badge()` on your `Application`
+  handler to provide the initial count shown when Canvas loads applications. See
+  [Notification Badges](/sdk/handlers-applications/#notification-badges) on the
+  Applications handler page.
+- **Live updates** — emit an `ApplicationNotificationBadge` effect from any event
+  handler to update the count in real time, without the user reloading the page.
+  This is what the rest of this page covers.
+
+## Setting a badge
+
+`ApplicationNotificationBadge` is a fluent builder. Construct it with the target
+application's identifier, optionally `.filter(...)` to target patients, then call
+`.broadcast(...)` to produce the effect.
+
+| Method / Attribute       |          | Type        | Description                                                                                                                                                |
+| ------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `application_identifier` | required | String      | Passed to the constructor. Must match the `class` string declared for the application in `CANVAS_MANIFEST.json`. An unknown identifier raises a validation error. |
+| `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
+| `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
+| `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys whose chart context the update applies to.                                                       |
+
+```python
+from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
+
+# Set a badge of 3 for a specific staff member.
+ApplicationNotificationBadge("my_plugin__inbox").broadcast(count=3, staff_ids=["staff-key"])
+```
+
+## Targeting
+
+`staff_ids` and `patient_ids` control who sees the update:
+
+| `staff_ids` | `patient_ids` | Who sees the badge                                                                       |
+| ----------- | ------------- | ---------------------------------------------------------------------------------------- |
+| set         | empty         | The listed staff, wherever they view the application.                                    |
+| empty       | set           | Staff currently viewing the listed patients' charts.                                     |
+| set         | both          | The listed staff, but only while viewing the listed patients' charts.                    |
+| empty       | empty         | All staff (a system-wide update).                                                        |
+
+Patients are never subscribers themselves — `patient_ids` scopes the badge to a
+patient's chart, where staff viewing that chart will see it.
+
+```python
+# Show a badge to staff viewing a specific patient's chart.
+ApplicationNotificationBadge("my_plugin__patient_labs").filter(
+    patient_ids=["patient-key"]
+).broadcast(count=5)
+
+# Combine: only the on-call provider, and only on this patient's chart.
+ApplicationNotificationBadge("my_plugin__patient_labs").filter(
+    patient_ids=["patient-key"]
+).broadcast(count=1, staff_ids=["staff-key"])
+```
+
+## Reacting to events
+
+The most common pattern is updating a badge in response to a domain event. Here a
+handler recomputes a staff member's inbox count whenever a task is created and
+pushes the new value live:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+
+class InboxBadgeHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.TASK__CREATED)
+
+    def compute(self) -> list[Effect]:
+        task = Task.objects.get(id=self.event.target.id)
+        assignee = task.assignee
+        if not assignee:
+            return []
+
+        open_count = Task.objects.filter(assignee=assignee, status=TaskStatus.OPEN).count()
+
+        return [
+            ApplicationNotificationBadge("my_plugin__inbox").broadcast(
+                count=open_count,
+                staff_ids=[assignee.id],
+            )
+        ]
+```
+
+## Clearing a badge
+
+Broadcast a `count` of `0` to remove the badge from the icon:
+
+```python
+ApplicationNotificationBadge("my_plugin__inbox").broadcast(count=0, staff_ids=["staff-key"])
+```
+
+> **Note:** To set the badge value shown when applications first load (rather than
+> in response to an event), override `compute_notification_badge()` on your
+> `Application` handler. See
+> [Notification Badges](/sdk/handlers-applications/#notification-badges).
