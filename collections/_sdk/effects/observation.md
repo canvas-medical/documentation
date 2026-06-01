@@ -72,6 +72,8 @@ Before any effect is emitted, the model runs these checks:
 ### Enter in Error Validation
 - **observation_id** is **required** and must reference an existing observation
 - All other fields must **not** be set (only `observation_id` is allowed)
+- The observation must not already be entered in error
+- The observation must not belong to a locked note
 
 ## Effect Methods
 
