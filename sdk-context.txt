@@ -20696,7 +20696,7 @@ Attribute | Type | Description | Required
 `patient_id` | `str` or `None` | Patient ID (required for updates only) | No  
 `addresses` | `list[PatientAddress]` or `None` | Patient's addresses | No  
 `preferred_pharmacies` | `list[PatientPreferredPharmacy]` or `None` | Patient's preferred pharmacies | No  
-`preferred_pharmacies` | `list[PatientMetadata]` or `None` | Patient metadata | No  
+`metadata` | `list[PatientMetadata]` or `None` | Patient metadata | No  
 ##  PatientContactPoint 
 The `PatientContactPoint` dataclass represents various methods of contacting the patient.
 ###  Attributes 

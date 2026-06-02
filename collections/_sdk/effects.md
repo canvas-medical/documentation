@@ -172,7 +172,7 @@ The following effects are available to be applied in Canvas.
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
-
+| PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
 
@@ -241,6 +241,9 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | SIGN_NOTE                 | Sign a note.                                                                                                                                                                                          |
 | CHECK_IN_NOTE             | Check in a note.                                                                                                                                                                                      |
 | NO_SHOW_NOTE              | Mark a note as no-show.                                                                                                                                                                               |
+| DELETE_NOTE               | Delete a note.                                                                                                                                                                                        |
+| UNDELETE_NOTE             | Restore a deleted note.                                                                                                                                                                               |
+| DISCHARGE_NOTE            | Lock and discharge an inpatient note.                                                                                                                                                                 |
 | FAX_NOTE                  | Fax a note to an external recipient.                                                                                                                                                                  |
 | PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
 | UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
@@ -259,6 +262,7 @@ Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [App
 | UPDATE_APPOINTMENT | Update an appointment. |
 | RESCHEDULE_APPOINTMENT | Reschedule an appointment. |
 | CANCEL_APPOINTMENT | Cancel an appointment. |
+| REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state. |
 | ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total). |
 | REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment. |
 | UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment. |
@@ -367,6 +371,7 @@ Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 |---|---|
 | CREATE_OBSERVATION | Create an observation. |
 | UPDATE_OBSERVATION | Update an observation. |
+| ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error. |
 
 
 ### Questionnaire
