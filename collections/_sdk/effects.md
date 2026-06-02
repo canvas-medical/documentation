@@ -172,7 +172,7 @@ The following effects are available to be applied in Canvas.
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
-
+| PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
 
@@ -232,19 +232,24 @@ Check out the [Task Effects](/sdk/effect-tasks/) and [Task Metadata](/sdk/effect
 
 Check out the [Note Effects](/sdk/effect-notes/) documentation.
 
-| Effect | Description |
-|---|---|
-| CREATE_NOTE | Create a note. |
-| UPDATE_NOTE | Update a note. |
-| LOCK_NOTE | Lock a note. |
-| UNLOCK_NOTE | Unlock a note. |
-| SIGN_NOTE | Sign a note. |
-| CHECK_IN_NOTE | Check in a note. |
-| NO_SHOW_NOTE | Mark a note as no-show. |
-| FAX_NOTE | Fax a note to an external recipient. |
-| PUSH_NOTE_CHARGES | Push note charges for billing. |
-| UPSERT_NOTE_METADATA | Add or update metadata on a note. |
-| GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient. |
+| Effect                    | Description                                                                                                                                                                                           |
+|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| CREATE_NOTE               | Create a note.                                                                                                                                                                                        |
+| UPDATE_NOTE               | Update a note.                                                                                                                                                                                        |
+| LOCK_NOTE                 | Lock a note.                                                                                                                                                                                          |
+| UNLOCK_NOTE               | Unlock a note.                                                                                                                                                                                        |
+| SIGN_NOTE                 | Sign a note.                                                                                                                                                                                          |
+| CHECK_IN_NOTE             | Check in a note.                                                                                                                                                                                      |
+| NO_SHOW_NOTE              | Mark a note as no-show.                                                                                                                                                                               |
+| DELETE_NOTE               | Delete a note.                                                                                                                                                                                        |
+| UNDELETE_NOTE             | Restore a deleted note.                                                                                                                                                                               |
+| DISCHARGE_NOTE            | Lock and discharge an inpatient note.                                                                                                                                                                 |
+| FAX_NOTE                  | Fax a note to an external recipient.                                                                                                                                                                  |
+| PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
+| UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
+| GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
+| NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 
 
 ### Appointments
@@ -257,6 +262,7 @@ Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [App
 | UPDATE_APPOINTMENT | Update an appointment. |
 | RESCHEDULE_APPOINTMENT | Reschedule an appointment. |
 | CANCEL_APPOINTMENT | Cancel an appointment. |
+| REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state. |
 | ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total). |
 | REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment. |
 | UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment. |
@@ -334,6 +340,17 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 | PATIENT_GROUP__DEACTIVATE_MEMBER | Deactivate a member from a patient group. |
 
 
+### Staff
+
+| Effect | Description |
+|---|---|
+| [UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member. |
+| [DELETE_STAFF_METADATA](/sdk/effect-staff-metadata/) | Remove a key/value metadata entry from a staff member. |
+| [CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Create a new external identifier on a staff member. |
+| [UPDATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Update fields on an existing external identifier. |
+| [DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member. |
+
+
 ### Messages
 
 Check out the [Message Effects](/sdk/effect-messages/) documentation.
@@ -354,6 +371,7 @@ Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 |---|---|
 | CREATE_OBSERVATION | Create an observation. |
 | UPDATE_OBSERVATION | Update an observation. |
+| ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error. |
 
 
 ### Questionnaire
@@ -476,6 +494,20 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
 
 
+### Data Integration
+
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+
+| Effect                       | Description                                                                                                 |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member or team as reviewer to a document in the Data Integration queue.                      |
+| CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
+| JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
+| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |
+| REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.                                   |
+| UPDATE_DOCUMENT_FIELDS       | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  |
+
+
 ### Commands
 
 Check out the [Commands documentation](/sdk/commands/) for full details.
@@ -502,7 +534,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Change Medication | `*_CHANGE_MEDICATION_COMMAND` | |
 | Chart Section Review | `*_CHART_SECTION_REVIEW_COMMAND` | ORIGINATE only |
 | Close Goal | `*_CLOSE_GOAL_COMMAND` | |
-| Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE only |
+| Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE, ENTER_IN_ERROR |
 | Diagnose | `*_DIAGNOSE_COMMAND` | |
 | Exam | `*_EXAM_COMMAND` | |
 | Family History | `*_FAMILY_HISTORY_COMMAND` | |
@@ -536,7 +568,6 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
-
 
 
 <br/>

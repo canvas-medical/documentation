@@ -2419,6 +2419,8 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--no-follow`: Historical only; do not stream live logs.
   - `--level TEXT`: Repeatable. –level ERROR –level WARN
   - `--source TEXT`: Filter by source/service.
+  - `--plugin TEXT`: Repeatable. –plugin foo –plugin bar.
+  - `--handler TEXT`: Repeatable. Qualified handler name (e.g. my_plugin.handlers.Foo).
   - `--page-size INTEGER`: Fetch size per page (historical). [default: 200]
   - `--limit INTEGER`: Max historical logs to print.
   - `--all`: Fetch all pages until exhausted (historical).
@@ -5668,6 +5670,11 @@ Custom commands are different from standard commands:
   - They must be configured in your plugin's manifest before use
   - They support both display and print versions of content
   - They are designed for displaying formatted data, not for capturing user input
+The following effects are supported on custom commands:
+Method | Description  
+---|---  
+`originate()` | Inserts the custom command into a note  
+`enter_in_error()` | Marks a committed custom command as entered in error  
 Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 * * *
 ##  AdjustPrescription 
@@ -8936,6 +8943,12 @@ To execute:
     canvas namespace drop acme_corp__shared_data --host dev-instance --execute
     ```
 After a drop, the next plugin installation with that namespace name will create it from scratch, generating new authentication keys. Any other plugins that were sharing the namespace will need to be reconfigured with the new keys.
+##  Uninstalling and Reinstalling a Plugin 
+Uninstalling a plugin **deletes its secrets** , including the system-generated `namespace_read_access_key` and `namespace_read_write_access_key`. The namespace schema and its data, however, **survive the uninstall**. This is by design: uninstalling a plugin should never destroy custom data, and a namespace shared by multiple plugins must not be torn down while another plugin is still using it.
+Because the namespace still exists, reinstalling the plugin does **not** regenerate the keys — key generation only happens when the namespace is first created. The reinstalled plugin is therefore left without valid access keys and cannot read or write its own data, even though configuring the secrets appeared to succeed.
+This applies in production as well as during development. To avoid getting stuck:
+  - **Before uninstalling** , copy the namespace keys from the Canvas admin UI into an external secret store such as 1Password. On reinstall, set them back as plugin secrets and the plugin regains access immediately. (To find the keys: open the Canvas admin UI, find the plugin that created the namespace, and read the `namespace_read_access_key` / `namespace_read_write_access_key` secret values.)
+  - **If the keys are already lost** , run `canvas namespace drop <namespace> --host <instance> --execute` to remove the namespace, then reinstall. Installation recreates the namespace and generates fresh keys. Any other plugins that were sharing the namespace must be reconfigured with the new keys.
 ##  When to Reset vs. Drop 
 Scenario | Command  
 ---|---  
@@ -8945,6 +8958,7 @@ You changed your namespace name in the manifest | `drop` the old, then reinstall
 You're done developing and want to remove all traces | `drop`  
 Other plugins share this namespace and you want to preserve their access | `reset` (keys are preserved)  
 You want to regenerate the namespace authentication keys | `drop`, then reinstall  
+You uninstalled a plugin and a reinstall can't access its data (keys were deleted) | `drop`, then reinstall — or restore the saved keys  
 ##  See Also 
   - [Quick Start](/sdk/custom-data-quick-start/) \- Get started with custom data in 10 minutes
   - [CustomModels](/sdk/custom-data-custom-models/) \- Define structured database tables
@@ -9075,11 +9089,11 @@ After the namespace is created, you can find the generated keys in the **Canvas 
   1. Navigate to **Settings → Plugins**
   2. Find the plugin that created the namespace
   3. Click to view plugin details
-  4. The `read_access_key` and `read_write_access_key` appear in the **Secrets** section
+  4. The `namespace_read_access_key` and `namespace_read_write_access_key` appear in the **Secrets** section
 Share these keys securely with developers of other plugins that need access:
-  - Share `read_access_key` with plugins that only need to read data
-  - Share `read_write_access_key` with plugins that need to modify data
-> **Important:** Store these keys in a secure location outside of Canvas. If the keys are accidentally removed from the manifest's `secrets` array, they will be deleted upon the next installation.
+  - Share `namespace_read_access_key` with plugins that only need to read data
+  - Share `namespace_read_write_access_key` with plugins that need to modify data
+> **Important:** Store these keys in a secure location outside of Canvas, such as 1Password. Removing a key from the manifest's `secrets` array does **not** delete the stored value — it is preserved. However, **uninstalling the plugin deletes its secrets** , including the namespace keys. Because the namespace itself survives an uninstall, a later reinstall will not regenerate the keys, so a copy kept outside Canvas is the only way to restore access. See [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin).
 ###  Configuring Plugin Access 
 Each plugin that joins a namespace must:
   1. **Declare the namespace** in `CANVAS_MANIFEST.json`
@@ -9222,18 +9236,18 @@ When a plugin with `read` access attempts a write operation, a `NamespaceWriteDe
         log.error(f"Cannot write to shared namespace: {e}")
     ```
 ###  Troubleshooting 
-**"NamespaceAccessError: secret 'read_access_key' is not configured"**
+**"NamespaceAccessError: secret 'namespace_read_access_key' is not configured"**
   - Add the secret name to the `secrets` array in your manifest
   - Ensure the secret has a value set in the Canvas UI
 **"NamespaceAccessError: the key value is not a valid access key"**
   - Verify you're using the correct key from the namespace owner
   - Check that the key hasn't been regenerated
 **"NamespaceAccessError: requests 'read_write' access but key only grants 'read'"**
-  - You're using `read_access_key` but declared `"access": "read_write"`
-  - Either change to `read_write_access_key` or change access to `"read"`
+  - You're using `namespace_read_access_key` but declared `"access": "read_write"`
+  - Either change to `namespace_read_write_access_key` or change access to `"read"`
 **"NamespaceWriteDenied: namespace is read-only"**
   - Your plugin has `"access": "read"` but is attempting a write operation
-  - Change to `"access": "read_write"` and use `read_write_access_key`
+  - Change to `"access": "read_write"` and use `namespace_read_write_access_key`
 ##  API Sharing 
 API sharing is the recommended approach when:
   - Plugins are owned by different organizations
@@ -11610,6 +11624,7 @@ resolution_date | Date
 clinical_status | ClinicalStatus  
 codings | ConditionCoding[]  
 lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[]  
+notes | String  
 surgical | Boolean  
 ###  ConditionCoding 
 Field Name | Type  
@@ -12899,6 +12914,101 @@ MEDPREC | medical precaution
 OSTOCK | product out of stock  
 PATOBJ | patient objection  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-immunization/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-instruction/
+##  Introduction 
+The `Instruction` model represents an `Instruct` command in a patient's note — for example, "cessation of smoking" counseling, dietary instructions, or any other piece of clinical guidance recorded as an Instruct command. Instructions are included regardless of command state (staged or committed); use `.committed()` to filter to only committed commands.
+Querying `Instruction` from a plugin is the recommended way to ask "has this patient been given an instruction in this value set?" — for example, when computing quality measures that look for tobacco cessation counseling or dialysis education.
+##  Basic usage 
+To get an instruction by identifier, use the `get` method on the `Instruction` model manager:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    instruction = Instruction.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the instructions for a patient can be accessed with the `instructions` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    # Returns all instructions for the patient, regardless of command state (staged or committed)
+    instructions = patient.instructions.all()
+    ```
+If you have a patient ID, you can get the instructions for the patient with the `for_patient` method on the `Instruction` model manager:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    # All instructions for the patient, regardless of command state (staged or committed)
+    instructions = Instruction.objects.for_patient(patient_id)
+    # Only committed instructions for the patient
+    committed_instructions = Instruction.objects.for_patient(patient_id).committed()
+    ```
+##  Codings 
+The codings for an instruction can be accessed with the `codings` attribute on an `Instruction` object:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    from logger import log
+    instruction = Instruction.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    for coding in instruction.codings.all():
+        log.info(f"system:  {coding.system}")
+        log.info(f"code:    {coding.code}")
+        log.info(f"display: {coding.display}")
+    ```
+Instruct commands originated through the SDK use either the SNOMED CT code system or an internal "unstructured" system for free-text instructions. See the [InstructCommand](/sdk/commands/#instructcommand) effect for the write-side details.
+##  Committed instructions 
+The `committed` method returns instructions whose underlying command has been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    committed_instructions = Instruction.objects.committed()
+    ```
+##  Filtering 
+Instructions can be filtered by any attribute that exists on the model.
+Filtering for instructions is done with the `filter` method on the `Instruction` model manager.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    instructions = Instruction.objects.filter(note__id="2c91b0d8-7b9d-4ef1-89e2-1f9a3a8a2b14")
+    ```
+###  By ValueSet 
+Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
+    ```python
+    from canvas_sdk.v1.data.instruction import Instruction
+    from canvas_sdk.value_set.v2022.intervention import TobaccoUseCessationCounseling
+    cessation_counseling = (
+        Instruction.objects
+        .for_patient("1eed3ea2a8d546a1b681a2a45de1d790")
+        .committed()
+        .find(TobaccoUseCessationCounseling)
+    )
+    ```
+`find` joins through the `codings` reverse relation and filters on `(system, code)` pairs from the value set, so it composes naturally with `for_patient` and `committed`.
+##  Attributes 
+###  Instruction 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+deleted | Boolean  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note/#note)  
+narrative | String  
+codings | InstructionCoding[]  
+###  InstructionCoding 
+Field Name | Type  
+---|---  
+dbid | Integer  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+instruction | Instruction  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-instruction/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-integration-task/
@@ -14668,6 +14778,21 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
     >>> print([consent.state for consent in consents])
     ['accepted', 'accepted_via_patient_portal', 'rejected']
     ```
+Each `PatientConsentCoding` has a `document` field containing the URL to the consent template document:
+    ```python
+    >>> from canvas_sdk.v1.data import PatientConsentCoding
+    >>> coding = PatientConsentCoding.objects.first()
+    >>> print(coding.document)
+    'consent_templates/hipaa_consent.pdf'
+    ```
+##  Accessing Document Files 
+The `document_url` property returns a presigned S3 URL for securely accessing the consent form.
+    ```python
+    from canvas_sdk.v1.data import PatientConsentCoding
+    consent_coding = PatientConsentCoding.objects.first()
+    # Returns a presigned S3 URL (valid for 1 hour)
+    url = consent_coding.document_url
+    ```
 ##  Attributes 
 ###  PatientConsent 
 Field Name | Type  
@@ -14695,6 +14820,8 @@ is_mandatory | Boolean
 is_proof_required | Boolean  
 show_in_patient_portal | Boolean  
 summary | String  
+document | String  
+document_url | String (property) — presigned S3 URL  
 ###  PatientConsentRejectionCoding 
 Field Name | Type  
 ---|---  
@@ -14806,6 +14933,22 @@ Specify attributes with `filter` to filter by those attributes:
     from canvas_sdk.v1.data.patient import Patient
     patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
     ```
+##  Accessing the patient photo 
+The `photo_url` property returns a presigned S3 URL for securely accessing the patient's uploaded avatar photo. If the patient has no uploaded avatar, the property returns a default avatar URL instead — so the value is always safe to render without a null check.
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    # Returns a presigned S3 URL (valid for 1 hour), or the default avatar URL when no photo is on file
+    url = patient.photo_url
+    ```
+If you need the underlying `PatientPhoto` record (for example, to read the original `url` or `title`), use the `photo` property:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    photo = patient.photo  # PatientPhoto or None
+    if photo:
+        print(photo.title)
+    ```
 ##  Attributes 
 ###  Patient 
 Field Name | Type  
@@ -14868,6 +15011,7 @@ lab_reviews | [LabReview](/sdk/data-labs/#labreview)[]
 medications | [Medication](/sdk/data-medication/#medication)[]  
 metadata | PatientMetadata[]  
 observations | [Observation](/sdk/data-observation/#observation)[]  
+photos | PatientPhoto[]  
 preferred_pharmacy | JSON  
 protocol_overrides | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]  
 settings | PatientSetting  
@@ -14981,6 +15125,23 @@ value | String
     for metadata in patient_metadata:
        log.info(f"Patient metadata: {metadata.key}, {metadata.value}") # favorite_color - red
     ```
+###  PatientPhoto 
+Represents a patient's uploaded avatar photo.
+Field Name | Type  
+---|---  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | Patient  
+url | String  
+title | String  
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from logger import log
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    for photo in patient.photos.all():
+        log.info(f"Photo: {photo.title}, stored at: {photo.url}")
+    ```
 ###  PatientIdentificationCard 
 Represents a patient identification card image (e.g., driver's license, insurance card).
 Field Name | Type  
@@ -15022,6 +15183,8 @@ UNK | unknown
   - `preferred_full_name`: The patient's preferred full name, if different from the legal name.
   - `preferred_first_name`: The patient's preferred first name, if different from the legal first name.
   - `primary_phone_number`: The patient's primary contact number.
+  - `photo`: The patient's first uploaded avatar PatientPhoto, if any.
+  - `photo_url`: A presigned URL for the patient's avatar photo, or the default avatar URL when no photo is set.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-patient/
 
 
@@ -16148,6 +16311,8 @@ comments | [TaskComment](/sdk/data-task/#taskcomment)[]
 care_team_memberships | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]  
 teams | [Team](/sdk/data-team/#team)[]  
 telecom | StaffContactPoint[]  
+external_identifiers | StaffExternalIdentifier[]  
+metadata | StaffMetadata[]  
 ###  StaffContactPoint 
 Field Name | Type  
 ---|---  
@@ -16215,6 +16380,48 @@ name | String
 domain_privilege_level | Integer  
 permissions | JSON  
 role_type | RoleType  
+###  StaffExternalIdentifier 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+staff | Staff  
+use | String  
+identifier_type | String  
+system | String  
+value | String  
+issued_date | Date  
+expiration_date | Date  
+    ```python
+    from canvas_sdk.v1.data.staff import Staff
+    from logger import log
+    staff_id = "4150cd20de8a470aa570a852859ac87e"
+    staff = Staff.objects.get(id=staff_id)
+    for identifier in staff.external_identifiers.all():
+        log.info(f"Staff external identifier: {identifier.system}, {identifier.value}")
+        # https://www.example.com - employee-001
+    ```
+###  StaffMetadata 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+staff | Staff  
+key | String  
+value | String  
+    ```python
+    from canvas_sdk.v1.data.staff import Staff
+    from logger import log
+    staff_id = "4150cd20de8a470aa570a852859ac87e"
+    staff = Staff.objects.get(id=staff_id)
+    for metadata in staff.metadata.all():
+        log.info(f"{metadata.key}={metadata.value}")
+    ```
+`StaffMetadata` is a free-form key/value store on a staff member, mirroring `PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/) to upsert it from a plugin.
 ##  Enumeration types 
 ###  License Type 
 Value | Description  
@@ -16726,7 +16933,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -18298,6 +18505,164 @@ If validation fails, a `ValidationError` is raised with detailed error messages 
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-compound-medication/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-configure-command-buttons/
+The `ConfigureCommandButtons` effect allows plugins to hide or disable the command buttons that appear in specific areas of the patient chart — such as the conditions section, medications section, or protocol cards.
+##  Locations 
+The `Location` enum defines which areas of the chart can be configured:
+Value | Area  
+---|---  
+`CONDITIONS` | Conditions chart summary section  
+`MEDICATIONS` | Medications chart summary section  
+`ALLERGIES` | Allergies chart summary section  
+`GOALS` | Goals chart summary section  
+`VITALS` | Vitals chart summary section  
+`IMMUNIZATIONS` | Immunizations chart summary section  
+`SURGICAL_HISTORY` | Surgical history chart summary section  
+`FAMILY_HISTORY` | Family history chart summary section  
+`SOCIAL_DETERMINANTS` | Social determinants chart summary section  
+`CARE_TEAMS` | Care teams chart summary section  
+`CODING_GAPS` | Coding gaps chart summary section  
+`QUALITY_PROTOCOLS` | Quality protocol result cards  
+`LAB_REVIEWS` | Lab report review result cards  
+`IMAGING_REVIEWS` | Imaging report review result cards  
+`REFERRAL_REVIEWS` | Referral report review result cards  
+`DOCUMENT_REVIEWS` | Uncategorized document review result cards  
+##  Visibility 
+Each location can be configured with one of three visibility values:
+Value | Behaviour  
+---|---  
+`VISIBLE` | Buttons are shown and interactive (default when not listed)  
+`HIDDEN` | Buttons are not rendered  
+`DISABLED` | Buttons are rendered but not interactive  
+##  Attributes 
+Each entry in `locations` is a `LocationConfig` with the following attributes:
+Attribute | Required | Type | Description  
+---|---|---|---  
+`location` | yes | `Location` | The chart area to configure  
+`visibility` | yes | `Visibility` | The visibility state for that area  
+Top-level | Required | Type | Description  
+---|---|---|---  
+`patient_id` | yes | `str` | The patient key  
+`locations` | no | `list[LocationConfig]` | Areas to configure. Areas not listed retain their default visible state.  
+##  Validation 
+Duplicate `location` values in the `locations` list will raise a `ValidationError` when `apply()` is called.
+##  Example: Patient Chart Load 
+`PATIENT_TIMELINE__GET_CONFIGURATION` fires every time a patient chart is opened, making it a convenient hook for configuring button visibility on chart load. The example below hides all command buttons across every location:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.configure_command_buttons import ConfigureCommandButtons
+    from canvas_sdk.events import EventType
+    from canvas_sdk.protocols import BaseProtocol
+    Location = ConfigureCommandButtons.Location
+    LocationConfig = ConfigureCommandButtons.LocationConfig
+    Visibility = ConfigureCommandButtons.Visibility
+    class HideButtonsOnChartLoad(BaseProtocol):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_TIMELINE__GET_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [
+                ConfigureCommandButtons(
+                    patient_id=self.target,
+                    locations=[
+                        LocationConfig(location=loc, visibility=Visibility.HIDDEN)
+                        for loc in Location
+                    ],
+                ).apply()
+            ]
+    ```
+##  Example: Note Applications 
+One use case is toggling chart buttons alongside a `NoteApplication`. When the application tab opens, `on_open` disables chart buttons. When the provider switches back to the note body, Canvas sends a `NOTE_TAB_CHANGE` message to the iframe, which calls a `SimpleAPI` endpoint to restore them.
+###  Python 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.configure_command_buttons import ConfigureCommandButtons
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.application import NoteApplication
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    from canvas_sdk.templates import render_to_string
+    Location = ConfigureCommandButtons.Location
+    LocationConfig = ConfigureCommandButtons.LocationConfig
+    Visibility = ConfigureCommandButtons.Visibility
+    class MyChartingApp(NoteApplication):
+        NAME = "My Charting App"
+        IDENTIFIER = "my-plugin:charting-app"
+        def on_open(self) -> list[Effect]:
+            patient_id = self.event.context.get("patient", {}).get("id")
+            return [
+                LaunchModalEffect(
+                    target=LaunchModalEffect.TargetType.NOTE,
+                    content=render_to_string(
+                        "templates/charting_app.html",
+                        context={"identifier": self.IDENTIFIER},
+                    ),
+                    title="My Charting App",
+                ).apply(),
+                ConfigureCommandButtons(
+                    patient_id=patient_id,
+                    locations=[
+                        LocationConfig(location=loc, visibility=Visibility.DISABLED)
+                        for loc in Location
+                    ],
+                ).apply(),
+            ]
+    class CommandButtonsApi(StaffSessionAuthMixin, SimpleAPI):
+        @api.post("/configure-buttons/disable")
+        def disable(self) -> list[Response | Effect]:
+            patient_id = self.request.json().get("patient_id")
+            return [
+                JSONResponse({"ok": True}),
+                ConfigureCommandButtons(
+                    patient_id=patient_id,
+                    locations=[
+                        LocationConfig(location=loc, visibility=Visibility.DISABLED)
+                        for loc in Location
+                    ],
+                ).apply(),
+            ]
+        @api.post("/configure-buttons/enable")
+        def enable(self) -> list[Response | Effect]:
+            patient_id = self.request.json().get("patient_id")
+            return [
+                JSONResponse({"ok": True}),
+                ConfigureCommandButtons(
+                    patient_id=patient_id,
+                    locations=[
+                        LocationConfig(location=loc, visibility=Visibility.VISIBLE)
+                        for loc in Location
+                    ],
+                ).apply(),
+            ]
+    ```
+###  Template 
+The iframe listens for `NOTE_TAB_CHANGE` messages from Canvas and calls the appropriate endpoint. When `tab` is `"note"` the provider has switched back to the note body; when `tab` matches the application's identifier the application tab is active.
+    ```html
+    <!-- templates/charting_app.html -->
+    <script>
+      var port;
+      var myIdentifier = '';
+      function post(endpoint, patientId) {
+        fetch('/plugin-io/api/my_plugin/configure-buttons/' + endpoint, {
+          method: 'POST',
+          body: JSON.stringify({ patient_id: patientId })
+        });
+      }
+      window.addEventListener('message', function(event) {
+        if (event.data?.type === 'INIT_CHANNEL') {
+          port = event.ports[0];
+          port.onmessage = function(e) {
+            if (e.data?.type === 'NOTE_TAB_CHANGE') {
+              if (e.data.tab === 'note') post('enable', e.data.patient.id);
+              else if (e.data.tab === myIdentifier) post('disable', e.data.patient.id);
+            }
+          };
+        }
+      });
+    </script>
+    ```
+Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` in your `CANVAS_MANIFEST.json`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-configure-command-buttons/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-create-ccda-export/
 The `CreateCCDA` effect creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
 This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
@@ -18445,6 +18810,357 @@ Attribute | Type | Description | Required
 This effect will create a new preferred pharmacy for the specified patient.
 Since the `default` attribute is set to `True`, it will mark this pharmacy as the patient's default preferred pharmacy.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-create-patient-preferred-pharmacies/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-data-integration/
+Plugins can automate triage of inbound clinical documents in the [Data Integration queue](/sdk/data-integration-task/) — lab reports, imaging reports, faxes, clinical and administrative documents, and other uploaded files awaiting staff review before they're attached to a patient's chart.
+Most of these effects work by writing a **prefill suggestion** to the IntegrationTask. The Data Integration UI surfaces that suggestion as a pre-populated value in the staff member's review form — the suggested patient, document type, template values, or reviewer assignment — along with optional annotation badges. A staff member still reviews and commits the change; the plugin doesn't directly mutate the IntegrationTask.
+The exceptions are `JunkDocument` and `RemoveDocumentFromPatient`, which act on the IntegrationTask's status or patient link immediately without writing a prefill.
+##  Assigning a Reviewer 
+To assign a staff member or team as the reviewer for a document in the Data Integration queue, import the `AssignDocumentReviewer` class from `canvas_sdk.effects.data_integration` and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document.  
+`reviewer_id` | optional | string | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign as reviewer.  
+`team_id` | optional | string | The `id` of the [Team](/sdk/data-team/#team) to assign as reviewer.  
+`review_mode` | optional | ReviewMode | Review mode. Defaults to `ReviewMode.REVIEW_REQUIRED`.  
+`annotations` | optional | list | List of annotations for display in the UI. See Annotations.  
+Supply either `reviewer_id` or `team_id`, not both. If both are supplied, the staff reviewer is used and the team is ignored when the Data Integration UI pre-populates the reviewer field. Supplying neither makes the effect a no-op.
+###  ReviewMode 
+Value | Description  
+---|---  
+`ReviewMode.REVIEW_REQUIRED` (default) | Document requires explicit review.  
+`ReviewMode.ALREADY_REVIEWED` | Document is marked as already reviewed.  
+`ReviewMode.REVIEW_NOT_REQUIRED` | Document does not require review.  
+An example of assigning a staff reviewer. Annotations render as colored badges next to the reviewer field in the Data Integration UI — useful for surfacing why the plugin chose this reviewer:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import AssignDocumentReviewer, ReviewMode
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class AssignReviewerHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            return [
+                AssignDocumentReviewer(
+                    document_id=self.event.target.id,
+                    reviewer_id="4150cd20de8a470aa570a852859ac87e",
+                    review_mode=ReviewMode.ALREADY_REVIEWED,
+                    annotations=[
+                        {"text": "Team lead", "color": "#4CAF50"},
+                        {"text": "Auto-assigned", "color": "#FF9800"},
+                    ],
+                ).apply()
+            ]
+    ```
+An example of assigning a team instead of an individual reviewer:
+    ```python
+    from canvas_sdk.effects.data_integration import AssignDocumentReviewer
+    assign_reviewer = AssignDocumentReviewer(
+        document_id="d2194110-5c9a-4842-8733-ef09ea5ead11",
+        team_id="3f8a2e1c-9b4d-4f5a-8c7e-1d2b3a4c5d6e",
+        annotations=[
+            {"text": "Routed to Coding team", "color": "#2196F3"},
+        ],
+    )
+    ```
+##  Categorizing a Document 
+To categorize a document in the Data Integration queue into a specific document type, import the `CategorizeDocument` class from `canvas_sdk.effects.data_integration` and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to categorize.  
+`document_type` | required | DocumentType | Document type information for categorizing the document.  
+`annotations` | optional | list | List of annotations for display in the UI. See Annotations.  
+###  DocumentType 
+The `document_type` parameter is a dictionary with the following fields:
+Key |  | Type | Description  
+---|---|---|---  
+`key` | required | string | The unique key identifying the document type. Must match a key from the Supported Document Types table below.  
+`name` | required | string | The human-readable name of the document type. Should match the catalog's `Name` for that key.  
+`report_type` | required | string | The type of report. Must be `"CLINICAL"` or `"ADMINISTRATIVE"`.  
+`template_type` | required | string | null | Must be `"LabReportTemplate"`, `"ImagingReportTemplate"`, `"SpecialtyReportTemplate"`, or `null`.  
+###  Supported Document Types 
+Canvas's built-in document type catalog. Use the `Key` value in your `document_type` dict; the other columns show the catalog's `report_type` and the matching parse template (when applicable).
+Name | Key | Report Type | Template Type  
+---|---|---|---  
+Advance Beneficiary Notice | `5375e6ae238e41b4972717174be99d10` | ADMINISTRATIVE | `null`  
+Advance Directive / Living Will | `1d5a4821140dab935e90d9d73bfd7a35` | ADMINISTRATIVE | `null`  
+CDL (Commercial Driver License) | `7639c58fb4b75e2ff74270787eda80a7` | ADMINISTRATIVE | `null`  
+Care Management | `6b4b539a233145fe871e8ac703f39fcb` | CLINICAL | `null`  
+Disability Form | `a5fd8d81026747c0b01f757b7935f82a` | ADMINISTRATIVE | `null`  
+Emergency Department Report | `67037fd377654984b8b368b47d0ab0e4` | CLINICAL | `null`  
+External Medical Records | `b61d0a4ebf4316a1a3beea32bec88052` | CLINICAL | `null`  
+Handicap Parking Permit | `649a852657357c20491856f4eb7a2690` | ADMINISTRATIVE | `null`  
+Home Care Report | `d368eaa8f1b2419cb792bb7876bfac8a` | CLINICAL | `null`  
+Hospital Discharge Summary | `6be998e1335a4d9689cae33ec7ed6968` | CLINICAL | `null`  
+Hospital History & Physical | `d9060893790744589c5252ddb81b785e` | CLINICAL | `null`  
+Imaging Report | `87041869c5954337b84fd10094fe5c0a` | CLINICAL | `ImagingReportTemplate`  
+In-Office Testing | `372e7248ba944dbeab54712078c0ec44` | CLINICAL | `null`  
+Insurance Card | `2551841bcfd34e1aa839cb1e3b7ef48f` | ADMINISTRATIVE | `null`  
+Insurer Prior Authorization | `0394e7a3a5c847f495414e7511d12543` | ADMINISTRATIVE | `null`  
+Lab Report | `f605e084dcad4beca16c0f62e6586d76` | CLINICAL | `LabReportTemplate`  
+Medicaid Documents | `e02e0f6dc76d42aaa61384c85ca90830` | ADMINISTRATIVE | `null`  
+Nursing Home | `fc14824cdc9fdcd1e2ce005aa3019d20` | CLINICAL | `null`  
+Operative Report | `7f118206607248b7b13409e69c638eba` | CLINICAL | `null`  
+POLST (Provider Order for Life Sustaining Treatment) | `cf72e522dd95fa1da1297cf3bf5e54e8` | ADMINISTRATIVE | `null`  
+Patient Administrative Intake Form | `b25601a3e8ac543f5f2d7a85006de223` | ADMINISTRATIVE | `null`  
+Patient Agreement | `2e16ccd7ad5a4bcf9d21dd51b4d16cb9` | ADMINISTRATIVE | `null`  
+Patient Assistance | `ebd8c4f6f35b4c008e512d0e3c666e95` | ADMINISTRATIVE | `null`  
+Patient Clinical Intake Form | `8c9ca86c76704d57a775cd6f48a02b6c` | CLINICAL | `null`  
+Patient Consent | `7ce5a6eefedcff89a5a460f6be89d308` | ADMINISTRATIVE | `null`  
+Physical Exams | `b1146b76cd2c4b488c964cf497fb1dce` | CLINICAL | `null`  
+Power of Attorney | `1ff5f640868528e633a5d45f2142161e` | ADMINISTRATIVE | `null`  
+Prescription Card | `0d002c5fe86c44b0a63c08e70e0df37c` | ADMINISTRATIVE | `null`  
+Prescription Refill Request | `714a8229339b4af3989403a308bdcbfb` | CLINICAL | `null`  
+Rehabilitation Report | `660f6fce32a64b3f9817f4bad3d56c79` | CLINICAL | `null`  
+Release of Information Request | `2283372cb0fa4962a6fcff2eb3ca080b` | ADMINISTRATIVE | `null`  
+Specialist Consult Report | `f0f1398f6f4640d29e4ff80d5481eb3f` | CLINICAL | `SpecialtyReportTemplate`  
+Uncategorized Administrative Document | `7ebe754f4c3b860cf80d3aa9ebd8494c` | ADMINISTRATIVE | `null`  
+Uncategorized Clinical Document | `52ef59487ecabc9cdd645c21c7a35458` | CLINICAL | `null`  
+Worker's Compensation Documents | `54a06a3f06b48cbebf8dec88707272c3` | ADMINISTRATIVE | `null`  
+###  Example 
+The `DOCUMENT_RECEIVED` event context includes `available_document_types`, a list of every document type the instance supports — each entry carries the `key`, `name`, `report_type`, and `template_type` you'll need to construct a `CategorizeDocument` effect. The idiomatic pattern is to read from that list rather than hardcode catalog values, so a plugin keeps working as the catalog changes.
+The handler below matches by `name` (using the Supported Document Types table above as a reference for what names to expect) and forwards the matched values to the effect. `ReportType` and `TemplateType` enum instances are constructed explicitly from the context's string values — the SDK rejects raw strings.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import CategorizeDocument
+    from canvas_sdk.effects.data_integration.types import ReportType, TemplateType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class CategorizeLabReports(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            available = self.event.context.get("available_document_types", [])
+            lab_report = next((dt for dt in available if dt["name"] == "Lab Report"), None)
+            if not lab_report:
+                return []
+            template_type = lab_report.get("template_type")
+            return [
+                CategorizeDocument(
+                    document_id=self.event.target.id,
+                    document_type={
+                        "key": lab_report["key"],
+                        "name": lab_report["name"],
+                        "report_type": ReportType(lab_report["report_type"]),
+                        "template_type": TemplateType(template_type) if template_type else None,
+                    },
+                    annotations=[
+                        {"text": "AI Categorized", "color": "#4CAF50"},
+                    ],
+                ).apply()
+            ]
+    ```
+For full end-to-end usage including discovery, error handling, and the other Data Integration effects in a single handler, see the [`data_integration_example` plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/data_integration_example) in canvas-plugins.
+##  Linking a Document to a Patient 
+To link a document in the Data Integration queue to a patient, import the `LinkDocumentToPatient` class from `canvas_sdk.effects.data_integration` and create an instance of it. The plugin is responsible for matching the patient and supplying their key — the interpreter does not search for matching patients itself.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document.  
+`patient_key` | required | string | The `id` of the [Patient](/sdk/data-patient/#patient) to link the document to.  
+`annotations` | optional | list | List of annotations for display in the UI. See Annotations.  
+An example of linking a document to a patient:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import LinkDocumentToPatient
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data.patient import Patient
+    class LinkDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            document_id = self.event.target.id
+            document_title = self.event.context.get("document", {}).get("title", "")
+            # Plugin-specific matching logic — e.g., parse the document title or
+            # call an OCR/LLM service to extract patient demographics, then look
+            # up the patient via the SDK data module.
+            patient = Patient.objects.filter(...).first()
+            if not patient:
+                return []
+            return [
+                LinkDocumentToPatient(
+                    document_id=document_id,
+                    patient_key=patient.id,
+                    annotations=[
+                        {"text": "AI 92%", "color": "#4CAF50"},
+                        {"text": f"Matched from '{document_title}'", "color": "#2196F3"},
+                    ],
+                ).apply()
+            ]
+    ```
+##  Marking a Document as Junk 
+To mark a document in the Data Integration queue as junk (spam), import the `JunkDocument` class and create an instance of it.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to mark as junk.  
+`JunkDocument` only works on IntegrationTasks in early-stage states: **Unread** , **Read** , **Error** , **Unread error** , or **Junk** (already). IntegrationTasks in **Processed** or **Reviewed** states cannot be junked — attempting to do so raises a validation error. The effect also validates that `document_id` resolves to an existing IntegrationTask and is a well-formed UUID; missing, malformed, or unknown IDs raise validation errors before the IntegrationTask is touched.
+To avoid the validation error for tasks that have moved past the early-stage states, you can read the [`status`](/sdk/data-integration-task/#integrationtask) field from the SDK data module and preflight-check before emitting the effect.
+An example that preflight-checks the IntegrationTask status before junking:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import JunkDocument
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data.integration_task import IntegrationTask, IntegrationTaskStatus
+    class JunkDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            document_id = self.event.target.id
+            task = IntegrationTask.objects.get(id=document_id)
+            # Skip tasks that have already been processed or reviewed
+            if task.status in (IntegrationTaskStatus.PROCESSED, IntegrationTaskStatus.REVIEWED):
+                return []
+            return [JunkDocument(document_id=document_id).apply()]
+    ```
+##  Prefilling Document Fields 
+`PrefillDocumentFields` pre-populates the parse-template fields on an IntegrationTask. **Only three document types support field prefill** — those whose `template_type` is a known parse-template family:
+Document type | `template_type` | SDK data module  
+---|---|---  
+Lab Report | `LabReportTemplate` | [`LabReportTemplate`](/sdk/data-lab-report-template/)  
+Imaging Report | `ImagingReportTemplate` | [`ImagingReportTemplate`](/sdk/data-imaging-report-template/)  
+Specialist Consult Report | `SpecialtyReportTemplate` | [`SpecialtyReportTemplate`](/sdk/data-specialty-report-template/)  
+Document types with inline fields (Patient Consent, Power of Attorney, the Uncategorized variants, and the other ~30 entries in the Supported Document Types catalog) cannot have their fields prefilled by this effect.
+> The wire-level effect type for this class is `UPDATE_DOCUMENT_FIELDS`, which is what appears in event logs and the [effects table](/sdk/effects/#data-integration). The class name is `PrefillDocumentFields`.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document.  
+`templates` | required | list[PrefillTemplate] | One or more templates to prefill. Must contain at least one entry.  
+`annotations` | optional | list | List of annotations for display in the UI. See Annotations.  
+###  PrefillTemplate 
+A `PrefillTemplate` is a dictionary with the following keys:
+Key |  | Type | Description  
+---|---|---|---  
+`template_id` | required | int | The integer `dbid` of a `LabReportTemplate`, `ImagingReportTemplate`, or `SpecialtyReportTemplate` record. (Note: this is the integer primary key, not the `id` UUID.) Look this up via the SDK data module — see the example below.  
+`template_name` | required | string | The matching template's `.name`.  
+`fields` | required | dict[str, PrefillDocumentFieldData] | Map of field name to field data. Keys must match the `label` of a field on the chosen template — iterate `template.fields.all()` to discover the available labels, units, types, and required-ness.  
+###  PrefillDocumentFieldData 
+A `PrefillDocumentFieldData` is a dictionary with the following keys:
+Key |  | Type | Description  
+---|---|---|---  
+`value` | required | string | The field value, stringified into the form field at render time. The same rules apply to all three template families (`LabReportTemplateField`, `ImagingReportTemplateField`, `SpecialtyReportTemplateField`). Currently supported are fields whose `type` is `"float"`, `"text"`, `"date"`, `"select"`, or `"radio"`. For `"select"` and `"radio"`, the value must exactly match one of the field's `options[*].key` for the dropdown to pre-select.  
+`unit` | optional | string | Unit of measurement. Should match the corresponding template field's `units` (`LabReportTemplateField.units`, `ImagingReportTemplateField.units`, or `SpecialtyReportTemplateField.units`).  
+`reference_range` | optional | string | Reference range for the value.  
+`abnormal` | optional | bool | Whether the value is abnormal.  
+`annotations` | optional | list | Per-field annotations. Same shape as Annotations.  
+###  Discovering Available Fields 
+Before constructing a `PrefillDocumentFields` payload, you can inspect the template to see what labels, units, types, and option keys it defines. The same approach works for `ImagingReportTemplate` and `SpecialtyReportTemplate`.
+    ```python
+    from canvas_sdk.v1.data import LabReportTemplate
+    from logger import log
+    def inspect_lab_template(template_name) -> None:
+        template = (
+            LabReportTemplate.objects
+            .active()
+            .filter(name=template_name)
+            .first()
+        )
+        if not template:
+            log.info(f"No template found with name {template_name}")
+            return
+        log.info(f"Template: {template.name} (dbid={template.dbid})")
+        for field in template.fields.all().order_by("sequence"):
+            log.info(
+                f"  {field.label}",
+                type=field.type,
+                units=field.units,
+                required=field.required,
+                code=field.code,
+                code_system=field.code_system,
+            )
+            for opt in field.options.all():
+                log.info(f"    option", key=opt.key, label=opt.label)
+    ```
+Sample output for a CBC Panel template:
+    ```text
+    Template: CBC Panel (dbid=42)
+      Hemoglobin   type=float  units=g/dL    required=True   code=718-7   code_system=LOINC
+      WBC          type=float  units=10^3/uL required=True   code=6690-2  code_system=LOINC
+      Differential type=select units=        required=False  code=        code_system=
+        option key=NORMAL    label=Normal
+        option key=ABNORMAL  label=Abnormal
+    ```
+With that you can see which labels go into the `fields` dict's keys, what `unit` value to send, and — for `select`/`radio` fields — which `option.key` values are valid for the `value` field.
+###  Example 
+An example of prefilling a Lab Report. The plugin looks up the CBC Panel template via the [`LabReportTemplate`](/sdk/data-lab-report-template/) SDK data module, then iterates the template's `fields` relation to discover which labels and units are available before filling in the values it extracted from the document.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import PrefillDocumentFields
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import LabReportTemplate
+    class PrefillLabReportHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_RECEIVED)
+        def compute(self) -> list[Effect]:
+            cbc = (
+                LabReportTemplate.objects
+                .active()
+                .filter(name__icontains="CBC")
+                .first()
+            )
+            if not cbc:
+                return []
+            # Values the plugin extracted from the document via OCR/LLM.
+            # Hardcoded here for clarity.
+            extracted = {
+                "Hemoglobin": ("13.5", False),
+                "WBC": ("11.2", True),
+            }
+            # Iterate the template's fields to discover which labels and units
+            # the template defines, then fill in only the ones the plugin has
+            # values for. Each field exposes `label`, `units`, `type`, and
+            # `required` (see LabReportTemplateField).
+            prefill_fields: dict[str, dict] = {}
+            for field in cbc.fields.all():
+                if field.label not in extracted:
+                    continue
+                value, abnormal = extracted[field.label]
+                prefill_fields[field.label] = {
+                    "value": value,
+                    "unit": field.units or "",
+                    "abnormal": abnormal,
+                }
+            return [
+                PrefillDocumentFields(
+                    document_id=self.event.target.id,
+                    templates=[
+                        {
+                            "template_id": cbc.dbid,
+                            "template_name": cbc.name,
+                            "fields": prefill_fields,
+                        },
+                    ],
+                    annotations=[
+                        {"text": "Prefilled via AI", "color": "#FF9800"},
+                    ],
+                ).apply()
+            ]
+    ```
+##  Removing a Document from a Patient 
+To unlink a document from its currently-linked patient in the Data Integration queue, import the `RemoveDocumentFromPatient` class and create an instance of it. An IntegrationTask carries at most one patient link at a time, so this effect simply clears that link.
+Attribute |  | Type | Description  
+---|---|---|---  
+`document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to unlink from its patient.  
+An example of unlinking a document from its patient:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.data_integration import RemoveDocumentFromPatient
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class RemoveDocumentHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.DOCUMENT_LINKED_TO_PATIENT)
+        def compute(self) -> list[Effect]:
+            return [
+                RemoveDocumentFromPatient(
+                    document_id=self.event.target.id,
+                ).apply()
+            ]
+    ```
+##  Annotations 
+The `annotations` field on any data integration effect accepts a list of dictionaries with the following keys:
+Key | Type | Description  
+---|---|---  
+`text` | string | The annotation text to display (e.g., "AI 95%").  
+`color` | string | Hex color code (e.g., "#4CAF50" for green).  
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-data-integration/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-event-validation-error/
@@ -18666,7 +19382,7 @@ ADT^A13 | Cancel Discharge/End Visit
 The `HealthGorillaLabOrderIngest` effect creates a Canvas `LabOrder` plus its `LabTest` rows for an order that was placed outside Canvas — for example, by a partner on its own Health Gorilla tenant. Canvas records the order so it shows up in the chart, but the order's `hg_request_result` field is set to a partner-supplied skip-send marker so Canvas's send-to-Health-Gorilla worker treats the order as already-sent and never forwards it.
 Typical use is from a SimpleAPI route the partner POSTs to when they place a standing or recurring order on their side.
 ##  Behavior 
-The effect targets the home-app `HealthGorillaLabOrderIngest` interpreter, which in a single transaction:
+Canvas processes the effect in a single transaction:
   1. Resolves `Patient` (by `key`), `Staff` (by NPI), and `Note` (by external id).
   2. Creates a `LabOrder` with `hg_request_result` set non-empty so the send-to-HG worker leaves it alone.
   3. Creates one `LabTest` row per HG order code in `test_codes`. Test names are filled from the HG ontology when available.
@@ -18676,7 +19392,7 @@ Attribute | Type | Required | Description
 ---|---|---|---  
 patient_id | str | yes | Canvas Patient `key` (uuid).  
 ordering_provider_npi | str | yes | NPI used to look up the Staff record.  
-note_id | str | yes | Canvas Note `externally_exposable_id` (uuid). LabOrders require a Note FK in home-app.  
+note_id | str | yes | Canvas Note `externally_exposable_id` (uuid). LabOrders require an associated Note.  
 ontology_lab_partner | str | yes | Ontology lab partner name (e.g. `"Quest Diagnostics"`, `"LabCorp"`).  
 date_ordered | datetime | yes | When the order was authored on the partner side.  
 hg_request_result | str | yes | Skip-send marker. Convention is the partner's HG `RequestGroup` URL or id so Canvas can correlate later. Any non-empty value works.  
@@ -18772,7 +19488,7 @@ When `bill_to_code` is `patient` or `guarantor`, Canvas attaches the appropriate
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-report-ingest/
 The `HealthGorillaLabReportIngest` effect creates a Canvas `LabReport` plus its `LabValue` rows and attaches a PDF for a result that was received outside Canvas — for example, by a partner on its own Health Gorilla tenant or any upstream lab interface. It is the inbound counterpart to [`HealthGorillaLabOrderIngest`](/sdk/effects/).
-The home-app interpreter is equivalent to what `LabEngineInboundService.process_and_store_report` does for HG-pull ingest, minus the HG fetch — the partner provides the PDF and Canvas stores it through the existing S3 + `ElectronicLabIntegrationTask` path.
+Canvas's ingest path is equivalent to a standard Health Gorilla pull, minus the HG fetch — the partner provides the PDF and Canvas stores it through the existing inbound-lab pipeline.
 ##  Dedup 
 Reports are deduped server-side on `(external_id, version)`:
 State | Result  
@@ -18780,9 +19496,9 @@ State | Result
 New `external_id` | Create new `LabReport`.  
 Same `external_id`, higher `version` | Replace values, bump version on existing record, re-store PDF.  
 Same `external_id`, same or lower `version` | No-op; existing record kept, no PDF fetch.  
-This matches the version-bump contract in `LabEngineInboundService.process_and_store_report`, so partners can safely replay events.
+This matches Canvas's standard inbound-lab version-bump contract, so partners can safely replay events.
 ##  PDF handling 
-Exactly one of `pdf_url` or `pdf_base64` must be set. The home-app interpreter fetches the PDF (or decodes the inline base64) **outside** the `LabReport` transaction so a slow partner bucket cannot hold row locks. Limits:
+Exactly one of `pdf_url` or `pdf_base64` must be set. Canvas fetches the PDF (or decodes the inline base64) **outside** the `LabReport` transaction so a slow partner bucket cannot hold row locks. Limits:
   - `pdf_base64` capped at 1 MB encoded (~750 KB binary). Use `pdf_url` for larger PDFs.
   - `pdf_url` fetch capped at 10 MB.
 ##  Attributes 
@@ -18795,7 +19511,7 @@ version | int | yes | Report version, monotonically increasing per `external_id`
 status | str | no | Report status; defaults to `"final"`.  
 date_performed | datetime | yes | When the report was generated on the partner side.  
 lab_values | list[dict] | yes | Per-test results. Each entry: `ontology_test_code`, `ontology_test_name`, `value`, `units`, `reference_range`, `abnormal_flag`, `observation_status`, `comment`.  
-pdf_url | str | one of | URL the home-app interpreter can GET the PDF from (typically a partner's presigned URL).  
+pdf_url | str | one of | URL Canvas will GET the PDF from (typically a partner's presigned URL).  
 pdf_base64 | str | one of | PDF bytes inline as base64. Use only for small PDFs.  
 ##  Example 
     ```python
@@ -19113,6 +19829,90 @@ The effect performs comprehensive validation before execution:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-note-metadata/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-note-restrictions/
+The `NoteRestrictionsEffect` and `NoteRestrictionsUpdatedEffect` allow plugins to restrict access to notes and push real-time permission updates to connected clients.
+  - **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells the Canvas UI whether the requesting user should see a banner, have the note content blurred, or have editing disabled.
+  - **`NoteRestrictionsUpdatedEffect`** — emitted by a plugin at any time to signal that restrictions for a specific note have changed, causing all connected clients viewing that note to immediately refetch their restrictions.
+* * *
+##  NoteRestrictionsEffect 
+###  How it works 
+Every time a note is opened (or its restrictions are refetched), Canvas fires a `GET_NOTE_RESTRICTIONS` event targeting that note's external ID. Plugins that subscribe to this event can return a `NoteRestrictionsEffect` to control what the user sees.
+If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by default.
+###  Event payload 
+Property | Value | Description  
+---|---|---  
+`event.target.id` | `str` (UUID) | The `id` of the note being accessed. Use this to look up the note or its metadata.  
+`event.actor.id` | `str` (int) | The database ID of the authenticated user requesting the note. Use `Staff.objects.filter(user__dbid=event.actor.id)` to resolve to a staff record.  
+`event.context` | `{}` | Empty — no additional context is provided.  
+###  Fields 
+Field | Type | Default | Description  
+---|---|---|---  
+`restrict_access` | `bool` | `False` | Whether the requesting user is restricted from editing this note.  
+`blur_content` | `bool` | `False` | Whether the note body should be blurred for the requesting user.  
+`banner_message` | `str` | `None` | `None` | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed.  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.restrictions import NoteRestrictionsEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class NoteAccessHandler(BaseHandler):
+        """Restrict access to notes based on custom business logic."""
+        RESPONDS_TO = EventType.Name(EventType.GET_NOTE_RESTRICTIONS)
+        def compute(self) -> list[Effect]:
+            note_id = self.event.target.id
+            actor_id = self.event.actor.id
+            if not self.user_can_access(note_id, actor_id):
+                return [
+                    NoteRestrictionsEffect(
+                        restrict_access=True,
+                        blur_content=True,
+                        banner_message="You do not have permission to view this note.",
+                    ).apply()
+                ]
+            return []
+        def user_can_access(self, note_id: str, actor_id: str) -> bool:
+            # Custom access logic here
+            ...
+    ```
+* * *
+##  NoteRestrictionsUpdatedEffect 
+###  How it works 
+When a plugin performs an action that changes whether a note is restricted (e.g. writing an edit lock to `NoteMetadata`, updating an access rule), it can emit a `NoteRestrictionsUpdatedEffect`. Canvas will broadcast a WebSocket notification to all clients currently viewing that note, causing them to refetch their restrictions immediately — no page reload required.
+###  Fields 
+Field | Type | Description  
+---|---|---  
+`note_id` | `str` (UUID) | The id of the note whose restrictions have changed.  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.restrictions import NoteRestrictionsUpdatedEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import NoteMetadata
+    class NoteAccessChangedHandler(BaseHandler):
+        """Broadcast a real-time restriction update after note metadata changes."""
+        RESPONDS_TO = EventType.Name(EventType.NOTE_METADATA_UPDATED)
+        def compute(self) -> list[Effect]:
+            note_id = (
+                NoteMetadata.objects
+                .filter(id=self.event.target.id)
+                .values_list("note__id", flat=True)
+                .first()
+            )
+            if not note_id:
+                return []
+            return [NoteRestrictionsUpdatedEffect(note_id=str(note_id)).apply()]
+    ```
+* * *
+##  Common use cases 
+  - **Concurrent edit protection** — prevent multiple providers from editing the same note simultaneously; the second user sees a banner and disabled inputs until the first provider's session expires.
+  - **Role-based note type access** — restrict certain note types (e.g. sensitive clinical notes) to a specific set of staff members.
+  - **Sensitive note hiding** — blur the content of notes containing sensitive information for users who should not see the full details.
+For full working implementations of these patterns, see the [**note-timeline-restrictions**](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/note-timeline-restrictions) example plugin, which covers concurrent edit locking, role-based access via a dashboard, automatic lock expiry via a cron job, and real-time updates.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-note-restrictions/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-notes/
 The Canvas SDK provides effects to facilitate creating, updating, and managing **visit notes** , **appointments** , and **schedule events**. Below you'll find detailed documentation for each effect type and their operations.
 ##  Note Effect 
@@ -19324,6 +20124,57 @@ Attribute | Type | Description | Required
         def compute(self):
             note_effect = Note(instance_id="existing-note-uuid")
             return [note_effect.no_show()]
+    ```
+> **Info:** This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found. 
+###  Delete 
+Deletes an existing note. Has the exact same effect as clicking on the `Delete` button in the Note footer.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`instance_id` | `UUID` or `str` | Identifier of the note to delete | Yes  
+**Note** : `instance_id` must be a valid, existing Note whose current state allows deletion (e.g. `NEW`, `CONVERTED`, `UNLOCKED`, `PUSHED`, or `UNDELETED`).
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects.note.note import Note
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            note_effect = Note(instance_id="existing-note-uuid")
+            return [note_effect.delete()]
+    ```
+> **Info:** This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found. 
+###  Undelete 
+Restores a previously deleted note. Has the exact same effect as clicking on the `Restore` button on a deleted note.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`instance_id` | `UUID` or `str` | Identifier of the note to restore | Yes  
+**Note** : `instance_id` must be a valid, existing Note that is currently in the `DELETED` state.
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects.note.note import Note
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            note_effect = Note(instance_id="existing-note-uuid")
+            return [note_effect.undelete()]
+    ```
+> **Info:** This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found. 
+###  Discharge 
+Locks and discharges an inpatient note. Has the exact same effect as clicking on the `Lock and discharge` button in the Inpatient note footer.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`instance_id` | `UUID` or `str` | Identifier of the inpatient note to discharge | Yes  
+**Note** : `instance_id` must be a valid, existing Note whose `NoteTypeVersion.category` is `INPATIENT`, and whose current state allows discharge (`NEW`, `CONVERTED`, `UNLOCKED`, or `UNDELETED`).
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects.note.note import Note
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            note_effect = Note(instance_id="existing-inpatient-note-uuid")
+            return [note_effect.discharge()]
     ```
 > **Info:** This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found. 
 ###  Upsert Metadata 
@@ -19540,6 +20391,11 @@ Attribute | Type | Description | Required
     ```
 ###  Cancel Appointment 
 Cancels an existing appointment and updates its status.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`instance_id` | `UUID` or `str` | Identifier of the appointment to cancel | Yes  
+**Note** : `instance_id` must be a valid, existing Appointment whose current state allows cancellation. An appointment can only be cancelled when it is in the `BOOKED` or `REVERTED` state.
 ####  Example Usage 
     ```python
     from canvas_sdk.effects.note.appointment import Appointment
@@ -19548,6 +20404,22 @@ Cancels an existing appointment and updates its status.
         def compute(self):
             appointment_effect = Appointment(instance_id="existing-appointment-uuid")
             return appointment_effect.cancel()
+    ```
+###  Revert Appointment 
+Reverts a booked or checked-in appointment back to a state where it can be checked in, cancelled, rescheduled, or marked as no-show.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes  
+**Note** : `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects.note.appointment import Appointment
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+            return appointment_effect.revert()
     ```
 ##  Managing Appointment Labels 
 Canvas supports adding up to 3 labels per appointment for categorization and workflow automation. Labels can be managed programmatically using the appointment label effects.
@@ -19626,29 +20498,8 @@ Name | Type | Description
 `value_quantity_unit` | `str` | Unit of measure for this component value.  
 `name` | `str` | Name of this component.  
 `codings` | `list[CodingData]` or `None` | Standardized codes identifying this component.  
-##  Validation & Errors 
-Before any effect is emitted, the model runs these checks:
-###  Create Validation 
-  - **observation_id** must **not** be set (will be generated by the system)
-  - **patient_id** is **required**
-  - **name** is **required**
-  - **effective_datetime** is **required**
-  - If **is_member_of_id** is provided, the parent observation must exist
-###  Update Validation 
-  - **observation_id** is **required** and must reference an existing observation
-  - All other fields are optional; only dirty (modified) fields are updated
-  - If **is_member_of_id** is provided, the parent observation must exist
-##  Effect Methods 
-###  `create()`
-Create a new observation record.
-  - **Effect Type:** `CREATE_OBSERVATION`
-  - **Payload:** `{ "data": { patient_id, name, effective_datetime, ... } }`
-###  `update()`
-Update an existing observation.
-  - **Effect Type:** `UPDATE_OBSERVATION`
-  - **Payload:** `{ "data": { observation_id, <dirty_fields> } }`
-  - Only fields marked dirty (modified on the model) are included in the update.
-##  Example Usage 
+##  Methods 
+The examples below share this setup:
     ```python
     import datetime
     from canvas_sdk.effects.observation import Observation, CodingData, ObservationComponentData
@@ -19656,7 +20507,17 @@ Update an existing observation.
     from canvas_sdk.v1.data.patient import Patient
     patient = Patient.objects.first()
     ```
-###  Create a Blood Pressure Observation 
+###  create() → Effect 
+Create a new observation record.
+  - **Effect Type:** `CREATE_OBSERVATION`
+  - **Payload:** `{ "data": { patient_id, name, effective_datetime, ... } }`
+####  Validation 
+  - `observation_id` must **not** be set (will be generated by the system)
+  - `patient_id` is **required**
+  - `name` is **required**
+  - `effective_datetime` is **required**
+  - If `is_member_of_id` is provided, the parent observation must exist
+####  Example: Blood Pressure Observation 
     ```python
     # Create a blood pressure observation with components and codings
     bp_observation = Observation(
@@ -19711,7 +20572,55 @@ Update an existing observation.
     )
     effect_create = bp_observation.create()
     ```
-###  Update an Existing Observation 
+####  Example: Simple Lab Result 
+    ```python
+    # Create a simple lab observation
+    glucose = Observation(
+        patient_id=patient.id,
+        name="Glucose",
+        category="laboratory",
+        value="95",
+        units="mg/dL",
+        effective_datetime=datetime.datetime.now(),
+        codings=[
+            CodingData(
+                code="2339-0",
+                display="Glucose [Mass/volume] in Blood",
+                system="http://loinc.org",
+            )
+        ],
+    )
+    effect_create_lab = glucose.create()
+    ```
+####  Example: Multiple Categories 
+    ```python
+    # Create an observation that belongs to multiple categories
+    comprehensive_assessment = Observation(
+        patient_id=patient.id,
+        name="Comprehensive Physical Assessment",
+        category=["vital-signs", "exam"],  # Multiple categories
+        value="Normal",
+        effective_datetime=datetime.datetime.now(),
+        codings=[
+            CodingData(
+                code="29545-1",
+                display="Physical examination",
+                system="http://loinc.org",
+            )
+        ],
+    )
+    effect_create_multi = comprehensive_assessment.create()
+    ```
+###  update() → Effect 
+Update an existing observation.
+  - **Effect Type:** `UPDATE_OBSERVATION`
+  - **Payload:** `{ "data": { observation_id, <dirty_fields> } }`
+  - Only fields marked dirty (modified on the model) are included in the update.
+####  Validation 
+  - `observation_id` is **required** and must reference an existing observation
+  - All other fields are optional; only dirty (modified) fields are updated
+  - If `is_member_of_id` is provided, the parent observation must exist
+####  Example 
     ```python
     # Find an existing observation
     existing_obs = ObservationModel.objects.filter(patient_id=patient.id).first()
@@ -19749,44 +20658,23 @@ Update an existing observation.
     )
     effect_update = updated_bp.update()
     ```
-###  Create a Simple Lab Result 
+###  enter_in_error() → Effect 
+Marks an existing observation as entered in error. Use this when an observation was recorded incorrectly and should be flagged rather than deleted.
+  - **Effect Type:** `ENTER_IN_ERROR_OBSERVATION`
+  - **Payload:** `{ "data": { observation_id } }`
+  - Only `observation_id` is allowed; setting any other field will raise a validation error.
+####  Validation 
+  - `observation_id` is **required** and must reference an existing observation
+  - All other fields must **not** be set (only `observation_id` is allowed)
+  - The observation must not already be entered in error
+  - The observation must not belong to a locked note
+####  Example 
     ```python
-    # Create a simple lab observation
-    glucose = Observation(
-        patient_id=patient.id,
-        name="Glucose",
-        category="laboratory",
-        value="95",
-        units="mg/dL",
-        effective_datetime=datetime.datetime.now(),
-        codings=[
-            CodingData(
-                code="2339-0",
-                display="Glucose [Mass/volume] in Blood",
-                system="http://loinc.org",
-            )
-        ],
-    )
-    effect_create_lab = glucose.create()
-    ```
-###  Create an Observation with Multiple Categories 
-    ```python
-    # Create an observation that belongs to multiple categories
-    comprehensive_assessment = Observation(
-        patient_id=patient.id,
-        name="Comprehensive Physical Assessment",
-        category=["vital-signs", "exam"],  # Multiple categories
-        value="Normal",
-        effective_datetime=datetime.datetime.now(),
-        codings=[
-            CodingData(
-                code="29545-1",
-                display="Physical examination",
-                system="http://loinc.org",
-            )
-        ],
-    )
-    effect_create_multi = comprehensive_assessment.create()
+    # Find an observation that was recorded incorrectly
+    erroneous_obs = ObservationModel.objects.filter(patient_id=patient.id).first()
+    # Mark it as entered in error
+    error_observation = Observation(observation_id=erroneous_obs.id)
+    effect_error = error_observation.enter_in_error()
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-observation/
 
@@ -19979,12 +20867,9 @@ Creates or updates a metadata entry for the specified patient and key combinatio
 Parameter | Type | Description | Required  
 ---|---|---|---  
 `value` | `str` | The metadata value to store | Yes  
-####  Returns 
-An `Effect` object configured for upserting patient metadata.
 ####  Behavior 
   - If a metadata entry with the specified key already exists for the patient, it will be updated with the new value
   - If no entry exists, a new metadata entry will be created
-  - The operation is idempotent - repeated calls with the same key and value will not create duplicate entries
 ##  Implementation Details 
 ###  Validation 
 The effect performs comprehensive validation before execution:
@@ -20030,8 +20915,8 @@ The effect payload is structured as JSON with the following schema:
       """
       RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
       def compute(self):
-        patient_id = self.context["patient"]["id"]
-        narrative = self.context.get("fields", {}).get("narrative", "")
+        patient_id = self.event.context["patient"]["id"]
+        narrative = self.event.context.get("fields", {}).get("narrative", "")
         # Extract key-value pairs from narrative text
         # Pattern: key=somekey*value=somevalue
         key_match = re.search(r'key=([^*#_\s]+)', narrative)
@@ -20159,7 +21044,7 @@ Attribute | Type | Description | Required
 `patient_id` | `str` or `None` | Patient ID (required for updates only) | No  
 `addresses` | `list[PatientAddress]` or `None` | Patient's addresses | No  
 `preferred_pharmacies` | `list[PatientPreferredPharmacy]` or `None` | Patient's preferred pharmacies | No  
-`preferred_pharmacies` | `list[PatientMetadata]` or `None` | Patient metadata | No  
+`metadata` | `list[PatientMetadata]` or `None` | Patient metadata | No  
 ##  PatientContactPoint 
 The `PatientContactPoint` dataclass represents various methods of contacting the patient.
 ###  Attributes 
@@ -20543,6 +21428,158 @@ code | Yes* | string | The code identifying the questionnaire within the code sy
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-questionnaires/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-staff-external-identifier/
+Manage external identifiers on a staff member from a plugin. `StaffExternalIdentifier` is a single effect class with three methods — `.create()`, `.update()`, and `.delete()` — and which fields are required depends on the operation.
+##  Methods 
+###  create() → Effect 
+Creates a new external identifier on the specified staff member.
+####  Attributes 
+Attribute | Type | Required | Description  
+---|---|---|---  
+`staff_id` | `str` / `UUID` | Yes | UUID of the [Staff](/sdk/data-staff/) record.  
+`value` | `str` | Yes | The identifier value (e.g. an employee ID).  
+`system` | `str` | No | The system the identifier belongs to (typically a URL).  
+####  Validation 
+  - `staff_id` must reference an existing Staff record, or the effect raises a descriptive error.
+  - `id` must not be set on `create()` — the UUID is assigned server-side. Supplying it fails validation.
+  - `value` and `staff_id` are required.
+####  Server-side defaults 
+Canvas applies these defaults on `create()`:
+  - `use` → `"usual"`
+  - `issued_date` → `"1970-01-01"`
+  - `expiration_date` → `"2100-12-31"`
+####  Example 
+    ```python
+    from canvas_sdk.effects.staff import StaffExternalIdentifier
+    effect = StaffExternalIdentifier(
+        staff_id="4150cd20de8a470aa570a852859ac87e",
+        system="https://hr.example.com/",
+        value="EMP-001234",
+    ).create()
+    ```
+###  update() → Effect 
+Updates fields on an existing external identifier. Only the fields you set on the effect are written; unset fields keep their existing values.
+####  Attributes 
+Attribute | Type | Required | Description  
+---|---|---|---  
+`id` | `str` / `UUID` | Yes | UUID of the identifier to update.  
+`value` | `str` | No | New identifier value. Only written if supplied.  
+`system` | `str` | No | New system value. Only written if supplied.  
+####  Validation 
+  - `id` is required and must reference an existing StaffExternalIdentifier record, or the effect raises a descriptive error.
+####  Example 
+    ```python
+    from canvas_sdk.effects.staff import StaffExternalIdentifier
+    effect = StaffExternalIdentifier(
+        id="00000000-0000-0000-0000-000000000001",
+        value="EMP-005678",
+    ).update()
+    ```
+###  delete() → Effect 
+Deletes the external identifier identified by `id`.
+####  Attributes 
+Attribute | Type | Required | Description  
+---|---|---|---  
+`id` | `str` / `UUID` | Yes | UUID of the identifier to delete.  
+####  Validation 
+  - `id` is required and must reference an existing StaffExternalIdentifier record, or the effect raises a descriptive error.
+####  Example 
+    ```python
+    from canvas_sdk.effects.staff import StaffExternalIdentifier
+    effect = StaffExternalIdentifier(
+        id="00000000-0000-0000-0000-000000000001",
+    ).delete()
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-staff-external-identifier/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-staff-metadata/
+The `StaffMetadata` effect provides a flexible key-value storage system for staff-specific data within the Canvas system, letting plugins attach extensible information beyond the standard staff data model.
+##  Overview 
+`StaffMetadata` exposes `.upsert(value)` to write or replace a metadata entry, and `.delete()` to remove one. The same key may be used across many staff members; the `(staff, key)` pair is unique per staff member.
+##  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`staff_id` | `str` | Id of the [Staff](/sdk/data-staff/) record to associate metadata with | Yes  
+`key` | `str` | Unique identifier for the metadata entry within the staff context | Yes  
+##  Methods 
+###  upsert(value: str) → Effect 
+Creates or updates a metadata entry for the specified staff and key combination.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`value` | `str` | The metadata value to store | Yes  
+####  Behavior 
+  - If a metadata entry with the specified key already exists for the staff member, it will be updated with the new value.
+  - If no entry exists, a new metadata entry will be created.
+  - Metadata entries are isolated per staff member — the same key can hold different values for different staff members.
+  - Values are stored as strings with no schema enforcement; the plugin is responsible for validating its own values.
+####  Key Naming Conventions 
+  1. **Use descriptive names**. Choose keys that clearly indicate the purpose of the metadata. 
+     - Good: `department`, `cost_center`, `external_employee_id`
+     - Avoid: `data1`, `temp`, `misc`
+  2. **Namespace your keys**. Prefix keys for integrations or modules to avoid collisions. 
+     - Example: `hr.employee_id`, `payroll.cost_center`
+####  Value Storage 
+  1. **String serialization**. All values are stored as strings. For complex data: 
+         ```python
+         import json
+         from canvas_sdk.effects.staff_metadata import StaffMetadata
+         metadata = StaffMetadata(
+             staff_id="4150cd20de8a470aa570a852859ac87e",
+             key="hr.profile",
+         )
+         complex_data = {"hire_date": "2020-01-15", "department": "cardiology"}
+         metadata.upsert(json.dumps(complex_data))
+         ```
+  2. **Boolean values**. Store as `"true"` or `"false"` strings for consistency.
+####  Examples 
+    ```python
+    from canvas_sdk.effects.staff_metadata import StaffMetadata
+    # Tag a provider with their primary department
+    metadata = StaffMetadata(
+        staff_id="4150cd20de8a470aa570a852859ac87e",
+        key="department",
+    )
+    effect = metadata.upsert("cardiology")
+    ```
+Mirroring an HR system from a handler:
+    ```python
+    from canvas_sdk.effects.staff_metadata import StaffMetadata
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.events import EventType
+    class StaffHRSync(BaseHandler):
+        """Sync select fields from an HR webhook payload onto Canvas staff."""
+        RESPONDS_TO = EventType.Name(EventType.STAFF_UPDATED)
+        def compute(self):
+            staff_id = self.event.context["staff"]["id"]
+            hr_record = self.event.context.get("fields", {}).get("hr_record", {})
+            return [
+                StaffMetadata(staff_id=staff_id, key=f"hr.{key}").upsert(str(value))
+                for key, value in hr_record.items()
+            ]
+    ```
+###  delete() → Effect 
+Removes the metadata entry identified by `(staff_id, key)`.
+####  Behavior 
+  - Removes the row that matches both `staff_id` and `key`. Returns success even if no row was present (idempotent).
+  - Does not affect other metadata entries for the same staff member with different keys.
+####  Example 
+    ```python
+    from canvas_sdk.effects.staff_metadata import StaffMetadata
+    # Clear the department tag for a staff member
+    effect = StaffMetadata(
+        staff_id="4150cd20de8a470aa570a852859ac87e",
+        key="department",
+    ).delete()
+    ```
+##  Validation 
+The effect validates before execution:
+  - **Staff existence** : the `staff_id` must correspond to an existing Staff record, or the effect raises a descriptive error.
+  - **Required fields** : `staff_id` and `key` must be non-empty strings, and `.upsert(...)` requires a `value`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-staff-metadata/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-task-metadata/
 The `TaskMetadata` effect provides a flexible key-value storage system for task-specific data within the Canvas system. This effect enables the creation and updating of custom metadata entries associated with task records, allowing for extensible task information storage beyond standard task fields.
 ##  Overview 
@@ -20856,7 +21893,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -20879,6 +21916,7 @@ HOMEPAGE_CONFIGURATION | Can be used to configure the homepage layout. Check out
 SHOW_ACTION_BUTTON | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals).  
 SHOW_APPLICATION | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/) and [LaunchModalEffects](/sdk/layout-effect/#modals).  
 REDIRECT_CONTEXT | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context).  
+PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).  
 ###  Search Results 
 Effect | Description  
 ---|---  
@@ -20926,10 +21964,15 @@ UNLOCK_NOTE | Unlock a note.
 SIGN_NOTE | Sign a note.  
 CHECK_IN_NOTE | Check in a note.  
 NO_SHOW_NOTE | Mark a note as no-show.  
+DELETE_NOTE | Delete a note.  
+UNDELETE_NOTE | Restore a deleted note.  
+DISCHARGE_NOTE | Lock and discharge an inpatient note.  
 FAX_NOTE | Fax a note to an external recipient.  
 PUSH_NOTE_CHARGES | Push note charges for billing.  
 UPSERT_NOTE_METADATA | Add or update metadata on a note.  
 GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient.  
+NOTE_RESTRICTIONS | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/).  
+NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  
 ###  Appointments 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
 Effect | Description  
@@ -20938,6 +21981,7 @@ CREATE_APPOINTMENT | Create an appointment.
 UPDATE_APPOINTMENT | Update an appointment.  
 RESCHEDULE_APPOINTMENT | Reschedule an appointment.  
 CANCEL_APPOINTMENT | Cancel an appointment.  
+REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state.  
 ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total).  
 REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment.  
 UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment.  
@@ -20993,6 +22037,14 @@ Effect | Description
 ---|---  
 PATIENT_GROUP__ADD_MEMBER | Add a member to a patient group.  
 PATIENT_GROUP__DEACTIVATE_MEMBER | Deactivate a member from a patient group.  
+###  Staff 
+Effect | Description  
+---|---  
+[UPSERT_STAFF_METADATA](/sdk/effect-staff-metadata/) | Insert or update a key/value metadata entry on a staff member.  
+[DELETE_STAFF_METADATA](/sdk/effect-staff-metadata/) | Remove a key/value metadata entry from a staff member.  
+[CREATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Create a new external identifier on a staff member.  
+[UPDATE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Update fields on an existing external identifier.  
+[DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member.  
 ###  Messages 
 Check out the [Message Effects](/sdk/effect-messages/) documentation.
 Effect | Description  
@@ -21007,6 +22059,7 @@ Effect | Description
 ---|---  
 CREATE_OBSERVATION | Create an observation.  
 UPDATE_OBSERVATION | Update an observation.  
+ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error.  
 ###  Questionnaire 
 Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation.
 Effect | Description  
@@ -21089,6 +22142,16 @@ Effect | Description
 SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request.  
 SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request.  
 SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request.  
+###  Data Integration 
+Check out the [Data Integration Effects](/sdk/effect-data-integration/) documentation.
+Effect | Description  
+---|---  
+ASSIGN_DOCUMENT_REVIEWER | Assign a staff member or team as reviewer to a document in the Data Integration queue.  
+CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type.  
+JUNK_DOCUMENT | Mark a document in the Data Integration queue as junk (spam).  
+LINK_DOCUMENT_TO_PATIENT | Link a document in the Data Integration queue to a patient by patient key.  
+REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.  
+UPDATE_DOCUMENT_FIELDS | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  
 ###  Commands 
 Check out the [Commands documentation](/sdk/commands/) for full details.
 Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COMMAND`. The available actions are:
@@ -21110,7 +22173,7 @@ Assess | `*_ASSESS_COMMAND` |
 Change Medication | `*_CHANGE_MEDICATION_COMMAND` |   
 Chart Section Review | `*_CHART_SECTION_REVIEW_COMMAND` | ORIGINATE only  
 Close Goal | `*_CLOSE_GOAL_COMMAND` |   
-Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE only  
+Custom Command | `*_CUSTOM_COMMAND_COMMAND` | ORIGINATE, ENTER_IN_ERROR  
 Diagnose | `*_DIAGNOSE_COMMAND` |   
 Exam | `*_EXAM_COMMAND` |   
 Family History | `*_FAMILY_HISTORY_COMMAND` |   
@@ -21206,9 +22269,16 @@ The actor is available in the following contexts:
   - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
   - [**Application**](/sdk/handlers-applications/) handlers
   - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+  - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
+  - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
   - **Appointment scheduling events** — all `APPOINTMENT__*` events
   - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
+  - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
+  - **Homepage events** — `GET_HOMEPAGE_CONFIGURATION`
+  - **Command additional-fields events** — `COMMAND__FORM__GET_ADDITIONAL_FIELDS`
+  - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
   - **Claim events** — `CLAIM__CONDITIONS`
+  - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
   - **Patient portal events** — all `PATIENT_PORTAL__*` events
     ```python
     from canvas_sdk.effects import Effect
@@ -21732,6 +22802,21 @@ Target object | Context object
       "id": queue_id
     "queue_exited":
       "id": queue_id  
+CLAIM__CONDITIONS  
+---  
+Fires when the conditions list is loaded inside the claim summary view. Plugins can use this event to surface plugin-specific diagnosis information alongside the existing diagnosis codes on the claim.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    [
+      "id": str,
+      "codings": [
+        "code": str,
+        "system": str,
+        "display": str
+      ]
+    ]  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -22464,6 +23549,38 @@ Target object | Context object
     "note_id": note_id,
     "patient_id": pt_id,
     "state": [str](/sdk/data-note/#notestates)  
+NOTE_OPENED  
+---  
+Fires when a provider expands a note in the patient chart. The context includes the note's ID.  
+Target object | Context object  
+    "id": patient_key
+    "type": Patient
+| 
+    "note": {"id": note_uuid},
+    "user": {
+      "type": str,
+      "id": user_id
+    }  
+NOTE_CLOSED  
+---  
+Fires when a provider collapses a note that was previously open. The context includes the note's ID.  
+Target object | Context object  
+    "id": patient_key
+    "type": Patient
+| 
+    "note": {"id": note_uuid},
+    "user": {
+      "type": str,
+      "id": user_id
+    }  
+GET_NOTE_RESTRICTIONS  
+---  
+Fires every time a note is opened or its restrictions are refetched. Plugins respond with a [`NoteRestrictionsEffect`](/sdk/effect-note-restrictions/) to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. If no plugin responds, the note is unrestricted by default.  
+Target object | Context object  
+    "id": note.id
+    "type": [Note](/sdk/data-note/)
+| 
+    empty  
 ####  Letters 
 LETTER_CREATED  
 ---  
@@ -22668,6 +23785,62 @@ Target object | Context object
     "type": [Staff](/sdk/data-staff/#staff)
 | 
     empty  
+####  Staff External Identifier 
+STAFF_EXTERNAL_IDENTIFIER_CREATED  
+---  
+Occurs when an external identifier is created for a staff member.  
+Target object | Context object  
+    "id": staffexternalidentifier_id
+    "type": [StaffExternalIdentifier](/sdk/data-staff/#staffexternalidentifier)
+| 
+    "staff":
+        "id": staff_id  
+STAFF_EXTERNAL_IDENTIFIER_UPDATED  
+---  
+Occurs when an external identifier for a staff member is updated.  
+Target object | Context object  
+    "id": staffexternalidentifier_id
+    "type": [StaffExternalIdentifier](/sdk/data-staff/#staffexternalidentifier)
+| 
+    "staff":
+        "id": staff_id  
+STAFF_EXTERNAL_IDENTIFIER_DELETED  
+---  
+Occurs when an external identifier for a staff member is deleted.  
+Target object | Context object  
+    "id": staffexternalidentifier_id
+    "type": [StaffExternalIdentifier](/sdk/data-staff/#staffexternalidentifier)
+| 
+    "staff":
+        "id": staff_id  
+####  Staff Metadata 
+STAFF_METADATA_CREATED  
+---  
+Occurs when a staff member's metadata is created.  
+Target object | Context object  
+    "id": staffmetadata_id
+    "type": [StaffMetadata](/sdk/data-staff/#staffmetadata)
+| 
+    "staff":
+        "id": staff_id  
+STAFF_METADATA_UPDATED  
+---  
+Occurs when a staff member's metadata is updated.  
+Target object | Context object  
+    "id": staffmetadata_id
+    "type": [StaffMetadata](/sdk/data-staff/#staffmetadata)
+| 
+    "staff":
+        "id": staff_id  
+STAFF_METADATA_DELETED  
+---  
+Occurs when a staff member's metadata is deleted.  
+Target object | Context object  
+    "id": staffmetadata_id
+    "type": [StaffMetadata](/sdk/data-staff/#staffmetadata)
+| 
+    "staff":
+        "id": staff_id  
 ####  Vital Signs 
 VITAL_SIGN_CREATED  
 ---  
@@ -24292,6 +25465,186 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
+####  Custom Command 
+CUSTOM_COMMAND_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "content": str
+      "schema_key": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CUSTOM_COMMAND_COMMAND__AVAILABLE_ACTIONS  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "actions":
+      "name": str
+    "user":
+      "staff": staff_id  
 ####  Diagnose Command 
 DIAGNOSE_COMMAND__POST_COMMIT  
 ---  
@@ -27199,6 +28552,23 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
+HEALTH_GORILLA_LAB_ORDER_PREPARED  
+---  
+Fires from Canvas right after the outbound Health Gorilla FHIR `RequestGroup` dict is constructed and right before it is POSTed to Health Gorilla. Read-only — any effects returned by handlers are discarded. Complements `LAB_ORDER_COMMAND__PRE_SEND`, which fires before the build and accepts override effects.  
+Target object | Context object  
+    "id": laborder_id
+    "type": [LabOrder](/sdk/data-labs/#laborder)
+| 
+    "lab_order":
+      "id": laborder_id
+      "uuid": laborder_id
+    "lab_partner": str
+    "note":
+      "id": note_id
+      "uuid": note_id
+    "patient":
+      "id": pt_id
+    "request_group": dict  
 LAB_ORDER_COMMAND__PRE_UPDATE  
 ---  
 Target object | Context object  
@@ -32459,6 +33829,213 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
+####  Visual Exam Finding 
+VISUAL_EXAM_FINDING_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__AVAILABLE_ACTIONS  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "actions":
+      "name": string
+    "user":
+      "staff": staff_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VISUAL_EXAM_FINDING_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "title": str
+      "narrative": str
+      "image": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
 ####  Vitals Command 
 VITALS_COMMAND__POST_COMMIT  
 ---  
@@ -33191,7 +34768,6 @@ SSO__GET_POST_LOGIN_REDIRECT | A user has just authenticated via SAML SSO and Ca
 Event | Occurs when | UNKNOWN | Default event type unlikely to ever be emitted.  
 ---|---  
 CRON | This event fires regularly and can be used for scheduled tasks. See [CronTask](/sdk/handlers-crontask/).  
-CLAIM__CONDITIONS | The conditions are loaded within the claim summary.  
 PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION | A patient chart's summary section is loading.  
 PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for a custom patient chart summary section. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/).  
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
@@ -37479,7 +39055,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
       "url_permissions": [
         {
           "url": "https://example.com/",
-          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA"]
+          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
         }
       ],
       "components": {
@@ -38484,6 +40060,8 @@ To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, 
   - **Allowing custom scripts** : If you need to load scripts from an external source, the URL for the script must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` and `'SCRIPTS'` must be in the permissions list.
   - **Requesting microphone access** : If the site in your modal or widget needs microphone access, `'MICROPHONE'` must be in the URL's permissions list.
   - **Requesting camera access** : If the site in your modal or widget needs camera access, `'CAMERA'` must be in the URL's permissions list.
+  - **Requesting clipboard read access** : If the site in your modal or widget needs to read from the user's clipboard, `'CLIPBOARD_READ'` must be in the URL's permissions list.
+  - **Requesting clipboard write access** : If the site in your modal or widget needs to write to the user's clipboard, `'CLIPBOARD_WRITE'` must be in the URL's permissions list.
   - **Allowing browser access to cookies from the iframe's origin** : If you want the loaded URL to access cookies for its domain, `'ALLOW_SAME_ORIGIN'` must be in the URL's permissions list. If the URL you're loading requires authentication, this will prevent your user from having to log in each time the modal is launched.
 The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
     ```json
@@ -38495,7 +40073,7 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
       "url_permissions": [
         {
           "url": "https://example.com/info",
-          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA"]
+          "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
         },
         {
           "url": "https://d3js.org/d3.v4.js",
@@ -38975,9 +40553,12 @@ Navigation path:
 The UI lets you:
   - Filter by **source** (e.g., `plugin-runner`, `effect-interpreter`)
   - Filter by **level** (`ERROR`, `WARN`, `INFO`, `DEBUG`)
+  - Filter by **plugin** — multi-select; the dropdown is pre-populated with plugins seen in the last 7 days, and accepts free-text entries for older or yet-to-log plugins
+  - Filter by **handler** — multi-select on the fully-qualified handler class; works the same as plugin (last 7 days + free-text)
   - Filter by **time** (start/end)
   - Inspect **full JSON** of a log entry in a modal
   - **Load more** results without leaving the page
+The results table shows columns for `@timestamp`, `level`, `source`, `plugin`, and `message`. Click a row to open the full log entry as JSON.
 > **Info:** The UI defaults to showing the most recent logs first (sorted by `@timestamp desc`). 
 * * *
 ###  CLI Overview 
@@ -38998,6 +40579,17 @@ Run `canvas logs --help` to see all options.
     $ canvas logs --level ERROR
     # Errors and warnings:
     $ canvas logs --level ERROR --level WARN
+    ```
+#####  Filter by plugin / handler (repeatable) 
+    ```console
+    # One plugin:
+    $ canvas logs --plugin my_plugin
+    # Multiple plugins:
+    $ canvas logs --plugin my_plugin --plugin other_plugin
+    # A specific handler (fully qualified class name):
+    $ canvas logs --handler my_plugin.handlers.foo.MyHandler
+    # Multiple handlers:
+    $ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
     ```
 #####  Time windows: since / start / end 
 **Relative lookback (`--since`)**  
@@ -39034,7 +40626,7 @@ When more results are available, the CLI prints a **resume command** with a **cu
       --no-follow \
       --cursor <TOKEN>
     ```
-> **Warning:** `--cursor` is **mutually exclusive** with filters (`--since`, `--start/--end`, `--level`, `--source`) to enforce consistency. Use the token alone to resume 
+> **Warning:** `--cursor` is **mutually exclusive** with filters (`--since`, `--start/--end`, `--level`, `--source`, `--plugin`, `--handler`) to enforce consistency. Use the token alone to resume 
 .
 * * *
 ###  Limits & Page Size 
