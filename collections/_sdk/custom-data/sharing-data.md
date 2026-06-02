@@ -48,18 +48,22 @@ Share these keys securely with developers of other plugins that need access:
 Each plugin that joins a namespace must:
 
 1. **Declare the namespace** in `CANVAS_MANIFEST.json`
-2. **Include the secret name** in the manifest's `secrets` array
+2. **Include the access key name** in the manifest's `variables` array
 3. **Provide the access key** during installation
 
 ```json
 {
-  "secrets": ["namespace_read_write_access_key"],
+  "variables": [
+    {"name": "namespace_read_write_access_key", "sensitive": false}
+  ],
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"
   }
 }
 ```
+
+> Namespace access keys are declared with `"sensitive": false` so the value remains readable in the Admin UI's Secrets inline — that's the surface developers use to copy a key into a sibling plugin that joins the same namespace.
 
 **Installing with the Canvas CLI (recommended):**
 
@@ -86,7 +90,9 @@ If you've already installed the plugin without the secret:
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
   "name": "my_plugin",
-  "secrets": ["namespace_read_write_access_key"],
+  "variables": [
+    {"name": "namespace_read_write_access_key", "sensitive": false}
+  ],
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"

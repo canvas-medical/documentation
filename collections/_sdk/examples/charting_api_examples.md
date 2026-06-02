@@ -256,7 +256,9 @@ null
         "effects": [],
         "views": []
     },
-    "secrets": ["simpleapi-api-key"],
+    "variables": [
+        {"name": "simpleapi-api-key", "sensitive": true}
+    ],
     "tags": {},
     "references": [],
     "license": "",

@@ -39,15 +39,15 @@ A FormField consists of the following properties:
 
 #### Attributes
 
-| Attribute          | Type                 | Description                                                       |
-|--------------------|----------------------|-------------------------------------------------------------------|
-| `key`              | `str`                | unique identifier of the field - command metadata key             |
-| `label`            | `str`                | the label that will be displayed on the field                     |
-| `type`             | `InputType`          | the type of the input - TEXT, SELECT, DATE.                       |
-| `required`         | `bool`               | if the input is required.                                         |
-| `editable`         | `bool`               | if the input can be editabled.                                    |
-| `options`          | `list[str]`          | possible options for when the input type is set to "SELECT”       |
-| `value`            | `str`                | default value for the field                                       |
+| Attribute          | Type                 | Description                                                                                                                                                                                        |
+|--------------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `key`              | `str`                | unique identifier of the field - command metadata key                                                                                                                                              |
+| `label`            | `str`                | the label that will be displayed on the field                                                                                                                                                      |
+| `type`             | `InputType`          | the type of the input - TEXT, SELECT, DATE.                                                                                                                                                        |
+| `required`         | `bool`               | if the input is required.                                                                                                                                                                          |
+| `editable`         | `bool`               | if the input can be editabled.                                                                                                                                                                     |
+| `options`          | `list[str]`          | possible options for when the input type is set to "SELECT”                                                                                                                                        |
+| `value`            | `str`                | default value used only when no CommandMetadata row exists for this key. If the user has previously saved a value (including a cleared/empty value) the stored row wins and this field is ignored. |
 
 
 ### **CommandMetadataCreateFormEffect**

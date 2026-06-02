@@ -399,7 +399,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
   "url_permissions": [
     {
       "url": "https://example.com/",
-      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA"]
+      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "SCRIPTS", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
     }
   ],
   "components": {
@@ -420,7 +420,7 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
     "effects": [],
     "views": []
   },
-  "secrets": [],
+  "variables": [],
   "tags": {},
   "references": [],
   "license": "",

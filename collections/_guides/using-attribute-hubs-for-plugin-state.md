@@ -83,7 +83,7 @@ Replace the contents of `lab_sync/CANVAS_MANIFEST.json`:
             }
         ]
     },
-    "secrets": [],
+    "variables": [],
     "custom_data": {
         "namespace": "my_org__lab_sync",
         "access": "read_write"
@@ -454,7 +454,10 @@ You'll also need to add the secrets to your manifest and configure them at
 install time:
 
 ```json?partial=true
-"secrets": ["LAB_VENDOR_API_KEY", "LAB_VENDOR_BASE_URL"],
+"variables": [
+    {"name": "LAB_VENDOR_API_KEY", "sensitive": true},
+    {"name": "LAB_VENDOR_BASE_URL", "sensitive": false}
+],
 ```
 
 ```sh
