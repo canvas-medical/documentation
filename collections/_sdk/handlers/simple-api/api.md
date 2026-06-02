@@ -378,12 +378,12 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
-#### File uploads (`file_uploads="stored"`)
+#### File uploads
 
 For endpoints that accept file uploads, declare the route with `file_uploads="stored"`. Canvas
-will intercept `multipart/form-data` requests on these endpoints, write each file part to S3
-*before* invoking your plugin, and pass your handler a `StoredFilePart` for each file field
-instead of the raw bytes.
+will intercept `multipart/form-data` requests on these endpoints, write each file part to
+cloud storage *before* invoking your plugin, and pass your handler a `StoredFilePart` for
+each file field instead of the raw bytes.
 
 This is the recommended pattern for any endpoint that accepts files larger than a few KB.
 Files never enter the plugin runner, which keeps your plugin light, fast, and out of the
@@ -394,37 +394,44 @@ business of buffering binary data.
 
 ```python?partial=true
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import StoredFilePart, api
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, StoredFilePart, api
 
 
 class AttachmentApi(api.SimpleAPI):
     PREFIX = "/attachments"
 
-    def authenticate(self, credentials):
-        return True
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
 
     @api.post("/upload", file_uploads="stored")
     def upload(self) -> list[Response]:
         form = self.request.form_data()
-        attachment: StoredFilePart = form["attachment"]
-        # attachment.key:          "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
-        # attachment.filename:     original filename (sanitized)
-        # attachment.content_type: MIME type from the multipart part
-        # attachment.content_length: number of bytes
-        # NOTE: there is no `.content` attribute. Bytes live in S3 only.
-        return [JSONResponse({"key": attachment.key, "filename": attachment.filename})]
+        # The endpoint decides which part names it looks for; the client must send
+        # matching names in its multipart request.
+        front: StoredFilePart = form["id_card_front"]
+        back: StoredFilePart = form["id_card_back"]
+        # front.key:            "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
+        # front.filename:       original filename (sanitized)
+        # front.content_type:   MIME type from the multipart part
+        # front.content_length: number of bytes
+        # NOTE: there is no `.content` attribute. Bytes live in cloud storage only.
+        return [JSONResponse({"keys": [front.key, back.key]})]
 ```
 
+You choose which part names your endpoint looks for (`id_card_front` and `id_card_back`
+above); the client is responsible for sending parts with matching names in its multipart
+request. If the client sends a part name your endpoint isn't looking for, the lookup will
+fail.
+
 The `StoredFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
-`content_length`, `key`, and `error`. For successful uploads, `key` is the S3 key and `error` is
-`None`. For failures (see the next section), `key` is `None` and `error` is set. Plain
-string fields in the same multipart request are returned as `StringFormPart` instances
+`content_length`, `key`, and `error`. For successful uploads, `key` is the storage key and
+`error` is `None`. For failures (see the next section), `key` is `None` and `error` is set.
+Plain string fields in the same multipart request are returned as `StringFormPart` instances
 with `name` and `value`, just like in a non-upload endpoint.
 
-The S3 key your plugin receives is a stable, customer-scoped relative path. Reference it in
-subsequent effects (for example, by passing it to a message-attachment effect or storing it
-on a custom data record). When the file later needs to be served, Canvas generates a fresh
-short-lived presigned URL on read.
+The storage key your plugin receives is a stable, customer-scoped relative path. Store or
+pass it wherever your plugin needs to reference the file later. When the file needs to be
+served, Canvas generates a fresh short-lived presigned URL on read.
 
 If a caller posts with a non-multipart content type to an endpoint declared with
 `file_uploads="stored"`, the request is rejected with **400 Bad Request** before the handler
@@ -433,7 +440,7 @@ plugin as before), so existing endpoints are not affected by this feature.
 
 ##### Handling partial failures
 
-S3 uploads happen per file. A failure on one file does not prevent the rest of the batch
+Uploads happen per file. A failure on one file does not prevent the rest of the batch
 from reaching your handler — only when **every** file in the request fails does Canvas
 return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, both
 successful and failed files are exposed through `request.form_data()` in the same MultiDict
