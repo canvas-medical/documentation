@@ -320,6 +320,87 @@ class MyHandler(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+### Delete
+
+Deletes an existing note. Has the exact same effect as clicking on the `Delete` button in the Note footer. Applies to visit notes (encounter, base) and inpatient notes.
+
+#### Attributes
+
+| Attribute     | Type            | Description                      | Required |
+| ------------- | --------------- | -------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to delete | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note whose current state allows deletion (e.g. `NEW`, `UNLOCKED`, `PUSHED`, or `UNDELETED`).
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.delete()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Undelete
+
+Restores a previously deleted note. Has the exact same effect as clicking on the `Restore` button on a deleted note.
+
+#### Attributes
+
+| Attribute     | Type            | Description                       | Required |
+| ------------- | --------------- | --------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the note to restore | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note that is currently in the `DELETED` state.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-note-uuid")
+        return [note_effect.undelete()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
+### Discharge
+
+Locks and discharges an inpatient note. Has the exact same effect as clicking on the `Lock and discharge` button in the Inpatient note footer.
+
+#### Attributes
+
+| Attribute     | Type            | Description                                  | Required |
+| ------------- | --------------- | -------------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the inpatient note to discharge | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Note whose `NoteTypeVersion.category` is `INPATIENT`.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_effect = Note(instance_id="existing-inpatient-note-uuid")
+        return [note_effect.discharge()]
+```
+
+{% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
+
 ### Upsert Metadata
 
 Creates or updates a metadata entry for the specified note. For detailed documentation on note metadata management, see [NoteMetadata Effect](/sdk/effect-note-metadata/).
@@ -631,6 +712,32 @@ class MyHandler(BaseHandler):
         appointment_effect = Appointment(instance_id="existing-appointment-uuid")
 
         return appointment_effect.cancel()
+```
+
+### Revert Appointment
+
+Reverts a booked or checked-in appointment back to a state where it can be checked in, cancelled, rescheduled, or marked as no-show.
+
+#### Attributes
+
+| Attribute     | Type            | Description                             | Required |
+| ------------- | --------------- | --------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion (e.g. `BOOKED` or `CONVERTED`).
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.note.appointment import Appointment
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        appointment_effect = Appointment(instance_id="existing-appointment-uuid")
+
+        return appointment_effect.revert()
 ```
 
 ## Managing Appointment Labels
