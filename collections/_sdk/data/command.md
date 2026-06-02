@@ -148,7 +148,7 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | origination_source | String                                |
 | custom_html        | String (optional)                     |
 
-The `custom_html` field stores base64-encoded HTML content that is rendered alongside the command. This field is optional and defaults to `None`.
+The `custom_html` field stores HTML content that is rendered alongside the command in the note. This field is optional and defaults to `None`. Use the [`set_custom_html`](/sdk/commands/#set_custom_html) method to set or clear this field on a staged command.
 
 ### CommandMetadata
 
