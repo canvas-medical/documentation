@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Instruction` model represents an `Instruct` command committed in a patient's note — for example, "cessation of smoking" counseling, dietary instructions, or any other piece of clinical guidance recorded as an Instruct command.
+The `Instruction` model represents an `Instruct` command in a patient's note — for example, "cessation of smoking" counseling, dietary instructions, or any other piece of clinical guidance recorded as an Instruct command. Instructions are included regardless of command state (staged or committed); use `.committed()` to filter to only committed commands.
 
 Querying `Instruction` from a plugin is the recommended way to ask "has this patient been given an instruction in this value set?" — for example, when computing quality measures that look for tobacco cessation counseling or dialysis education.
 
@@ -27,6 +27,8 @@ If you have a patient object, the instructions for a patient can be accessed wit
 from canvas_sdk.v1.data.patient import Patient
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+
+# Returns all instructions for the patient, regardless of command state (staged or committed)
 instructions = patient.instructions.all()
 ```
 
@@ -36,7 +38,12 @@ If you have a patient ID, you can get the instructions for the patient with the 
 from canvas_sdk.v1.data.instruction import Instruction
 
 patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+
+# All instructions for the patient, regardless of command state (staged or committed)
 instructions = Instruction.objects.for_patient(patient_id)
+
+# Only committed instructions for the patient
+committed_instructions = Instruction.objects.for_patient(patient_id).committed()
 ```
 
 ## Codings
@@ -89,7 +96,7 @@ Filtering by ValueSet works a little differently. The `find` method on the model
 
 ```python
 from canvas_sdk.v1.data.instruction import Instruction
-from canvas_sdk.value_set.v2018.intervention import TobaccoUseCessationCounseling
+from canvas_sdk.value_set.v2022.intervention import TobaccoUseCessationCounseling
 
 cessation_counseling = (
     Instruction.objects

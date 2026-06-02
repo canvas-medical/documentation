@@ -322,7 +322,7 @@ class MyHandler(BaseHandler):
 
 ### Delete
 
-Deletes an existing note. Has the exact same effect as clicking on the `Delete` button in the Note footer. Applies to visit notes (encounter, base) and inpatient notes.
+Deletes an existing note. Has the exact same effect as clicking on the `Delete` button in the Note footer.
 
 #### Attributes
 
@@ -330,7 +330,7 @@ Deletes an existing note. Has the exact same effect as clicking on the `Delete` 
 | ------------- | --------------- | -------------------------------- | -------- |
 | `instance_id` | `UUID` or `str` | Identifier of the note to delete | Yes      |
 
-**Note**: `instance_id` must be a valid, existing Note whose current state allows deletion (e.g. `NEW`, `UNLOCKED`, `PUSHED`, or `UNDELETED`).
+**Note**: `instance_id` must be a valid, existing Note whose current state allows deletion (e.g. `NEW`, `CONVERTED`, `UNLOCKED`, `PUSHED`, or `UNDELETED`).
 
 #### Example Usage
 
@@ -384,7 +384,7 @@ Locks and discharges an inpatient note. Has the exact same effect as clicking on
 | ------------- | --------------- | -------------------------------------------- | -------- |
 | `instance_id` | `UUID` or `str` | Identifier of the inpatient note to discharge | Yes      |
 
-**Note**: `instance_id` must be a valid, existing Note whose `NoteTypeVersion.category` is `INPATIENT`.
+**Note**: `instance_id` must be a valid, existing Note whose `NoteTypeVersion.category` is `INPATIENT`, and whose current state allows discharge (`NEW`, `CONVERTED`, `UNLOCKED`, or `UNDELETED`).
 
 #### Example Usage
 
@@ -700,6 +700,14 @@ class MyHandler(BaseHandler):
 
 Cancels an existing appointment and updates its status.
 
+#### Attributes
+
+| Attribute     | Type            | Description                             | Required |
+| ------------- | --------------- | --------------------------------------- | -------- |
+| `instance_id` | `UUID` or `str` | Identifier of the appointment to cancel | Yes      |
+
+**Note**: `instance_id` must be a valid, existing Appointment whose current state allows cancellation. An appointment can only be cancelled when it is in the `BOOKED` or `REVERTED` state.
+
 #### Example Usage
 
 ```python
@@ -724,7 +732,7 @@ Reverts a booked or checked-in appointment back to a state where it can be check
 | ------------- | --------------- | --------------------------------------- | -------- |
 | `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes      |
 
-**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion (e.g. `BOOKED` or `CONVERTED`).
+**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
 
 #### Example Usage
 
