@@ -42,17 +42,26 @@ ApplicationNotificationBadge("my_plugin__inbox").broadcast(count=3, staff_ids=["
 
 ## Targeting
 
-`staff_ids` and `patient_ids` control who sees the update:
+`staff_ids` and `patient_ids` control who sees the update. An empty list means
+"all" on that axis:
 
 | `staff_ids` | `patient_ids` | Who sees the badge                                                                       |
 | ----------- | ------------- | ---------------------------------------------------------------------------------------- |
-| set         | empty         | The listed staff, wherever they view the application.                                    |
+| set         | empty         | The listed staff, on any patient (and on global views).                                  |
 | empty       | set           | Staff currently viewing the listed patients' charts.                                     |
-| set         | both          | The listed staff, but only while viewing the listed patients' charts.                    |
-| empty       | empty         | All staff (a system-wide update).                                                        |
+| set         | set           | The listed staff, but only while viewing the listed patients' charts.                    |
+| empty       | empty         | All staff, all patients (a system-wide update).                                          |
 
 Patients are never subscribers themselves — `patient_ids` scopes the badge to a
 patient's chart, where staff viewing that chart will see it.
+
+> **Note on "all patients" (empty `patient_ids`):** the update is delivered
+> **live** only to charts a staff member currently has open. Other patients'
+> charts reflect the new value the next time they're loaded, via
+> `compute_notification_badge()`. So for a badge that should read the same across
+> every patient, have `compute_notification_badge()` return a patient-independent
+> count (ignore the patient in `self.event.context`). A push then keeps the
+> open chart live, and the load-time hook covers the rest.
 
 ```python
 # Show a badge to staff viewing a specific patient's chart.
