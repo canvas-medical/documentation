@@ -2288,8 +2288,9 @@ questionnaire = StructuredAssessmentCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import TaskCommand, TaskPriority
+from canvas_sdk.commands import TaskCommand
 from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
+from canvas_sdk.v1.data.task import TaskPriority
 from datetime import date
 
 TaskCommand(
