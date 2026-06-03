@@ -732,7 +732,7 @@ Reverts a booked or checked-in appointment back to a state where it can be check
 | ------------- | --------------- | --------------------------------------- | -------- |
 | `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes      |
 
-**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
+**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED`, `CONVERTED`, or `NOSHOW` state.
 
 #### Example Usage
 
