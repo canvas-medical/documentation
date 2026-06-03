@@ -962,10 +962,11 @@ hpi = HistoryOfPresentIllnessCommand(
 
 **`Priority`**
 
-| Priority  | Description                |
-|:----------|:---------------------------|
-| `ROUTINE` | Indicates a routine order. |
-| `URGENT`  | Indicates un urgent order. |
+| Priority  | Description                                                                                |
+|:----------|:-------------------------------------------------------------------------------------------|
+| `ROUTINE` | The request has normal priority.                                                           |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
 
 **Example**:
 
@@ -1953,10 +1954,11 @@ unstructured_rfv = ReasonForVisitCommand(
 
 **`Priority`**
 
-| Priority  | Description                |
-|:----------|:---------------------------|
-| `ROUTINE` | Indicates a routine order. |
-| `URGENT`  | Indicates un urgent order. |
+| Priority  | Description                                                                                |
+|:----------|:-------------------------------------------------------------------------------------------|
+| `ROUTINE` | The request has normal priority.                                                           |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
 
 **`ClinicalQuestion`**
 
@@ -2253,11 +2255,20 @@ questionnaire = StructuredAssessmentCommand(
 | `title`             | _string_       | `true`   | The title or summary of the task.                   |
 | `assign_to`         | _TaskAssigner_ | `true`   | Specifies the assignee (role, team, or individual). |
 | `due_date`          | _date_         | `false`  | Due date for completing the task.                   |
+| `priority`          | _TaskPriority enum_ | `false` | Priority of the task. Must be one of `TaskPriority`. |
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels associated with the task.                    |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
 
 **Enums and Types**:
+
+**`TaskPriority`**
+
+| Priority  | Description                                                                                |
+|-----------|--------------------------------------------------------------------------------------------|
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `ROUTINE` | The request has normal priority.                                                           |
 
 **TaskAssigner Type**:
 
@@ -2277,7 +2288,7 @@ questionnaire = StructuredAssessmentCommand(
 **Example**:
 
 ```python
-from canvas_sdk.commands import TaskCommand
+from canvas_sdk.commands import TaskCommand, TaskPriority
 from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
 from datetime import date
 
@@ -2285,6 +2296,7 @@ TaskCommand(
     title="Follow-up appointment scheduling",
     assign_to=TaskAssigner(to=AssigneeType.STAFF, id=123),
     due_date=date(2024, 12, 15),
+    priority=TaskPriority.URGENT,
     comment="Ensure the patient schedules a follow-up within 30 days.",
     labels=["Urgent"],
     linked_items_urns=["urn:task:123", "urn:note:456"]
