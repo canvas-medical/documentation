@@ -236,7 +236,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Change Medication</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
