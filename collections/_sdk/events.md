@@ -15275,7 +15275,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_DELETE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_DELETE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15305,7 +15305,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_ENTER_IN_ERROR</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15386,7 +15386,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_EXECUTE_ACTION</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15416,7 +15416,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ORIGINATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15446,7 +15446,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_UPDATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_UPDATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15476,7 +15476,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_COMMIT</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_COMMIT</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15506,7 +15506,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_DELETE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_DELETE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15536,7 +15536,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15566,7 +15566,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15596,7 +15596,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ORIGINATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15626,7 +15626,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_UPDATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_UPDATE</th></tr>
   </thead>
   <tbody>
     <tr>

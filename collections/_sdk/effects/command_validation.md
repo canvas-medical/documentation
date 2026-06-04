@@ -5,13 +5,18 @@ excerpt: "Validate commands and return structured error messages to users."
 hidden: false
 ---
 
-The Canvas SDK allows you to validate commands and return structured error messages that will be displayed to users in the Canvas UI.
+The `CommandValidationErrorEffect` returns structured error messages that are displayed to users in the Canvas UI. It serves two purposes:
 
-## Command Validation Effect
+- **Validate a command** as it is being entered, surfacing problems before the command is committed (`__POST_VALIDATION` events).
+- **Block a deletion** by returning the effect from a command's `__PRE_DELETE` handler.
 
-To add validation errors to a command, import the `CommandValidationErrorEffect` class and create an instance of it. This effect is typically used in conjunction with the `PLAN_COMMAND__POST_VALIDATION` event (or similar validation events for other command types).
+In both cases you build a `CommandValidationErrorEffect`, attach one or more error messages, and return it from your handler.
 
-### Parameters
+These validations run as part of the **SDK command lifecycle** — not in the browser — so they apply both to commands entered or acted on in the Canvas UI and to commands driven through the SDK [commands module](/sdk/commands/) (command effects). When a check fails, the operation is stopped and the error is surfaced to whoever initiated it.
+
+## The effect
+
+### CommandValidationErrorEffect
 
 The `CommandValidationErrorEffect` class accepts an optional list of `ValidationError` objects during initialization:
 
@@ -27,96 +32,45 @@ Each `ValidationError` object represents a single validation error message:
 | --------- | ------ | -------- | ----------------------------------- |
 | `message` | String | required | The validation error message to display. Must not be empty. |
 
-### Adding Validation Errors
+### Building the errors
 
-There are several ways to add validation errors to the effect:
+Add errors incrementally with `add_error()`, which returns `self` so calls can be chained:
 
-#### Method 1: Using `add_error()` method
+```python?partial=True
+effect = CommandValidationErrorEffect()
+effect.add_error("Narrative is required").add_error("Please provide details about the plan")
 
-The `add_error()` method allows you to incrementally build validation errors and supports method chaining:
-
-```python
-from canvas_sdk.commands import PlanCommand
-from canvas_sdk.commands.validation import CommandValidationErrorEffect
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandler
-
-class MyHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
-
-    def compute(self) -> list[Effect]:
-        narrative = self.context["fields"]["narrative"]
-
-        # Create the validation effect
-        effect = CommandValidationErrorEffect()
-
-        # Add validation errors using the add_error method
-        if not narrative or len(narrative.strip()) < 10:
-            effect.add_error("Narrative must be at least 10 characters long")
-
-        if "TODO" in narrative.upper():
-            effect.add_error("Narrative cannot contain TODO items")
-
-        # Return the effect using the apply() method
-        return [effect.apply()]
+return [effect.apply()]
 ```
 
-#### Method 2: Method chaining
+Or pass a list of `ValidationError` objects to the constructor:
 
-The `add_error()` method returns `self`, allowing for clean method chaining:
-
-```python
-from canvas_sdk.commands.validation import CommandValidationErrorEffect
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandler
-
-class MyHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
-
-    def compute(self) -> list[Effect]:
-        narrative = self.context["fields"]["narrative"]
-
-        effect = CommandValidationErrorEffect()
-
-        if not narrative:
-            effect.add_error("Narrative is required").add_error("Please provide details about the plan")
-
-        return [effect.apply()]
-```
-
-#### Method 3: Initialize with errors
-
-You can also initialize the effect with a list of `ValidationError` objects:
-
-```python
+```python?partial=True
 from canvas_sdk.commands.validation import CommandValidationErrorEffect, ValidationError
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandler
 
-class MyHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_VALIDATION)
+errors = [
+    ValidationError("Narrative is required"),
+    ValidationError("Narrative must be at least 10 characters long"),
+]
 
-    def compute(self) -> list[Effect]:
-        narrative = self.context["fields"]["narrative"]
+effect = CommandValidationErrorEffect(errors=errors)
 
-        errors = []
-
-        if not narrative:
-            errors.append(ValidationError("Narrative is required"))
-
-        if narrative and len(narrative.strip()) < 10:
-            errors.append(ValidationError("Narrative must be at least 10 characters long"))
-
-        effect = CommandValidationErrorEffect(errors=errors)
-        return [effect.apply()]
+return [effect.apply()]
 ```
 
-## Example Use Case
+## Validate a command
 
-Here's a complete example that validates a Plan command to ensure it meets specific requirements:
+Use `CommandValidationErrorEffect` with a command's `__POST_VALIDATION` event to check the command as it is entered and surface problems before it is committed. Every command type fires this event, following the pattern:
+
+`{COMMAND_KEY}_COMMAND__POST_VALIDATION`
+
+For example:
+
+- `PLAN_COMMAND__POST_VALIDATION`
+- `PRESCRIBE_COMMAND__POST_VALIDATION`
+- `DIAGNOSE_COMMAND__POST_VALIDATION`
+
+The following handler validates a Plan command to ensure it meets specific requirements:
 
 ```python
 from canvas_sdk.commands import PlanCommand
@@ -164,64 +118,47 @@ class MyHandler(BaseHandler):
         return [effect.apply()]
 ```
 
-## Behavior
+When validation errors are returned:
 
-- When validation errors are returned, they will be displayed to the user in the Canvas UI
-- The command will not be committed if validation errors are present
-- Multiple validation errors can be returned at once, and all will be displayed to the user
+- they are displayed to the user in the Canvas UI,
+- the command is not committed, and
+- multiple errors can be returned at once, and all are displayed.
 
-## Related Events
+## Block a deletion
 
-### Validation Events
+Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler to block its deletion. The deletion is aborted, the surrounding transaction is rolled back, and the error messages are returned to whatever initiated the delete — the [`delete()`](/sdk/commands/) method in the SDK commands module, or a delete in the Canvas UI. Pre-delete events follow the pattern:
 
-The command validation effect can be used with command validation events. All command types support `__POST_VALIDATION` events following the naming pattern:
+`{COMMAND_KEY}_COMMAND__PRE_DELETE`
 
-`{COMMAND_KEY}_COMMAND__POST_VALIDATION`
-
-For example:
-- `PLAN_COMMAND__POST_VALIDATION`
-- `PRESCRIBE_COMMAND__POST_VALIDATION`
-- `DIAGNOSE_COMMAND__POST_VALIDATION`
-
-### Pre-Command Events (Blocking Operations)
-
-You can also use `CommandValidationErrorEffect` with `PRE_DELETE` events to block command deletions. If a handler returns this effect for a pre-command event, the operation is aborted and the error messages are shown to the user.
-
-**Supported pre-command events:**
-
-- `{COMMAND_KEY}_COMMAND__PRE_DELETE` — Block command deletions
-
-#### Example: Blocking a Prescribe Deletion
-
-This example prevents deletion of a prescribe command while an order is being processed by an external pharmacy:
+The following handler prevents deletion of a Refer command once its priority has been set to `Urgent` or `STAT`, so high-priority referrals can't be removed by mistake. The command's field values are available on the event context, so no extra lookup is needed:
 
 ```python
+from canvas_sdk.commands import ReferCommand
 from canvas_sdk.commands.validation import CommandValidationErrorEffect
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
 
-class BlockPrescribeDeletionHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PRESCRIBE_COMMAND__PRE_DELETE)
+class BlockUrgentReferralDeletionHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.REFER_COMMAND__PRE_DELETE)
 
     def compute(self) -> list[Effect]:
-        command_id = self.target
-        
-        # Check external system state (e.g., pharmacy verification status)
-        if self.is_order_in_flight(command_id):
+        priority = self.context["fields"].get("priority")
+
+        protected = {ReferCommand.Priority.URGENT.value, ReferCommand.Priority.STAT.value}
+        if priority in protected:
             effect = CommandValidationErrorEffect()
-            effect.add_error("Cannot delete this prescription while it is being processed by the pharmacy")
+            effect.add_error(
+                f"A {priority}-priority referral can't be deleted. "
+                "Lower its priority first if you need to remove it."
+            )
             return [effect.apply()]
-        
+
         return []
-    
-    def is_order_in_flight(self, command_id: str) -> bool:
-        # Your logic to check external state
-        ...
 ```
 
-When the user attempts to delete the command, the deletion is blocked and the error message is displayed in the UI.
+When a delete is attempted on an `Urgent` or `STAT` referral, it is blocked and the error message is returned to whoever initiated it.
 
 For more information about command events and their context objects, see the [Events documentation](/sdk/events/).
 
