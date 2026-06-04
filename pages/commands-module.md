@@ -231,7 +231,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Adjust Prescription</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td><ul><li>The command has been split into two commands. Change Medication can be used if only adjusting the sig.</li></ul></td>
     </tr>
     <tr>
