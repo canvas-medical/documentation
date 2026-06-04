@@ -23,9 +23,22 @@ jobs:
         with:
           python-version: "3.14"
 
+      # Console (console.canvasmedical.com) is only reachable over Tailscale.
+      # Step copied from canvas-claude-usage/.github/workflows/weekly-report.yml.
+      - name: Tailscale
+        env:
+          TAILSCALE_EXIT_NODE_IP: ${{ secrets.TAILSCALE_EXIT_NODE_IP }}
+        uses: tailscale/github-action@v4.1.2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --exit-node ${{ env.TAILSCALE_EXIT_NODE_IP }}
+          ping: ${{ env.TAILSCALE_EXIT_NODE_IP }}
+
       - name: Regenerate FHIR service base URL bundles
         env:
-          CONSOLE_BASE_URL: ${{ secrets.CONSOLE_BASE_URL }}
+          CONSOLE_BASE_URL: https://console.canvasmedical.com/api/v1/provisioning
           CONSOLE_AUTH_TOKEN: ${{ secrets.CONSOLE_AUTH_TOKEN }}
         run: uv run scripts/api/fhir_service_base_urls.py
 
