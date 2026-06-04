@@ -17,7 +17,7 @@ The `CustomCommand` class allows plugins to create custom commands with HTML-ren
 |:----------------|:---------|:---------|:-----------------------------------------------------------------------------------------------|
 | `note_uuid`     | _string_ | `true`   | The externally exposable id of the note in which to insert the command.                        |
 | `command_uuid`  | _string_ | `true`   | The externally exposable id of the command which is being referenced.                          |
-| `schema_key`    | _string_ | `true`   | Unique identifier for data binding. Must match the `schema_key` in your manifest configuration. |
+| `schema_key`    | _string_ | `true`   | Identifier for data binding. Must match the `schema_key` in your manifest configuration and must be unique across every plugin installed on the instance. |
 | `content`       | _string_ | `true`   | HTML content for display in the chart.                                                         |
 | `print_content` | _string_ | `false`  | HTML content for print version (recommended for optimal print output).                         |
 
@@ -44,7 +44,7 @@ Custom commands must be declared in your `CANVAS_MANIFEST.json`:
 
 - **name**: Unique name for the command
 - **label**: User-friendly label displayed in Canvas UI
-- **schema_key**: Unique identifier for the command. CustomCommand instances must use this value.
+- **schema_key**: Identifier for the command. Must be unique across every plugin installed on the Canvas instance — if another installed plugin already declares the same `schema_key`, installation will be rejected. CustomCommand instances must use this value.
 - **section**: Chart section where command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`
 
 ## Basic Usage
@@ -214,7 +214,7 @@ Custom commands support two versions of content:
 - Custom commands are read-only and cannot capture user input
 - Interactive elements (forms, buttons, input fields) are not supported
 - Commands must be configured in the manifest before use
-- The `schema_key` must be unique across your plugin's commands
+- The `schema_key` must be unique across every plugin installed on the Canvas instance. Installing a plugin whose `schema_key` is already owned by another installed plugin will fail with a validation error.
 
 
 <br/>
