@@ -185,7 +185,7 @@ For example:
 
 ### Pre-Command Events (Blocking Operations)
 
-You can also use `CommandValidationErrorEffect` with `PRE_DELETE` events to block command deletions or commits. If a handler returns this effect for a pre-command event, the operation is aborted and the error messages are shown to the user.
+You can also use `CommandValidationErrorEffect` with `PRE_DELETE` events to block command deletions. If a handler returns this effect for a pre-command event, the operation is aborted and the error messages are shown to the user.
 
 **Supported pre-command events:**
 
