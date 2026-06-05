@@ -15,8 +15,8 @@ Plugin that renames Notes when locked using OpenAI and the contents of the Note.
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "secrets": [
-        "OPENAI_API_KEY"
+    "variables": [
+        {"name": "OPENAI_API_KEY", "sensitive": true}
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -33,7 +33,7 @@ Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admi
     "name": "ai_note_titles",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "ai_note_titles.handlers.rename_note:Handler",
                 "description": "Renames Notes when locked using OpenAI and the contents of the Note"
@@ -44,7 +44,9 @@ Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admi
         "effects": [],
         "views": []
     },
-    "secrets": ["OPENAI_API_KEY"],
+    "variables": [
+        {"name": "OPENAI_API_KEY", "sensitive": true}
+    ],
     "tags": {},
     "references": [],
     "license": "",

@@ -27,16 +27,30 @@ Provides specialized container datatypes that extend beyond the built-in types l
 - `Counter`
 - `defaultdict`
 
+##### `dataclasses`
+This module provides a decorator and functions for automatically adding generated special methods such as __init__() and __repr__() to user-defined classes. [read more](https://docs.python.org/3/library/dataclasses.html)
+- `asdict`
+- `astuple`
+- `dataclass`
+- `field`
+- `Field`
+- `fields`
+- `InitVar`
+- `is_dataclass`
+- `make_dataclass`
+- `replace`
+
 ##### `datetime`
 Provides classes for working with dates and times, essential for medical applications that need to track appointment schedules and patient timelines. [read more](https://docs.python.org/3/library/datetime.html)
 - `date`
 - `datetime`
+- `time`
 - `timedelta`
 - `timezone`
 - `UTC`
 
 ##### `dateutil`
-Extends Python's datetime capabilities with more flexible date parsing and arithmetic. [read more](https://dateutil.readthedocs.io/en/stable/)
+Extends Python’s datetime capabilities with more flexible date parsing and arithmetic. [read more](https://dateutil.readthedocs.io/en/stable/)
 - `relativedelta`
 
 ##### `dateutil.relativedelta`
@@ -47,6 +61,10 @@ Provides relative time delta calculations for more complex date arithmetic opera
 Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html)
 - `Decimal`
 
+##### `defusedxml.ElementTree`
+The defusedxml package contains several Python-only workarounds and fixes for denial of service and other vulnerabilities in Python’s XML libraries. [read more](https://pypi.org/project/defusedxml/)
+- `fromstring`
+
 ##### `enum`
 Provides support for enumerations, useful for defining sets of named constants such as status codes or categories. [read more](https://docs.python.org/3/library/enum.html)
 - `Enum`
@@ -55,6 +73,7 @@ Provides support for enumerations, useful for defining sets of named constants s
 ##### `functools`
 Provides utilities for higher-order functions and operations on callable objects. [read more](https://docs.python.org/3/library/functools.html)
 - `reduce`
+- `wraps`
 
 ##### `hashlib`
 Provides secure hash and message digest algorithms for data integrity verification and security purposes. [read more](https://docs.python.org/3/library/hashlib.html)
@@ -65,6 +84,12 @@ Provides hash-based message authentication code (HMAC) functions for secure mess
 - `compare_digest`
 - `new`
 
+##### `html`
+Provides functions for escaping and unescaping HTML entities. [read more](https://docs.python.org/3/library/html.html)
+- `escape`
+- `HTML`
+- `unescape`
+
 ##### `http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
 - `HTTPStatus`
@@ -72,6 +97,7 @@ Provides HTTP status codes and related constants for web API development and HTT
 ##### `json`
 Provides functions for parsing and generating JSON data, essential for API communication and data serialization. [read more](https://docs.python.org/3/library/json.html)
 - `dumps`
+- `JSONDecodeError`
 - `loads`
 
 ##### `operator`
@@ -81,13 +107,15 @@ Provides function equivalents of operators for functional programming and comple
 ##### `random`
 Provides functions for generating random numbers and making random selections, useful for sampling and testing scenarios. [read more](https://docs.python.org/3/library/random.html)
 - `choices`
-- `uniform`
 - `randint`
+- `uniform`
 
 ##### `re`
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
 - `compile`
 - `DOTALL`
+- `findall`
+- `fullmatch`
 - `IGNORECASE`
 - `match`
 - `search`
@@ -101,13 +129,20 @@ Provides string constants and template classes for string manipulation and forma
 
 ##### `time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
-- `time`
 - `sleep`
+- `time`
+- `time_ns`
+
+##### `traceback`
+Provides functions for extracting, formatting, and printing stack traces. [read more](https://docs.python.org/3/library/traceback.html)
+- `format_exc`
 
 ##### `typing`
 Provides support for type hints and static type checking to improve code clarity and IDE support. [read more](https://docs.python.org/3/library/typing.html)
 - `Any`
+- `Callable`
 - `cast`
+- `ClassVar`
 - `Dict`
 - `Final`
 - `Iterable`
@@ -115,12 +150,13 @@ Provides support for type hints and static type checking to improve code clarity
 - `Literal`
 - `NamedTuple`
 - `NotRequired`
-- `Protocol`
 - `Optional`
+- `Pattern`
+- `Protocol`
 - `Sequence`
 - `Tuple`
+- `TYPE_CHECKING`
 - `Type`
-- `TypeGuard`
 - `TypedDict`
 - `TypeGuard`
 - `Union`
@@ -131,8 +167,9 @@ Provides modules for working with URLs, including URL parsing and manipulation. 
 
 ##### `urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
-- `urlencode`
 - `quote`
+- `unquote`
+- `urlencode`
 
 ##### `uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
@@ -153,29 +190,91 @@ A human-friendly approach to creating, manipulating, formatting and converting d
 - `now`
 - `utcnow`
 
+##### `django.contrib.postgres.indexes`
+Django’s PostgreSQL-specific index types for advanced indexing strategies. [read more](https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/)
+- `GinIndex`
+
+##### `django.db`
+Django’s database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
+- `IntegrityError`
+
 ##### `django.db.models`
-Django's database abstraction layer for defining database models and performing queries. [read more](https://docs.djangoproject.com/en/stable/topics/db/models/)
+Django’s database abstraction layer for defining database models and performing queries. [read more](https://docs.djangoproject.com/en/stable/topics/db/models/)
+- `Avg`
 - `BigIntegerField`
+- `BooleanField`
+- `CASCADE`
 - `Case`
 - `CharField`
+- `Count`
+- `DateField`
+- `DateTimeField`
+- `DecimalField`
+- `DO_NOTHING`
+- `Exists`
+- `F`
+- `FloatField`
+- `ForeignKey`
+- `Func`
+- `Index`
 - `IntegerField`
-- `Model`
+- `JSONField`
+- `ManyToManyField`
+- `Max`
+- `Min`
+- `OneToOneField`
+- `OuterRef`
+- `Prefetch`
 - `Q`
+- `RowRange`
+- `SET_NULL`
+- `Subquery`
+- `Sum`
+- `TextField`
+- `UniqueConstraint`
 - `Value`
+- `ValueRange`
 - `When`
+- `Window`
 
 ##### `django.db.models.expressions`
-Django's database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
+Django’s database expressions for complex query operations and conditional logic. [read more](https://docs.djangoproject.com/en/stable/ref/models/expressions/)
 - `Case`
+- `Exists`
+- `OuterRef`
+- `Subquery`
 - `Value`
 - `When`
 
+##### `django.db.models.functions`
+Django’s database functions for common SQL operations and window functions. [read more](https://docs.djangoproject.com/en/stable/ref/models/database-functions/)
+- `Coalesce`
+- `CumeDist`
+- `DenseRank`
+- `FirstValue`
+- `Lag`
+- `LastValue`
+- `Lead`
+- `NthValue`
+- `Ntile`
+- `PercentRank`
+- `Rank`
+- `RowNumber`
+- `Trim`
+
 ##### `django.db.models.query`
-Django's QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
+Django’s QuerySet class for database query operations and result handling. [read more](https://docs.djangoproject.com/en/stable/ref/models/querysets/)
+- `Prefetch`
 - `QuerySet`
 
+##### `django.db.transaction`
+Django’s transaction management for atomic database operations. [read more](https://docs.djangoproject.com/en/stable/topics/db/transactions/)
+- `atomic`
+- `on_commit`
+- `on_rollback`
+
 ##### `django.utils.functional`
-Django's functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
+Django’s functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
 - `cached_property`
 
 ##### `jwt`
@@ -189,8 +288,8 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 ##### `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
 - `BaseModel`
-- `conint`
 - `ConfigDict`
+- `conint`
 - `constr`
 - `Field`
 - `RootModel`
@@ -201,17 +300,6 @@ A fast string matching library for fuzzy string comparison and search operations
 - `fuzz`
 - `process`
 - `utils`
-
-##### `requests`
-A simple and elegant HTTP library for making web requests and API calls. [read more](https://docs.python-requests.org/en/latest/)
-- `delete`
-- `get`
-- `patch`
-- `post`
-- `put`
-- `request`
-- `RequestException`
-- `Response`
 
 ## Canvas SDK Modules
 
@@ -240,6 +328,7 @@ The following Python builtin functions are available within the sandbox:
 - `classmethod`
 - `dict`
 - `enumerate`
+- `extract_exc_frames`
 - `filter`
 - `getattr`
 - `hasattr`
@@ -252,10 +341,33 @@ The following Python builtin functions are available within the sandbox:
 - `property`
 - `reversed`
 - `staticmethod`
+- `sum`
 - `super`
 - `vars`
 
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+
+### `extract_exc_frames()`
+
+A sandbox-provided function that extracts frame information from the current exception's traceback. Must be called from within an `except` block. Returns an empty list if no exception is active.
+
+Each frame exposes only safe attributes:
+- `filename` — the file path
+- `lineno` — the line number
+- `name` — the function name
+
+Source code lines and local variables are not accessible.
+
+```python?partial=true
+from logger import log 
+
+try:
+    raise Exception("some failed operation")
+except Exception:
+    frames = extract_exc_frames()
+    for frame in frames:
+        log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
+```
 
 ## Requesting Additional Imports
 

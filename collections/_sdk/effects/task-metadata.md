@@ -1,11 +1,9 @@
 ---
-title: "TaskMetadata"
+title: "TaskMetadata Effect"
 slug: "effect-task-metadata"
 excerpt: "Effects for task metadata management"
 hidden: false
 ---
-
-# TaskMetadata Effect
 
 The `TaskMetadata` effect provides a flexible key-value storage system for task-specific data within the Canvas
 system.
@@ -179,3 +177,7 @@ class TaskMetadataHandler(BaseHandler):
 - Metadata entries are task-specific and isolated - the same key can have different values for different tasks
 - There is no built-in versioning; updating a key overwrites the previous value
 - The system does not enforce any schema on metadata values - validation is the responsibility of the implementing code
+
+<br/>
+<br/>
+<br/>

@@ -32,7 +32,7 @@ organization = Organization.objects.first()
 ### Organization
 
 | Field Name            | Type                                                |
-|-----------------------|-----------------------------------------------------|
+| --------------------- | --------------------------------------------------- |
 | dbid                  | Integer                                             |
 | created               | DateTime                                            |
 | modified              | DateTime                                            |
@@ -48,6 +48,51 @@ organization = Organization.objects.first()
 | group_npi_number      | String                                              |
 | group_taxonomy_number | String                                              |
 | include_zz_qualifier  | Boolean                                             |
+
+## OrganizationAddress
+
+The `OrganizationAddress` model represents a physical or mailing address associated with an Organization. Multiple addresses can be linked to a single Organization, each with its own type and details.
+
+### Attributes
+
+| Field Name           | Type                                                                        |
+| -------------------- | --------------------------------------------------------------------------- |
+| id                   | UUID                                                                        |
+| dbid                 | Integer                                                                     |
+| organization         | [Organization](#organization)                                               |
+| use                  | [AddressUseWithBilling](/sdk/data-enumeration-types/#addressusewithbilling) |
+| type                 | [AddressType](/sdk/data-enumeration-types/#addresstype)                     |
+| longitude            | Float                                                                       |
+| latitude             | Float                                                                       |
+| start                | Date                                                                        |
+| end                  | Date                                                                        |
+| country              | String                                                                      |
+| state                | [AddressState](/sdk/data-enumeration-types/#addressstate)                   |
+| address_search_index | String                                                                      |
+| line1                | String                                                                      |
+| line2                | String                                                                      |
+| city                 | String                                                                      |
+| district             | String                                                                      |
+| state_code           | String                                                                      |
+| postal_code          | String                                                                      |
+
+## OrganizationContactPoint
+
+The `OrganizationContactPoint` model represents a contact method (such as phone, email, or fax) for an Organization. Multiple contact points can be associated with a single Organization, each with its own type, use, and status.
+
+### Attributes
+
+| Field Name   | Type                                                                  |
+| ------------ | --------------------------------------------------------------------- |
+| id           | UUID                                                                  |
+| dbid         | Integer                                                               |
+| organization | [Organization](#organization)                                         |
+| system       | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
+| value        | String                                                                |
+| use          | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)       |
+| use_notes    | String                                                                |
+| rank         | Integer                                                               |
+| state        | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)   |
 
 <br/>
 <br/>

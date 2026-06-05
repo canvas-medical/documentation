@@ -57,7 +57,7 @@ const toggleSearch = () => {
     searchbutton.addEventListener('click', showSearch);
 
     window.addEventListener('keydown', (e) => {
-      if (e.key === '/') {
+      if (e.key === '/' || (e.key === 'k' && (e.metaKey || e.ctrlKey))) {
         e.preventDefault();
         showSearch();
       } else if (e.key === 'Escape') {

@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-provenance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-provenance.html)
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html)
           <br><br>In Canvas a Provenance record is created each time the following data types are create or updated in the Canvas database: 
 
             - AllergyIntolerance
@@ -16,14 +16,17 @@ sections:
             - CareTeamMembership
             - Condition
             - ConsolidatedImmunization
+            - Coverage
             - Device
             - DiagnosticReport
             - DocumentReference
+            - Encounter
             - Goal
             - Observation
             - Patient
             - Prescription
             - Procedure
+            - ServiceRequest
             - UpdateGoal
         attributes:
           - name: resourceType
@@ -47,17 +50,19 @@ sections:
                     - value: CarePlan
                     - value: CareTeam
                     - value: Condition
+                    - value: Coverage
                     - value: Device
                     - value: DiagnosticReport
                     - value: DocumentReference
+                    - value: Encounter
                     - value: Goal
                     - value: Immunization
+                    - value: MedicationDispense
                     - value: MedicationRequest
                     - value: Observation
-                    - value: Organization
                     - value: Patient
-                    - value: Practitioner
                     - value: Procedure
+                    - value: ServiceRequest
                 - name: display
                   type: string
                   description: Text alternative for the resource.

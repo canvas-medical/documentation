@@ -86,12 +86,51 @@ sections:
                   type: string
                   description: The type of questionnaire item this is.
                   enum_options:
+                    - value: group (for nested groups of items)
                     - value: choice (for multiple or single choice questions)
                     - value: text (for free text questions)
                 - name: repeats
                   type: boolean
                   description: Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
-                - name: answerOptions
+                - name: enableWhen
+                  type: array[json]
+                  description: Conditions under which this question is enabled (displayed). Corresponds to FHIR `enableWhen`.
+                  attributes:
+                    - name: question
+                      description: The linkId of the question whose answer is evaluated.
+                      type: string
+                    - name: operator
+                      description: The comparison operator.
+                      type: string
+                      enum_options:
+                        - value: "="
+                        - value: "!="
+                        - value: exists
+                        - value: not_exists
+                    - name: answerCoding
+                      description: Value for comparison when the condition references a choice question.
+                      type: json
+                      attributes:
+                        - name: code
+                          description: The code of the answer option to match.
+                          type: string
+                        - name: display
+                          description: The display name of the answer option.
+                          type: string
+                    - name: answerString
+                      description: Value for comparison when the condition references a free text question.
+                      type: string
+                    - name: answerBoolean
+                      description: Used with the `exists` operator to indicate whether the referenced question must be answered (`true`) or unanswered (`false`).
+                      type: boolean
+                - name: enableBehavior
+                  type: string
+                  description: >-
+                    Controls whether `all` or `any` of the `enableWhen` conditions must be met. Only present when there are multiple `enableWhen` conditions.
+                  enum_options:
+                    - value: all
+                    - value: any
+                - name: answerOption
                   type: array[json]
                   description: Permitted answers
                   attributes:
@@ -115,6 +154,11 @@ sections:
                         - name: display
                           description: The display name of the coding.
                           type: string
+                - name: item
+                  type: array[json]
+                  description: >-
+                    Nested questionnaire items. A nested `item` attribute can represent questions nested under other questions, or groups of nested items. The attributes for nested items are the same as the attributes for items at the root level.<br><br>
+                    If `item` is nested under an `item` of type **group**, then it represents a member of a group. If `item` is nested under an `item` of any type other than **group** or **display**, then it represents an item nested under a question.
         search_parameters:
           - name: _id
             description: The identifier of the Questionnaire.
@@ -213,6 +257,16 @@ sections:
             ],
             "text": "In an average week, how many days do you exercise?",
             "type": "choice",
+            "enableWhen": [
+                {
+                    "question": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
+                    "operator": "=",
+                    "answerCoding": {
+                        "code": "LA33-6",
+                        "display": "Yes"
+                    }
+                }
+            ],
             "repeats": false,
             "answerOption": [
                 {
@@ -283,6 +337,22 @@ sections:
             ],
             "text": "On the days when you exercised, for how long did you exercise?",
             "type": "choice",
+            "enableWhen": [
+                {
+                    "question": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
+                    "operator": "=",
+                    "answerCoding": {
+                        "code": "LA33-6",
+                        "display": "Yes"
+                    }
+                },
+                {
+                    "question": "f2419de1-a208-4a3f-9d55-ba9bd5ed4ec2",
+                    "operator": "exists",
+                    "answerBoolean": true
+                }
+            ],
+            "enableBehavior": "all",
             "repeats": false,
             "answerOption": [
                 {
@@ -325,6 +395,13 @@ sections:
             ],
             "text": "What type of exercise do you do?",
             "type": "text",
+            "enableWhen": [
+                {
+                    "question": "93137723-295f-4b28-9f97-fb58825b2cda",
+                    "operator": "=",
+                    "answerString": "40-60 min"
+                }
+            ],
             "repeats": false,
             "answerOption": [
                 {
@@ -477,6 +554,16 @@ sections:
                         ],
                         "text": "In an average week, how many days do you exercise?",
                         "type": "choice",
+                        "enableWhen": [
+                            {
+                                "question": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
+                                "operator": "=",
+                                "answerCoding": {
+                                    "code": "LA33-6",
+                                    "display": "Yes"
+                                }
+                            }
+                        ],
                         "repeats": false,
                         "answerOption": [
                             {
@@ -547,6 +634,22 @@ sections:
                         ],
                         "text": "On the days when you exercised, for how long did you exercise?",
                         "type": "choice",
+                        "enableWhen": [
+                            {
+                                "question": "d82e29db-0cac-4b97-a5aa-9e81749686e2",
+                                "operator": "=",
+                                "answerCoding": {
+                                    "code": "LA33-6",
+                                    "display": "Yes"
+                                }
+                            },
+                            {
+                                "question": "f2419de1-a208-4a3f-9d55-ba9bd5ed4ec2",
+                                "operator": "exists",
+                                "answerBoolean": true
+                            }
+                        ],
+                        "enableBehavior": "all",
                         "repeats": false,
                         "answerOption": [
                             {
@@ -589,6 +692,13 @@ sections:
                         ],
                         "text": "What type of exercise do you do?",
                         "type": "text",
+                        "enableWhen": [
+                            {
+                                "question": "93137723-295f-4b28-9f97-fb58825b2cda",
+                                "operator": "=",
+                                "answerString": "40-60 min"
+                            }
+                        ],
                         "repeats": false,
                         "answerOption": [
                             {

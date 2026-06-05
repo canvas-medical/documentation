@@ -9,7 +9,7 @@ request containing the ID of a Task upon its creation.
 
 {% include alert.html type="info" content="This guide assumes pre-existing
 knowledge of the Canvas SDK. If you're starting from scratch, you may want to
-read and implement <a href='/guides/your-first-plugin/'>Your First Plugin</a> before
+read and implement <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a> before
 working through this exercise." %}
 
 
@@ -39,11 +39,11 @@ Task was created!".
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     """
     When a task is created, log a message
     """
@@ -69,9 +69,9 @@ created a task, you should see this in your log stream:
 ```sh
 INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
 INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.protocols.my_protocol:Protocol'
+INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:04:24,410 A Task was created!
-INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.protocols.my_protocol:Protocol.compute() completed (0 ms)
+INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (0 ms)
 INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
 ```
 
@@ -87,12 +87,12 @@ to make the request:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     """
     When a task is created, hit a webhook
     """
@@ -125,9 +125,9 @@ created a task, you should see this in your log stream:
 
 ```sh
 INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.protocols.my_protocol:Protocol'
+INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.protocols.my_protocol:Protocol.compute() completed (693 ms)
+INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (693 ms)
 INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
 ```
 
@@ -151,7 +151,7 @@ specifically going to incorporate the event's `target` and `secrets`.
 
 ### Make an authenticated HTTP request that includes the newly created Task's ID
 
-Within your `Protocol` class, you have access to `self.target`, which
+Within your `Handler` class, you have access to `self.target`, which
 represents the ID of the subject of the event. In our case, it will be the
 Task's ID. This is the same ID used in the [FHIR Task endpoints](/api/task/),
 so you can use it to make FHIR API requests.
@@ -171,9 +171,9 @@ auth token. Here's what the manifest file looks like with secrets declared:
     "name": "task_webhook",
     "description": "Webhooks for task creation",
     "components": {
-        "protocols": [
+        "handlers": [
             {
-                "class": "task_webhook.protocols.my_protocol:Protocol",
+                "class": "task_webhook.handlers.event_handlers:Handler",
                 "description": "Hit an API when a task is created",
                 "data_access": {
                     "event": "",
@@ -183,17 +183,22 @@ auth token. Here's what the manifest file looks like with secrets declared:
             }
        ]
     },
-    "secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],
+    "variables": [
+        {"name": "WEBHOOK_ID", "sensitive": true},
+        {"name": "AUTH_TOKEN", "sensitive": true}
+    ],
     "tags": {},
     "license": "",
     "readme": "./README.md"
 }
 ```
 
-The line `"secrets": ["WEBHOOK_ID", "AUTH_TOKEN"],` declares two secrets,
-`WEBHOOK_ID` and `AUTH_TOKEN`. After we update the plugin, we can set values
-for these in the plugin configuration page. This allows for different values
-to be used across different installations.
+The `variables` array declares two sensitive variables, `WEBHOOK_ID` and
+`AUTH_TOKEN`. After we update the plugin, we can set values for these in
+the plugin configuration page. This allows for different values to be used
+across different installations. Marking each entry with `"sensitive": true`
+means the values will be masked in the Admin UI and listed only as `[set]`
+or `[not set]` by `canvas config list`.
 
 Here's how that configuration looks:
 
@@ -204,12 +209,12 @@ With those values set, we can use them in our code:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     """
     When a task is created, hit a webhook
     """
@@ -257,12 +262,12 @@ Here is a short example that listens for two different events:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.utils import Http
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     """
     When a task is created or updated, hit a webhook
     """

@@ -118,6 +118,8 @@ appointment = Appointment.objects.filter(
 |-------------|-----------------------------|
 | id          | UUID                        |
 | dbid        | Integer                     |
+| created     | DateTime                    |
+| modified    | DateTime                    |
 | appointment | [Appointment](#appointment) |
 | key         | String                      |
 | value       | String                      |

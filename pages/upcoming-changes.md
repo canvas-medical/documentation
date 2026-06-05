@@ -26,51 +26,51 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
-      <td>UI & FHIR API: Patient Contact Relationship</td>
+      <td>FHIR API: Remove Practitioner birth sex extension — phase 1</td>
       <td style="color: red;">Breaking Change</td>
       <td>
-        On the release date, the following will be updated: <code>Prefer: note-append</code> header.
-        <ul>
-          <li>UI: Relationship field is being removed from contacts section of patient profile page</li>
-          <li>Data migration: Data in Relationship field will be migrated to / appended to the Comments field</li>
-          <li>FHIR Patient
-            <ul>
-              <li>Support will be discontinued for free text <code>contact[].relationship[].text</code> field; Relationship will now be represented by expanded use of contact categories</li>
-              <li>Support will be discontinued for <strong>emergency contact</strong> and <strong>authorized for release of information</strong> extensions</li>
-            </ul>
-          </li>
-        </ul>
+        We recently added support for an extension to the FHIR Practitioner resource that enables writing a practitioner's birth sex (extension URL http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex). After doing so, we discovered that this feature is not compliant with USCDI v3.<br><br>
+        On the release date, we are going to remove support for this extension. Read and search endpoints will no longer return this data. If the extension is present in a resource sent to a create or update endpoint, the extension will be ignored.<br><br>
+        Instead, when a request is sent to create a practitioner, the birth sex value in the database will be set to <code>unknown</code>.<br><br>
+        <strong>To avoid disruption, act before the release date and change your client code to stop consuming birth sex from FHIR Practitioner read and search responses.</strong>
       </td>
-      <td>09/30/25</td>
+      <td>02/06/26</td>
       <td></td>
     </tr>
     <tr>
-      <td>FHIR API: Coverage member identifier moving from subscriberId attribute to identifier attribute</td>
+      <td>FHIR API: Remove Practitioner birth sex extension — phase 2</td>
       <td style="color: red;">Breaking Change</td>
       <td>
-        On the release date, several corrections will be made to the FHIR Coverage resource to comply with USCDI v3 requirements.<br><br>
-        The meaning of the <code>subscriberId</code> attribute in the resource is changing, resulting in the following updates:<br>
-        <ul>
-          <li>Insurance member ID will no longer be provided in the <code>subscriberId</code> attribute. The member ID will now be presented in the <code>identifier</code> attribute instead, and the <code>subscriberId</code> attribute will now represent the identifier for the subscriber, not the member. This will apply for create, read, update, and search endpoints.</li>
-          <li>The <code>subscriberid</code> will represent a new optional field within Canvas.</li>
-          <li>The <code>subscriberid</code> search parameter will no longer search member IDs; it will now instead search subscriber IDs. The new <code>identifier</code> search parameter will now search member IDs.</li>
-        </ul>
-        Additionally, we will be making several corrections to code systems in Coverage resources that are returned by read/search endpoints, and consumed by create/update endpoints:
-        <ul>
-          <li><code>http://hl7.org/fhir/ValueSet/coverage-type</code> will be changing to either <code>http://terminology.hl7.org/CodeSystem/coverage-selfpay</code> (for code value <code>pay</code>) or <code>http://terminology.hl7.org/CodeSystem/v3-ActCode</code> (for all other code values).</li>
-          <li><code>http://hl7.org/fhir/ValueSet/subscriber-relationship</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/subscriber-relationship</code></li>
-          <li><code>http://hl7.org/fhir/ValueSet/coverage-class</code> will be changing to <code>http://terminology.hl7.org/CodeSystem/coverage-class</code></li>
-        </ul>
-        To facilitate these changes, the following changes have already been made to FHIR Coverage resource and endpoints:
-        <ul>
-          <li>The insurance member ID is being populated into and consumed from the <code>identifier</code> attribute.</li>
-          <li>Member IDs can be searched using the new <code>identifier</code> search parameter.</li>
-          <li>The correct codings listed above have been added to responses from read/search endpoints, and are being consumed by create/update endpoints. On the release date, the incorrect codings will be removed.</li>
-        </ul>
-        Examples and documentation for the <code>identifier</code> field and the new code system values are available in the <a href="/api/coverage/">FHIR Coverage API documentation</a>.<br><br>
-        <strong>API client code must be updated by the release date to avoid disruption.</strong>
+        On the release date, requests sent to the FHIR Practitioner create and update endpoints that contain the birth sex extension will receive an error response.<br><br>
+        <strong>To avoid disruption, act before the release date and change your client code to stop sending the birth sex extension in FHIR Practitioner create and update requests.</strong>
       </td>
-      <td>10/21/25</td>
+      <td>02/16/26</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>FHIR API: QuestionnaireResponse questionnaire attribute changing from reference string to absolute URL</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>
+        On the release date, Canvas will change the way the QuestionnaireResponse
+        <code>questionnaire</code> attribute is presented. We are making this change to meet USCDI
+        v3 requirements.<br><br>
+        The <code>questionnaire</code> attribute is currently presented as a reference string, e.g.
+        <code>Questionnaire/b357ddc9-c6fc-4a99-a79b-1d0b933afd7a</code>. USCDI v3 requires that this
+        attribute be presented as a full URL, e.g. <code>https://fumage-CUSTOMER-ID.canvasmedical.com/Questionnaire/b357ddc9-c6fc-4a99-a79b-1d0b933afd7a</code><br><br>
+        This will affect all QuestionnaireResponse endpoints.<br><br>
+        <strong>What you need to do to avoid disruption:</strong><br><br>
+        The create and update endpoints currently accept either a reference string or an absolute
+        URL for the <code>questionnaire</code> attribute. Client code needs to be adjusted to start
+        sending the absolute URL of the Questionnaire for this attribute in request bodies. Use the
+        example above as a reference, and be sure to replace the customer ID in the example so that
+        the base URL matches what you normally use for FHIR requests.<br><br>        
+        Read and search endpoints will start returning the absolute URL for this attribute on the
+        release date. Client code needs to be adjusted so that it can accept and handle either a
+        reference string or an absolute URL for this attribute in response bodies.<br><br>
+        <strong>Making these two changes before the release date will ensure that your use of the
+        QuestionnaireResponse endpoints will be unaffected by this change.</strong> 
+      </td>
+      <td>02/02/26</td>
       <td></td>
     </tr>
     <tr>

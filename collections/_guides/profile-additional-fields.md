@@ -61,7 +61,7 @@ from canvas_sdk.handlers import BaseHandler
 
 
 # Inherit from BaseHandler to properly get registered for events
-class Protocol(BaseHandler):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_METADATA__GET_ADDITIONAL_FIELDS)
 
     def compute(self) -> list[Effect]:

@@ -5,6 +5,7 @@ guide_for:
 - /sdk/events/
 - /sdk/effects/
 - /sdk/protocols/
+- /sdk/handlers/
 ---
 In a typical visit note, it's common for clinicians to make 20, 30, even 50 or more selections from structured terminologies with commands like Diagnose, Prescribe, Family History, and many more. You can help clinicians make faster and more accurate selections with Canvas plugins. Write simple plugin code to apply custom filtering, sorting, and search result annotations in real time with near zero latency.
 
@@ -46,10 +47,10 @@ import json
 
 from canvas_sdk.events import EventType
 from canvas_sdk.effects import Effect, EffectType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
@@ -95,17 +96,17 @@ This code can be broken down into the following sections:
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT__MEDICATION__POST_SEARCH)
 
     def compute(self):
         results = self.context.get("results")
 ```
 
-The class inherits from `BaseProtocol`, which clues the plugin-runner into
+The class inherits from `BaseHandler`, which clues the plugin-runner into
 registering your code as interested in the event or events listed in the
 `RESPONDS_TO` class constant. We only specify one event here,
 `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, but you could make this value
@@ -186,6 +187,27 @@ The dropdown of options presented to the user now reflects our modifications!
 The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
 
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
+
+## Accessing User Context
+
+All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+
+You can access the user's staff key from the context:
+
+```python
+def compute(self):
+    user_context = self.context.get("user", {})
+    staff_key = user_context.get("staff")
+
+    # Use the staff key to customize search results
+    # based on the user's role, preferences, or permissions
+```
+
+This can be useful for customizing search results based on:
+- User-specific preferences or settings
+- Role-based filtering (e.g., showing different prescriber options based on the user's specialty)
+- Permission-based access control
+- User's organization or practice location
 
 ## Watch Me Build It
 

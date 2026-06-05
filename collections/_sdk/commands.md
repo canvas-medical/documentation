@@ -19,6 +19,8 @@ All commands share the following init kwarg parameters:
 
 All parameters can be set upon initialization, and also updated on the class instance.
 
+The **Required to** column (depending on the command's terminal action) in each command's parameter table below indicates whether a field must be set in order for the server to accept that terminal action. It does **not** mean the field is required to instantiate the class or to call `.originate()` or `.edit()`. You can create a command with every other field empty and the command appears in the note as fresh command, mirroring how a clinician picks a command from the menu in the UI and leaves it unfilled until they're ready to finalize it.
+
 ### Methods
 
 All commands have the following methods:
@@ -26,6 +28,41 @@ All commands have the following methods:
 #### originate
 
 Returns an Effect that originates a new command in the note body.
+
+**Parameters:**
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
+
+**See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
+
+**Examples**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
+    new_plan.narrative = 'newer'
+
+    return [new_plan.originate()]
+```
+
+To originate and commit in a single effect:
+
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
+```
 
 #### edit
 
@@ -36,19 +73,80 @@ Returns an Effect that edits an existing command with the values set on the comm
 - **No Changes:** Calling `edit()` without making any changes will result in a no-op; the command remains unchanged.
 - **Invalid Values:** If you attempt to set an invalid value, you should receive a validation error.
 
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
+
+    return [existing_plan.edit()]
+```
+
 #### delete
 
 Returns an Effect that deletes an existing, non-committed command from the note body.
 
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.delete()]
+```
+
 #### commit
 
 Returns an Effect that commits an existing, non-committed command to the note body.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.commit()]
+```
+
+#### review
+
+Returns an Effect that sets a command in review.
+
+**Limited availability** The `review()` method can only be called on [Prescribe](#prescribe) commands objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.review()]
+```
 
 #### send
 
 Returns an Effect that sends a signed command.
 
 **Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send()]
+```
 
 #### enter_in_error
 
@@ -60,12 +158,65 @@ Returns an effect that enter-in-errors an existing, committed command in the not
 from canvas_sdk.commands import PlanCommand
 
 def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
 
-    existing_plan = PlanCommand(command_uuid='63hdik', narrative='something new')
-    new_plan = PlanCommand(note_uuid='rk786p', narrative='new')
-    new_plan.narrative = 'newer'
+    return [existing_plan.enter_in_error()]
+```
 
-    return [existing_plan.edit(), new_plan.originate()]
+#### delegate
+
+Returns an Effect that delegates an existing, staged command by creating a task.
+
+**Limited availability** The `delegate()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferCommand
+
+def compute():
+    existing_refer = ReferCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_refer.delegate()]
+```
+
+#### sign
+
+Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
+
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingOrderCommand
+
+def compute():
+    existing_imaging_order = ImagingOrderCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_imaging_order.sign()]
+```
+
+#### upsert_metadata
+
+Returns an effect that creates or updates a metadata key-value pair on a command. If metadata with the given key already exists on the command, its value will be updated. Otherwise, a new metadata record will be created.
+
+The `command_uuid` field must be set on the command object before calling `upsert_metadata`.
+
+| Parameter | Type     | Description                                      |
+|-----------|----------|--------------------------------------------------|
+| `key`     | _string_ | The metadata key (max 256 characters).           |
+| `value`   | _string_ | The metadata value.                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.upsert_metadata(key="priority", value="high")]
 ```
 
 ## Command Constants
@@ -76,10 +227,11 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 
 `ClinicalQuantity` represents detailed information about the form or unit of medication, particularly for prescription-related commands.
 
-| Field Name                      | Type     | Description                                           |
-|---------------------------------|----------|-------------------------------------------------------|
-| `representative_ndc`            | _string_ | National Drug Code (NDC) representing the medication. |
-| `ncpdp_quantity_qualifier_code` | _string_ | NCPDP code indicating the quantity qualifier.         |
+| Field Name                      | Type     | Required | Description                                           |
+|---------------------------------|----------|----------|-------------------------------------------------------|
+| `representative_ndc`            | _string_ | `true`   | National Drug Code (NDC) representing the medication. |
+| `ncpdp_quantity_qualifier_code` | _string_ | `true`   | NCPDP code indicating the quantity qualifier.         |
+| `description`                   | _string_ | `false`  | The clinical quantity description to dispense (e.g. `"0.5 mL vial"`). Use this field to narrow the selection to the correct clinical quantity when multiple options are available for the same NDC and qualifier code. If omitted, the first available clinical quantity is used. |
 
 **Usage Example**:
 
@@ -87,10 +239,17 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 from canvas_sdk.commands import PrescribeCommand
 from canvas_sdk.commands.constants import ClinicalQuantity
 
-# Using ClinicalQuantity in a prescription
+# Without description — selects the first available clinical quantity
 clinical_quantity = ClinicalQuantity(
     representative_ndc="12843016128",
     ncpdp_quantity_qualifier_code="C48542"
+)
+
+# With description — narrows to the correct clinical quantity when multiple options share the same NDC and qualifier code
+clinical_quantity = ClinicalQuantity(
+    representative_ndc="00002024304",
+    ncpdp_quantity_qualifier_code="C28254",
+    description="0.5 mL vial"
 )
 
 prescribe = PrescribeCommand(
@@ -296,11 +455,27 @@ class Handler(BaseHandler):
 
  ```
 
-## Chaining Methods with a User-set UUID
+## Originating and Committing Together
 
-A common use case is to originate and also commit a command in a single plugin action. However, attempting to commit a command without a `command_uuid` will throw an error. Because the `originate` method executes asynchronously, there is not currently a clean way to get the `command_uuid` back from the originate action and use it for the commit action in the same operation.
+The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
 
-The solution is to set the UUID in the plugin -- using a valid Version 4 UUID -- and pass it through to both the originate and commit actions. This is accomplished by manually setting the `command_uuid` before calling the methods:
+```python
+from canvas_sdk.commands import DiagnoseCommand
+
+def compute():
+    diagnose_command = DiagnoseCommand(
+        note_uuid='550e8400-e29b-41d4-a716-446655440000',
+        icd10_code='E11.9'
+    )
+
+    return [diagnose_command.originate(commit=True)]
+```
+
+This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
+
+### Chaining Methods with a User-set UUID
+
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
 
 ```python
 from uuid import uuid4
@@ -327,12 +502,33 @@ This pattern ensures that both the originate and commit operations use the same 
 
 Command-specific details for each command class can be found below.
 
+## Custom Commands
+
+For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
+
+Custom commands are different from standard commands:
+- They allow you to display read-only HTML content in the patient chart
+- They must be configured in your plugin's manifest before use
+- They support both display and print versions of content
+- They are designed for displaying formatted data, not for capturing user input
+
+The following effects are supported on custom commands:
+
+| Method | Description |
+|:-------|:------------|
+| `originate()` | Inserts the custom command into a note |
+| `enter_in_error()` | Marks a committed custom command as entered in error |
+
+Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
+
+---
+
 ## AdjustPrescription
 
 **Command-specific parameters**:
 
-| Name           | Type     | Required | Description                          |
-|:---------------|:---------|:---------|:-------------------------------------|
+| Name           | Type     | Required to review / send | Description                          |
+|:---------------|:---------|:--------------------------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
 Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
@@ -354,7 +550,7 @@ AdjustPrescriptionCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -367,8 +563,8 @@ AdjustPrescriptionCommand(
 
 **Command-specific parameters**:
 
-| Name               | Type            | Required | Description                                                                      |
-|:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
+| Name               | Type            | Required to commit | Description                                                                      |
+|:-------------------|:----------------|:-------------------|:---------------------------------------------------------------------------------|
 | `allergy`          | _Allergen_      | `false`  | Represents the allergen. See details in the Allergen type below.                 |
 | `severity`         | _Severity enum_ | `false`  | The severity of the allergic reaction. Must be one of `AllergyCommand.Severity`. |
 | `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
@@ -419,8 +615,8 @@ allergy = AllergyCommand(
 
 **Command-specific parameters**:
 
-| Name           | Type          | Required | Description                                                                |
-|:---------------|:--------------|:---------|:---------------------------------------------------------------------------|
+| Name           | Type          | Required to commit | Description                                                                |
+|:---------------|:--------------|:-------------------|:---------------------------------------------------------------------------|
 | `condition_id` | _string_      | `true`   | The externally exposable id of the condition being assessed.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of `AssessCommand.Status` |
@@ -452,8 +648,8 @@ assess = AssessCommand(
 
 **Command-specific parameters**:
 
-| Name            | Type     | Required | Description                                                        |
-|:----------------|:---------|:---------|:-------------------------------------------------------------------|
+| Name            | Type     | Required to commit | Description                                                        |
+|:----------------|:---------|:-------------------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | Externally exposable id of the patient's medication being changed. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
@@ -475,8 +671,8 @@ change_medication = ChangeMedicationCommand(
 
 **Command-specific parameters**:
 
-| Name                 | Type                     | Required | Description                                                                               |
-|:---------------------|:-------------------------|:---------|:------------------------------------------------------------------------------------------|
+| Name                 | Type                     | Required to commit | Description                                                                               |
+|:---------------------|:-------------------------|:-------------------|:------------------------------------------------------------------------------------------|
 | `goal_id`            | _int_                    | `true`   | The externally exposable ID of the goal being closed.                                     |
 | `achievement_status` | _AchievementStatus enum_ | `false`  | The final achievement status of the goal. Must be one of `GoalCommand.AchievementStatus`. |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
@@ -494,14 +690,12 @@ close_goal = CloseGoalCommand(
 )
 ```
 
----
-
 ## Diagnose
 
 **Command-specific parameters**:
 
-| Name                        | Type       | Required | Description                                                |
-|:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
+| Name                        | Type       | Required to commit | Description                                                |
+|:----------------------------|:-----------|:-------------------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
@@ -528,8 +722,8 @@ diagnose = DiagnoseCommand(
 
 **Command-specific parameters**:
 
-| Name             | Type                 | Required | Description                                           |
-|:-----------------|:---------------------|:---------|:------------------------------------------------------|
+| Name             | Type                 | Required to commit | Description                                           |
+|:-----------------|:---------------------|:-------------------|:------------------------------------------------------|
 | `family_history` | _string_ or _Coding_ | `true`   | A description of the family history being documented. |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle).  |
 | `note`           | _string_             | `false`  | Additional notes or context about the family history. |
@@ -537,11 +731,13 @@ diagnose = DiagnoseCommand(
 **Coding Support**:
 
 The `family_history` parameter accepts either:
-- **String**: Searches for matching family history condition
+- **String**: Searches for matching family history conditions and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
   - Optional field: `display`
+
+The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
 
 **Example**:
 
@@ -549,7 +745,8 @@ The `family_history` parameter accepts either:
 from canvas_sdk.commands import FamilyHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 
-# Using a string (searches for matching conditions)
+
+# Using a string (searches and takes the first result — may be ambiguous)
 family_history = FamilyHistoryCommand(
     note_uuid="rk786p",
     family_history="Diabetes Type 2",
@@ -579,15 +776,14 @@ family_history_unstructured = FamilyHistoryCommand(
     relative="Father"
 )
 ```
-
 ---
 
 ## FollowUp
 
 **Command-specific parameters**:
 
-| Name             | Type                     | Required                  | Description                                                                                                                                                                                                                |
-|:-----------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name             | Type                     | Required to commit                  | Description                                                                                                                                                                                                                |
+|:-----------------|:-------------------------|:------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
 | `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment.                                                                                                                                                                                           |
@@ -634,8 +830,8 @@ unstructured = FollowUpCommand(
 
 **Command-specific parameters**:
 
-| Name                 | Type                     | Required | Description                                               |
-|:---------------------|:-------------------------|:---------|:----------------------------------------------------------|
+| Name                 | Type                     | Required to commit | Description                                               |
+|:---------------------|:-------------------------|:-------------------|:----------------------------------------------------------|
 | `goal_statement`     | _string_                 | `true`   | Description of the goal.                                  |
 | `start_date`         | _datetime_               | `false`  | The date the goal begins.                                 |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
@@ -685,8 +881,8 @@ goal = GoalCommand(
 
 **Command-specific parameters**:
 
-| Name        | Type     | Required | Description                                                |
-|:------------|:---------|:---------|:-----------------------------------------------------------|
+| Name        | Type     | Required to commit | Description                                                |
+|:------------|:---------|:-------------------|:-----------------------------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's history of present illness. |
 
 **Example**:
@@ -707,8 +903,8 @@ hpi = HistoryOfPresentIllnessCommand(
 
 **Command-specific parameters**:
 
-| Name                    | Type              | Required | Description                                                                   |
-|:------------------------|:------------------|:---------|:------------------------------------------------------------------------------|
+| Name                    | Type              | Required to delegate / sign | Description                                                                   |
+|:------------------------|:------------------|:----------------------------|:------------------------------------------------------------------------------|
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order.                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
 | `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
@@ -767,12 +963,59 @@ imaging_order = ImagingOrderCommand(
 
 ---
 
+## ImagingReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required to commit | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of imaging report IDs to review.                                                                          |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.       |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ImagingReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import ImagingReport, Patient
+
+patient = Patient.objects.get(id="patient-id")
+# Get imaging reports to review
+imaging_reports = ImagingReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in imaging_reports]
+
+imaging_review = ImagingReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your imaging results show no abnormalities.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="All clear, no follow-up needed."
+)
+```
+
+---
+
 ## ImmunizationStatement
 
 **Command-specific parameters**:
 
-| Name               | Type                 | Required | Description                                                                                                         |
-|--------------------|----------------------|----------|---------------------------------------------------------------------------------------------------------------------|
+| Name               | Type                 | Required to commit | Description                                                                                                         |
+|--------------------|----------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
 | `cpt_code`         | _string_ or _Coding_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. |
 | `cvx_code`         | _string_ or _Coding_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation.   |
 | `unstructured`     | _Coding_             | `false`* | Free-text immunization description.                                                                                 |
@@ -841,8 +1084,8 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 
 **Command-specific parameters**:
 
-| Name      | Type       | Required | Description                                                           |
-|-----------|------------|----------|-----------------------------------------------------------------------|
+| Name      | Type       | Required to commit | Description                                                           |
+|-----------|------------|--------------------|-----------------------------------------------------------------------|
 | `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
 
@@ -885,8 +1128,8 @@ Built-in validations ensure that:
 
 **Command-specific parameters**:
 
-| Name                    | Type           | Required | Description                                                                                                                                                      |
-|-------------------------|----------------|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name                    | Type           | Required to send | Description                                                                                                                                                      |
+|-------------------------|----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `lab_partner`           | _string_       | `true`   | The lab partner processing the order. Accepts either the lab partner’s name or its unique identifier (ID).                                                       |
 | `tests_order_codes`     | _list[string]_ | `true`   | A list of codes or IDs for the tests being ordered. The system verifies that each provided value corresponds to an available test for the specified lab partner. |
 | `ordering_provider_key` | _string_       | `false`  | The key for the provider ordering the tests.                                                                                                                     |
@@ -945,17 +1188,66 @@ LabOrderCommand(
 
 ---
 
+## LabReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required to commit | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of lab report IDs to review.                                                                              |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.           |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import LabReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import LabReport, Patient
+
+patient = Patient.objects.get(id="patient-id")
+# Get lab reports to review
+lab_reports = LabReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in lab_reports]
+
+lab_review = LabReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your lab results are within normal range.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="All values normal, no follow-up needed."
+)
+```
+
+---
+
 ## MedicalHistory
 
 **Command-specific parameters**:
 
-| Name                     | Type      | Required | Description                                                |
-|--------------------------|-----------|----------|------------------------------------------------------------|
-| `past_medical_history`   | _string_  | `true`   | A description of the past medical condition or history.    |
+| Name                     | Type      | Required to commit | Description                                                |
+|--------------------------|-----------|--------------------|------------------------------------------------------------|
+| `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). |
 | `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
 | `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Important: Use ICD-10 codes for accurate matching.** The `past_medical_history` field searches for matching conditions and selects the first result. When a text description is provided, similar conditions may match first. To guarantee the correct condition, pass the ICD-10 code directly (e.g., `"I1010"`).
 
 **Example**:
 
@@ -963,6 +1255,15 @@ LabOrderCommand(
 from canvas_sdk.commands import MedicalHistoryCommand
 from datetime import date
 
+# Preferred: use the ICD-10 code for exact matching
+MedicalHistoryCommand(
+    past_medical_history="I1010",  # Resistant Hypertension
+    approximate_start_date=date(2015, 1, 1),
+    show_on_condition_list=True,
+    comments="Controlled with medication."
+)
+
+# Also works but may match a different condition if the description is ambiguous
 MedicalHistoryCommand(
     past_medical_history="Resistant Hypertension",
     approximate_start_date=date(2015, 1, 1),
@@ -977,8 +1278,8 @@ MedicalHistoryCommand(
 
 **Command-specific parameters**:
 
-| Name       | Type                 | Required | Description                                            |
-|:-----------|:---------------------|:---------|:-------------------------------------------------------|
+| Name       | Type                 | Required to commit | Description                                            |
+|:-----------|:---------------------|:-------------------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _Coding_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
 | `sig`      | _string_             | `false`  | Administration details of the medication.              |
 
@@ -1031,8 +1332,8 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 **Command-specific parameters**:
 
-| Name                    | Type                 | Required | Description                                        |
-|-------------------------|----------------------|----------|----------------------------------------------------|
+| Name                    | Type                 | Required to commit | Description                                        |
+|-------------------------|----------------------|--------------------|----------------------------------------------------|
 | `past_surgical_history` | _string_ or _Coding_ | `true`   | A description of the past surgical procedure.      |
 | `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
 | `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
@@ -1040,7 +1341,7 @@ medication_statement_unstructured = MedicationStatementCommand(
 **Coding Support**:
 
 The `past_surgical_history` parameter accepts either:
-- **String**: Searches for matching surgical procedures
+- **String**: Searches for matching surgical procedures and selects the first result.
 - **Coding object**: Allows structured or unstructured coding
   - Supported systems: `SNOMED`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
@@ -1053,7 +1354,7 @@ from canvas_sdk.commands import PastSurgicalHistoryCommand
 from canvas_sdk.commands.constants import CodeSystems, Coding
 from datetime import date
 
-# Using a string (searches for matching procedures)
+# Using a string (searches and takes the first result)
 PastSurgicalHistoryCommand(
     past_surgical_history="Appendectomy",
     approximate_date=date(2008, 6, 15),
@@ -1087,8 +1388,8 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 
 **Command-specific parameters**:
 
-| Name       | Type                 | Required | Description                                          |
-|------------|----------------------|----------|------------------------------------------------------|
+| Name       | Type                 | Required to commit | Description                                          |
+|------------|----------------------|--------------------|------------------------------------------------------|
 | `cpt_code` | _string_ or _Coding_ | `true`   | The CPT code of the procedure or action performed.   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
 
@@ -1139,8 +1440,8 @@ perform_unstructured = PerformCommand(
 
 **Command-specific parameters**:
 
-| Name        | Type     | Required | Description                          |
-|:------------|:---------|:---------|:-------------------------------------|
+| Name        | Type     | Required to commit | Description                          |
+|:------------|:---------|:-------------------|:-------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's plan. |
 
 **Example**:
@@ -1166,8 +1467,8 @@ plan = PlanCommand(
 
 **Command-specific parameters**:
 
-| Name                        | Type                          | Required | Description                                                         |
-|-----------------------------|-------------------------------|----------|---------------------------------------------------------------------|
+| Name                        | Type                          | Required to review / send | Description                                                         |
+|-----------------------------|-------------------------------|---------------------------|---------------------------------------------------------------------|
 | `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
 | `compound_medication_id`    | _string_                      | `false`* | The ID of an existing compound medication to prescribe.             |
 | `compound_medication_data`  | `CompoundMedicationData`      | `false`* | Data for creating a new compound medication inline.                 |
@@ -1239,7 +1540,7 @@ prescription = PrescribeCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1247,6 +1548,8 @@ prescription = PrescribeCommand(
 ```
 
 ***Option 2: Existing Compound Medication (by ID)***
+
+Note: `type_to_dispense` should not be provided for compound medications as this field will auto-populate in the command when it is inserted in the note
 ```python
 from canvas_sdk.commands.constants import ClinicalQuantity
 from canvas_sdk.commands import PrescribeCommand
@@ -1265,13 +1568,9 @@ prescription = PrescribeCommand(
     sig="Take one tablet daily after meals",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1299,13 +1598,9 @@ prescription = PrescribeCommand(
     sig="Apply thin layer to affected area twice daily",
     days_supply=30,
     quantity_to_dispense=30,
-    type_to_dispense=ClinicalQuantity(
-        representative_ndc="12843016128",
-        ncpdp_quantity_qualifier_code="C48542"
-    ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1330,10 +1625,9 @@ prescription = PrescribeCommand(
 
 **Command-specific parameters**:
 
-| Name               | Type     | Required | Description                                                                     |
-|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| Name               | Type     | Required to commit | Description                                                                     |
+|:-------------------|:---------|:-------------------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 ### Toggle Questions Feature
 
@@ -1477,10 +1771,9 @@ In addition to the basic parameters, this command supports a dynamic response in
 
 **Command-specific parameters**:
 
-| Name               | Type     | Required | Description                                                                     |
-|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| Name               | Type     | Required to commit | Description                                                                     |
+|:-------------------|:---------|:-------------------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -1489,8 +1782,7 @@ from canvas_sdk.commands import QuestionnaireCommand
 
 questionnaire = QuestionnaireCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -1506,7 +1798,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Note, Questionnaire
 
-class Protocol(BaseHandler):
+class MyHandler(BaseHandler):
 
     def compute(self) -> list[Effect]:
       q = Questionnaire.objects.filter(name="Exercise").first()
@@ -1540,8 +1832,7 @@ class Protocol(BaseHandler):
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit.
-      return [command.originate(), command.edit()]
+      return [command.originate()]
 ```
 
 ### Explanation
@@ -1559,13 +1850,8 @@ class Protocol(BaseHandler):
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
 
 
- - **Creating and Editing:**
-   When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
-
- - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
- - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
-   - An `.originate()` to insert the command and select the questionnaire
-   - An `.edit()` to populate the responses
+ - If you are looking to insert a committed questionnaire command, you'll need to return two effects:
+   - An `.originate()` to insert the command and select the questionnaire with the responses
    - A `.commit()` to commit the command
 
 ---
@@ -1610,8 +1896,8 @@ unstructured_rfv = ReasonForVisitCommand(
 
 **Command-specific parameters**:
 
-| Name                  | Type                    | Required | Description                                                                                  |
-|:----------------------|:------------------------|:---------|:---------------------------------------------------------------------------------------------|
+| Name                  | Type                    | Required to delegate / sign | Description                                                                                  |
+|:----------------------|:------------------------|:----------------------------|:---------------------------------------------------------------------------------------------|
 | `service_provider`    | _[ServiceProvider](#serviceprovider)_       | `true`   | The service provider associated with the referral command.                                   |
 | `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
 | `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
@@ -1678,6 +1964,53 @@ refer_command = ReferCommand(
 
 ---
 
+## ReferralReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required to commit | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of referral report IDs to review.                                                                         |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReferralReviewCommand.ReportReviewCommunicationMethod`.      |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferralReviewCommand
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+from canvas_sdk.v1.data import Patient, ReferralReport
+
+patient = Patient.objects.get(id="patient-id")
+# Get referral reports to review
+referral_reports = ReferralReport.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(report.id) for report in referral_reports]
+
+referral_review = ReferralReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your referral has been reviewed and approved.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="Referral approved, patient notified."
+)
+```
+
+---
+
 ## Refill
 
 **Command-specific parameters**:
@@ -1702,7 +2035,7 @@ RefillCommand(
     ),
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
-    pharmacy="Main Street Pharmacy",
+    pharmacy="pharmacy_ncpdp_id",
     prescriber_id="provider_123",
     supervising_provider_id="provider_456",
     note_to_pharmacist="Please verify patient's insurance before processing."
@@ -1715,8 +2048,8 @@ RefillCommand(
 
 **Command-specific parameters**:
 
-| Name         | Type     | Required | Description                                      |
-|--------------|----------|----------|--------------------------------------------------|
+| Name         | Type     | Required to commit | Description                                      |
+|--------------|----------|--------------------|--------------------------------------------------|
 | `allergy_id` | _string_ | `true`   | The external ID of the allergy to remove.        |
 | `narrative`  | _string_ | `false`  | Additional context or narrative for the removal. |
 
@@ -1737,8 +2070,8 @@ RemoveAllergyCommand(
 
 **Command-specific parameters**:
 
-| Name                     | Type      | Required | Description                                                                |
-|--------------------------|-----------|----------|----------------------------------------------------------------------------|
+| Name                     | Type      | Required to commit | Description                                                                |
+|--------------------------|-----------|--------------------|----------------------------------------------------------------------------|
 | `condition_id`           | _string_  | `true`   | The externally exposable id of the condition being resolved.               |
 | `show_in_condition_list` | _boolean_ | `false`  | Determines whether the condition remains visible in patient chart summary. |
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
@@ -1765,10 +2098,9 @@ ResolveConditionCommand(
 
 **Command-specific parameters**:
 
-| Name               | Type     | Required | Description                                                                     |
-|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| Name               | Type     | Required to commit | Description                                                                     |
+|:-------------------|:---------|:-------------------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 
 ### Toggle Questions Feature
@@ -1838,8 +2170,8 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='existing-exam-uuid')
 
 **Command-specific parameters**:
 
-| Name            | Type     | Required | Description                                                        |
-|:----------------|:---------|:---------|:-------------------------------------------------------------------|
+| Name            | Type     | Required to commit | Description                                                        |
+|:----------------|:---------|:-------------------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | Externally exposable id of the patient's medication being stopped. |
 | `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
 
@@ -1861,10 +2193,9 @@ stop_medication = StopMedicationCommand(
 
 **Command-specific parameters**:
 
-| Name               | Type     | Required | Description                                                                     |
-|:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
+| Name               | Type     | Required to commit | Description                                                                     |
+|:-------------------|:---------|:-------------------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The externally exposable id of the questionnaire being answered by the patient. |
-| `result`           | _string_ | `false`  | A summary of the result of the patient's answers.                               |
 
 **Example**:
 
@@ -1873,8 +2204,7 @@ from canvas_sdk.commands import StructuredAssessmentCommand
 
 questionnaire = StructuredAssessmentCommand(
     note_uuid='rk786p',
-    questionnaire_id='g73hd9',
-    result='The patient is feeling average today.'
+    questionnaire_id='g73hd9'
 )
 ```
 
@@ -1886,8 +2216,8 @@ questionnaire = StructuredAssessmentCommand(
 
 **Command-specific parameters**:
 
-| Name                | Type           | Required | Description                                         |
-|---------------------|----------------|----------|-----------------------------------------------------|
+| Name                | Type           | Required to commit | Description                                         |
+|---------------------|----------------|--------------------|-----------------------------------------------------|
 | `title`             | _string_       | `true`   | The title or summary of the task.                   |
 | `assign_to`         | _TaskAssigner_ | `true`   | Specifies the assignee (role, team, or individual). |
 | `due_date`          | _date_         | `false`  | Due date for completing the task.                   |
@@ -1929,14 +2259,62 @@ TaskCommand(
 )
 ```
 
+
+---
+
+## UncategorizedDocumentReview
+
+**Command-specific parameters**:
+
+| Name                     | Type                                     | Required to commit | Description                                                                                                    |
+|--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
+| `report_ids`             | _list[string]_                           | `true`   | List of uncategorized document IDs to review.                                                                  |
+| `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
+| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.                            |
+| `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
+| `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
+
+**Enums and Types**:
+
+**`ReportReviewCommunicationMethod`**
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import UncategorizedDocumentReviewCommand
+from canvas_sdk.v1.data import UncategorizedClinicalDocument, Patient
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+
+patient = Patient.objects.last()
+# Get uncategorized documents to review
+uncategorized_documents = UncategorizedClinicalDocument.objects.filter(patient=patient, review__isnull=True)
+report_ids = [str(doc.id) for doc in uncategorized_documents]
+
+uncategorized_review = UncategorizedDocumentReviewCommand(
+    note_uuid="a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+    report_ids=report_ids,
+    message_to_patient="Your document has been reviewed.",
+    communication_method=ReportReviewCommunicationMethod.DELEGATED_CALL_CAN_LEAVE_MESSAGE,
+    comment="Document reviewed, no further action needed."
+)
+```
+
 ---
 
 ## UpdateDiagnosis
 
 **Command-specific parameters**:
 
-| Name                 | Type     | Required | Description                                                       |
-|----------------------|----------|----------|-------------------------------------------------------------------|
+| Name                 | Type     | Required to commit | Description                                                       |
+|----------------------|----------|--------------------|-------------------------------------------------------------------|
 | `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update.              |
 | `new_condition_code` | _string_ | `true`   | The new condition ICD-10 code to replace the existing diagnosis.  |
 | `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis. |
@@ -1963,8 +2341,8 @@ UpdateDiagnosisCommand(
 
 **Command-specific parameters**:
 
-| Name                 | Type                     | Required | Description                                               |
-|:---------------------|:-------------------------|:---------|:----------------------------------------------------------|
+| Name                 | Type                     | Required to commit | Description                                               |
+|:---------------------|:-------------------------|:-------------------|:----------------------------------------------------------|
 | `goal_id`            | _string_                 | `true`   | Externally exposable id of the goal being updated.        |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
 | `achievement_status` | _AchievementStatus enum_ | `false`  | The current achievement status of the goal.               |
@@ -2011,13 +2389,13 @@ update_goal = UpdateGoalCommand(
 
 **Command-specific parameters**:
 
-| Name                               | Type      | Required | Description                                      |
-|------------------------------------|-----------|----------|--------------------------------------------------|
+| Name                               | Type      | Required to commit | Description                                      |
+|------------------------------------|-----------|--------------------|--------------------------------------------------|
 | `height`                           | _integer_ | `false`  | Height in inches.                                |
 | `weight_lbs`                       | _integer_ | `false`  | Weight in pounds.                                |
 | `weight_oz`                        | _integer_ | `false`  | Weight in ounces.                                |
 | `waist_circumference`              | _integer_ | `false`  | Waist circumference in inches.                   |
-| `body_temperature`                 | _integer_ | `false`  | Body temperature in Fahrenheit.                  |
+| `body_temperature`                 | _float_   | `false`  | Body temperature in Fahrenheit.                  |
 | `body_temperature_site`            | _enum_    | `false`  | Site of body temperature measurement.            |
 | `blood_pressure_systole`           | _integer_ | `false`  | Systolic blood pressure.                         |
 | `blood_pressure_diastole`          | _integer_ | `false`  | Diastolic blood pressure.                        |

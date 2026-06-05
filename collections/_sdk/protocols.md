@@ -1,45 +1,45 @@
 ---
-title: "Protocols"
+title: "Handlers & Protocols"
 ---
 
-The protocols module lets you define workflows and workflow automations.
+The handlers module lets you define workflows and workflow automations. Handlers respond to [Events](/sdk/events/) and return zero, one, or many [Effects](/sdk/effects/).
 
-Protocols respond to [Events](/sdk/events/) and return zero, one, or many [Effects](/sdk/effects/).
+`ClinicalQualityMeasure` is a specialized handler base class for clinical protocols — see [ClinicalQualityMeasure](#clinicalqualitymeasure) below.
 
 ## Contents
 
-- [BaseProtocol](#baseprotocol)
+- [BaseHandler](#basehandler)
 - [ClinicalQualityMeasure](#clinicalqualitymeasure)
 
-## BaseProtocol
+## BaseHandler
 
-`BaseProtocol` is the abstract base class all protocol implementations inherit from. It extends the handler contract (`BaseHandler`) and provides the lifecycle and surface area plugin authors implement for event-driven protocols.
+`BaseHandler` is the abstract base class all handler implementations inherit from. It provides the lifecycle and surface area plugin authors implement for event-driven handlers.
 
 ### Purpose & lifecycle
 
-- The framework will call `compute()` on the protocol instance when an event should be handled. `compute()` must
+- The framework will call `compute()` on the handler instance when an event should be handled. `compute()` must
   return a list of `Effect` objects that the runtime will apply.
-- Protocols must override the `compute()` method.
+- Handlers must override the `compute()` method.
 
 ### Constructor and attributes
 
-- Your protocol should inherit from `BaseProtocol` and define the following:
+- Your handler should inherit from `BaseHandler` and define the following:
 
-  - `RESPONDS_TO` — The `Event(s)` that trigger the protocol.
+  - `RESPONDS_TO` — The `Event(s)` that trigger the handler.
   - `compute` — The method that handles the Event and returns a list of Effects.
 
-- Instance attributes available to protocol authors:
+- Instance attributes available to handler authors:
   - `self.event` — The `Event` instance.
-  - `self.secrets` — Secrets provided to the protocol (defaults to {}).
+  - `self.secrets` — Secrets provided to the handler (defaults to {}).
 
 ### Example
 
 ```python
-from canvas_sdk.protocols.base import BaseProtocol
+from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.events import EventType
 from canvas_sdk.effects.task import AddTask
 
-class SimpleFollowUpProtocol(BaseProtocol):
+class SimpleFollowUpHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.IMAGING_REPORT_CREATED)
 
     def compute(self):
@@ -162,4 +162,4 @@ When a CQM protocol that returns a single ProtocolCard effect is uploaded to Can
 
 - Timeframe: by default the protocol looks at the 1-year window prior to now. Override `timeframe` if your measure requires a broader or narrower lookback.
 - patient id resolution: `patient_id_from_target()` supports only the event types enumerated by the implementation; verify the event you plan to subscribe to maps to a supported model. When used heavily, this method avoids extra DB queries by caching the patient id on the instance.
-- Event-driven protocols should avoid expensive synchronous DB operations inside their event handler. When possible, emit Effects that are handled asynchronously by the platform.
+- Event-driven handlers should avoid expensive synchronous DB operations inside their event handler. When possible, emit Effects that are handled asynchronously by the platform.

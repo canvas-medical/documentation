@@ -245,23 +245,28 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><ul><li>The committed layout defaults to expanded.</li></ul></td>
     </tr>
     <tr>
+      <td>Visual Exam Finding</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Lab Review</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Imaging Review</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Consult Report Review</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Uncategorized Document Review</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>

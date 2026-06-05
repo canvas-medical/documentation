@@ -103,6 +103,7 @@ tasks = imaging_order.get_task_objects().all()
 | message_to_patient           | String                                                                                            |
 | is_released_to_patient       | Boolean                                                                                           |
 | status                       | [ReviewStatus](/sdk/data-enumeration-types/#reviewstatus)                                         |
+| note                         | [Note](/sdk/data-note/#note)                                                                           |
 | patient                      | [Patient](/sdk/data-patient/#patient)                                                             |
 
 ### ImagingReport

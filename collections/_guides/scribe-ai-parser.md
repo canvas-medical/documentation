@@ -102,12 +102,12 @@ Each section contains specific information that can be parsed. For example:
 ### AI Scribe Plugin Architecture
 Once the content is pasted in, the plugin does the rest. Here's how. 
 
-#### 1. Protocol Class
+#### 1. Handler Class
 
-The `Protocol` class intercepts events and processes the transcript using a parser.
+The `Handler` class intercepts events and processes the transcript using a parser.
 
 ```python
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 
@@ -115,7 +115,7 @@ from canvas_sdk.events import EventType
 class ScribeParser: ...  # explained in section 2 below, "ScribeParser"
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     """A Plugin for interpreting transcripts."""
 
     RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE)
@@ -248,18 +248,18 @@ class CustomParser(TranscriptParser):
         ...
 ```
 
-Replace the parser in the `Protocol` class:
+Replace the parser in the `Handler` class:
 
 ```python
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects import Effect
 
 
 class CustomParser: ... # defined above
 
 
-class Protocol(BaseProtocol):
-    """Protocol using a custom parser."""
+class Handler(BaseHandler):
+    """Handler using a custom parser."""
 
     def compute(self) -> list[Effect]:
         transcript = self.context["fields"]["text"]
