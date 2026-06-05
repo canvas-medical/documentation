@@ -7,12 +7,12 @@ hidden: false
 
 The `CommandValidationErrorEffect` returns structured error messages that are displayed to users in the Canvas UI. It serves two purposes:
 
-- **Validate a command** as it is being entered, surfacing problems before the command is committed (`__POST_VALIDATION` events).
+- **Validate a command** as it is entered in the Canvas UI, surfacing problems before it can be committed (`__POST_VALIDATION` events).
 - **Block a deletion** by returning the effect from a command's `__PRE_DELETE` handler.
 
 In both cases you build a `CommandValidationErrorEffect`, attach one or more error messages, and return it from your handler.
 
-These validations run as part of the **SDK command lifecycle** — not in the browser — so they apply both to commands entered or acted on in the Canvas UI and to commands driven through the SDK [commands module](/sdk/commands/) (command effects). When a check fails, the operation is stopped and the error is surfaced to whoever initiated it.
+Where these errors are enforced differs by event: `__POST_VALIDATION` errors block a commit **only in the Canvas UI**, while `__PRE_DELETE` errors block a deletion through **both** the Canvas UI and the SDK [commands module](/sdk/commands/). Each section below covers the specifics.
 
 ## The effect
 
@@ -118,15 +118,13 @@ class MyHandler(BaseHandler):
         return [effect.apply()]
 ```
 
-When validation errors are returned:
+When validation errors are returned, the Canvas UI shows them to the user — the command's action buttons are disabled and the messages appear as a tooltip — so the command can't be committed there. Multiple errors can be returned at once, and all are displayed.
 
-- they are displayed to the user in the Canvas UI,
-- the command is not committed, and
-- multiple errors can be returned at once, and all are displayed.
+> **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
 
 ## Block a deletion
 
-Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler to block its deletion. The deletion is aborted, the surrounding transaction is rolled back, and the error messages are returned to whatever initiated the delete — the [`delete()`](/sdk/commands/) method in the SDK commands module, or a delete in the Canvas UI. Pre-delete events follow the pattern:
+Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler to block its deletion. Unlike `__POST_VALIDATION`, this works through **both** the Canvas UI and the SDK [commands module](/sdk/commands/): the deletion is aborted, the surrounding transaction is rolled back, and the error messages are returned to whatever initiated the delete — a [`delete()`](/sdk/commands/) call or a delete in the UI. For SDK-initiated deletes, the error is written to `canvas logs`. Pre-delete events follow the pattern:
 
 `{COMMAND_KEY}_COMMAND__PRE_DELETE`
 
