@@ -732,16 +732,14 @@ example_plugins:
     identifier: charting
   - title: "Patient Portal Customization"
     identifier: portal_customization
+  - title: "Integrations"
+    identifier: integrations
 
 charting:
   - title: "Abnormal Lab Task Notification"
     url: /sdk/example-abnormal_lab_task_notification/
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
-  - title: "API Samples"
-    url: /sdk/example-api_samples/
-  - title: "AWS S3"
-    url: /sdk/example-aws_s3/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
@@ -750,18 +748,10 @@ charting:
     url: /sdk/example-extend_ai_pdf/
   - title: "Group Items in Patient Chart"
     url: /sdk/example-patient_summary_chart_groups/
-  - title: "LLM"
-    url: /sdk/example-llm/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
-  - title: "Patient Portal Customization"
-    identifier: portal_customization
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
-  - title: "SendGrid Email"
-    url: /sdk/example-sendgrid_email/
-  - title: "Twilio SMS/MMS"
-    url: /sdk/example-twilio_sms_mms/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
@@ -773,6 +763,16 @@ portal_customization:
   - title: "Launch an Application"
     url: /sdk/example-portal-customization-launch_application/
 
+integrations:
+  - title: "AWS S3"
+    url: /sdk/example-aws_s3/
+  - title: "LLM"
+    url: /sdk/example-llm/
+  - title: "SendGrid Email"
+    url: /sdk/example-sendgrid_email/
+  - title: "Twilio SMS/MMS"
+    url: /sdk/example-twilio_sms_mms/
+  
 sdk_handlers:
   - title: "Action Buttons"
     url: /sdk/handlers-action-buttons/
