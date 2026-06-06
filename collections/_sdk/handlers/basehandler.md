@@ -51,11 +51,12 @@ of course. You have access to event information with `self.event`,
 your plugin with `self.secrets` and for the running instance with `self.environment`. You can use
 our [Data Module](/sdk/data/) to retrieve additional information at runtime.
 
-## Keep `compute()` fast
+## Keep your handler fast
 
-`compute()` runs synchronously on a bounded pool of plugin workers that is
-shared across your whole Canvas instance. Whatever you do inside `compute()`
-occupies one of those workers until it returns. Fast handlers free their worker
+Your handler's entry point — `compute()` here, or `handle()` for an
+[Action Button](/sdk/handlers-action-buttons/) — runs synchronously on a bounded
+pool of plugin workers that is shared across your whole Canvas instance. Whatever
+you do inside it occupies one of those workers until it returns. Fast handlers free their worker
 in milliseconds; slow handlers hold it, and a handler that blocks on a slow or
 unavailable external dependency holds it for a long time. When enough handlers
 are blocked at once, the pool is exhausted and the instance can no longer
