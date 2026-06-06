@@ -73,6 +73,11 @@ does work that can hang:
   multi-minute) hang at the same time.
 - **Long timeouts combined with retries.** A 300&nbsp;second timeout retried a
   few times can pin one worker for over ten minutes per event.
+- **Inefficient database queries.** Unbounded result sets, N+1 query patterns,
+  and missing `select_related`/`prefetch_related` turn a fast-looking handler
+  into a slow one as a patient's or instance's data grows. Filter and paginate
+  with the [Data Module](/sdk/data/), fetch only the fields you need, and follow
+  foreign keys with `select_related`/`prefetch_related` instead of looping.
 - **Heavy synchronous computation** that doesn't yield.
 
 ### Move slow work off the synchronous path
