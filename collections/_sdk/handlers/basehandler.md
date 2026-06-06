@@ -10,7 +10,7 @@ are interested in, then provide the code to execute when one of those events
 is emitted. All the [handlers](/sdk/handlers/) inherit from `BaseHandler`, and
 many of yours will too.
 
-{% include alert.html type="danger" content="<strong>With great power comes great responsibility.</strong> Your <code>compute()</code> method runs <strong>synchronously</strong> inside a worker. A slow <code>compute()</code> &mdash; especially one that makes a blocking network call to an external service (an LLM API, a third-party HTTP endpoint) &mdash; holds that worker for its entire duration. If the external service slows down or goes offline, every event that triggers your handler piles up until the worker pool is exhausted, and your <strong>entire Canvas instance can grind to a halt and stop responding to requests</strong>. Long timeouts and retries multiply the damage: a 300&nbsp;second timeout retried three times pins a single worker for over ten minutes. Keep <code>compute()</code> fast, and move long-running or failure-prone work off the synchronous path &mdash; see <a href='#keep-compute-fast'>Keep compute() fast</a> below." %}
+{% include compute-availability-warning.html %}
 
 ## Handling Events With `BaseHandler`
 
