@@ -12,6 +12,7 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 - **`LabOrder`**: Represents a lab order placed for a patient, including order details, transmission type, and associated tests
 - **`LabTest`**: Individual tests within a lab order, tracking status from creation through processing
 - **`LabReport`**: Contains the results returned from the lab, including all values and associated metadata
+- **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
 
@@ -328,6 +329,17 @@ for report in lab_reports:
 | deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
+| remarks              | [LabReportRemark](#labreportremark)[] |
+
+### LabReportRemark
+
+| Field Name | Type                    |
+|------------|-------------------------|
+| dbid       | Integer                 |
+| created    | DateTime                |
+| modified   | DateTime                |
+| report     | [LabReport](#labreport) |
+| comment    | String                  |
 
 ### LabReview
 
