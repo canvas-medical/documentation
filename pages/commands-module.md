@@ -321,7 +321,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Approve Refill</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
@@ -331,7 +331,7 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Deny Refill</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
