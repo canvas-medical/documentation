@@ -40,7 +40,7 @@ The actor is available in the following contexts:
 - [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
 - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
 - [**Application**](/sdk/handlers-applications/) handlers
-- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`, `NOTE_STATE_CHANGE_EVENT_CREATED`, `NOTE_STATE_CHANGE_EVENT_UPDATED`
 - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events

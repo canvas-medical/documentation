@@ -7,8 +7,13 @@ hidden: false
 
 Notification badges let your plugin surface a count on an
 [application](/sdk/handlers-applications/) icon — the small number that
-indicates, for example, how many unread items are waiting. Badges appear on the
-application icon both in the app drawer and on panel icons.
+indicates, for example, how many unread items are waiting. Badges are shown only
+for applications scoped [`global`](/sdk/handlers-applications/#application-scopes)
+or [`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
+icon in the app drawer, or, when the application sets `show_in_panel`, on the panel
+alongside the other panel buttons. Applications in other scopes (`full_chart`,
+`provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not
+display badges.
 
 There are two ways a badge is set:
 
@@ -28,16 +33,34 @@ application's identifier, optionally `.filter(...)` to target patients, then cal
 
 | Method / Attribute       |          | Type        | Description                                                                                                                                                |
 | ------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `application_identifier` | required | String      | Passed to the constructor. Must match the `class` string declared for the application in `CANVAS_MANIFEST.json`. An unknown identifier raises a validation error. |
+| `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in `CANVAS_MANIFEST.json` — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
 | `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
 | `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
 | `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys whose chart context the update applies to.                                                       |
+
+The `application_identifier` is the application's `class` string from
+`CANVAS_MANIFEST.json` (`<module path>:<ClassName>`). For example, an `InboxApp`
+defined in `my_plugin/apps/inbox.py` and registered like this:
+
+```json
+"applications": [
+  {
+    "class": "my_plugin.apps.inbox:InboxApp",
+    "name": "Inbox",
+    "description": "Unread items inbox",
+    "icon": "/assets/inbox.png",
+    "scope": "global"
+  }
+]
+```
+
+is targeted by that same `class` string:
 
 ```python
 from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
 
 # Set a badge of 3 for a specific staff member.
-ApplicationNotificationBadge("my_plugin__inbox").broadcast(count=3, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-key"])
 ```
 
 ## Targeting
@@ -65,12 +88,12 @@ patient's chart, where staff viewing that chart will see it.
 
 ```python
 # Show a badge to staff viewing a specific patient's chart.
-ApplicationNotificationBadge("my_plugin__patient_labs").filter(
+ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
     patient_ids=["patient-key"]
 ).broadcast(count=5)
 
 # Combine: only the on-call provider, and only on this patient's chart.
-ApplicationNotificationBadge("my_plugin__patient_labs").filter(
+ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
     patient_ids=["patient-key"]
 ).broadcast(count=1, staff_ids=["staff-key"])
 ```
@@ -101,7 +124,7 @@ class InboxBadgeHandler(BaseHandler):
         open_count = Task.objects.filter(assignee=assignee, status=TaskStatus.OPEN).count()
 
         return [
-            ApplicationNotificationBadge("my_plugin__inbox").broadcast(
+            ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(
                 count=open_count,
                 staff_ids=[assignee.id],
             )
@@ -113,7 +136,7 @@ class InboxBadgeHandler(BaseHandler):
 Broadcast a `count` of `0` to remove the badge from the icon:
 
 ```python
-ApplicationNotificationBadge("my_plugin__inbox").broadcast(count=0, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-key"])
 ```
 
 > **Note:** To set the badge value shown when applications first load (rather than

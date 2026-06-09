@@ -1499,14 +1499,14 @@ indications, individual measured values, and a free-text remarks field.
 
 Built-in validations ensure that:
 
-- The provided `template` UUID resolves to an active POC `LabReportTemplate`.
-- Each `test_values` entry's `label` matches one of the template's field labels (case-insensitive).
+- The provided `template` UUID resolves to an active POC [`LabReportTemplate`](/sdk/data-lab-report-template/#labreporttemplate).
+- Each `test_values` entry's `label` matches one of the template's [field labels](/sdk/data-lab-report-template/#labreporttemplatefield) (case-insensitive).
 
 **Command-specific parameters**:
 
 | Name          | Type              | Required to commit | Description                                                                                                          |
 |---------------|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------|
-| `template`    | _UUID_            | `true`             | The UUID of the active POC `LabReportTemplate`. Accepts UUID instances or UUID-formatted strings.                    |
+| `template`    | _UUID \| string_  | `true`             | The UUID of the active POC `LabReportTemplate`. Accepts UUID instances or UUID-formatted strings.                    |
 | `indications` | _list[string]_    | `false`            | ICD-10 diagnosis codes justifying the test.                                                                          |
 | `test_values` | _list[TestValue]_ | `false`            | The measured values, each tagged with its template-field label. See `TestValue` below.                               |
 | `remarks`     | _string (≤512)_   | `false`            | Free-text comments from the clinician.                                                                               |
@@ -1532,11 +1532,20 @@ A dataclass representing a single measured value within a POC lab test result.
 
 ### Validations
 
-- **Template Validation:** The `template` UUID must resolve to a `LabReportTemplate` that is
+- **Template Validation:** The `template` UUID must resolve to a [`LabReportTemplate`](/sdk/data-lab-report-template/#labreporttemplate) that is
   `active=True` and `poc=True`. Templates from external lab partners or inactive templates are
   rejected.
 - **Test Values Validation:** Each `TestValue.label` must match (case-insensitive) the `label` of
-  one of the resolved template's fields. Unknown labels cause a validation error.
+  one of the resolved template's [fields](/sdk/data-lab-report-template/#labreporttemplatefield). Unknown labels cause a validation error.
+
+The valid labels are the `label` of each [`LabReportTemplateField`](/sdk/data-lab-report-template/#labreporttemplatefield) on the template's [`fields`](/sdk/data-lab-report-template/#labreporttemplate) relation:
+
+```python
+from canvas_sdk.v1.data import LabReportTemplate
+
+template = LabReportTemplate.objects.active().point_of_care().first()
+valid_labels = [field.label for field in template.fields.all()]
+```
 
 **Example**:
 

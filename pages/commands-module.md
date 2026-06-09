@@ -190,6 +190,11 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr>
+      <td>Adjust Protocol</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Immunization Statement</td>
        <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
@@ -270,7 +275,57 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr>
+      <td>Assess Coding Gap</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Clipboard</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Create Coding Gap</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Defer Coding Gap</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Private Notes</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Validate Coding Gap</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Approve Change</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Deny Change</td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>POC Lab Test</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Approve Refill</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Cancel Prescription</td>
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
@@ -279,9 +334,9 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
-     <tr>
-      <td>POC Lab Test</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+    <tr>
+      <td>Reference</td>
+      <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
   </tbody>

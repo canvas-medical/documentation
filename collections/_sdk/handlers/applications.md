@@ -431,9 +431,12 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on your application's
-icon, both in the app drawer and on panel icons. A badge is useful for surfacing
-how many items are waiting for attention, such as unread messages or open tasks.
+You can display a notification badge — a small count — on the icon of a `global`
+or `patient_specific` application: in the app drawer, or on the panel when the
+application sets `show_in_panel`. A badge is useful for surfacing how many items
+are waiting for attention, such as unread messages or open tasks. Applications in
+other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the
+Provider Companion scopes) do not display badges.
 
 ### Initial count on load
 
