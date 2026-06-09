@@ -309,7 +309,14 @@ response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({
 #         "Analgesic or Antipyretic Non-Opioid and Combinations",
 #         "Analgesic or Antipyretic Non-Opioid"
 #       ],
-#       "rxnorm_rxcui": "313782"
+#       "rxnorm_rxcui": "313782",
+#       "rxnorm_codings": [
+#         {
+#           "rxnorm_rxcui": "313782",
+#           "rxnorm_term_type": "SCD"
+#         }
+#       ],
+#       "med_generic_medication_identifier": null
 #     },
 #     ...
 #   ]
@@ -362,7 +369,14 @@ response_json = ontologies_http.get_json(f"/fdb/ndc-to-medication/76420037215/")
 #     "Analgesic or Antipyretic Non-Opioid and Combinations",
 #     "Analgesic or Antipyretic Non-Opioid"
 #   ],
-#   "rxnorm_rxcui": "313782"
+#   "rxnorm_rxcui": "313782",
+#   "rxnorm_codings": [
+#     {
+#       "rxnorm_rxcui": "313782",
+#       "rxnorm_term_type": "SCD"
+#     }
+#   ],
+#   "med_generic_medication_identifier": null
 # }
 
 # look up multiple NDCs
