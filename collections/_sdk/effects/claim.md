@@ -16,6 +16,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [adding banner alerts](#add-banner) to claims
 - [removing banner alerts](#remove-banner) from claims
 - [updating provider information](#update-provider) on claims
+- [setting the supervising provider](#set-supervising-provider) on claims
+- [setting the incident-to flag](#set-incident-to) on claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -770,6 +772,134 @@ class ClaimProviderHandler(BaseHandler):
                 billing_provider=billing, facility=facility
             )
         ]
+```
+
+### Set Supervising Provider
+
+`ClaimEffect.set_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D) and remains frozen after submission.
+
+Provide exactly one of:
+- A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
+- A `ClaimSupervisingProvider` dataclass to specify the snapshot fields directly. This clears any Staff association.
+
+#### Parameters
+
+| Parameter              | Type                                                          | Description                            | Required                      |
+| ---------------------- | ------------------------------------------------------------- | -------------------------------------- | ----------------------------- |
+| `supervising_provider` | [ClaimSupervisingProvider](#claimsupervisingprovider) or `None` | Free-text provider snapshot            | Yes (if `staff_id` not given) |
+| `staff_id`             | `str` or `None`                                               | Staff identifier to populate from      | Yes (if `supervising_provider` not given) |
+
+#### ClaimSupervisingProvider
+
+The `ClaimSupervisingProvider` dataclass represents a supervising provider's identifying information for billing purposes.
+
+| Attribute     | Type            | Description                   |
+| ------------- | --------------- | ----------------------------- |
+| `first_name`  | `str` or `None` | First name (max 255 chars)    |
+| `last_name`   | `str` or `None` | Last name (max 255 chars)     |
+| `middle_name` | `str` or `None` | Middle name (max 255 chars)   |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)     |
+| `taxonomy`    | `str` or `None` | Taxonomy code (max 100 chars) |
+| `tax_id`      | `str` or `None` | Tax ID (max 100 chars)        |
+| `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates that exactly one of `staff_id` or `supervising_provider` is provided
+- If `staff_id` is provided, validates that the Staff record exists
+
+#### Example Usage
+
+Using a Staff record:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class SupervisingProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, set the supervising provider from the note's supervising provider."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD" and note.supervising_provider:
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.set_supervising_provider(staff_id=str(note.supervising_provider.id))]
+        return []
+```
+
+Using free-text provider information:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect, ClaimSupervisingProvider
+from canvas_sdk.v1.data import Note
+
+
+class SupervisingProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, set a custom supervising provider on the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [
+                claim_effect.set_supervising_provider(
+                    ClaimSupervisingProvider(
+                        first_name="Jane",
+                        last_name="Doe",
+                        npi="1234567890",
+                        taxonomy="207Q00000X",
+                    )
+                )
+            ]
+        return []
+```
+
+### Set Incident To
+
+`ClaimEffect.set_incident_to()`: sets the claim's `incident_to` billing flag. When `incident_to` is `True`, the rendering provider's NPI is replaced with the supervising physician's NPI at claim submission.
+
+#### Parameters
+
+| Parameter | Type   | Description                                              | Required |
+| --------- | ------ | -------------------------------------------------------- | -------- |
+| `value`   | `bool` | Whether the claim is billed incident-to the supervising physician | Yes      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class IncidentToHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_SUPERVISING_PROVIDER_CHANGED)
+
+    def compute(self) -> list[Effect]:
+        """When a supervising provider is set on a claim, enable incident-to billing."""
+        claim_id = self.event.target.id
+        claim_effect = ClaimEffect(claim_id=claim_id)
+        return [claim_effect.set_incident_to(True)]
 ```
 
 ---
