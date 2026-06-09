@@ -552,6 +552,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
+| POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
 | Prescribe | `*_PRESCRIBE_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Questionnaire | `*_QUESTIONNAIRE_COMMAND` | |
 | Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only |
