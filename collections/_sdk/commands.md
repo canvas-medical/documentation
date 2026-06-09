@@ -1550,7 +1550,8 @@ valid_labels = [field.label for field in template.fields.all()]
 **Example**:
 
 ```python
-from canvas_sdk.commands import POCLabTestCommand, TestValue
+from canvas_sdk.commands import POCLabTestCommand
+from canvas_sdk.commands.commands.poc_lab_test import TestValue
 from canvas_sdk.v1.data import LabReportTemplate
 
 template = LabReportTemplate.objects.active().point_of_care().first()

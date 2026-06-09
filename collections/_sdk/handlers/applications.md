@@ -471,12 +471,16 @@ the event context also carries the patient, so you can compute a count specific
 to the staff member *and* the patient they are viewing:
 
 ```python
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
 def compute_notification_badge(self) -> int | None:
     staff_id = self.event.context.get("staff", {}).get("id")
     patient_id = self.event.context.get("patient", {}).get("id")
     if not (staff_id and patient_id):
         return None
-    return unread_results_for(staff_id, patient_id)
+    return Task.objects.filter(
+        assignee__id=staff_id, patient__id=patient_id, status=TaskStatus.OPEN
+    ).count()
 ```
 
 The badge event context contains:
