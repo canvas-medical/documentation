@@ -43,6 +43,10 @@ for member in team.members.all():
     log.info(f"last_name: {member.last_name}")
 ```
 
+## Reconciling with FHIR
+
+A team's `group_id` is the same identifier used to represent the team in the [FHIR Group endpoint](/api/group/). Use it to cross-reference a `Team` between the SDK and FHIR.
+
 ## Filtering
 
 Teams can be filtered by any attribute that exists on the model.
@@ -72,6 +76,7 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 | name             | String                                           |
 | responsibilities | Array[[TeamResponsibility](#teamresponsibility)] |
 | members          | [Staff](/sdk/data-staff/#staff)[]                |
+| group_id         | UUID                                             |
 
 ### TeamContactPoint
 
