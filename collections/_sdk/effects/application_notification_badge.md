@@ -87,6 +87,8 @@ patient's chart, where staff viewing that chart will see it.
 > open chart live, and the load-time hook covers the rest.
 
 ```python
+from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
+
 # Show a badge to staff viewing a specific patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
     patient_ids=["patient-key"]
@@ -136,6 +138,8 @@ class InboxBadgeHandler(BaseHandler):
 Broadcast a `count` of `0` to remove the badge from the icon:
 
 ```python
+from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
+
 ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-key"])
 ```
 
