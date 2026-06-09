@@ -330,8 +330,8 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr>
-      <td>Cancel Prescription</td>
-      <td><span class="tag-next-up"> Next up </span> </td>
+      <td><a href="/product-updates/cancelrx/">Cancel Prescription</a></td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
