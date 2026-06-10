@@ -216,6 +216,49 @@ $ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 
 - `--help`: Show this message and exit.
 
+**Validations performed**:
+
+1. **Schema validation** — Checks that `CANVAS_MANIFEST.json` contains all required fields and valid values.
+2. **Handler resolution** — Verifies that every handler class declared in the manifest (`protocols`, `applications`, and `handlers`) resolves to a file the plugin runner can find at runtime.
+
+#### Handler resolution and directory layout
+
+The plugin runner loads handlers by mapping dotted module paths to files relative to the plugin's install directory. For a plugin named `my_plugin` with a handler class `my_plugin.handlers.events:MyHandler`, the runner expects `handlers/events.py` inside the plugin directory — the directory containing `CANVAS_MANIFEST.json`.
+
+A common mistake is placing `CANVAS_MANIFEST.json` in a parent directory above the plugin package. This passes schema validation and works locally, but fails at runtime with `ModuleNotFoundError` — the handler files are nested one level too deep.
+
+**Correct layout:**
+
+```
+my_plugin/
+├── CANVAS_MANIFEST.json   # ← manifest inside the package
+├── handlers/
+│   └── events.py
+└── ...
+```
+
+**Incorrect layout:**
+
+```
+project/
+├── CANVAS_MANIFEST.json   # ← manifest above the package (wrong!)
+└── my_plugin/
+    └── handlers/
+        └── events.py
+```
+
+If `validate-manifest` detects handlers that won't resolve, it reports which classes are affected and the file paths the runner expects:
+
+```console
+Error: these handler classes won't be found by the plugin runner with the current directory layout:
+  - my_plugin.handlers.events:MyHandler
+    runner expects: my_plugin/handlers/events.py
+
+CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
+```
+
+{% include alert.html type="info" content="Because <code>canvas install</code> calls <code>validate-manifest</code> before uploading, this check also gates plugin installations." %}
+
 ### `canvas logs`
 
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
