@@ -250,11 +250,6 @@ Commands migrated to the new framework will function similarly if not identicall
       <td><ul><li>The committed layout defaults to expanded.</li></ul></td>
     </tr>
     <tr>
-      <td>Visual Exam Finding</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
       <td>Lab Review</td>
       <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
@@ -336,6 +331,11 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Reference</td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Visual Exam Finding</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
