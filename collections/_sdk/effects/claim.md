@@ -776,7 +776,7 @@ class ClaimProviderHandler(BaseHandler):
 
 ### Set Supervising Provider
 
-`ClaimEffect.set_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D) and remains frozen after submission.
+`ClaimEffect.set_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
 
 Provide exactly one of:
 - A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
@@ -889,6 +889,19 @@ When a claim is marked as incident-to:
 3. **Frozen after submission**: Once a claim has been submitted to the clearinghouse, the rendering provider swap no longer occurs even if incident-to settings change.
 
 4. **Re-sync on supervising provider change**: If the supervising provider is updated on an incident-to claim, the rendering provider fields are automatically re-synced to match the new supervising provider.
+
+#### Printed CMS-1500 Form
+
+The supervising provider appears on the printed CMS-1500 (HCFA) form differently depending on whether the claim is marked incident-to:
+
+| Scenario | Box 24J (Rendering NPI) | Box 17 (Referring/Supervising Provider) |
+| -------- | ----------------------- | --------------------------------------- |
+| **Incident-to claim** | Supervising provider's NPI (via the automatic rendering swap) | Not populated for supervising—the provider already appears in Box 24J |
+| **Non-incident-to claim with supervising provider** | Original rendering provider's NPI | Supervising provider with **DQ** qualifier (if no referring or ordering provider exists) |
+
+For non-incident-to claims with a supervising provider who has a valid NPI and no referring or ordering provider, the printed form populates Box 17 with the supervising provider's name, Box 17a with the "DQ" (supervising physician) qualifier, and Box 17b with the supervising provider's NPI.
+
+Box 17 follows a priority order: referring provider (DN) takes precedence over ordering provider (DK), which takes precedence over supervising provider (DQ). The supervising provider only appears in Box 17 when no referring or ordering provider is present.
 
 #### Claim Errors
 
