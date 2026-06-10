@@ -870,7 +870,7 @@ class SupervisingProviderHandler(BaseHandler):
 
 ### Set Incident To
 
-`ClaimEffect.set_incident_to()`: sets the claim's `incident_to` billing flag. When `incident_to` is `True`, the rendering provider's NPI is replaced with the supervising physician's NPI at claim submission.
+`ClaimEffect.set_incident_to()`: sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
 
 #### Parameters
 
@@ -878,9 +878,41 @@ class SupervisingProviderHandler(BaseHandler):
 | --------- | ------ | -------------------------------------------------------- | -------- |
 | `value`   | `bool` | Whether the claim is billed incident-to the supervising physician | Yes      |
 
+#### How Incident-To Billing Works
+
+When a claim is marked as incident-to:
+
+1. **Automatic rendering provider swap**: The rendering provider fields (first name, last name, middle name, NPI, and taxonomy) are replaced with the supervising provider's values. This swap happens immediately when `incident_to` is set to `True`, not at claim submission.
+
+2. **Billing provider unchanged**: The billing provider information (NM1*85 on the 837P) remains unchanged. Only the rendering provider (NM1*82 / Box 24J) is affected.
+
+3. **Frozen after submission**: Once a claim has been submitted to the clearinghouse, the rendering provider swap no longer occurs even if incident-to settings change.
+
+4. **Re-sync on supervising provider change**: If the supervising provider is updated on an incident-to claim, the rendering provider fields are automatically re-synced to match the new supervising provider.
+
+#### Claim Errors
+
+The following errors prevent claim submission when incident-to is enabled:
+
+| Error | Description | Solution |
+| ----- | ----------- | -------- |
+| Missing supervising provider | The claim is marked incident-to but has no supervising provider with an NPI. | Add a supervising provider with a valid NPI, or disable incident-to. |
+| Supervising provider same as rendering | The supervising provider is the same as the note's original rendering provider. | Set the supervising provider to a different physician, or disable incident-to. |
+
+#### Claim Warnings
+
+The following warnings are displayed for incident-to claims but do not prevent submission:
+
+| Warning | Description | Guidance |
+| ------- | ----------- | -------- |
+| Non-office place of service | The place of service is not office (11). Incident-to billing is generally not valid in facility settings per 42 CFR 410.26. | Confirm the place of service is correct, or disable incident-to if it does not apply. |
+| Non-Medicare payer | The payer is not Medicare. Incident-to rules are a Medicare policy; coverage varies by commercial payer. | Confirm the payer accepts incident-to billing, or disable incident-to if it does not apply. |
+
 #### Implementation Details
 
 - Validates `claim_id` is provided and that the associated claim exists
+- The rendering provider swap requires a valid supervising provider with an NPI
+- The swap is skipped if the supervising provider's NPI is missing or invalid
 
 #### Example Usage
 
