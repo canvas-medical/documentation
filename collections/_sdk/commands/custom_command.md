@@ -47,6 +47,8 @@ Custom commands must be declared in your `CANVAS_MANIFEST.json`:
 - **schema_key**: Unique identifier for the command. CustomCommand instances must use this value.
 - **section**: Chart section where command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`
 
+**Note**: `schema_key` values must be unique across **all plugins installed on the instance**, not just within a single plugin. If you install a plugin whose manifest declares a `schema_key` already owned by another installed plugin, the installation fails with a clear validation error instead of silently overwriting the existing command. Choose a distinctive `schema_key` — for example, prefixing it with your plugin's name — to avoid collisions.
+
 ## Basic Usage
 
 ### Step 1: Create HTML Templates
@@ -214,7 +216,7 @@ Custom commands support two versions of content:
 - Custom commands are read-only and cannot capture user input
 - Interactive elements (forms, buttons, input fields) are not supported
 - Commands must be configured in the manifest before use
-- The `schema_key` must be unique across your plugin's commands
+- The `schema_key` must be unique across all plugins installed on the instance, not just within your plugin
 
 
 <br/>

@@ -47,6 +47,25 @@ for member in team.members.all():
 
 A team's `group_id` is the same identifier used to represent the team in the [FHIR Group endpoint](/api/group/). Use it to cross-reference a `Team` between the SDK and FHIR.
 
+Given a `Team`, you can use its `group_id` with the [Canvas FHIR client](/sdk/clients-canvas-fhir/) to fetch the corresponding FHIR `Group` payload:
+
+```python
+from canvas_sdk.clients.canvas_fhir import CanvasFhir
+from canvas_sdk.v1.data.team import Team
+
+team = Team.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+# plugin configuration page.
+client = CanvasFhir(
+    self.secrets["CANVAS_FHIR_CLIENT_ID"],
+    self.secrets["CANVAS_FHIR_CLIENT_SECRET"],
+)
+
+# Use the team's group_id to read the corresponding FHIR Group resource.
+group = client.read("Group", str(team.group_id))
+```
+
 ## Filtering
 
 Teams can be filtered by any attribute that exists on the model.
