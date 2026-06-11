@@ -630,6 +630,78 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
 }
 ```
 
+## Notification Badges
+
+You can display a notification badge — a small count — on the icon of a `global`
+or `patient_specific` application: in the app drawer, or on the panel when the
+application sets `show_in_panel`. A badge is useful for surfacing how many items
+are waiting for attention, such as unread messages or open tasks. Applications in
+other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the
+Provider Companion scopes) do not display badges.
+
+### Initial count on load
+
+Override `compute_notification_badge()` on your `Application` handler to provide
+the count shown when Canvas loads applications. Return an integer to show a badge,
+or `None` (the default) to show no badge. A count of `0` shows no badge.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+
+class InboxApp(Application):
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(
+            url="https://www.your-app.com/inbox",
+            title="Inbox",
+        ).apply()
+
+    def compute_notification_badge(self) -> int | None:
+        """Return the badge count shown on the icon when applications load."""
+        staff_id = self.event.context.get("staff", {}).get("id")
+        if not staff_id:
+            return None
+        return Task.objects.filter(assignee__id=staff_id, status=TaskStatus.OPEN).count()
+```
+
+When the application is rendered on a patient chart (`patient_specific` scope),
+the event context also carries the patient, so you can compute a count specific
+to the staff member *and* the patient they are viewing:
+
+```python
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+def compute_notification_badge(self) -> int | None:
+    staff_id = self.event.context.get("staff", {}).get("id")
+    patient_id = self.event.context.get("patient", {}).get("id")
+    if not (staff_id and patient_id):
+        return None
+    return Task.objects.filter(
+        assignee__id=staff_id, patient__id=patient_id, status=TaskStatus.OPEN
+    ).count()
+```
+
+The badge event context contains:
+
+| Key       | Description                                                          |
+| --------- | -------------------------------------------------------------------- |
+| `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
+| `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
+
+> **Note:** Note Applications (`NoteApplication` / `EmbeddedApplication`) do not
+> support notification badges.
+
+### Live updates
+
+To change the count after load — for example, in response to a new task or
+message — emit an `ApplicationNotificationBadge` effect from any event handler.
+The badge updates in real time without the user reloading the page. See the
+[Application Notification Badge](/sdk/effect-application-notification-badge/)
+effect for details.
+
 
 <br/>
 <br/>
