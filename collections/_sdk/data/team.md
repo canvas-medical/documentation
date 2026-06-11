@@ -49,7 +49,7 @@ A team's `group_id` is the same identifier used to represent the team in the [FH
 
 Given a `Team`, you can use its `group_id` with the [Canvas FHIR client](/sdk/clients-canvas-fhir/) to fetch the corresponding FHIR `Group` payload:
 
-```python
+```python?partial=true
 from canvas_sdk.clients.canvas_fhir import CanvasFhir
 from canvas_sdk.v1.data.team import Team
 
