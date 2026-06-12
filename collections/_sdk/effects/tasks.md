@@ -23,13 +23,45 @@ To add a task, import the `AddTask` class and create an instance of it.
 | priority           | optional | TaskPriority       | A priority of `STAT`, `URGENT`, or `ROUTINE`. Defaults to no priority if not supplied. |
 | labels             | optional | list[string]       | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 | author_id          | optional | string or UUID     | Author's id to set task creator, defaults to CanvasBot.                              |
-| linked_object_id   | optional | string or UUID     | Linked object id of linked object.                                                   |
-| linked_object_type | optional | LinkableObjectType | Type of the [LinkedObject](#linked-object-type)                                      |
+| linked_object_id   | optional | string or UUID     | Linked object id of linked object. (Legacy - use add_linked_item instead)            |
+| linked_object_type | optional | LinkableObjectType | Type of the [LinkedObject](#linked-object-type). (Legacy - use add_linked_item instead) |
 
+
+### Methods
+
+#### add_linked_item
+
+The `add_linked_item` method allows you to link multiple items to a task. This is the recommended way to add linked items to tasks.
+
+```python
+add_linked_item(item_type: LinkedItemType, item_id: str) -> Self
+```
+
+**Parameters:**
+- `item_type`: The type of item to link (see [LinkedItemType](#linked-item-type) enum)
+- `item_id`: The URN (Uniform Resource Name) of the item to link
+
+**Returns:** Self (for method chaining)
 
 ### Enumeration Types
 
-#### Linked Object Type
+#### Linked Item Type
+
+The `LinkedItemType` enum defines all supported types of items that can be linked to a task:
+
+| Value                            | Description                         |
+|----------------------------------|-------------------------------------|
+| COMMAND                          | Command objects                     |
+| NOTE                             | Clinical notes                      |
+| TASK                             | Other tasks                         |
+| CLAIM                            | Claim objects                       |
+| PATIENT_ADMINISTRATIVE_DOCUMENT  | Patient administrative documents    |
+| UNCATEGORIZED_CLINICAL_DOCUMENT  | Uncategorized clinical documents    |
+| IMAGING_REPORT                   | Imaging reports                     |
+| REFERRAL_REPORT                  | Referral reports                    |
+| LAB_REPORT                       | Lab reports                         |
+
+#### Linked Object Type (Legacy)
 
 | Value    | Description |
 |----------|-------------|
@@ -51,7 +83,14 @@ An example of adding a task:
 import arrow
 
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskPriority, TaskStatus
+from canvas_sdk.effects.task import (
+    AddTask,
+    AddTaskComment,
+    LinkedItemType,
+    TaskPriority,
+    TaskStatus,
+    UpdateTask,
+)
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
@@ -94,6 +133,62 @@ class MyHandler(BaseHandler):
         return []
 ```
 
+### Linking Multiple Items to a Task
+
+You can use the `add_linked_item()` method to link multiple items to a task. This method supports linking notes, commands, claims, and various document types.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.task import AddTask, LinkedItemType, TaskStatus
+from canvas_sdk.events import EventType
+from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.v1.data.lab import LabReport
+from canvas_sdk.v1.data.note import Note
+from canvas_sdk.v1.data.staff import Staff
+from canvas_sdk.v1.data.team import Team
+from permalinks.urn import get_urn_v1
+
+
+class Protocol(BaseProtocol):
+    RESPONDS_TO = [
+        EventType.Name(EventType.LAB_REPORT_CREATED),
+    ]
+
+    def compute(self) -> list[Effect]:
+        lab_report = LabReport.objects.get(id=self.target)
+        staff_assignee = Staff.objects.get(last_name="Weed")
+        team = Team.objects.get(name="Labs")
+
+        if lab_report.patient:
+            # Create a task with multiple linked items
+            add_task = AddTask(
+                assignee_id=staff_assignee.id,
+                author_id=staff_assignee.id,
+                team_id=team.id,
+                patient_id=lab_report.patient.id,
+                title="Review lab results and follow up with patient",
+                status=TaskStatus.OPEN,
+                labels=["lab-review", "follow-up"],
+            )
+
+            # Link the lab report
+            lab_report_urn = get_urn_v1(lab_report)
+            add_task.add_linked_item(LinkedItemType.LAB_REPORT, lab_report_urn)
+
+            # Link a related note if it exists
+            related_note = Note.objects.filter(
+                patient=lab_report.patient,
+                is_committed=True
+            ).first()
+            if related_note:
+                note_urn = get_urn_v1(related_note)
+                add_task.add_linked_item(LinkedItemType.NOTE, note_urn)
+
+            return [add_task.apply()]
+
+        return []
+```
+
 ## Updating a Task
 
 To update an existing task, import the `UpdateTask` class and create an instance of it.
@@ -123,6 +218,37 @@ class MyHandler(BaseHandler):
             id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
             status=TaskStatus.COMPLETED,
         )
+
+        return [update_task.apply()]
+```
+
+### Updating a Task with Linked Items
+
+You can also use `add_linked_item()` with `UpdateTask` to add linked items to an existing task:
+
+```python
+from canvas_sdk.effects.task import UpdateTask, LinkedItemType, TaskStatus
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.claim import Claim
+from permalinks.urn import get_urn_v1
+
+
+class Protocol(BaseHandler):
+    def compute(self):
+        # Get a claim to link to the task
+        claim = Claim.objects.filter(
+            patient__key="patient-123"
+        ).first()
+
+        # Update the task and add a linked claim
+        update_task = UpdateTask(
+            id="d06276ba-85c5-471b-87c0-9c9805f4ca6f",
+            status=TaskStatus.OPEN,
+        )
+
+        if claim:
+            claim_urn = get_urn_v1(claim)
+            update_task.add_linked_item(LinkedItemType.CLAIM, claim_urn)
 
         return [update_task.apply()]
 ```
