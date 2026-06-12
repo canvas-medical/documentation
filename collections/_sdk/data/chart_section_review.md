@@ -16,7 +16,7 @@ To get a chart section review by identifier, use the `get` method on the `ChartS
 ```python
 from canvas_sdk.v1.data.chart_section_review import ChartSectionReview
 
-review = ChartSectionReview.objects.get(id=42)
+review = ChartSectionReview.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
 ```
 
 If you have a patient object, the chart section reviews for a patient can be accessed with the `chart_section_reviews` attribute on a `Patient` object:
@@ -79,6 +79,7 @@ medication_reviews = ChartSectionReview.objects.filter(
 
 | Field Name | Type                                                      |
 |------------|-----------------------------------------------------------|
+| id         | UUID                                                      |
 | dbid       | Integer                                                   |
 | created    | DateTime                                                  |
 | modified   | DateTime                                                  |
