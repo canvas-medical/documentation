@@ -74,6 +74,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `enable`: Enable a plugin from a Canvas instance
 - `disable`: Disable a plugin from a Canvas instance
 - `list`: List all plugins from a Canvas instance
+- `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
 - `config list`: List all secrets from a plugin
@@ -116,6 +117,12 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 - `--help`: Show this message and exit.
 
 **Notes**:
+
+Before uploading, `canvas install` runs pre-flight validation:
+- Manifest validation (schema, tags, handler resolution)
+- Sandbox-load validation (imports every handler in the sandbox)
+
+If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
 
 Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
 
@@ -198,6 +205,54 @@ $ canvas list [OPTIONS]
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+### `canvas validate`
+
+Validate a plugin's manifest and that all handlers load in the sandbox.
+
+**Usage**:
+
+```console
+$ canvas validate [OPTIONS] PLUGIN_NAME
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to plugin to validate [required]
+
+**Options**:
+
+- `--help`: Show this message and exit.
+
+This command runs full pre-flight validation combining:
+
+1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
+2. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
+
+**Sandbox-load validation** executes each handler module in the plugin sandbox to catch:
+
+- **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
+- **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
+- **Import errors** — Missing dependencies or broken imports.
+
+For each handler, the output shows whether it loaded successfully:
+
+```console
+$ canvas validate my_plugin
+Loading 2 handler(s) in the sandbox:
+  ✓ my_plugin.handlers.events:MyHandler
+  ✗ my_plugin.handlers.api:APIHandler
+    ImportError: 'subprocess' is not an allowed import
+1 of 2 handler(s) failed to load in the sandbox.
+```
+
+The command exits with code 1 if any handler fails validation.
+
+#### Limitations
+
+A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
+
+{% include alert.html type="info" content="<code>canvas install</code> runs the same sandbox-load validation before uploading, so violations are caught before they reach your instance." %}
+
 ### `canvas validate-manifest`
 
 Validate the Canvas Manifest json file.
@@ -257,7 +312,7 @@ Error: these handler classes won't be found by the plugin runner with the curren
 CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
 ```
 
-{% include alert.html type="info" content="Because <code>canvas install</code> calls <code>validate-manifest</code> before uploading, this check also gates plugin installations." %}
+{% include alert.html type="info" content="<code>canvas install</code> runs both manifest validation and sandbox-load validation before uploading. Use <code>canvas validate</code> for a full pre-flight check with detailed per-handler output." %}
 
 ### `canvas logs`
 
