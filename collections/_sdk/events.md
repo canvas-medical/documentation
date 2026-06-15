@@ -2935,7 +2935,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">TASK_LABELS_ADJUSTED</th></tr>
-    <tr><td colspan="2">Occurs when a task's labels are changed.</td></tr>
+    <tr><td colspan="2">Occurs when a label is added to or removed from a task. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
   </thead>
   <tbody>
     <tr>
