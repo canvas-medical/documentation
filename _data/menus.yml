@@ -796,6 +796,9 @@ effects_module:
   - title: "Appointments"
     url: /sdk/effect-notes/#appointment-effect
     description: Create, update, and cancel patient appointments.
+  - title: "Application Notification Badge"
+    url: /sdk/effect-application-notification-badge/
+    description: Display and update a notification badge count on an application icon.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.

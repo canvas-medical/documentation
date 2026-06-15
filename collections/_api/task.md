@@ -66,6 +66,13 @@ sections:
                 - value: completed
                 - value: cancelled
                   description: In canvas this maps to a status of closed.
+          - name: priority
+            type: string
+            description: The priority level of the task.
+            enum_options:
+                - value: stat
+                - value: urgent
+                - value: routine
           - name: description
             type: string
             required_in: create,update
@@ -210,6 +217,13 @@ sections:
           - name: patient
             type: string
             description: Search by patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+          - name: priority
+            type: string
+            description: Search by task priority
+            search_options:
+                - value: stat
+                - value: urgent
+                - value: routine
           - name: requester
             type: string
             description: Search by task requester in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
@@ -268,6 +282,7 @@ curl --request POST \
         }
     ],
     "status": "requested",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -310,6 +325,7 @@ payload = {
         }
     ],
     "status": "requested",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -382,6 +398,7 @@ print(response.text)
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for":
     {
@@ -512,6 +529,7 @@ curl --request PUT \
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -554,6 +572,7 @@ payload = {
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -648,6 +667,7 @@ print(response.text)
                     }
                 ],
                 "status": "completed",
+                "priority": "urgent",
                 "description": "Ask patient for new insurance information.",
                 "for":
                 {
