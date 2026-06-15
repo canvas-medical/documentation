@@ -974,6 +974,9 @@ data_module:
   - title: "Condition"
     url: /sdk/data-condition/
     description: Condition, diagnosis, or reason for seeking medical attention.
+  - title: "ContentType"
+    url: /sdk/data-content-type/
+    description: Django content type ids used for generic relations and permalink generation.
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
