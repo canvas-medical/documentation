@@ -15,6 +15,7 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 - **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
+- **`DiagnosticReport`**: The FHIR `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
 
 ## Basic Usage
 
@@ -212,6 +213,43 @@ for test in lab_order.tests.all():
         print(f"Report ID: {test.report.id}")
 ```
 
+### Working with Diagnostic Reports
+
+A `LabReport` may be linked to one or more FHIR `DiagnosticReport` records. The `DiagnosticReport` model exposes its FHIR `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+
+#### Getting the DiagnosticReport(s) from a LabReport
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+lab_report = LabReport.objects.get(id="report-id")
+
+for diagnostic_report in lab_report.diagnostic_reports.all():
+    print(f"DiagnosticReport ID: {diagnostic_report.id}")
+    print(f"Status: {diagnostic_report.status}")
+```
+
+#### Following a DiagnosticReport back to its LabReport
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+
+diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
+
+# Follow the `lab` foreign key back to the originating LabReport
+lab_report = diagnostic_report.lab
+if lab_report:
+    print(f"LabReport ID: {lab_report.id}")
+```
+
+#### Filtering DiagnosticReports by patient
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+
+diagnostic_reports = DiagnosticReport.objects.for_patient("patient-id")
+```
+
 ### Working with Lab Reviews
 
 Lab reviews track the clinical review process for lab results, including provider comments and patient communication. Here's how to work with the LabReport and LabReview relationship:
@@ -330,6 +368,7 @@ for report in lab_reports:
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
+| diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
 
 ### LabReportRemark
 
@@ -340,6 +379,20 @@ for report in lab_reports:
 | modified   | DateTime                |
 | report     | [LabReport](#labreport) |
 | comment    | String                  |
+
+### DiagnosticReport
+
+The FHIR `DiagnosticReport` linked to a `LabReport`. The `id` is the FHIR DiagnosticReport id.
+
+| Field Name | Type                                                  |
+|------------|-------------------------------------------------------|
+| id         | UUID                                                  |
+| dbid       | Integer                                               |
+| created    | DateTime                                              |
+| modified   | DateTime                                              |
+| status     | [DiagnosticReportStatus](#diagnosticreportstatus)     |
+| subject    | [Patient](/sdk/data-patient/#patient)                 |
+| lab        | [LabReport](#labreport)                               |
 
 ### LabReview
 
@@ -482,6 +535,21 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | values                      | [LabValue](#labvalue)[]                   |
 
 ## Enumeration types
+
+### DiagnosticReportStatus
+
+| Value            | Label            |
+|------------------|------------------|
+| registered       | Registered       |
+| partial          | Partial          |
+| preliminary      | Preliminary      |
+| final            | Final            |
+| amended          | Amended          |
+| corrected        | Corrected        |
+| appended         | Appended         |
+| cancelled        | Cancelled        |
+| entered-in-error | Entered-in-error |
+| unknown          | Unknown          |
 
 ### TransmissionType
 
