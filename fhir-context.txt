@@ -44883,6 +44883,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string required
 Human-readable explanation of task.
@@ -45023,6 +45030,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string 
 Human-readable explanation of task.
@@ -45155,6 +45169,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string required
 Human-readable explanation of task.
@@ -45287,6 +45308,13 @@ Search by task owner in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a78
 patient 
 string 
 Search by patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+priority 
+string 
+Search by task priority
+**Search Values Supported:**
+  - stat
+  - urgent
+  - routine
 requester 
 string 
 Search by task requester in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
@@ -45362,6 +45390,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string 
 Human-readable explanation of task.
@@ -45479,6 +45514,7 @@ The request requires user authorization.
                 }
             ],
             "status": "requested",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45517,6 +45553,7 @@ The request requires user authorization.
                 }
             ],
             "status": "requested",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45665,6 +45702,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for":
             {
@@ -45779,6 +45817,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45817,6 +45856,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -46018,6 +46058,7 @@ The request requires user authorization.
                             }
                         ],
                         "status": "completed",
+                        "priority": "urgent",
                         "description": "Ask patient for new insurance information.",
                         "for":
                         {
