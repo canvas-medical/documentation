@@ -15,7 +15,7 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 - **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
-- **`DiagnosticReport`**: The FHIR `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
+- **`DiagnosticReport`**: The `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
 
 ## Basic Usage
 
@@ -215,7 +215,7 @@ for test in lab_order.tests.all():
 
 ### Working with Diagnostic Reports
 
-A `LabReport` may be linked to one or more FHIR `DiagnosticReport` records. The `DiagnosticReport` model exposes its FHIR `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
 
 #### Getting the DiagnosticReport(s) from a LabReport
 
@@ -248,6 +248,28 @@ if lab_report:
 from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
 
 diagnostic_reports = DiagnosticReport.objects.for_patient("patient-id")
+```
+
+#### Reconciling with FHIR
+
+A `DiagnosticReport`'s `id` is the same id used by the FHIR API, so you can start from a `LabReport`, grab its `DiagnosticReport`, and use the FHIR client to read the corresponding FHIR [DiagnosticReport](/api/diagnosticreport/) resource:
+
+```python?partial=true
+from canvas_sdk.clients.canvas_fhir import CanvasFhir
+from canvas_sdk.v1.data.lab import LabReport
+
+lab_report = LabReport.objects.get(id="report-id")
+diagnostic_report = lab_report.diagnostic_reports.first()
+
+# Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+# plugin configuration page.
+client = CanvasFhir(
+    self.secrets["CANVAS_FHIR_CLIENT_ID"],
+    self.secrets["CANVAS_FHIR_CLIENT_SECRET"],
+)
+
+# Use the DiagnosticReport's id to read the corresponding FHIR DiagnosticReport resource.
+fhir_diagnostic_report = client.read("DiagnosticReport", str(diagnostic_report.id))
 ```
 
 ### Working with Lab Reviews
@@ -382,7 +404,7 @@ for report in lab_reports:
 
 ### DiagnosticReport
 
-The FHIR `DiagnosticReport` linked to a `LabReport`. The `id` is the FHIR DiagnosticReport id.
+The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport id.
 
 | Field Name | Type                                                  |
 |------------|-------------------------------------------------------|
@@ -538,18 +560,18 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 
 ### DiagnosticReportStatus
 
-| Value            | Label            |
-|------------------|------------------|
-| registered       | Registered       |
-| partial          | Partial          |
-| preliminary      | Preliminary      |
-| final            | Final            |
-| amended          | Amended          |
-| corrected        | Corrected        |
-| appended         | Appended         |
-| cancelled        | Cancelled        |
-| entered-in-error | Entered-in-error |
-| unknown          | Unknown          |
+| Value              | Label            |
+|--------------------|------------------|
+| `REGISTERED`       | Registered       |
+| `PARTIAL`          | Partial          |
+| `PRELIMINARY`      | Preliminary      |
+| `FINAL`            | Final            |
+| `AMENDED`          | Amended          |
+| `CORRECTED`        | Corrected        |
+| `APPENDED`         | Appended         |
+| `CANCELLED`        | Cancelled        |
+| `ENTERED_IN_ERROR` | Entered-in-error |
+| `UNKNOWN`          | Unknown          |
 
 ### TransmissionType
 
