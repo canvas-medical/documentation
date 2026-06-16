@@ -573,6 +573,14 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Vitals | `*_VITALS_COMMAND` | |
 
 
+### Data Integration
+
+Check out the [Data Integration](/sdk/effect-data-integration/) documentation.
+
+| Effect | Description |
+|---|---|
+| UPDATE_DOCUMENT_FIELDS | Can be used to update fields extracted from a document in the Data Integration queue based on field name and value pairs provided by an external service. |
+
 <br/>
 <br/>
 <br/>
