@@ -226,18 +226,6 @@ Some FHIR operations require a dedicated scope in addition to the resource scope
 | `DiagnosticReport.create-lab-report` | Create a lab report |
 | `Practitioner.send-reset-password-email` | Send a password-reset email to a practitioner |
 
-## SMART on FHIR discovery
-
-The FHIR API exposes a SMART on FHIR configuration document at `GET {FUMAGE_BASE_URL}/.well-known/smart-configuration`. Clients can fetch this document at runtime to discover the supported authorization endpoints, token endpoint, and capabilities. Returned fields include:
-
-- `issuer` — the issuer URL.
-- `authorization_endpoint` — the URL to send users to for authorization (Authorization Code flow).
-- `token_endpoint` — the URL to exchange an authorization code or client credentials for an access token.
-- `jwks_uri` — the URL of the JSON Web Key Set used to verify tokens.
-- `capabilities` — supported SMART capabilities, including `launch-standalone`, `client-confidential-symmetric`, and supported response types.
-- `grant_types_supported` — the supported OAuth grant types (e.g., `authorization_code`, `client_credentials`, `refresh_token`).
-- `scopes_supported` — the supported scope strings.
-
 ## Additional reading
 - [Authentication Best Practices](/api/authentication-best-practices)
 - [Event Actor](/sdk/events/#event-actor) — how plugins identify the authenticated user

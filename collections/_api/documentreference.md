@@ -52,7 +52,7 @@ sections:
 
               - clinical-date  
 
-              - A reviewer is required, it can either be a practitioner (`reviewer`) or a group of practitioners (`reviewer-group`). Provide one or the other, not both.
+              - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
               "
             attributes:
               - name: url
@@ -69,7 +69,7 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/document-reference-requires-signature
               - name: valueString
                 type: string
-                description_for_all_endpoints: Value of extensions for Comment. Maximum length 512 characters.
+                description_for_all_endpoints: Value of extensions for Comment.
                 create_description: The `valueString` attribute is needed for the Comment's extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-comment`.<br><br> Comment is a comment on the underlying Canvas document that is related to this DocumentReference resource.
               - name: valueCode
                 type: string
@@ -140,13 +140,13 @@ sections:
                     type: string
                     required_in: create
                   - name: code
-                    description: 'The LOINC code value. The values below are typical/known codes Canvas emits or accepts; any LOINC code is accepted on create.'
+                    description: The code value.
                     type: string
                     required_in: create
                     enum_options: 
-                      - value: 51852-2 (Letters)
-                      - value: 34895-3 (Educational Material)
-                      - value: 94093-2 (Invoices/Itemized Bill)
+                      - value: 51852-2 (Letters) (read-only)
+                      - value: 34895-3 (Educational Material) (read-only)
+                      - value: 94093-2 (Invoices/Itemized Bill) (read-only)
                       - value: 53243-2 (Advance Beneficiary Notice)
                       - value: 42348-3 (Advance Directive / Living Will)
                       - value: 91983-7 (Care Management)
@@ -183,7 +183,8 @@ sections:
           - name: category
             type: array[json]
             required_in: create
-            description: 'The categorization of the document. For non-administrative documents, the response also includes an additional `category` entry with system `http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category` and code `clinical-note` (for US Core compliance).'
+            description: The categorization of the document.
+            read_and_search_description: 'The categorization of the document. For non-administrative documents, the response also includes an additional `category` entry with system `http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category` and code `clinical-note` (for US Core compliance).'
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
@@ -275,7 +276,7 @@ sections:
                 description: Type the reference refers to (e.g. "Organization").
           - name: description
             type: string
-            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource. Maximum length 1000 characters.
+            description_for_all_endpoints: The title of the underlying Canvas Document related to this DocumentReference resource.
           - name: content
             type: array[json]
             required_in: create

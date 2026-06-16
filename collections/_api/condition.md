@@ -164,7 +164,7 @@ sections:
                         - value: problem-list-item
                         - value: health-concern
                         - value: sdoh
-                        - value: function-status
+                        - value: functional-status
                         - value: disability-status
                         - value: cognitive-status
                     - name: display
@@ -176,7 +176,7 @@ sections:
                         - value: Problem List Item
                         - value: Health Concern
                         - value: SDOH
-                        - value: Function Status
+                        - value: Functional Status
                         - value: Disability Status
                         - value: Cognitive Status
                 - name: text
@@ -188,7 +188,7 @@ sections:
                         - value: Problem List Item
                         - value: Health Concern
                         - value: SDOH
-                        - value: Function Status
+                        - value: Functional Status
                         - value: Disability Status
                         - value: Cognitive Status
           - name: code

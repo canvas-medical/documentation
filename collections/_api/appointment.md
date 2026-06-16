@@ -35,7 +35,7 @@ sections:
               - name: id
                 required_in: create, update
                 type: string
-                description: The `id` of the contained entry. Either `appointment-meeting-endpoint` or `appointment-meeting-endpoint-0` is accepted on create and update; read responses always return `appointment-meeting-endpoint-0`. The SupportingInformation.reference must match this id (e.g., `#appointment-meeting-endpoint-0`).
+                description: The `id` of the contained entry. This needs to be `appointment-meeting-endpoint-0` and the SupportingInformation.reference will be `#appointment-meeting-endpoint-0`.
               - name: status
                 type: enum [ active ]
                 exclude_in: create, update
@@ -167,6 +167,8 @@ sections:
                 attributes:
                   - name: system
                     description: >-
+                      The system of the appointment
+                    create_and_update_description: >-
                       The system of the appointment. On create and update, only `http://snomed.info/sct` and `INTERNAL` are accepted; other systems will be rejected.
                     type: string
                     enum_options:

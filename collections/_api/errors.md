@@ -11,12 +11,12 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 | Error Code                 | Description                                                            |
 |----------------------------| ---------------------------------------------------------------------- |
 | 200 - OK                   | Everything worked as expected.                                         |
-| 400 - Bad Request          | The request was malformed or rejected by validation; details are provided in the returned OperationOutcome. |
+| 400 - Bad Request          | The request was malformed or rejected by validation. |
 | 401 - Unauthorized         | No valid Bearer token provided.                                        |
 | 403 - Forbidden            | Token bearer is forbidden from performing the operation.               |
 | 404 - Not Found            | The requested resource doesn't exist.                                  |
-| 412 - Precondition Failed  | A conditional request failed because the resource has been modified since the precondition was specified; details are provided in the returned OperationOutcome. |
-| 422 - Unprocessable Entity | The operation cannot be completed because of an error in the request body; details are provided in the returned OperationOutcome. |
+| 412 - Precondition Failed  | A conditional request failed because the resource has been modified since the precondition was specified. |
+| 422 - Unprocessable Entity | The request was syntactically correct but failed due to request semantics, database state, or a business rule. |
 | 5XX - Server Error         | Something went wrong on Canvas's end.                                  |
 
 

@@ -22,7 +22,8 @@ sections:
           - name: status
             type: string
             required_in: create
-            description: Indicates the current state of this consent. Read interactions may also return `inactive` for consents whose `period.end` has passed.
+            description: Indicates the current state of this consent.
+            read_and_search_description: Indicates the current state of this consent. Read interactions may also return `inactive` for consents whose `period.end` has passed.
             enum_options:
               - value: active
               - value: rejected

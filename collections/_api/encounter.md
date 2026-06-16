@@ -316,7 +316,7 @@ sections:
                 {
                     "system": "http://snomed.info/sct",
                     "code": "308335008",
-                    "display": "Patient encounter procedure (procedure)"
+                    "display": "Office Visit"
                 }
             ]
         }
@@ -503,7 +503,7 @@ sections:
                             {
                                 "system": "http://snomed.info/sct",
                                 "code": "308335008",
-                                "display": "Patient encounter procedure (procedure)"
+                                "display": "Office Visit"
                             }
                         ]
                     }

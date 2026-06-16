@@ -18,50 +18,50 @@ To mark a lab value as abnormal, an optional `interpretation` attribute can be a
 For the values/units in each `labValue` object, a `valueQuantity`, `valueString`, or `valueCodeableConcept` can be supplied in the payload. For example:
 
 ```json
-...,
-"valueQuantity": {
+{
+  "valueQuantity": {
     "value": 0.7,
     "unit": "mg/dL",
-    "system": "http://unitsofmeasure.org",
-},
-...
+    "system": "http://unitsofmeasure.org"
+  }
+}
 ```
 
 or
 
 ```json
-...,
-"valueString": "Normal",
-...
+{
+  "valueString": "Normal"
+}
 ```
 
 or
 
 ```json
-...,
-"valueCodeableConcept": {
+{
+  "valueCodeableConcept": {
     "coding": [
-        {
-            "system": "http://snomed.info/sct",
-            "code": "260385009",
-            "display": "Negative"
-        }
+      {
+        "system": "http://snomed.info/sct",
+        "code": "260385009",
+        "display": "Negative"
+      }
     ]
-},
-...
+  }
+}
 ```
 
 If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the comparator value can be passed in a `comparator` key like so:
 
 ```json
-...,
-"valueQuantity": {
+{
+  "valueQuantity": {
     "value": 1.0,
     "unit": "mg/dL",
     "system": "http://unitsofmeasure.org",
     "comparator": "<"
-},
-...
+  }
+}
 ```
 
 Supported `comparator` values are `<`, `<=`, `>=`, and `>`.

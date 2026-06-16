@@ -64,7 +64,6 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
-                      - value: http://hl7.org/fhir/ValueSet/coverage-type
                       - value: http://terminology.hl7.org/CodeSystem/coverage-selfpay
                       - value: http://terminology.hl7.org/CodeSystem/v3-ActCode
                     type: string
@@ -229,7 +228,6 @@ sections:
                     description: The system url of the coding.
                     required_in: create,update
                     enum_options:
-                      - value: http://hl7.org/fhir/ValueSet/subscriber-relationship
                       - value: http://terminology.hl7.org/CodeSystem/subscriber-relationship
                     type: string
                   - name: code
@@ -365,7 +363,6 @@ sections:
                         description: The system url of the coding.
                         required_in: create,update
                         enum_options:
-                          - value: http://hl7.org/fhir/ValueSet/coverage-class
                           - value: http://terminology.hl7.org/CodeSystem/coverage-class
                         type: string
                       - name: code

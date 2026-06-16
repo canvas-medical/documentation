@@ -18,7 +18,7 @@ sections:
             type: string
             description: The Canvas identifier of the goal.
           - name: lifecycleStatus
-            type: enum [ accepted | active | completed | entered-in-error ]
+            type: enum [ proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected ]
             description: >-
               State the goal is in throughout its lifecycle. <br><br>
               - Goals that have been closed using a Close Goal Command will have a status of `completed`. <br>

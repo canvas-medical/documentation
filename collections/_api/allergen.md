@@ -63,12 +63,12 @@ sections:
         endpoints: [read, search]
         read:
           description: Read an Allergen resource.
-          responses: [200, 401, 403, 404, 500]
+          responses: [200, 401, 403, 404]
           example_request: allergen-read-request
           example_response: allergen-read-response
         search:
           description: Search for Allergen resources.
-          responses: [200, 400, 401, 403, 500]
+          responses: [200, 400, 401, 403]
           example_request: allergen-search-request
           example_response: allergen-search-response
 ---
