@@ -37,9 +37,7 @@ sections:
             - Laboratory Values/Results
             - Smoking Status
 
-          <br><br>
-
-            Here are some Canvas specific workflows where observations will be created:
+          Here are some Canvas specific workflows where observations will be created:
 
             1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)<br>
             2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`). <br>
