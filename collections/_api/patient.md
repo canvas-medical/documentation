@@ -593,8 +593,6 @@ sections:
           - name: communication
             type: array[json]
             description_for_all_endpoints: Languages used to communicate with the patient.
-            create_description: Defaults to English if omitted. Currently only English is supported.
-            update_description: Communication languages cannot currently be modified via this endpoint — the value stored in Canvas is preserved regardless of what's sent.
             attributes:
               - name: language
                 type: json
