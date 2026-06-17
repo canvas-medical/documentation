@@ -14,15 +14,13 @@ sections:
           *Codings*<br><br>
           All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.<br><br>
           *Question Types*<br><br>
-          Canvas supports 4 different types of questions:<br><br>
+          Canvas supports 3 different type of questions:<br><br>
           1. Multi select response questions are denoted with:<br>
           `"type": "choice", "repeats": true`<br><br>  
           2. Single select response questions are denoted with:<br>
           `"type": "choice", "repeats": false`<br><br>  
           3. Free text response questions are denoted with:<br>
           `"type": "text", "repeats": false`<br><br>
-          4. Decimal numeric response questions are denoted with:<br>
-          `"type": "decimal"`<br><br>
           Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
         attributes:
           - name: resourceType

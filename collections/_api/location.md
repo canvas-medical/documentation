@@ -39,7 +39,7 @@ sections:
             description: A list of alternate names that the location is known as, or was known as, in the past. This is the practice location's short name in Canvas.
             type: array[string]
           - name: description
-            description: Additional details about the location, derived from the practice location's title in Canvas.
+            description: "Additional details about the location that could be displayed as further information to identify the location beyond its name. Canvas will produce this in the format `Organization full name: Location full name`"
             type: string
           - name: address
             description: Physical location.

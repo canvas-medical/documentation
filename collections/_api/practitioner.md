@@ -122,7 +122,7 @@ sections:
                 required_in: create, update
               - name: text
                 type: string
-                description: The credentialed full name of the practitioner.
+                description: Text representation of the full name.
                 exclude_in: create, update
               - name: family
                 type: string
@@ -134,11 +134,11 @@ sections:
                 description: Practitioner's first name. Only one first name is allowed.
               - name: prefix
                 type: array[string]
-                description: Name prefixes (e.g. titles), sourced from the staff record.
+                description: Parts that come before the name.
                 exclude_in: create, update
               - name: suffix
                 type: array[string]
-                description: Name suffixes (e.g. credentials), sourced from the staff record.
+                description: Parts that come after the name.
                 exclude_in: create, update
           - name: telecom
             type: array[json]
@@ -259,7 +259,7 @@ sections:
                 attributes:
                   - name: text
                     type: string
-                    description: The license type code. This field specifies the type of license that practitioner holds. On write, any unrecognized value (or `OTHER`) is stored as `License`.
+                    description: The license type code. This field specifies the type of license that practitioner holds.
                     enum_options:
                       - value: CLIA
                       - value: DEA
@@ -267,7 +267,7 @@ sections:
                       - value: SPI
                       - value: STATE
                       - value: TAXONOMY
-                      - value: OTHER (stored as `License`)
+                      - value: OTHER
               - name: period
                 type: json
                 required_in: create, update
@@ -302,7 +302,6 @@ sections:
                       - name: valueBoolean
                         type: boolean
                         description: The boolean value for the extension. Used for the license-primary extension to indicate if this is the practitioner's primary license.
-                  
         search_parameters:
           - name: _id
             type: string
@@ -491,7 +490,7 @@ curl --request POST \
                 }
             ],
             "code": {
-                "text": "CLIA"
+                "text": "License"
             },
             "period": {
                 "start": "2020-01-01",
@@ -669,7 +668,7 @@ payload = {
                 }
             ],
             "code": {
-                "text": "CLIA"
+                "text": "License"
             },
             "period": {
                 "start": "2020-01-01",
@@ -862,7 +861,7 @@ print(response.text)
                 }
             ],
             "code": {
-                "text": "CLIA"
+                "text": "License"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1097,7 +1096,7 @@ curl --request PUT \
                 }
             ],
             "code": {
-                "text": "CLIA"
+                "text": "License"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1277,7 +1276,7 @@ payload = {
                 }
             ],
             "code": {
-                "text": "CLIA"
+                "text": "License"
             },
             "period": {
                 "start": "2020-01-01",
@@ -1490,7 +1489,7 @@ print(response.text)
                             }
                         ],
                         "code": {
-                            "text": "CLIA"
+                            "text": "License"
                         },
                         "period": {
                             "start": "2020-01-01",

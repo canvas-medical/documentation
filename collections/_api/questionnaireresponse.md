@@ -217,14 +217,14 @@ sections:
                           required_in: create, update
                     - name: item
                       description: >-
-                        Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. Nested items are returned on read only; create and update do not support nested items.
+                        Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. 
                       type: array[json]
                       exclude_in: create, update
                 - name: item
                   type: array[json]
                   exclude_in: create, update
                   description: >-
-                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level. Nested items are returned on read only; create and update do not support nested items.
+                    Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
         search_parameters:
           - name: _id
             description: The identifier of the QuestionnaireResponse.

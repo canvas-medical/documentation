@@ -294,7 +294,7 @@ payload = {
   "vaccineCode": {
       "coding": [
         {
-          "system": "http://www.ama-assn.org/go/cpt",
+          "system": "http://hl7.org/fhir/sid/cpt",
           "code": "91306",
           "display": "Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) (coronavirus disease [COVID-19]) vaccine, mRNA-LNP, spike protein, preservative free, 50 mcg/0.25 mL dosage, for intramuscular use"
         },
@@ -400,7 +400,7 @@ curl --request PUT \
     "vaccineCode": {
         "coding": [
             {
-              "system": "http://www.ama-assn.org/go/cpt",
+              "system": "http://hl7.org/fhir/sid/cpt",
               "code": "91306",
               "display": "Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) (coronavirus disease [COVID-19]) vaccine, mRNA-LNP, spike protein, preservative free, 50 mcg/0.25 mL dosage, for intramuscular use"
             },
@@ -453,7 +453,7 @@ payload = {
     "vaccineCode": {
         "coding": [
             {
-              "system": "http://www.ama-assn.org/go/cpt",
+              "system": "http://hl7.org/fhir/sid/cpt",
               "code": "91306",
               "display": "Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) (coronavirus disease [COVID-19]) vaccine, mRNA-LNP, spike protein, preservative free, 50 mcg/0.25 mL dosage, for intramuscular use"
             },
@@ -530,7 +530,7 @@ payload = {
           "vaccineCode": {
             "coding": [
               {
-                "system": "http://www.ama-assn.org/go/cpt",
+                "system": "http://hl7.org/fhir/sid/cpt",
                 "code": "91306",
                 "display": "Severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2) (coronavirus disease [COVID-19]) vaccine, mRNA-LNP, spike protein, preservative free, 50 mcg/0.25 mL dosage, for intramuscular use"
               },

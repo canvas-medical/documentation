@@ -59,7 +59,7 @@ sections:
           - name: status
             type: enum [ final | unknown | entered-in-error ]
             description: The status of the result value. 
-            create_description: The status of the result value. In Canvas only `final` committed vitals (or `unknown`) can be created.
+            create_description: The status of the result value. Observations created via the FHIR API can only be `final`.
             required_in: create
           - name: category
             type: array[json]
@@ -269,9 +269,7 @@ sections:
                 description: Numerical value (with implicit precision).
               - name: unit
                 type: string
-                description: >-
-                  Unit representation.<br><br>
-                  For laboratory observations, the `unit` value is passed through verbatim from the source system and may be any string. The `system` and `code` fields are populated only when the unit maps to a known UCUM code.
+                description: Unit representation.
                 create_description: Unit representation. If omitted, it will default to the values in the table defined above. For the submitted `code`, only units from the table above can be sent. Sending a different unit will result in a 422 error.
               - name: system
                 type: string
@@ -401,7 +399,7 @@ sections:
                 description: Type the reference refers to (e.g. "Specimen").
           - name: component
             type: array[json]
-            description: Component results. <br><br> Used for observations that have sub-measurements, such as blood pressure (systolic / diastolic) and oxygen saturation (which carries inhaled oxygen concentration and flow rate as components).
+            description: Component results. <br><br> Currently only used for blood pressure observations to display the systolic and diastolic components.
             create_description: >-
               Component results<br><br>
               This attribute is only used for blood pressure, as it has two components (systolic and diastolic). <br>
@@ -1178,6 +1176,7 @@ print(response.text)
                     }
                 ],
                 "issued": "2024-04-09T18:35:35.716508+00:00",
+                "valueString": "120/80 mmHg",
                 "derivedFrom": [
                     {
                         "reference": "Observation/378d88eb-cbfc-4668-a96e-c1e011f9f015",

@@ -28,7 +28,7 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  description: Reference that defines the content of this object. Required when an extension is provided.
+                  description: Reference that defines the content of this object. 
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/task-permalink
                       description: This url will have an associated valueString with a url that will directly link to the task in the Canvas UI. 

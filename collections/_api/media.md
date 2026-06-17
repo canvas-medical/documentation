@@ -29,7 +29,7 @@ sections:
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
                 - name: valueId
-                  type: id
+                  type: string
                   description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: status
             required_in: create
@@ -103,9 +103,8 @@ sections:
                 description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
           - name: note
             description: >-
-              Comments made about the media.<br><br>
-              The note attribute is an array of JSON objects, each of which contains a text attribute that contains the text of a comment that will be attached to the inserted media on the UI.<br><br>
-              Note entries are concatenated into a single newline-separated narrative when written, and split back into individual entries on read.
+              Comments made about the media<br><br>
+              The note attribute is an array of JSON objects, each of which contains a text attribute that contains the text of a comment that will be attached to the inserted media on the UI.
             type: array[json]
             attributes:
               - name: text

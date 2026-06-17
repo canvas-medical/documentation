@@ -231,7 +231,7 @@ sections:
             search_options:
                 - value: MedicationRequest:medication
           - name: _revinclude
-            description: Standard FHIR `_revinclude` parameter; include resources that reference the matched MedicationRequest resources.
+            description: Standard FHIR `_revinclude` parameter.
             type: string
         endpoints: [read, search]
         read:
