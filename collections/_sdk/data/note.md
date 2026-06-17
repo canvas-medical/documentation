@@ -316,6 +316,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
 | imaging_reviews            | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | All imaging reviews associated with this note                                                                                                                                              |
 | referral_reviews            | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note                                                                                                                                              |
+| chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
+| visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
 
 ### NoteType
 
