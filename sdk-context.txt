@@ -5152,7 +5152,7 @@ Name | Type | Required | Description
 ---|---|---|---  
 `note_uuid` | _string_ | `true` | The externally exposable id of the note in which to insert the command.  
 `command_uuid` | _string_ | `true` | The externally exposable id of the command which is being referenced.  
-`schema_key` | _string_ | `true` | Unique identifier for data binding. Must match the `schema_key` in your manifest configuration.  
+`schema_key` | _string_ | `true` | Identifier for data binding. Must match the `schema_key` in your manifest configuration and must be unique across every plugin installed on the instance.  
 `content` | _string_ | `true` | HTML content for display in the chart.  
 `print_content` | _string_ | `false` | HTML content for print version (recommended for optimal print output).  
 ##  Manifest Configuration 
@@ -5174,8 +5174,9 @@ Custom commands must be declared in your `CANVAS_MANIFEST.json`:
 ###  Manifest Fields 
   - **name** : Unique name for the command
   - **label** : User-friendly label displayed in Canvas UI
-  - **schema_key** : Unique identifier for the command. CustomCommand instances must use this value.
+  - **schema_key** : Identifier for the command. Must be unique across every plugin installed on the Canvas instance — if another installed plugin already declares the same `schema_key`, installation will be rejected. CustomCommand instances must use this value.
   - **section** : Chart section where command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`
+**Note** : `schema_key` values must be unique across **all plugins installed on the instance** , not just within a single plugin. If you install a plugin whose manifest declares a `schema_key` already owned by another installed plugin, the installation fails with a clear validation error instead of silently overwriting the existing command. Choose a distinctive `schema_key` — for example, prefixing it with your plugin's name — to avoid collisions.
 ##  Basic Usage 
 ###  Step 1: Create HTML Templates 
 Create a template file for your command content (e.g., `templates/risk_assessment.html`):
@@ -5312,7 +5313,7 @@ Custom commands support two versions of content:
   - Custom commands are read-only and cannot capture user input
   - Interactive elements (forms, buttons, input fields) are not supported
   - Commands must be configured in the manifest before use
-  - The `schema_key` must be unique across your plugin's commands
+  - The `schema_key` must be unique across every plugin installed on the Canvas instance. Installing a plugin whose `schema_key` is already owned by another installed plugin will fail with a validation error.
 ----- END PAGE https://docs.canvasmedical.com/sdk/commands-custom-command/
 
 
@@ -5543,12 +5544,21 @@ Field Name | Type | Description
 ###  CodeSystems 
 `CodeSystems` provides standardized medical coding system identifiers used throughout Canvas for consistent medical code classification.
 **Available Code Systems** :
-Code System | Description  
----|---  
-`ICD10` | International Classification of Diseases, 10th Revision  
-`SNOMED` | Systematized Nomenclature of Medicine Clinical Terms  
-`RXNORM` | RxNorm - standardized nomenclature for medications  
-`UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes  
+Code System | System URI | Description  
+---|---|---  
+`SNOMED` | `http://snomed.info/sct` | Systematized Nomenclature of Medicine Clinical Terms  
+`RXNORM` | `http://www.nlm.nih.gov/research/umls/rxnorm` | RxNorm — standardized nomenclature for medications  
+`LOINC` | `http://loinc.org` | Logical Observation Identifiers Names and Codes (labs/observations)  
+`FDB` | `http://www.fdbhealth.com/` | First Databank drug knowledge base  
+`ICD10` | `ICD-10` | International Classification of Diseases, 10th Revision  
+`CVX` | `http://hl7.org/fhir/sid/cvx` | CDC codes for administered vaccines  
+`CPT` | `http://www.ama-assn.org/go/cpt` | Current Procedural Terminology (AMA procedure codes)  
+`NUCC` | `http://www.nucc.org/` | National Uniform Claim Committee provider taxonomy codes  
+`NDC` | `http://hl7.org/fhir/sid/ndc` | National Drug Code  
+`HCPCS` | `http://www.cms.gov/medicare/coding/medhcpcsgeninfo` | Healthcare Common Procedure Coding System  
+`UNITS_OF_MEASURE` | `http://unitsofmeasure.org` | Unified Code for Units of Measure (UCUM)  
+`FULLSCRIPT` | `http://fullscript.com` | Fullscript supplement/dispensary code system  
+`UNSTRUCTURED` | `UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes  
 **Usage Example** :
     ```python
     from canvas_sdk.commands.constants import CodeSystems, Coding
@@ -12766,7 +12776,7 @@ key | String
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-imaging/
 ##  Introduction 
-The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results.
+The `ImagingOrder`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging results.
 ##  Basic Usage 
 To retrieve an `ImagingOrder`, `ImagingReview`, or `ImagingReport` by identifier, use the `get` method on the model manager:
     ```python
@@ -12860,6 +12870,18 @@ name | String
 result_date | Date  
 original_date | Date  
 review | ImagingReview  
+codings | ImagingReportCoding[]  
+###  ImagingReportCoding 
+Field Name | Type  
+---|---  
+dbid | Integer  
+report | ImagingReport  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+value | String  
 ##  Enumeration types 
 ###  ImagingReportSource 
 Value | Label  
@@ -13429,8 +13451,10 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
   - **`LabOrder`** : Represents a lab order placed for a patient, including order details, transmission type, and associated tests
   - **`LabTest`** : Individual tests within a lab order, tracking status from creation through processing
   - **`LabReport`** : Contains the results returned from the lab, including all values and associated metadata
+  - **`LabReportRemark`** : Report-level remarks from lab personnel, accessible via `LabReport.remarks`
   - **`LabValue`** : Individual test results within a lab report, including values, units, and reference ranges
   - **`LabReview`** : Tracks the clinical review process for lab results, including provider comments and patient communication
+  - **`DiagnosticReport`** : The `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
 ##  Basic Usage 
 To retrieve a `LabReport` model by id, use the `objects.get` method on the model. For example:
     ```python
@@ -13571,6 +13595,46 @@ Lab orders and lab reports are connected through the `LabTest` model. Here's how
             print(f"Test: {test.ontology_test_name}")
             print(f"Report ID: {test.report.id}")
     ```
+###  Working with Diagnostic Reports 
+A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+####  Getting the DiagnosticReport(s) from a LabReport 
+    ```python
+    from canvas_sdk.v1.data.lab import LabReport
+    lab_report = LabReport.objects.get(id="report-id")
+    for diagnostic_report in lab_report.diagnostic_reports.all():
+        print(f"DiagnosticReport ID: {diagnostic_report.id}")
+        print(f"Status: {diagnostic_report.status}")
+    ```
+####  Following a DiagnosticReport back to its LabReport 
+    ```python
+    from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+    diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
+    # Follow the `lab` foreign key back to the originating LabReport
+    lab_report = diagnostic_report.lab
+    if lab_report:
+        print(f"LabReport ID: {lab_report.id}")
+    ```
+####  Filtering DiagnosticReports by patient 
+    ```python
+    from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+    diagnostic_reports = DiagnosticReport.objects.for_patient("patient-id")
+    ```
+####  Reconciling with FHIR 
+A `DiagnosticReport`'s `id` is the same id used by the FHIR API, so you can start from a `LabReport`, grab its `DiagnosticReport`, and use the FHIR client to read the corresponding FHIR [DiagnosticReport](/api/diagnosticreport/) resource:
+    ```python
+    from canvas_sdk.clients.canvas_fhir import CanvasFhir
+    from canvas_sdk.v1.data.lab import LabReport
+    lab_report = LabReport.objects.get(id="report-id")
+    diagnostic_report = lab_report.diagnostic_reports.first()
+    # Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+    # plugin configuration page.
+    client = CanvasFhir(
+        self.secrets["CANVAS_FHIR_CLIENT_ID"],
+        self.secrets["CANVAS_FHIR_CLIENT_SECRET"],
+    )
+    # Use the DiagnosticReport's id to read the corresponding FHIR DiagnosticReport resource.
+    fhir_diagnostic_report = client.read("DiagnosticReport", str(diagnostic_report.id))
+    ```
 ###  Working with Lab Reviews 
 Lab reviews track the clinical review process for lab results, including provider comments and patient communication. Here's how to work with the LabReport and LabReview relationship:
 ####  Accessing the Review from a LabReport 
@@ -13664,6 +13728,27 @@ entered_in_error | [CanvasUser](/sdk/data-canvasuser)
 deleted | Boolean  
 values | LabValue[]  
 tests | LabTest[]  
+remarks | LabReportRemark[]  
+diagnostic_reports | DiagnosticReport[]  
+###  LabReportRemark 
+Field Name | Type  
+---|---  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+report | LabReport  
+comment | String  
+###  DiagnosticReport 
+The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport id.
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+status | DiagnosticReportStatus  
+subject | [Patient](/sdk/data-patient/#patient)  
+lab | LabReport  
 ###  LabReview 
 Field Name | Type  
 ---|---  
@@ -13790,6 +13875,19 @@ aoe_code | String
 procedure_class | String  
 values | LabValue[]  
 ##  Enumeration types 
+###  DiagnosticReportStatus 
+Value | Label  
+---|---  
+`REGISTERED` | Registered  
+`PARTIAL` | Partial  
+`PRELIMINARY` | Preliminary  
+`FINAL` | Final  
+`AMENDED` | Amended  
+`CORRECTED` | Corrected  
+`APPENDED` | Appended  
+`CANCELLED` | Cancelled  
+`ENTERED_IN_ERROR` | Entered-in-error  
+`UNKNOWN` | Unknown  
 ###  TransmissionType 
 Value | Label  
 ---|---  
@@ -16801,6 +16899,22 @@ The members of a team can be access with the `members` attribute on a `Team` obj
         log.info(f"first_name: {member.first_name}")
         log.info(f"last_name: {member.last_name}")
     ```
+##  Reconciling with FHIR 
+A team's `group_id` is the same identifier used to represent the team in the [FHIR Group endpoint](/api/group/). Use it to cross-reference a `Team` between the SDK and FHIR.
+Given a `Team`, you can use its `group_id` with the [Canvas FHIR client](/sdk/clients-canvas-fhir/) to fetch the corresponding FHIR `Group` payload:
+    ```python
+    from canvas_sdk.clients.canvas_fhir import CanvasFhir
+    from canvas_sdk.v1.data.team import Team
+    team = Team.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    # Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+    # plugin configuration page.
+    client = CanvasFhir(
+        self.secrets["CANVAS_FHIR_CLIENT_ID"],
+        self.secrets["CANVAS_FHIR_CLIENT_SECRET"],
+    )
+    # Use the team's group_id to read the corresponding FHIR Group resource.
+    group = client.read("Group", str(team.group_id))
+    ```
 ##  Filtering 
 Teams can be filtered by any attribute that exists on the model.
 Filtering for teams is done with the `filter` method on the `Team` model manager.
@@ -16821,6 +16935,7 @@ modified | DateTime
 name | String  
 responsibilities | Array[TeamResponsibility]  
 members | [Staff](/sdk/data-staff/#staff)[]  
+group_id | UUID  
 ###  TeamContactPoint 
 Field Name | Type  
 ---|---  
