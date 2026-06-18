@@ -804,6 +804,9 @@ effects_module:
   - title: "Appointments"
     url: /sdk/effect-notes/#appointment-effect
     description: Create, update, and cancel patient appointments.
+  - title: "Application Notification Badge"
+    url: /sdk/effect-application-notification-badge/
+    description: Display and update a notification badge count on an application icon.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
@@ -979,6 +982,9 @@ data_module:
   - title: "Condition"
     url: /sdk/data-condition/
     description: Condition, diagnosis, or reason for seeking medical attention.
+  - title: "ContentType"
+    url: /sdk/data-content-type/
+    description: Django content type ids used for generic relations and permalink generation.
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
@@ -1069,6 +1075,9 @@ data_module:
   - title: "PayorSpecificCharge"
     url: /sdk/data-payor-specific-charge/
     description: A billing charge specific to a certain transactor in Canvas.
+  - title: "PluginCommand"
+    url: /sdk/data-plugin-command/
+    description: Custom commands registered by plugins via the manifest configuration.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
