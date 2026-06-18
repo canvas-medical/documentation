@@ -215,27 +215,6 @@ After a drop, the next plugin installation with that namespace name will create 
 generating new authentication keys. Any other plugins that were sharing the namespace will need
 to be reconfigured with the new keys.
 
-## Uninstalling and Reinstalling a Plugin
-
-Uninstalling a plugin **deletes its secrets**, including the system-generated `namespace_read_access_key`
-and `namespace_read_write_access_key`. The namespace schema and its data, however, **survive the uninstall**.
-This is by design: uninstalling a plugin should never destroy custom data, and a namespace shared by multiple
-plugins must not be torn down while another plugin is still using it.
-
-Because the namespace still exists, reinstalling the plugin does **not** regenerate the keys — key generation
-only happens when the namespace is first created. The reinstalled plugin is therefore left without valid access
-keys and cannot read or write its own data, even though configuring the secrets appeared to succeed.
-
-This applies in production as well as during development. To avoid getting stuck:
-
-- **Before uninstalling**, copy the namespace keys from the Canvas admin UI into an external secret store such
-  as 1Password. On reinstall, set them back as plugin secrets and the plugin regains access immediately. (To
-  find the keys: open the Canvas admin UI, find the plugin that created the namespace, and read the
-  `namespace_read_access_key` / `namespace_read_write_access_key` secret values.)
-- **If the keys are already lost**, run `canvas namespace drop <namespace> --host <instance> --execute` to remove
-  the namespace, then reinstall. Installation recreates the namespace and generates fresh keys. Any other plugins
-  that were sharing the namespace must be reconfigured with the new keys.
-
 ## When to Reset vs. Drop
 
 | Scenario | Command |
@@ -246,7 +225,6 @@ This applies in production as well as during development. To avoid getting stuck
 | You're done developing and want to remove all traces | `drop` |
 | Other plugins share this namespace and you want to preserve their access | `reset` (keys are preserved) |
 | You want to regenerate the namespace authentication keys | `drop`, then reinstall |
-| You uninstalled a plugin and a reinstall can't access its data (keys were deleted) | `drop`, then reinstall — or restore the saved keys |
 
 ## See Also
 

@@ -693,8 +693,6 @@ sdk_overview:
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/
     identifier: simple_api_handlers
-  - title: "SSO Capabilities"
-    url: /sdk/sso/
   - title: "Testing Utilities"
     url: /sdk/testing-utils/
   - title: "Utils Module"
@@ -796,9 +794,6 @@ effects_module:
   - title: "Appointments"
     url: /sdk/effect-notes/#appointment-effect
     description: Create, update, and cancel patient appointments.
-  - title: "Application Notification Badge"
-    url: /sdk/effect-application-notification-badge/
-    description: Display and update a notification badge count on an application icon.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
@@ -817,9 +812,6 @@ effects_module:
   - title: "Command Metadata"
     url: /sdk/effect-command-metadata/
     description: Attach custom key-value metadata to command records.
-  - title: "Configure Command Buttons"
-    url: /sdk/effect-configure-command-buttons/
-    description: Hide or disable command buttons in specific patient chart locations.
   - title: "Command Metadata Create form"
     url: /sdk/command-metadata-create-form-effect/
     description: Adds additional fields to commands that are stored as command metadata.
@@ -853,9 +845,6 @@ effects_module:
   - title: "Form Result"
     url: /sdk/form-result-effect/
     description: Effect for dynamically displaying forms in the Patient Portal.
-  - title: "HTTP Request"
-    url: /sdk/effect-http-request/
-    description: Have the platform issue an HTTP request on behalf of a plugin.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
@@ -868,9 +857,6 @@ effects_module:
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
-  - title: "Note Restrictions"
-    url: /sdk/effect-note-restrictions/
-    description: Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects.
   - title: "Notes"
     url: /sdk/effect-notes/
     description: Interact with notes in Canvas.
@@ -913,12 +899,6 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
-  - title: "Staff External ID"
-    url: /sdk/effect-staff-external-identifier/
-    description: Create, update, or delete an external identifier for a staff member.
-  - title: "Staff Metadata"
-    url: /sdk/effect-staff-metadata/
-    description: Interact with staff metadata.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
@@ -1010,9 +990,6 @@ data_module:
   - title: "Immunization"
     url: /sdk/data-immunization/
     description: A record of a vaccination that is being administered to a patient, either now, in the past, or in the future.
-  - title: "Instruction"
-    url: /sdk/data-instruction/
-    description: An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions.
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.

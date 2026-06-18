@@ -73,19 +73,6 @@ staff.licenses.all()
 
 ```
 
-## Accessing the staff signature
-
-The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
-
-```python
-from canvas_sdk.v1.data.staff import Staff
-
-staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
-
-# Returns a presigned S3 URL (valid for 1 hour) or None
-url = staff.signature_url
-```
-
 ## Attributes
 
 ### Staff
@@ -128,7 +115,6 @@ url = staff.signature_url
 | personal_meeting_room_link | URL                                                             |
 | state                      | JSON                                                            |
 | user                       | [CanvasUser](/sdk/data-canvasuser)                              |
-| signature                  | String                                                          |
 | supervising_team           | [Staff](#staff)[]                                               |
 | notes                      | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
@@ -137,8 +123,6 @@ url = staff.signature_url
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
 | teams                      | [Team](/sdk/data-team/#team)[]                                  |
 | telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
-| external_identifiers       | [StaffExternalIdentifier](#staffexternalidentifier)[]           |
-| metadata                   | [StaffMetadata](#staffmetadata)[]                               |
 
 ### StaffContactPoint
 
@@ -217,61 +201,6 @@ url = staff.signature_url
 | permissions            | JSON                       |
 | role_type              | [RoleType](#role-type)     |
 
-### StaffExternalIdentifier
-
-| Field Name      | Type            |
-| --------------- | --------------- |
-| id              | UUID            |
-| dbid            | Integer         |
-| created         | DateTime        |
-| modified        | DateTime        |
-| staff           | [Staff](#staff) |
-| use             | String          |
-| identifier_type | String          |
-| system          | String          |
-| value           | String          |
-| issued_date     | Date            |
-| expiration_date | Date            |
-
-```python
-from canvas_sdk.v1.data.staff import Staff
-from logger import log
-
-staff_id = "4150cd20de8a470aa570a852859ac87e"
-staff = Staff.objects.get(id=staff_id)
-
-for identifier in staff.external_identifiers.all():
-    log.info(f"Staff external identifier: {identifier.system}, {identifier.value}")
-    # https://www.example.com - employee-001
-```
-
-### StaffMetadata
-
-| Field Name | Type            |
-| ---------- | --------------- |
-| id         | UUID            |
-| dbid       | Integer         |
-| created    | DateTime        |
-| modified   | DateTime        |
-| staff      | [Staff](#staff) |
-| key        | String          |
-| value      | String          |
-
-```python
-from canvas_sdk.v1.data.staff import Staff
-from logger import log
-
-staff_id = "4150cd20de8a470aa570a852859ac87e"
-staff = Staff.objects.get(id=staff_id)
-
-for metadata in staff.metadata.all():
-    log.info(f"{metadata.key}={metadata.value}")
-```
-
-`StaffMetadata` is a free-form key/value store on a staff member, mirroring
-`PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
-one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
-to upsert it from a plugin.
 
 ## Enumeration types
 
@@ -308,7 +237,6 @@ to upsert it from a plugin.
 ## Computed Properties
 
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
-- `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 
 
 <br/>

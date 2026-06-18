@@ -15,11 +15,11 @@ Plugin that provides a SimpleAPI for managing AWS S3 objects, including listing,
 This example plugin defines the following "secrets" in the manifest file:
 
 ```
-    "variables": [
-        {"name": "S3Key", "sensitive": true},
-        {"name": "S3Secret", "sensitive": true},
-        {"name": "S3Region", "sensitive": false},
-        {"name": "S3Bucket", "sensitive": false}
+    "secrets": [
+        "S3Key",
+        "S3Secret",
+        "S3Region",
+        "S3Bucket"
     ],
 ```
 Once defined in the `MANIFEST.json`, set the secrets for your plugin in the Admin UI of your Canvas EMR. [Read more](https://docs.canvasmedical.com/sdk/secrets/)
@@ -66,11 +66,11 @@ The name of your S3 bucket.
     "effects": [],
     "views": []
   },
-  "variables": [
-    {"name": "S3Key", "sensitive": true},
-    {"name": "S3Secret", "sensitive": true},
-    {"name": "S3Region", "sensitive": false},
-    {"name": "S3Bucket", "sensitive": false}
+  "secrets": [
+    "S3Key",
+    "S3Secret",
+    "S3Region",
+    "S3Bucket"
   ],
   "tags": {},
   "references": [],

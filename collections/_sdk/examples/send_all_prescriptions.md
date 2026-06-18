@@ -46,7 +46,7 @@ send_all_prescriptions/
         "effects": [],
         "views": []
     },
-    "variables": [],
+    "secrets": [],
     "tags": {},
     "references": ["https://docs.canvasmedical.com/sdk/handlers-action-buttons/", "https://docs.canvasmedical.com/sdk/commands/#prescribe"],
     "license": "",

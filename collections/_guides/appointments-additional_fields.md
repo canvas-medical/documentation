@@ -63,7 +63,7 @@ from canvas_sdk.handlers import BaseHandler
 
 
 # Inherit from BaseHandler to properly get registered for events
-class Handler(BaseHandler):
+class Protocol(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.APPOINTMENT__FORM__GET_ADDITIONAL_FIELDS)
 
     def compute(self) -> list[Effect]:

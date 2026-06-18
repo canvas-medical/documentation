@@ -104,7 +104,7 @@ Once the content is pasted in, the plugin does the rest. Here's how.
 
 #### 1. Handler Class
 
-The `Handler` class intercepts events and processes the transcript using a parser.
+The `Protocol` class intercepts events and processes the transcript using a parser.
 
 ```python
 from canvas_sdk.handlers import BaseHandler
@@ -115,7 +115,7 @@ from canvas_sdk.events import EventType
 class ScribeParser: ...  # explained in section 2 below, "ScribeParser"
 
 
-class Handler(BaseHandler):
+class Protocol(BaseHandler):
     """A Plugin for interpreting transcripts."""
 
     RESPONDS_TO = EventType.Name(EventType.CLIPBOARD_COMMAND__POST_INSERTED_INTO_NOTE)
@@ -248,7 +248,7 @@ class CustomParser(TranscriptParser):
         ...
 ```
 
-Replace the parser in the `Handler` class:
+Replace the parser in the `Protocol` class:
 
 ```python
 from canvas_sdk.handlers import BaseHandler
@@ -258,8 +258,8 @@ from canvas_sdk.effects import Effect
 class CustomParser: ... # defined above
 
 
-class Handler(BaseHandler):
-    """Handler using a custom parser."""
+class Protocol(BaseHandler):
+    """Protocol using a custom parser."""
 
     def compute(self) -> list[Effect]:
         transcript = self.context["fields"]["text"]

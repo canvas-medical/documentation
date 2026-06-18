@@ -112,7 +112,7 @@ installation of the plugin.
     "components": {
         "handlers": [
             {
-                "class": "paperwork_eviscerator.handlers.event_handlers:Handler",
+                "class": "paperwork_eviscerator.handlers.event_handlers:Protocol",
                 "description": "A handler that does xyz...",
                 "data_access": {
                     "event": "",
@@ -126,9 +126,7 @@ installation of the plugin.
         "effects": [],
         "views": []
     },
-    "variables": [
-        {"name": "my_secret_code", "sensitive": true}
-    ],
+    "secrets": ["my_secret_code"],
     "tags": {},
     "references": [],
     "license": "",
@@ -163,7 +161,7 @@ from logger import log
 
 
 # Inherit from BaseHandler to properly get registered for events
-class Handler(BaseHandler):
+class Protocol(BaseHandler):
     """
     You should put a helpful description of this handler's behavior here.
     """

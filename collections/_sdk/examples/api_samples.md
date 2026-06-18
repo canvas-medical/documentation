@@ -36,9 +36,7 @@ authenticated requests.
         "effects": [],
         "views": []
     },
-    "variables": [
-        {"name": "my-api-key", "sensitive": true}
-    ],
+    "secrets": ["my-api-key"],
     "tags": {},
     "references": [],
     "license": "",

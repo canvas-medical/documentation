@@ -30,7 +30,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `patient_id`             | `str` or `None`                             | Patient ID (required for updates only)      | No       |
 | `addresses`              | `list[PatientAddress]` or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`  | Patient's preferred pharmacies              | No       |
-| `metadata`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
+| `preferred_pharmacies`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
 
 ## PatientContactPoint
 

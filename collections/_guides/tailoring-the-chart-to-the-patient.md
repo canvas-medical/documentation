@@ -299,7 +299,7 @@ And here's the updated `CANVAS_MANIFEST.json`:
         "effects": [],
         "views": []
     },
-    "variables": [],
+    "secrets": [],
     "tags": {},
     "references": [],
     "license": "",

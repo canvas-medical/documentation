@@ -31,7 +31,7 @@ To include a questionnaire in your plugin, add a reference to its YAML template 
             }
         ]
     },
-    "variables": [],
+    "secrets": [],
     "tags": {},
     "references": [],
     "license": "",

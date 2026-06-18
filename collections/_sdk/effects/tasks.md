@@ -20,14 +20,13 @@ To add a task, import the `AddTask` class and create an instance of it.
 | title              | required | string             | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
 | due                | optional | datetime           | A date/time when the task is due.                                                    |
 | status             | optional | TaskStatus         | A status of OPEN, CLOSED or COMPLETED. Defaults to OPEN if not supplied.             |
-| priority           | optional | TaskPriority       | A priority of `STAT`, `URGENT`, or `ROUTINE`. Defaults to no priority if not supplied. |
 | labels             | optional | list[string]       | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 | author_id          | optional | string or UUID     | Author's id to set task creator, defaults to CanvasBot.                              |
 | linked_object_id   | optional | string or UUID     | Linked object id of linked object.                                                   |
 | linked_object_type | optional | LinkableObjectType | Type of the [LinkedObject](#linked-object-type)                                      |
 
 
-### Enumeration Types
+### Enumeration Type
 
 #### Linked Object Type
 
@@ -36,14 +35,6 @@ To add a task, import the `AddTask` class and create an instance of it.
 | REFERRAL | REFERRAL    |
 | IMAGING  | IMAGING     |
 
-#### TaskPriority
-
-| Value   | Description                                                                            |
-|---------|----------------------------------------------------------------------------------------|
-| STAT    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
-| URGENT  | The request should be actioned promptly — higher priority than routine.                |
-| ROUTINE | The request has normal priority.                                                       |
-
 
 An example of adding a task:
 
@@ -51,7 +42,7 @@ An example of adding a task:
 import arrow
 
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskPriority, TaskStatus
+from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
@@ -83,7 +74,6 @@ class MyHandler(BaseHandler):
                 title="Please call the patient with their test results.",
                 due=arrow.utcnow().shift(days=5).datetime,
                 status=TaskStatus.OPEN,
-                priority=TaskPriority.URGENT,
                 labels=["call"],
                 linked_object_id=referral.id,
                 linked_object_type=linked_task_type,
@@ -107,7 +97,6 @@ To update an existing task, import the `UpdateTask` class and create an instance
 | title       | optional | string         | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
 | due         | optional | datetime       | A date/time when the task is due.                                                    |
 | status      | optional | TaskStatus     | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     |
-| priority    | optional | TaskPriority   | A priority of `STAT`, `URGENT`, or `ROUTINE`. See [TaskPriority](#taskpriority).      |
 | labels      | optional | list[string]   | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 
 An example of updating a task to a status of `COMPLETED`:

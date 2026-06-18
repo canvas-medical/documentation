@@ -190,11 +190,6 @@ Commands migrated to the new framework will function similarly if not identicall
       <td></td>
     </tr>
     <tr>
-      <td>Adjust Protocol</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
       <td>Immunization Statement</td>
        <td> <span class="tag-complete"> Released - GA </span> </td>
       <td></td>
@@ -236,107 +231,47 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Adjust Prescription</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td><ul><li>The command has been split into two commands. Change Medication can be used if only adjusting the sig.</li></ul></td>
     </tr>
     <tr>
       <td>Change Medication</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Chart Section Review</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td><ul><li>The committed layout defaults to expanded.</li></ul></td>
     </tr>
     <tr>
       <td>Lab Review</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Imaging Review</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Consult Report Review</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
+      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Uncategorized Document Review</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Assess Coding Gap</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Clipboard</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Create Coding Gap</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Defer Coding Gap</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Private Notes</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Validate Coding Gap</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Approve Change</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Deny Change</td>
-      <td><span class="tag-complete"> Released - GA </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>POC Lab Test</td>
       <td><span class="tag-beta-testing"> Released - Beta </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Approve Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Deny Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><a href="/product-updates/cancelrx/">Cancel Prescription</a></td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Reference</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Visual Exam Finding</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-next-up"> Next up </span> </td>
       <td></td>
     </tr>
   </tbody>

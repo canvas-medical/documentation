@@ -97,7 +97,6 @@ conditions = Condition.objects.find(Diabetes)
 | clinical_status             | [ClinicalStatus](#clinicalstatus)                                          |
 | codings                     | [ConditionCoding](#conditioncoding)[]                                      |
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
-| notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
 
 ### ConditionCoding

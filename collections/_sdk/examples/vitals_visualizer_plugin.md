@@ -65,7 +65,7 @@ vitals_visualizer_plugin/
         "effects": [],
         "views": []
     },
-    "variables": [],
+    "secrets": [],
     "tags": [],
     "license": "NONE",
     "readme": "./README.md"

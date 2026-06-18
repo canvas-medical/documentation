@@ -30,10 +30,15 @@ Creates or updates a metadata entry for the specified patient and key combinatio
 |-----------|-------|-----------------------------|----------|
 | `value`   | `str` | The metadata value to store | Yes      |
 
+#### Returns
+
+An `Effect` object configured for upserting patient metadata.
+
 #### Behavior
 
 - If a metadata entry with the specified key already exists for the patient, it will be updated with the new value
 - If no entry exists, a new metadata entry will be created
+- The operation is idempotent - repeated calls with the same key and value will not create duplicate entries
 
 ## Implementation Details
 
@@ -100,8 +105,8 @@ class NarrativeMetadataExtractor(BaseHandler):
   RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
 
   def compute(self):
-    patient_id = self.event.context["patient"]["id"]
-    narrative = self.event.context.get("fields", {}).get("narrative", "")
+    patient_id = self.context["patient"]["id"]
+    narrative = self.context.get("fields", {}).get("narrative", "")
 
     # Extract key-value pairs from narrative text
     # Pattern: key=somekey*value=somevalue

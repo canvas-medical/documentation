@@ -122,7 +122,7 @@ class TaskDashboardGlobal(Application):
     "effects": [],
     "views": []
   },
-  "variables": [],
+  "secrets": [],
   "tags": {},
   "references": [],
   "license": "",
@@ -208,7 +208,7 @@ class TaskDashboardPatient(Application):
     "effects": [],
     "views": []
   },
-  "variables": [],
+  "secrets": [],
   "tags": {},
   "references": [],
   "license": "",
@@ -294,7 +294,7 @@ class ScribeAssistant(Application):
     "effects": [],
     "views": []
   },
-  "variables": [],
+  "secrets": [],
   "tags": {},
   "references": [],
   "license": "",
@@ -407,7 +407,7 @@ and one query-string parameter.
     "effects": [],
     "views": []
   },
-  "variables": [],
+  "secrets": [],
   "tags": {},
   "references": [],
   "license": "",
