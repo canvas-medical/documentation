@@ -85,7 +85,6 @@ findings = VisualExamFinding.objects.filter(patient=patient)
 | dbid       | Integer                               |
 | created    | DateTime                              |
 | modified   | DateTime                              |
-| deleted    | Boolean                               |
 | patient    | [Patient](/sdk/data-patient/#patient) |
 | note       | [Note](/sdk/data-note/#note)          |
 | image      | String (S3 key)                       |

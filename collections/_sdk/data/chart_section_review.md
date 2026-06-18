@@ -73,6 +73,57 @@ medication_reviews = ChartSectionReview.objects.filter(
 )
 ```
 
+## Working with entries
+
+`entries` is a list of integer `dbid` values identifying the records that were reviewed in the section. Which model those `dbid`s belong to depends on the review's `section`:
+
+| `section`          | Model(s) referenced by `entries`             |
+|--------------------|----------------------------------------------|
+| `conditions`       | [Condition](/sdk/data-condition/) (non-surgical) |
+| `surgical_history` | [Condition](/sdk/data-condition/) (surgical) |
+| `medications`      | [Medication](/sdk/data-medication/)          |
+| `family_histories` | `FamilyHistory` (not currently exposed in the SDK data module) |
+| `allergies`        | [AllergyIntolerance](/sdk/data-allergy-intolerance/) |
+| `immunizations`    | [Immunization](/sdk/data-immunization/) and [ImmunizationStatement](/sdk/data-immunization/) |
+
+If you only need to **see what was reviewed**, prefer the `content` field: it holds the pre-rendered text of the reviewed records (one line per entry, captured at review time), so it needs no entry resolution and avoids the ambiguity described below.
+
+To work with the **record objects themselves**, filter the corresponding model by `dbid__in=review.entries`. Always scope the query to `review.patient` as well: a `dbid` is unique only within its own table, so scoping by patient avoids matching an unrelated record that happens to share the same integer (this is also why the `immunizations` section, which draws from two models, is resolved against both).
+
+```python
+from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
+from canvas_sdk.v1.data.chart_section_review import (
+    ChartSectionReview,
+    ChartSectionReviewSection,
+)
+from canvas_sdk.v1.data.condition import Condition
+from canvas_sdk.v1.data.immunization import Immunization, ImmunizationStatement
+from canvas_sdk.v1.data.medication import Medication
+
+review = ChartSectionReview.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+
+if review.section == ChartSectionReviewSection.CONDITIONS:
+    records = Condition.objects.filter(
+        patient=review.patient, dbid__in=review.entries, surgical=False
+    )
+elif review.section == ChartSectionReviewSection.SURGICAL_HISTORY:
+    records = Condition.objects.filter(
+        patient=review.patient, dbid__in=review.entries, surgical=True
+    )
+elif review.section == ChartSectionReviewSection.MEDICATIONS:
+    records = Medication.objects.filter(patient=review.patient, dbid__in=review.entries)
+elif review.section == ChartSectionReviewSection.ALLERGIES:
+    records = AllergyIntolerance.objects.filter(patient=review.patient, dbid__in=review.entries)
+elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
+    # entries may reference either model, so resolve against both.
+    records = [
+        *Immunization.objects.filter(patient=review.patient, dbid__in=review.entries),
+        *ImmunizationStatement.objects.filter(patient=review.patient, dbid__in=review.entries),
+    ]
+```
+
+> **Note on the `immunizations` section:** `entries` stores bare `dbid` integers with no indication of which model each one came from. Because `Immunization` and `ImmunizationStatement` are separate tables with independent `dbid` sequences, the same integer can be a valid `dbid` in both. If a patient has an `Immunization` and an `ImmunizationStatement` that share a `dbid` and only one was reviewed, resolving against both models (as above) will return both records — there is no way to disambiguate them from `entries` alone. Treat the immunizations result as a best-effort superset, not an exact match. If you only need to know what was reviewed, use `content` instead: it captured the rendered text of the actual reviewed items at review time.
+
 ## Attributes
 
 ### ChartSectionReview
@@ -87,7 +138,7 @@ medication_reviews = ChartSectionReview.objects.filter(
 | patient    | [Patient](/sdk/data-patient/#patient)                     |
 | note       | [Note](/sdk/data-note/#note)                              |
 | section    | [ChartSectionReviewSection](#chartsectionreviewsection)   |
-| entries    | Integer[] (array of entry IDs)                            |
+| entries    | Integer[] (`dbid`s of the reviewed records — see [Working with entries](#working-with-entries)) |
 | content    | String (newline-separated bullet items)                   |
 
 ## Enumeration types
