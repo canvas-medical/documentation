@@ -10997,6 +10997,123 @@ CPT | CPT
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-charge-description-master/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-chart-section-review/
+##  Introduction 
+The `ChartSectionReview` model represents a reviewed chart section captured on a note, with its pre-rendered content. When a provider reviews a chart section during a visit, Canvas stores a snapshot of that section's content at the time of review.
+##  Basic usage 
+To get a chart section review by identifier, use the `get` method on the `ChartSectionReview` model manager:
+    ```python
+    from canvas_sdk.v1.data.chart_section_review import ChartSectionReview
+    review = ChartSectionReview.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+    ```
+If you have a patient object, the chart section reviews for a patient can be accessed with the `chart_section_reviews` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    reviews = patient.chart_section_reviews.all()
+    ```
+If you have a note object, the chart section reviews for that note can be accessed with the `chart_section_reviews` attribute on a `Note` object:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    reviews = note.chart_section_reviews.all()
+    ```
+##  Filtering 
+Chart section reviews can be filtered by any attribute that exists on the model.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.chart_section_review import (
+        ChartSectionReview,
+        ChartSectionReviewSection,
+    )
+    # Get all reviews for the conditions section
+    condition_reviews = ChartSectionReview.objects.filter(
+        section=ChartSectionReviewSection.CONDITIONS
+    )
+    ```
+###  By patient and section 
+    ```python
+    from canvas_sdk.v1.data.chart_section_review import (
+        ChartSectionReview,
+        ChartSectionReviewSection,
+    )
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    medication_reviews = ChartSectionReview.objects.filter(
+        patient=patient,
+        section=ChartSectionReviewSection.MEDICATIONS
+    )
+    ```
+##  Working with entries 
+`entries` is a list of integer `dbid` values identifying the records that were reviewed in the section. Which model those `dbid`s belong to depends on the review's `section`:
+`section` | Model(s) referenced by `entries`  
+---|---  
+`conditions` | [Condition](/sdk/data-condition/) (non-surgical)  
+`surgical_history` | [Condition](/sdk/data-condition/) (surgical)  
+`medications` | [Medication](/sdk/data-medication/)  
+`family_histories` | `FamilyHistory` (not currently exposed in the SDK data module)  
+`allergies` | [AllergyIntolerance](/sdk/data-allergy-intolerance/)  
+`immunizations` | [Immunization](/sdk/data-immunization/) and [ImmunizationStatement](/sdk/data-immunization/)  
+If you only need to **see what was reviewed** , prefer the `content` field: it holds the pre-rendered text of the reviewed records (one line per entry, captured at review time), so it needs no entry resolution and avoids the ambiguity described below.
+To work with the **record objects themselves** , filter the corresponding model by `dbid__in=review.entries`. Always scope the query to `review.patient` as well: a `dbid` is unique only within its own table, so scoping by patient avoids matching an unrelated record that happens to share the same integer (this is also why the `immunizations` section, which draws from two models, is resolved against both).
+    ```python
+    from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
+    from canvas_sdk.v1.data.chart_section_review import (
+        ChartSectionReview,
+        ChartSectionReviewSection,
+    )
+    from canvas_sdk.v1.data.condition import Condition
+    from canvas_sdk.v1.data.immunization import Immunization, ImmunizationStatement
+    from canvas_sdk.v1.data.medication import Medication
+    review = ChartSectionReview.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+    if review.section == ChartSectionReviewSection.CONDITIONS:
+        records = Condition.objects.filter(
+            patient=review.patient, dbid__in=review.entries, surgical=False
+        )
+    elif review.section == ChartSectionReviewSection.SURGICAL_HISTORY:
+        records = Condition.objects.filter(
+            patient=review.patient, dbid__in=review.entries, surgical=True
+        )
+    elif review.section == ChartSectionReviewSection.MEDICATIONS:
+        records = Medication.objects.filter(patient=review.patient, dbid__in=review.entries)
+    elif review.section == ChartSectionReviewSection.ALLERGIES:
+        records = AllergyIntolerance.objects.filter(patient=review.patient, dbid__in=review.entries)
+    elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
+        # entries may reference either model, so resolve against both.
+        records = [
+            *Immunization.objects.filter(patient=review.patient, dbid__in=review.entries),
+            *ImmunizationStatement.objects.filter(patient=review.patient, dbid__in=review.entries),
+        ]
+    ```
+> **Note on the`immunizations` section:** `entries` stores bare `dbid` integers with no indication of which model each one came from. Because `Immunization` and `ImmunizationStatement` are separate tables with independent `dbid` sequences, the same integer can be a valid `dbid` in both. If a patient has an `Immunization` and an `ImmunizationStatement` that share a `dbid` and only one was reviewed, resolving against both models (as above) will return both records — there is no way to disambiguate them from `entries` alone. Treat the immunizations result as a best-effort superset, not an exact match. If you only need to know what was reviewed, use `content` instead: it captured the rendered text of the actual reviewed items at review time.
+##  Attributes 
+###  ChartSectionReview 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+deleted | Boolean  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note/#note)  
+section | ChartSectionReviewSection  
+entries | Integer[] (`dbid`s of the reviewed records — see Working with entries)  
+content | String (newline-separated bullet items)  
+##  Enumeration types 
+###  ChartSectionReviewSection 
+Value | Label  
+---|---  
+conditions | Conditions  
+surgical_history | Surgical History  
+medications | Medications  
+family_histories | Family Histories  
+allergies | Allergies  
+immunizations | Immunizations
+----- END PAGE https://docs.canvasmedical.com/sdk/data-chart-section-review/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-claim/
 ##  Introduction 
 This module defines the data models used to manage healthcare claim workflows.
@@ -11741,6 +11858,111 @@ remission | remission
 resolved | resolved  
 investigative | investigative  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-condition/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-content-type/
+##  Introduction 
+The `ContentType` model provides read-only access to Django content types. Use it to resolve the content type id for a given model, which is required when working with generic relations (such as [document references](/sdk/data-document-reference)) and when generating permalinks.
+A content type is identified by two **stable** values — `app_label` and `model` — that are the same on every Canvas instance. Its `dbid` (the content type id) is a per-database auto-increment that **is not stable across environments**. Always resolve the `dbid` at runtime from the `app_label` and `model`; never hardcode a content type id, or it will point at the wrong model in another environment.
+##  Basic usage 
+To get a content type by its database id, use the `get` method on the `ContentType` model manager:
+    ```python
+    from canvas_sdk.v1.data import ContentType
+    content_type = ContentType.objects.get(dbid=42)
+    ```
+##  Resolving a content type at runtime 
+Because the `dbid` differs per environment, look the content type up by its stable `app_label` and `model`, then read `dbid` from the result:
+    ```python
+    from canvas_sdk.v1.data import ContentType
+    content_type = ContentType.objects.filter(app_label="api", model="note").first()
+    if content_type:
+        # Resolved for this environment — safe to use for a generic relation or permalink.
+        content_type_id = content_type.dbid
+    ```
+##  Filtering 
+Content types can be filtered by any attribute that exists on the model.
+Filtering for content types is done with the `filter` method on the `ContentType` model manager.
+###  By model 
+To find the content type for a specific model, filter by `app_label` and `model`:
+    ```python
+    from canvas_sdk.v1.data import ContentType
+    content_type = ContentType.objects.filter(app_label="api", model="note").first()
+    if content_type:
+        print(f"Content type id: {content_type.dbid}")
+    ```
+##  app_label and model for data module models 
+Use these stable values to resolve a content type with `ContentType.objects.filter(app_label=..., model=...)`. The `model` value is the lowercased Django model name, and most data module models live under the `api` app. This list is not exhaustive — any model not shown here can be resolved the same way once you know its `app_label` and `model`.
+###  `api` app 
+SDK data model | app_label | model  
+---|---|---  
+[AllergyIntolerance](/sdk/data-allergy-intolerance/) | `api` | `allergyintolerance`  
+[Appointment](/sdk/data-appointment/) | `api` | `appointment`  
+[Assessment](/sdk/data-assessment/) | `api` | `assessment`  
+[BannerAlert](/sdk/data-banner-alert/) | `api` | `banneralert`  
+[ChartSectionReview](/sdk/data-chart-section-review/) | `api` | `chartsectionreview`  
+[Condition](/sdk/data-condition/) | `api` | `condition`  
+[Coverage](/sdk/data-coverage/) | `api` | `coverage`  
+[DetectedIssue](/sdk/data-detected-issue/) | `api` | `detectedissue`  
+[Device](/sdk/data-device/) | `api` | `device`  
+[DiagnosticReport](/sdk/data-labs/#diagnosticreport) | `api` | `diagnosticreport`  
+[DocumentReference](/sdk/data-document-reference/) | `api` | `documentreference`  
+[Encounter](/sdk/data-encounter/) | `api` | `encounter`  
+[Facility](/sdk/data-facility/) | `api` | `facility`  
+[Goal](/sdk/data-goal/) | `api` | `goal`  
+[ImagingOrder](/sdk/data-imaging/) | `api` | `imagingorder`  
+[ImagingReport](/sdk/data-imaging/) | `api` | `imagingreport`  
+[ImagingReview](/sdk/data-imaging/) | `api` | `imagingreview`  
+[Immunization](/sdk/data-immunization/) | `api` | `immunization`  
+[Instruction](/sdk/data-instruction/) | `api` | `instruction`  
+[Interview](/sdk/data-questionnaire/) | `api` | `interview`  
+[LabOrder](/sdk/data-labs/) | `api` | `laborder`  
+[LabReport](/sdk/data-labs/) | `api` | `labreport`  
+[LabValue](/sdk/data-labs/) | `api` | `labvalue`  
+[Letter](/sdk/data-letter/) | `api` | `letter`  
+[Medication](/sdk/data-medication/) | `api` | `medication`  
+[MedicationStatement](/sdk/data-medication-statement/) | `api` | `medicationstatement`  
+[Message](/sdk/data-message/) | `api` | `message`  
+[Note](/sdk/data-note/) | `api` | `note`  
+[Observation](/sdk/data-observation/) | `api` | `observation`  
+[Organization](/sdk/data-organization/) | `api` | `organization`  
+[Patient](/sdk/data-patient/) | `api` | `patient`  
+[PatientConsent](/sdk/data-patient-consent/) | `api` | `patientconsent`  
+[PatientGroup](/sdk/data-patient-group/) | `api` | `patientgroup`  
+[PracticeLocation](/sdk/data-practicelocation/) | `api` | `practicelocation`  
+[Prescription](/sdk/data-prescription/) | `api` | `prescription`  
+[Questionnaire](/sdk/data-questionnaire/) | `api` | `questionnaire`  
+[ReasonForVisit](/sdk/data-reason-for-visit/) | `api` | `reasonforvisit`  
+[Referral](/sdk/data-referral/) | `api` | `referral`  
+[Staff](/sdk/data-staff/) | `api` | `staff`  
+[StopMedicationEvent](/sdk/data-stop-medication-event/) | `api` | `stopmedicationevent`  
+[Task](/sdk/data-task/) | `api` | `task`  
+[Team](/sdk/data-team/) | `api` | `team`  
+[UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) | `api` | `uncategorizedclinicaldocument`  
+[VisualExamFinding](/sdk/data-visual-exam-finding/) | `api` | `visualexamfinding`  
+###  Other apps 
+Some models live in a different Django app, so their `app_label` is not `api`:
+SDK data model | app_label | model  
+---|---|---  
+[Command](/sdk/data-command/) | `commands` | `command`  
+[Application](/sdk/data-application/) | `plugin_io` | `application`  
+[PluginCommand](/sdk/data-plugin-command/) | `plugin_io` | `plugincommand`  
+[Calendar](/sdk/data-calendar/) | `calendars` | `calendar`  
+[ExternalEvent](/sdk/data-external-event/) | `data_integration` | `externalevent`  
+[ServiceProvider](/sdk/data-serviceprovider/) | `data_integration` | `serviceprovider`  
+[ChargeDescriptionMaster](/sdk/data-charge-description-master/) | `quality_and_revenue` | `chargedescriptionmaster`  
+[Claim](/sdk/data-claim/) | `quality_and_revenue` | `claim`  
+[PayorSpecificCharge](/sdk/data-payor-specific-charge/) | `quality_and_revenue` | `payorspecificcharge`  
+##  Attributes 
+###  ContentType 
+Field Name | Type  
+---|---  
+dbid | Integer  
+app_label | String  
+model | String  
+  - **dbid** : The internal database primary key, which is the content type id used for generic relations and permalinks. This value is environment-specific — resolve it at runtime rather than hardcoding it.
+  - **app_label** : The label of the application the model belongs to (e.g., `api`).
+  - **model** : The lowercased name of the model (e.g., `note`).
+----- END PAGE https://docs.canvasmedical.com/sdk/data-content-type/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-coverage/
@@ -14576,6 +14798,8 @@ metadata | QuerySet[NoteMetadata] | All metadata key-value pairs associated with
 lab_reviews | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note  
 imaging_reviews | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | All imaging reviews associated with this note  
 referral_reviews | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note  
+chart_section_reviews | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note  
+visual_exam_findings | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note  
 ###  NoteType 
 Field Name | Type  
 ---|---  
@@ -15203,6 +15427,8 @@ tasks | [Task](/sdk/data-task/#task)[]
 telecom | PatientContactPoint[]  
 user | [CanvasUser](/sdk/data-canvasuser/)[]  
 patient_groups | [PatientGroup](/sdk/data-patient-group/)[]  
+chart_section_reviews | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]  
+visual_exam_findings | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]  
 ###  PatientAddress 
 Field Name | Type  
 ---|---  
@@ -15404,6 +15630,57 @@ effective_date | Date
 end_date | Date  
 part_of_capitated_set | Boolean
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-payor-specific-charge/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-plugin-command/
+##  Introduction 
+The `PluginCommand` model provides read-only access to the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
+##  Basic usage 
+To get a plugin command by identifier, use the `get` method on the `PluginCommand` model manager:
+    ```python
+    from canvas_sdk.v1.data.plugin_command import PluginCommand
+    plugin_command = PluginCommand.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+##  Filtering 
+Plugin commands can be filtered by any attribute that exists on the model.
+Filtering for plugin commands is done with the `filter` method on the `PluginCommand` model manager.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.plugin_command import PluginCommand
+    # Find all plugin commands in a specific chart section
+    plugin_commands = PluginCommand.objects.filter(section="assessment")
+    ```
+###  By command key 
+To find a registered command by the `schema_key` declared in the manifest, filter on `command_key`:
+    ```python
+    from canvas_sdk.v1.data.plugin_command import PluginCommand
+    plugin_command = PluginCommand.objects.filter(command_key="riskAssessment").first()
+    if plugin_command:
+        print(f"Label: {plugin_command.label}")
+        print(f"Section: {plugin_command.section}")
+    ```
+##  Attributes 
+###  PluginCommand 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+name | String  
+command_key | String  
+schema_key | String  
+label | String  
+section | String  
+plugin_name | String  
+  - **id** : The unique UUID identifier for the plugin command.
+  - **dbid** : The internal database primary key.
+  - **name** : The registered name of the command (e.g., `RiskAssessment`).
+  - **command_key** : The command key declared in the plugin's manifest (e.g., `riskAssessment`). This identifies the logical command; multiple rows can share a `command_key`, one per content version.
+  - **schema_key** : The content-versioned identifier for this row, derived from the `command_key` and a hash of the command's `label` and `section`. Changing a command's label or section produces a new `schema_key` and a new row, leaving historical chart entries pinned to their original label.
+  - **label** : The user-friendly display label for the command (e.g., `Risk Assessment`).
+  - **section** : The chart section where the command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`.
+  - **plugin_name** : The name of the plugin that registered the command.
+----- END PAGE https://docs.canvasmedical.com/sdk/data-plugin-command/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-posting/
@@ -17134,13 +17411,75 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-value-sets/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-visual-exam-finding/
+##  Introduction 
+The `VisualExamFinding` model represents a visual exam finding captured on a note. Each finding consists of a titled image along with a narrative description of the clinical observation.
+##  Basic usage 
+To get a visual exam finding by identifier, use the `get` method on the `VisualExamFinding` model manager:
+    ```python
+    from canvas_sdk.v1.data.visual_exam_finding import VisualExamFinding
+    finding = VisualExamFinding.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the visual exam findings for a patient can be accessed with the `visual_exam_findings` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    findings = patient.visual_exam_findings.all()
+    ```
+If you have a note object, the visual exam findings for that note can be accessed with the `visual_exam_findings` attribute on a `Note` object:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    findings = note.visual_exam_findings.all()
+    ```
+##  Accessing image files 
+The `image_url` property returns a presigned S3 URL for securely accessing the image file. The URL is valid for 1 hour.
+    ```python
+    from canvas_sdk.v1.data.visual_exam_finding import VisualExamFinding
+    finding = VisualExamFinding.objects.exclude(image="").first()
+    # Returns a presigned S3 URL (valid for 1 hour), or None if no image is set
+    url = finding.image_url
+    ```
+##  Filtering 
+Visual exam findings can be filtered by any attribute that exists on the model.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.visual_exam_finding import VisualExamFinding
+    # Get all findings with a specific title
+    findings = VisualExamFinding.objects.filter(title="Left forearm")
+    ```
+###  By patient 
+    ```python
+    from canvas_sdk.v1.data.visual_exam_finding import VisualExamFinding
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    findings = VisualExamFinding.objects.filter(patient=patient)
+    ```
+##  Attributes 
+###  VisualExamFinding 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note/#note)  
+image | String (S3 key)  
+title | String  
+narrative | String  
+image_url | String (property) — presigned S3 URL
+----- END PAGE https://docs.canvasmedical.com/sdk/data-visual-exam-finding/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data/
 The data module provides you with data to compute on. It provides curated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level data), representing the current state of your target Canvas instance. The module's classes offer convenience methods and operators that make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 Data module classes are Django ORM models, which allow easy retrieval of data at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -39864,7 +40203,7 @@ This file adds a "Visualize" button to the patient chart's vitals section, which
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/examples/
 The pages below showcase example plugins written with the Canvas SDK. All pages describe the file structure, the functionality, and link to GitHub where you can grab the code yourself and start iterating.
-[ Abnormal Lab Task Notification ](/sdk/example-abnormal_lab_task_notification/) [ AI Note Titles ](/sdk/example-ai_note_titles/) [ API Samples ](/sdk/example-api_samples/) [ AWS S3 ](/sdk/example-aws_s3/) [ Charting API Examples ](/sdk/example-charting_api_examples/) [ Example Chart Application ](/sdk/example-example_chart_app/) [ Extend AI PDF ](/sdk/example-extend_ai_pdf/) [ Group Items in Patient Chart ](/sdk/example-patient_summary_chart_groups/) [ LLM ](/sdk/example-llm/) [ Patient Creation Platform Sync ](/sdk/example-patient_creation_platform_sync/) [ Patient Portal Customization ]() [ Send All Prescriptions ](/sdk/example-send_all_prescriptions/) [ SendGrid Email ](/sdk/example-sendgrid_email/) [ Twilio SMS/MMS ](/sdk/example-twilio_sms_mms/) [ Upsert Patient Metadata ](/sdk/example-upsert_patient_metadata/) [ Vitals Visualizer ](/sdk/example-vitals_visualizer_plugin/)
+[ API Samples ](/sdk/example-api_samples/) [ Charting Interface ]() [ Patient Portal Customization ]() [ Integrations ]()
 ----- END PAGE https://docs.canvasmedical.com/sdk/examples/
 
 
