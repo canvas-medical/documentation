@@ -159,16 +159,16 @@ class MyHandler(BaseHandler):
 
 By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing `patient_id` to `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
 
-A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_key()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
 
 ```python
-from canvas_sdk.effects.patient import Patient, generate_patient_key
+from canvas_sdk.effects.patient import Patient, generate_patient_id
 from canvas_sdk.handlers.base import BaseHandler
 
 
 class MyHandler(BaseHandler):
     def compute(self):
-        new_patient_id = generate_patient_key()
+        new_patient_id = generate_patient_id()
 
         patient = Patient(
             patient_id=new_patient_id,
