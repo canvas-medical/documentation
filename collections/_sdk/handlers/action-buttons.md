@@ -59,6 +59,7 @@ The `ActionButton` class defines several locations where the button can be place
 |---------------------------------------------|---------------------------------------------------------------------------------|
 | `NOTE_HEADER`                               | The button will appear in the header of each note.                              |
 | `NOTE_FOOTER`                               | The button will appear in the footer of each note.                              |
+| `NOTE_BODY`                                 | The button will appear in the body of each note.                                |
 | `NOTE_HEADER_DROPDOWN`                      | The button will appear in the note header dropdown.                             |
 | `CHART_PATIENT_HEADER`                      | The button will appear in the patient header on the patient page.               |
 | `CHART_SUMMARY_SOCIAL_DETERMINANTS_SECTION` | The button will appear in the Social Determinants section of the chart summary. |
@@ -212,3 +213,68 @@ class VitalsButtonHandler(ActionButton):
         # Optionally, make the button visible only under specific conditions
         return True
 ```
+
+## Note State Action Buttons
+
+`NoteStateActionButton` is a specialized `ActionButton` subclass for building note footer buttons that transition a note from one state to another, such as locking, signing, pushing charges, deleting, and discharging, along with the appointment transitions check in, no show, cancel, and restore. It handles visibility, ordering, and the underlying state-transition effects for you, so a plugin can replace Canvas's default footer buttons with its own.
+
+To create one, subclass `NoteStateActionButton` and set the `STATE_ACTION` class attribute to the target [`NoteStates`](/sdk/data-note/#notestates) value the button should transition the note into:
+
+```python
+from canvas_sdk.handlers.action_button import NoteStateActionButton
+from canvas_sdk.v1.data.note import NoteStates
+
+
+class LockButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.LOCKED
+
+
+class SignButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.SIGNED
+```
+
+Each button is configured automatically based on its `STATE_ACTION`:
+
+- **`BUTTON_LOCATION`** is always `NOTE_FOOTER`.
+- **`BUTTON_TITLE`** defaults to an imperative label for the target state, such as `Lock`, `Sign`, `Push charges`, `Check in`, `No show`, `Delete`, `Restore`, `Discharge`, or `Cancel`. Set `BUTTON_TITLE` explicitly to override it.
+- **`BUTTON_KEY`** defaults to `note_state_action__<state value>`, for example `note_state_action__LKD`. Set `BUTTON_KEY` explicitly to override it.
+
+When the button is clicked, the appropriate note or appointment effect is applied and the note's action buttons are reloaded so the footer reflects the new state.
+
+### Visibility
+
+A `NoteStateActionButton` appears only when its `STATE_ACTION` is a permitted transition from the note's current state and note type, so you do not need to override `visible()` yourself. Lock and Sign are the same underlying transition, surfaced differently depending on signature requirements: a `LOCKED`-target button is hidden for note types that require a signature, and a `SIGNED`-target button is hidden for note types that do not.
+
+When several `NoteStateActionButton`s are visible at once, they are ordered automatically to match the order in which the transitions are offered for the note's current state.
+
+### Hiding the default footer buttons
+
+To replace Canvas's built-in footer buttons with your own, hide the defaults with the [`NoteFooterConfiguration`](/sdk/effect-note-footer-configuration/) effect and register your `NoteStateActionButton` handlers alongside it. Without this configuration, your buttons appear in addition to the default ones.
+
+### Example: Custom note footer buttons
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note_footer_configuration import NoteFooterConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.action_button import NoteStateActionButton
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.note import NoteStates
+
+
+class HideDefaultFooterButtons(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_FOOTER__GET_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [NoteFooterConfiguration(hide_default_state_buttons=True).apply()]
+
+
+class LockButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.LOCKED
+
+
+class DeleteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.DELETED
+```
+
+Register each handler in your `CANVAS_MANIFEST.json` to make the buttons available in the note footer.
