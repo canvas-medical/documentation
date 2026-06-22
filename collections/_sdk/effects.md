@@ -376,6 +376,18 @@ Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 | ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error. |
 
 
+### Lab Reports
+
+Check out the [Lab Report Effects](/sdk/effect-lab-report/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_LAB_REPORT | Create a lab report. |
+| UPDATE_LAB_REPORT | Update a lab report's metadata. |
+| ENTER_IN_ERROR_LAB_REPORT | Mark a lab report as entered in error. |
+| ATTACH_LAB_REPORT_RESULTS | Attach lab tests and values to an existing report. |
+
+
 ### Questionnaire
 
 Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation.
