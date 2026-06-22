@@ -873,6 +873,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Footer Configuration"
+    url: /sdk/effect-note-footer-configuration/
+    description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
@@ -921,6 +924,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Reload Action Buttons"
+    url: /sdk/effect-reload-action-buttons/
+    description: Re-evaluate a note's or patient's action buttons in real time.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.
