@@ -27,7 +27,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`       | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers              | No       |
-| `patient_id`             | `str` or `None`                             | Patient key. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient key on creation](#supplying-a-patient-key-on-creation). | No       |
+| `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
 | `addresses`              | `list[PatientAddress]` or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`  | Patient's preferred pharmacies              | No       |
 | `metadata`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
@@ -95,7 +95,7 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 
 ## Implementation Details
 
-- **Creation**: Creates new patient records. By default the server generates the patient key, but you may supply your own `patient_id` — see [Supplying a patient key on creation](#supplying-a-patient-key-on-creation)
+- **Creation**: Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation)
 - **Updates**: Updates existing patient records when `patient_id` is provided
 - Validates that referenced practice locations exist in the system
 - Verifies that referenced healthcare providers exist in the system
@@ -155,11 +155,11 @@ class MyHandler(BaseHandler):
         return [patient.create()]
 ```
 
-## Supplying a patient key on creation
+## Supplying a patient id on creation
 
-By default, Canvas generates the patient key (`patient_id`) when you create a patient. You can supply your own instead by passing `patient_id` to `Patient`. This lets your plugin generate the key up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the key back first. It works the same way Notes and Commands accept a pre-generated id.
+By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing `patient_id` to `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
 
-A supplied key must be a well-formed patient key: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_key()` to produce one rather than building the format by hand. A key in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the key as before, so existing plugins are unaffected.
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_key()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
 
 ```python
 from canvas_sdk.effects.patient import Patient, generate_patient_key
@@ -168,15 +168,15 @@ from canvas_sdk.handlers.base import BaseHandler
 
 class MyHandler(BaseHandler):
     def compute(self):
-        patient_key = generate_patient_key()
+        new_patient_id = generate_patient_key()
 
         patient = Patient(
-            patient_id=patient_key,
+            patient_id=new_patient_id,
             first_name="Jane",
             last_name="Doe",
         )
 
-        # `patient_key` can now be reused for subsequent patient-scoped
+        # `new_patient_id` can now be reused for subsequent patient-scoped
         # effects in the same plugin execution.
 
         return [patient.create()]
@@ -232,7 +232,7 @@ The effect performs validation before execution to ensure data integrity:
 3. **Data Format Validation**: Ensures that provided values conform to expected formats:
    - Date fields must be valid dates
    - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
-   - On creation, if `patient_id` is supplied it must be a well-formed patient key (a 32-character hex string); otherwise validation raises
+   - On creation, if `patient_id` is supplied it must be a well-formed patient id (a 32-character hex string); otherwise validation raises
 4. **Update-Specific Validation**:
    - Validates that the patient exists before attempting updates
 
