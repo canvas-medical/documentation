@@ -1584,6 +1584,8 @@ command.set_test_value("pH", "6.8")
 
 ## Prescribe
 
+**A plugin cannot sign a prescription.** Signing (committing) a prescription is a licensed prescriber's action and must be performed by a prescriber in Canvas; it is never done programmatically. A plugin can draft a prescription with `originate()`, but the `commit` flag is ignored for the `Prescribe`, `Refill`, and `Adjust Prescription` commands, so origination always leaves the prescription unsigned. A prescriber must then sign it in the Canvas UI before a plugin can `send()` it electronically. Attempting to commit one of these commands programmatically is refused.
+
 **Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
 
 - A pharmacy must be specified on the command before it can be sent.
