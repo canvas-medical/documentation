@@ -161,7 +161,7 @@ By default, Canvas generates the patient id (`patient_id`) when you create a pat
 
 A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
 
-```python
+```python?partial=true
 from canvas_sdk.effects.patient import Patient, generate_patient_id
 from canvas_sdk.handlers.base import BaseHandler
 
