@@ -402,7 +402,7 @@ class ReloadFooterOnNoteStateChange(BaseHandler):
 
 ## Reference plugin
 
-A complete, working plugin that ties these patterns together is available as the **note footer state** example. It demonstrates:
+A complete, working plugin that ties these patterns together is available as the [**note-lifecycle-example**](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/note-lifecycle-example) plugin. It demonstrates:
 
 - a full set of state-responsive footer buttons built on `NoteStateActionButton` (Lock, Sign, Unlock, Push charges, Check in, No show, Cancel, Restore, Delete, Discharge), each appearing only when its transition is valid from the note's current state;
 - a `HideDefaultStateButtons` handler that hides Canvas's native footer buttons so the plugin's buttons replace them;
