@@ -159,7 +159,7 @@ class MyHandler(BaseHandler):
 
 By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
 
-A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
 
 ```python?partial=true
 from canvas_sdk.effects.patient import Patient, generate_patient_id
@@ -233,6 +233,7 @@ The effect performs validation before execution to ensure data integrity:
    - Date fields must be valid dates
    - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
    - On creation, if `patient_id` is supplied it must be a well-formed patient id (a 32-character hex string); otherwise validation raises
+   - On creation, a supplied `patient_id` must not already belong to an existing patient; a duplicate id raises a validation error
 4. **Update-Specific Validation**:
    - Validates that the patient exists before attempting updates
 
