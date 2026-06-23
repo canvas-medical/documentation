@@ -37,7 +37,7 @@ sections:
                             - value: http://terminology.hl7.org/CodeSystem/v2-0203
                           type: string
                         - name: code
-                          description: The code of the clinical status.
+                          description: The code identifying the identifier type.
                           type: string
                           enum_options: 
                             - value: TAX
@@ -52,6 +52,7 @@ sections:
                   enum_options: 
                     - value: urn:oid:2.16.840.1.113883.4.4 (for Tax ID)
                     - value: http://hl7.org/fhir/sid/us-npi (for NPI)
+                    - value: http://nucc.org/provider-taxonomy (for Provider Taxonomy)
                 - name: value
                   type: string
                   description: The value that is unique.
