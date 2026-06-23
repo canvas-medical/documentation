@@ -16,7 +16,7 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [adding banner alerts](#add-banner) to claims
 - [removing banner alerts](#remove-banner) from claims
 - [updating provider information](#update-provider) on claims
-- [setting the supervising provider](#set-supervising-provider) on claims
+- [updating the supervising provider](#update-supervising-provider) on claims
 - [setting the incident-to flag](#set-incident-to) on claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
@@ -774,9 +774,9 @@ class ClaimProviderHandler(BaseHandler):
         ]
 ```
 
-### Set Supervising Provider
+### Update Supervising Provider
 
-`ClaimEffect.set_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
+`ClaimEffect.update_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
 
 Provide exactly one of:
 - A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
@@ -831,7 +831,7 @@ class SupervisingProviderHandler(BaseHandler):
         state = self.event.context["state"]
         if state == "LKD" and note.supervising_provider:
             claim_effect = ClaimEffect(claim_id=claim.id)
-            return [claim_effect.set_supervising_provider(staff_id=str(note.supervising_provider.id))]
+            return [claim_effect.update_supervising_provider(staff_id=str(note.supervising_provider.id))]
         return []
 ```
 
@@ -856,7 +856,7 @@ class SupervisingProviderHandler(BaseHandler):
         if state == "LKD":
             claim_effect = ClaimEffect(claim_id=claim.id)
             return [
-                claim_effect.set_supervising_provider(
+                claim_effect.update_supervising_provider(
                     ClaimSupervisingProvider(
                         first_name="Jane",
                         last_name="Doe",
