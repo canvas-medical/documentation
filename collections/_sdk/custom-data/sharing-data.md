@@ -58,10 +58,10 @@ When both keys are present at the install that creates the namespace, those plai
 
 Rules:
 
-- Both keys must be supplied, or neither. Supplying only one is an error.
-- Values must be non-empty strings. Format is not enforced, but UUID4s are conventional.
-- Only applies to the install that **creates** the namespace. Subsequent joins continue to validate against whatever was written at creation time.
-- If you supply neither, behavior is unchanged: Canvas generates both keys for you.
+- Supply **both** keys for your values to take effect. If you provide only one — or leave either value empty — Canvas silently ignores the supplied keys and auto-generates both instead. The install still succeeds; it does not fail.
+- Format is not enforced, but UUID4s are conventional.
+- This only applies to the install that **creates** the namespace. Subsequent joins validate against whatever was written at creation time.
+- If you supply neither key, behavior is unchanged: Canvas generates both for you.
 
 When to use this:
 
