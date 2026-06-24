@@ -134,6 +134,8 @@ if photo:
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
 | user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
+| chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
+| visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
 
 ### PatientAddress
 

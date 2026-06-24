@@ -34,14 +34,14 @@ After the namespace is created, you can find the generated keys in the **Canvas 
 1. Navigate to **Settings → Plugins**
 2. Find the plugin that created the namespace
 3. Click to view plugin details
-4. The `read_access_key` and `read_write_access_key` appear in the **Secrets** section
+4. The `namespace_read_access_key` and `namespace_read_write_access_key` appear in the **Secrets** section
 
 Share these keys securely with developers of other plugins that need access:
 
-- Share `read_access_key` with plugins that only need to read data
-- Share `read_write_access_key` with plugins that need to modify data
+- Share `namespace_read_access_key` with plugins that only need to read data
+- Share `namespace_read_write_access_key` with plugins that need to modify data
 
-> **Important:** Store these keys in a secure location outside of Canvas. If the keys are accidentally removed from the manifest's `secrets` array, they will be deleted upon the next installation.
+> **Important:** Store these keys in a secure location outside of Canvas, such as 1Password. Removing a key from the manifest's `secrets` array does **not** delete the stored value — it is preserved. However, **uninstalling the plugin deletes its secrets**, including the namespace keys. Because the namespace itself survives an uninstall, a later reinstall will not regenerate the keys, so a copy kept outside Canvas is the only way to restore access. See [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin).
 
 ### Configuring Plugin Access
 
@@ -233,7 +233,7 @@ except NamespaceWriteDenied as e:
 
 ### Troubleshooting
 
-**"NamespaceAccessError: secret 'read_access_key' is not configured"**
+**"NamespaceAccessError: secret 'namespace_read_access_key' is not configured"**
 - Add the secret name to the `secrets` array in your manifest
 - Ensure the secret has a value set in the Canvas UI
 
@@ -242,12 +242,12 @@ except NamespaceWriteDenied as e:
 - Check that the key hasn't been regenerated
 
 **"NamespaceAccessError: requests 'read_write' access but key only grants 'read'"**
-- You're using `read_access_key` but declared `"access": "read_write"`
-- Either change to `read_write_access_key` or change access to `"read"`
+- You're using `namespace_read_access_key` but declared `"access": "read_write"`
+- Either change to `namespace_read_write_access_key` or change access to `"read"`
 
 **"NamespaceWriteDenied: namespace is read-only"**
 - Your plugin has `"access": "read"` but is attempting a write operation
-- Change to `"access": "read_write"` and use `read_write_access_key`
+- Change to `"access": "read_write"` and use `namespace_read_write_access_key`
 
 ## API Sharing
 
