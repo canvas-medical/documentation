@@ -1,5 +1,5 @@
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/
-Canvas Medical's FHIR API adheres to the [FHIR R4 specification](http://hl7.org/fhir/R4/).
+Canvas Medical's FHIR API conforms to the [FHIR R4 specification](http://hl7.org/fhir/R4/) and to the [US Core Implementation Guide STU 6.1.0](https://hl7.org/fhir/us/core/STU6.1/) for the resources where US Core profiles apply.
 There is a [Bruno](https://www.usebruno.com/) Collection that allows easy access to making requests to Canvas FHIR API Endpoints. Make sure to pull changes periodically to ensure you have all the latest examples.   
 [ ![Fetch in Bruno](https://fetch.usebruno.com/button.svg)](https://fetch.usebruno.com?url=https%3A%2F%2Fgithub.com%2Fcanvas-medical%2Fcanvas-fhir-example-requests.git)
 ##  Who can access this API? 
@@ -162,7 +162,7 @@ The requested resource was not found.
 get
 /Allergen
 #### Allergen search
-Search for Allergyen resources.
+Search for Allergen resources.
 ### Query Parameters
 **An Allergen Search requires either a code or _text search parameter to perform.**
 _text 
@@ -710,13 +710,13 @@ string
 The display name of the coding.
 **Value Options Supported:**
   - Confirmed 
-  - Entered-in-error 
+  - Entered in Error 
 text 
 string 
 Plain text representation of the concept.
 **Value Options Supported:**
   - Confirmed 
-  - Entered-in-error 
+  - Entered in Error 
 type 
 enum [ allergy | intolerance ] 
 Identification of the underlying physiological mechanism for the reaction risk.
@@ -1128,13 +1128,13 @@ string
 The display name of the coding.
 **Value Options Supported:**
   - Confirmed 
-  - Entered-in-error 
+  - Entered in Error 
 text 
 string 
 Plain text representation of the concept.
 **Value Options Supported:**
   - Confirmed 
-  - Entered-in-error 
+  - Entered in Error 
 type 
 enum [ allergy | intolerance ] 
 Identification of the underlying physiological mechanism for the reaction risk.
@@ -1270,7 +1270,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -1353,7 +1353,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -1529,7 +1529,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -1656,7 +1656,7 @@ The request requires user authorization.
              "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -1677,7 +1677,7 @@ The request requires user authorization.
                         "display": "Entered in Error"
                     }
                 ],
-                "text": "Confirmed"
+                "text": "Entered in Error"
             },
             "type": "allergy",
             "code": {
@@ -1739,7 +1739,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -1760,7 +1760,7 @@ The request requires user authorization.
                         "display": "Entered in Error"
                     }
                 ],
-                "text": "Confirmed"
+                "text": "Entered in Error"
             },
             "type": "allergy",
             "code": {
@@ -1965,7 +1965,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             }
                         ],
                         "clinicalStatus": {
@@ -2148,8 +2148,8 @@ end
 datetime 
 End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
 status 
-enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ] required
-The status of the appointment.   
+enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ] required
+The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update.   
 This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute.   
 FHIR Status | Canvas Status  
 ---|---  
@@ -2159,7 +2159,7 @@ booked | confirmed
 arrived | arrived  
 checked-in | roomed  
 fulfilled | exited  
-noshow | no-showed  
+noshow | noshowed  
 cancelled | cancelled  
 entered-in-error | deleted  
 If any of the first 7 FHIR statuses are used, the appointment will appear on the schedule from the dropdown on the Appointment Card in the Schedule view with one of those statuses.   
@@ -2179,7 +2179,10 @@ The type of appointment
 Click to view child attributes
 system 
 string 
-The system of the appointment
+The system of the appointment. On create and update, only `http://snomed.info/sct` and `INTERNAL` are accepted; other systems will be rejected.
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - INTERNAL 
 code 
 string 
 The code of the appointment.   
@@ -2351,8 +2354,8 @@ end
 datetime 
 End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
 status 
-enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ] 
-The status of the appointment.   
+enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ] 
+The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update.   
 This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute.   
 FHIR Status | Canvas Status  
 ---|---  
@@ -2362,7 +2365,7 @@ booked | confirmed
 arrived | arrived  
 checked-in | roomed  
 fulfilled | exited  
-noshow | no-showed  
+noshow | noshowed  
 cancelled | cancelled  
 entered-in-error | deleted  
 The first 7 statuses come from the dropdown on the Appointment Card in the Schedule view. A `cancelled` status comes from a patient appointment or an other event being cancelled. The `deleted/entered-in-error` status is when a checked-in appointment note has been deleted in Canvas.
@@ -2377,6 +2380,9 @@ Click to view child attributes
 system 
 string 
 The system of the appointment
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - INTERNAL 
 code 
 string 
 The code of the appointment.   
@@ -2535,8 +2541,8 @@ end
 datetime 
 End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
 status 
-enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ] required
-The status of the appointment.   
+enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ] required
+The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update.   
 This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute.   
 FHIR Status | Canvas Status  
 ---|---  
@@ -2546,7 +2552,7 @@ booked | confirmed
 arrived | arrived  
 checked-in | roomed  
 fulfilled | exited  
-noshow | no-showed  
+noshow | noshowed  
 cancelled | cancelled  
 entered-in-error | deleted  
 If any of the first 7 FHIR statuses are used, the appointment will appear on the schedule from the dropdown on the Appointment Card in the Schedule view with one of those statuses.   
@@ -2567,7 +2573,10 @@ The type of appointment
 Click to view child attributes
 system 
 string 
-The system of the appointment
+The system of the appointment. On create and update, only `http://snomed.info/sct` and `INTERNAL` are accepted; other systems will be rejected.
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - INTERNAL 
 code 
 string 
 The code of the appointment.   
@@ -2809,8 +2818,8 @@ end
 datetime 
 End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
 status 
-enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ] 
-The status of the appointment.   
+enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ] 
+The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update.   
 This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute.   
 FHIR Status | Canvas Status  
 ---|---  
@@ -2820,7 +2829,7 @@ booked | confirmed
 arrived | arrived  
 checked-in | roomed  
 fulfilled | exited  
-noshow | no-showed  
+noshow | noshowed  
 cancelled | cancelled  
 entered-in-error | deleted  
 The first 7 statuses come from the dropdown on the Appointment Card in the Schedule view. A `cancelled` status comes from a patient appointment or an other event being cancelled. The `deleted/entered-in-error` status is when a checked-in appointment note has been deleted in Canvas.
@@ -2835,6 +2844,9 @@ Click to view child attributes
 system 
 string 
 The system of the appointment
+**Value Options Supported:**
+  - http://snomed.info/sct 
+  - INTERNAL 
 code 
 string 
 The code of the appointment.   
@@ -2979,7 +2991,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "identifier": [
@@ -3183,7 +3195,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             }
                         ],
                         "identifier": [
@@ -3944,7 +3956,7 @@ For some connections requiring a username and password, it may be necessary to u
     ```
 Repeated, unnecessary calls to a token request function double the number of requests this script generates.
 ####  Do this 
-Regardless of the authentication method used, a successful request includes `"expires_in": ` in the response body. The corresponding value will be an integer for the number of seconds until the token will be expired in Canvas. By reusing the token and eliminating redundant token requests, there is a **performance** gain from reducing the overall number of requests. The system is also more **secure** \- having fewer tokens reduces the overall surface area for illegitamate access
+Regardless of the authentication method used, a successful request includes `"expires_in": ` in the response body. The corresponding value will be an integer for the number of seconds until the token will be expired in Canvas. By reusing the token and eliminating redundant token requests, there is a **performance** gain from reducing the overall number of requests. The system is also more **secure** \- having fewer tokens reduces the overall surface area for illegitimate access
 **General Guidelines:**
   - store the access token as securely as the client id and secret
   - depending on your use case, it may be best to store a token just for that session or to reuse it until it nears expiration
@@ -3976,7 +3988,7 @@ There's any number of ways to do this in your language of choice. In Python, you
             access_token = response.json()["access_token"]
             expiration_date = datetime.now() + timedelta(seconds=response.json()["expires_in"])
             os.environ["CANVAS_API_ACCESS_TOKEN"] = access_token
-            os.environ["CANVAS_ACESS_TOKEN_EXPIRATION_DATE"] = expiration_date.strftime("%m/%d/%y %H:%M:%S")
+            os.environ["CANVAS_ACCESS_TOKEN_EXPIRATION_DATE"] = expiration_date.strftime("%m/%d/%y %H:%M:%S")
             return response.json()["access_token"]
         else:
             raise Exception(f"Could not acquire new auth token: {response.text}")
@@ -4006,7 +4018,7 @@ There's any number of ways to do this in your language of choice. In Python, you
         patients = response.json()["entry"]
         for patient in patients:
             patient_id = patient["resource"]["id"]
-            response = requests.get(f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}")
+            response = requests.get(f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}", headers=headers)
             # do something with the appointments - save locally, modify and update, etc.
     ```
 ####  Takeaway 
@@ -4110,6 +4122,9 @@ A category code in the format `system|code`.
 patient 
 string 
 The patient reference for who this care plan is for, in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+_revinclude 
+string 
+Standard FHIR `_revinclude` parameter.
 ### Response Payload Attributes
 resourceType 
 string 
@@ -4490,7 +4505,7 @@ boolean
 Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
 role 
 array[json] 
-Type of involvement
+Type of involvement. Required for Practitioner participants; not present (and ignored) for Organization participants.
 Click to view child attributes
 coding 
 array[json] 
@@ -4572,7 +4587,7 @@ boolean required
 Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
 role 
 array[json] required
-Type of involvement
+Type of involvement. Required for Practitioner participants; not present (and ignored) for Organization participants.
 Click to view child attributes
 coding 
 array[json] required
@@ -4639,6 +4654,9 @@ Search for care team participants of a patient by a specific status. If a status
   - suspended
   - inactive
   - entered-in-error
+_revinclude 
+string 
+Standard FHIR `_revinclude` parameter.
 ### Response Payload Attributes
 resourceType 
 string 
@@ -4717,7 +4735,7 @@ boolean
 Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
 role 
 array[json] 
-Type of involvement
+Type of involvement. Required for Practitioner participants; not present (and ignored) for Organization participants.
 Click to view child attributes
 coding 
 array[json] 
@@ -5423,7 +5441,7 @@ The bearer token included in requests send to this endpoint must have one of the
                 }
             ]
         }
-        response = requests.put(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
         print(response.text)
         ```
 ----- END PAGE https://docs.canvasmedical.com/api/claim-operations/
@@ -5594,6 +5612,10 @@ category
 json required
 Classification of the supplied information.
 Click to view child attributes
+coding 
+array[json] required
+Code defined by a terminology system.
+Click to view child attributes
 system 
 string required
 The system url of the coding.
@@ -5624,8 +5646,12 @@ positive integer required
 Diagnosis instance identifier.  
 The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
 diagnosisCodeableConcept 
-array[json] required
+json required
 Nature of illness or problem.
+Click to view child attributes
+coding 
+array[json] required
+Code defined by a terminology system.
 Click to view child attributes
 system 
 string required
@@ -5732,13 +5758,13 @@ system
 string required
 The system url of the coding.
 **Value Options Supported:**
-  - hhttp://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
+  - http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
   - https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets 
 code 
 string required
 The code.
 display 
-string required
+string 
 The display name of the coding.
 ### Responses
 201 Created 
@@ -5924,6 +5950,10 @@ category
 json 
 Classification of the supplied information.
 Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
+Click to view child attributes
 system 
 string 
 The system url of the coding.
@@ -5953,8 +5983,12 @@ positive integer
 Diagnosis instance identifier.  
 The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
 diagnosisCodeableConcept 
-array[json] 
+json 
 Nature of illness or problem.
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
 Click to view child attributes
 system 
 string 
@@ -6059,7 +6093,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - hhttp://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
+  - http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
   - https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets 
 code 
 string 
@@ -6240,6 +6274,10 @@ category
 json required
 Classification of the supplied information.
 Click to view child attributes
+coding 
+array[json] required
+Code defined by a terminology system.
+Click to view child attributes
 system 
 string required
 The system url of the coding.
@@ -6266,21 +6304,25 @@ Information about diagnoses relevant to the claim items.
 These diagnoses will create Assessments in Canvas. At least one diagnosis element is required.
 Click to view child attributes
 sequence 
-positive integer required
+positive integer 
 Diagnosis instance identifier.  
 The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
 diagnosisCodeableConcept 
-array[json] required
+json 
 Nature of illness or problem.
 Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
+Click to view child attributes
 system 
-string required
+string 
 The system url of the coding.
 **Value Options Supported:**
   - http://hl7.org/fhir/ValueSet/icd-10 
   - http://hl7.org/fhir/sid/icd-10-cm 
 code 
-string required
+string 
 The ICD10 code. Canvas will automatically add the `.` when displaying in the UI (e.g the code 'H9190' is for the ICD10 H91.90 for unspecified hearing loss in an unspecified ear)
 display 
 string 
@@ -6330,7 +6372,7 @@ positive integer required
 Item instance identifier.  
 The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
 diagnosisSequence 
-array[positive integer] required
+array[positive integer] 
 Applicable diagnoses. This list of integers corresponds one or more diagnoses in the `Claim.diagnosis` list that this service charge is associated with.
 productOrService 
 json required
@@ -6353,14 +6395,14 @@ display
 string required
 The display name of the coding.
 quantity 
-json required
+json 
 Count of products or services.
 Click to view child attributes
 value 
 integer 
 Numerical value.
 unitPrice 
-json required
+json 
 Fee, charge or cost per item.
 Click to view child attributes
 value 
@@ -6378,13 +6420,13 @@ system
 string required
 The system url of the coding.
 **Value Options Supported:**
-  - hhttp://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
+  - http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
   - https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets 
 code 
 string required
 The code.
 display 
-string required
+string 
 The display name of the coding.
 ### Responses
 200 OK 
@@ -6604,6 +6646,10 @@ category
 json 
 Classification of the supplied information.
 Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
+Click to view child attributes
 system 
 string 
 The system url of the coding.
@@ -6633,8 +6679,12 @@ positive integer
 Diagnosis instance identifier.  
 The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
 diagnosisCodeableConcept 
-array[json] 
+json 
 Nature of illness or problem.
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
 Click to view child attributes
 system 
 string 
@@ -6739,7 +6789,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - hhttp://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
+  - http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers 
   - https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets 
 code 
 string 
@@ -7110,6 +7160,10 @@ The request requires user authorization.
                     "code": "NeedsClinicianReview",
                     "display": "Clinician"
                 }
+              },
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+                "valueId": "d4a09e6c-bcfb-4d7f-bcc6-aa6cc77eaff3"
               }
             ],
             "status": "active",
@@ -8287,9 +8341,13 @@ The request requires user authorization.
               "resource": {
                 "resourceType": "Communication",
                 "id": "7433b4b2-0d18-45ca-bb12-71105c80386b",
-                "status": "unknown",
+                "status": "completed",
                 "sent": "2021-03-21T10:46:17+00:00",
                 "received": "2022-03-14T12:03:58.958000+00:00",
+                "subject": {
+                  "reference": "Patient/4c21512185184e579b09bfac16dfdd2f",
+                  "type": "Patient"
+                },
                 "recipient": [
                   {
                     "reference": "Patient/4c21512185184e579b09bfac16dfdd2f",
@@ -8379,8 +8437,13 @@ The request requires user authorization.
         {
             "resourceType": "Communication",
             "id": "17b7d61e-4b0e-4940-bd37-b64f5c2ae29d",
-            "status": "unknown",
+            "status": "completed",
             "sent": "2023-10-23T21:19:22.865089+00:00",
+            "received": "2023-10-23T21:21:00.000000+00:00",
+            "subject": {
+                "reference": "Patient/43f1418bae9c41919203e0006761067c",
+                "type": "Patient"
+            },
             "recipient": [
                 {
                     "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e",
@@ -8396,22 +8459,6 @@ The request requires user authorization.
                     "contentString": "What's up doc?"
                 }
             ]
-        }
-        ```
-  - **400**
-        ```json
-        {
-          "resourceType": "OperationOutcome",
-          "id": "101",
-          "issue": [
-            {
-              "severity": "error",
-              "code": "invalid",
-              "details": {
-                "text": "Bad request"
-              }
-            }
-          ]
         }
         ```
   - **401**
@@ -8661,7 +8708,7 @@ The code of the clinical status.
 **Value Options Supported:**
   - active 
   - resolved 
-  - relapsed 
+  - relapse 
   - remission 
 display 
 string 
@@ -8669,7 +8716,7 @@ The display name of the coding.
 **Value Options Supported:**
   - Active 
   - Resolved 
-  - Relapsed 
+  - Relapse 
   - Remission 
 text 
 string 
@@ -8677,7 +8724,7 @@ Plain text representation of the concept.
 **Value Options Supported:**
   - Active 
   - Resolved 
-  - Relapsed 
+  - Relapse 
   - Remission 
 verificationStatus 
 json 
@@ -8973,6 +9020,7 @@ verification-status
 string 
 The verification status to support the clinical status of the condition.
 **Search Values Supported:**
+  - confirmed
   - entered-in-error
   - provisional
 category 
@@ -9052,7 +9100,7 @@ The code of the clinical status.
 **Value Options Supported:**
   - active 
   - resolved 
-  - relapsed 
+  - relapse 
   - remission 
 display 
 string 
@@ -9060,7 +9108,7 @@ The display name of the coding.
 **Value Options Supported:**
   - Active 
   - Resolved 
-  - Relapsed 
+  - Relapse 
   - Remission 
 text 
 string 
@@ -9068,7 +9116,7 @@ Plain text representation of the concept.
 **Value Options Supported:**
   - Active 
   - Resolved 
-  - Relapsed 
+  - Relapse 
   - Remission 
 verificationStatus 
 json 
@@ -9242,7 +9290,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -9320,7 +9368,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -9491,7 +9539,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus":
@@ -9625,7 +9673,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -9703,7 +9751,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "clinicalStatus": {
@@ -9924,7 +9972,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             }
                         ],
                         "clinicalStatus": {
@@ -10078,6 +10126,7 @@ scope
 json required
 For create interactions, this field is required by FHIR but ignored by Canvas, so {} is an accepted value.
 Click to view child attributes
+text 
 string 
 Plain text representation of the concept
 **Value Options Supported:**
@@ -10115,12 +10164,15 @@ The source on which this consent statement is based.
 The source on which this consent is based.  
 For create interactions, `sourceAttachment.title`, `sourceAttachment.contentType`, and `sourceAttachment.data` are required.
 Click to view child attributes
+title 
 string required
 Label to display in place of the data.
+contentType 
 string required
 Mime type of the content, with charset etc.
 **Value Options Supported:**
   - application/pdf 
+data 
 string required
 Data inline, base64ed.
 provision 
@@ -10130,11 +10182,14 @@ Canvas uses `period.start` and `period.end` to define the start and end dates of
 For create interactions, `period.start` is required with a **YYYY-MM-DD** format.  
 A `period.end` with a past date will mark the consent as Expired in the UI.
 Click to view child attributes
+period 
 json required
 Timeframe for this rule
 Click to view child attributes
+start 
 date required
 Starting time with inclusive boundary
+end 
 date 
 End time with inclusive boundary, if not ongoing.
 ### Responses
@@ -10169,14 +10224,16 @@ string
 The identifier of the Consent.
 status 
 string 
-Indicates the current state of this consent.
+Indicates the current state of this consent. Read interactions may also return `inactive` for consents whose `period.end` has passed.
 **Value Options Supported:**
   - active 
   - rejected 
+  - inactive 
 scope 
 json 
 Type of consent being presented (e.g. ADR, Privacy, Treatment, Research).
 Click to view child attributes
+text 
 string 
 Plain text representation of the concept
 **Value Options Supported:**
@@ -10219,17 +10276,21 @@ The source on which this consent statement is based.
 Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.
 Click to view child attributes
 url 
+url 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 provision 
 json 
 Constraints to the base Consent.  
 Canvas uses `period.start` and `period.end` to define the start and end dates of the consent.
 Click to view child attributes
+period 
 json 
 Timeframe for this rule
 Click to view child attributes
+start 
 date 
 Starting time with inclusive boundary
+end 
 date 
 End time with inclusive boundary, if not ongoing.
 ### Responses
@@ -10292,14 +10353,16 @@ string
 The identifier of the Consent.
 status 
 string 
-Indicates the current state of this consent.
+Indicates the current state of this consent. Read interactions may also return `inactive` for consents whose `period.end` has passed.
 **Value Options Supported:**
   - active 
   - rejected 
+  - inactive 
 scope 
 json 
 Type of consent being presented (e.g. ADR, Privacy, Treatment, Research).
 Click to view child attributes
+text 
 string 
 Plain text representation of the concept
 **Value Options Supported:**
@@ -10342,17 +10405,21 @@ The source on which this consent statement is based.
 Canvas returns the `sourceAttachment.url` for the document associated with the consent that has the latest period.start date.
 Click to view child attributes
 url 
+url 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
 provision 
 json 
 Constraints to the base Consent.  
 Canvas uses `period.start` and `period.end` to define the start and end dates of the consent.
 Click to view child attributes
+period 
 json 
 Timeframe for this rule
 Click to view child attributes
+start 
 date 
 Starting time with inclusive boundary
+end 
 date 
 End time with inclusive boundary, if not ongoing.
 ### Responses
@@ -10811,25 +10878,27 @@ resourceType
 string 
 The FHIR Resource name.
 identifier 
-array[json] 
+array[json] required
 An identifier for the insured of an insurance policy, usually assigned by the insurance carrier.
 Click to view child attributes
 type 
-json 
+json required
 Insurance member ID description
 Click to view child attributes
 system 
+required
 The system url of the coding.
 **Value Options Supported:**
   - http://terminology.hl7.org/CodeSystem/v2-0203 
 code 
+required
 The code of the insurance member ID description.
 **Value Options Supported:**
   - MB 
 display 
 The display name of the coding.
 value 
-string 
+string required
 Insurance member ID value
 status 
 enum [ active | cancelled ] required
@@ -11295,7 +11364,7 @@ The display name of the coding.
   - Worker's compensation 
 text 
 string 
-The 2 character code that represents the patient relationship to the insured as defined by CMS.
+Plain text representation of the coverage type.
 subscriber 
 json 
 Who was signed up for or 'owns' the Coverage.
@@ -11453,25 +11522,27 @@ id
 string required
 The identifier of the Coverage.
 identifier 
-array[json] 
+array[json] required
 An identifier for the insured of an insurance policy, usually assigned by the insurance carrier.
 Click to view child attributes
 type 
-json 
+json required
 Insurance member ID description
 Click to view child attributes
 system 
+required
 The system url of the coding.
 **Value Options Supported:**
   - http://terminology.hl7.org/CodeSystem/v2-0203 
 code 
+required
 The code of the insurance member ID description.
 **Value Options Supported:**
   - MB 
 display 
 The display name of the coding.
 value 
-string 
+string required
 Insurance member ID value
 status 
 enum [ active | cancelled ] required
@@ -11983,7 +12054,7 @@ The display name of the coding.
   - Worker's compensation 
 text 
 string 
-The 2 character code that represents the patient relationship to the insured as defined by CMS.
+Plain text representation of the coverage type.
 subscriber 
 json 
 Who was signed up for or 'owns' the Coverage.
@@ -12971,15 +13042,15 @@ The request requires user authorization.
           "link": [
             {
                 "relation": "self",
-                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
             },
             {
                 "relation": "first",
-                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
             },
             {
                 "relation": "last",
-                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd"
+                "url": "/Coverage?identifier=12345&patient=Patient%2Fb3084f7e884e4af2b7e23b1dca494abd&_count=10&_offset=0"
             }
           ],
           "entry": [
@@ -13182,6 +13253,7 @@ array[json] required
 Patient insurance information.  
 Canvas requires a single coverage resource identifying the insurance to check eligibility against.
 Click to view child attributes
+coverage 
 json required
 Insurance information.
 Click to view child attributes
@@ -13371,6 +13443,7 @@ string
 Status of the resource. The value is "entered-in-error" if the call to the third-party eligibility service failed.
 **Value Options Supported:**
   - active 
+  - draft 
   - entered-in-error 
 purpose 
 array[string] 
@@ -13489,7 +13562,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/benefit-unit 
+  - http://terminology.hl7.org/CodeSystem/benefit-network 
 code 
 string 
 The code of the benefit network.
@@ -13527,7 +13600,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete Information) 
+  - (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   
@@ -13618,6 +13691,7 @@ string
 Status of the resource. The value is "entered-in-error" if the call to the third-party eligibility service failed.
 **Value Options Supported:**
   - active 
+  - draft 
   - entered-in-error 
 purpose 
 array[string] 
@@ -13736,7 +13810,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/benefit-unit 
+  - http://terminology.hl7.org/CodeSystem/benefit-network 
 code 
 string 
 The code of the benefit network.
@@ -13774,7 +13848,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete Information) 
+  - (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   
@@ -14246,14 +14320,14 @@ The request requires user authorization.
   - **curl**
         ```shell
         curl --request GET \
-             --url 'https://fumage-example.canvasmedical.com/Group?request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1' \
+             --url 'https://fumage-example.canvasmedical.com/CoverageEligibilityResponse?request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1' \
              --header 'Authorization: Bearer <token>' \
              --header 'accept: application/json'
         ```
   - **python**
         ```python
         import requests
-        url = "https://fumage-example.canvasmedical.com/Group?request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1"
+        url = "https://fumage-example.canvasmedical.com/CoverageEligibilityResponse?request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1"
         headers = {
             "accept": "application/json",
             "Authorization": "Bearer <token>"
@@ -14817,6 +14891,7 @@ Scope | Description
 `user/*.write` | Write access to all resources  
 `user/*.*` | Full access to all resources  
 `user/Patient.read` | Read Patient resources only  
+`system/*.read` | System-level read access to all resources (used for bulk-data export, e.g., `Group/{id}/$export`)  
 ###  Launch and OpenID scopes 
 Scope | Description  
 ---|---  
@@ -14856,22 +14931,19 @@ Example: `"?date=le2021-01-01"`
   - `lt` Strictly less than the date.   
 Example: `"?date=lt2021-01-01"`
   - `eq` Strictly equal to the date.   
-Example: `"?date=eq2021-01-01"`
-  - `ne` Not equal to the date.   
-Example: `"?date=ne2021-01-01"`  
+Example: `"?date=eq2021-01-01"`  
 You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
 The API endpoints that support date search parameters include:
-  - [AllergyIntolerance](/api/allergyintolerance/) (/AllergyIntolerance) - Filter by recorded date
   - [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
-  - [CarePlan](/api/careplan/) (/CarePlan) - Filter by care plan date/period
-  - [CareTeam](/api/careteam/) (/CareTeam) - Filter by care team period
   - [Consent](/api/consent/) (/Consent) - Filter by consent date
+  - [DetectedIssue](/api/detectedissue/) (/DetectedIssue) - Filter by identified date
   - [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
   - [DocumentReference](/api/documentreference/) (/DocumentReference) - Filter by document date
   - [Encounter](/api/encounter/) (/Encounter) - Filter by encounter date/period
-  - [Immunization](/api/immunization/) (/Immunization) - Filter by immunization date
   - [Observation](/api/observation/) (/Observation) - Filter by observation date/time
-  - [Procedure](/api/procedure/) (/Procedure) - Filter by procedure date
+  - [QuestionnaireResponse](/api/questionnaireresponse/) (/QuestionnaireResponse) - Filter by authored date
+  - [ServiceRequest](/api/servicerequest/) (/ServiceRequest) - Filter by authored date
+  - [Task](/api/task/) (/Task) - Filter by date
 ----- END PAGE https://docs.canvasmedical.com/api/date-filtering/
 
 
@@ -15885,6 +15957,7 @@ The request requires user authorization.
                 ],
                 "text": "Codinggap"
             },
+            "severity": "moderate",
             "patient": {
                 "reference": "Patient/a39cafb9d1b445be95a2e2548e12a787",
                 "type": "Patient"
@@ -16311,6 +16384,51 @@ The request requires user authorization.
             ]
         }
         ```
+  - **400**
+        ```json
+        {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "invalid",
+              "details": {
+                "text": "Bad request"
+              }
+            }
+          ]
+        }
+        ```
+  - **401**
+        ```json
+        {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "unknown",
+              "details": {
+                "text": "Authentication failed"
+              }
+            }
+          ]
+        }
+        ```
+  - **403**
+        ```json
+        {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "forbidden",
+              "details": {
+                "text": "Authorization failed"
+              }
+            }
+          ]
+        }
+        ```
 ----- END PAGE https://docs.canvasmedical.com/api/detectedissue/
 
 
@@ -16350,7 +16468,7 @@ enum [ active | inactive ]
 Status of the Device availability.
 distinctIdentifier 
 string 
-The distinct identification string. This will match the `id` attribute.
+The distinct identification string.
 manufacturer 
 string 
 Name of device manufacturer.
@@ -16464,7 +16582,7 @@ enum [ active | inactive ]
 Status of the Device availability.
 distinctIdentifier 
 string 
-The distinct identification string. This will match the `id` attribute.
+The distinct identification string.
 manufacturer 
 string 
 Name of device manufacturer.
@@ -16749,35 +16867,57 @@ Creates a lab report, lab tests, lab values, and a stored PDF in Canvas.
 This endpoint is a [FHIR operation](https://hl7.org/fhir/R4/operations.html) and was developed as a convenience method in order to post all data associated with a lab report in a single request. In order to adhere to the FHIR standard, the request structure for creating lab reports is in the [Parameters](https://hl7.org/fhir/R4/parameters.html) format. This means that an array of named parameter resources makes up the body of the request.
 In the example below, the first object in the parameter array is a named parameter called `labReport`. This references a `DiagnosticReport` resource. The `subject` attribute passed here must contain a valid patient reference and the `presentedForm` attribute must contain a base64-encoded string of the report PDF. Only one `labReport` parameter is allowed per payload.
 The subsequent parameters in the array must be named `labTestCollection`. These represent the lab tests performed and associated result values. Each `labTestCollection` has a `part` array with `labTest` and `labValue` parameters. Only one `labTest` parameter is allowed per `labTestCollection`. Multiple `labValue` parameters are allowed per `labTestCollection`. Both resources must be represented as `Observation` resources.
-To mark a lab value as abnormal, an optional `interpretation` attribute can be added to a `labValue` `Observation` resource. **Only abnormal interpretations (`"code": "A"`)** are currently supported, and the payload must match the structure shown in the example below.
-For the values/units in each `labValue` object, either a `valueQuantity` or `valueString` can be supplied in the payload. For example:
+To mark a lab value as abnormal, an optional `interpretation` attribute can be added to a `labValue` `Observation` resource. **Only abnormal interpretations (`"code": "A"`)** are currently supported, and the `interpretation` payload must match the exact structure shown in the example below (`text`, `coding[0].system`, `coding[0].code`, and `coding[0].display` are all required and must match).
+For the values/units in each `labValue` object, a `valueQuantity`, `valueString`, or `valueCodeableConcept` can be supplied in the payload. For example:
     ```json
-    ...,
-    "valueQuantity": {
-        "value": "0.7",
+    {
+      "valueQuantity": {
+        "value": 0.7,
         "unit": "mg/dL",
-        "system": "http://unitsofmeasure.org",
-    },
-    ...
+        "system": "http://unitsofmeasure.org"
+      }
+    }
     ```
 or
     ```json
-    ...,
-    "valueString": "Normal",
-    ...
+    {
+      "valueString": "Normal"
+    }
+    ```
+or
+    ```json
+    {
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://snomed.info/sct",
+            "code": "260385009",
+            "display": "Negative"
+          }
+        ]
+      }
+    }
     ```
 If using `valueQuantity` and a comparator value is needed (i.e. `<1.0`), the comparator value can be passed in a `comparator` key like so:
     ```json
-    ...,
-    "valueQuantity": {
-        "value": "1.0",
+    {
+      "valueQuantity": {
+        "value": 1.0,
         "unit": "mg/dL",
         "system": "http://unitsofmeasure.org",
         "comparator": "<"
-    },
-    ...
+      }
+    }
     ```
 Supported `comparator` values are `<`, `<=`, `>=`, and `>`.
+A `referenceRange` array may also be supplied on each `labValue` `Observation`. Only `referenceRange[0].text` is persisted in Canvas; `low` and `high` are accepted by the API but are not stored.
+###  Validation requirements 
+The following constraints are enforced when creating a lab report:
+  - `labReport.presentedForm` must contain exactly one entry.
+  - `labReport.presentedForm[0].contentType` must be `application/pdf`.
+  - `labReport.presentedForm[0].data` is required and must contain a base64-encoded PDF.
+  - `labReport.effectiveDateTime` must be a full ISO 8601 datetime (a date alone is not accepted).
+  - Each `labTest` and `labValue` `Observation.code.coding` must contain exactly one entry, the `system` must be `http://loinc.org`, and `code` is required.
 > **Warning:** While lab tests can be posted and are visible in the Canvas UI, they are not currently available to be read through the FHIR API. Only lab values can be read through the Observation resource. 
 The bearer token included in requests send to this endpoint must have one of the following scopes:
   - `system/DiagnosticReport.create-lab-report`
@@ -16876,7 +17016,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity":
                                 {
-                                    "value": "9.6",
+                                    "value": 9.6,
                                     "unit": "g/dL",
                                     "system": "http://unitsofmeasure.org"
                                 },
@@ -16885,11 +17025,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "6.0"
+                                            "value": 6.0
                                         },
                                         "high":
                                         {
-                                            "value": "8.5"
+                                            "value": 8.5
                                         },
                                         "text": "6.0-8.5"
                                     }
@@ -16931,7 +17071,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "valueQuantity":
                                 {
                                     "unit": "g/dL",
-                                    "value": "3.8",
+                                    "value": 3.8,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange":
@@ -16939,11 +17079,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "3.6"
+                                            "value": 3.6
                                         },
                                         "high":
                                         {
-                                            "value": "4.6"
+                                            "value": 4.6
                                         },
                                         "text": "3.6-4.6"
                                     }
@@ -16972,7 +17112,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "valueQuantity":
                                 {
                                     "unit": "mg/dL",
-                                    "value": "0.3",
+                                    "value": 0.3,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange":
@@ -16980,11 +17120,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high":
                                         {
-                                            "value": "1.2"
+                                            "value": 1.2
                                         },
                                         "text": "0.0-1.2"
                                     }
@@ -17013,7 +17153,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "valueQuantity":
                                 {
                                     "unit": "IU/L",
-                                    "value": "83.6",
+                                    "value": 83.6,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange":
@@ -17021,11 +17161,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "high":
                                         {
-                                            "value": "121.0"
+                                            "value": 121.0
                                         },
                                         "text": "44-121"
                                     }
@@ -17054,7 +17194,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "valueQuantity":
                                 {
                                     "unit": "IU/L",
-                                    "value": "19.4",
+                                    "value": 19.4,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange":
@@ -17062,11 +17202,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high":
                                         {
-                                            "value": "40.0"
+                                            "value": 40.0
                                         },
                                         "text": "0-40"
                                     }
@@ -17095,7 +17235,7 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "valueQuantity":
                                 {
                                     "unit": "IU/L",
-                                    "value": "13.5",
+                                    "value": 13.5,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange":
@@ -17103,11 +17243,11 @@ The bearer token included in requests send to this endpoint must have one of the
                                     {
                                         "low":
                                         {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high":
                                         {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "text": "0-44"
                                     }
@@ -17201,17 +17341,17 @@ The bearer token included in requests send to this endpoint must have one of the
                                 },
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
-                                    "value": "9.6",
+                                    "value": 9.6,
                                     "unit": "g/dL",
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "6.0"
+                                            "value": 6.0
                                         },
                                         "high": {
-                                            "value": "8.5"
+                                            "value": 8.5
                                         },
                                         "text": "6.0-8.5"
                                     }
@@ -17247,16 +17387,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "g/dL",
-                                    "value": "3.8",
+                                    "value": 3.8,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "3.6"
+                                            "value": 3.6
                                         },
                                         "high": {
-                                            "value": "4.6"
+                                            "value": 4.6
                                         },
                                         "text": "3.6-4.6"
                                     }
@@ -17281,16 +17421,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "mg/dL",
-                                    "value": "0.3",
+                                    "value": 0.3,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "1.2"
+                                            "value": 1.2
                                         },
                                         "text": "0.0-1.2"
                                     }
@@ -17315,16 +17455,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "83.6",
+                                    "value": 83.6,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "high": {
-                                            "value": "121.0"
+                                            "value": 121.0
                                         },
                                         "text": "44-121"
                                     }
@@ -17349,16 +17489,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "19.4",
+                                    "value": 19.4,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "40.0"
+                                            "value": 40.0
                                         },
                                         "text": "0-40"
                                     }
@@ -17383,16 +17523,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "13.5",
+                                    "value": 13.5,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "text": "0-44"
                                     }
@@ -17406,6 +17546,22 @@ The bearer token included in requests send to this endpoint must have one of the
         response = requests.post(url, json=payload, headers=headers)
         print(response.text)
         ```
+###  Response 
+A successful request returns `201 Created` with a `Parameters` resource containing a `valueReference` to the newly created `DiagnosticReport`:
+    ```json
+    {
+        "resourceType": "Parameters",
+        "parameter": [
+            {
+                "name": "return",
+                "valueReference": {
+                    "reference": "DiagnosticReport/9b90621b-059f-4f6e-9ef5-58171098e424"
+                }
+            }
+        ]
+    }
+    ```
+Standard error responses (`400 Bad Request`, `401 Unauthorized`, `403 Forbidden`) follow the FHIR `OperationOutcome` shape described in [Errors](/api/errors).
 ###  Additional JSON Examples 
   - **More than one lab test**
         ```json
@@ -17481,17 +17637,17 @@ The bearer token included in requests send to this endpoint must have one of the
                                 },
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
-                                    "value": "9.6",
+                                    "value": 9.6,
                                     "unit": "g/dL",
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "6.0"
+                                            "value": 6.0
                                         },
                                         "high": {
-                                            "value": "8.5"
+                                            "value": 8.5
                                         },
                                         "text": "6.0-8.5"
                                     }
@@ -17527,16 +17683,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "g/dL",
-                                    "value": "3.8",
+                                    "value": 3.8,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "3.6"
+                                            "value": 3.6
                                         },
                                         "high": {
-                                            "value": "4.6"
+                                            "value": 4.6
                                         },
                                         "text": "3.6-4.6"
                                     }
@@ -17561,16 +17717,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "mg/dL",
-                                    "value": "0.3",
+                                    "value": 0.3,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "1.2"
+                                            "value": 1.2
                                         },
                                         "text": "0.0-1.2"
                                     }
@@ -17595,16 +17751,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "83.6",
+                                    "value": 83.6,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "high": {
-                                            "value": "121.0"
+                                            "value": 121.0
                                         },
                                         "text": "44-121"
                                     }
@@ -17629,16 +17785,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "19.4",
+                                    "value": 19.4,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "40.0"
+                                            "value": 40.0
                                         },
                                         "text": "0-40"
                                     }
@@ -17663,16 +17819,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-01-11T17:37:30.756832+00:00",
                                 "valueQuantity": {
                                     "unit": "IU/L",
-                                    "value": "13.5",
+                                    "value": 13.5,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "0.0"
+                                            "value": 0.0
                                         },
                                         "high": {
-                                            "value": "44.0"
+                                            "value": 44.0
                                         },
                                         "text": "0-44"
                                     }
@@ -17719,16 +17875,16 @@ The bearer token included in requests send to this endpoint must have one of the
                                 "effectiveDateTime": "2024-02-25T15:10:56.296677",
                                 "valueQuantity": {
                                     "unit": "ng/mL",
-                                    "value": "41.0",
+                                    "value": 41.0,
                                     "system": "http://unitsofmeasure.org"
                                 },
                                 "referenceRange": [
                                     {
                                         "low": {
-                                            "value": "30.0"
+                                            "value": 30.0
                                         },
                                         "high": {
-                                            "value": "100.0"
+                                            "value": 100.0
                                         },
                                         "text": "30.0-100.0"
                                     }
@@ -17814,21 +17970,6 @@ The FHIR Resource name.
 id 
 string 
 The identifier of the Diagnostic Report.
-text 
-json 
-Text summary of the Diagnostic Report, for human interpretation.
-Click to view child attributes
-status 
-All reports returned from this endpoint will show a status of `generated`.
-div 
-Limited xhtml content that contains the human readable text of the Diagnostic Report.
-identifier 
-array[json] 
-Business identifier for report.
-Click to view child attributes
-id 
-string 
-The identifier of the Diagnostic Report.
 status 
 enum [ final | entered-in-error ] 
 Status of the Diagnostic Report see <https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html>. Currently Canvas only supports two types of statuses.
@@ -17900,9 +18041,6 @@ Click to view child attributes
 reference 
 string 
 The reference string of the Encounter in the format of `"Encounter/912542cf-3bfb-4609-99f6-26ce94feb70d"`.
-id 
-string 
-Unique identifier of the Encounter.
 effectiveDateTime 
 datetime | date 
 Clinically relevant date/time for report.
@@ -17936,9 +18074,6 @@ Click to view child attributes
 url 
 string 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-extension 
-json 
-Extension for backward-compatible URLs
 ### Responses
 200 OK 
 Request was successful. 
@@ -18006,21 +18141,6 @@ The FHIR Resource name.
 id 
 string 
 The identifier of the Diagnostic Report.
-text 
-json 
-Text summary of the Diagnostic Report, for human interpretation.
-Click to view child attributes
-status 
-All reports returned from this endpoint will show a status of `generated`.
-div 
-Limited xhtml content that contains the human readable text of the Diagnostic Report.
-identifier 
-array[json] 
-Business identifier for report.
-Click to view child attributes
-id 
-string 
-The identifier of the Diagnostic Report.
 status 
 enum [ final | entered-in-error ] 
 Status of the Diagnostic Report see <https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html>. Currently Canvas only supports two types of statuses.
@@ -18092,9 +18212,6 @@ Click to view child attributes
 reference 
 string 
 The reference string of the Encounter in the format of `"Encounter/912542cf-3bfb-4609-99f6-26ce94feb70d"`.
-id 
-string 
-Unique identifier of the Encounter.
 effectiveDateTime 
 datetime | date 
 Clinically relevant date/time for report.
@@ -18128,9 +18245,6 @@ Click to view child attributes
 url 
 string 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-extension 
-json 
-Extension for backward-compatible URLs
 ### Responses
 200 OK 
 Request was successful. 
@@ -18187,7 +18301,8 @@ The request requires user authorization.
                         "code": "73562",
                         "display": "XRAY, knee; 3 views"
                     }
-                ]
+                ],
+                "text": "XRAY, knee; 3 views"
             },
             "subject":
             {
@@ -18488,8 +18603,7 @@ Specific FHIR extensions on this resource are supported to be able to map some C
 In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.  
 **A few of the extensions are required:******
   - clinical-date
-  - A reviewer is required, it can either be a practitioner or a group
-  - requires-signature
+  - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
 Click to view child attributes
 url 
 string required
@@ -18532,14 +18646,14 @@ type
 string 
 Type the reference refers to (e.g. "Practitioner" or "Group").
 valueBoolean 
-string required
+boolean required
 Value of extensions for Priority and Requires Signature.
 The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`.   
 Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized. If the priority is omitted from the request, it will default to False.   
-Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature. The requires-signature extension is required on create.
+Requires Signature is also a field on the underlying Canvas document that determines whether the related document requires Practitioner's signature.
 status 
 required
-The "status" field is required by FHIR to indicate the current state of the document; however, the value is ignored by Canvas on creation.
+Status must be set to `current` on creation; the value has no further effect.
 **Value Options Supported:**
   - current 
 type 
@@ -18636,6 +18750,9 @@ attachment
 json required
 Where to access the document.  
 Click to view child attributes
+contentType 
+string required
+Mime type of the content, with charset etc.
 data 
 string required
 Base64 encoded document file as a string.
@@ -18720,7 +18837,7 @@ type
 string 
 Type the reference refers to (e.g. "Practitioner" or "Group").
 valueBoolean 
-string 
+boolean 
 Value of extensions for Priority and Requires Signature.
 status 
 The status of the document reference.   
@@ -18785,7 +18902,7 @@ string
 Plain text representation of the type of document.
 category 
 array[json] 
-The categorization of the document.
+The categorization of the document. For non-administrative documents, the response also includes an additional `category` entry with system `http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category` and code `clinical-note` (for US Core compliance).
 Click to view child attributes
 coding 
 array[json] 
@@ -18867,9 +18984,6 @@ Mime type of the content, with charset etc.
 url 
 string 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-extension 
-json 
-Extension for backward-compatible URLs
 format 
 json 
 Format/content rules for the document
@@ -19041,7 +19155,7 @@ type
 string 
 Type the reference refers to (e.g. "Practitioner" or "Group").
 valueBoolean 
-string 
+boolean 
 Value of extensions for Priority and Requires Signature.
 status 
 The status of the document reference.   
@@ -19106,7 +19220,7 @@ string
 Plain text representation of the type of document.
 category 
 array[json] 
-The categorization of the document.
+The categorization of the document. For non-administrative documents, the response also includes an additional `category` entry with system `http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category` and code `clinical-note` (for US Core compliance).
 Click to view child attributes
 coding 
 array[json] 
@@ -19188,9 +19302,6 @@ Mime type of the content, with charset etc.
 url 
 string 
 URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files) for details on how to access the file.
-extension 
-json 
-Extension for backward-compatible URLs
 format 
 json 
 Format/content rules for the document
@@ -19278,13 +19389,6 @@ The request requires user authorization.
                     }
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-                    "valueReference": {
-                        "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                        "type": "Group"
-                    }
-                },
-                {
                     "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
                     "valueBoolean": true
                 },
@@ -19362,13 +19466,6 @@ The request requires user authorization.
                     "valueReference": {
                         "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                         "type": "Practitioner",
-                    }
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-                    "valueReference": {
-                        "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                        "type": "Group"
                     }
                 },
                 {
@@ -19543,13 +19640,6 @@ The request requires user authorization.
                     }
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-                    "valueReference": {
-                        "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                        "type": "Group"
-                    }
-                },
-                {
                     "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
                     "valueBoolean": true
                 },
@@ -19689,15 +19779,15 @@ The request requires user authorization.
             "link": [
                 {
                     "relation": "self",
-                    "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+                    "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
                 },
                 {
                     "relation": "first",
-                    "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+                    "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
                 },
                 {
                     "relation": "last",
-                    "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+                    "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
                 }
             ],
             "entry": [
@@ -20750,7 +20840,7 @@ string
 Type the reference refers to (e.g. "Patient").
 participant 
 array[json] 
-List of participants involved in the encounter.
+List of participants involved in the encounter. Participants may include Practitioner references and RelatedPerson references for patient contacts associated with the encounter.
 Click to view child attributes
 type 
 array[json] 
@@ -20774,7 +20864,7 @@ display
 string 
 The display name of the coding.
 **Value Options Supported:**
-  - Participant 
+  - Participation 
 period 
 json 
 Period of time during the encounter that the participant participated
@@ -20787,14 +20877,14 @@ datetime
 End time with inclusive boundary, if not ongoing.
 individual 
 json 
-Persons involved in the encounter other than the patient.
+Persons involved in the encounter other than the patient. May reference a Practitioner or a RelatedPerson.
 Click to view child attributes
 reference 
 string 
-The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
+The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"RelatedPerson/3fcea5ee-8961-43b4-9d47-3e8a2a625e95"`.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner").
+Type the reference refers to (e.g. "Practitioner" or "RelatedPerson").
 display 
 string 
 Text alternative for the resource (e.g Credendialed name of the Practitioner).
@@ -20858,6 +20948,10 @@ Type the reference refers to (e.g. "Condition").
 hospitalization 
 json 
 Details about the admission to a healthcare service.
+Click to view child attributes
+dischargeDisposition 
+json 
+Category or kind of location after discharge.
 Click to view child attributes
 coding 
 array[json] 
@@ -21035,7 +21129,7 @@ string
 Type the reference refers to (e.g. "Patient").
 participant 
 array[json] 
-List of participants involved in the encounter.
+List of participants involved in the encounter. Participants may include Practitioner references and RelatedPerson references for patient contacts associated with the encounter.
 Click to view child attributes
 type 
 array[json] 
@@ -21059,7 +21153,7 @@ display
 string 
 The display name of the coding.
 **Value Options Supported:**
-  - Participant 
+  - Participation 
 period 
 json 
 Period of time during the encounter that the participant participated
@@ -21072,14 +21166,14 @@ datetime
 End time with inclusive boundary, if not ongoing.
 individual 
 json 
-Persons involved in the encounter other than the patient.
+Persons involved in the encounter other than the patient. May reference a Practitioner or a RelatedPerson.
 Click to view child attributes
 reference 
 string 
-The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
+The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"RelatedPerson/3fcea5ee-8961-43b4-9d47-3e8a2a625e95"`.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner").
+Type the reference refers to (e.g. "Practitioner" or "RelatedPerson").
 display 
 string 
 Text alternative for the resource (e.g Credendialed name of the Practitioner).
@@ -21143,6 +21237,10 @@ Type the reference refers to (e.g. "Condition").
 hospitalization 
 json 
 Details about the admission to a healthcare service.
+Click to view child attributes
+dischargeDisposition 
+json 
+Category or kind of location after discharge.
 Click to view child attributes
 coding 
 array[json] 
@@ -21213,7 +21311,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "identifier": [
@@ -21405,7 +21503,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             }
                         ],
                         "identifier": [
@@ -21653,11 +21751,28 @@ All `4xx` errors that could be handled programmatically (e.g., resource not foun
 Error Code | Description  
 ---|---  
 200 - OK | Everything worked as expected.  
+400 - Bad Request | The request was malformed or rejected by validation.  
 401 - Unauthorized | No valid Bearer token provided.  
 403 - Forbidden | Token bearer is forbidden from performing the operation.  
 404 - Not Found | The requested resource doesn't exist.  
-422 - Unprocessable Entity | There operation cannot be completed because of an error in the request body; details are provided in the returned OperationOutcome  
+412 - Precondition Failed | A conditional request failed because the resource has been modified since the precondition was specified.  
+422 - Unprocessable Entity | The request was syntactically correct but failed due to request semantics, database state, or a business rule.  
 5XX - Server Error | Something went wrong on Canvas's end.  
+**400**
+    ```json
+    {
+      "resourceType": "OperationOutcome",
+      "issue": [
+        {
+          "severity": "error",
+          "code": "invalid",
+          "details": {
+            "text": "The request was malformed or failed validation."
+          }
+        }
+      ]
+    }
+    ```
 **401**
     ```json
     {
@@ -21703,6 +21818,21 @@ Error Code | Description
       ]
     }
     ```
+**412**
+    ```json
+    {
+      "resourceType": "OperationOutcome",
+      "issue": [
+        {
+          "severity": "error",
+          "code": "conflict",
+          "details": {
+            "text": "The resource has been modified since the precondition was specified."
+          }
+        }
+      ]
+    }
+    ```
 **422**
     ```json
     {
@@ -21725,7 +21855,7 @@ Error Code | Description
       "issue": [
         {
           "severity": "error",
-          "code": "excepetion",
+          "code": "exception",
           "details": {
             "text": "Internal server error"
           }
@@ -21758,14 +21888,15 @@ id
 string 
 The Canvas identifier of the goal.
 lifecycleStatus 
-enum [ active | completed | entered-in-error ] 
+enum [ proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected ] 
 State the goal is in throughout its lifecycle.   
-\- Goals that have been closed using a Close Goal Command will have a staus of `completed`.   
+\- Goals that have been closed using a Close Goal Command will have a status of `completed`.   
 \- Goal commands that were entered-in-error will have a status of `entered-in-error`.   
-\- All goals that are not closed will have the `active` status.
+\- Goals that are not closed will have the `active` status.   
+\- Goals with no lifecycle state set in Canvas will fall back to `accepted`.
 achievementStatus 
 json 
-Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This correspondes to the `Status` field on the latest committed goal related command.
+Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This corresponds to the `Status` field on the latest committed goal related command.
 Click to view child attributes
 coding 
 array[json] 
@@ -21794,13 +21925,17 @@ string
 The display name of the coding.
 priority 
 json 
-Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This correspondes to the `Priority` field on the latest committed goal related command.
+Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This corresponds to the `Priority` field on the latest committed goal related command.
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
 Click to view child attributes
 system 
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/goal-achievement 
+  - http://terminology.hl7.org/CodeSystem/goal-priority 
 code 
 string 
 The code.
@@ -21833,7 +21968,7 @@ date
 When goal pursuit begins.
 target 
 array[json] 
-A single iteration of this field with the **dueDate** , if available. This correspondes to the `Due date` field on the latest committed goal related command.
+A single iteration of this field with the **dueDate** , if available. This corresponds to the `Due date` field on the latest committed goal related command.
 Click to view child attributes
 dueDate 
 date 
@@ -21850,7 +21985,7 @@ string
 Type the reference refers to (e.g. "Practitioner").
 note 
 array[json] 
-Comments about the goal and who wrote them. Notes correspondes to any progress/barriers submitted on any of goal related commands.
+Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands.
 Click to view child attributes
 id 
 string 
@@ -21926,14 +22061,15 @@ id
 string 
 The Canvas identifier of the goal.
 lifecycleStatus 
-enum [ active | completed | entered-in-error ] 
+enum [ proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected ] 
 State the goal is in throughout its lifecycle.   
-\- Goals that have been closed using a Close Goal Command will have a staus of `completed`.   
+\- Goals that have been closed using a Close Goal Command will have a status of `completed`.   
 \- Goal commands that were entered-in-error will have a status of `entered-in-error`.   
-\- All goals that are not closed will have the `active` status.
+\- Goals that are not closed will have the `active` status.   
+\- Goals with no lifecycle state set in Canvas will fall back to `accepted`.
 achievementStatus 
 json 
-Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This correspondes to the `Status` field on the latest committed goal related command.
+Describes progress made on goal, from **http://terminology.hl7.org/CodeSystem/goal-achievement**. This corresponds to the `Status` field on the latest committed goal related command.
 Click to view child attributes
 coding 
 array[json] 
@@ -21962,13 +22098,17 @@ string
 The display name of the coding.
 priority 
 json 
-Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This correspondes to the `Priority` field on the latest committed goal related command.
+Level of importance associated with the reaching/sustaining goal, from **http://terminology.hl7.org/CodeSystem/goal-priority**. This corresponds to the `Priority` field on the latest committed goal related command.
+Click to view child attributes
+coding 
+array[json] 
+Code defined by a terminology system.
 Click to view child attributes
 system 
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/goal-achievement 
+  - http://terminology.hl7.org/CodeSystem/goal-priority 
 code 
 string 
 The code.
@@ -22001,7 +22141,7 @@ date
 When goal pursuit begins.
 target 
 array[json] 
-A single iteration of this field with the **dueDate** , if available. This correspondes to the `Due date` field on the latest committed goal related command.
+A single iteration of this field with the **dueDate** , if available. This corresponds to the `Due date` field on the latest committed goal related command.
 Click to view child attributes
 dueDate 
 date 
@@ -22018,7 +22158,7 @@ string
 Type the reference refers to (e.g. "Practitioner").
 note 
 array[json] 
-Comments about the goal and who wrote them. Notes correspondes to any progress/barriers submitted on any of goal related commands.
+Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands.
 Click to view child attributes
 id 
 string 
@@ -22927,6 +23067,7 @@ The request requires user authorization.
             "type": "practitioner",
             "actual": true,
             "name": "A Test Team",
+            "quantity": 1,
             "characteristic": [
                 {
                     "code": {
@@ -23221,6 +23362,7 @@ The request requires user authorization.
                         "type": "practitioner",
                         "actual": true,
                         "name": "A Test Team",
+                        "quantity": 1,
                         "characteristic": [
                             {
                                 "code": {
@@ -23340,7 +23482,6 @@ The system url of the coding.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/cvx 
   - http://www.ama-assn.org/go/cpt 
-  - unstructured 
 code 
 string required
 The code.
@@ -23369,7 +23510,7 @@ type
 string 
 Type the reference refers to (e.g. "Encounter").
 occurrenceDateTime 
-date required
+datetime required
 The date or datetime the immunization was administered or reported to have been administered.
 primarySource 
 boolean required
@@ -23443,7 +23584,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/v3-ActReaso 
+  - http://terminology.hl7.org/CodeSystem/v3-ActReason 
 code 
 string 
 The code.
@@ -23464,7 +23605,6 @@ The system url of the coding.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/cvx 
   - http://www.ama-assn.org/go/cpt 
-  - unstructured 
 code 
 string 
 The code.
@@ -23492,7 +23632,7 @@ type
 string 
 Type the reference refers to (e.g. "Encounter").
 occurrenceDateTime 
-date 
+datetime 
 The date or datetime the immunization was administered or reported to have been administered.
 primarySource 
 boolean 
@@ -23560,7 +23700,6 @@ The system url of the coding.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/cvx 
   - http://www.ama-assn.org/go/cpt 
-  - unstructured 
 code 
 string required
 The code.
@@ -23588,7 +23727,7 @@ type
 string 
 Type the reference refers to (e.g. "Encounter").
 occurrenceDateTime 
-date required
+datetime required
 The date or datetime the immunization was administered or reported to have been administered.
 primarySource 
 boolean required
@@ -23602,6 +23741,9 @@ text
 string 
 The annotation - text content.
 ### Responses
+200 OK 
+The server has successfully processed the request.  
+Canvas returns a `null` response body. 
 ### Errors
 400 Bad Request 
 The request was invalid or cannot be otherwise served. An accompanying error message will explain further. 
@@ -23688,7 +23830,7 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://terminology.hl7.org/CodeSystem/v3-ActReaso 
+  - http://terminology.hl7.org/CodeSystem/v3-ActReason 
 code 
 string 
 The code.
@@ -23709,7 +23851,6 @@ The system url of the coding.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/cvx 
   - http://www.ama-assn.org/go/cpt 
-  - unstructured 
 code 
 string 
 The code.
@@ -23737,7 +23878,7 @@ type
 string 
 Type the reference refers to (e.g. "Encounter").
 occurrenceDateTime 
-date 
+datetime 
 The date or datetime the immunization was administered or reported to have been administered.
 primarySource 
 boolean 
@@ -24039,7 +24180,7 @@ The request requires user authorization.
         ```
   - **curl**
         ```shell
-        curl --request POST \
+        curl --request PUT \
              --url 'https://fumage-example.canvasmedical.com/Immunization/d9aefede-da05-4bef-bbf9-63bcf83c806a' \
              --header 'Authorization: Bearer <token>' \
              --header 'accept: application/json' \
@@ -24134,7 +24275,7 @@ The request requires user authorization.
             ]
         }
         ```
-  - **201**
+  - **200**
         ```json
         null
         ```
@@ -24183,6 +24324,21 @@ The request requires user authorization.
           ]
         }
         ```
+  - **404**
+        ```json
+        {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "not-found",
+              "details": {
+                "text": "Unknown Immunization resource 'a47c7b0e-bbb4-42cd-bc4a-df259d148ea1'"
+              }
+            }
+          ]
+        }
+        ```
   - **405**
         ```json
         {
@@ -24193,6 +24349,21 @@ The request requires user authorization.
               "code": "not-supported",
               "details": {
                 "text": "Operation is not supported"
+              }
+            }
+          ]
+        }
+        ```
+  - **412**
+        ```json
+        {
+          "resourceType": "OperationOutcome",
+          "issue": [
+            {
+              "severity": "error",
+              "code": "conflict",
+              "details": {
+                "text": "Resource updated since If-Unmodified-Since date"
               }
             }
           ]
@@ -24443,6 +24614,9 @@ Click to view child attributes
 use 
 enum [ home | work | temp | old | billing ] 
 Purpose of this address
+type 
+enum [ both | physical | postal ] 
+Distinguishes between physical and postal addresses.
 line 
 array[string] 
 Street name, number, direction & P.O. Box etc. This repeating element order: The order in which lines should appear in an address label.
@@ -24541,6 +24715,9 @@ Click to view child attributes
 use 
 enum [ home | work | temp | old | billing ] 
 Purpose of this address
+type 
+enum [ both | physical | postal ] 
+Distinguishes between physical and postal addresses.
 line 
 array[string] 
 Street name, number, direction & P.O. Box etc. This repeating element order: The order in which lines should appear in an address label.
@@ -24823,7 +25000,7 @@ Type the reference refers to (e.g. "Patient").
 encounter 
 json 
 Encounter associated with media.
-Supply an encounter reference to be able to insert the allergy command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.   
+Supply an encounter reference to be able to insert the Visual Exam Finding command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.   
 **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
 Click to view child attributes
 reference 
@@ -24838,7 +25015,7 @@ The person who generated the image.
 The operator attribute contains a reference to the practitioner or patient that generated the media. This will show up in the Canvas UI as the value for Originator when you click the command in the tooltip that pops up. If omitted, it will default to Canvas Bot.
 Click to view child attributes
 reference 
-string required
+string 
 The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
 type 
 string 
@@ -25123,7 +25300,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "status": "completed",
@@ -25165,7 +25342,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "status": "completed",
@@ -25300,7 +25477,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "status": "completed",
@@ -25420,7 +25597,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             }
                         ],
                         "status": "completed",
@@ -25550,6 +25727,9 @@ The code of the medication.
 display 
 string 
 The display name of the coding.
+text 
+string 
+Plain text representation of the medication.
 ### Responses
 200 OK 
 Request was successful. 
@@ -25637,6 +25817,9 @@ The code of the medication.
 display 
 string 
 The display name of the coding.
+text 
+string 
+Plain text representation of the medication.
 ### Responses
 200 OK 
 Request was successful. 
@@ -26010,6 +26193,9 @@ The identifier of the MedicationDispense.
 patient 
 string 
 The patient reference associated with the MedicationDispense in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+_revinclude 
+string 
+Standard FHIR `_revinclude` parameter.
 ### Response Payload Attributes
 resourceType 
 string 
@@ -26464,7 +26650,7 @@ id
 string 
 The identifier of the MedicationRequest.
 status 
-enum [ active | entered-in-error | cancelled ] 
+enum [ active | entered-in-error | cancelled | stopped | unknown ] 
 A code specifying the current state of the order.
 intent 
 enum [ order | filler-order ] 
@@ -26688,6 +26874,15 @@ Search Medication Requests by a specific status.
   - active
   - entered-in-error
   - cancelled
+  - stopped
+_include 
+string 
+Include referenced resources in the search bundle. The supported value is `MedicationRequest:medication`, which adds the referenced Medication resources to the response.
+**Search Values Supported:**
+  - MedicationRequest:medication
+_revinclude 
+string 
+Standard FHIR `_revinclude` parameter.
 ### Response Payload Attributes
 resourceType 
 string 
@@ -26722,7 +26917,7 @@ id
 string 
 The identifier of the MedicationRequest.
 status 
-enum [ active | entered-in-error | cancelled ] 
+enum [ active | entered-in-error | cancelled | stopped | unknown ] 
 A code specifying the current state of the order.
 intent 
 enum [ order | filler-order ] 
@@ -26982,6 +27177,9 @@ The request requires user authorization.
                 "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
                 "type": "Practitioner"
             },
+            "performer": {
+                "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
+            },
             "reasonCode": [
                 {
                     "coding": [
@@ -27155,6 +27353,9 @@ The request requires user authorization.
                         "requester": {
                             "reference": "Practitioner/6c20b7152cf7421791c5ab4113060b3f",
                             "type": "Practitioner"
+                        },
+                        "performer": {
+                            "display": "Name: CVS Health #68534|NCPDP ID: 0068534|Address: 1 Cvs Dr, Woonsocket, RI, 028956146|Phone: 4017702500|Fax: 4017704486"
                         },
                         "reasonCode": [
                             {
@@ -27412,7 +27613,8 @@ A code representing the patient or other source's judgment about the state of th
   - active 
   - entered-in-error 
   - stopped 
-  - intented (Medications where the effectivePeriod.start date is in the future)
+  - intended (Medications where the effectivePeriod.start date is in the future)
+  - unknown (Returned when the source state cannot be mapped to one of the other values.)
 medicationCodeableConcept 
 json 
 What medication was taken.   
@@ -27463,7 +27665,7 @@ This will display if the medication was added to the Patient's chart via a Medic
 Click to view child attributes
 reference 
 string 
-The reference string of the MedicationRequest in the format of `"medicationReference/948b54e2-40b7-4648-bfce-e2373f9802af"`
+The reference string of the MedicationRequest in the format of `"MedicationRequest/948b54e2-40b7-4648-bfce-e2373f9802af"`
 type 
 string 
 Type the reference refers to (e.g. "MedicationRequest")
@@ -27666,7 +27868,8 @@ A code representing the patient or other source's judgment about the state of th
   - active 
   - entered-in-error 
   - stopped 
-  - intented (Medications where the effectivePeriod.start date is in the future)
+  - intended (Medications where the effectivePeriod.start date is in the future)
+  - unknown (Returned when the source state cannot be mapped to one of the other values.)
 medicationCodeableConcept 
 json 
 What medication was taken.   
@@ -27717,7 +27920,7 @@ This will display if the medication was added to the Patient's chart via a Medic
 Click to view child attributes
 reference 
 string 
-The reference string of the MedicationRequest in the format of `"medicationReference/948b54e2-40b7-4648-bfce-e2373f9802af"`
+The reference string of the MedicationRequest in the format of `"MedicationRequest/948b54e2-40b7-4648-bfce-e2373f9802af"`
 type 
 string 
 Type the reference refers to (e.g. "MedicationRequest")
@@ -27941,6 +28144,7 @@ The request requires user authorization.
             "context": {
                 "reference": "Encounter/eae3c8a5-a129-4960-9715-fc26da30eccc"
             },
+            "dateAsserted": "2023-06-15T15:00:00-04:00",
             "effectivePeriod": {
                 "start": "2023-06-15T15:00:00-04:00",
                 "end": "2023-06-25T15:00:00-04:00"
@@ -28512,10 +28716,10 @@ Canvas supports the following US Core Profiles for Observations:
   - [US Core Observation Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
   - [US Core Observation Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
   - [US Core Observation Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
-  - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
+  - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-screening-assessment.html)
   - [US Core Observation Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
   - [US Core Simple Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
-  - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
+  - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-smokingstatus.html)
   - [US Core Vital Signs Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-vital-signs.html)
   - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
   - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-pediatric-bmi-for-age.html)
@@ -28583,7 +28787,7 @@ string
 The FHIR Resource name.
 status 
 enum [ final | unknown | entered-in-error ] required
-The status of the result value. In Canvas only `final` committed vitals can be created.
+The status of the result value. Observations created via the FHIR API can only be `final`.
 code 
 json required
 Describes what was observed.  
@@ -28638,10 +28842,10 @@ Who is responsible for the observation
 Click to view child attributes
 reference 
 string 
-The reference string of the patient or practitioner (e.g. `"Practitioner/4150cd20de8a470aa570a852859ac87e"`).
+The reference string of the performer in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"Patient/a39cafb9d1b445be95a2e2548e12a787"`. Performer can be a Practitioner or a Patient.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner").
+Type the reference refers to (e.g. "Practitioner" or "Patient").
 valueQuantity 
 json 
 Actual result.  
@@ -28806,7 +29010,6 @@ The display name of the coding.
 **Value Options Supported:**
   - Vital Signs 
   - Social History 
-  - Vital Signs 
   - Imaging 
   - Laboratory 
   - Procedure 
@@ -28830,8 +29033,8 @@ string
 Reference that defines the content of this object.
 **Value Options Supported:**
   - http://hl7.org/fhir/StructureDefinition/data-absent-reason 
-valueString 
-string 
+valueCode 
+code 
 The reason the Observation.coding attribute is missing.
 **Value Options Supported:**
   - unsupported 
@@ -28891,10 +29094,10 @@ Who is responsible for the observation
 Click to view child attributes
 reference 
 string 
-The reference string of the patient or practitioner (e.g. `"Practitioner/4150cd20de8a470aa570a852859ac87e"`).
+The reference string of the performer in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"Patient/a39cafb9d1b445be95a2e2548e12a787"`. Performer can be a Practitioner or a Patient.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner").
+Type the reference refers to (e.g. "Practitioner" or "Patient").
 issued 
 datetime 
 Date/Time this version was made available. It is the timestamp in Canvas when the observation was ingested.
@@ -28924,7 +29127,6 @@ Coded form of the unit may be shown.
   - [degF] 
   - mm[Hg] 
   - % 
-  - [in_i] 
   - /min 
   - kg/m2 
   - L/min 
@@ -29080,6 +29282,9 @@ string
 Coded form of the unit
 **Value Options Supported:**
   - mm[Hg] 
+valueString 
+string 
+Actual component result, when the value is non-numeric and not coded.
 dataAbsentReason 
 json 
 Why the result is missing (if there is no `Component[x].value[y]` section)
@@ -29135,8 +29340,8 @@ string
 A reference to a related measurement the observation is made from.   
 Use this search parameter to find all observations of a specific vital panel or questionnaire response observations from the same interview.
 **Search Values Supported:**
-  - QuestionnaireResponse/_id
-  - Observation/_id
+  - QuestionnaireResponse/{id}
+  - Observation/{id}
 patient 
 string 
 The patient reference associated to the observation in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -29213,7 +29418,6 @@ The display name of the coding.
 **Value Options Supported:**
   - Vital Signs 
   - Social History 
-  - Vital Signs 
   - Imaging 
   - Laboratory 
   - Procedure 
@@ -29237,8 +29441,8 @@ string
 Reference that defines the content of this object.
 **Value Options Supported:**
   - http://hl7.org/fhir/StructureDefinition/data-absent-reason 
-valueString 
-string 
+valueCode 
+code 
 The reason the Observation.coding attribute is missing.
 **Value Options Supported:**
   - unsupported 
@@ -29298,10 +29502,10 @@ Who is responsible for the observation
 Click to view child attributes
 reference 
 string 
-The reference string of the patient or practitioner (e.g. `"Practitioner/4150cd20de8a470aa570a852859ac87e"`).
+The reference string of the performer in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"Patient/a39cafb9d1b445be95a2e2548e12a787"`. Performer can be a Practitioner or a Patient.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner").
+Type the reference refers to (e.g. "Practitioner" or "Patient").
 issued 
 datetime 
 Date/Time this version was made available. It is the timestamp in Canvas when the observation was ingested.
@@ -29331,7 +29535,6 @@ Coded form of the unit may be shown.
   - [degF] 
   - mm[Hg] 
   - % 
-  - [in_i] 
   - /min 
   - kg/m2 
   - L/min 
@@ -29487,6 +29690,9 @@ string
 Coded form of the unit
 **Value Options Supported:**
   - mm[Hg] 
+valueString 
+string 
+Actual component result, when the value is non-numeric and not coded.
 dataAbsentReason 
 json 
 Why the result is missing (if there is no `Component[x].value[y]` section)
@@ -29823,7 +30029,7 @@ The request requires user authorization.
               "severity": "error",
               "code": "not-found",
               "details": {
-                "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+                "text": "Unknown Observation resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
               }
             }
           ]
@@ -31062,7 +31268,7 @@ The system url of the coding.
   - http://terminology.hl7.org/CodeSystem/v2-0203 
 code 
 string 
-The code of the clinical status.
+The code identifying the identifier type.
 **Value Options Supported:**
   - TAX 
 display 
@@ -31076,6 +31282,7 @@ The namespace for the identifier value.
 **Value Options Supported:**
   - urn:oid:2.16.840.1.113883.4.4 (for Tax ID) 
   - http://hl7.org/fhir/sid/us-npi (for NPI) 
+  - http://nucc.org/provider-taxonomy (for Provider Taxonomy) 
 value 
 string 
 The value that is unique.
@@ -31244,7 +31451,7 @@ The system url of the coding.
   - http://terminology.hl7.org/CodeSystem/v2-0203 
 code 
 string 
-The code of the clinical status.
+The code identifying the identifier type.
 **Value Options Supported:**
   - TAX 
 display 
@@ -31258,6 +31465,7 @@ The namespace for the identifier value.
 **Value Options Supported:**
   - urn:oid:2.16.840.1.113883.4.4 (for Tax ID) 
   - http://hl7.org/fhir/sid/us-npi (for NPI) 
+  - http://nucc.org/provider-taxonomy (for Provider Taxonomy) 
 value 
 string 
 The value that is unique.
@@ -31852,6 +32060,7 @@ Gender identity code.
   - ASKU (Asked but unknown)
 display 
 string 
+Representation defined by the system.
 text 
 string 
 valueReference 
@@ -31986,6 +32195,16 @@ Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed i
 suffix 
 array[string] 
 Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+period 
+json 
+Validity window for this name.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD).
+end 
+date 
+Inclusive end date (YYYY-MM-DD).
 telecom 
 array[json] 
 Patient contact points (phone / email / fax / etc.).   
@@ -32123,7 +32342,6 @@ Purpose of this contact point.
 communication 
 array[json] 
 Languages used to communicate with the patient.
-Defaults to English if omitted. Currently only English is supported.
 Click to view child attributes
 language 
 json 
@@ -32263,6 +32481,7 @@ Gender identity code.
   - ASKU (Asked but unknown)
 display 
 string 
+Representation defined by the system.
 text 
 string 
 valueReference 
@@ -32375,6 +32594,12 @@ Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
 end 
 date 
 Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+type 
+json 
+Codeable concept identifying the kind of identifier.
+assigner 
+json 
+Organization that issued id.
 active 
 boolean 
 Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
@@ -32400,6 +32625,16 @@ Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed i
 suffix 
 array[string] 
 Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+period 
+json 
+Validity window for this name.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD).
+end 
+date 
+Inclusive end date (YYYY-MM-DD).
 telecom 
 array[json] 
 Patient contact points (phone / email / fax / etc.).   
@@ -32570,6 +32805,9 @@ array[string]
 First item is address line 1; remaining items are concatenated as address line 2.
 city 
 string 
+district 
+string 
+District name (aka county).
 state 
 string 
 2-letter state abbreviation.
@@ -32726,6 +32964,7 @@ Gender identity code.
   - ASKU (Asked but unknown)
 display 
 string 
+Representation defined by the system.
 text 
 string 
 valueReference 
@@ -32865,6 +33104,16 @@ Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed i
 suffix 
 array[string] 
 Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+period 
+json 
+Validity window for this name.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD).
+end 
+date 
+Inclusive end date (YYYY-MM-DD).
 telecom 
 array[json] 
 Patient contact points (phone / email / fax / etc.).   
@@ -33015,7 +33264,6 @@ Purpose of this contact point.
 communication 
 array[json] 
 Languages used to communicate with the patient.
-Communication languages cannot currently be modified via this endpoint — the value stored in Canvas is preserved regardless of what's sent.
 Click to view child attributes
 language 
 json 
@@ -33070,13 +33318,16 @@ Search for patients based on references from other resources using the FHIR reve
 _id 
 string 
 A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+_revinclude 
+string 
+Standard FHIR `_revinclude` parameter.
 _sort 
 string 
 Sort the results by a specific field. Supported values are **_id** , **birthdate** , **family** , and **given**. Prefix with **-** (e.g., **-birthdate**) to sort in descending order.
 active 
 boolean 
 By default, both active and inactive patients are returned. Use this parameter to return only active (`true`) or only inactive (`false`) patients.
-birthDate 
+birthdate 
 date 
 The patient's birth date.
 email 
@@ -33229,6 +33480,7 @@ Gender identity code.
   - ASKU (Asked but unknown)
 display 
 string 
+Representation defined by the system.
 text 
 string 
 valueReference 
@@ -33341,6 +33593,12 @@ Inclusive start date (YYYY-MM-DD). Defaults to **1970-01-01** if omitted.
 end 
 date 
 Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+type 
+json 
+Codeable concept identifying the kind of identifier.
+assigner 
+json 
+Organization that issued id.
 active 
 boolean 
 Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
@@ -33366,6 +33624,16 @@ Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed i
 suffix 
 array[string] 
 Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+period 
+json 
+Validity window for this name.
+Click to view child attributes
+start 
+date 
+Inclusive start date (YYYY-MM-DD).
+end 
+date 
+Inclusive end date (YYYY-MM-DD).
 telecom 
 array[json] 
 Patient contact points (phone / email / fax / etc.).   
@@ -33536,6 +33804,9 @@ array[string]
 First item is address line 1; remaining items are concatenated as address line 2.
 city 
 string 
+district 
+string 
+District name (aka county).
 state 
 string 
 2-letter state abbreviation.
@@ -33803,7 +34074,7 @@ The request requires user authorization.
                                     "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
                                     "code": "SPS",
                                     "display": "spouse"
-                                }
+                                },
                                 {
                                     "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                                     "code": "ARI",
@@ -33819,7 +34090,7 @@ The request requires user authorization.
                                     "code": "EMC",
                                     "display": "Emergency contact"
                                 }
-                            ],
+                            ]
                         }
                     ],
                     "telecom":
@@ -34602,7 +34873,7 @@ The request requires user authorization.
                                     "code": "EMC",
                                     "display": "Emergency contact"
                                 }
-                            ],
+                            ]
                         }
                     ],
                     "name":
@@ -35279,7 +35550,7 @@ The request requires user authorization.
                                     "code": "EMC",
                                     "display": "Emergency contact"
                                 }
-                            ],
+                            ]
                         }
                     ],
                     "telecom":
@@ -35819,7 +36090,7 @@ The request requires user authorization.
                                 ]
                             },
                             {
-                                "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3"
+                                "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
                                 "relationship":
                                 [
                                     {
@@ -35959,6 +36230,9 @@ Moreover, this endpoint can be used to denote copayments as well. For that purpo
 A created payment notice can be found in Canvas by going to the patient's chart, and clicking the paper icon in the top right corner. The created payment notice will be displayed under receipts. The "Originator" will be automatically set to Canvas Bot.  
 As payment notices are created, they will be applied to charges in chronological order of creation date, from oldest to newest.
 ### Attributes
+id 
+string 
+The identifier of the payment notice.
 extension 
 array[json] 
 Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
@@ -36735,7 +37009,7 @@ The bearer token included in requests send to this endpoint must have one of the
         payload = {
             "resourceType": "Parameters"
         }
-        response = requests.put(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
         print(response.text)
         ```
 ----- END PAGE https://docs.canvasmedical.com/api/practitioner-operations/
@@ -36769,22 +37043,11 @@ Identifies the meaning of the extension
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location 
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature 
   - http://schemas.canvasmedical.com/fhir/extensions/roles 
-  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex 
 valueString 
 string 
 Value of extension.  
 The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
 A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-valueCode 
-string 
-Value of extension.  
-The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`.   
-A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-**Value Options Supported:**
-  - M 
-  - F 
-  - OTH 
-  - UNK 
 valueUrl 
 string 
 Value of extension.  
@@ -36851,7 +37114,7 @@ array[json] required
 The name associated with the practitioner.
 Click to view child attributes
 use 
-enum [ ususal ] required
+enum [ usual ] required
 The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
 family 
 string required
@@ -36933,7 +37196,7 @@ value
 string 
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
-object[json] 
+json 
 License type coding object. Specifies the type of license that practitioner holds.
 Click to view child attributes
 text 
@@ -36943,11 +37206,12 @@ The license type code. This field specifies the type of license that practitione
   - CLIA 
   - DEA 
   - PTAN 
+  - SPI 
   - STATE 
   - TAXONOMY 
   - OTHER 
 period 
-object[json] required
+json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
@@ -36955,9 +37219,9 @@ string
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
 string 
-Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-object[json] 
+json 
 A component of the Practitioner's license object that defines the license issuing authority short name.
 Click to view child attributes
 display 
@@ -37019,22 +37283,11 @@ Identifies the meaning of the extension
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location 
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature 
   - http://schemas.canvasmedical.com/fhir/extensions/roles 
-  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex 
 valueString 
 string 
 Value of extension.  
 The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
 A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-valueCode 
-string 
-Value of extension.  
-The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`.   
-A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-**Value Options Supported:**
-  - M 
-  - F 
-  - OTH 
-  - UNK 
 valueUrl 
 string 
 Value of extension.  
@@ -37104,14 +37357,23 @@ array[json]
 The name associated with the practitioner.
 Click to view child attributes
 use 
-enum [ ususal ] 
+enum [ usual ] 
 The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
+text 
+string 
+Text representation of the full name.
 family 
 string 
 Practitioner's last name.
 given 
 array[string] 
 Practitioner's first name. Only one first name is allowed.
+prefix 
+array[string] 
+Parts that come before the name.
+suffix 
+array[string] 
+Parts that come after the name.
 telecom 
 array[json] 
 Practitioner contact point(s) (email / phone / fax).
@@ -37190,7 +37452,7 @@ value
 string 
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
-object[json] 
+json 
 License type coding object. Specifies the type of license that practitioner holds.
 Click to view child attributes
 text 
@@ -37200,11 +37462,12 @@ The license type code. This field specifies the type of license that practitione
   - CLIA 
   - DEA 
   - PTAN 
+  - SPI 
   - STATE 
   - TAXONOMY 
   - OTHER 
 period 
-object[json] 
+json 
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
@@ -37212,9 +37475,9 @@ string
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
 string 
-Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-object[json] 
+json 
 A component of the Practitioner's license object that defines the license issuing authority short name.
 Click to view child attributes
 display 
@@ -37268,22 +37531,11 @@ Identifies the meaning of the extension
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location 
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature 
   - http://schemas.canvasmedical.com/fhir/extensions/roles 
-  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex 
 valueString 
 string 
 Value of extension.  
 The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
 A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-valueCode 
-string 
-Value of extension.  
-The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`.   
-A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-**Value Options Supported:**
-  - M 
-  - F 
-  - OTH 
-  - UNK 
 valueUrl 
 string 
 Value of extension.  
@@ -37350,7 +37602,7 @@ array[json] required
 The name associated with the practitioner.
 Click to view child attributes
 use 
-enum [ ususal ] required
+enum [ usual ] required
 The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
 family 
 string required
@@ -37443,7 +37695,7 @@ value
 string 
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
-object[json] 
+json 
 License type coding object. Specifies the type of license that practitioner holds.
 Click to view child attributes
 text 
@@ -37453,11 +37705,12 @@ The license type code. This field specifies the type of license that practitione
   - CLIA 
   - DEA 
   - PTAN 
+  - SPI 
   - STATE 
   - TAXONOMY 
   - OTHER 
 period 
-object[json] required
+json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
@@ -37465,9 +37718,9 @@ string
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
 string 
-Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-object[json] 
+json 
 A component of the Practitioner's license object that defines the license issuing authority short name.
 Click to view child attributes
 display 
@@ -37575,22 +37828,11 @@ Identifies the meaning of the extension
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location 
   - http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature 
   - http://schemas.canvasmedical.com/fhir/extensions/roles 
-  - http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex 
 valueString 
 string 
 Value of extension.  
 The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
 A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
-valueCode 
-string 
-Value of extension.  
-The `valueCode` attribute is needed for the birthsex extension where the `url` is `http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`.   
-A code classifying the person's sex assigned at birth as specified by the Office of the National Coordinator for Health IT (ONC).
-**Value Options Supported:**
-  - M 
-  - F 
-  - OTH 
-  - UNK 
 valueUrl 
 string 
 Value of extension.  
@@ -37660,14 +37902,23 @@ array[json]
 The name associated with the practitioner.
 Click to view child attributes
 use 
-enum [ ususal ] 
+enum [ usual ] 
 The 'use' attribute specifies the context in which the name is used. For this API, the only permitted value is 'usual,' which indicates that the name provided is the name typically used to identify the practitioner in daily practice.
+text 
+string 
+Text representation of the full name.
 family 
 string 
 Practitioner's last name.
 given 
 array[string] 
 Practitioner's first name. Only one first name is allowed.
+prefix 
+array[string] 
+Parts that come before the name.
+suffix 
+array[string] 
+Parts that come after the name.
 telecom 
 array[json] 
 Practitioner contact point(s) (email / phone / fax).
@@ -37746,7 +37997,7 @@ value
 string 
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
-object[json] 
+json 
 License type coding object. Specifies the type of license that practitioner holds.
 Click to view child attributes
 text 
@@ -37756,11 +38007,12 @@ The license type code. This field specifies the type of license that practitione
   - CLIA 
   - DEA 
   - PTAN 
+  - SPI 
   - STATE 
   - TAXONOMY 
   - OTHER 
 period 
-object[json] 
+json 
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
@@ -37768,9 +38020,9 @@ string
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
 string 
-Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
+End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-object[json] 
+json 
 A component of the Practitioner's license object that defines the license issuing authority short name.
 Click to view child attributes
 display 
@@ -37813,10 +38065,6 @@ The request requires user authorization.
         {
             "resourceType": "Practitioner",
             "extension": [
-                {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
-                },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
                     "valueString": "username123"
@@ -37984,10 +38232,6 @@ The request requires user authorization.
         payload = {
             "resourceType": "Practitioner",
             "extension": [
-                {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
-                },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
                     "valueString": "username123"
@@ -38252,10 +38496,6 @@ The request requires user authorization.
             "id": "55096fbcdfb240fd8c999c325304de03",
             "extension": [
                 {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
-                },
-                {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
                     "valueString": "username123"
                 },
@@ -38272,7 +38512,7 @@ The request requires user authorization.
                     }
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
                     "valueAttachment": {
                         "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
                     }
@@ -38478,10 +38718,6 @@ The request requires user authorization.
             "resourceType": "Practitioner",
             "extension": [
                 {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
-                },
-                {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
                     "valueUrl": "https://meet.google.com/room-001"
                 },
@@ -38494,13 +38730,9 @@ The request requires user authorization.
                 },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-                    "extension": [
-                        {
-                            "valueAttachment": {
-                                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                            }
-                        }
-                    ]
+                    "valueAttachment": {
+                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                    }
                 },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -38660,10 +38892,6 @@ The request requires user authorization.
             "resourceType": "Practitioner",
             "extension": [
                 {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
-                },
-                {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
                     "valueUrl": "https://meet.google.com/room-001"
                 },
@@ -38675,14 +38903,10 @@ The request requires user authorization.
                     }
                 },
                 {
-                    "extension": [
-                        {
-                            "valueAttachment": {
-                                "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
-                            }
-                        }
-                    ],
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature"
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
+                    "valueAttachment": {
+                        "url": "https://canvas-client-media.s3.amazonaws.com/local/signature-cdfkizrj.pdf?AWSAccessKeyId=AKIA5KJ2QWTAU572JXPZ&Signature=ljyujvD4fkgOG7b3SxlIokdDIlQ%3D&Expires=1703596102"
+                    }
                 },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
@@ -38959,172 +39183,191 @@ The request requires user authorization.
   - **200**
         ```json
         {
-            "resourceType": "Practitioner",
-            "id": "55096fbcdfb240fd8c999c325304de03",
-            "extension": [
+            "resourceType": "Bundle",
+            "type": "searchset",
+            "total": 1,
+            "link": [
                 {
-                    "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex",
-                    "valueCode": "F"
+                    "relation": "self",
+                    "url": "/Practitioner?_count=10&_offset=0"
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
-                    "valueString": "username123"
+                    "relation": "first",
+                    "url": "/Practitioner?_count=10&_offset=0"
                 },
                 {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
-                    "valueUrl": "https://meet.google.com/room-001"
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
-                    "valueReference": {
-                        "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
-                        "type": "Location",
-                        "display": "Canvas Clinic San Francisco"
-                    }
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
-                    "valueAttachment": {
-                        "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
-                    }
-                },
-                {
-                    "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
-                    "extension": [
-                        {
-                            "url": "code",
-                            "valueCoding": {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "RN"
-                            }
-                        },
-                        {
-                            "url": "code",
-                            "valueCoding": {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "MA"
-                            }
-                        },
-                        {
-                            "url": "code",
-                            "valueCoding": {
-                                "system": "http://schemas.canvasmedical.com/fhir/roles",
-                                "code": "CC"
-                            }
-                        }
-                    ]
+                    "relation": "last",
+                    "url": "/Practitioner?_count=10&_offset=0"
                 }
             ],
-            "identifier": [
+            "entry": [
                 {
-                    "system": "http://hl7.org/fhir/sid/us-npi",
-                    "value": "1920301155"
-                }
-            ],
-            "active": true,
-            "name": [
-                {
-                    "use": "usual",
-                    "text": "Samantha Jones",
-                    "family": "Jones",
-                    "given": [
-                        "Samantha"
-                    ]
-                }
-            ],
-            "telecom": [
-                {
-                    "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
-                    "system": "phone",
-                    "value": "5554320555",
-                    "use": "mobile",
-                    "rank": 1
-                },
-                {
-                    "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
-                    "system": "phone",
-                    "value": "333555",
-                    "use": "work",
-                    "rank": 1
-                },
-                {
-                    "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
-                    "system": "email",
-                    "value": "samantha.jones@example.com",
-                    "use": "work",
-                    "rank": 1
-                },
-                {
-                    "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
-                    "system": "email",
-                    "value": "samantha.jones2@example.com",
-                    "use": "work",
-                    "rank": 2
-                }
-            ],
-            "address": [
-                {
-                    "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
-                    "use": "work",
-                    "line": [
-                        "1234 Main St"
-                    ],
-                    "city": "Los Angeles",
-                    "state": "CA",
-                    "postalCode": "94107",
-                    "country": "United States"
-                },
-                {
-                    "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
-                    "use": "work",
-                    "line": [
-                        "12 Cesar Chavez St"
-                    ],
-                    "city": "San Francisco",
-                    "state": "CA",
-                    "postalCode": "94110",
-                    "country": "United States"
-                }
-            ],
-            "birthDate": "1988-10-10",
-            "photo": [
-                {
-                    "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
-                    "title": "Profile photo 1 -- sample title"
-                },
-                {
-                    "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
-                }
-            ],
-            "qualification": [
-                {
-                    "identifier": [
-                        {
-                            "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
-                            "value": "PRT-01"
-                        }
-                    ],
-                    "code": {
-                        "text": "License"
-                    },
-                    "period": {
-                        "start": "2020-01-01",
-                        "end": "2024-05-05"
-                    },
-                    "issuer": {
-                        "display": "MD University Los Angeles",
+                    "resource": {
+                        "resourceType": "Practitioner",
+                        "id": "55096fbcdfb240fd8c999c325304de03",
                         "extension": [
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
-                                "valueString": "MDU LA"
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
+                                "valueString": "username123"
                             },
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
-                                "valueString": "CA"
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link",
+                                "valueUrl": "https://meet.google.com/room-001"
                             },
                             {
-                                "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
-                                "valueBoolean": true
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-primary-practice-location",
+                                "valueReference": {
+                                    "reference": "Location/95b9ac2d-e963-4d7a-b165-7901870f1663",
+                                    "type": "Location",
+                                    "display": "Canvas Clinic San Francisco"
+                                }
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-signature",
+                                "valueAttachment": {
+                                    "url": "https://fumage-example.canvasmedical.com/Practitioner/55096fbcdfb240fd8c999c325304de03/files/signature"
+                                }
+                            },
+                            {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
+                                "extension": [
+                                    {
+                                        "url": "code",
+                                        "valueCoding": {
+                                            "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                            "code": "RN"
+                                        }
+                                    },
+                                    {
+                                        "url": "code",
+                                        "valueCoding": {
+                                            "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                            "code": "MA"
+                                        }
+                                    },
+                                    {
+                                        "url": "code",
+                                        "valueCoding": {
+                                            "system": "http://schemas.canvasmedical.com/fhir/roles",
+                                            "code": "CC"
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "identifier": [
+                            {
+                                "system": "http://hl7.org/fhir/sid/us-npi",
+                                "value": "1920301155"
+                            }
+                        ],
+                        "active": true,
+                        "name": [
+                            {
+                                "use": "usual",
+                                "text": "Samantha Jones",
+                                "family": "Jones",
+                                "given": [
+                                    "Samantha"
+                                ]
+                            }
+                        ],
+                        "telecom": [
+                            {
+                                "id": "4fb49223-3d48-4bd6-8125-2ac62208efd6",
+                                "system": "phone",
+                                "value": "5554320555",
+                                "use": "mobile",
+                                "rank": 1
+                            },
+                            {
+                                "id": "1a7f5403-2d9e-4156-a6e0-16c816e873fd",
+                                "system": "phone",
+                                "value": "333555",
+                                "use": "work",
+                                "rank": 1
+                            },
+                            {
+                                "id": "2d9490aa-ed57-46ef-8eec-ed5f22c38844",
+                                "system": "email",
+                                "value": "samantha.jones@example.com",
+                                "use": "work",
+                                "rank": 1
+                            },
+                            {
+                                "id": "4b8369cf-67e7-404d-8abe-51ff6e9ac835",
+                                "system": "email",
+                                "value": "samantha.jones2@example.com",
+                                "use": "work",
+                                "rank": 2
+                            }
+                        ],
+                        "address": [
+                            {
+                                "id": "5e76df8f-36c1-489a-8034-0916c7e8829f",
+                                "use": "work",
+                                "line": [
+                                    "1234 Main St"
+                                ],
+                                "city": "Los Angeles",
+                                "state": "CA",
+                                "postalCode": "94107",
+                                "country": "United States"
+                            },
+                            {
+                                "id": "33fe0a8f-1140-4ee3-b703-1afe42e8a3d6",
+                                "use": "work",
+                                "line": [
+                                    "12 Cesar Chavez St"
+                                ],
+                                "city": "San Francisco",
+                                "state": "CA",
+                                "postalCode": "94110",
+                                "country": "United States"
+                            }
+                        ],
+                        "birthDate": "1988-10-10",
+                        "photo": [
+                            {
+                                "url": "https://fastly.picsum.photos/id/1064/200/300.jpg?hmac=Joir_QEJYjd2_bmYco64ek_C2TSsfReMcWWcXYsObKI",
+                                "title": "Profile photo 1 -- sample title"
+                            },
+                            {
+                                "url": "https://fastly.picsum.photos/id/674/200/300.jpg?hmac=kS3VQkm7AuZdYJGUABZGmnNj_3KtZ6Twgb5Qb9ITssY"
+                            }
+                        ],
+                        "qualification": [
+                            {
+                                "identifier": [
+                                    {
+                                        "system": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url",
+                                        "value": "PRT-01"
+                                    }
+                                ],
+                                "code": {
+                                    "text": "License"
+                                },
+                                "period": {
+                                    "start": "2020-01-01",
+                                    "end": "2024-05-05"
+                                },
+                                "issuer": {
+                                    "display": "MD University Los Angeles",
+                                    "extension": [
+                                        {
+                                            "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-short-name",
+                                            "valueString": "MDU LA"
+                                        },
+                                        {
+                                            "url": "http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-state",
+                                            "valueString": "CA"
+                                        },
+                                        {
+                                            "url": "http://schemas.canvasmedical.com/fhir/extensions/license-primary",
+                                            "valueBoolean": true
+                                        }
+                                    ]
+                                }
                             }
                         ]
                     }
@@ -39573,7 +39816,7 @@ The request requires user authorization.
 ### 
 Provenance of a resource is a record that describes entities and processes involved in producing and delivering or otherwise influencing that resource. Provenance provides a critical foundation for assessing authenticity, enabling trust, and allowing reproducibility. Provenance assertions are a form of contextual metadata and can themselves become important records with their own provenance. Provenance statement indicates clinical significance in terms of confidence in authenticity, reliability, and trustworthiness, integrity, and stage in lifecycle (e.g. Document Completion - has the artifact been legally authenticated), all of which may impact security, privacy, and trust policies.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-provenance.html>   
-In Canvas a Provenance record is created each time the following data types are create or updated in the Canvas database:
+In Canvas a Provenance record is created each time the following data types are created or updated in the Canvas database:
   - AllergyIntolerance
   - CarePlan
   - CareTeamMembership
@@ -39630,7 +39873,6 @@ Type the reference refers to (e.g. "Patient").
   - Encounter 
   - Goal 
   - Immunization 
-  - MedicationDispense 
   - MedicationRequest 
   - Observation 
   - Patient 
@@ -39692,20 +39934,38 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type 
   - http://terminology.hl7.org/CodeSystem/provenance-participant-type 
+  - http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type 
 code 
 string 
 The code.
 **Value Options Supported:**
+  - enterer 
+  - performer 
   - author 
+  - verifier 
+  - legal 
+  - attester 
+  - informant 
+  - custodian 
+  - assembler 
   - composer 
+  - transmitter 
 display 
 string 
 The display name of the coding.
 **Value Options Supported:**
+  - Enterer 
+  - Performer 
   - Author 
+  - Verifier 
+  - Legal 
+  - Attester 
+  - Informant 
+  - Custodian 
+  - Assembler 
   - Composer 
+  - Transmitter 
 who 
 json 
 Click to view child attributes
@@ -39811,7 +40071,6 @@ Type the reference refers to (e.g. "Patient").
   - Encounter 
   - Goal 
   - Immunization 
-  - MedicationDispense 
   - MedicationRequest 
   - Observation 
   - Patient 
@@ -39873,20 +40132,38 @@ system
 string 
 The system url of the coding.
 **Value Options Supported:**
-  - http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type 
   - http://terminology.hl7.org/CodeSystem/provenance-participant-type 
+  - http://hl7.org/fhir/us/core/CodeSystem/us-core-provenance-participant-type 
 code 
 string 
 The code.
 **Value Options Supported:**
+  - enterer 
+  - performer 
   - author 
+  - verifier 
+  - legal 
+  - attester 
+  - informant 
+  - custodian 
+  - assembler 
   - composer 
+  - transmitter 
 display 
 string 
 The display name of the coding.
 **Value Options Supported:**
+  - Enterer 
+  - Performer 
   - Author 
+  - Verifier 
+  - Legal 
+  - Attester 
+  - Informant 
+  - Custodian 
+  - Assembler 
   - Composer 
+  - Transmitter 
 who 
 json 
 Click to view child attributes
@@ -40254,6 +40531,7 @@ The type of questionnaire item this is.
   - group (for nested groups of items) 
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
+  - decimal (for decimal numeric questions) 
 repeats 
 boolean 
 Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -40350,8 +40628,8 @@ string
 Computationally friendly name of the questionnaire
 questionnaire-code 
 string 
-The questionnaire the answers are provided for.  
-A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
+A code that matches the Questionnaire's own `code` value.  
+A Questionnaire search of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
 status 
 string 
 The current status of the questionnaire  
@@ -40449,6 +40727,7 @@ The type of questionnaire item this is.
   - group (for nested groups of items) 
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
+  - decimal (for decimal numeric questions) 
 repeats 
 boolean 
 Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -41232,7 +41511,7 @@ string required
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
 answer 
 array[json] required
 A list of one or more answers to this question.
@@ -41263,12 +41542,6 @@ The code of the answer.
 display 
 string required
 The display name of the coding.
-item 
-array[json] 
-Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
-item 
-array[json] 
-Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 201 Created 
 The server has successfully processed the request; the new resource has been created and is now ready for interaction.  
@@ -41372,6 +41645,7 @@ The position of the questionnaire response within its overall lifecycle.
 **Value Options Supported:**
   - completed 
   - entered-in-error 
+  - in-progress 
 subject 
 json 
 The subject of the questions.
@@ -41434,7 +41708,7 @@ string
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
 answer 
 array[json] 
 A list of one or more answers to this question.
@@ -41598,7 +41872,7 @@ string required
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
 answer 
 array[json] required
 A list of one or more answers to this question.
@@ -41629,12 +41903,6 @@ The code of the answer.
 display 
 string required
 The display name of the coding.
-item 
-array[json] 
-Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question.
-item 
-array[json] 
-Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
 ### Responses
 200 OK 
 The server has successfully processed the request.  
@@ -41778,6 +42046,7 @@ The position of the questionnaire response within its overall lifecycle.
 **Value Options Supported:**
   - completed 
   - entered-in-error 
+  - in-progress 
 subject 
 json 
 The subject of the questions.
@@ -41840,7 +42109,7 @@ string
 A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
 text 
 string 
-Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
 answer 
 array[json] 
 A list of one or more answers to this question.
@@ -41901,7 +42170,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -41980,7 +42249,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -42151,7 +42420,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 },
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
@@ -42278,7 +42547,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -42357,7 +42626,7 @@ The request requires user authorization.
             "extension": [
                 {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                    "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                 }
             ],
             "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -42578,7 +42847,7 @@ The request requires user authorization.
                         "extension": [
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                                "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                             },
                             {
                                 "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
@@ -42734,7 +43003,7 @@ Navigate to the Canvas UI (sandbox or production instance) and log in using the 
 For more detail about making Patient Create requests, check out the API documentation for Patient Create.
 > **Info:** As part of the request's response, you will see a patient ID within the location: header. Copy the ID value between Patient/ and / history - you will need it to create an appointment in the next step.  
 >   
->  Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chat: https://{customer}.canvasmedication.com/patient/{patientID} 
+>  Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chart: https://{customer}.canvasmedical.com/patient/{patientID} 
 ##  Create an Appointment 
 We have our first patient and now want to book their first appointment. But before we can book their appointment we will need to find a practitioner.
 If you are using one of our canvas sandboxes, there will already be a demo staff member loaded in the instance.
@@ -42773,7 +43042,6 @@ You will then get a response similar to:
             ]
           }
         }
-       }
       ]
     }
     ```
@@ -42785,41 +43053,39 @@ Now lets set up the cURL command to create the appointment. Again you will need 
       --header 'Authorization: Bearer <bearer-token>' \
       --header 'Content-Type: application/json' \
       --data '{
-        "resource": {
-            "resourceType": "Appointment",
-            "status": "booked",
-            "appointmentType": {
-                "coding": [
-                    {
-                        "system": "http://snomed.info/sct",
-                        "code": "448337001",
-                        "display": "Telemedicine consultation with patient (procedure)"
-                    }
-                ]
-            },
-            "description": "Weekly check-in.",
-            "supportingInformation" : [
-              {
-                "reference" : "Location/1"
-              }
-            ],
-            "start": "2022-02-19T13:30:00.000Z",
-            "end": "2022-02-19T14:00:00.000Z",
-            "participant": [
+        "resourceType": "Appointment",
+        "status": "booked",
+        "appointmentType": {
+            "coding": [
                 {
-                    "actor": {
-                        "reference": "Practitioner/<practitioner-id>"
-                    },
-                    "status": "accepted"
-                },
-                {
-                    "actor": {
-                        "reference": "Patient/<patient-id>"
-                    },
-                    "status": "accepted"
+                    "system": "http://snomed.info/sct",
+                    "code": "448337001",
+                    "display": "Telemedicine consultation with patient (procedure)"
                 }
             ]
-        }
+        },
+        "description": "Weekly check-in.",
+        "supportingInformation" : [
+          {
+            "reference" : "Location/1"
+          }
+        ],
+        "start": "2022-02-19T13:30:00.000Z",
+        "end": "2022-02-19T14:00:00.000Z",
+        "participant": [
+            {
+                "actor": {
+                    "reference": "Practitioner/<practitioner-id>"
+                },
+                "status": "accepted"
+            },
+            {
+                "actor": {
+                    "reference": "Patient/<patient-id>"
+                },
+                "status": "accepted"
+            }
+        ]
     }'
     ```
 If you navigate to the correct date you used for start and end in the request above on the Schedule of your Canvas home page, you will see your first appointment. You should also be able to see the appointment when navigating to the patient's chart.
@@ -42934,6 +43200,9 @@ List of strings. The first item in the list will be address line 1 in Canvas. Th
 city 
 string 
 String representing the city of the address.
+district 
+string 
+District (e.g., county) of the address.
 state 
 string 
 2 letter state abbreviation of the address.
@@ -43093,6 +43362,9 @@ List of strings. The first item in the list will be address line 1 in Canvas. Th
 city 
 string 
 String representing the city of the address.
+district 
+string 
+District (e.g., county) of the address.
 state 
 string 
 2 letter state abbreviation of the address.
@@ -43822,14 +44094,6 @@ The patient reference associated to the Service Request in the format `Patient/c
 authored 
 date 
 Filter by **authoredOn**. See [Date Filtering](/api/date-filtering) for more information.
-status 
-string 
-The status of the request. Filters by the `status` field.
-**Search Values Supported:**
-  - active
-  - completed
-  - draft
-  - entered-in-error
 category 
 string 
 Categorization of the request (SNOMED CT). Filters by `category.coding` code and/or system. You can search by code alone or `system|code`.
@@ -44122,15 +44386,15 @@ The request requires user authorization.
           "link": [
             {
               "relation": "self",
-              "url": "/ServiceRequest?_count=10&_offset=0"
+              "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
             },
             {
               "relation": "first",
-              "url": "/ServiceRequest?_count=10&_offset=0"
+              "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
             },
             {
               "relation": "last",
-              "url": "/ServiceRequest?_count=10&_offset=0"
+              "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
             }
           ],
           "entry": [
@@ -44694,7 +44958,7 @@ The request requires user authorization.
           },
           "subject": {
             "reference": "Patient/1c8c6f27551d4d01aa3bf2477a4d5259",
-            "type": "Patient",
+            "type": "Patient"
           }
         }
         ```
@@ -44746,14 +45010,14 @@ The request requires user authorization.
   - **curl**
         ```shell
         curl --request GET \
-             --url 'https://fumage-example.canvasmedical.com/Specimen?_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27-55d-4d01-aa3b-f2477a4d5259' \
+             --url 'https://fumage-example.canvasmedical.com/Specimen?_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27551d4d01aa3bf2477a4d5259' \
              --header 'Authorization: Bearer <token>' \
              --header 'accept: application/json'
         ```
   - **python**
         ```python
         import requests
-        url = "https://fumage-example.canvasmedical.com/Specimen?_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27-55d-4d01-aa3b-f2477a4d5259"
+        url = "https://fumage-example.canvasmedical.com/Specimen?_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27551d4d01aa3bf2477a4d5259"
         headers = {
             "accept": "application/json",
             "Authorization": "Bearer <token>"
@@ -44790,8 +45054,8 @@ The request requires user authorization.
                   "text": "Serum"
                 },
                 "subject": {
-                  "reference": "Patient/1c8c6f27-551d4d01aa3bf2477a4d5259",
-                  "type": "Patient",
+                  "reference": "Patient/1c8c6f27551d4d01aa3bf2477a4d5259",
+                  "type": "Patient"
                 }
               }
             }
@@ -44865,7 +45129,7 @@ Additional content defined by implementations
   - Canvas supports assigning a task to a group/team. This optional field requires a reference to the team from the [FHIR Group](/api/group) endpoint. In the Canvas UI, this will display under the field **team** in the task card.
 Click to view child attributes
 url 
-string required
+string 
 Reference that defines the content of this object.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/task-group (This url will have an associated valueReference for the FHIR Group that this task is assigned to.)
@@ -44875,7 +45139,7 @@ A reference to a FHIR Group resource that represents the canvas team assigned to
 Click to view child attributes
 reference 
 string required
-The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
 status 
 string required
 The current status of the task.
@@ -44883,6 +45147,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string required
 Human-readable explanation of task.
@@ -44892,7 +45163,7 @@ Beneficiary of the Task. This must be a [Patient](/api/patient) reference. If th
 Click to view child attributes
 reference 
 string required
-The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
 authoredOn 
 datetime 
 Task Creation Date. If omitted from the message, it will default to the current timestamp at the time of ingestion.
@@ -44902,14 +45173,14 @@ Who is asking for task to be done. This must be a [Practitioner](/api/practition
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 owner 
 json 
 Responsible individual. If supplied, this must be a [Practitioner](/api/practitioner) reference. In canvas this practitioner will become the staff member assignee.
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 intent 
 enum [unknown] required
 Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
@@ -44944,7 +45215,7 @@ A reference to the Canvas Practitioner who authored the task comment.
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
@@ -45009,7 +45280,7 @@ A reference to a FHIR Group resource that represents the canvas team assigned to
 Click to view child attributes
 reference 
 string 
-The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
 type 
 string 
 Type the reference refers to (e.g. "Group").
@@ -45023,6 +45294,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string 
 Human-readable explanation of task.
@@ -45032,7 +45310,7 @@ Beneficiary of the Task. This must be a [Patient](/api/patient) reference. If th
 Click to view child attributes
 reference 
 string 
-The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
 type 
 string 
 Type the reference refers to (e.g. "Patient").
@@ -45048,7 +45326,7 @@ Who is asking for task to be done. This must be a [Practitioner](/api/practition
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45058,7 +45336,7 @@ Responsible individual. If supplied, this must be a [Practitioner](/api/practiti
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45092,7 +45370,7 @@ A reference to the Canvas Practitioner who authored the task comment.
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45137,7 +45415,7 @@ Additional content defined by implementations
   - Canvas supports assigning a task to a group/team. This optional field requires a reference to the team from the [FHIR Group](/api/group) endpoint. In the Canvas UI, this will display under the field **team** in the task card.
 Click to view child attributes
 url 
-string required
+string 
 Reference that defines the content of this object.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/task-group (This url will have an associated valueReference for the FHIR Group that this task is assigned to.)
@@ -45147,7 +45425,7 @@ A reference to a FHIR Group resource that represents the canvas team assigned to
 Click to view child attributes
 reference 
 string required
-The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
 status 
 string required
 The current status of the task.
@@ -45155,6 +45433,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string required
 Human-readable explanation of task.
@@ -45164,7 +45449,7 @@ Beneficiary of the Task. This must be a [Patient](/api/patient) reference. If th
 Click to view child attributes
 reference 
 string required
-The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
 authoredOn 
 datetime 
 Task Creation Date. If omitted from the message, it will default to the current timestamp at the time of ingestion.
@@ -45174,14 +45459,14 @@ Who is asking for task to be done. This must be a [Practitioner](/api/practition
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 owner 
 json 
 Responsible individual. If supplied, this must be a [Practitioner](/api/practitioner) reference. In canvas this practitioner will become the staff member assignee.
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 intent 
 enum [unknown] required
 Distinguishes whether the task is a proposal, plan or full order. Canvas does not have a mapping for this field, so it should always be set to **unknown**.
@@ -45216,7 +45501,7 @@ A reference to the Canvas Practitioner who authored the task comment.
 Click to view child attributes
 reference 
 string required
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
@@ -45287,6 +45572,13 @@ Search by task owner in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a78
 patient 
 string 
 Search by patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+priority 
+string 
+Search by task priority
+**Search Values Supported:**
+  - stat
+  - urgent
+  - routine
 requester 
 string 
 Search by task requester in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
@@ -45348,7 +45640,7 @@ A reference to a FHIR Group resource that represents the canvas team assigned to
 Click to view child attributes
 reference 
 string 
-The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
 type 
 string 
 Type the reference refers to (e.g. "Group").
@@ -45362,6 +45654,13 @@ The current status of the task.
   - requested (In canvas this maps to a status of open.)
   - completed 
   - cancelled (In canvas this maps to a status of closed.)
+priority 
+string 
+The priority level of the task.
+**Value Options Supported:**
+  - stat 
+  - urgent 
+  - routine 
 description 
 string 
 Human-readable explanation of task.
@@ -45371,7 +45670,7 @@ Beneficiary of the Task. This must be a [Patient](/api/patient) reference. If th
 Click to view child attributes
 reference 
 string 
-The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
 type 
 string 
 Type the reference refers to (e.g. "Patient").
@@ -45387,7 +45686,7 @@ Who is asking for task to be done. This must be a [Practitioner](/api/practition
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45397,7 +45696,7 @@ Responsible individual. If supplied, this must be a [Practitioner](/api/practiti
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45431,7 +45730,7 @@ A reference to the Canvas Practitioner who authored the task comment.
 Click to view child attributes
 reference 
 string 
-The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
 type 
 string 
 Type the reference refers to (e.g. "Practitioner").
@@ -45479,6 +45778,7 @@ The request requires user authorization.
                 }
             ],
             "status": "requested",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45517,6 +45817,7 @@ The request requires user authorization.
                 }
             ],
             "status": "requested",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45665,6 +45966,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for":
             {
@@ -45779,6 +46081,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -45817,6 +46120,7 @@ The request requires user authorization.
                 }
             ],
             "status": "completed",
+            "priority": "urgent",
             "description": "Ask patient for new insurance information.",
             "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
             "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -46018,6 +46322,7 @@ The request requires user authorization.
                             }
                         ],
                         "status": "completed",
+                        "priority": "urgent",
                         "description": "Ask patient for new insurance information.",
                         "for":
                         {
