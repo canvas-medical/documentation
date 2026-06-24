@@ -29,8 +29,8 @@ The `Patient` effect enables the creation and updating of patient records within
 | `deceased_datetime`      | `datetime.datetime` or `None`               | Date and time of patient's death            | No       |
 | `deceased_cause`         | `str` or `None`                             | Cause of patient's death                    | No       |
 | `deceased_comment`       | `str` or `None`                             | Additional comments about patient's death   | No       |
-| `biological_race_codes`  | `list[str]` or `None`                       | CDC race codes describing the patient's biological race (e.g., `"2106-3"`) | No       |
-| `cultural_ethnicity_codes` | `list[str]` or `None`                     | CDC ethnicity codes describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No       |
+| `biological_race_codes`  | `list[str]` or `None`                       | [CDC race codes](#setting-race-and-ethnicity) describing the patient's biological race (e.g., `"2106-3"`) | No       |
+| `cultural_ethnicity_codes` | `list[str]` or `None`                     | [CDC ethnicity codes](#setting-race-and-ethnicity) describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No       |
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`       | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers              | No       |
@@ -168,25 +168,34 @@ By default, Canvas generates the patient id (`patient_id`) when you create a pat
 
 A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
 
-```python?partial=true
+Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
+
+```python
 from canvas_sdk.effects.patient import Patient, generate_patient_id
-from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 
 
-class MyHandler(BaseHandler):
-    def compute(self):
+class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/patients"
+
+    def post(self) -> list[Response]:
+        body = self.request.json()
         new_patient_id = generate_patient_id()
 
         patient = Patient(
             patient_id=new_patient_id,
-            first_name="Jane",
-            last_name="Doe",
+            first_name=body["first_name"],
+            last_name=body["last_name"],
         )
 
-        # `new_patient_id` can now be reused for subsequent patient-scoped
-        # effects in the same plugin execution.
-
-        return [patient.create()]
+        # `new_patient_id` can be reused for follow-up patient-scoped effects in
+        # the same execution, and is returned so the caller has it immediately
+        # without a follow-up lookup.
+        return [
+            patient.create(),
+            JSONResponse({"patient_id": new_patient_id}, status_code=201),
+        ]
 ```
 
 # Patient Update Example
@@ -261,7 +270,27 @@ class DeceasedPatientHandler(BaseHandler):
 
 # Setting Race and Ethnicity
 
-`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of CDC code strings. You can set both fields when creating or updating a patient.
+`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of code strings drawn from the [CDC Race and Ethnicity CodeSystem (CDCREC)](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html) — the same code set used by the [FHIR Patient API](/api/patient/). You can set both fields when creating or updating a patient, and you can supply more than one code per field.
+
+Canvas recognizes the full CDCREC code set — both the OMB top-level categories below and the more specific detailed codes that roll up to them (for example, the race code `2108-9` "European" rolls up to `2106-3` "White", and the ethnicity code `2148-5` "Mexican" rolls up to `2135-2` "Hispanic or Latino"). The categories below are the most common values; see the CodeSystem for the complete list of detailed codes.
+
+**Race** (`biological_race_codes`) — OMB top-level categories:
+
+| Code      | Description                               |
+| --------- | ----------------------------------------- |
+| `1002-5`  | American Indian or Alaska Native          |
+| `2028-9`  | Asian                                     |
+| `2054-5`  | Black or African American                 |
+| `2076-8`  | Native Hawaiian or Other Pacific Islander |
+| `2106-3`  | White                                     |
+| `2131-1`  | Other Race                                |
+
+**Ethnicity** (`cultural_ethnicity_codes`) — OMB top-level categories:
+
+| Code      | Description            |
+| --------- | ---------------------- |
+| `2135-2`  | Hispanic or Latino     |
+| `2186-5`  | Not Hispanic or Latino |
 
 ```python
 from canvas_sdk.effects.patient import Patient

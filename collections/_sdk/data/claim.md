@@ -90,6 +90,8 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | metadata                   | [ClaimMetadata](#claimmetadata)[]           |
 | banner_alerts              | [ClaimBannerAlert](#claimbanneralert)[]     |
 | provider                   | [ClaimProvider](#claimprovider)             |
+| incident_to                | Boolean                                     |
+| supervising_provider       | [ClaimSupervisingProvider](#claimsupervisingprovider) |
 
 **Computed Properties**:
 
@@ -103,6 +105,26 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 **Helpful Methods**:
 
 - `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)`: Finds the active coverage associated with a payer_id. Optionally checks if the subscriber_number matches, which will choose the correct coverage in the case where a patient has two coverages with the same payer_id.
+
+### ClaimSupervisingProvider
+
+An immutable snapshot of a claim's supervising provider (837P loop 2310D), captured at claim creation from the note's supervising provider and frozen thereafter, so later edits to the note or the underlying Staff record do not retroactively change a submitted claim.
+
+| Field Name  | Type                                                |
+| ----------- | --------------------------------------------------- |
+| id          | UUID                                                |
+| dbid        | Integer                                             |
+| claim       | [Claim](#claim)                                     |
+| staff       | [Staff](/sdk/data-staff/#staff)                     |
+| first_name  | String                                              |
+| last_name   | String                                              |
+| middle_name | String                                              |
+| npi         | String                                              |
+| taxonomy    | String                                              |
+| tax_id      | String                                              |
+| tax_id_type | [TaxIDType](/sdk/data-enumeration-types/#taxidtype) |
+| created     | DateTime                                            |
+| modified    | DateTime                                            |
 
 ### ClaimLineItem
 

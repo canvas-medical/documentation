@@ -130,6 +130,7 @@ url = staff.signature_url
 | user                       | [CanvasUser](/sdk/data-canvasuser)                              |
 | signature                  | String                                                          |
 | supervising_team           | [Staff](#staff)[]                                               |
+| default_supervising_provider | [Staff](#staff)                                               |
 | notes                      | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
 | assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
