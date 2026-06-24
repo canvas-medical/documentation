@@ -25,7 +25,7 @@ Each item in the `errors` list is a `ValidationError` dataclass with the followi
 
 ## Example Usage
 
-Return an `EventValidationError` from your protocol's `compute` method to block the event and show a message to the user. You can also return other effects alongside `EventValidatinoError`.
+Return an `EventValidationError` from your protocol's `compute` method to block the event and show a message to the user. You can also return other effects alongside `EventValidationError`.
 
 ```python
 from canvas_sdk.effects import Effect
