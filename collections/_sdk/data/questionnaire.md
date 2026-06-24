@@ -98,28 +98,6 @@ from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
 questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 ```
 
-`Interview` also supports `find`, which returns the interviews whose questionnaire has a code in the value set:
-
-```python
-from canvas_sdk.v1.data.questionnaire import Interview
-from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
-
-interviews = Interview.objects.find(TobaccoUseScreening)
-```
-
-For interviews, `find` matches against the related `Questionnaire` through the `questionnaires` relation. Questionnaires store their code system by name (for example, `"LOINC"`) rather than by URL, and `find` handles this for you. It also composes with `for_patient`:
-
-```python
-from canvas_sdk.v1.data.questionnaire import Interview
-from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
-
-interviews = (
-    Interview.objects
-    .for_patient("1eed3ea2a8d546a1b681a2a45de1d790")
-    .find(TobaccoUseScreening)
-)
-```
-
 ## Attributes
 
 ### ResponseOptionSet
