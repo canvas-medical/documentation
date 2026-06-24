@@ -24,13 +24,20 @@ The `Patient` effect enables the creation and updating of patient records within
 | `clinical_note`          | `str` or `None`                             | Clinical notes about the patient            | No       |
 | `default_location_id`    | `str` or `None`                             | ID of patient's default practice location   | No       |
 | `default_provider_id`    | `str` or `None`                             | ID of patient's default healthcare provider | No       |
+| `active`                 | `bool` or `None`                            | Whether the patient record is active        | No       |
+| `deceased`               | `bool` or `None`                            | Whether the patient is deceased             | No       |
+| `deceased_datetime`      | `datetime.datetime` or `None`               | Date and time of patient's death            | No       |
+| `deceased_cause`         | `str` or `None`                             | Cause of patient's death                    | No       |
+| `deceased_comment`       | `str` or `None`                             | Additional comments about patient's death   | No       |
+| `biological_race_codes`  | `list[str]` or `None`                       | CDC race codes describing the patient's biological race (e.g., `"2106-3"`) | No       |
+| `cultural_ethnicity_codes` | `list[str]` or `None`                     | CDC ethnicity codes describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No       |
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`       | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers              | No       |
 | `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
 | `addresses`              | `list[PatientAddress]` or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`  | Patient's preferred pharmacies              | No       |
-| `metadata`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
+| `metadata`               | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
 
 ## PatientContactPoint
 
@@ -217,6 +224,59 @@ class MyHandler(BaseHandler):
         )
 
         return [updated_patient.update()]
+```
+
+# Marking a Patient as Inactive or Deceased
+
+```python
+from canvas_sdk.effects.patient import Patient
+from canvas_sdk.handlers.base import BaseHandler
+import datetime
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Mark a patient as inactive
+        inactive_patient = Patient(
+            patient_id="existing-patient-uuid",
+            active=False
+        )
+
+        return [inactive_patient.update()]
+
+
+class DeceasedPatientHandler(BaseHandler):
+    def compute(self):
+        # Record a patient's death
+        deceased_patient = Patient(
+            patient_id="existing-patient-uuid",
+            deceased=True,
+            deceased_datetime=datetime.datetime(2025, 3, 14, 12, 0, 0),
+            deceased_cause="Natural causes",
+            deceased_comment="Pronounced at home."
+        )
+
+        return [deceased_patient.update()]
+```
+
+# Setting Race and Ethnicity
+
+`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of CDC code strings. You can set both fields when creating or updating a patient.
+
+```python
+from canvas_sdk.effects.patient import Patient
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        patient = Patient(
+            patient_id="existing-patient-uuid",
+            biological_race_codes=["2106-3"],      # White
+            cultural_ethnicity_codes=["2186-5"]    # Not Hispanic or Latino
+        )
+
+        return [patient.update()]
 ```
 
 ## Validation
