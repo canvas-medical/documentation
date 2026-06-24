@@ -99,3 +99,4 @@ class MyHandler(BaseHandler):
 
 - If an `EventValidationError` is returned, the event is aborted and the error message is shown in the UI (if initiated from the UI).
 - This effect is typically used for pre-create validation of events, such as note state changes or appointment scheduling.
+- Any other effects returned alongside an `EventValidationError` are still applied, even though the event itself is blocked. In the example above, the `AddBannerAlert` effect is added and persists even when the note state change is rejected.
