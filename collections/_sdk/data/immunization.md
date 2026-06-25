@@ -115,6 +115,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | route                         | String                                          |
 | frequency_normalized_per_day  | Float                                           |
 | deleted                       | Boolean                                         |
+| committer                     | [CanvasUser](/sdk/data-canvasuser)             |
+| entered_in_error              | [CanvasUser](/sdk/data-canvasuser)             |
 | codings                       | [ImmunizationCoding](#immunizationcoding)[]    |
 
 ### ImmunizationCoding
@@ -143,6 +145,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | comment          | String                                                            |
 | reason_not_given | [ImmunizationReasonsNotGiven](#immunizationreasonsnotgiven)      |
 | deleted          | Boolean                                                           |
+| committer        | [CanvasUser](/sdk/data-canvasuser)                              |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser)                              |
 | coding           | [ImmunizationStatementCoding](#immunizationstatementcoding)[]    |
 
 ### ImmunizationStatementCoding
