@@ -1066,6 +1066,9 @@ data_module:
   - title: "Organization"
     url: /sdk/data-organization/
     description: The clinical organization present in the Canvas EMR.
+  - title: "OrganizationalEntity"
+    url: /sdk/data-organizational-entity/
+    description: External entities, such as service providers, referenced by a patient's external care team members.
   - title: "Patient"
     url: /sdk/data-patient/
     description: Data used to categorize individuals for identification, records matching, and other purposes.
