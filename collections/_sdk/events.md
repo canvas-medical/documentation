@@ -2470,6 +2470,29 @@ Surescripts response events fire when the platform receives a response from Sure
 
 The `correlation_id` in the context matches the ID from the originating `SendSurescriptsEligibilityRequestEffect`, enabling you to match responses to requests. Use the typed `SurescriptsEligibilityResponse` and `EligibilityPlan` classes from `canvas_sdk.events.surescripts` to parse the context into structured data.
 
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_BENEFITS_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns a benefits response after a <code>SendSurescriptsBenefitsRequestEffect</code> is executed. The response contains formulary and coverage details for the requested medication, including copays, quantity limits, and therapeutic alternatives. See <a href='/sdk/effect-surescripts/'>Surescripts Effects</a> for the request effect and typed response data classes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"medication_ndc": str
+"coverages": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+The `correlation_id` in the context matches the ID from the originating `SendSurescriptsBenefitsRequestEffect`. Use the typed `SurescriptsBenefitsResponse`, `BenefitCoverage`, and `TherapeuticAlternative` classes from `canvas_sdk.events.surescripts` to parse the context into structured data.
+
 #### Messaging
 
 <table>
