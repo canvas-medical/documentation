@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results.
+The `ImagingOrder`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging results.
 
 ## Basic Usage
 
@@ -125,6 +125,20 @@ tasks = imaging_order.get_task_objects().all()
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+
+### ImagingReportCoding
+
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| report        | [ImagingReport](#imagingreport) |
+| system        | String                          |
+| version       | String                          |
+| code          | String                          |
+| display       | String                          |
+| user_selected | Boolean                         |
+| value         | String                          |
 
 ## Enumeration types
 

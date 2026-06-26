@@ -21,6 +21,7 @@ sections:
             description: Status of the resource. The value is "entered-in-error" if the call to the third-party eligibility service failed.
             enum_options:
               - value: active
+              - value: draft
               - value: entered-in-error
           - name: purpose
             type: array[string]
@@ -141,7 +142,7 @@ sections:
                             - name: system
                               description: The system url of the coding.
                               enum_options: 
-                                - value: http://terminology.hl7.org/CodeSystem/benefit-unit
+                                - value: http://terminology.hl7.org/CodeSystem/benefit-network
                               type: string
                             - name: code
                               description: The code of the benefit network.
@@ -180,7 +181,7 @@ sections:
                                 - value: 'Out of Pocket (Stop Loss)'
                                 - value: 'Limitations'
                                 - value: 'Contact following entity for eligibility or benefit information'
-                                - value: '<information_type> (Incomplete Information)'
+                                - value: '<information_type> (Incomplete information)'
                             - name: allowedString
                               type: string
                               description: Benefits allowed. <br><br>Used for Co-Insurance benefit types.
@@ -659,7 +660,7 @@ sections:
 </div>
 
 <div id="coverageeligibilityresponse-search-request">
-{% include search-request.html resource_type="Group" search_string="request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1" %}
+{% include search-request.html resource_type="CoverageEligibilityResponse" search_string="request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1" %}
 </div>
 
 <div id="coverageeligibilityresponse-search-response">
