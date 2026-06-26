@@ -23564,7 +23564,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
-    <tr><td colspan="2">Occurs when Canvas requests available embedded applications for a given scope. Used internally by <a href="/sdk/handlers-applications/#embedded-applications">EmbeddedApplication</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
   </thead>
   <tbody>
     <tr>

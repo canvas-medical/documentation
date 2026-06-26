@@ -218,209 +218,15 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 }
 ```
 
-## Embedded Applications
-
-Embedded applications integrate directly into specific UI contexts rather than appearing in the app drawer. They register dynamically and render within their designated scope.
-
-### ApplicationScope Enum
-
-The `ApplicationScope` enum defines where embedded applications appear:
-
-| Scope | Value | Description |
-|-------|-------|-------------|
-| `NOTE` | `"note"` | Application appears as a tab within patient notes |
-| `PROVIDER_COMPANION_GLOBAL` | `"provider_companion_global"` | Application appears on the provider companion main page |
-| `PROVIDER_COMPANION_PATIENT_SPECIFIC` | `"provider_companion_patient_specific"` | Application appears on the provider companion patient detail page |
-| `PROVIDER_COMPANION_NOTE_SPECIFIC` | `"provider_companion_note_specific"` | Application appears within notes on the provider companion |
-
-### EmbeddedApplication Class
-
-`EmbeddedApplication` is an abstract base class for scope-based applications. It handles the `APPLICATION__ON_GET` event automatically, which Canvas uses to discover applications for a given scope.
-
-Define the following class attributes:
-
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `NAME` | `str` | Yes | The display name shown in the UI |
-| `SCOPE` | `ApplicationScope` | Yes | Determines where the application is visible |
-| `IDENTIFIER` | `str \| None` | No | Unique identifier for the application. Defaults to `module:classname` if not provided |
-| `PRIORITY` | `int` | No | Controls display order (lower values appear first). Defaults to `0` |
-
-Your class must implement `on_open()` to handle what happens when the application opens.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import ApplicationScope, EmbeddedApplication
-
-
-class MyEmbeddedApp(EmbeddedApplication):
-    NAME = "My Application"
-    SCOPE = ApplicationScope.NOTE
-    IDENTIFIER = "my_plugin__my_app"
-    PRIORITY = 5
-
-    def on_open(self) -> Effect | list[Effect]:
-        return LaunchModalEffect(
-            target=LaunchModalEffect.TargetType.NOTE,
-            content="<html>Application content</html>",
-            title="My Application"
-        ).apply()
-```
-
-### Visibility Control
-
-Override `visible()` to control when your application appears. This method runs during the `APPLICATION__ON_GET` event:
-
-```python
-def visible(self) -> bool:
-    """Only show for specific conditions."""
-    # Check context or other conditions
-    return self.event.context.get("some_condition") is True
-```
-
-By default, `visible()` returns `True`, making applications visible whenever the scope matches.
-
-### Open by Default
-
-Override `open_by_default()` to open your application automatically when the user enters its scope:
-
-```python
-def open_by_default(self) -> bool:
-    """Open automatically when entering scope."""
-    return True
-```
-
 ## Provider Companion Applications
 
-Provider companion applications run in the Canvas provider companion interface, a mobile-friendly view where providers can access patient information and custom tools. Three scope levels let you target different parts of the companion workflow.
+Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
 
-### Scope Levels
-
-| Scope | Where it appears | Event context |
-|-------|------------------|---------------|
-| `provider_companion_global` | Main companion page grid | No patient or note context |
-| `provider_companion_patient_specific` | Patient detail page drawer | `patient.id` (patient key) |
-| `provider_companion_note_specific` | Note view overlay | `patient.id` (patient key), `note.id` (note UUID) |
-
-The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
-
-### Global Companion Apps
-
-Global apps appear on the companion main page alongside the patient search. Use them for workflows that span multiple patients, such as schedule viewers, task lists, or administrative tools.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import Application
-
-
-class ScheduleViewer(Application):
-    """A global companion app for viewing the provider's schedule."""
-
-    def on_open(self) -> Effect:
-        return LaunchModalEffect(
-            url="/plugin-io/api/my_plugin/schedule",
-            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
-        ).apply()
-```
-
-Manifest configuration:
-
-```json
-{
-  "class": "my_plugin.applications:ScheduleViewer",
-  "name": "Schedule",
-  "description": "View upcoming appointments",
-  "scope": "provider_companion_global",
-  "icon": "assets/schedule.png"
-}
-```
-
-### Patient-Specific Companion Apps
-
-Patient-specific apps appear on the patient detail page. When opened, they receive the patient's key in the event context. Use them for per-patient tools like vitals viewers, chart summaries, or risk scoring.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import Application
-
-
-class PatientSummary(Application):
-    """A patient-specific companion app for viewing a chart summary."""
-
-    def on_open(self) -> Effect:
-        patient = self.event.context.get("patient", {})
-        patient_id = patient.get("id", "")
-
-        return LaunchModalEffect(
-            url=f"/plugin-io/api/my_plugin/summary?patient_id={patient_id}",
-            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
-        ).apply()
-```
-
-Manifest configuration:
-
-```json
-{
-  "class": "my_plugin.applications:PatientSummary",
-  "name": "Summary",
-  "description": "View patient chart summary",
-  "scope": "provider_companion_patient_specific",
-  "icon": "assets/summary.png"
-}
-```
-
-### Note-Specific Companion Apps
-
-Note-specific apps appear within an expanded note on the patient detail page. They receive both patient and note information in the event context. Use them for encounter-level tools like documentation assistants or coding tools.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import Application
-
-
-class NoteCodingAssistant(Application):
-    """A note-specific companion app for coding assistance."""
-
-    def on_open(self) -> Effect:
-        patient = self.event.context.get("patient", {})
-        patient_id = patient.get("id", "")
-        note = self.event.context.get("note", {})
-        note_id = note.get("id", "")
-
-        return LaunchModalEffect(
-            url=f"/plugin-io/api/my_plugin/coding?patient_id={patient_id}&note_id={note_id}",
-            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
-        ).apply()
-```
-
-Manifest configuration:
-
-```json
-{
-  "class": "my_plugin.applications:NoteCodingAssistant",
-  "name": "Coding Assistant",
-  "description": "Get coding suggestions for the current note",
-  "scope": "provider_companion_note_specific",
-  "icon": "assets/coding.png"
-}
-```
-
-### Event Context Reference
-
-The event context available in `self.event.context` varies by scope:
-
-| Key | Global | Patient-Specific | Note-Specific | Description |
-|-----|--------|------------------|---------------|-------------|
-| `patient.id` | — | ✓ | ✓ | The patient's key |
-| `note.id` | — | — | ✓ | The note's UUID |
+See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
 
 ## Note Applications
 
-Note Applications appear as tabs within a patient's note. They inherit from `EmbeddedApplication` with the scope set to `ApplicationScope.NOTE`.
+Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
 
 ### Implementing a Note Application
 
@@ -691,7 +497,7 @@ The badge event context contains:
 | `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
 | `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
 
-> **Note:** Note Applications (`NoteApplication` / `EmbeddedApplication`) do not
+> **Note:** Note Applications (`NoteApplication`) do not
 > support notification badges.
 
 ### Live updates
