@@ -93,7 +93,7 @@ Represents a single insurance plan from the eligibility response.
 
 ### Response Handler Example
 
-```python
+```python?partial=true
 from canvas_sdk.events import EventType
 from canvas_sdk.events.surescripts import EligibilityPlan, SurescriptsEligibilityResponse
 from canvas_sdk.handlers.base import BaseHandler
@@ -232,7 +232,7 @@ Represents a therapeutic alternative suggested for the requested medication.
 
 ### Response Handler Example
 
-```python
+```python?partial=true
 from canvas_sdk.events import EventType
 from canvas_sdk.events.surescripts import (
     BenefitCoverage,
@@ -275,7 +275,7 @@ class HandleBenefitsResponse(BaseHandler):
 
 ### Imports
 
-```python
+```python?partial=true
 # Effects for sending requests
 from canvas_sdk.effects.surescripts.surescripts_messages import (
     SendSurescriptsBenefitsRequestEffect,
