@@ -71,7 +71,7 @@ sections:
   },
   "subject": {
     "reference": "Patient/1c8c6f27551d4d01aa3bf2477a4d5259",
-    "type": "Patient",
+    "type": "Patient"
   }
 }
 ```
@@ -139,7 +139,7 @@ sections:
 </div>
 
 <div id="specimen-search-request">
-{% include search-request.html resource_type="Specimen" search_string="_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27-55d-4d01-aa3b-f2477a4d5259" %}
+{% include search-request.html resource_type="Specimen" search_string="_id=0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d&patient=Patient/1c8c6f27551d4d01aa3bf2477a4d5259" %}
 </div>
 
 <div id="specimen-search-response">
@@ -175,8 +175,8 @@ sections:
           "text": "Serum"
         },
         "subject": {
-          "reference": "Patient/1c8c6f27-551d4d01aa3bf2477a4d5259",
-          "type": "Patient",
+          "reference": "Patient/1c8c6f27551d4d01aa3bf2477a4d5259",
+          "type": "Patient"
         }
       }
     }
