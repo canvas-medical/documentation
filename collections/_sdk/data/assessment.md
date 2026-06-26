@@ -44,6 +44,16 @@ from canvas_sdk.v1.data.assessment import Assessment, AssessmentStatus
 assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de1d790", status=AssessmentStatus.STATUS_IMPROVING)
 ```
 
+### Committed assessments
+
+The `committed` method returns assessments that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.assessment import Assessment
+
+committed_assessments = Assessment.objects.committed()
+```
+
 ## Attributes
 
 ### Assessment

@@ -46,6 +46,16 @@ medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 stopped_medication_events = medication.stopmedicationevent_set.all()
 ```
 
+## Committed records
+
+The `committed` method returns stop medication events that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data import StopMedicationEvent
+
+committed_stop_medication_events = StopMedicationEvent.objects.committed()
+```
+
 ## Attributes
 
 ### StopMedicationEvent

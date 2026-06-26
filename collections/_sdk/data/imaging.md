@@ -50,6 +50,17 @@ reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
 
+### Committed records
+
+The `committed` method returns `ImagingOrder` and `ImagingReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview
+
+committed_orders = ImagingOrder.objects.committed()
+committed_reviews = ImagingReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Imaging Order's related tasks, use the `get_task_objects` method on the ImagingOrder object.
 

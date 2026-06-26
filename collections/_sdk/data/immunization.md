@@ -80,6 +80,26 @@ from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
 immunizations = Immunization.objects.find(InfluenzaVaccine)
 ```
 
+### Committed and active records
+
+The `committed` method returns immunizations that have been committed and not entered in error. The `active` method is an alias for `committed` and returns the same records:
+
+```python
+from canvas_sdk.v1.data.immunization import Immunization
+
+committed_immunizations = Immunization.objects.committed()
+active_immunizations = Immunization.objects.active()
+```
+
+The same methods are available on the `ImmunizationStatement` model manager:
+
+```python
+from canvas_sdk.v1.data.immunization import ImmunizationStatement
+
+committed_statements = ImmunizationStatement.objects.committed()
+active_statements = ImmunizationStatement.objects.active()
+```
+
 ## Immunization Statements
 
 To work with immunization statements (historical records), use the `ImmunizationStatement` model:
