@@ -80,6 +80,9 @@ sections:
           - name: patient
             type: string
             description: The patient reference for who this care plan is for, in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+          - name: _revinclude
+            type: string
+            description: Standard FHIR `_revinclude` parameter.
         endpoints: [read, search]
         read:
           description: Read a CarePlan resource.

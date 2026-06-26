@@ -89,6 +89,7 @@ sections:
                     - value: group (for nested groups of items)
                     - value: choice (for multiple or single choice questions)
                     - value: text (for free text questions)
+                    - value: decimal (for decimal numeric questions)
                 - name: repeats
                   type: boolean
                   description: Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -173,8 +174,8 @@ sections:
             type: string
           - name: questionnaire-code
             description: >-
-              The questionnaire the answers are provided for.<br><br>
-              A Questionnaire search of of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
+              A code that matches the Questionnaire's own `code` value.<br><br>
+              A Questionnaire search of the form `/Questionnaire?questionnaire-code=711013002` will return Questionnaire resources uploaded to Canvas that have the code **711013002**.
             type: string
           - name: status
             description: >-
