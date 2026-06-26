@@ -244,7 +244,7 @@ A single plugin handler can listen for multiple event types. The event type will
             url = f"https://webhook.site/{self.secrets['WEBHOOK_ID']}"
             headers = {"Authorization": f"Bearer {self.secrets['AUTH_TOKEN']}"}
             # self.event.type is a member of the EventType enum corresponding to
-            # one of the event types in the plugin's RESPONDS_TO attribute
+            # one of the event types in the handler's RESPONDS_TO attribute
             verb = 'created' if self.event.type == EventType.TASK_CREATED else 'updated'
             payload = {
                 "message": f"A Task was {verb}!",
@@ -289,8 +289,8 @@ Modify your handler to handle the widget configuration event. For example:
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
         def compute(self):
             widget = PortalWidget(
-              content="Hello World", 
-              size=PortalWidget.Size.COMPACT, 
+              content="Hello World",
+              size=PortalWidget.Size.COMPACT,
               priority=10
             )
             return [widget.apply()]
@@ -458,8 +458,8 @@ Update your plugin's `compute` method to pass the desired values for medication 
                 "name": last_medication.codings.first().display
             }
             medication_widget = PortalWidget(
-              content=render_to_string("templates/medication_widget.html", medication_info), 
-              size=PortalWidget.Size.COMPACT, 
+              content=render_to_string("templates/medication_widget.html", medication_info),
+              size=PortalWidget.Size.COMPACT,
               priority=10
             )
             return [medication_widget.apply()]
@@ -789,7 +789,7 @@ Here's an example of a simple plugin using the `LaunchModalEffect` to display a 
         BUTTON_KEY = "show_hello_world"
         BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
         def handle(self) -> list[Effect]:
-            launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
+            launch_modal = LaunchModalEffect(content=render_to_string("templates/hello-world.html", { "title": "hello world" }))
             return [launch_modal.apply()]
     ```
 And here's the result!
@@ -38601,11 +38601,11 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
         "components": {
             "handlers": [
                 {
-                    "class": "patient_summary_chart_groups.handlers.my_protocol:Conditions",
+                    "class": "patient_summary_chart_groups.handlers.my_handler:Conditions",
                     "description": "A handler that groups Psychiatry conditions"
                 },
                 {
-                    "class": "patient_summary_chart_groups.handlers.my_protocol:Medications",
+                    "class": "patient_summary_chart_groups.handlers.my_handler:Medications",
                     "description": "A handler that groups Psychiatry medications"
                 }
             ],
@@ -42953,7 +42953,7 @@ Declare each variable as an object with a `name` and an optional `sensitive` fla
       "components": {
         "handlers": [
           {
-            "class": "live_notifications.handlers.my_protocol:Protocol",
+            "class": "live_notifications.handlers.my_handler:Handler",
             "description": "A handler that does xyz..."
           }
         ]
