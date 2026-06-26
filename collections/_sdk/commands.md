@@ -219,6 +219,38 @@ def compute():
     return [existing_plan.upsert_metadata(key="priority", value="high")]
 ```
 
+#### set_custom_html
+
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+
+The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
+
+| Parameter     | Type              | Description                                                      |
+|---------------|-------------------|------------------------------------------------------------------|
+| `custom_html` | _string_ or _None_ | The HTML content to set on the command, or `None` to clear it.  |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.set_custom_html("<div class='highlight'>Important note</div>")]
+```
+
+To clear existing custom HTML from a command:
+
+```python
+from canvas_sdk.commands import PlanCommand
+
+def compute():
+    existing_plan = PlanCommand(command_uuid='63hdik')
+
+    return [existing_plan.set_custom_html(None)]
+```
+
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
@@ -312,12 +344,21 @@ refer = ReferCommand(
 
 **Available Code Systems**:
 
-| Code System    | Description                                                    |
-|----------------|----------------------------------------------------------------|
-| `ICD10`        | International Classification of Diseases, 10th Revision       |
-| `SNOMED`       | Systematized Nomenclature of Medicine Clinical Terms           |
-| `RXNORM`       | RxNorm - standardized nomenclature for medications            |
-| `UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes       |
+| Code System        | System URI                                          | Description                                                         |
+|--------------------|-----------------------------------------------------|---------------------------------------------------------------------|
+| `SNOMED`           | `http://snomed.info/sct`                            | Systematized Nomenclature of Medicine Clinical Terms                |
+| `RXNORM`           | `http://www.nlm.nih.gov/research/umls/rxnorm`       | RxNorm — standardized nomenclature for medications                  |
+| `LOINC`            | `http://loinc.org`                                  | Logical Observation Identifiers Names and Codes (labs/observations) |
+| `FDB`              | `http://www.fdbhealth.com/`                         | First Databank drug knowledge base                                  |
+| `ICD10`            | `ICD-10`                                            | International Classification of Diseases, 10th Revision             |
+| `CVX`              | `http://hl7.org/fhir/sid/cvx`                       | CDC codes for administered vaccines                                 |
+| `CPT`              | `http://www.ama-assn.org/go/cpt`                    | Current Procedural Terminology (AMA procedure codes)                |
+| `NUCC`             | `http://www.nucc.org/`                              | National Uniform Claim Committee provider taxonomy codes            |
+| `NDC`              | `http://hl7.org/fhir/sid/ndc`                       | National Drug Code                                                  |
+| `HCPCS`            | `http://www.cms.gov/medicare/coding/medhcpcsgeninfo`| Healthcare Common Procedure Coding System                           |
+| `UNITS_OF_MEASURE` | `http://unitsofmeasure.org`                         | Unified Code for Units of Measure (UCUM)                            |
+| `FULLSCRIPT`       | `http://fullscript.com`                             | Fullscript supplement/dispensary code system                        |
+| `UNSTRUCTURED`     | `UNSTRUCTURED`                                      | Canvas-specific system for unstructured or custom codes             |
 
 **Usage Example**:
 
@@ -930,10 +971,11 @@ hpi = HistoryOfPresentIllnessCommand(
 
 **`Priority`**
 
-| Priority  | Description                |
-|:----------|:---------------------------|
-| `ROUTINE` | Indicates a routine order. |
-| `URGENT`  | Indicates un urgent order. |
+| Priority  | Description                                                                                |
+|:----------|:-------------------------------------------------------------------------------------------|
+| `ROUTINE` | The request has normal priority.                                                           |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
 
 **Example**:
 
@@ -1125,6 +1167,8 @@ Built-in validations ensure that:
 
 - Only lab partners with electronic ordering enabled support the `send()` method.
 - The command must be committed/signed before it can be sent electronically.
+- The patient must have an address and phone number on file.
+- The ordering provider must have an NPI.
 
 **Command-specific parameters**:
 
@@ -1453,6 +1497,89 @@ plan = PlanCommand(
     note_uuid='rk786p',
     narrative='will return in 2 weeks to check on pain management'
 )
+```
+
+---
+
+## POCLabTest
+
+The `POCLabTestCommand` is used to document the results of a Point-of-Care (POC) lab test performed
+in the clinic — distinct from `LabOrder` (which sends tests to an external lab partner) and
+`LabReview` (which reviews returned results). The command captures the template used, the
+indications, individual measured values, and a free-text remarks field.
+
+Built-in validations ensure that:
+
+- The provided `template` UUID resolves to an active POC [`LabReportTemplate`](/sdk/data-lab-report-template/#labreporttemplate).
+- Each `test_values` entry's `label` matches one of the template's [field labels](/sdk/data-lab-report-template/#labreporttemplatefield) (case-insensitive).
+
+**Command-specific parameters**:
+
+| Name          | Type              | Required to commit | Description                                                                                                          |
+|---------------|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------|
+| `template`    | _UUID \| string_  | `true`             | The UUID of the active POC `LabReportTemplate`. Accepts UUID instances or UUID-formatted strings.                    |
+| `indications` | _list[string]_    | `false`            | ICD-10 diagnosis codes justifying the test.                                                                          |
+| `test_values` | _list[TestValue]_ | `false`            | The measured values, each tagged with its template-field label. See `TestValue` below.                               |
+| `remarks`     | _string (≤512)_   | `false`            | Free-text comments from the clinician.                                                                               |
+
+**Enums and Types**:
+
+**`TestValue`**
+
+A dataclass representing a single measured value within a POC lab test result.
+
+| Attribute | Type     | Description                                                       |
+|-----------|----------|-------------------------------------------------------------------|
+| `label`   | _string_ | The template field's label (must match a field on the template).  |
+| `value`   | _string_ | The measured value (as a string).                                 |
+
+`TestValue.to_dict()` returns the `{"label": ..., "value": ...}` dict shape consumed by the runtime.
+
+**Helper methods**:
+
+- `set_test_value(label, value)` — Adds or replaces a test value by label. If a `TestValue` with
+  the same `label` already exists on the command, it is replaced (so calling `set_test_value` twice
+  with the same label leaves a single entry).
+
+### Validations
+
+- **Template Validation:** The `template` UUID must resolve to a [`LabReportTemplate`](/sdk/data-lab-report-template/#labreporttemplate) that is
+  `active=True` and `poc=True`. Templates from external lab partners or inactive templates are
+  rejected.
+- **Test Values Validation:** Each `TestValue.label` must match (case-insensitive) the `label` of
+  one of the resolved template's [fields](/sdk/data-lab-report-template/#labreporttemplatefield). Unknown labels cause a validation error.
+
+The valid labels are the `label` of each [`LabReportTemplateField`](/sdk/data-lab-report-template/#labreporttemplatefield) on the template's [`fields`](/sdk/data-lab-report-template/#labreporttemplate) relation:
+
+```python
+from canvas_sdk.v1.data import LabReportTemplate
+
+template = LabReportTemplate.objects.active().point_of_care().first()
+valid_labels = [field.label for field in template.fields.all()]
+```
+
+**Example**:
+
+```python
+from canvas_sdk.commands import POCLabTestCommand
+from canvas_sdk.commands.commands.poc_lab_test import TestValue
+from canvas_sdk.v1.data import LabReportTemplate
+
+template = LabReportTemplate.objects.active().point_of_care().first()
+
+command = POCLabTestCommand(
+    note_uuid="rk786p",
+    template=template.id,
+    indications=["E11.9"],
+    test_values=[
+        TestValue(label="pH", value="6.5"),
+        TestValue(label="Glucose", value="120"),
+    ],
+    remarks="Sample collected mid-stream",
+)
+
+# Or via the helper (overwrites by label):
+command.set_test_value("pH", "6.8")
 ```
 
 ---
@@ -1921,10 +2048,11 @@ unstructured_rfv = ReasonForVisitCommand(
 
 **`Priority`**
 
-| Priority  | Description                |
-|:----------|:---------------------------|
-| `ROUTINE` | Indicates a routine order. |
-| `URGENT`  | Indicates un urgent order. |
+| Priority  | Description                                                                                |
+|:----------|:-------------------------------------------------------------------------------------------|
+| `ROUTINE` | The request has normal priority.                                                           |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
 
 **`ClinicalQuestion`**
 
@@ -2221,11 +2349,20 @@ questionnaire = StructuredAssessmentCommand(
 | `title`             | _string_       | `true`   | The title or summary of the task.                   |
 | `assign_to`         | _TaskAssigner_ | `true`   | Specifies the assignee (role, team, or individual). |
 | `due_date`          | _date_         | `false`  | Due date for completing the task.                   |
+| `priority`          | _TaskPriority enum_ | `false` | Priority of the task. Must be one of `TaskPriority`. |
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels associated with the task.                    |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
 
 **Enums and Types**:
+
+**`TaskPriority`**
+
+| Priority  | Description                                                                                |
+|-----------|--------------------------------------------------------------------------------------------|
+| `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
+| `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
+| `ROUTINE` | The request has normal priority.                                                           |
 
 **TaskAssigner Type**:
 
@@ -2247,12 +2384,14 @@ questionnaire = StructuredAssessmentCommand(
 ```python
 from canvas_sdk.commands import TaskCommand
 from canvas_sdk.commands.commands.task import TaskAssigner, AssigneeType
+from canvas_sdk.v1.data.task import TaskPriority
 from datetime import date
 
 TaskCommand(
     title="Follow-up appointment scheduling",
     assign_to=TaskAssigner(to=AssigneeType.STAFF, id=123),
     due_date=date(2024, 12, 15),
+    priority=TaskPriority.URGENT,
     comment="Ensure the patient schedules a follow-up within 30 days.",
     labels=["Urgent"],
     linked_items_urns=["urn:task:123", "urn:note:456"]

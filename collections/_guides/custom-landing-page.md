@@ -48,8 +48,8 @@ class Handler(BaseHandler):
 
     def compute(self):
         widget = PortalWidget(
-          content="Hello World", 
-          size=PortalWidget.Size.COMPACT, 
+          content="Hello World",
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [widget.apply()]
@@ -277,8 +277,8 @@ class Handler(BaseHandler):
         }
 
         medication_widget = PortalWidget(
-          content=render_to_string("templates/medication_widget.html", medication_info), 
-          size=PortalWidget.Size.COMPACT, 
+          content=render_to_string("templates/medication_widget.html", medication_info),
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [medication_widget.apply()]

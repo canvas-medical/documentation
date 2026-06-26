@@ -285,7 +285,7 @@ class Handler(BaseHandler):
         headers = {"Authorization": f"Bearer {self.secrets['AUTH_TOKEN']}"}
 
         # self.event.type is a member of the EventType enum corresponding to
-        # one of the event types in the plugin's RESPONDS_TO attribute
+        # one of the event types in the handler's RESPONDS_TO attribute
         verb = 'created' if self.event.type == EventType.TASK_CREATED else 'updated'
 
         payload = {
