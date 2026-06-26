@@ -1898,7 +1898,7 @@ Plugins are your tool for customizing the Canvas experience. By using the module
 ##  Video 
 The video below showcases a Canvas engineer working through this guide step-by-step.
 ##  1\. Install the Canvas CLI 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 ##  2\. Configure the Canvas CLI for your instances 
 The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If you've used our FHIR API, you'll be very familiar with the process for [registering credentials](/api/customer-authentication/). Register a separate OAuth application, choosing `confidential` for the Client type, and `client-credentials` for the Authorization grant type. Redirect URIs can be left blank, and the Algorithm should be `No OIDC support`. Note the client_id and client_secret for the next step.
 Create a file at the path `~/.canvas/credentials.ini`. Here is what its contents should look like:
