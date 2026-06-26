@@ -249,6 +249,7 @@ print(response.text)
     "type": "practitioner",
     "actual": true,
     "name": "A Test Team",
+    "quantity": 1,
     "characteristic": [
         {
             "code": {
@@ -456,6 +457,7 @@ print(response.text)
                 "type": "practitioner",
                 "actual": true,
                 "name": "A Test Team",
+                "quantity": 1,
                 "characteristic": [
                     {
                         "code": {
