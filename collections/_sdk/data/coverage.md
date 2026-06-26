@@ -7,7 +7,9 @@ hidden: false
 
 ## Introduction
 
-The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and and coinsurance values.
+The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and coinsurance values.
+
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
 
 ## Usage
 
@@ -38,13 +40,24 @@ Find the latest eligibility summary for a patient:
 ```python
     from canvas_sdk.v1.data.coverage import Coverage, EligibilitySummary
 
-    coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
     elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
     elig_summary_from_cvg = coverage.eligibility_summary
     if elig_summary_from_model:
         print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance) # 1000 5
     if elig_summary_from_cvg:
         print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance) # 1000 5
+```
+
+Access insurance card images through the coverage's snapshot:
+
+```python
+from canvas_sdk.v1.data.coverage import Coverage
+
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+if coverage.snapshot:
+    for image in coverage.snapshot.images.all():
+        print(image.image_url)  # Presigned S3 URL for the insurance card image
 ```
 
 ## Filtering
