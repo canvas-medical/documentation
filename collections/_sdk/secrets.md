@@ -22,7 +22,7 @@ Declare each variable as an object with a `name` and an optional `sensitive` fla
   "components": {
     "handlers": [
       {
-        "class": "live_notifications.handlers.my_protocol:Protocol",
+        "class": "live_notifications.handlers.my_handler:Handler",
         "description": "A handler that does xyz..."
       }
     ]

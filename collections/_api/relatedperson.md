@@ -107,6 +107,9 @@ sections:
               - name: city
                 type: string
                 description: String representing the city of the address.
+              - name: district
+                type: string
+                description: District (e.g., county) of the address.
               - name: state
                 type: string
                 description: 2 letter state abbreviation of the address.
