@@ -54,7 +54,7 @@ Access insurance card images through the coverage's snapshot:
 ```python
 from canvas_sdk.v1.data.coverage import Coverage
 
-coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
 if coverage.snapshot:
     for image in coverage.snapshot.images.all():
         print(image.image_url)  # Presigned S3 URL for the insurance card image
