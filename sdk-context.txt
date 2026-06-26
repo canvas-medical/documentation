@@ -6167,6 +6167,8 @@ The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
 **Electronic ordering:** LabOrder commands support the `send()` method for electronic ordering of signed orders directly to lab partners. However, electronic ordering has additional requirements:
   - Only lab partners with electronic ordering enabled support the `send()` method.
   - The command must be committed/signed before it can be sent electronically.
+  - The patient must have an address and phone number on file.
+  - The ordering provider must have an NPI.
 **Command-specific parameters** :
 Name | Type | Required to send | Description  
 ---|---|---|---  
