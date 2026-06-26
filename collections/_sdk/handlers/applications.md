@@ -199,6 +199,7 @@ The `scope` attribute determines where your application is visible within Canvas
 | `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
 | `provider_menu_item` | Displayed as a menu item in the provider menu |
 | `portal_menu_item` | Displayed as a menu item in the patient portal |
+| `provider_companion` | Visible on the [Provider Companion](/sdk/companion/) main page (legacy, use `provider_companion_global` for new apps) |
 | `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page |
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
@@ -216,6 +217,12 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
   "scope": "full_chart"
 }
 ```
+
+## Provider Companion Applications
+
+Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
+
+See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
 
 ## Note Applications
 
@@ -490,7 +497,7 @@ The badge event context contains:
 | `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
 | `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
 
-> **Note:** Note Applications (`NoteApplication` / `EmbeddedApplication`) do not
+> **Note:** Note Applications (`NoteApplication`) do not
 > support notification badges.
 
 ### Live updates
