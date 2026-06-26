@@ -20,7 +20,6 @@ sections:
           - name: text
             type: json
             description: Text summary of the resource, for human interpretation.
-            type: json
             attributes:
               - name: status
                 description: The status of the narrative.

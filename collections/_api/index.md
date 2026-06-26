@@ -4,7 +4,7 @@ title: "Introduction "
 layout: apilandingpage
 ---
 
-Canvas Medical's FHIR API adheres to the [FHIR R4 specification](http://hl7.org/fhir/R4/).
+Canvas Medical's FHIR API conforms to the [FHIR R4 specification](http://hl7.org/fhir/R4/) and to the [US Core Implementation Guide STU 6.1.0](https://hl7.org/fhir/us/core/STU6.1/) for the resources where US Core profiles apply.
 
 
 

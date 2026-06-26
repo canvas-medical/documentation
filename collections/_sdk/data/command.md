@@ -111,6 +111,7 @@ The following table shows the different command `schema_key` values with links t
 | medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)        |
 | perform             | [Perform](/sdk/commands/#perform)                                |
 | plan                | [Plan](/sdk/commands/#plan)                                      |
+| pocLabTest          | [POCLabTest](/sdk/commands/#poclabtest)                          |
 | prescribe           | [Prescribe](/sdk/commands/#prescribe)                            |
 | questionnaire       | [Questionnaire](/sdk/commands/#questionnaire)                    |
 | reasonForVisit      | [ReasonForVisit](/sdk/commands/#reasonforvisit)                  |
@@ -146,6 +147,9 @@ __PLEASE NOTE__ the Commands Module is under development and Canvas is working t
 | schema_key         | String                                |
 | data               | JSON                                  |
 | origination_source | String                                |
+| custom_html        | String (optional)                     |
+
+The `custom_html` field stores HTML content that is rendered alongside the command in the note. This field is optional and defaults to `None`. Use the [`set_custom_html`](/sdk/commands/#set_custom_html) method to set or clear this field on a staged command.
 
 ### CommandMetadata
 
