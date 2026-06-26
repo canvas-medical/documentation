@@ -49,6 +49,7 @@ The actor is available in the following contexts:
 - **Homepage events** — `GET_HOMEPAGE_CONFIGURATION`
 - **Command additional-fields events** — `COMMAND__FORM__GET_ADDITIONAL_FIELDS`
 - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
+- **Prescribe command events** — `PRESCRIBE_COMMAND__PRE_SEND`
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
@@ -14803,6 +14804,39 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "indications": list[dict]
+  "sig": str
+  "days_supply": int
+  "quantity_to_dispense": int
+  "type_to_dispense": dict
+  "refills": int
+  "substitutions": str
+  "pharmacy": dict
+  "prescriber": dict
+  "note_to_pharmacist": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_SEND</th></tr>
+    <tr><td colspan="2">Fires from Canvas right before a prescription's Surescripts <code>NewRx</code> message is sent to the pharmacy. Plugins may respond with one or more <a href='/sdk/effect-surescripts-benefits-coordination-override/'>SurescriptsBenefitsCoordinationOverride</a> effects to override the BenefitsCoordination fields (BIN, PCN, Group ID, Member ID) on the outbound message.</td></tr>
   </thead>
   <tbody>
     <tr>
