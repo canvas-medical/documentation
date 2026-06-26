@@ -248,10 +248,8 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | PUSH_NOTE_CHARGES         | Push note charges for billing.                                                                                                                                                                        |
 | UPSERT_NOTE_METADATA      | Add or update metadata on a note.                                                                                                                                                                     |
 | GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
-| FREEZE_NOTE               | Temporarily freeze a note from concurrent edits with optional content blur. Check out [Note Effects](/sdk/effect-notes/#freeze-note).                                                                 |
-| UNFREEZE_NOTE             | Remove a freeze from a previously frozen note. Check out [Note Effects](/sdk/effect-notes/#unfreeze-note).                                                                                            |
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
-| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  |
+| NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 
 
 ### Appointments
