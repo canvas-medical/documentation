@@ -40,7 +40,7 @@ Find the latest eligibility summary for a patient:
 ```python
     from canvas_sdk.v1.data.coverage import Coverage, EligibilitySummary
 
-    coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
     elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
     elig_summary_from_cvg = coverage.eligibility_summary
     if elig_summary_from_model:
