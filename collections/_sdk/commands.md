@@ -344,12 +344,21 @@ refer = ReferCommand(
 
 **Available Code Systems**:
 
-| Code System    | Description                                                    |
-|----------------|----------------------------------------------------------------|
-| `ICD10`        | International Classification of Diseases, 10th Revision       |
-| `SNOMED`       | Systematized Nomenclature of Medicine Clinical Terms           |
-| `RXNORM`       | RxNorm - standardized nomenclature for medications            |
-| `UNSTRUCTURED` | Canvas-specific system for unstructured or custom codes       |
+| Code System        | System URI                                          | Description                                                         |
+|--------------------|-----------------------------------------------------|---------------------------------------------------------------------|
+| `SNOMED`           | `http://snomed.info/sct`                            | Systematized Nomenclature of Medicine Clinical Terms                |
+| `RXNORM`           | `http://www.nlm.nih.gov/research/umls/rxnorm`       | RxNorm — standardized nomenclature for medications                  |
+| `LOINC`            | `http://loinc.org`                                  | Logical Observation Identifiers Names and Codes (labs/observations) |
+| `FDB`              | `http://www.fdbhealth.com/`                         | First Databank drug knowledge base                                  |
+| `ICD10`            | `ICD-10`                                            | International Classification of Diseases, 10th Revision             |
+| `CVX`              | `http://hl7.org/fhir/sid/cvx`                       | CDC codes for administered vaccines                                 |
+| `CPT`              | `http://www.ama-assn.org/go/cpt`                    | Current Procedural Terminology (AMA procedure codes)                |
+| `NUCC`             | `http://www.nucc.org/`                              | National Uniform Claim Committee provider taxonomy codes            |
+| `NDC`              | `http://hl7.org/fhir/sid/ndc`                       | National Drug Code                                                  |
+| `HCPCS`            | `http://www.cms.gov/medicare/coding/medhcpcsgeninfo`| Healthcare Common Procedure Coding System                           |
+| `UNITS_OF_MEASURE` | `http://unitsofmeasure.org`                         | Unified Code for Units of Measure (UCUM)                            |
+| `FULLSCRIPT`       | `http://fullscript.com`                             | Fullscript supplement/dispensary code system                        |
+| `UNSTRUCTURED`     | `UNSTRUCTURED`                                      | Canvas-specific system for unstructured or custom codes             |
 
 **Usage Example**:
 
