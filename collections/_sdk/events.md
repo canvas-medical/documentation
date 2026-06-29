@@ -2644,6 +2644,46 @@ The following events fire when a prescription's status changes during the e-pres
 
 <table>
   <thead>
+    <tr><th colspan="2">NOTE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is updated, including changes to fields, commands, or body content.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"user":
+    "id": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">NOTE_OPENED</th></tr>
     <tr><td colspan="2">Fires when a provider expands a note in the patient chart. The context includes the note's ID.</td></tr>
   </thead>
