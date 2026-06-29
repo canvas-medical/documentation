@@ -77,8 +77,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
-- `config list`: List all secrets from a plugin
-- `config set`: Configure plugin secrets
+- `config list`: List plugin variables on a Canvas instance
+- `config set`: Set plugin variables on a Canvas instance
 
 ### `canvas init`
 
@@ -110,8 +110,8 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
-- `--secret TEXT`:  Secrets to set, e.g. Key=value
-- `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+- `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
+- `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
 - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
@@ -346,7 +346,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 
 **Usage**:
 
@@ -371,15 +371,24 @@ $ canvas config list my_plugin
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+**Example Output**:
+
+```console
+$ canvas config list my_plugin
+  API_TOKEN = [set]  (sensitive)
+  WEBHOOK_URL = [set]
+  DEBUG_MODE = [not set]
+```
+
 
 ### `canvas config set`
 
-Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
 ```console
-$ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+$ canvas config set [OPTIONS] PLUGIN VARIABLES...
 ```
 
 **Examples**:
@@ -398,8 +407,8 @@ $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
 
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to configure
- - `KEY=value ...`: One or more variables to set
+ - `PLUGIN`:  Plugin name to set variables for
+ - `VARIABLES...`: Variables to set, e.g. Key=value
 
 **Options**:
 

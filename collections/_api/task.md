@@ -28,7 +28,6 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  required_in: create,update
                   description: Reference that defines the content of this object. 
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/task-permalink
@@ -47,7 +46,7 @@ sections:
                     - name: reference
                       type: string
                       required_in: create,update
-                      description: The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+                      description: The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
                     - name: type
                       type: string
                       exclude_in: create, update
@@ -84,7 +83,7 @@ sections:
                 - name: reference
                   type: string
                   required_in: create,update
-                  description: The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+                  description: The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
                 - name: type
                   type: string
                   exclude_in: create, update
@@ -104,7 +103,7 @@ sections:
               - name: reference
                 type: string
                 required_in: create,update
-                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
               - name: type
                 type: string
                 exclude_in: create, update
@@ -116,7 +115,7 @@ sections:
               - name: reference
                 type: string
                 required_in: create,update
-                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
               - name: type
                 type: string
                 exclude_in: create, update
@@ -163,7 +162,7 @@ sections:
                     - name: reference
                       type: string
                       required_in: create,update
-                      description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                      description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
                     - name: type
                       type: string
                       exclude_in: create, update
