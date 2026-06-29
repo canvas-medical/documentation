@@ -1509,6 +1509,44 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_FIELDS_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document's fields are updated. This fires when a Lab Report, Imaging Report, or Specialist Consult Report is parsed and its values are saved. The <code>updated_fields</code> list contains each changed field with its new and previous values.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"updated_fields":
+    "name": str
+    "value": str | int | float | bool
+    "previous_value": str | int | float | bool | None
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"updated_at": datetime str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Conditions
 
 <table>
