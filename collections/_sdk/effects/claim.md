@@ -16,6 +16,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [adding banner alerts](#add-banner) to claims
 - [removing banner alerts](#remove-banner) from claims
 - [updating provider information](#update-provider) on claims
+- [updating the supervising provider](#update-supervising-provider) on claims
+- [setting the incident-to flag](#set-incident-to) on claims
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -770,6 +772,179 @@ class ClaimProviderHandler(BaseHandler):
                 billing_provider=billing, facility=facility
             )
         ]
+```
+
+### Update Supervising Provider
+
+`ClaimEffect.update_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
+
+Provide exactly one of:
+- A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
+- A `ClaimSupervisingProvider` dataclass to specify the snapshot fields directly. This clears any Staff association.
+
+#### Parameters
+
+| Parameter              | Type                                                          | Description                            | Required                      |
+| ---------------------- | ------------------------------------------------------------- | -------------------------------------- | ----------------------------- |
+| `supervising_provider` | [ClaimSupervisingProvider](#claimsupervisingprovider) or `None` | Free-text provider snapshot            | Yes (if `staff_id` not given) |
+| `staff_id`             | `str` or `None`                                               | Staff identifier to populate from      | Yes (if `supervising_provider` not given) |
+
+#### ClaimSupervisingProvider
+
+The `ClaimSupervisingProvider` dataclass represents a supervising provider's identifying information for billing purposes.
+
+| Attribute     | Type            | Description                   |
+| ------------- | --------------- | ----------------------------- |
+| `first_name`  | `str` or `None` | First name (max 255 chars)    |
+| `last_name`   | `str` or `None` | Last name (max 255 chars)     |
+| `middle_name` | `str` or `None` | Middle name (max 255 chars)   |
+| `npi`         | `str` or `None` | NPI number (max 10 chars)     |
+| `taxonomy`    | `str` or `None` | Taxonomy code (max 100 chars) |
+| `tax_id`      | `str` or `None` | Tax ID (max 100 chars)        |
+| `tax_id_type` | `str` or `None` | Tax ID type (max 1 char)      |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates that exactly one of `staff_id` or `supervising_provider` is provided
+- If `staff_id` is provided, validates that the Staff record exists
+
+#### Example Usage
+
+Using a Staff record:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class SupervisingProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, set the supervising provider from the note's supervising provider."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD" and note.supervising_provider:
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.update_supervising_provider(staff_id=str(note.supervising_provider.id))]
+        return []
+```
+
+Using free-text provider information:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect, ClaimSupervisingProvider
+from canvas_sdk.v1.data import Note
+
+
+class SupervisingProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, set a custom supervising provider on the claim."""
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        state = self.event.context["state"]
+        if state == "LKD":
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [
+                claim_effect.update_supervising_provider(
+                    ClaimSupervisingProvider(
+                        first_name="Jane",
+                        last_name="Doe",
+                        npi="1234567890",
+                        taxonomy="207Q00000X",
+                    )
+                )
+            ]
+        return []
+```
+
+### Set Incident To
+
+`ClaimEffect.set_incident_to()`: sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
+
+#### Parameters
+
+| Parameter | Type   | Description                                              | Required |
+| --------- | ------ | -------------------------------------------------------- | -------- |
+| `value`   | `bool` | Whether the claim is billed incident-to the supervising physician | Yes      |
+
+#### How Incident-To Billing Works
+
+When a claim is marked as incident-to:
+
+1. **Automatic rendering provider swap**: The rendering provider fields (first name, last name, middle name, NPI, and taxonomy) are replaced with the supervising provider's values. This swap happens immediately when `incident_to` is set to `True`, not at claim submission.
+
+2. **Billing provider unchanged**: The billing provider information (NM1*85 on the 837P) remains unchanged. Only the rendering provider (NM1*82 / Box 24J) is affected.
+
+3. **Frozen after submission**: Once a claim has been submitted to the clearinghouse, the rendering provider swap no longer occurs even if incident-to settings change.
+
+4. **Re-sync on supervising provider change**: If the supervising provider is updated on an incident-to claim, the rendering provider fields are automatically re-synced to match the new supervising provider.
+
+#### Printed CMS-1500 Form
+
+The supervising provider appears on the printed CMS-1500 (HCFA) form differently depending on whether the claim is marked incident-to:
+
+| Scenario | Box 24J (Rendering NPI) | Box 17 (Referring/Supervising Provider) |
+| -------- | ----------------------- | --------------------------------------- |
+| **Incident-to claim** | Supervising provider's NPI (via the automatic rendering swap) | Not populated for supervising—the provider already appears in Box 24J |
+| **Non-incident-to claim with supervising provider** | Original rendering provider's NPI | Supervising provider with **DQ** qualifier (if no referring or ordering provider exists) |
+
+For non-incident-to claims with a supervising provider who has a valid NPI and no referring or ordering provider, the printed form populates Box 17 with the supervising provider's name, Box 17a with the "DQ" (supervising physician) qualifier, and Box 17b with the supervising provider's NPI.
+
+Box 17 follows a priority order: referring provider (DN) takes precedence over ordering provider (DK), which takes precedence over supervising provider (DQ). The supervising provider only appears in Box 17 when no referring or ordering provider is present.
+
+#### Claim Errors
+
+The following errors prevent claim submission when incident-to is enabled:
+
+| Error | Description | Solution |
+| ----- | ----------- | -------- |
+| Missing supervising provider | The claim is marked incident-to but has no supervising provider with an NPI. | Add a supervising provider with a valid NPI, or disable incident-to. |
+| Supervising provider same as rendering | The supervising provider is the same as the note's original rendering provider. | Set the supervising provider to a different physician, or disable incident-to. |
+
+#### Claim Warnings
+
+The following warnings are displayed for incident-to claims but do not prevent submission:
+
+| Warning | Description | Guidance |
+| ------- | ----------- | -------- |
+| Non-office place of service | The place of service is not office (11). Incident-to billing is generally not valid in facility settings per 42 CFR 410.26. | Confirm the place of service is correct, or disable incident-to if it does not apply. |
+| Non-Medicare payer | The payer is not Medicare. Incident-to rules are a Medicare policy; coverage varies by commercial payer. | Confirm the payer accepts incident-to billing, or disable incident-to if it does not apply. |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- The rendering provider swap requires a valid supervising provider with an NPI
+- The swap is skipped if the supervising provider's NPI is missing or invalid
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.v1.data import Note
+
+
+class IncidentToHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_SUPERVISING_PROVIDER_CHANGED)
+
+    def compute(self) -> list[Effect]:
+        """When a supervising provider is set on a claim, enable incident-to billing."""
+        claim_id = self.event.target.id
+        claim_effect = ClaimEffect(claim_id=claim_id)
+        return [claim_effect.set_incident_to(True)]
 ```
 
 ---
