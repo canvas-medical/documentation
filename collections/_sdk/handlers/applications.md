@@ -238,6 +238,8 @@ To create a Note Application, your handler class should inherit from `NoteApplic
 | `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
 | `PRIORITY`   | Controls tab order — lower values appear first. Defaults to `0`                |
 
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
+
 Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 
 > **⚠️  Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
@@ -435,6 +437,35 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
   "readme": "./README.md"
 }
 ```
+
+## Opening an Application on Load
+
+You can configure an application to open **automatically**, without the user
+clicking its icon, by enabling the **Open on load** setting for that application
+in your instance settings.
+
+To enable it, go to the Plugins_IO > Applications section of your instance settings
+(`/admin/plugin_io/application/`), open the application you want, check
+**Open on load**, and save. If you don't have access to this setting, reach out
+to Canvas Support.
+
+Behavior depends on the application's [scope](#application-scopes):
+
+| Scope              | When it opens                                    |
+|--------------------|--------------------------------------------------|
+| `global`           | Automatically when the app shell first loads.    |
+| `patient_specific` | Automatically when a patient chart is opened.    |
+
+This is an instance-level setting configured per application in your instance
+settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is
+preserved when the plugin is reinstalled or updated.
+
+{% include alert.html type="warning" content="<b>Enable Open on load for at most one application per scope.</b> There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two <code>patient_specific</code> apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load." %}
+
+> **Note:** This is distinct from a Note Application's
+> [`open_by_default()`](#opening-by-default), which controls which **tab** is
+> active when a note is viewed. **Open on load** controls whether a `global` or
+> `patient_specific` application opens automatically on app/chart load.
 
 ## Notification Badges
 

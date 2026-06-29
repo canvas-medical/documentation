@@ -1898,7 +1898,7 @@ Plugins are your tool for customizing the Canvas experience. By using the module
 ##  Video 
 The video below showcases a Canvas engineer working through this guide step-by-step.
 ##  1\. Install the Canvas CLI 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 ##  2\. Configure the Canvas CLI for your instances 
 The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If you've used our FHIR API, you'll be very familiar with the process for [registering credentials](/api/customer-authentication/). Register a separate OAuth application, choosing `confidential` for the Client type, and `client-credentials` for the Authorization grant type. Redirect URIs can be left blank, and the Algorithm should be `No OIDC support`. Note the client_id and client_secret for the next step.
 Create a file at the path `~/.canvas/credentials.ini`. Here is what its contents should look like:
@@ -2320,8 +2320,8 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `list`: List all plugins from a Canvas instance
   - `validate-manifest`: Validate the Canvas Manifest json file
   - `logs`: Listen and print log streams from a Canvas instance
-  - `config list`: List all secrets from a plugin
-  - `config set`: Configure plugin secrets
+  - `config list`: List plugin variables on a Canvas instance
+  - `config set`: Set plugin variables on a Canvas instance
 ###  `canvas init`
 Create a new plugin.
 **Usage** :
@@ -2339,8 +2339,8 @@ Install a plugin into a Canvas instance.
 **Arguments** :
   - `PLUGIN_NAME`: Path to plugin to install [required]
 **Options** :
-  - `--secret TEXT`: Secrets to set, e.g. Key=value
-  - `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+  - `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
+  - `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
   - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
@@ -2428,7 +2428,7 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--cursor TEXT`: Resume token from a previous run.
   - `--help`: Show this message and exit.
 ###  `canvas config list`
-List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 **Usage** :
     ```console
     $ canvas config list [OPTIONS] PLUGIN
@@ -2444,11 +2444,18 @@ List the variables configured for a plugin. Each variable is rendered as `[set]`
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
+**Example Output** :
+    ```console
+    $ canvas config list my_plugin
+      API_TOKEN = [set]  (sensitive)
+      WEBHOOK_URL = [set]
+      DEBUG_MODE = [not set]
+    ```
 ###  `canvas config set`
-Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 **Usage** :
     ```console
-    $ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+    $ canvas config set [OPTIONS] PLUGIN VARIABLES...
     ```
 **Examples** :
 Set a single variable:
@@ -2460,8 +2467,8 @@ Set multiple variables in one call:
     $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
     ```
 **Arguments** :
-  - `PLUGIN`: Plugin name to configure
-  - `KEY=value ...`: One or more variables to set
+  - `PLUGIN`: Plugin name to set variables for
+  - `VARIABLES...`: Variables to set, e.g. Key=value
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
@@ -6167,6 +6174,8 @@ The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
 **Electronic ordering:** LabOrder commands support the `send()` method for electronic ordering of signed orders directly to lab partners. However, electronic ordering has additional requirements:
   - Only lab partners with electronic ordering enabled support the `send()` method.
   - The command must be committed/signed before it can be sent electronically.
+  - The patient must have an address and phone number on file.
+  - The ordering provider must have an NPI.
 **Command-specific parameters** :
 Name | Type | Required to send | Description  
 ---|---|---|---  
@@ -11967,7 +11976,8 @@ model | String
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-coverage/
 ##  Introduction 
-The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated `EligibilitySummary`, which provides the most up-to-date copay and and coinsurance values.
+The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated `EligibilitySummary`, which provides the most up-to-date copay and coinsurance values.
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
 ##  Usage 
 The `Coverage` model can be used to find all of the coverages defined in a Canvas instance, whether overall or for a particular patient. For example, to find all of the current coverages for a patient, the `Patient.coverages` method can be used:
     ```python
@@ -11990,13 +12000,21 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 Find the latest eligibility summary for a patient:
     ```python
         from canvas_sdk.v1.data.coverage import Coverage, EligibilitySummary
-        coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+        coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
         elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
         elig_summary_from_cvg = coverage.eligibility_summary
         if elig_summary_from_model:
             print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance) # 1000 5
         if elig_summary_from_cvg:
             print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance) # 1000 5
+    ```
+Access insurance card images through the coverage's snapshot:
+    ```python
+    from canvas_sdk.v1.data.coverage import Coverage
+    coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+    if coverage.snapshot:
+        for image in coverage.snapshot.images.all():
+            print(image.image_url)  # Presigned S3 URL for the insurance card image
     ```
 ##  Filtering 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -22429,6 +22447,37 @@ author_id | optional | string or UUID | Author's id to set task comment creator,
             )
             return [add_task_comment.apply()]
     ```
+##  Creating a task and a comment together 
+`AddTaskComment` requires the `task_id` of an existing task. To create a brand new task **and** add a comment to it in a single `compute()` return, supply your own `id` to `AddTask` and reuse that same value as the `task_id` on `AddTaskComment`. Because the `id` on `AddTask` is optional and is generated for you when omitted, the trick is simply to generate it yourself so you can reference it on the comment.
+There is no need to create the task first and listen for a follow-up event — just return both effects from the same handler, with the `AddTask` effect before the `AddTaskComment` effect.
+    ```python
+    import uuid
+    import arrow
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.task import AddTask, AddTaskComment, TaskStatus
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [
+            EventType.Name(EventType.LAB_REPORT_CREATED),
+        ]
+        def compute(self) -> list[Effect]:
+            # Generate the task id up front so the comment can reference it.
+            task_id = str(uuid.uuid4())
+            add_task = AddTask(
+                id=task_id,
+                title="Please call the patient with their test results.",
+                due=arrow.utcnow().shift(days=1).datetime,
+                status=TaskStatus.OPEN,
+            )
+            add_task_comment = AddTaskComment(
+                task_id=task_id,
+                body="Results flagged abnormal — follow up today.",
+            )
+            # Order matters: the task must be created before the comment.
+            return [add_task.apply(), add_task_comment.apply()]
+    ```
+> **Note:** The effects are applied in the order they are returned, so the `AddTask` effect must come before the `AddTaskComment` effect that references it. Both effects must be returned from the same handler — don't split them across separate handlers or plugins, and don't defer either effect, since that breaks the ordering the comment relies on.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-tasks/
 
 
@@ -24502,6 +24551,11 @@ PRE_COMMAND_EXECUTE_ACTION | Before an action is executed on any command.
 POST_COMMAND_EXECUTE_ACTION | After an action is executed on any command.  
 POST_COMMAND_INSERTED_INTO_NOTE | After a command is added to a note in the UI.  
 AVAILABLE_ACTIONS | When a command is rendered in the UI, after any update to data, state, or other changes  
+#####  Transaction Behavior 
+Pre-event handlers (`PRE_COMMAND_ORIGINATE`, `PRE_COMMAND_COMMIT`, `PRE_COMMAND_UPDATE`) run synchronously inside the same database transaction as the command operation. Your handler can perform validation or modify data, and if it raises an exception, both your changes and the command operation roll back together.
+Post-event handlers (`POST_COMMAND_ORIGINATE`, `POST_COMMAND_COMMIT`, `POST_COMMAND_UPDATE`) use Django's `on_commit` mechanism and execute only after the outermost transaction commits successfully. If you wrap a command operation inside a `transaction.atomic()` block, the post-event handlers won't fire until that outer transaction commits.
+This model lets you combine command operations with other database writes in a single atomic unit. You can originate a command and update related records together, knowing that either all operations succeed or none do.
+See [Transactions](/sdk/custom-data-transactions/) for more on using `transaction.atomic()` in your plugins.
 #####  Context Overview 
 Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
 **Base Context (All Events Except`PRE_COMMAND_ORIGINATE`)**:
@@ -40572,6 +40626,7 @@ Attribute | Description
 `NAME` | The display title shown on the tab (supports emojis)  
 `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
 `PRIORITY` | Controls tab order — lower values appear first. Defaults to `0`  
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
 Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 > **⚠️ Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
     ```python
@@ -40719,6 +40774,17 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
       "readme": "./README.md"
     }
     ```
+##  Opening an Application on Load 
+You can configure an application to open **automatically** , without the user clicking its icon, by enabling the **Open on load** setting for that application in your instance settings.
+To enable it, go to the Plugins_IO > Applications section of your instance settings (`/admin/plugin_io/application/`), open the application you want, check **Open on load** , and save. If you don't have access to this setting, reach out to Canvas Support.
+Behavior depends on the application's scope:
+Scope | When it opens  
+---|---  
+`global` | Automatically when the app shell first loads.  
+`patient_specific` | Automatically when a patient chart is opened.  
+This is an instance-level setting configured per application in your instance settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is preserved when the plugin is reinstalled or updated.
+> **Warning:** **Enable Open on load for at most one application per scope.** There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two `patient_specific` apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load. 
+> **Note:** This is distinct from a Note Application's `open_by_default()`, which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
 ##  Notification Badges 
 You can display a notification badge — a small count — on the icon of a `global` or `patient_specific` application: in the app drawer, or on the panel when the application sets `show_in_panel`. A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 ###  Initial count on load 
@@ -42973,9 +43039,9 @@ Given these considerations, the platform maintains a strict and judicious approa
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/secrets/
 Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's `CANVAS_MANIFEST.json` as **variables** , set at install time or through the Admin UI, and read from `self.secrets` at runtime.
-Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification).
-###  Declaring variables in `CANVAS_MANIFEST.json`
-Declare each variable as an object with a `name` and an optional `sensitive` flag (defaults to `false`):
+Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification). All variable values are write-only through the CLI and API.
+###  Declaring Variables in `CANVAS_MANIFEST.json`
+Variables are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-level `variables` field. Each variable is an object with a `name` and an optional `sensitive` flag (defaults to `false`). Variables marked as `sensitive: true` are write-only and behave like secrets. These declared variables become available for configuration in the Canvas Admin UI when the plugin is installed.
     ```json
     {
       "sdk_version": "0.1.4",
@@ -42992,19 +43058,25 @@ Declare each variable as an object with a `name` and an optional `sensitive` fla
       },
       "variables": [
         {"name": "API_TOKEN", "sensitive": true},
+        {"name": "WEBHOOK_URL"},
         {"name": "LOG_LEVEL", "sensitive": false}
       ],
       "tags": {}
     }
     ```
+Field | Type | Required | Description  
+---|---|---|---  
+`name` | string | Yes | The variable name used in your plugin code  
+`sensitive` | boolean | No | When `true`, marks the variable as sensitive for display purposes (default: `false`)  
 ####  Legacy `secrets` array (deprecated) 
 The flat `secrets` array is still accepted for backwards compatibility:
     ```json
     "secrets": ["API_TOKEN"]
     ```
 It emits a deprecation warning during `canvas validate-manifest` and is mapped internally to `variables` entries with `sensitive: false`. To preserve sensitive treatment, migrate to the `variables` schema with `sensitive: true` and re-install the plugin.
+> **Warning:** **Deprecation Notice:** The legacy `secrets` array format is deprecated. Use the `variables` format shown above instead. The legacy format will continue to work but displays a deprecation warning during `canvas validate-manifest`. 
 > ⚠️ **Pre-existing values default to non-sensitive.** Any plugin secret that existed before Canvas 1.305.0 — or any value configured via the legacy `secrets:` array — is stored with `sensitive: false`. It will appear in plain text in the Admin UI until the owning plugin is migrated to the `variables` schema with `sensitive: true` and re-installed.
-###  Configuring values from the CLI 
+###  Configuring Variables from the CLI 
 Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
 Provide values during install:
     ```console
@@ -43030,22 +43102,23 @@ Run `canvas config list <plugin_name>` to see which variables are configured for
     ```
 To read a value, use the Django Admin UI (access is gated by managing-user permissions).
 > _The`--variable` flag, `canvas config list` sensitive marking, and Admin UI masking require Canvas CLI 0.146.0 or newer. Upgrade with `pip install --upgrade canvas`._
-###  Configuring values in the Admin UI 
+###  Configuring Variables in the Admin UI 
 After install you can also set values through the Admin interface.
 Navigation path: `Home` › `Plugin_IO` › `Plugins` › `(your plugin)`
 Or, go directly to:
     https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
-On this page, you will find input fields for each variable declared in your manifest. Sensitive values display as `SENSITIVE` and are no longer rendered in the form HTML — submit a new value to overwrite, or leave the field blank to keep the existing value. Non-sensitive values display their current value and can be edited inline.
-![Setting plugin secrets](/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png)
-Plugin secret access can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its values (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI.
-###  Accessing values in your plugin 
-All variables and secrets — sensitive and non-sensitive alike — are exposed to your plugin code through `self.secrets`, a Python dictionary keyed by variable name:
+On this page, you will find input fields for each variable defined in your manifest. Sensitive values display as `SENSITIVE` and are no longer rendered in the form HTML — submit a new value to overwrite, or leave the field blank to keep the existing value. Non-sensitive values display their current value and can be edited inline.
+![Setting plugin variables](/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png)
+Sensitive variables can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its sensitive variables (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change sensitive variable values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
+###  Accessing Variables in Your Plugin 
+All variables — sensitive and non-sensitive alike — are exposed to your plugin code through `self.secrets`, a Python dictionary keyed by variable name:
     ```python
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
             api_token = self.secrets["API_TOKEN"]
+            webhook_url = self.secrets["WEBHOOK_URL"]
             log_level = self.secrets["LOG_LEVEL"]
             ...
     ```
