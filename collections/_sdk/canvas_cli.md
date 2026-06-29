@@ -284,7 +284,7 @@ A common mistake is placing `CANVAS_MANIFEST.json` in a parent directory above t
 
 **Correct layout:**
 
-```
+```text
 my_plugin/
 ├── CANVAS_MANIFEST.json   # ← manifest inside the package
 ├── handlers/
@@ -294,7 +294,7 @@ my_plugin/
 
 **Incorrect layout:**
 
-```
+```text
 project/
 ├── CANVAS_MANIFEST.json   # ← manifest above the package (wrong!)
 └── my_plugin/
