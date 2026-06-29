@@ -52,6 +52,8 @@ reports = ImagingReport.objects.filter(requires_signature=True)
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 `ImagingReport` supports `ValueSet` filtering through the `find` method on its model manager:
 
 ```python

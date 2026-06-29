@@ -5,21 +5,25 @@ excerpt: "Effects for sending Surescripts eligibility, medication history, and b
 hidden: false
 ---
 
-Surescripts effects let plugins query insurance eligibility, medication history, and benefits information through Surescripts. These effects send requests to Surescripts, and responses arrive asynchronously as corresponding events.
+Surescripts effects let plugins query insurance eligibility, benefits, and medication history through Surescripts. Eligibility and benefits requests receive responses asynchronously as corresponding events; medication history is handled by Canvas without a plugin-facing response.
 
-## SendSurescriptsEligibilityRequestEffect
+## Eligibility
+
+Check a patient's insurance coverage and plan details. Send a request with `SendSurescriptsEligibilityRequestEffect`, then handle the `SURESCRIPTS_ELIGIBILITY_RESPONSE` event when the response arrives.
+
+### SendSurescriptsEligibilityRequestEffect
 
 Sends an eligibility request to Surescripts to check a patient's insurance coverage. The response arrives as a `SURESCRIPTS_ELIGIBILITY_RESPONSE` event.
 
-### Attributes
+#### Attributes
 
 | Name             | Type   | Description                                                                                                                                                     |
 |------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `patient_id`     | `str`  | The Canvas patient ID for whom to check eligibility.                                                                                                            |
-| `staff_id`       | `str`  | The Canvas staff ID initiating the request.                                                                                                                     |
+| `patient_id`     | `str`  | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check eligibility.                                                                                                            |
+| `staff_id`       | `str`  | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                                                     |
 | `correlation_id` | `str`  | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. |
 
-### Correlation ID
+#### Correlation ID
 
 Each eligibility request includes a `correlation_id` that echoes back in the corresponding `SURESCRIPTS_ELIGIBILITY_RESPONSE` event. Use this to match responses to their originating requests when handling multiple concurrent eligibility checks.
 
@@ -27,7 +31,7 @@ By default, the effect auto-generates a unique `correlation_id` (a UUID hex stri
 
 > **Note:** The `correlation_id` is required for receiving response events. The platform only delivers `SURESCRIPTS_ELIGIBILITY_RESPONSE` events to plugins that sent a request with a valid `correlation_id`.
 
-### Example Usage
+#### Example Usage
 
 ```python
 from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsEligibilityRequestEffect
@@ -54,44 +58,44 @@ class CheckEligibilityOnAppointment(BaseHandler):
         return [effect.apply()]
 ```
 
-## Handling Eligibility Responses
+### Handling Eligibility Responses
 
 When Surescripts returns an eligibility response, the platform fires a `SURESCRIPTS_ELIGIBILITY_RESPONSE` event. Use the typed data classes from `canvas_sdk.events.surescripts` to parse the response.
 
 > **Important:** To prevent infinite loops, you cannot return a `SendSurescriptsEligibilityRequestEffect` from a handler that responds to `SURESCRIPTS_ELIGIBILITY_RESPONSE` events.
 
-### Response Data Classes
+#### Response Data Classes
 
-#### SurescriptsEligibilityResponse
+##### SurescriptsEligibilityResponse
 
 The top-level response object containing eligibility results.
 
 | Name             | Type                   | Description                                                           |
 |------------------|------------------------|-----------------------------------------------------------------------|
 | `correlation_id` | `str`                  | The correlation ID from the originating request.                      |
-| `patient_id`     | `str`                  | The Canvas patient ID for this eligibility check.                     |
-| `plans`          | `list[EligibilityPlan]`| List of insurance plans returned in the response.                     |
+| `patient_id`     | `str`                  | The Canvas [Patient](/sdk/data-patient/#patient) ID for this eligibility check.                     |
+| `plans`          | [EligibilityPlan](#eligibilityplan)[] | List of insurance plans returned in the response.      |
 | `error`          | `str` or `None`        | Error message if the request failed, otherwise `None`.                |
 
-#### EligibilityPlan
+##### EligibilityPlan
 
 Represents a single insurance plan from the eligibility response.
 
 | Name                    | Type            | Description                                                                 |
 |-------------------------|-----------------|-----------------------------------------------------------------------------|
 | `pbm_name`              | `str`           | Name of the Pharmacy Benefit Manager.                                       |
-| `payer_id`              | `str`           | Identifier for the insurance payer.                                         |
+| `payer_id`              | `str`           | Identifier for the insurance payer ([Transactor](/sdk/data-coverage/#transactor)).                                         |
 | `member_id`             | `str`           | The patient's member ID for this plan.                                      |
 | `plan_network_id`       | `str` or `None` | Network identifier for the plan.                                            |
 | `group_number`          | `str` or `None` | Group number for the plan.                                                  |
 | `drug_formulary_number` | `str` or `None` | Drug formulary identifier.                                                  |
-| `coverage_id`           | `str` or `None` | Coverage identifier.                                                        |
+| `coverage_id`           | `str` or `None` | [Coverage](/sdk/data-coverage/#coverage) identifier.                        |
 | `description`           | `str` or `None` | Human-readable description of the plan.                                     |
 | `rejected`              | `bool`          | `True` if the eligibility check was rejected for this plan.                 |
 | `reject_reason`         | `str` or `None` | Reason for rejection, if applicable.                                        |
 | `service_types`         | `list[str]`     | List of service types covered (e.g., "MEDICAL", "RX").                      |
 
-### Response Handler Example
+#### Response Handler Example
 
 ```python
 from canvas_sdk.events import EventType
@@ -125,22 +129,26 @@ class HandleEligibilityResponse(BaseHandler):
         return []
 ```
 
-## SendSurescriptsBenefitsRequestEffect
+## Benefits
+
+Retrieve formulary and coverage details for a specific medication. Send a request with `SendSurescriptsBenefitsRequestEffect`, then handle the `SURESCRIPTS_BENEFITS_RESPONSE` event when the response arrives.
+
+### SendSurescriptsBenefitsRequestEffect
 
 Sends a benefits request to Surescripts to retrieve formulary and coverage details for a specific medication. The response arrives as a `SURESCRIPTS_BENEFITS_RESPONSE` event.
 
-### Attributes
+#### Attributes
 
 | Name                     | Type   | Description                                                                                                                                                     |
 |--------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `patient_id`             | `str`  | The Canvas patient ID for whom to check benefits.                                                                                                              |
-| `staff_id`               | `str`  | The Canvas staff ID initiating the request.                                                                                                                     |
+| `patient_id`             | `str`  | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check benefits.                                                                                                              |
+| `staff_id`               | `str`  | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                                                     |
 | `medication_description` | `str`  | A human-readable description of the medication (e.g., "Lipitor 10 mg tablet").                                                                                  |
 | `medication_ndc`         | `str`  | The NDC of the medication to check.                                                                                                                            |
 | `plan`                   | `str`  | The plan or PBM to check benefits against.                                                                                                                      |
 | `correlation_id`         | `str`  | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. |
 
-### Correlation ID
+#### Correlation ID
 
 As with eligibility requests, each benefits request includes a `correlation_id` that echoes back in the corresponding `SURESCRIPTS_BENEFITS_RESPONSE` event. Use this to match responses to their originating requests when handling multiple concurrent benefits checks.
 
@@ -148,7 +156,7 @@ By default, the effect auto-generates a unique `correlation_id` (a UUID hex stri
 
 > **Note:** The `correlation_id` is required for receiving response events. The platform only delivers `SURESCRIPTS_BENEFITS_RESPONSE` events to plugins that sent a request with a valid `correlation_id`.
 
-### Example Usage
+#### Example Usage
 
 ```python
 from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsBenefitsRequestEffect
@@ -177,44 +185,44 @@ class CheckBenefitsOnPrescription(BaseHandler):
         return [effect.apply()]
 ```
 
-## Handling Benefits Responses
+### Handling Benefits Responses
 
 When Surescripts returns a benefits response, the platform fires a `SURESCRIPTS_BENEFITS_RESPONSE` event. Use the typed data classes from `canvas_sdk.events.surescripts` to parse the response.
 
 > **Important:** To prevent infinite loops, you cannot return a `SendSurescriptsBenefitsRequestEffect` from a handler that responds to `SURESCRIPTS_BENEFITS_RESPONSE` events.
 
-### Response Data Classes
+#### Response Data Classes
 
-#### SurescriptsBenefitsResponse
+##### SurescriptsBenefitsResponse
 
 The top-level response object containing benefits results.
 
 | Name             | Type                    | Description                                                           |
 |------------------|-------------------------|-----------------------------------------------------------------------|
 | `correlation_id` | `str`                   | The correlation ID from the originating request.                      |
-| `patient_id`     | `str`                   | The Canvas patient ID for this benefits check.                        |
+| `patient_id`     | `str`                   | The Canvas [Patient](/sdk/data-patient/#patient) ID for this benefits check.                        |
 | `medication_ndc` | `str`                   | The NDC of the medication that was checked.                           |
-| `coverages`      | `list[BenefitCoverage]` | List of coverage results returned in the response.                    |
+| `coverages`      | [BenefitCoverage](#benefitcoverage)[] | List of coverage results returned in the response.    |
 | `error`          | `str` or `None`         | Error message if the request failed, otherwise `None`.                |
 
-#### BenefitCoverage
+##### BenefitCoverage
 
 Represents a single coverage result from the benefits response.
 
 | Name                           | Type                            | Description                                                       |
 |--------------------------------|---------------------------------|-------------------------------------------------------------------|
 | `pbm_name`                     | `str`                           | Name of the Pharmacy Benefit Manager.                             |
-| `payer_id`                     | `str`                           | Identifier for the insurance payer.                               |
+| `payer_id`                     | `str`                           | Identifier for the insurance payer ([Transactor](/sdk/data-coverage/#transactor)).                               |
 | `formulary_status`             | `str` or `None`                 | Formulary status of the medication (e.g., "On Formulary").        |
 | `prior_authorization_required` | `bool`                          | `True` if prior authorization is required.                        |
 | `step_therapy_required`        | `bool`                          | `True` if step therapy is required.                               |
 | `quantity_limits`              | `list[str]`                     | Human-readable quantity limits (e.g., "30 fills per 1 calendar year"). |
 | `copays`                       | `list[str]`                     | Human-readable copay descriptions (e.g., "Tier 2: $25.00").       |
-| `alternatives`                 | `list[TherapeuticAlternative]`  | Therapeutic alternatives for the requested medication.            |
+| `alternatives`                 | [TherapeuticAlternative](#therapeuticalternative)[]  | Therapeutic alternatives for the requested medication.            |
 | `rejected`                     | `bool`                          | `True` if the benefits check was rejected for this coverage.      |
 | `reject_reason`                | `str` or `None`                 | Reason for rejection, if applicable.                              |
 
-#### TherapeuticAlternative
+##### TherapeuticAlternative
 
 Represents a therapeutic alternative suggested for the requested medication.
 
@@ -230,7 +238,7 @@ Represents a therapeutic alternative suggested for the requested medication.
 | `quantity_limits`              | `list[str]`     | Human-readable quantity limits.                            |
 | `copays`                       | `list[str]`     | Human-readable copay descriptions.                         |
 
-### Response Handler Example
+#### Response Handler Example
 
 ```python
 from canvas_sdk.events import EventType
@@ -273,13 +281,54 @@ class HandleBenefitsResponse(BaseHandler):
         return []
 ```
 
-### Imports
+## Medication History
+
+Request a patient's medication history from Surescripts.
+
+Unlike eligibility and benefits, this effect has **no paired response event** — Canvas retrieves the medication history and processes it on the platform side; the results are not delivered back to your plugin. There is no `correlation_id` and no `SURESCRIPTS_MEDICATION_HISTORY_RESPONSE` event to handle.
+
+### SendSurescriptsMedicationHistoryRequestEffect
+
+Sends a medication history request to Surescripts for the patient. Canvas requests the patient's recent fill history (currently the trailing 12 months).
+
+#### Attributes
+
+| Name         | Type  | Description                                                              |
+|--------------|-------|--------------------------------------------------------------------------|
+| `patient_id` | `str` | The Canvas [Patient](/sdk/data-patient/#patient) ID whose medication history to request. |
+| `staff_id`   | `str` | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.    |
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsMedicationHistoryRequestEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class RequestMedicationHistoryOnAppointment(BaseHandler):
+    RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_CREATED)]
+
+    def compute(self):
+        patient_id = self.event.target.get("id")
+        staff_id = self.event.context.get("created_by", {}).get("id")
+
+        return [
+            SendSurescriptsMedicationHistoryRequestEffect(
+                patient_id=patient_id,
+                staff_id=staff_id,
+            ).apply()
+        ]
+```
+
+## Imports
 
 ```python
 # Effects for sending requests
 from canvas_sdk.effects.surescripts.surescripts_messages import (
     SendSurescriptsBenefitsRequestEffect,
     SendSurescriptsEligibilityRequestEffect,
+    SendSurescriptsMedicationHistoryRequestEffect,
 )
 
 # Data classes for parsing responses
@@ -291,14 +340,6 @@ from canvas_sdk.events.surescripts import (
     TherapeuticAlternative,
 )
 ```
-
-## Other Surescripts Effects
-
-The following Surescripts effect is also available:
-
-| Effect                                        | Description                        |
-|-----------------------------------------------|------------------------------------|
-| `SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST` | Send a medication history request. |
 
 <br/>
 <br/>

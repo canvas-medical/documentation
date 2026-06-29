@@ -52,6 +52,8 @@ reviews = ReferralReview.objects.filter(status="completed")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 `ReferralReport` supports `ValueSet` filtering through the `find` method on its model manager:
 
 ```python

@@ -203,7 +203,7 @@ The `scope` attribute determines where your application is visible within Canvas
 | `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page |
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
-| `scheduling` | Replaces the built-in scheduling modal at all entry points |
+| `scheduling` | Replaces the built-in scheduling modal at all entry points. See [Scheduling Applications](#scheduling-applications) |
 
 ### Full Chart Scope
 
@@ -436,13 +436,13 @@ When `on_open()` is called, scheduling context is available through `self.event.
 
 Entities are delivered as `{"id": <external id>}` objects, resolvable with the conventional `.objects.get(id=...)`:
 
-| Key           | Description                                    | Available From                              |
-|---------------|------------------------------------------------|---------------------------------------------|
-| `patient`     | `{"id": <patient key>}`                        | Patient chart, reschedule flows             |
-| `provider`    | `{"id": <staff key>}`                          | Calendar, patient chart                     |
-| `location`    | `{"id": <practice location id>}`               | Current location context                    |
-| `appointment` | `{"id": <appointment id>}`                     | Reschedule flows                            |
-| `note`        | `{"id": <note id>}`                            | Note reschedule flow                        |
+| Field         | Resolves To                                                      | Value                            | Available From                  |
+|---------------|------------------------------------------------------------------|----------------------------------|---------------------------------|
+| `patient`     | [Patient](/sdk/data-patient/#patient)                            | `{"id": <patient id>}`           | Patient chart, reschedule flows |
+| `provider`    | [Staff](/sdk/data-staff/#staff)                                  | `{"id": <staff id>}`             | Calendar, patient chart         |
+| `location`    | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | `{"id": <practice location id>}` | Current location context        |
+| `appointment` | [Appointment](/sdk/data-appointment/#appointment)                | `{"id": <appointment id>}`       | Reschedule flows                |
+| `note`        | [Note](/sdk/data-note/#note)                                     | `{"id": <note id>}`              | Note reschedule flow            |
 
 #### Scalar Values
 
@@ -456,9 +456,23 @@ Entities are delivered as `{"id": <external id>}` objects, resolvable with the c
 
 When `end` is not provided, derive it from `start + duration`.
 
+#### Origins
+
+`origin` tells you which surface launched the scheduling action, which in turn determines the `mode` and whether the slot length arrives as `end` or `duration`:
+
+| `origin`              | Launching surface                                               | `mode`                   | Slot length            |
+|-----------------------|-----------------------------------------------------------------|--------------------------|------------------------|
+| `schedule_page`       | **New appointment** from the schedule page (no patient context) | `schedule` or `followup` | neither (`start` only) |
+| `patient_chart`       | **New appointment** from a patient's chart                      | `schedule` or `followup` | neither (`start` only) |
+| `calendar`            | Drag-and-drop on the calendar to create a slot                  | `schedule`               | `end`                  |
+| `calendar_reschedule` | Rescheduling an existing appointment from the calendar          | `reschedule`             | `duration`             |
+| `note_reschedule`     | Rescheduling an appointment from within a note                  | `reschedule`             | `duration`             |
+
+Which entities accompany each origin is shown in the [Entity Objects](#entity-objects) table's "Available From" column above — for example, `patient_chart` and the reschedule flows include a `patient`, while `schedule_page` and `calendar` do not.
+
 ### Manifest Configuration
 
-Register your scheduling application in the `CANVAS_MANIFEST.json`:
+Register your scheduling application in the `CANVAS_MANIFEST.json`. The application's `scope` **must** be set to `"scheduling"` — this is what tells Canvas to use it as the scheduling-modal override:
 
 ```json
 {
@@ -474,6 +488,8 @@ Register your scheduling application in the `CANVAS_MANIFEST.json`:
   }
 }
 ```
+
+> **Important:** The `scope` must be exactly `"scheduling"`. With any other value the application will not take over the scheduling flows, and the built-in modal will continue to be used.
 
 When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
 
