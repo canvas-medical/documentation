@@ -24,13 +24,20 @@ The `Patient` effect enables the creation and updating of patient records within
 | `clinical_note`          | `str` or `None`                             | Clinical notes about the patient            | No       |
 | `default_location_id`    | `str` or `None`                             | ID of patient's default practice location   | No       |
 | `default_provider_id`    | `str` or `None`                             | ID of patient's default healthcare provider | No       |
+| `active`                 | `bool` or `None`                            | Whether the patient record is active        | No       |
+| `deceased`               | `bool` or `None`                            | Whether the patient is deceased             | No       |
+| `deceased_datetime`      | `datetime.datetime` or `None`               | Date and time of patient's death            | No       |
+| `deceased_cause`         | `str` or `None`                             | Cause of patient's death                    | No       |
+| `deceased_comment`       | `str` or `None`                             | Additional comments about patient's death   | No       |
+| `biological_race_codes`  | `list[str]` or `None`                       | [CDC race codes](#setting-race-and-ethnicity) describing the patient's biological race (e.g., `"2106-3"`) | No       |
+| `cultural_ethnicity_codes` | `list[str]` or `None`                     | [CDC ethnicity codes](#setting-race-and-ethnicity) describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No       |
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | `list[PatientContactPoint]` or `None`       | Patient's contact information               | No       |
 | `external_identifiers`   | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers              | No       |
-| `patient_id`             | `str` or `None`                             | Patient ID (required for updates only)      | No       |
+| `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
 | `addresses`              | `list[PatientAddress]` or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | `list[PatientPreferredPharmacy]` or `None`  | Patient's preferred pharmacies              | No       |
-| `metadata`   | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
+| `metadata`               | `list[PatientMetadata]` or `None`           | Patient metadata                            | No       |
 
 ## PatientContactPoint
 
@@ -95,7 +102,7 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 
 ## Implementation Details
 
-- **Creation**: Creates new patient records when `patient_id` is not provided
+- **Creation**: Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation)
 - **Updates**: Updates existing patient records when `patient_id` is provided
 - Validates that referenced practice locations exist in the system
 - Verifies that referenced healthcare providers exist in the system
@@ -155,6 +162,42 @@ class MyHandler(BaseHandler):
         return [patient.create()]
 ```
 
+## Supplying a patient id on creation
+
+By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
+
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+
+Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
+
+```python
+from canvas_sdk.effects.patient import Patient, generate_patient_id
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+
+
+class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/patients"
+
+    def post(self) -> list[Response]:
+        body = self.request.json()
+        new_patient_id = generate_patient_id()
+
+        patient = Patient(
+            patient_id=new_patient_id,
+            first_name=body["first_name"],
+            last_name=body["last_name"],
+        )
+
+        # `new_patient_id` can be reused for follow-up patient-scoped effects in
+        # the same execution, and is returned so the caller has it immediately
+        # without a follow-up lookup.
+        return [
+            patient.create(),
+            JSONResponse({"patient_id": new_patient_id}, status_code=201),
+        ]
+```
+
 # Patient Update Example
 
 ```python
@@ -192,6 +235,79 @@ class MyHandler(BaseHandler):
         return [updated_patient.update()]
 ```
 
+# Marking a Patient as Inactive or Deceased
+
+```python
+from canvas_sdk.effects.patient import Patient
+from canvas_sdk.handlers.base import BaseHandler
+import datetime
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Mark a patient as inactive
+        inactive_patient = Patient(
+            patient_id="existing-patient-uuid",
+            active=False
+        )
+
+        return [inactive_patient.update()]
+
+
+class DeceasedPatientHandler(BaseHandler):
+    def compute(self):
+        # Record a patient's death
+        deceased_patient = Patient(
+            patient_id="existing-patient-uuid",
+            deceased=True,
+            deceased_datetime=datetime.datetime(2025, 3, 14, 12, 0, 0),
+            deceased_cause="Natural causes",
+            deceased_comment="Pronounced at home."
+        )
+
+        return [deceased_patient.update()]
+```
+
+# Setting Race and Ethnicity
+
+`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of code strings drawn from the [CDC Race and Ethnicity CodeSystem (CDCREC)](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html) — the same code set used by the [FHIR Patient API](/api/patient/). You can set both fields when creating or updating a patient, and you can supply more than one code per field.
+
+Canvas recognizes the full CDCREC code set — both the OMB top-level categories below and the more specific detailed codes that roll up to them (for example, the race code `2108-9` "European" rolls up to `2106-3` "White", and the ethnicity code `2148-5` "Mexican" rolls up to `2135-2` "Hispanic or Latino"). The categories below are the most common values; see the CodeSystem for the complete list of detailed codes.
+
+**Race** (`biological_race_codes`) — OMB top-level categories:
+
+| Code      | Description                               |
+| --------- | ----------------------------------------- |
+| `1002-5`  | American Indian or Alaska Native          |
+| `2028-9`  | Asian                                     |
+| `2054-5`  | Black or African American                 |
+| `2076-8`  | Native Hawaiian or Other Pacific Islander |
+| `2106-3`  | White                                     |
+| `2131-1`  | Other Race                                |
+
+**Ethnicity** (`cultural_ethnicity_codes`) — OMB top-level categories:
+
+| Code      | Description            |
+| --------- | ---------------------- |
+| `2135-2`  | Hispanic or Latino     |
+| `2186-5`  | Not Hispanic or Latino |
+
+```python
+from canvas_sdk.effects.patient import Patient
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        patient = Patient(
+            patient_id="existing-patient-uuid",
+            biological_race_codes=["2106-3"],      # White
+            cultural_ethnicity_codes=["2186-5"]    # Not Hispanic or Latino
+        )
+
+        return [patient.update()]
+```
+
 ## Validation
 
 The effect performs validation before execution to ensure data integrity:
@@ -205,8 +321,9 @@ The effect performs validation before execution to ensure data integrity:
 3. **Data Format Validation**: Ensures that provided values conform to expected formats:
    - Date fields must be valid dates
    - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
+   - On creation, if `patient_id` is supplied it must be a well-formed patient id (a 32-character hex string); otherwise validation raises
+   - On creation, a supplied `patient_id` must not already belong to an existing patient; a duplicate id raises a validation error
 4. **Update-Specific Validation**:
-   - Ensures `patient_id` is not provided during patient creation
    - Validates that the patient exists before attempting updates
 
 <br/>
