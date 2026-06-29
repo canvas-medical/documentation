@@ -124,7 +124,13 @@ Before uploading, `canvas install` runs pre-flight validation:
 
 If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
 
-Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+The CLI automatically excludes common build artifacts from the plugin bundle:
+- `__pycache__` directories
+- `*.pyc` and `*.pyo` files
+- `node_modules` directories
+- Hidden files and directories (e.g., `.git`, `.env`)
+
+To exclude additional files, create a `.canvasignore` file in your plugin directory. This file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore).
 
 Example
 ```md
