@@ -74,10 +74,11 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `enable`: Enable a plugin from a Canvas instance
 - `disable`: Disable a plugin from a Canvas instance
 - `list`: List all plugins from a Canvas instance
+- `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
-- `config list`: List all secrets from a plugin
-- `config set`: Configure plugin secrets
+- `config list`: List plugin variables on a Canvas instance
+- `config set`: Set plugin variables on a Canvas instance
 
 ### `canvas init`
 
@@ -109,13 +110,19 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Options**:
 
-- `--secret TEXT`:  Secrets to set, e.g. Key=value
-- `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+- `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
+- `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
 - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
 **Notes**:
+
+Before uploading, `canvas install` runs pre-flight validation:
+- Manifest validation (schema, tags, handler resolution)
+- Sandbox-load validation (imports every handler in the sandbox)
+
+If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
 
 Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
 
@@ -198,6 +205,54 @@ $ canvas list [OPTIONS]
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+### `canvas validate`
+
+Validate a plugin's manifest and that all handlers load in the sandbox.
+
+**Usage**:
+
+```console
+$ canvas validate [OPTIONS] PLUGIN_NAME
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to plugin to validate [required]
+
+**Options**:
+
+- `--help`: Show this message and exit.
+
+This command runs full pre-flight validation combining:
+
+1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
+2. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
+
+**Sandbox-load validation** executes each handler module in the plugin sandbox to catch:
+
+- **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
+- **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
+- **Import errors** — Missing dependencies or broken imports.
+
+For each handler, the output shows whether it loaded successfully:
+
+```console
+$ canvas validate my_plugin
+Loading 2 handler(s) in the sandbox:
+  ✓ my_plugin.handlers.events:MyHandler
+  ✗ my_plugin.handlers.api:APIHandler
+    ImportError: 'subprocess' is not an allowed import
+1 of 2 handler(s) failed to load in the sandbox.
+```
+
+The command exits with code 1 if any handler fails validation.
+
+#### Limitations
+
+A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
+
+{% include alert.html type="info" content="<code>canvas install</code> runs the same sandbox-load validation before uploading, so violations are caught before they reach your instance." %}
+
 ### `canvas validate-manifest`
 
 Validate the Canvas Manifest json file.
@@ -215,6 +270,49 @@ $ canvas validate-manifest [OPTIONS] PLUGIN_NAME
 **Options**:
 
 - `--help`: Show this message and exit.
+
+**Validations performed**:
+
+1. **Schema validation** — Checks that `CANVAS_MANIFEST.json` contains all required fields and valid values.
+2. **Handler resolution** — Verifies that every handler class declared in the manifest (`protocols`, `applications`, and `handlers`) resolves to a file the plugin runner can find at runtime.
+
+#### Handler resolution and directory layout
+
+The plugin runner loads handlers by mapping dotted module paths to files relative to the plugin's install directory. For a plugin named `my_plugin` with a handler class `my_plugin.handlers.events:MyHandler`, the runner expects `handlers/events.py` inside the plugin directory — the directory containing `CANVAS_MANIFEST.json`.
+
+A common mistake is placing `CANVAS_MANIFEST.json` in a parent directory above the plugin package. This passes schema validation and works locally, but fails at runtime with `ModuleNotFoundError` — the handler files are nested one level too deep.
+
+**Correct layout:**
+
+```text
+my_plugin/
+├── CANVAS_MANIFEST.json   # ← manifest inside the package
+├── handlers/
+│   └── events.py
+└── ...
+```
+
+**Incorrect layout:**
+
+```text
+project/
+├── CANVAS_MANIFEST.json   # ← manifest above the package (wrong!)
+└── my_plugin/
+    └── handlers/
+        └── events.py
+```
+
+If `validate-manifest` detects handlers that won't resolve, it reports which classes are affected and the file paths the runner expects:
+
+```console
+Error: these handler classes won't be found by the plugin runner with the current directory layout:
+  - my_plugin.handlers.events:MyHandler
+    runner expects: my_plugin/handlers/events.py
+
+CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
+```
+
+{% include alert.html type="info" content="<code>canvas install</code> runs both manifest validation and sandbox-load validation before uploading. Use <code>canvas validate</code> for a full pre-flight check with detailed per-handler output." %}
 
 ### `canvas logs`
 
@@ -248,7 +346,7 @@ $ canvas logs [OPTIONS]
 
 ### `canvas config list`
 
-List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 
 **Usage**:
 
@@ -273,15 +371,24 @@ $ canvas config list my_plugin
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
+**Example Output**:
+
+```console
+$ canvas config list my_plugin
+  API_TOKEN = [set]  (sensitive)
+  WEBHOOK_URL = [set]
+  DEBUG_MODE = [not set]
+```
+
 
 ### `canvas config set`
 
-Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
 ```console
-$ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+$ canvas config set [OPTIONS] PLUGIN VARIABLES...
 ```
 
 **Examples**:
@@ -300,8 +407,8 @@ $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
 
 **Arguments**:
 
- - `PLUGIN`:  Plugin name to configure
- - `KEY=value ...`: One or more variables to set
+ - `PLUGIN`:  Plugin name to set variables for
+ - `VARIABLES...`: Variables to set, e.g. Key=value
 
 **Options**:
 
