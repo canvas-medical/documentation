@@ -158,6 +158,7 @@ sections:
                             description: Asked but unknown
                       - name: display
                         type: string
+                        description: Representation defined by the system.
                   - name: text
                     type: string
               - name: valueReference
@@ -225,7 +226,7 @@ sections:
                         type: string
                         required_in: create, update
                         description: >-
-                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
                       - name: display
                         type: string
                   - name: valueCodeableConcept
@@ -304,6 +305,14 @@ sections:
                   - name: end
                     type: date
                     description: Inclusive end date (YYYY-MM-DD). Defaults to **2100-12-31** if omitted.
+              - name: type
+                type: json
+                exclude_in: create, update
+                description: Codeable concept identifying the kind of identifier.
+              - name: assigner
+                type: json
+                exclude_in: create, update
+                description: Organization that issued id.
           - name: active
             type: boolean
             description: Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
@@ -338,6 +347,16 @@ sections:
               - name: suffix
                 type: array[string]
                 description: Parts that come after the name (e.g., "Jr.", "III"). Surfaced in the Canvas UI.
+              - name: period
+                type: json
+                description: Validity window for this name.
+                attributes:
+                  - name: start
+                    type: date
+                    description: Inclusive start date (YYYY-MM-DD).
+                  - name: end
+                    type: date
+                    description: Inclusive end date (YYYY-MM-DD).
           - name: telecom
             type: array[json]
             description_for_all_endpoints: >-
@@ -552,6 +571,9 @@ sections:
                     description: First item is address line 1; remaining items are concatenated as address line 2.
                   - name: city
                     type: string
+                  - name: district
+                    type: string
+                    description: District name (aka county).
                   - name: state
                     type: string
                     description: 2-letter state abbreviation.
@@ -571,8 +593,6 @@ sections:
           - name: communication
             type: array[json]
             description_for_all_endpoints: Languages used to communicate with the patient.
-            create_description: Defaults to English if omitted. Currently only English is supported.
-            update_description: Communication languages cannot currently be modified via this endpoint — the value stored in Canvas is preserved regardless of what's sent.
             attributes:
               - name: language
                 type: json
@@ -607,6 +627,9 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+          - name: _revinclude
+            type: string
+            description: Standard FHIR `_revinclude` parameter.
           - name: _sort
             type: string
             description: >-
@@ -614,7 +637,7 @@ sections:
           - name: active
             type: boolean
             description: By default, both active and inactive patients are returned. Use this parameter to return only active (`true`) or only inactive (`false`) patients.
-          - name: birthDate
+          - name: birthdate
             type: date
             description: The patient's birth date.
           - name: email
@@ -897,7 +920,7 @@ curl --request POST \
                             "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
                             "code": "SPS",
                             "display": "spouse"
-                        }
+                        },
                         {
                             "system": "http://schemas.canvasmedical.com/fhir/contact-category",
                             "code": "ARI",
@@ -913,7 +936,7 @@ curl --request POST \
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "telecom":
@@ -1621,7 +1644,7 @@ print(response.text)
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "name":
@@ -2313,7 +2336,7 @@ payload = {
                             "code": "EMC",
                             "display": "Emergency contact"
                         }
-                    ],
+                    ]
                 }
             ],
             "telecom":
@@ -2743,7 +2766,7 @@ print(response.text)
                         ]
                     },
                     {
-                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3"
+                        "id": "f259a2b0-6bae-479b-8efe-f9436046cfb3",
                         "relationship":
                         [
                             {
