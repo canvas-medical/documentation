@@ -1161,6 +1161,46 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_SUPERVISING_PROVIDER_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's supervising provider snapshot is created or updated. The context includes the previous value(s) of any changed fields.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous": null | {
+  "first_name": str,
+  "last_name": str,
+  ...
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_INCIDENT_TO_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's <code>incident_to</code> billing flag is changed. The context includes the previous boolean value.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
@@ -2641,6 +2681,26 @@ The following events fire when a prescription's status changes during the e-pres
 "user": {
   "type": str,
   "id": user_id
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_SUPERVISING_PROVIDER_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"previous": null | {
+  "id": staff_key
 }</pre></td>
     </tr>
   </tbody>

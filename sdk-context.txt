@@ -11189,6 +11189,8 @@ labels | [TaskLabel](/sdk/data-task/#tasklabel)[]
 metadata | ClaimMetadata[]  
 banner_alerts | ClaimBannerAlert[]  
 provider | ClaimProvider  
+incident_to | Boolean  
+supervising_provider | ClaimSupervisingProvider  
 **Computed Properties** :
   - `total_charges`: Total charges for active line items
   - `total_paid`: Sum of paid amounts from postings
@@ -11198,6 +11200,23 @@ provider | ClaimProvider
   - `total_payer_paid`: Paid amount by coverages
 **Helpful Methods** :
   - `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)`: Finds the active coverage associated with a payer_id. Optionally checks if the subscriber_number matches, which will choose the correct coverage in the case where a patient has two coverages with the same payer_id.
+###  ClaimSupervisingProvider 
+An immutable snapshot of a claim's supervising provider (837P loop 2310D), captured at claim creation from the note's supervising provider and frozen thereafter, so later edits to the note or the underlying Staff record do not retroactively change a submitted claim.
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+claim | Claim  
+staff | [Staff](/sdk/data-staff/#staff)  
+first_name | String  
+last_name | String  
+middle_name | String  
+npi | String  
+taxonomy | String  
+tax_id | String  
+tax_id_type | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)  
+created | DateTime  
+modified | DateTime  
 ###  ClaimLineItem 
 Represents individual billed procedures or services tied to a claim.
 Field Name | Type  
@@ -14804,6 +14823,7 @@ title | String |
 body | JSON | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`.  
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
+supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
 checksum | String |   
 billing_note | String |   
 related_data | JSON | Can contain one key, `roomNumber`, if the Note is an inpatient stay.  
@@ -16782,7 +16802,9 @@ state | JSON
 user | [CanvasUser](/sdk/data-canvasuser)  
 signature | String  
 supervising_team | Staff[]  
+default_supervising_provider | Staff  
 notes | Note[]  
+supervised_notes | Note[]  
 creator_tasks | [Task](/sdk/data-task/#task)[]  
 assignee_tasks | [Task](/sdk/data-task/#task)[]  
 comments | [TaskComment](/sdk/data-task/#taskcomment)[]  
@@ -18109,6 +18131,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
   - adding banner alerts to claims
   - removing banner alerts from claims
   - updating provider information on claims
+  - updating the supervising provider on claims
+  - setting the incident-to flag on claims
 Additionally, the SDK provides a separate effect to update claim line items.
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 Deprecated Class | Old Import Path | New Equivalent  
@@ -18711,6 +18735,130 @@ Attribute | Type | Description
                     billing_provider=billing, facility=facility
                 )
             ]
+    ```
+###  Update Supervising Provider 
+`ClaimEffect.update_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
+Provide exactly one of:
+  - A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
+  - A `ClaimSupervisingProvider` dataclass to specify the snapshot fields directly. This clears any Staff association.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`supervising_provider` | ClaimSupervisingProvider or `None` | Free-text provider snapshot | Yes (if `staff_id` not given)  
+`staff_id` | `str` or `None` | Staff identifier to populate from | Yes (if `supervising_provider` not given)  
+####  ClaimSupervisingProvider 
+The `ClaimSupervisingProvider` dataclass represents a supervising provider's identifying information for billing purposes.
+Attribute | Type | Description  
+---|---|---  
+`first_name` | `str` or `None` | First name (max 255 chars)  
+`last_name` | `str` or `None` | Last name (max 255 chars)  
+`middle_name` | `str` or `None` | Middle name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
+`tax_id` | `str` or `None` | Tax ID (max 100 chars)  
+`tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - Validates that exactly one of `staff_id` or `supervising_provider` is provided
+  - If `staff_id` is provided, validates that the Staff record exists
+####  Example Usage 
+Using a Staff record:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.v1.data import Note
+    class SupervisingProviderHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, set the supervising provider from the note's supervising provider."""
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            state = self.event.context["state"]
+            if state == "LKD" and note.supervising_provider:
+                claim_effect = ClaimEffect(claim_id=claim.id)
+                return [claim_effect.update_supervising_provider(staff_id=str(note.supervising_provider.id))]
+            return []
+    ```
+Using free-text provider information:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect, ClaimSupervisingProvider
+    from canvas_sdk.v1.data import Note
+    class SupervisingProviderHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, set a custom supervising provider on the claim."""
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            state = self.event.context["state"]
+            if state == "LKD":
+                claim_effect = ClaimEffect(claim_id=claim.id)
+                return [
+                    claim_effect.update_supervising_provider(
+                        ClaimSupervisingProvider(
+                            first_name="Jane",
+                            last_name="Doe",
+                            npi="1234567890",
+                            taxonomy="207Q00000X",
+                        )
+                    )
+                ]
+            return []
+    ```
+###  Set Incident To 
+`ClaimEffect.set_incident_to()`: sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`value` | `bool` | Whether the claim is billed incident-to the supervising physician | Yes  
+####  How Incident-To Billing Works 
+When a claim is marked as incident-to:
+  1. **Automatic rendering provider swap** : The rendering provider fields (first name, last name, middle name, NPI, and taxonomy) are replaced with the supervising provider's values. This swap happens immediately when `incident_to` is set to `True`, not at claim submission.
+  2. **Billing provider unchanged** : The billing provider information (NM1 _85 on the 837P) remains unchanged. Only the rendering provider (NM1_ 82 / Box 24J) is affected.
+  3. **Frozen after submission** : Once a claim has been submitted to the clearinghouse, the rendering provider swap no longer occurs even if incident-to settings change.
+  4. **Re-sync on supervising provider change** : If the supervising provider is updated on an incident-to claim, the rendering provider fields are automatically re-synced to match the new supervising provider.
+####  Printed CMS-1500 Form 
+The supervising provider appears on the printed CMS-1500 (HCFA) form differently depending on whether the claim is marked incident-to:
+Scenario | Box 24J (Rendering NPI) | Box 17 (Referring/Supervising Provider)  
+---|---|---  
+**Incident-to claim** | Supervising provider's NPI (via the automatic rendering swap) | Not populated for supervising—the provider already appears in Box 24J  
+**Non-incident-to claim with supervising provider** | Original rendering provider's NPI | Supervising provider with **DQ** qualifier (if no referring or ordering provider exists)  
+For non-incident-to claims with a supervising provider who has a valid NPI and no referring or ordering provider, the printed form populates Box 17 with the supervising provider's name, Box 17a with the "DQ" (supervising physician) qualifier, and Box 17b with the supervising provider's NPI.
+Box 17 follows a priority order: referring provider (DN) takes precedence over ordering provider (DK), which takes precedence over supervising provider (DQ). The supervising provider only appears in Box 17 when no referring or ordering provider is present.
+####  Claim Errors 
+The following errors prevent claim submission when incident-to is enabled:
+Error | Description | Solution  
+---|---|---  
+Missing supervising provider | The claim is marked incident-to but has no supervising provider with an NPI. | Add a supervising provider with a valid NPI, or disable incident-to.  
+Supervising provider same as rendering | The supervising provider is the same as the note's original rendering provider. | Set the supervising provider to a different physician, or disable incident-to.  
+####  Claim Warnings 
+The following warnings are displayed for incident-to claims but do not prevent submission:
+Warning | Description | Guidance  
+---|---|---  
+Non-office place of service | The place of service is not office (11). Incident-to billing is generally not valid in facility settings per 42 CFR 410.26. | Confirm the place of service is correct, or disable incident-to if it does not apply.  
+Non-Medicare payer | The payer is not Medicare. Incident-to rules are a Medicare policy; coverage varies by commercial payer. | Confirm the payer accepts incident-to billing, or disable incident-to if it does not apply.  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - The rendering provider swap requires a valid supervising provider with an NPI
+  - The swap is skipped if the supervising provider's NPI is missing or invalid
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.v1.data import Note
+    class IncidentToHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.CLAIM_SUPERVISING_PROVIDER_CHANGED)
+        def compute(self) -> list[Effect]:
+            """When a supervising provider is set on a claim, enable incident-to billing."""
+            claim_id = self.event.target.id
+            claim_effect = ClaimEffect(claim_id=claim_id)
+            return [claim_effect.set_incident_to(True)]
     ```
 * * *
 ##  UpdateClaimLineItem 
@@ -20561,10 +20709,12 @@ Attribute | Type | Description | Required
 `practice_location_id` | `UUID` or `str` | Identifier for the practice location | Yes  
 `provider_id` | `str` | Identifier for the provider | Yes  
 `title` | `str` or `None` | Optional title for the note | No  
+`supervising_provider_id` | `str` or `None` | Staff identifier for the supervising provider | No  
 ####  Implementation Details 
   - Validates that the note type exists and has an appropriate category
   - Ensures the patient exists in the system
   - Verifies that the practice location and provider are valid
+  - If `supervising_provider_id` is provided, validates that the Staff record exists
 ####  Example Usage 
     ```python
     import datetime
@@ -20591,6 +20741,7 @@ Attribute | Type | Description | Required | Updatable
 `datetime_of_service` | `datetime.datetime` | Updated service date/time | No | Yes  
 `practice_location_id` | `UUID` or `str` | Updated practice location | No | Yes  
 `provider_id` | `str` | Updated provider | No | Yes  
+`supervising_provider_id` | `str` or `None` | Staff identifier for the supervising provider | No | Yes  
 **Note** : `patient_id` and `note_type_id` cannot be updated after creation.
 ####  Example Usage 
     ```python
@@ -21432,6 +21583,7 @@ The effect validates:
     ```
 ##  Notes 
   - The address details (line1, line2, city, state, country, postal_code) displayed for a patient facility address are automatically populated from the linked facility's address information.
+  - When a facility's address is updated, all linked patient facility addresses are automatically updated to match. This synchronization happens asynchronously and applies to line1, line2, city, district, state_code, postal_code, and country fields. Non-address changes to the facility (such as name, NPI number, or phone number) do not trigger this cascade.
   - When creating a new facility inline, the facility is created first, then linked to the patient facility address.
   - Room number is optional and can be used to specify the patient's specific room within the facility.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-facility-address/
@@ -21670,10 +21822,17 @@ Attribute | Type | Description | Required
 `clinical_note` | `str` or `None` | Clinical notes about the patient | No  
 `default_location_id` | `str` or `None` | ID of patient's default practice location | No  
 `default_provider_id` | `str` or `None` | ID of patient's default healthcare provider | No  
+`active` | `bool` or `None` | Whether the patient record is active | No  
+`deceased` | `bool` or `None` | Whether the patient is deceased | No  
+`deceased_datetime` | `datetime.datetime` or `None` | Date and time of patient's death | No  
+`deceased_cause` | `str` or `None` | Cause of patient's death | No  
+`deceased_comment` | `str` or `None` | Additional comments about patient's death | No  
+`biological_race_codes` | `list[str]` or `None` | CDC race codes describing the patient's biological race (e.g., `"2106-3"`) | No  
+`cultural_ethnicity_codes` | `list[str]` or `None` | CDC ethnicity codes describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No  
 `previous_names` | `list[str]` or `None` | List of patient's previous names | No  
 `contact_points` | `list[PatientContactPoint]` or `None` | Patient's contact information | No  
 `external_identifiers` | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers | No  
-`patient_id` | `str` or `None` | Patient ID (required for updates only) | No  
+`patient_id` | `str` or `None` | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see Supplying a patient id on creation. | No  
 `addresses` | `list[PatientAddress]` or `None` | Patient's addresses | No  
 `preferred_pharmacies` | `list[PatientPreferredPharmacy]` or `None` | Patient's preferred pharmacies | No  
 `metadata` | `list[PatientMetadata]` or `None` | Patient metadata | No  
@@ -21720,7 +21879,7 @@ Attribute | Type | Description | Required
 `key` | `str` | The key of the metadata | Yes  
 `value` | `str` | The value of the metadata | Yes  
 ##  Implementation Details 
-  - **Creation** : Creates new patient records when `patient_id` is not provided
+  - **Creation** : Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see Supplying a patient id on creation
   - **Updates** : Updates existing patient records when `patient_id` is provided
   - Validates that referenced practice locations exist in the system
   - Verifies that referenced healthcare providers exist in the system
@@ -21774,6 +21933,32 @@ Attribute | Type | Description | Required
             )
             return [patient.create()]
     ```
+##  Supplying a patient id on creation 
+By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
+    ```python
+    from canvas_sdk.effects.patient import Patient, generate_patient_id
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+    class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
+        PATH = "/patients"
+        def post(self) -> list[Response]:
+            body = self.request.json()
+            new_patient_id = generate_patient_id()
+            patient = Patient(
+                patient_id=new_patient_id,
+                first_name=body["first_name"],
+                last_name=body["last_name"],
+            )
+            # `new_patient_id` can be reused for follow-up patient-scoped effects in
+            # the same execution, and is returned so the caller has it immediately
+            # without a follow-up lookup.
+            return [
+                patient.create(),
+                JSONResponse({"patient_id": new_patient_id}, status_code=201),
+            ]
+    ```
 #  Patient Update Example 
     ```python
     from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
@@ -21806,6 +21991,60 @@ Attribute | Type | Description | Required
             )
             return [updated_patient.update()]
     ```
+#  Marking a Patient as Inactive or Deceased 
+    ```python
+    from canvas_sdk.effects.patient import Patient
+    from canvas_sdk.handlers.base import BaseHandler
+    import datetime
+    class MyHandler(BaseHandler):
+        def compute(self):
+            # Mark a patient as inactive
+            inactive_patient = Patient(
+                patient_id="existing-patient-uuid",
+                active=False
+            )
+            return [inactive_patient.update()]
+    class DeceasedPatientHandler(BaseHandler):
+        def compute(self):
+            # Record a patient's death
+            deceased_patient = Patient(
+                patient_id="existing-patient-uuid",
+                deceased=True,
+                deceased_datetime=datetime.datetime(2025, 3, 14, 12, 0, 0),
+                deceased_cause="Natural causes",
+                deceased_comment="Pronounced at home."
+            )
+            return [deceased_patient.update()]
+    ```
+#  Setting Race and Ethnicity 
+`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of code strings drawn from the [CDC Race and Ethnicity CodeSystem (CDCREC)](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html) — the same code set used by the [FHIR Patient API](/api/patient/). You can set both fields when creating or updating a patient, and you can supply more than one code per field.
+Canvas recognizes the full CDCREC code set — both the OMB top-level categories below and the more specific detailed codes that roll up to them (for example, the race code `2108-9` "European" rolls up to `2106-3` "White", and the ethnicity code `2148-5` "Mexican" rolls up to `2135-2` "Hispanic or Latino"). The categories below are the most common values; see the CodeSystem for the complete list of detailed codes.
+**Race** (`biological_race_codes`) — OMB top-level categories:
+Code | Description  
+---|---  
+`1002-5` | American Indian or Alaska Native  
+`2028-9` | Asian  
+`2054-5` | Black or African American  
+`2076-8` | Native Hawaiian or Other Pacific Islander  
+`2106-3` | White  
+`2131-1` | Other Race  
+**Ethnicity** (`cultural_ethnicity_codes`) — OMB top-level categories:
+Code | Description  
+---|---  
+`2135-2` | Hispanic or Latino  
+`2186-5` | Not Hispanic or Latino  
+    ```python
+    from canvas_sdk.effects.patient import Patient
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            patient = Patient(
+                patient_id="existing-patient-uuid",
+                biological_race_codes=["2106-3"],      # White
+                cultural_ethnicity_codes=["2186-5"]    # Not Hispanic or Latino
+            )
+            return [patient.update()]
+    ```
 ##  Validation 
 The effect performs validation before execution to ensure data integrity:
   1. **Required Fields** : 
@@ -21817,8 +22056,9 @@ The effect performs validation before execution to ensure data integrity:
   3. **Data Format Validation** : Ensures that provided values conform to expected formats: 
      - Date fields must be valid dates
      - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
+     - On creation, if `patient_id` is supplied it must be a well-formed patient id (a 32-character hex string); otherwise validation raises
+     - On creation, a supplied `patient_id` must not already belong to an existing patient; a duplicate id raises a validation error
   4. **Update-Specific Validation** : 
-     - Ensures `patient_id` is not provided during patient creation
      - Validates that the patient exists before attempting updates
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient/
 
@@ -22447,6 +22687,37 @@ author_id | optional | string or UUID | Author's id to set task comment creator,
             )
             return [add_task_comment.apply()]
     ```
+##  Creating a task and a comment together 
+`AddTaskComment` requires the `task_id` of an existing task. To create a brand new task **and** add a comment to it in a single `compute()` return, supply your own `id` to `AddTask` and reuse that same value as the `task_id` on `AddTaskComment`. Because the `id` on `AddTask` is optional and is generated for you when omitted, the trick is simply to generate it yourself so you can reference it on the comment.
+There is no need to create the task first and listen for a follow-up event — just return both effects from the same handler, with the `AddTask` effect before the `AddTaskComment` effect.
+    ```python
+    import uuid
+    import arrow
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.task import AddTask, AddTaskComment, TaskStatus
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [
+            EventType.Name(EventType.LAB_REPORT_CREATED),
+        ]
+        def compute(self) -> list[Effect]:
+            # Generate the task id up front so the comment can reference it.
+            task_id = str(uuid.uuid4())
+            add_task = AddTask(
+                id=task_id,
+                title="Please call the patient with their test results.",
+                due=arrow.utcnow().shift(days=1).datetime,
+                status=TaskStatus.OPEN,
+            )
+            add_task_comment = AddTaskComment(
+                task_id=task_id,
+                body="Results flagged abnormal — follow up today.",
+            )
+            # Order matters: the task must be created before the comment.
+            return [add_task.apply(), add_task_comment.apply()]
+    ```
+> **Note:** The effects are applied in the order they are returned, so the `AddTask` effect must come before the `AddTaskComment` effect that references it. Both effects must be returned from the same handler — don't split them across separate handlers or plugins, and don't defer either effect, since that breaks the ordering the comment relies on.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-tasks/
 
 
@@ -23461,6 +23732,26 @@ Target object | Context object
         "display": str
       ]
     ]  
+CLAIM_SUPERVISING_PROVIDER_CHANGED  
+---  
+Occurs when a claim's supervising provider snapshot is created or updated. The context includes the previous value(s) of any changed fields.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "previous": null | {
+      "first_name": str,
+      "last_name": str,
+      ...
+    }  
+CLAIM_INCIDENT_TO_CHANGED  
+---  
+Occurs when a claim's `incident_to` billing flag is changed. The context includes the previous boolean value.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "previous": bool  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -24216,6 +24507,16 @@ Target object | Context object
     "user": {
       "type": str,
       "id": user_id
+    }  
+NOTE_SUPERVISING_PROVIDER_CHANGED  
+---  
+Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or `null` if the note previously had no supervising provider.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "previous": null | {
+      "id": staff_key
     }  
 GET_NOTE_RESTRICTIONS  
 ---  
@@ -40595,6 +40896,7 @@ Attribute | Description
 `NAME` | The display title shown on the tab (supports emojis)  
 `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
 `PRIORITY` | Controls tab order — lower values appear first. Defaults to `0`  
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
 Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 > **⚠️ Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
     ```python
@@ -40742,6 +41044,17 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
       "readme": "./README.md"
     }
     ```
+##  Opening an Application on Load 
+You can configure an application to open **automatically** , without the user clicking its icon, by enabling the **Open on load** setting for that application in your instance settings.
+To enable it, go to the Plugins_IO > Applications section of your instance settings (`/admin/plugin_io/application/`), open the application you want, check **Open on load** , and save. If you don't have access to this setting, reach out to Canvas Support.
+Behavior depends on the application's scope:
+Scope | When it opens  
+---|---  
+`global` | Automatically when the app shell first loads.  
+`patient_specific` | Automatically when a patient chart is opened.  
+This is an instance-level setting configured per application in your instance settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is preserved when the plugin is reinstalled or updated.
+> **Warning:** **Enable Open on load for at most one application per scope.** There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two `patient_specific` apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load. 
+> **Note:** This is distinct from a Note Application's `open_by_default()`, which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
 ##  Notification Badges 
 You can display a notification badge — a small count — on the icon of a `global` or `patient_specific` application: in the app drawer, or on the panel when the application sets `show_in_panel`. A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 ###  Initial count on load 
