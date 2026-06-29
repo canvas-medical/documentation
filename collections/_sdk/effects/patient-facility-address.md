@@ -168,5 +168,6 @@ class MyHandler(BaseHandler):
 ## Notes
 
 - The address details (line1, line2, city, state, country, postal_code) displayed for a patient facility address are automatically populated from the linked facility's address information.
+- When a facility's address is updated, all linked patient facility addresses are automatically updated to match. This synchronization happens asynchronously and applies to line1, line2, city, district, state_code, postal_code, and country fields. Non-address changes to the facility (such as name, NPI number, or phone number) do not trigger this cascade.
 - When creating a new facility inline, the facility is created first, then linked to the patient facility address.
 - Room number is optional and can be used to specify the patient's specific room within the facility.
