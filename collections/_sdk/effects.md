@@ -264,7 +264,7 @@ Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [App
 | UPDATE_APPOINTMENT | Update an appointment. |
 | RESCHEDULE_APPOINTMENT | Reschedule an appointment. |
 | CANCEL_APPOINTMENT | Cancel an appointment. |
-| REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state. |
+| REVERT_APPOINTMENT | Revert a cancelled, converted, or no-showed appointment back to the booked state. |
 | ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total). |
 | REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment. |
 | UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment. |
