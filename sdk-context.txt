@@ -23966,6 +23966,34 @@ Target object | Context object
     "deleted_by":
       "id": user_id
       "name": str  
+DOCUMENT_FIELDS_UPDATED  
+---  
+Occurs when a clinical document's fields are updated. This fires when a Lab Report, Imaging Report, or Specialist Consult Report is parsed and its values are saved. The `updated_fields` list contains each changed field with its new and previous values.  
+Target object | Context object  
+    "id": document_id
+    "type": [IntegrationTask](/sdk/data-integration-task/)
+| 
+    "document":
+      "id": document_id
+      "channel": str
+      "status": str
+      "title": str
+      "type": str
+      "content_url": str
+      "content_type": str
+      "created_at": datetime str
+    "patient":
+      "id": pt_id
+    "updated_fields":
+        "name": str
+        "value": str | int | float | bool
+        "previous_value": str | int | float | bool | None
+    "document_type":
+      "key": str
+      "name": str
+      "report_type": str
+      "template_type": str
+    "updated_at": datetime str  
 ####  Conditions 
 CONDITION_ASSESSED  
 ---  
