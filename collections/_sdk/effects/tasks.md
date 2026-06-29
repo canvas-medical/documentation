@@ -20,13 +20,14 @@ To add a task, import the `AddTask` class and create an instance of it.
 | title              | required | string             | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
 | due                | optional | datetime           | A date/time when the task is due.                                                    |
 | status             | optional | TaskStatus         | A status of OPEN, CLOSED or COMPLETED. Defaults to OPEN if not supplied.             |
+| priority           | optional | TaskPriority       | A priority of `STAT`, `URGENT`, or `ROUTINE`. Defaults to no priority if not supplied. |
 | labels             | optional | list[string]       | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 | author_id          | optional | string or UUID     | Author's id to set task creator, defaults to CanvasBot.                              |
 | linked_object_id   | optional | string or UUID     | Linked object id of linked object.                                                   |
 | linked_object_type | optional | LinkableObjectType | Type of the [LinkedObject](#linked-object-type)                                      |
 
 
-### Enumeration Type
+### Enumeration Types
 
 #### Linked Object Type
 
@@ -35,6 +36,14 @@ To add a task, import the `AddTask` class and create an instance of it.
 | REFERRAL | REFERRAL    |
 | IMAGING  | IMAGING     |
 
+#### TaskPriority
+
+| Value   | Description                                                                            |
+|---------|----------------------------------------------------------------------------------------|
+| STAT    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
+| URGENT  | The request should be actioned promptly — higher priority than routine.                |
+| ROUTINE | The request has normal priority.                                                       |
+
 
 An example of adding a task:
 
@@ -42,7 +51,7 @@ An example of adding a task:
 import arrow
 
 from canvas_sdk.effects import Effect
-from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskStatus
+from canvas_sdk.effects.task import AddTask, AddTaskComment, UpdateTask, TaskPriority, TaskStatus
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 
@@ -74,6 +83,7 @@ class MyHandler(BaseHandler):
                 title="Please call the patient with their test results.",
                 due=arrow.utcnow().shift(days=5).datetime,
                 status=TaskStatus.OPEN,
+                priority=TaskPriority.URGENT,
                 labels=["call"],
                 linked_object_id=referral.id,
                 linked_object_type=linked_task_type,
@@ -97,6 +107,7 @@ To update an existing task, import the `UpdateTask` class and create an instance
 | title       | optional | string         | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
 | due         | optional | datetime       | A date/time when the task is due.                                                    |
 | status      | optional | TaskStatus     | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     |
+| priority    | optional | TaskPriority   | A priority of `STAT`, `URGENT`, or `ROUTINE`. See [TaskPriority](#taskpriority).      |
 | labels      | optional | list[string]   | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
 
 An example of updating a task to a status of `COMPLETED`:
@@ -143,6 +154,60 @@ class MyHandler(BaseHandler):
 
         return [add_task_comment.apply()]
 ```
+
+## Creating a task and a comment together
+
+`AddTaskComment` requires the `task_id` of an existing task. To create a brand new
+task **and** add a comment to it in a single `compute()` return, supply your own
+`id` to `AddTask` and reuse that same value as the `task_id` on `AddTaskComment`.
+Because the `id` on `AddTask` is optional and is generated for you when omitted,
+the trick is simply to generate it yourself so you can reference it on the comment.
+
+There is no need to create the task first and listen for a follow-up event — just
+return both effects from the same handler, with the `AddTask` effect before the
+`AddTaskComment` effect.
+
+```python
+import uuid
+
+import arrow
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.task import AddTask, AddTaskComment, TaskStatus
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = [
+        EventType.Name(EventType.LAB_REPORT_CREATED),
+    ]
+
+    def compute(self) -> list[Effect]:
+        # Generate the task id up front so the comment can reference it.
+        task_id = str(uuid.uuid4())
+
+        add_task = AddTask(
+            id=task_id,
+            title="Please call the patient with their test results.",
+            due=arrow.utcnow().shift(days=1).datetime,
+            status=TaskStatus.OPEN,
+        )
+
+        add_task_comment = AddTaskComment(
+            task_id=task_id,
+            body="Results flagged abnormal — follow up today.",
+        )
+
+        # Order matters: the task must be created before the comment.
+        return [add_task.apply(), add_task_comment.apply()]
+```
+
+> **Note:** The effects are applied in the order they are returned, so the `AddTask`
+> effect must come before the `AddTaskComment` effect that references it. Both
+> effects must be returned from the same handler — don't split them across separate
+> handlers or plugins, and don't defer either effect, since that breaks the ordering
+> the comment relies on.
 
 <br/>
 <br/>

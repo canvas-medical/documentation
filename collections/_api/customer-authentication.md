@@ -194,6 +194,7 @@ Common examples:
 | `user/*.write` | Write access to all resources |
 | `user/*.*` | Full access to all resources |
 | `user/Patient.read` | Read Patient resources only |
+| `system/*.read` | System-level read access to all resources (used for bulk-data export, e.g., `Group/{id}/$export`) |
 
 ### Launch and OpenID scopes
 

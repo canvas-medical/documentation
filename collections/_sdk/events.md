@@ -40,7 +40,7 @@ The actor is available in the following contexts:
 - [**SimpleAPI**](/sdk/handlers-simple-api/) handlers — HTTP and WebSocket requests
 - [**Action button**](/sdk/handlers-action-buttons/) handlers — button display and click events
 - [**Application**](/sdk/handlers-applications/) handlers
-- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`
+- **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`, `NOTE_STATE_CHANGE_EVENT_CREATED`, `NOTE_STATE_CHANGE_EVENT_UPDATED`
 - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
@@ -1157,6 +1157,46 @@ These events fire as a result of records being created, updated, or deleted.
     "display": str
   ]
 ]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_SUPERVISING_PROVIDER_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's supervising provider snapshot is created or updated. The context includes the previous value(s) of any changed fields.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous": null | {
+  "first_name": str,
+  "last_name": str,
+  ...
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_INCIDENT_TO_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's <code>incident_to</code> billing flag is changed. The context includes the previous boolean value.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous": bool</pre></td>
     </tr>
   </tbody>
 </table>
@@ -2610,6 +2650,26 @@ The following events fire when a prescription's status changes during the e-pres
 
 <table>
   <thead>
+    <tr><th colspan="2">NOTE_SUPERVISING_PROVIDER_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or <code>null</code> if the note previously had no supervising provider.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"previous": null | {
+  "id": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">GET_NOTE_RESTRICTIONS</th></tr>
     <tr><td colspan="2">Fires every time a note is opened or its restrictions are refetched. Plugins respond with a <a href="/sdk/effect-note-restrictions/"><code>NoteRestrictionsEffect</code></a> to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. If no plugin responds, the note is unrestricted by default.</td></tr>
   </thead>
@@ -2935,7 +2995,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">TASK_LABELS_ADJUSTED</th></tr>
-    <tr><td colspan="2">Occurs when a task's labels are changed.</td></tr>
+    <tr><td colspan="2">Occurs when a label is added to or removed from a task. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3296,6 +3356,16 @@ These events fire during the command lifecycle.
     </tr>
   </tbody>
 </table>
+
+##### Transaction Behavior
+
+Pre-event handlers (`PRE_COMMAND_ORIGINATE`, `PRE_COMMAND_COMMIT`, `PRE_COMMAND_UPDATE`) run synchronously inside the same database transaction as the command operation. Your handler can perform validation or modify data, and if it raises an exception, both your changes and the command operation roll back together.
+
+Post-event handlers (`POST_COMMAND_ORIGINATE`, `POST_COMMAND_COMMIT`, `POST_COMMAND_UPDATE`) use Django's `on_commit` mechanism and execute only after the outermost transaction commits successfully. If you wrap a command operation inside a `transaction.atomic()` block, the post-event handlers won't fire until that outer transaction commits.
+
+This model lets you combine command operations with other database writes in a single atomic unit. You can originate a command and update related records together, knowing that either all operations succeed or none do.
+
+See [Transactions](/sdk/custom-data-transactions/) for more on using `transaction.atomic()` in your plugins.
 
 ##### Context Overview
 
@@ -5301,6 +5371,182 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
   "staff": staff_key
 }
 "results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Chart Section Review Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CHART_SECTION_REVIEW_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "section": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13841,6 +14087,382 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+#### POC Lab Test Command
+
+POC Lab Test commands carry a `test_values|<label>` field per template field — those labels
+are determined dynamically by the selected template, so the `fields` block below shows the static
+shape only; dynamic per-field entries appear alongside.
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str   # one per template field
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">POC_LAB_TEST_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "template": dict
+  "indications": list[dict]
+  "remarks": str
+  "test_values|&lt;label&gt;": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Prescribe Command
 
 <table>
@@ -15275,7 +15897,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_DELETE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_DELETE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15305,7 +15927,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_ENTER_IN_ERROR</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15386,7 +16008,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_EXECUTE_ACTION</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15416,7 +16038,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_ORIGINATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15446,7 +16068,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__POST_UPDATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__POST_UPDATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15476,7 +16098,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_COMMIT</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_COMMIT</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15506,7 +16128,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_DELETE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_DELETE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15536,7 +16158,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15566,7 +16188,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15596,7 +16218,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_ORIGINATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15626,7 +16248,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
-    <tr><th colspan="2">REFER_COMMAND_COMMAND__PRE_UPDATE</th></tr>
+    <tr><th colspan="2">REFER_COMMAND__PRE_UPDATE</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -15818,6 +16440,336 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_key
 }
 "results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Reference Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERENCE_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnostic_view_id": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16204,6 +17156,764 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_key
 }
 "results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Approve Refill Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPROVE_REFILL_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "refills": int
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Deny Refill Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DENY_REFILL_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescribe": dict
+  "response_type": str
+  "reason_code": str
+  "note_to_pharmacist": str
+  "refill_request": int
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19165,6 +20875,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19192,6 +20903,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19219,6 +20931,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19267,6 +20980,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19294,6 +21008,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19321,6 +21036,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19348,6 +21064,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19375,6 +21092,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19402,6 +21120,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19429,6 +21148,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19456,6 +21176,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19483,6 +21204,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -19510,6 +21232,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "title": str
   "assign_to": dict
   "due_date": str
+  "priority": str
   "comment": str
   "labels": list[dict]
   "linked_items": list[dict]
@@ -21910,6 +23633,29 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 
 <table>
   <thead>
+    <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
+    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>scope</pre></td>
+      <td><pre>
+  "scope": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">APPLICATION__ON_OPEN</th></tr>
     <tr><td colspan="2">Occurs when a user clicks on an application icon to open it</td></tr>
   </thead>
@@ -21926,6 +23672,56 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
+    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "url": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
+  "claim": (optional)
+    "id": str
+  "claim_queue": (optional)
+    "dbid": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
+    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "staff":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a>
+  "patient":
+    "id": str
+    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>

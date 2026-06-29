@@ -142,6 +142,7 @@ for note_task in note_tasks:
 | due        | DateTime                              |
 | due_event  | [EventType](#eventtype)               |
 | status     | [TaskStatus](#taskstatus)             |
+| priority   | [TaskPriority](#taskpriority)         |
 | comments   | [TaskComment](#taskcomment)[]         |
 | labels     | [TaskLabel](#tasklabel)[]             |
 | metadata   | [TaskMetadata](#taskmetadata)[]       |
@@ -243,6 +244,14 @@ for metadata in task_metadata:
 | COMPLETED | Completed |
 | CLOSED    | Closed    |
 | OPEN      | Open      |
+
+### TaskPriority
+
+| Value   | Label   |
+| ------- | ------- |
+| STAT    | STAT    |
+| URGENT  | Urgent  |
+| ROUTINE | Routine |
 
 ### TaskLabelModule
 
