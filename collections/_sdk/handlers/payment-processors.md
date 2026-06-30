@@ -94,7 +94,7 @@ from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data import Patient
 
 
-def add_payment_method_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
+def add_card_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
     content = render_to_string(
         "templates/add_card_form.html",
         {"payor_id": self.api.get_default_payor_id()},
@@ -199,7 +199,7 @@ from canvas_sdk.effects.payment_processor import PaymentMethod
 from canvas_sdk.v1.data import Patient
 
 
-def list_payment_methods(self, patient: Patient) -> list[PaymentMethod]:
+def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
    return [
             PaymentMethod(
                 payment_method_id="pm_1",
@@ -245,7 +245,7 @@ from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
 from canvas_sdk.v1.data import Patient
 
 
-def remove_payment_method(self, payment_method_id: str, patient: Patient) -> RemovePaymentMethodResponse:
+def remove_payment_method(self, token: str, patient: Patient) -> RemovePaymentMethodResponse:
     return RemovePaymentMethodResponse(success=True)
 ```
 
@@ -341,10 +341,3 @@ Before building a plugin, ensure:
 - Your provider offers secure frontend tokenization
 - You can integrate with their JavaScript SDK
 - You can submit token data from the form via `setToken`
-
----
-
-## Paytheory Payment Plugin Implementation
-
-A reference plugin that implements a custom payment processor using **PayTheory** is available [here]()
-This plugin can serve as an example for building a custom processor that replaces the standard Stripe implementation.
