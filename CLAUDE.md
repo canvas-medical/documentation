@@ -28,7 +28,7 @@ Dev server runs on ports 4000 (Jekyll) and 4001 (Webpack).
 
 ## Project Structure
 
-```
+```text
 collections/           # All content (Jekyll collections)
   _api/                # FHIR API resource docs (~60 files)
   _sdk/                # SDK docs (~140 files)
