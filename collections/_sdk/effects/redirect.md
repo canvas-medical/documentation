@@ -11,6 +11,8 @@ The `RedirectEffect` navigates the Canvas frontend to a URL. Return it from a pl
 
 Your plugin builds the full target string in Python, so it can include patient or note identifiers. The target can be an internal Canvas path (for example, `/panel` or `/patient/{key}?...`) or an external URL (for example, `https://example.com`).
 
+A redirect only navigates the browser of the user who triggered the handler. It is scoped to that acting user and never affects anyone else's session. Redirects are also surface-independent: any handler that returns a `RedirectEffect` — a note sign or lock, an action button, an application, and so on — triggers the navigation.
+
 ```python
 from canvas_sdk.effects.redirect import RedirectEffect
 from canvas_sdk.handlers.base import BaseHandler
@@ -58,7 +60,11 @@ A RedirectEffect consists of the following properties:
 
 ## Allowing target URLs
 
-For security, target URLs are validated against your plugin's `url_permissions` allowlist on the server before the browser navigates. Any target that is not covered by the allowlist is blocked. External URLs you redirect to must be listed in the `url_permissions` section of your plugin's `CANVAS_MANIFEST.json`.
+For security, every target is validated against your plugin's `url_permissions` allowlist on the server before the browser navigates, and any target that isn't permitted is blocked.
+
+Internal Canvas paths — relative, same-origin paths that begin with `/`, such as `/panel` or `/patient/{key}` — are always allowed and don't need an allowlist entry. Protocol-relative (`//host`) and backslash-prefixed (`/\host`) targets are rejected, because a browser can resolve them to a different origin.
+
+External absolute URLs must match one of the entries in the `url_permissions` section of your plugin's `CANVAS_MANIFEST.json`. A match is only counted at an origin or path boundary, so an entry of `https://app.example.com` permits `https://app.example.com/orders` but not `https://app.example.com.evil.com`.
 
 ```json
 {
@@ -74,6 +80,8 @@ For security, target URLs are validated against your plugin's `url_permissions` 
   ]
 }
 ```
+
+A redirect only requires that the target URL be allowlisted. The `permissions` values (such as `ALLOW_SAME_ORIGIN` or `SCRIPTS`) apply to embedded content like `LaunchModalEffect` iframes, not to redirects.
 
 <br/>
 <br/>
