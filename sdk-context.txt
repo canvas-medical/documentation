@@ -2318,6 +2318,7 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `enable`: Enable a plugin from a Canvas instance
   - `disable`: Disable a plugin from a Canvas instance
   - `list`: List all plugins from a Canvas instance
+  - `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
   - `validate-manifest`: Validate the Canvas Manifest json file
   - `logs`: Listen and print log streams from a Canvas instance
   - `config list`: List plugin variables on a Canvas instance
@@ -2345,7 +2346,16 @@ Install a plugin into a Canvas instance.
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
 **Notes** :
-Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+Before uploading, `canvas install` runs pre-flight validation:
+  - Manifest validation (schema, tags, handler resolution)
+  - Sandbox-load validation (imports every handler in the sandbox)
+If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
+The CLI automatically excludes common build artifacts from the plugin bundle:
+  - `__pycache__` directories
+  - `*.pyc` and `*.pyo` files
+  - `node_modules` directories
+  - Hidden files and directories (e.g., `.git`, `.env`)
+To exclude additional files, create a `.canvasignore` file in your plugin directory. This file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore).
 Example
     ```md
     # Exclude test files
@@ -2394,6 +2404,36 @@ List all plugins on a Canvas instance.
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
+###  `canvas validate`
+Validate a plugin's manifest and that all handlers load in the sandbox.
+**Usage** :
+    ```console
+    $ canvas validate [OPTIONS] PLUGIN_NAME
+    ```
+**Arguments** :
+  - `PLUGIN_NAME`: Path to plugin to validate [required]
+**Options** :
+  - `--help`: Show this message and exit.
+This command runs full pre-flight validation combining:
+  1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
+  2. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
+**Sandbox-load validation** executes each handler module in the plugin sandbox to catch:
+  - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
+  - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
+  - **Import errors** — Missing dependencies or broken imports.
+For each handler, the output shows whether it loaded successfully:
+    ```console
+    $ canvas validate my_plugin
+    Loading 2 handler(s) in the sandbox:
+      ✓ my_plugin.handlers.events:MyHandler
+      ✗ my_plugin.handlers.api:APIHandler
+        ImportError: 'subprocess' is not an allowed import
+    1 of 2 handler(s) failed to load in the sandbox.
+    ```
+The command exits with code 1 if any handler fails validation.
+####  Limitations 
+A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
+> **Info:** `canvas install` runs the same sandbox-load validation before uploading, so violations are caught before they reach your instance. 
 ###  `canvas validate-manifest`
 Validate the Canvas Manifest json file.
 **Usage** :
@@ -2404,6 +2444,36 @@ Validate the Canvas Manifest json file.
   - `PLUGIN_NAME`: Path to plugin to validate [required]
 **Options** :
   - `--help`: Show this message and exit.
+**Validations performed** :
+  1. **Schema validation** — Checks that `CANVAS_MANIFEST.json` contains all required fields and valid values.
+  2. **Handler resolution** — Verifies that every handler class declared in the manifest (`protocols`, `applications`, and `handlers`) resolves to a file the plugin runner can find at runtime.
+####  Handler resolution and directory layout 
+The plugin runner loads handlers by mapping dotted module paths to files relative to the plugin's install directory. For a plugin named `my_plugin` with a handler class `my_plugin.handlers.events:MyHandler`, the runner expects `handlers/events.py` inside the plugin directory — the directory containing `CANVAS_MANIFEST.json`.
+A common mistake is placing `CANVAS_MANIFEST.json` in a parent directory above the plugin package. This passes schema validation and works locally, but fails at runtime with `ModuleNotFoundError` — the handler files are nested one level too deep.
+**Correct layout:**
+    ```text
+    my_plugin/
+    ├── CANVAS_MANIFEST.json   # ← manifest inside the package
+    ├── handlers/
+    │   └── events.py
+    └── ...
+    ```
+**Incorrect layout:**
+    ```text
+    project/
+    ├── CANVAS_MANIFEST.json   # ← manifest above the package (wrong!)
+    └── my_plugin/
+        └── handlers/
+            └── events.py
+    ```
+If `validate-manifest` detects handlers that won't resolve, it reports which classes are affected and the file paths the runner expects:
+    ```console
+    Error: these handler classes won't be found by the plugin runner with the current directory layout:
+      - my_plugin.handlers.events:MyHandler
+        runner expects: my_plugin/handlers/events.py
+    CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
+    ```
+> **Info:** `canvas install` runs both manifest validation and sandbox-load validation before uploading. Use `canvas validate` for a full pre-flight check with detailed per-handler output. 
 ###  `canvas logs`
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 **Usage** :
@@ -16804,6 +16874,7 @@ signature | String
 supervising_team | Staff[]  
 default_supervising_provider | Staff  
 notes | Note[]  
+supervised_notes | Note[]  
 creator_tasks | [Task](/sdk/data-task/#task)[]  
 assignee_tasks | [Task](/sdk/data-task/#task)[]  
 comments | [TaskComment](/sdk/data-task/#taskcomment)[]  
@@ -21193,7 +21264,7 @@ Reverts a booked or checked-in appointment back to a state where it can be check
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes  
-**Note** : `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
+**Note** : `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED`, `CONVERTED`, or `NOSHOW` state.
 ####  Example Usage 
     ```python
     from canvas_sdk.effects.note.appointment import Appointment
@@ -21582,6 +21653,7 @@ The effect validates:
     ```
 ##  Notes 
   - The address details (line1, line2, city, state, country, postal_code) displayed for a patient facility address are automatically populated from the linked facility's address information.
+  - When a facility's address is updated, all linked patient facility addresses are automatically updated to match. This synchronization happens asynchronously and applies to line1, line2, city, district, state_code, postal_code, and country fields. Non-address changes to the facility (such as name, NPI number, or phone number) do not trigger this cascade.
   - When creating a new facility inline, the facility is created first, then linked to the patient facility address.
   - Room number is optional and can be used to specify the patient's specific room within the facility.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-facility-address/
@@ -22893,7 +22965,7 @@ CREATE_APPOINTMENT | Create an appointment.
 UPDATE_APPOINTMENT | Update an appointment.  
 RESCHEDULE_APPOINTMENT | Reschedule an appointment.  
 CANCEL_APPOINTMENT | Cancel an appointment.  
-REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state.  
+REVERT_APPOINTMENT | Revert a cancelled, converted, or no-showed appointment back to the booked state.  
 ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total).  
 REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment.  
 UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment.  
@@ -23964,6 +24036,34 @@ Target object | Context object
     "deleted_by":
       "id": user_id
       "name": str  
+DOCUMENT_FIELDS_UPDATED  
+---  
+Occurs when a clinical document's fields are updated. This fires when a Lab Report, Imaging Report, or Specialist Consult Report is parsed and its values are saved. The `updated_fields` list contains each changed field with its new and previous values.  
+Target object | Context object  
+    "id": document_id
+    "type": [IntegrationTask](/sdk/data-integration-task/)
+| 
+    "document":
+      "id": document_id
+      "channel": str
+      "status": str
+      "title": str
+      "type": str
+      "content_url": str
+      "content_type": str
+      "created_at": datetime str
+    "patient":
+      "id": pt_id
+    "updated_fields":
+        "name": str
+        "value": str | int | float | bool
+        "previous_value": str | int | float | bool | None
+    "document_type":
+      "key": str
+      "name": str
+      "report_type": str
+      "template_type": str
+    "updated_at": datetime str  
 ####  Conditions 
 CONDITION_ASSESSED  
 ---  
@@ -24482,6 +24582,26 @@ Target object | Context object
     "note_id": note_id,
     "patient_id": pt_id,
     "state": [str](/sdk/data-note/#notestates)  
+NOTE_CREATED  
+---  
+Occurs when a note is created.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "patient":
+        "id": pt_id  
+NOTE_UPDATED  
+---  
+Occurs when a note is updated, including changes to fields, commands, or body content.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "patient":
+        "id": pt_id
+    "user":
+        "id": staff_key  
 NOTE_OPENED  
 ---  
 Fires when a provider expands a note in the patient chart. The context includes the note's ID.  
