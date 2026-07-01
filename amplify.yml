@@ -6,8 +6,10 @@ frontend:
         - rvm install $(cat .ruby-version)
         - rvm use $(cat .ruby-version)
         - gem install bundler -v 2.4.12
+        - curl -LsSf https://astral.sh/uv/install.sh | sh
     build:
       commands:
+        - export PATH="$HOME/.local/bin:$PATH"
         - bundle install
         - yarn install
         - yarn build
@@ -17,3 +19,20 @@ frontend:
       - '**/*'
   cache:
     paths: []
+customHeaders:
+  # LLM-facing markdown mirrors: render as text, keep out of search results
+  # so they don't compete with the canonical HTML pages.
+  - pattern: '**/*.md'
+    headers:
+      - key: Content-Type
+        value: 'text/markdown; charset=utf-8'
+      - key: X-Robots-Tag
+        value: 'noindex'
+  - pattern: '/llms.txt'
+    headers:
+      - key: X-Robots-Tag
+        value: 'noindex'
+  - pattern: '/llms-full.txt'
+    headers:
+      - key: X-Robots-Tag
+        value: 'noindex'
