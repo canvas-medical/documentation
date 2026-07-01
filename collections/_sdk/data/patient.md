@@ -125,6 +125,7 @@ if photo:
 | medications              | [Medication](/sdk/data-medication/#medication)[]                          |
 | metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
+| payment_cards            | [PaymentCard](/sdk/data-payment-card/#paymentcard)[]                      |
 | photos                   | [PatientPhoto](#patientphoto)[]                                           |
 | preferred_pharmacy       | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |

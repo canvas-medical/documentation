@@ -479,6 +479,7 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 | Effect | Description |
 |---|---|
+| REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/). |
 | REVENUE__PAYMENT_PROCESSOR__METADATA | Can be used to provide payment processor metadata. |
 | REVENUE__PAYMENT_PROCESSOR__FORM | Can be used to provide a payment processor form. |
 | REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Can be used to process a credit card transaction. |
