@@ -5,6 +5,8 @@ excerpt: "Effects for sending Surescripts eligibility, medication history, and b
 hidden: false
 ---
 
+{% include alert.html type="warning" content="<b>This feature must be enabled by Canvas.</b> To use the Surescripts effects, <a href='https://portal.usepylon.com/canvas-medical/forms/standard'>contact Canvas Support</a> to have these Surescripts effects enabled for your instance. Until it is enabled, these effects will not send requests." %}
+
 Surescripts effects let plugins query insurance eligibility, benefits, and medication history through Surescripts. Eligibility and benefits requests receive responses asynchronously as corresponding events; medication history is handled by Canvas without a plugin-facing response.
 
 ## Eligibility
