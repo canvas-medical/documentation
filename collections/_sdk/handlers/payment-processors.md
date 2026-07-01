@@ -376,3 +376,9 @@ Before building a plugin, ensure:
 - Your provider offers secure frontend tokenization
 - You can integrate with their JavaScript SDK
 - You can submit token data from the form via `setToken`
+
+---
+
+## Example Plugin
+
+For a complete, working reference, see the [PayTheory Payment Processor](/sdk/example-paytheory_payment_processor/) example plugin. It implements a custom `CardPaymentProcessor` that replaces the standard Stripe integration with [Pay Theory](https://paytheory.com), covering tokenization forms, charging, and saved payment method management.
