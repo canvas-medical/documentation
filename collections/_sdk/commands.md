@@ -285,7 +285,7 @@ clinical_quantity = ClinicalQuantity(
 )
 
 prescribe = PrescribeCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     fdb_code="216092",
     icd10_codes=["R51"],
     sig="Take one tablet daily after meals",
@@ -329,7 +329,7 @@ service_provider = ServiceProvider(
 )
 
 refer = ReferCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     diagnosis_codes=["E119"],
     priority=ReferCommand.Priority.ROUTINE,
     clinical_question=ReferCommand.ClinicalQuestion.DIAGNOSTIC_UNCERTAINTY,
@@ -402,7 +402,7 @@ from canvas_sdk.commands.constants import CodeSystems, Coding
 
 # Using structured coding with SNOMED
 instruct_snomed = InstructCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     coding=Coding(
         system=CodeSystems.SNOMED,
         code="65921008",
@@ -413,13 +413,29 @@ instruct_snomed = InstructCommand(
 
 # Using unstructured coding for custom instructions
 instruct_custom = InstructCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     coding=Coding(
         system=CodeSystems.UNSTRUCTURED,
         code="Physical medicine neuromuscular training"
     )
 )
 ```
+
+### ReportReviewCommunicationMethod
+
+The `communication_method` value shared by the review commands — [ImagingReview](#imagingreview), [LabReview](#labreview), [ReferralReview](#referralreview), and [UncategorizedDocumentReview](#uncategorizeddocumentreview).
+
+```python
+from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
+```
+
+| Communication Method                | Value | Description                                                |
+|:------------------------------------|:------|:-----------------------------------------------------------|
+| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
+| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
+| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
+| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
+| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
 
 ## Command Actions
 
@@ -592,8 +608,8 @@ AdjustPrescriptionCommand(
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="pharmacy_ncpdp_id",
-    prescriber_id="provider_123",
-    supervising_provider_id="provider_456",
+    prescriber_id="a7c2e9d1-3b4f-4a6c-8e0d-5f1a2b3c4d5e",
+    supervising_provider_id="c3d4e5f6-7a8b-4c9d-0e1f-2a3b4c5d6e7f",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -606,21 +622,25 @@ AdjustPrescriptionCommand(
 
 | Name               | Type            | Required to commit | Description                                                                      |
 |:-------------------|:----------------|:-------------------|:---------------------------------------------------------------------------------|
-| `allergy`          | _Allergen_      | `false`  | Represents the allergen. See details in the Allergen type below.                 |
-| `severity`         | _Severity enum_ | `false`  | The severity of the allergic reaction. Must be one of `AllergyCommand.Severity`. |
+| `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#searching-for-allergens).                 |
+| `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
 | `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
+
+<a id="allergy-allergen"></a>
 
 **`Allergen`**
 
 | Attribute      | Type                | Description                                            |
 |:---------------|:--------------------|:-------------------------------------------------------|
 | `concept_id`   | _integer_           | The identifier for the allergen concept.               |
-| `concept_type` | _AllergenType enum_ | The type of allergen. See `AllergenType` values below. |
+| `concept_type` | _[AllergenType](#allergy-allergentype) enum_ | The type of allergen. See [`AllergenType`](#allergy-allergentype) values below. |
 
 
+
+<a id="allergy-allergentype"></a>
 
 | AllergenType     | Description                        |
 |:-----------------|:-----------------------------------|
@@ -628,6 +648,8 @@ AdjustPrescriptionCommand(
 | `MEDICATION`     | Represents a medication allergen.  |
 | `INGREDIENT`     | Represents an ingredient allergen. |
 
+
+<a id="allergy-severity"></a>
 
 | Severity   | Description                    |
 |:-----------|:-------------------------------|
@@ -642,7 +664,7 @@ from canvas_sdk.commands.commands.allergy import AllergyCommand, AllergenType, A
 from datetime import date
 
 allergy = AllergyCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     allergy=Allergen(concept_id=12345, concept_type=AllergenType.MEDICATION),
     severity=AllergyCommand.Severity.SEVERE,
     narrative="Severe rash and difficulty breathing after penicillin.",
@@ -658,10 +680,12 @@ allergy = AllergyCommand(
 
 | Name           | Type          | Required to commit | Description                                                                |
 |:---------------|:--------------|:-------------------|:---------------------------------------------------------------------------|
-| `condition_id` | _string_      | `true`   | The externally exposable id of the condition being assessed.               |
+| `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
-| `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of `AssessCommand.Status` |
+| `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`    | _string_      | `false`  | The narrative for the current assessment.                                  |
+
+<a id="assess-status"></a>
 
 | `Status`     | Value          |
 |:-------------|:---------------|
@@ -691,7 +715,7 @@ assess = AssessCommand(
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:-------------------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | Externally exposable id of the patient's medication being changed. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -714,8 +738,8 @@ change_medication = ChangeMedicationCommand(
 
 | Name                 | Type                     | Required to commit | Description                                                                               |
 |:---------------------|:-------------------------|:-------------------|:------------------------------------------------------------------------------------------|
-| `goal_id`            | _int_                    | `true`   | The externally exposable ID of the goal being closed.                                     |
-| `achievement_status` | _AchievementStatus enum_ | `false`  | The final achievement status of the goal. Must be one of `GoalCommand.AchievementStatus`. |
+| `goal_id`            | _int_                    | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.                                     |
+| `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The final achievement status of the goal. Must be one of [`GoalCommand.AchievementStatus`](#goal-achievementstatus). |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
 
 **Example**:
@@ -724,7 +748,7 @@ change_medication = ChangeMedicationCommand(
 from canvas_sdk.commands import CloseGoalCommand, GoalCommand
 
 close_goal = CloseGoalCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     goal_id=12345,
     achievement_status=GoalCommand.AchievementStatus.ACHIEVED,
     progress="Patient has achieved the target weight goal of 150 lbs."
@@ -737,7 +761,7 @@ close_goal = CloseGoalCommand(
 
 | Name                        | Type       | Required to commit | Description                                                |
 |:----------------------------|:-----------|:-------------------|:-----------------------------------------------------------|
-| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed.              |
+| `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#looking-up-clinical-codes).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
 | `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
@@ -765,8 +789,8 @@ diagnose = DiagnoseCommand(
 
 | Name             | Type                 | Required to commit | Description                                           |
 |:-----------------|:---------------------|:-------------------|:------------------------------------------------------|
-| `family_history` | _string_ or _Coding_ | `true`   | A description of the family history being documented. |
-| `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle).  |
+| `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#searching-clinical-concepts). |
+| `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#searching-clinical-concepts).  |
 | `note`           | _string_             | `false`  | Additional notes or context about the family history. |
 
 **Coding Support**:
@@ -789,7 +813,7 @@ from canvas_sdk.commands.constants import CodeSystems, Coding
 
 # Using a string (searches and takes the first result — may be ambiguous)
 family_history = FamilyHistoryCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     family_history="Diabetes Type 2",
     relative="Mother",
     note="Diagnosed at age 45"
@@ -797,7 +821,7 @@ family_history = FamilyHistoryCommand(
 
 # Using a SNOMED code
 family_history_snomed = FamilyHistoryCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     family_history=Coding(
         system=CodeSystems.SNOMED,
         code="44054006",
@@ -809,7 +833,7 @@ family_history_snomed = FamilyHistoryCommand(
 
 # Using unstructured (free text)
 family_history_unstructured = FamilyHistoryCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     family_history=Coding(
         system=CodeSystems.UNSTRUCTURED,
         code="Family history of heart disease"
@@ -827,8 +851,8 @@ family_history_unstructured = FamilyHistoryCommand(
 |:-----------------|:-------------------------|:------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
 | `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
-| `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment.                                                                                                                                                                                           |
-| `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing records |
+| `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
+| `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
@@ -841,7 +865,7 @@ structured = FollowUpCommand(
   note_uuid='rk786p',
   structured=True,
   requested_date=date(2025, 3, 2),
-  note_type_id="kz986a",
+  note_type_id="d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a",
   coding={'code': '', 'system': '', 'display': ''},
   comment='also wants to discuss treatment options'
 )
@@ -851,7 +875,7 @@ structured2 = FollowUpCommand(
   note_uuid='rk786p',
   structured=True,
   requested_date=date(2025, 3, 2),
-  note_type_id="kz986a",
+  note_type_id="d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a",
   coding="e2b1e1e3-3f52-4a0a-bb3a-123456789abc",  # Must correspond to an existing coding record
   comment="Discuss treatment options"
 )
@@ -859,7 +883,7 @@ structured2 = FollowUpCommand(
 unstructured = FollowUpCommand(
   note_uuid='rk786p',
   requested_date=date(2025, 3, 2),
-  note_type_id="kz986a",
+  note_type_id="d1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a",
   comment='also wants to discuss treatment options'
 )
 
@@ -876,10 +900,12 @@ unstructured = FollowUpCommand(
 | `goal_statement`     | _string_                 | `true`   | Description of the goal.                                  |
 | `start_date`         | _datetime_               | `false`  | The date the goal begins.                                 |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
-| `achievement_status` | _AchievementStatus enum_ | `false`  | The current achievement status of the goal.               |
-| `priority`           | _Priority enum_          | `false`  | The priority of the goal.                                 |
+| `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
+| `priority`           | _[Priority](#goal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
 
+
+<a id="goal-achievementstatus"></a>
 
 | `AchievementStatus` | Value            |
 |:--------------------|:-----------------|
@@ -892,6 +918,8 @@ unstructured = FollowUpCommand(
 | NOT_ACHIEVED        | "not-achieved"   |
 | NO_PROGRESS         | "no-progress"    |
 | NOT_ATTAINABLE      | "not-attainable" |
+
+<a id="goal-priority"></a>
 
 | `Priority` | Value             |
 |:-----------|:------------------|
@@ -946,13 +974,13 @@ hpi = HistoryOfPresentIllnessCommand(
 
 | Name                    | Type              | Required to delegate / sign | Description                                                                   |
 |:------------------------|:------------------|:----------------------------|:------------------------------------------------------------------------------|
-| `image_code`            | _string_          | `true`   | Code identifier of the imaging order.                                         |
-| `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order.                          |
-| `priority`              | _Priority enum_   | `false`  | Priority of the imaging order. Must be one of `ImagingOrderCommand.Priority`. |
+| `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
+| `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#looking-up-clinical-codes).                          |
+| `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
 | `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
-| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order.                                        |
+| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
 | `comment`               | _string_          | `false`  | Additional comments.                                                          |
-| `ordering_provider_key` | _string_          | `true`   | The key for the provider ordering the imaging.                                |
+| `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
 **Command-specific actions**:
@@ -969,6 +997,8 @@ hpi = HistoryOfPresentIllnessCommand(
 
 **Enums and Types**:
 
+<a id="imagingorder-priority"></a>
+
 **`Priority`**
 
 | Priority  | Description                                                                                |
@@ -984,13 +1014,13 @@ from canvas_sdk.commands import ImagingOrderCommand
 from canvas_sdk.commands.constants import ServiceProvider
 
 imaging_order = ImagingOrderCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     image_code="G0204",
     diagnosis_codes=["E119"],
     priority=ImagingOrderCommand.Priority.ROUTINE,
     comment="this is a comment",
     additional_details="more details",
-    ordering_provider_key="pk3920p",
+    ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
     service_provider=ServiceProvider(
       first_name="Clinic",
       last_name="Imaging",
@@ -1011,23 +1041,15 @@ imaging_order = ImagingOrderCommand(
 
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
-| `report_ids`             | _list[string]_                           | `true`   | List of imaging report IDs to review.                                                                          |
+| `report_ids`             | _list[string]_                           | `true`   | List of [ImagingReport](/sdk/data-imaging/#imagingreport) IDs to review. Must be reports on that patient's chart.                                                                          |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
-| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.       |
+| `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).       |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
 
 **Enums and Types**:
 
-**`ReportReviewCommunicationMethod`**
-
-| Communication Method                | Value | Description                                                |
-|:------------------------------------|:------|:-----------------------------------------------------------|
-| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
-| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
-| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
-| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
-| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+See [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod) under [Command Constants](#command-constants) for the available values.
 
 **Example**:
 
@@ -1058,9 +1080,9 @@ imaging_review = ImagingReviewCommand(
 
 | Name               | Type                 | Required to commit | Description                                                                                                         |
 |--------------------|----------------------|--------------------|---------------------------------------------------------------------------------------------------------------------|
-| `cpt_code`         | _string_ or _Coding_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. |
-| `cvx_code`         | _string_ or _Coding_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation.   |
-| `unstructured`     | _Coding_             | `false`* | Free-text immunization description.                                                                                 |
+| `cpt_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations). |
+| `cvx_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations).   |
+| `unstructured`     | _[Coding](#coding)_             | `false`* | Free-text immunization description.                                                                                 |
 | `approximate_date` | _date_               | `false`  | The approximate date when the immunization was administered.                                                        |
 | `comments`         | _string_             | `false`  | Additional comments about the immunization (max 255 characters).                                                    |
 
@@ -1128,7 +1150,7 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 
 | Name      | Type       | Required to commit | Description                                                           |
 |-----------|------------|--------------------|-----------------------------------------------------------------------|
-| `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. |
+| `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#searching-clinical-concepts). |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
 
 **Example**:
@@ -1174,10 +1196,10 @@ Built-in validations ensure that:
 
 | Name                    | Type           | Required to send | Description                                                                                                                                                      |
 |-------------------------|----------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `lab_partner`           | _string_       | `true`   | The lab partner processing the order. Accepts either the lab partner’s name or its unique identifier (ID).                                                       |
-| `tests_order_codes`     | _list[string]_ | `true`   | A list of codes or IDs for the tests being ordered. The system verifies that each provided value corresponds to an available test for the specified lab partner. |
-| `ordering_provider_key` | _string_       | `false`  | The key for the provider ordering the tests.                                                                                                                     |
-| `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order.                                                                                                                 |
+| `lab_partner`           | _string_       | `true`   | The [lab partner](/sdk/data-lab-partner-and-test/#labpartner) processing the order. Accepts either the lab partner’s name or its unique identifier (ID).                                                       |
+| `tests_order_codes`     | _list[string]_ | `true`   | A list of codes or IDs for the [tests](/sdk/data-lab-partner-and-test/#labpartnertest-attributes) being ordered. The system verifies that each provided value corresponds to an available test for the specified lab partner. |
+| `ordering_provider_key` | _string_       | `false`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the tests.                                                                                                                     |
+| `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#looking-up-clinical-codes).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
 | `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
 
@@ -1223,7 +1245,7 @@ tests = [test.order_code for test in LabPartnerTest.objects.filter(lab_partner=p
 LabOrderCommand(
   lab_partner=str(partner.id),
   tests_order_codes=tests,
-  ordering_provider_key="provider_key_123",
+  ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
   diagnosis_codes=["E119"],
   fasting_required=True,
   comment="Patient should fast for 8 hours before the test."
@@ -1238,23 +1260,15 @@ LabOrderCommand(
 
 | Name                     | Type                                     | Required to commit | Description                                                                                                    |
 |--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
-| `report_ids`             | _list[string]_                           | `true`   | List of lab report IDs to review.                                                                              |
+| `report_ids`             | _list[string]_                           | `true`   | List of [LabReport](/sdk/data-labs/#labreport) IDs to review. Must be reports on that patient's chart.                                                                              |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
-| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.           |
+| `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).           |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
 
 **Enums and Types**:
 
-**`ReportReviewCommunicationMethod`**
-
-| Communication Method                | Value | Description                                                |
-|:------------------------------------|:------|:-----------------------------------------------------------|
-| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
-| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
-| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
-| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
-| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+See [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod) under [Command Constants](#command-constants) for the available values.
 
 **Example**:
 
@@ -1285,7 +1299,7 @@ lab_review = LabReviewCommand(
 
 | Name                     | Type      | Required to commit | Description                                                |
 |--------------------------|-----------|--------------------|------------------------------------------------------------|
-| `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). |
+| `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). Search with the [ICD-10 condition endpoint](/sdk/utils/#looking-up-clinical-codes). |
 | `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
 | `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
@@ -1324,7 +1338,7 @@ MedicalHistoryCommand(
 
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:-------------------|:-------------------------------------------------------|
-| `fdb_code` | _string_ or _Coding_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
+| `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
 | `sig`      | _string_             | `false`  | Administration details of the medication.              |
 
 **Coding Support**:
@@ -1378,7 +1392,7 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 | Name                    | Type                 | Required to commit | Description                                        |
 |-------------------------|----------------------|--------------------|----------------------------------------------------|
-| `past_surgical_history` | _string_ or _Coding_ | `true`   | A description of the past surgical procedure.      |
+| `past_surgical_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the past surgical procedure. Search with the [procedures endpoint](/sdk/utils/#searching-clinical-concepts).      |
 | `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
 | `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
 
@@ -1434,7 +1448,7 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 
 | Name       | Type                 | Required to commit | Description                                          |
 |------------|----------------------|--------------------|------------------------------------------------------|
-| `cpt_code` | _string_ or _Coding_ | `true`   | The CPT code of the procedure or action performed.   |
+| `cpt_code` | _string_ or _[Coding](#coding)_ | `true`   | The CPT code of the procedure or action performed.   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
 
 **Coding Support**:
@@ -1599,7 +1613,7 @@ command.set_test_value("pH", "6.8")
 | `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
 | `compound_medication_id`    | _string_                      | `false`* | The ID of an existing compound medication to prescribe.             |
 | `compound_medication_data`  | `CompoundMedicationData`      | `false`* | Data for creating a new compound medication inline.                 |
-| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription.  |
+| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
 | `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
 | `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
@@ -1668,7 +1682,7 @@ prescription = PrescribeCommand(
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="pharmacy_ncpdp_id",
-    prescriber_id="provider_123",
+    prescriber_id="a7c2e9d1-3b4f-4a6c-8e0d-5f1a2b3c4d5e",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
@@ -1698,7 +1712,7 @@ prescription = PrescribeCommand(
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="pharmacy_ncpdp_id",
-    prescriber_id="provider_123",
+    prescriber_id="a7c2e9d1-3b4f-4a6c-8e0d-5f1a2b3c4d5e",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
@@ -1728,7 +1742,7 @@ prescription = PrescribeCommand(
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="pharmacy_ncpdp_id",
-    prescriber_id="provider_123",
+    prescriber_id="a7c2e9d1-3b4f-4a6c-8e0d-5f1a2b3c4d5e",
     supervising_provider_id='provider_456',
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
@@ -1990,7 +2004,7 @@ class MyHandler(BaseHandler):
 | Name         | Type                     | Required                  | Description                                                                                                                                                                                                                |
 |:-------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured` | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
-| `coding`     | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing records |
+| `coding`     | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`    | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
 
 **Example**:
@@ -2025,10 +2039,10 @@ unstructured_rfv = ReasonForVisitCommand(
 
 | Name                  | Type                    | Required to delegate / sign | Description                                                                                  |
 |:----------------------|:------------------------|:----------------------------|:---------------------------------------------------------------------------------------------|
-| `service_provider`    | _[ServiceProvider](#serviceprovider)_       | `true`   | The service provider associated with the referral command.                                   |
-| `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis.                                                         |
-| `clinical_question`   | _ClinicalQuestion enum_ | `true`   | The clinical question prompting the referral. Must be one of `ReferCommand.ClinicalQuestion` |
-| `priority`            | _Priority enum_         | `false`  | Priority of the imaging order. Must be one of `ReferCommand.Priority`.                       |
+| `service_provider`    | _[ServiceProvider](#serviceprovider)_       | `true`   | The service provider associated with the referral command. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                   |
+| `diagnosis_codes`     | _list[string]_          | `true`   | A list of relevant ICD-10 Diagnosis. Search with the [ICD-10 condition endpoint](/sdk/utils/#looking-up-clinical-codes).                                                         |
+| `clinical_question`   | _[ClinicalQuestion](#refer-clinicalquestion) enum_ | `true`   | The clinical question prompting the referral. Must be one of [`ReferCommand.ClinicalQuestion`](#refer-clinicalquestion) |
+| `priority`            | _[Priority](#refer-priority) enum_         | `false`  | Priority of the imaging order. Must be one of [`ReferCommand.Priority`](#refer-priority).                       |
 | `notes_to_specialist` | _string_                | `true`   | Notes or additional information directed to the specialist.                                  |
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
@@ -2046,6 +2060,8 @@ unstructured_rfv = ReasonForVisitCommand(
 
 **Enums and Types**:
 
+<a id="refer-priority"></a>
+
 **`Priority`**
 
 | Priority  | Description                                                                                |
@@ -2053,6 +2069,8 @@ unstructured_rfv = ReasonForVisitCommand(
 | `ROUTINE` | The request has normal priority.                                                           |
 | `URGENT`  | The request should be actioned promptly — higher priority than routine.                    |
 | `STAT`    | The request should be actioned immediately — highest possible priority. E.g. an emergency. |
+
+<a id="refer-clinicalquestion"></a>
 
 **`ClinicalQuestion`**
 
@@ -2071,7 +2089,7 @@ from canvas_sdk.commands import ReferCommand
 from canvas_sdk.commands.constants import ServiceProvider
 
 refer_command = ReferCommand(
-    note_uuid="rk786p",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     diagnosis_codes=["E119"],
     priority=ReferCommand.Priority.ROUTINE,
     clinical_question=ReferCommand.ClinicalQuestion.DIAGNOSTIC_UNCERTAINTY,
@@ -2100,21 +2118,13 @@ refer_command = ReferCommand(
 |--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of referral report IDs to review.                                                                         |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
-| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReferralReviewCommand.ReportReviewCommunicationMethod`.      |
+| `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).      |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
 
 **Enums and Types**:
 
-**`ReportReviewCommunicationMethod`**
-
-| Communication Method                | Value | Description                                                |
-|:------------------------------------|:------|:-----------------------------------------------------------|
-| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
-| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
-| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
-| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
-| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+See [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod) under [Command Constants](#command-constants) for the available values.
 
 **Example**:
 
@@ -2164,8 +2174,8 @@ RefillCommand(
     refills=3,
     substitutions=PrescribeCommand.Substitutions.ALLOWED,
     pharmacy="pharmacy_ncpdp_id",
-    prescriber_id="provider_123",
-    supervising_provider_id="provider_456",
+    prescriber_id="a7c2e9d1-3b4f-4a6c-8e0d-5f1a2b3c4d5e",
+    supervising_provider_id="c3d4e5f6-7a8b-4c9d-0e1f-2a3b4c5d6e7f",
     note_to_pharmacist="Please verify patient's insurance before processing."
 )
 ```
@@ -2187,7 +2197,7 @@ RefillCommand(
 from canvas_sdk.commands import RemoveAllergyCommand
 
 RemoveAllergyCommand(
-    allergy_id="123",
+    allergy_id="e5f6a7b8-9c0d-4e1f-a2b3-c4d5e6f7a8b9",
     narrative="Allergy no longer applies after reassessment."
 )
 ```
@@ -2216,7 +2226,7 @@ ResolveConditionCommand(
    condition_id=patient_condition.id,
    show_in_condition_list=True,
    rationale="Additional notes.",
-   note_uuid="rk786p",
+   note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
 )
 ```
 
@@ -2409,21 +2419,13 @@ TaskCommand(
 |--------------------------|:-----------------------------------------|:-------------------|:---------------------------------------------------------------------------------------------------------------|
 | `report_ids`             | _list[string]_                           | `true`   | List of uncategorized document IDs to review.                                                                  |
 | `message_to_patient`     | _string_                                 | `false`  | Message to communicate findings to the patient.                                                                |
-| `communication_method`   | _ReportReviewCommunicationMethod enum_   | `false`  | Method for patient communication. Must be one of `ReportReviewCommunicationMethod`.                            |
+| `communication_method`   | _[ReportReviewCommunicationMethod](#reportreviewcommunicationmethod) enum_   | `false`  | Method for patient communication. Must be one of [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod).                            |
 | `linked_items_urns`      | _list[string]_                           | `false`  | List of URNs for items linked to the review.                                                                   |
 | `comment`                | _string_                                 | `false`  | Internal comment about the review.                                                                             |
 
 **Enums and Types**:
 
-**`ReportReviewCommunicationMethod`**
-
-| Communication Method                | Value | Description                                                |
-|:------------------------------------|:------|:-----------------------------------------------------------|
-| `DELEGATED_CALL_CAN_LEAVE_MESSAGE`  | `"DM"`| Delegated call - can leave message                         |
-| `DELEGATED_CALL_NEED_ANSWER`        | `"DA"`| Delegated call - need answer                               |
-| `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
-| `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
-| `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+See [`ReportReviewCommunicationMethod`](#reportreviewcommunicationmethod) under [Command Constants](#command-constants) for the available values.
 
 **Example**:
 
@@ -2484,9 +2486,11 @@ UpdateDiagnosisCommand(
 |:---------------------|:-------------------------|:-------------------|:----------------------------------------------------------|
 | `goal_id`            | _string_                 | `true`   | Externally exposable id of the goal being updated.        |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
-| `achievement_status` | _AchievementStatus enum_ | `false`  | The current achievement status of the goal.               |
-| `priority`           | _Priority enum_          | `false`  | The priority of the goal.                                 |
+| `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
+| `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
+
+<a id="updategoal-achievementstatus"></a>
 
 | `AchievementStatus` |                  |
 |:--------------------|:-----------------|
@@ -2499,6 +2503,8 @@ UpdateDiagnosisCommand(
 | NOT_ACHIEVED        | "not-achieved"   |
 | NO_PROGRESS         | "no-progress"    |
 | NOT_ATTAINABLE      | "not-attainable" |
+
+<a id="updategoal-priority"></a>
 
 | `Priority` |                   |
 |:-----------|:------------------|
