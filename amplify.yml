@@ -19,20 +19,3 @@ frontend:
       - '**/*'
   cache:
     paths: []
-customHeaders:
-  # LLM-facing markdown mirrors: render as text, keep out of search results
-  # so they don't compete with the canonical HTML pages.
-  - pattern: '**/*.md'
-    headers:
-      - key: Content-Type
-        value: 'text/markdown; charset=utf-8'
-      - key: X-Robots-Tag
-        value: 'noindex'
-  - pattern: '/llms.txt'
-    headers:
-      - key: X-Robots-Tag
-        value: 'noindex'
-  - pattern: '/llms-full.txt'
-    headers:
-      - key: X-Robots-Tag
-        value: 'noindex'

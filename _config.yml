@@ -106,6 +106,7 @@ exclude:
   - amplify.yml
   - config
   - context_extractor.py
+  - customHttp.yml
   - generate-context.py
   - generate-llms.py
   - icon.png
