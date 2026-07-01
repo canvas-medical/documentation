@@ -11,7 +11,14 @@ All of the classes below are importable from `canvas_sdk.effects.payment_process
 
 ## PaymentProcessorMetadata
 
-Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCESSOR__LIST`. In practice you rarely construct this directly — the base handler returns it for you via its `metadata()` method using the processor's `identifier` and `TYPE`.
+Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCESSOR__LIST`. Canvas uses it to discover which processors are installed and to route later events (charge, add card, etc.) to the right handler.
+
+**You normally never construct this yourself.** The base `PaymentProcessor` handler builds and returns it automatically through its `metadata()` method, which fills in:
+
+* `identifier` — a stable, unique id derived from your handler class (its module path and class name), exposed as `self.identifier`. Canvas includes this `identifier` in every subsequent payment processor event so your handler knows the event is meant for it.
+* `type` — the processor's `TYPE` class attribute (for example, `CardPaymentProcessor` sets this to `CARD`).
+
+Because the base handler already responds to `REVENUE__PAYMENT_PROCESSOR__LIST` with this effect, you only need to construct it directly in advanced cases where you override that default behavior.
 
 | Attribute  |          | Type                                          | Description                                                                      |
 |------------|----------|-----------------------------------------------|----------------------------------------------------------------------------------|
@@ -23,15 +30,6 @@ Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCES
 | Value  | Description             |
 |--------|-------------------------|
 | `CARD` | A card-based processor. |
-
-```python
-from canvas_sdk.effects.payment_processor import PaymentProcessorMetadata
-
-metadata = PaymentProcessorMetadata(
-    identifier="my-processor-identifier",
-    type=PaymentProcessorMetadata.PaymentProcessorType.CARD,
-)
-```
 
 ## PaymentProcessorForm
 
@@ -84,6 +82,8 @@ def charge(
 ## PaymentMethod
 
 Represents a patient's saved payment method, returned in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST`.
+
+Canvas does not store these cards itself. Saved payment methods live with your third-party payment provider, and your processor is responsible for persisting them there when a card is added and deleting them when a card is removed. Canvas simply asks your handler for the current list each time it needs to display saved cards, so there is no internal payment method table to expose to the SDK — the values you return here are rendered directly.
 
 | Attribute             |          | Type           | Description                                 |
 |-----------------------|----------|----------------|---------------------------------------------|

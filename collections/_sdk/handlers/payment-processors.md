@@ -26,6 +26,8 @@ You can find it in:
 from canvas_sdk.handlers.payment_processors.base import PaymentProcessor
 ```
 
+`PaymentProcessor` is an abstract base that wires up event handling but does not define the methods a plugin needs to implement. You should not subclass it directly — instead, extend one of its typed subclasses. Currently the only supported type is [`CardPaymentProcessor`](#cardpaymentprocessor), which is where the methods you need to define are declared.
+
 ---
 
 ## CardPaymentProcessor
@@ -61,11 +63,16 @@ In order to implement a `CardPaymentProcessor`, you should override and implemen
 
 ### Displaying Forms
 
-The forms you return via `PaymentProcessorForm` are rendered directly as **inner HTML** within the Canvas application. These forms must define a small contract of JavaScript behaviors to allow Canvas to communicate with them.
+The forms you return via [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform) are rendered directly as **inner HTML** within the Canvas application. These forms must define a small contract of JavaScript behaviors to allow Canvas to communicate with them.
 
 These methods define the HTML content that will be rendered inside Canvas to collect card data for payments or adding new cards. They must comply with the [Form Workflow](#form-workflow).
 
-#### 1. Payment Form
+These forms render wherever Canvas collects a card payment or manages saved payment methods, including:
+
+* the **provider UI** — the Revenue module and the patient profile payment/insurance area
+* the **Patient Portal** — when a patient makes a payment or manages their saved cards
+
+#### Payment Form
 
 Triggered when a user selects the credit card payment option. 
 This method should return the HTML form used to collect and tokenize the payment details.
@@ -83,7 +90,7 @@ def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
 
 ---
 
-#### 2. Add Card Form
+#### Add Card Form
 
 Triggered when a user initiates the process of adding a new card to a patient's saved payment methods. 
 This method should return the HTML form used to collect and tokenize the new card information.
@@ -104,9 +111,9 @@ def add_card_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
 
 ---
 
-### 3. Charge
+### Charging a Card
 
-Handles the actual payment. This method is triggered after tokenization and is responsible for charging the card:
+Handles the actual payment. This method is triggered after tokenization and is responsible for charging the card. It returns a [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction) effect describing the result of the charge:
 
 ```python
 from decimal import Decimal
@@ -188,11 +195,13 @@ def charge(
 
 ---
 
-### 4. Managing Payment Methods
+### Managing Payment Methods
 
 These methods define how Canvas lists, stores, and deletes saved cards associated with a patient.
 
-#### 4.1 List
+#### List
+
+Returns the patient's saved cards as a list of [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod) effects, which Canvas renders when displaying stored payment methods.
 
 ```python
 from canvas_sdk.effects.payment_processor import PaymentMethod
@@ -213,7 +222,9 @@ def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]
         ]
 ```
 
-#### 4.2. Add
+#### Add
+
+Stores a new card for the patient using the tokenized card data and returns an [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse) effect indicating whether the card was saved.
 
 ```python
 from typing import Any
@@ -226,11 +237,11 @@ def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> Add
 ```
 ##### Additional Context
 
-The `add_payment_method` method accepts `**kwargs` which can contain additional context passed from the add card form. This is useful when you need to pass extra information from the tokenization response to the charge handler.
+The `add_payment_method` method accepts `**kwargs` which can contain additional context passed from the add card form. This is useful when you need to pass extra information from the tokenization response to the `add_payment_method` handler.
 
 The additional context is passed via the second argument of `setToken` in your form's JavaScript (see [Form Workflow](#form-workflow)). Canvas processes the `additional_context` as follows:
 
-| Input Type          | Example              | Passed to `charge` as              |
+| Input Type          | Example              | Passed to `add_payment_method` as  |
 |---------------------|----------------------|------------------------------------|
 | JSON object string  | `'{"key": "value"}'` | `key="value"` (unpacked as kwargs) |
 | `None`              | `null`               | `additional_context=None`          |
@@ -238,7 +249,31 @@ The additional context is passed via the second argument of `setToken` in your f
 | JSON number string  | `"123"`              | `additional_context=123`           |
 | JSON boolean string | `"true"`             | `additional_context=True`          |
 
-#### 4.3. Remove
+Example using additional context:
+
+```python
+from typing import Any
+from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
+from canvas_sdk.v1.data import Patient
+
+
+def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> AddPaymentMethodResponse:
+    # Access additional context from kwargs
+    # If setToken was called with a JSON object like {"zip_code": "60007", "city": "Chicago"},
+    # these will be available as kwargs
+    zip_code = kwargs.get("zip_code")
+    city = kwargs.get("city")
+
+    # Or if a non-dict value was passed, it will be in additional_context
+    raw_context = kwargs.get("additional_context")
+
+    # ... rest of implementation
+    return AddPaymentMethodResponse(success=True)
+```
+
+#### Remove
+
+Deletes the patient's saved card identified by `token` and returns a [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse) effect indicating whether the card was removed.
 
 ```python
 from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
