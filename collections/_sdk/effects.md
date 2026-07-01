@@ -489,11 +489,13 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 ### Surescripts
 
+Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
+
 | Effect | Description |
 |---|---|
-| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. |
-| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. |
-| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
+| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. See [Eligibility](/sdk/effect-surescripts/#eligibility). |
+| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. See [Benefits](/sdk/effect-surescripts/#benefits). |
+| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. See [Medication History](/sdk/effect-surescripts/#medication-history). |
 
 
 ### Data Integration

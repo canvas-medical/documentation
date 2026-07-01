@@ -203,6 +203,7 @@ The `scope` attribute determines where your application is visible within Canvas
 | `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page |
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
+| `scheduling` | Replaces the built-in scheduling modal at all entry points. See [Scheduling Applications](#scheduling-applications) |
 
 ### Full Chart Scope
 
@@ -386,6 +387,111 @@ class LowPriorityApp(NoteApplication):
     IDENTIFIER = "my_plugin__second"
     PRIORITY = 10
 ```
+
+## Scheduling Applications
+
+Scheduling Applications replace the built-in scheduling modal throughout Canvas. When you install a plugin with a scheduling application, it takes over all scheduling entry points: the schedule page, patient chart, calendar drag-and-drop, calendar reschedule, and note reschedule flows.
+
+### Implementing a Scheduling Application
+
+To create a Scheduling Application, your handler class should inherit from `SchedulingApplication` and define two required class attributes:
+
+| Attribute    | Description                                                                    |
+|--------------|--------------------------------------------------------------------------------|
+| `NAME`       | The display title shown in the modal                                           |
+| `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
+
+Your class must implement the `on_open()` method, which is called when a scheduling action is triggered. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect`.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import SchedulingApplication
+
+
+class CustomScheduler(SchedulingApplication):
+    """Scheduling application for custom appointment booking."""
+
+    NAME = "Schedule Appointment"
+    IDENTIFIER = "my_plugin__scheduler"
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the scheduling form when triggered."""
+        patient = self.event.context.get("patient", {})
+        provider = self.event.context.get("provider", {})
+        start = self.event.context.get("start", "")
+        mode = self.event.context.get("mode", "schedule")
+
+        return LaunchModalEffect(
+            url=f"https://scheduler.example.com/book?patient={patient.get('id', '')}&provider={provider.get('id', '')}&start={start}&mode={mode}",
+            title="Schedule Appointment"
+        ).apply()
+```
+
+### Context Data
+
+When `on_open()` is called, scheduling context is available through `self.event.context`. The available keys depend on which entry point triggered the scheduling action.
+
+#### Entity Objects
+
+Entities are delivered as `{"id": <external id>}` objects, resolvable with the conventional `.objects.get(id=...)`:
+
+| Field         | Resolves To                                                      | Value                            | Available From                  |
+|---------------|------------------------------------------------------------------|----------------------------------|---------------------------------|
+| `patient`     | [Patient](/sdk/data-patient/#patient)                            | `{"id": <patient id>}`           | Patient chart, reschedule flows |
+| `provider`    | [Staff](/sdk/data-staff/#staff)                                  | `{"id": <staff id>}`             | Calendar, patient chart         |
+| `location`    | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | `{"id": <practice location id>}` | Current location context        |
+| `appointment` | [Appointment](/sdk/data-appointment/#appointment)                | `{"id": <appointment id>}`       | Reschedule flows                |
+| `note`        | [Note](/sdk/data-note/#note)                                     | `{"id": <note id>}`              | Note reschedule flow            |
+
+#### Scalar Values
+
+| Key        | Description                                                                                                 |
+|------------|-------------------------------------------------------------------------------------------------------------|
+| `start`    | ISO-8601 datetime of the selected slot (all entry points)                                                   |
+| `end`      | ISO-8601 datetime for the slot end (calendar drag-and-drop only)                                            |
+| `duration` | Slot length in minutes (reschedule flows only). Either `end` or `duration` is present, never both           |
+| `mode`     | One of `schedule`, `reschedule`, or `followup`                                                              |
+| `origin`   | The launching surface: `schedule_page`, `patient_chart`, `calendar`, `calendar_reschedule`, or `note_reschedule` |
+
+When `end` is not provided, derive it from `start + duration`.
+
+#### Origins
+
+`origin` tells you which surface launched the scheduling action, which in turn determines the `mode` and whether the slot length arrives as `end` or `duration`:
+
+| `origin`              | Launching surface                                               | `mode`                   | Slot length            |
+|-----------------------|-----------------------------------------------------------------|--------------------------|------------------------|
+| `schedule_page`       | **New appointment** from the schedule page (no patient context) | `schedule` or `followup` | neither (`start` only) |
+| `patient_chart`       | **New appointment** from a patient's chart                      | `schedule` or `followup` | neither (`start` only) |
+| `calendar`            | Drag-and-drop on the calendar to create a slot                  | `schedule`               | `end`                  |
+| `calendar_reschedule` | Rescheduling an existing appointment from the calendar          | `reschedule`             | `duration`             |
+| `note_reschedule`     | Rescheduling an appointment from within a note                  | `reschedule`             | `duration`             |
+
+Which entities accompany each origin is shown in the [Entity Objects](#entity-objects) table's "Available From" column above — for example, `patient_chart` and the reschedule flows include a `patient`, while `schedule_page` and `calendar` do not.
+
+### Manifest Configuration
+
+Register your scheduling application in the `CANVAS_MANIFEST.json`. The application's `scope` **must** be set to `"scheduling"` — this is what tells Canvas to use it as the scheduling-modal override:
+
+```json
+{
+  "components": {
+    "applications": [
+      {
+        "class": "my_plugin.apps.scheduler:CustomScheduler",
+        "name": "Custom Scheduler",
+        "description": "Custom appointment scheduling",
+        "scope": "scheduling"
+      }
+    ]
+  }
+}
+```
+
+> **Important:** The `scope` must be exactly `"scheduling"`. With any other value the application will not take over the scheduling flows, and the built-in modal will continue to be used.
+
+When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
 
 ## Panel Display
 

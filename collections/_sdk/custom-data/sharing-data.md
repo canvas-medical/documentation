@@ -43,6 +43,32 @@ Share these keys securely with developers of other plugins that need access:
 
 > **Important:** Store these keys in a secure location outside of Canvas, such as 1Password. Removing a key from the manifest's `secrets` array does **not** delete the stored value — it is preserved. However, **uninstalling the plugin deletes its secrets**, including the namespace keys. Because the namespace itself survives an uninstall, a later reinstall will not regenerate the keys, so a copy kept outside Canvas is the only way to restore access. See [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin).
 
+### Pre-Supplying Keys at Creation
+
+By default, Canvas auto-generates the two access keys the first time a `read_write` plugin creates a namespace. You can also **supply both keys yourself** at that first install — pass them through the same `--secret` mechanism used for joins:
+
+```bash
+canvas install my_plugin \
+  --host demo.canvasmedical.com \
+  --secret namespace_read_access_key=<your-read-key> \
+  --secret namespace_read_write_access_key=<your-read-write-key>
+```
+
+When both keys are present at the install that creates the namespace, those plaintext values are what get hashed into the namespace's authentication table — Canvas does **not** generate fresh UUIDs.
+
+Rules:
+
+- Supply **both** keys for your values to take effect. If you provide only one — or leave either value empty — Canvas silently ignores the supplied keys and auto-generates both instead. The install still succeeds; it does not fail.
+- Format is not enforced, but UUID4s are conventional.
+- This only applies to the install that **creates** the namespace. Subsequent joins validate against whatever was written at creation time.
+- If you supply neither key, behavior is unchanged: Canvas generates both for you.
+
+When to use this:
+
+- You want the keys to be known and persisted outside Canvas before the namespace exists (for example, a deployment system that needs to seed sibling plugins with the same key without round-tripping through the Admin UI).
+- You're restoring access to a previously-dropped namespace and want to reuse known key values.
+- You want deterministic key values across test runs in CI.
+
 ### Configuring Plugin Access
 
 Each plugin that joins a namespace must:

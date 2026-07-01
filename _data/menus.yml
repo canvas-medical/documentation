@@ -927,6 +927,9 @@ effects_module:
   - title: "Staff Metadata"
     url: /sdk/effect-staff-metadata/
     description: Interact with staff metadata.
+  - title: "Surescripts"
+    url: /sdk/effect-surescripts/
+    description: Query insurance eligibility, medication history, and benefits through Surescripts.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
