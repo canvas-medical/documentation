@@ -1898,7 +1898,7 @@ Plugins are your tool for customizing the Canvas experience. By using the module
 ##  Video 
 The video below showcases a Canvas engineer working through this guide step-by-step.
 ##  1\. Install the Canvas CLI 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 ##  2\. Configure the Canvas CLI for your instances 
 The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If you've used our FHIR API, you'll be very familiar with the process for [registering credentials](/api/customer-authentication/). Register a separate OAuth application, choosing `confidential` for the Client type, and `client-credentials` for the Authorization grant type. Redirect URIs can be left blank, and the Algorithm should be `No OIDC support`. Note the client_id and client_secret for the next step.
 Create a file at the path `~/.canvas/credentials.ini`. Here is what its contents should look like:
@@ -2318,10 +2318,11 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `enable`: Enable a plugin from a Canvas instance
   - `disable`: Disable a plugin from a Canvas instance
   - `list`: List all plugins from a Canvas instance
+  - `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
   - `validate-manifest`: Validate the Canvas Manifest json file
   - `logs`: Listen and print log streams from a Canvas instance
-  - `config list`: List all secrets from a plugin
-  - `config set`: Configure plugin secrets
+  - `config list`: List plugin variables on a Canvas instance
+  - `config set`: Set plugin variables on a Canvas instance
 ###  `canvas init`
 Create a new plugin.
 **Usage** :
@@ -2339,13 +2340,22 @@ Install a plugin into a Canvas instance.
 **Arguments** :
   - `PLUGIN_NAME`: Path to plugin to install [required]
 **Options** :
-  - `--secret TEXT`: Secrets to set, e.g. Key=value
-  - `--variable TEXT`: Variables to set, e.g. Key=value. Use `--variable` for non-sensitive configuration and `--secret` for sensitive values.
+  - `--variable TEXT`: Non-sensitive variables to set, e.g. Key=value
+  - `--secret TEXT`: Sensitive variables to set (treated as sensitive=true), e.g. Key=value
   - `--enable / --disable`: Install the plugin in an enabled or disabled state. Defaults to `--enable`.
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
 **Notes** :
-Files can be excluded from the packaged plugin using a `.canvasignore` in the current working directory. The file behaves similarly to [.gitignore](https://git-scm.com/docs/gitignore)
+Before uploading, `canvas install` runs pre-flight validation:
+  - Manifest validation (schema, tags, handler resolution)
+  - Sandbox-load validation (imports every handler in the sandbox)
+If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
+The CLI automatically excludes common build artifacts from the plugin bundle:
+  - `__pycache__` directories
+  - `*.pyc` and `*.pyo` files
+  - `node_modules` directories
+  - Hidden files and directories (e.g., `.git`, `.env`)
+To exclude additional files, create a `.canvasignore` file in your plugin directory. This file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore).
 Example
     ```md
     # Exclude test files
@@ -2394,6 +2404,36 @@ List all plugins on a Canvas instance.
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
+###  `canvas validate`
+Validate a plugin's manifest and that all handlers load in the sandbox.
+**Usage** :
+    ```console
+    $ canvas validate [OPTIONS] PLUGIN_NAME
+    ```
+**Arguments** :
+  - `PLUGIN_NAME`: Path to plugin to validate [required]
+**Options** :
+  - `--help`: Show this message and exit.
+This command runs full pre-flight validation combining:
+  1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
+  2. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
+**Sandbox-load validation** executes each handler module in the plugin sandbox to catch:
+  - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
+  - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
+  - **Import errors** — Missing dependencies or broken imports.
+For each handler, the output shows whether it loaded successfully:
+    ```console
+    $ canvas validate my_plugin
+    Loading 2 handler(s) in the sandbox:
+      ✓ my_plugin.handlers.events:MyHandler
+      ✗ my_plugin.handlers.api:APIHandler
+        ImportError: 'subprocess' is not an allowed import
+    1 of 2 handler(s) failed to load in the sandbox.
+    ```
+The command exits with code 1 if any handler fails validation.
+####  Limitations 
+A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
+> **Info:** `canvas install` runs the same sandbox-load validation before uploading, so violations are caught before they reach your instance. 
 ###  `canvas validate-manifest`
 Validate the Canvas Manifest json file.
 **Usage** :
@@ -2404,6 +2444,36 @@ Validate the Canvas Manifest json file.
   - `PLUGIN_NAME`: Path to plugin to validate [required]
 **Options** :
   - `--help`: Show this message and exit.
+**Validations performed** :
+  1. **Schema validation** — Checks that `CANVAS_MANIFEST.json` contains all required fields and valid values.
+  2. **Handler resolution** — Verifies that every handler class declared in the manifest (`protocols`, `applications`, and `handlers`) resolves to a file the plugin runner can find at runtime.
+####  Handler resolution and directory layout 
+The plugin runner loads handlers by mapping dotted module paths to files relative to the plugin's install directory. For a plugin named `my_plugin` with a handler class `my_plugin.handlers.events:MyHandler`, the runner expects `handlers/events.py` inside the plugin directory — the directory containing `CANVAS_MANIFEST.json`.
+A common mistake is placing `CANVAS_MANIFEST.json` in a parent directory above the plugin package. This passes schema validation and works locally, but fails at runtime with `ModuleNotFoundError` — the handler files are nested one level too deep.
+**Correct layout:**
+    ```text
+    my_plugin/
+    ├── CANVAS_MANIFEST.json   # ← manifest inside the package
+    ├── handlers/
+    │   └── events.py
+    └── ...
+    ```
+**Incorrect layout:**
+    ```text
+    project/
+    ├── CANVAS_MANIFEST.json   # ← manifest above the package (wrong!)
+    └── my_plugin/
+        └── handlers/
+            └── events.py
+    ```
+If `validate-manifest` detects handlers that won't resolve, it reports which classes are affected and the file paths the runner expects:
+    ```console
+    Error: these handler classes won't be found by the plugin runner with the current directory layout:
+      - my_plugin.handlers.events:MyHandler
+        runner expects: my_plugin/handlers/events.py
+    CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
+    ```
+> **Info:** `canvas install` runs both manifest validation and sandbox-load validation before uploading. Use `canvas validate` for a full pre-flight check with detailed per-handler output. 
 ###  `canvas logs`
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 **Usage** :
@@ -2428,7 +2498,7 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--cursor TEXT`: Resume token from a previous run.
   - `--help`: Show this message and exit.
 ###  `canvas config list`
-List the variables configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 **Usage** :
     ```console
     $ canvas config list [OPTIONS] PLUGIN
@@ -2444,11 +2514,18 @@ List the variables configured for a plugin. Each variable is rendered as `[set]`
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
+**Example Output** :
+    ```console
+    $ canvas config list my_plugin
+      API_TOKEN = [set]  (sensitive)
+      WEBHOOK_URL = [set]
+      DEBUG_MODE = [not set]
+    ```
 ###  `canvas config set`
-Set (or update) one or more variables on an installed plugin. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 **Usage** :
     ```console
-    $ canvas config set [OPTIONS] PLUGIN KEY=value [KEY=value ...]
+    $ canvas config set [OPTIONS] PLUGIN VARIABLES...
     ```
 **Examples** :
 Set a single variable:
@@ -2460,8 +2537,8 @@ Set multiple variables in one call:
     $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
     ```
 **Arguments** :
-  - `PLUGIN`: Plugin name to configure
-  - `KEY=value ...`: One or more variables to set
+  - `PLUGIN`: Plugin name to set variables for
+  - `VARIABLES...`: Variables to set, e.g. Key=value
 **Options** :
   - `--host TEXT`: Canvas instance to connect to
   - `--help`: Show this message and exit.
@@ -6167,6 +6244,8 @@ The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
 **Electronic ordering:** LabOrder commands support the `send()` method for electronic ordering of signed orders directly to lab partners. However, electronic ordering has additional requirements:
   - Only lab partners with electronic ordering enabled support the `send()` method.
   - The command must be committed/signed before it can be sent electronically.
+  - The patient must have an address and phone number on file.
+  - The ordering provider must have an NPI.
 **Command-specific parameters** :
 Name | Type | Required to send | Description  
 ---|---|---|---  
@@ -11180,6 +11259,8 @@ labels | [TaskLabel](/sdk/data-task/#tasklabel)[]
 metadata | ClaimMetadata[]  
 banner_alerts | ClaimBannerAlert[]  
 provider | ClaimProvider  
+incident_to | Boolean  
+supervising_provider | ClaimSupervisingProvider  
 **Computed Properties** :
   - `total_charges`: Total charges for active line items
   - `total_paid`: Sum of paid amounts from postings
@@ -11189,6 +11270,23 @@ provider | ClaimProvider
   - `total_payer_paid`: Paid amount by coverages
 **Helpful Methods** :
   - `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)`: Finds the active coverage associated with a payer_id. Optionally checks if the subscriber_number matches, which will choose the correct coverage in the case where a patient has two coverages with the same payer_id.
+###  ClaimSupervisingProvider 
+An immutable snapshot of a claim's supervising provider (837P loop 2310D), captured at claim creation from the note's supervising provider and frozen thereafter, so later edits to the note or the underlying Staff record do not retroactively change a submitted claim.
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+claim | Claim  
+staff | [Staff](/sdk/data-staff/#staff)  
+first_name | String  
+last_name | String  
+middle_name | String  
+npi | String  
+taxonomy | String  
+tax_id | String  
+tax_id_type | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)  
+created | DateTime  
+modified | DateTime  
 ###  ClaimLineItem 
 Represents individual billed procedures or services tied to a claim.
 Field Name | Type  
@@ -11967,7 +12065,8 @@ model | String
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-coverage/
 ##  Introduction 
-The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated `EligibilitySummary`, which provides the most up-to-date copay and and coinsurance values.
+The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated `EligibilitySummary`, which provides the most up-to-date copay and coinsurance values.
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
 ##  Usage 
 The `Coverage` model can be used to find all of the coverages defined in a Canvas instance, whether overall or for a particular patient. For example, to find all of the current coverages for a patient, the `Patient.coverages` method can be used:
     ```python
@@ -11990,13 +12089,21 @@ Alternatively, to find all of the `Coverage` instances issed by a particular iss
 Find the latest eligibility summary for a patient:
     ```python
         from canvas_sdk.v1.data.coverage import Coverage, EligibilitySummary
-        coverage = Coverage.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+        coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
         elig_summary_from_model = EligibilitySummary.objects.filter(coverage=coverage).first()
         elig_summary_from_cvg = coverage.eligibility_summary
         if elig_summary_from_model:
             print(elig_summary_from_model.copay_cents, elig_summary_from_model.coinsurance) # 1000 5
         if elig_summary_from_cvg:
             print(elig_summary_from_cvg.copay_cents, elig_summary_from_cvg.coinsurance) # 1000 5
+    ```
+Access insurance card images through the coverage's snapshot:
+    ```python
+    from canvas_sdk.v1.data.coverage import Coverage
+    coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+    if coverage.snapshot:
+        for image in coverage.snapshot.images.all():
+            print(image.image_url)  # Presigned S3 URL for the insurance card image
     ```
 ##  Filtering 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -14786,6 +14893,7 @@ title | String |
 body | JSON | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`.  
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
+supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
 checksum | String |   
 billing_note | String |   
 related_data | JSON | Can contain one key, `roomNumber`, if the Note is an inpatient stay.  
@@ -16764,7 +16872,9 @@ state | JSON
 user | [CanvasUser](/sdk/data-canvasuser)  
 signature | String  
 supervising_team | Staff[]  
+default_supervising_provider | Staff  
 notes | Note[]  
+supervised_notes | Note[]  
 creator_tasks | [Task](/sdk/data-task/#task)[]  
 assignee_tasks | [Task](/sdk/data-task/#task)[]  
 comments | [TaskComment](/sdk/data-task/#taskcomment)[]  
@@ -18091,6 +18201,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
   - adding banner alerts to claims
   - removing banner alerts from claims
   - updating provider information on claims
+  - updating the supervising provider on claims
+  - setting the incident-to flag on claims
 Additionally, the SDK provides a separate effect to update claim line items.
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 Deprecated Class | Old Import Path | New Equivalent  
@@ -18693,6 +18805,130 @@ Attribute | Type | Description
                     billing_provider=billing, facility=facility
                 )
             ]
+    ```
+###  Update Supervising Provider 
+`ClaimEffect.update_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
+Provide exactly one of:
+  - A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
+  - A `ClaimSupervisingProvider` dataclass to specify the snapshot fields directly. This clears any Staff association.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`supervising_provider` | ClaimSupervisingProvider or `None` | Free-text provider snapshot | Yes (if `staff_id` not given)  
+`staff_id` | `str` or `None` | Staff identifier to populate from | Yes (if `supervising_provider` not given)  
+####  ClaimSupervisingProvider 
+The `ClaimSupervisingProvider` dataclass represents a supervising provider's identifying information for billing purposes.
+Attribute | Type | Description  
+---|---|---  
+`first_name` | `str` or `None` | First name (max 255 chars)  
+`last_name` | `str` or `None` | Last name (max 255 chars)  
+`middle_name` | `str` or `None` | Middle name (max 255 chars)  
+`npi` | `str` or `None` | NPI number (max 10 chars)  
+`taxonomy` | `str` or `None` | Taxonomy code (max 100 chars)  
+`tax_id` | `str` or `None` | Tax ID (max 100 chars)  
+`tax_id_type` | `str` or `None` | Tax ID type (max 1 char)  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - Validates that exactly one of `staff_id` or `supervising_provider` is provided
+  - If `staff_id` is provided, validates that the Staff record exists
+####  Example Usage 
+Using a Staff record:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.v1.data import Note
+    class SupervisingProviderHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, set the supervising provider from the note's supervising provider."""
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            state = self.event.context["state"]
+            if state == "LKD" and note.supervising_provider:
+                claim_effect = ClaimEffect(claim_id=claim.id)
+                return [claim_effect.update_supervising_provider(staff_id=str(note.supervising_provider.id))]
+            return []
+    ```
+Using free-text provider information:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect, ClaimSupervisingProvider
+    from canvas_sdk.v1.data import Note
+    class SupervisingProviderHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, set a custom supervising provider on the claim."""
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            state = self.event.context["state"]
+            if state == "LKD":
+                claim_effect = ClaimEffect(claim_id=claim.id)
+                return [
+                    claim_effect.update_supervising_provider(
+                        ClaimSupervisingProvider(
+                            first_name="Jane",
+                            last_name="Doe",
+                            npi="1234567890",
+                            taxonomy="207Q00000X",
+                        )
+                    )
+                ]
+            return []
+    ```
+###  Set Incident To 
+`ClaimEffect.set_incident_to()`: sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`value` | `bool` | Whether the claim is billed incident-to the supervising physician | Yes  
+####  How Incident-To Billing Works 
+When a claim is marked as incident-to:
+  1. **Automatic rendering provider swap** : The rendering provider fields (first name, last name, middle name, NPI, and taxonomy) are replaced with the supervising provider's values. This swap happens immediately when `incident_to` is set to `True`, not at claim submission.
+  2. **Billing provider unchanged** : The billing provider information (NM1 _85 on the 837P) remains unchanged. Only the rendering provider (NM1_ 82 / Box 24J) is affected.
+  3. **Frozen after submission** : Once a claim has been submitted to the clearinghouse, the rendering provider swap no longer occurs even if incident-to settings change.
+  4. **Re-sync on supervising provider change** : If the supervising provider is updated on an incident-to claim, the rendering provider fields are automatically re-synced to match the new supervising provider.
+####  Printed CMS-1500 Form 
+The supervising provider appears on the printed CMS-1500 (HCFA) form differently depending on whether the claim is marked incident-to:
+Scenario | Box 24J (Rendering NPI) | Box 17 (Referring/Supervising Provider)  
+---|---|---  
+**Incident-to claim** | Supervising provider's NPI (via the automatic rendering swap) | Not populated for supervising—the provider already appears in Box 24J  
+**Non-incident-to claim with supervising provider** | Original rendering provider's NPI | Supervising provider with **DQ** qualifier (if no referring or ordering provider exists)  
+For non-incident-to claims with a supervising provider who has a valid NPI and no referring or ordering provider, the printed form populates Box 17 with the supervising provider's name, Box 17a with the "DQ" (supervising physician) qualifier, and Box 17b with the supervising provider's NPI.
+Box 17 follows a priority order: referring provider (DN) takes precedence over ordering provider (DK), which takes precedence over supervising provider (DQ). The supervising provider only appears in Box 17 when no referring or ordering provider is present.
+####  Claim Errors 
+The following errors prevent claim submission when incident-to is enabled:
+Error | Description | Solution  
+---|---|---  
+Missing supervising provider | The claim is marked incident-to but has no supervising provider with an NPI. | Add a supervising provider with a valid NPI, or disable incident-to.  
+Supervising provider same as rendering | The supervising provider is the same as the note's original rendering provider. | Set the supervising provider to a different physician, or disable incident-to.  
+####  Claim Warnings 
+The following warnings are displayed for incident-to claims but do not prevent submission:
+Warning | Description | Guidance  
+---|---|---  
+Non-office place of service | The place of service is not office (11). Incident-to billing is generally not valid in facility settings per 42 CFR 410.26. | Confirm the place of service is correct, or disable incident-to if it does not apply.  
+Non-Medicare payer | The payer is not Medicare. Incident-to rules are a Medicare policy; coverage varies by commercial payer. | Confirm the payer accepts incident-to billing, or disable incident-to if it does not apply.  
+####  Implementation Details 
+  - Validates `claim_id` is provided and that the associated claim exists
+  - The rendering provider swap requires a valid supervising provider with an NPI
+  - The swap is skipped if the supervising provider's NPI is missing or invalid
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.v1.data import Note
+    class IncidentToHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.CLAIM_SUPERVISING_PROVIDER_CHANGED)
+        def compute(self) -> list[Effect]:
+            """When a supervising provider is set on a claim, enable incident-to billing."""
+            claim_id = self.event.target.id
+            claim_effect = ClaimEffect(claim_id=claim_id)
+            return [claim_effect.set_incident_to(True)]
     ```
 * * *
 ##  UpdateClaimLineItem 
@@ -20543,10 +20779,12 @@ Attribute | Type | Description | Required
 `practice_location_id` | `UUID` or `str` | Identifier for the practice location | Yes  
 `provider_id` | `str` | Identifier for the provider | Yes  
 `title` | `str` or `None` | Optional title for the note | No  
+`supervising_provider_id` | `str` or `None` | Staff identifier for the supervising provider | No  
 ####  Implementation Details 
   - Validates that the note type exists and has an appropriate category
   - Ensures the patient exists in the system
   - Verifies that the practice location and provider are valid
+  - If `supervising_provider_id` is provided, validates that the Staff record exists
 ####  Example Usage 
     ```python
     import datetime
@@ -20573,6 +20811,7 @@ Attribute | Type | Description | Required | Updatable
 `datetime_of_service` | `datetime.datetime` | Updated service date/time | No | Yes  
 `practice_location_id` | `UUID` or `str` | Updated practice location | No | Yes  
 `provider_id` | `str` | Updated provider | No | Yes  
+`supervising_provider_id` | `str` or `None` | Staff identifier for the supervising provider | No | Yes  
 **Note** : `patient_id` and `note_type_id` cannot be updated after creation.
 ####  Example Usage 
     ```python
@@ -21025,7 +21264,7 @@ Reverts a booked or checked-in appointment back to a state where it can be check
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes  
-**Note** : `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
+**Note** : `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED`, `CONVERTED`, or `NOSHOW` state.
 ####  Example Usage 
     ```python
     from canvas_sdk.effects.note.appointment import Appointment
@@ -21414,6 +21653,7 @@ The effect validates:
     ```
 ##  Notes 
   - The address details (line1, line2, city, state, country, postal_code) displayed for a patient facility address are automatically populated from the linked facility's address information.
+  - When a facility's address is updated, all linked patient facility addresses are automatically updated to match. This synchronization happens asynchronously and applies to line1, line2, city, district, state_code, postal_code, and country fields. Non-address changes to the facility (such as name, NPI number, or phone number) do not trigger this cascade.
   - When creating a new facility inline, the facility is created first, then linked to the patient facility address.
   - Room number is optional and can be used to specify the patient's specific room within the facility.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-facility-address/
@@ -21652,10 +21892,17 @@ Attribute | Type | Description | Required
 `clinical_note` | `str` or `None` | Clinical notes about the patient | No  
 `default_location_id` | `str` or `None` | ID of patient's default practice location | No  
 `default_provider_id` | `str` or `None` | ID of patient's default healthcare provider | No  
+`active` | `bool` or `None` | Whether the patient record is active | No  
+`deceased` | `bool` or `None` | Whether the patient is deceased | No  
+`deceased_datetime` | `datetime.datetime` or `None` | Date and time of patient's death | No  
+`deceased_cause` | `str` or `None` | Cause of patient's death | No  
+`deceased_comment` | `str` or `None` | Additional comments about patient's death | No  
+`biological_race_codes` | `list[str]` or `None` | CDC race codes describing the patient's biological race (e.g., `"2106-3"`) | No  
+`cultural_ethnicity_codes` | `list[str]` or `None` | CDC ethnicity codes describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No  
 `previous_names` | `list[str]` or `None` | List of patient's previous names | No  
 `contact_points` | `list[PatientContactPoint]` or `None` | Patient's contact information | No  
 `external_identifiers` | `list[PatientExternalIdentifier]` or `None` | Patient's external identifiers | No  
-`patient_id` | `str` or `None` | Patient ID (required for updates only) | No  
+`patient_id` | `str` or `None` | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see Supplying a patient id on creation. | No  
 `addresses` | `list[PatientAddress]` or `None` | Patient's addresses | No  
 `preferred_pharmacies` | `list[PatientPreferredPharmacy]` or `None` | Patient's preferred pharmacies | No  
 `metadata` | `list[PatientMetadata]` or `None` | Patient metadata | No  
@@ -21702,7 +21949,7 @@ Attribute | Type | Description | Required
 `key` | `str` | The key of the metadata | Yes  
 `value` | `str` | The value of the metadata | Yes  
 ##  Implementation Details 
-  - **Creation** : Creates new patient records when `patient_id` is not provided
+  - **Creation** : Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see Supplying a patient id on creation
   - **Updates** : Updates existing patient records when `patient_id` is provided
   - Validates that referenced practice locations exist in the system
   - Verifies that referenced healthcare providers exist in the system
@@ -21756,6 +22003,32 @@ Attribute | Type | Description | Required
             )
             return [patient.create()]
     ```
+##  Supplying a patient id on creation 
+By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
+    ```python
+    from canvas_sdk.effects.patient import Patient, generate_patient_id
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+    class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
+        PATH = "/patients"
+        def post(self) -> list[Response]:
+            body = self.request.json()
+            new_patient_id = generate_patient_id()
+            patient = Patient(
+                patient_id=new_patient_id,
+                first_name=body["first_name"],
+                last_name=body["last_name"],
+            )
+            # `new_patient_id` can be reused for follow-up patient-scoped effects in
+            # the same execution, and is returned so the caller has it immediately
+            # without a follow-up lookup.
+            return [
+                patient.create(),
+                JSONResponse({"patient_id": new_patient_id}, status_code=201),
+            ]
+    ```
 #  Patient Update Example 
     ```python
     from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
@@ -21788,6 +22061,60 @@ Attribute | Type | Description | Required
             )
             return [updated_patient.update()]
     ```
+#  Marking a Patient as Inactive or Deceased 
+    ```python
+    from canvas_sdk.effects.patient import Patient
+    from canvas_sdk.handlers.base import BaseHandler
+    import datetime
+    class MyHandler(BaseHandler):
+        def compute(self):
+            # Mark a patient as inactive
+            inactive_patient = Patient(
+                patient_id="existing-patient-uuid",
+                active=False
+            )
+            return [inactive_patient.update()]
+    class DeceasedPatientHandler(BaseHandler):
+        def compute(self):
+            # Record a patient's death
+            deceased_patient = Patient(
+                patient_id="existing-patient-uuid",
+                deceased=True,
+                deceased_datetime=datetime.datetime(2025, 3, 14, 12, 0, 0),
+                deceased_cause="Natural causes",
+                deceased_comment="Pronounced at home."
+            )
+            return [deceased_patient.update()]
+    ```
+#  Setting Race and Ethnicity 
+`biological_race_codes` and `cultural_ethnicity_codes` each accept a list of code strings drawn from the [CDC Race and Ethnicity CodeSystem (CDCREC)](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html) — the same code set used by the [FHIR Patient API](/api/patient/). You can set both fields when creating or updating a patient, and you can supply more than one code per field.
+Canvas recognizes the full CDCREC code set — both the OMB top-level categories below and the more specific detailed codes that roll up to them (for example, the race code `2108-9` "European" rolls up to `2106-3` "White", and the ethnicity code `2148-5` "Mexican" rolls up to `2135-2` "Hispanic or Latino"). The categories below are the most common values; see the CodeSystem for the complete list of detailed codes.
+**Race** (`biological_race_codes`) — OMB top-level categories:
+Code | Description  
+---|---  
+`1002-5` | American Indian or Alaska Native  
+`2028-9` | Asian  
+`2054-5` | Black or African American  
+`2076-8` | Native Hawaiian or Other Pacific Islander  
+`2106-3` | White  
+`2131-1` | Other Race  
+**Ethnicity** (`cultural_ethnicity_codes`) — OMB top-level categories:
+Code | Description  
+---|---  
+`2135-2` | Hispanic or Latino  
+`2186-5` | Not Hispanic or Latino  
+    ```python
+    from canvas_sdk.effects.patient import Patient
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self):
+            patient = Patient(
+                patient_id="existing-patient-uuid",
+                biological_race_codes=["2106-3"],      # White
+                cultural_ethnicity_codes=["2186-5"]    # Not Hispanic or Latino
+            )
+            return [patient.update()]
+    ```
 ##  Validation 
 The effect performs validation before execution to ensure data integrity:
   1. **Required Fields** : 
@@ -21799,8 +22126,9 @@ The effect performs validation before execution to ensure data integrity:
   3. **Data Format Validation** : Ensures that provided values conform to expected formats: 
      - Date fields must be valid dates
      - Enumerated types like `PersonSex`, `ContactPointSystem`, and `ContactPointUse` must contain valid values
+     - On creation, if `patient_id` is supplied it must be a well-formed patient id (a 32-character hex string); otherwise validation raises
+     - On creation, a supplied `patient_id` must not already belong to an existing patient; a duplicate id raises a validation error
   4. **Update-Specific Validation** : 
-     - Ensures `patient_id` is not provided during patient creation
      - Validates that the patient exists before attempting updates
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient/
 
@@ -22429,6 +22757,37 @@ author_id | optional | string or UUID | Author's id to set task comment creator,
             )
             return [add_task_comment.apply()]
     ```
+##  Creating a task and a comment together 
+`AddTaskComment` requires the `task_id` of an existing task. To create a brand new task **and** add a comment to it in a single `compute()` return, supply your own `id` to `AddTask` and reuse that same value as the `task_id` on `AddTaskComment`. Because the `id` on `AddTask` is optional and is generated for you when omitted, the trick is simply to generate it yourself so you can reference it on the comment.
+There is no need to create the task first and listen for a follow-up event — just return both effects from the same handler, with the `AddTask` effect before the `AddTaskComment` effect.
+    ```python
+    import uuid
+    import arrow
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.task import AddTask, AddTaskComment, TaskStatus
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = [
+            EventType.Name(EventType.LAB_REPORT_CREATED),
+        ]
+        def compute(self) -> list[Effect]:
+            # Generate the task id up front so the comment can reference it.
+            task_id = str(uuid.uuid4())
+            add_task = AddTask(
+                id=task_id,
+                title="Please call the patient with their test results.",
+                due=arrow.utcnow().shift(days=1).datetime,
+                status=TaskStatus.OPEN,
+            )
+            add_task_comment = AddTaskComment(
+                task_id=task_id,
+                body="Results flagged abnormal — follow up today.",
+            )
+            # Order matters: the task must be created before the comment.
+            return [add_task.apply(), add_task_comment.apply()]
+    ```
+> **Note:** The effects are applied in the order they are returned, so the `AddTask` effect must come before the `AddTaskComment` effect that references it. Both effects must be returned from the same handler — don't split them across separate handlers or plugins, and don't defer either effect, since that breaks the ordering the comment relies on.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-tasks/
 
 
@@ -22606,7 +22965,7 @@ CREATE_APPOINTMENT | Create an appointment.
 UPDATE_APPOINTMENT | Update an appointment.  
 RESCHEDULE_APPOINTMENT | Reschedule an appointment.  
 CANCEL_APPOINTMENT | Cancel an appointment.  
-REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state.  
+REVERT_APPOINTMENT | Revert a cancelled, converted, or no-showed appointment back to the booked state.  
 ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total).  
 REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment.  
 UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment.  
@@ -23443,6 +23802,26 @@ Target object | Context object
         "display": str
       ]
     ]  
+CLAIM_SUPERVISING_PROVIDER_CHANGED  
+---  
+Occurs when a claim's supervising provider snapshot is created or updated. The context includes the previous value(s) of any changed fields.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "previous": null | {
+      "first_name": str,
+      "last_name": str,
+      ...
+    }  
+CLAIM_INCIDENT_TO_CHANGED  
+---  
+Occurs when a claim's `incident_to` billing flag is changed. The context includes the previous boolean value.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "previous": bool  
 ####  Billing Line Items 
 BILLING_LINE_ITEM_CREATED  
 ---  
@@ -23657,6 +24036,34 @@ Target object | Context object
     "deleted_by":
       "id": user_id
       "name": str  
+DOCUMENT_FIELDS_UPDATED  
+---  
+Occurs when a clinical document's fields are updated. This fires when a Lab Report, Imaging Report, or Specialist Consult Report is parsed and its values are saved. The `updated_fields` list contains each changed field with its new and previous values.  
+Target object | Context object  
+    "id": document_id
+    "type": [IntegrationTask](/sdk/data-integration-task/)
+| 
+    "document":
+      "id": document_id
+      "channel": str
+      "status": str
+      "title": str
+      "type": str
+      "content_url": str
+      "content_type": str
+      "created_at": datetime str
+    "patient":
+      "id": pt_id
+    "updated_fields":
+        "name": str
+        "value": str | int | float | bool
+        "previous_value": str | int | float | bool | None
+    "document_type":
+      "key": str
+      "name": str
+      "report_type": str
+      "template_type": str
+    "updated_at": datetime str  
 ####  Conditions 
 CONDITION_ASSESSED  
 ---  
@@ -24175,6 +24582,26 @@ Target object | Context object
     "note_id": note_id,
     "patient_id": pt_id,
     "state": [str](/sdk/data-note/#notestates)  
+NOTE_CREATED  
+---  
+Occurs when a note is created.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "patient":
+        "id": pt_id  
+NOTE_UPDATED  
+---  
+Occurs when a note is updated, including changes to fields, commands, or body content.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "patient":
+        "id": pt_id
+    "user":
+        "id": staff_key  
 NOTE_OPENED  
 ---  
 Fires when a provider expands a note in the patient chart. The context includes the note's ID.  
@@ -24198,6 +24625,16 @@ Target object | Context object
     "user": {
       "type": str,
       "id": user_id
+    }  
+NOTE_SUPERVISING_PROVIDER_CHANGED  
+---  
+Occurs when a note's supervising provider is changed. The context includes the previous supervising provider's Staff ID, or `null` if the note previously had no supervising provider.  
+Target object | Context object  
+    "id": note_id
+    "type": [Note](/sdk/data-note/)
+| 
+    "previous": null | {
+      "id": staff_key
     }  
 GET_NOTE_RESTRICTIONS  
 ---  
@@ -24502,6 +24939,11 @@ PRE_COMMAND_EXECUTE_ACTION | Before an action is executed on any command.
 POST_COMMAND_EXECUTE_ACTION | After an action is executed on any command.  
 POST_COMMAND_INSERTED_INTO_NOTE | After a command is added to a note in the UI.  
 AVAILABLE_ACTIONS | When a command is rendered in the UI, after any update to data, state, or other changes  
+#####  Transaction Behavior 
+Pre-event handlers (`PRE_COMMAND_ORIGINATE`, `PRE_COMMAND_COMMIT`, `PRE_COMMAND_UPDATE`) run synchronously inside the same database transaction as the command operation. Your handler can perform validation or modify data, and if it raises an exception, both your changes and the command operation roll back together.
+Post-event handlers (`POST_COMMAND_ORIGINATE`, `POST_COMMAND_COMMIT`, `POST_COMMAND_UPDATE`) use Django's `on_commit` mechanism and execute only after the outermost transaction commits successfully. If you wrap a command operation inside a `transaction.atomic()` block, the post-event handlers won't fire until that outer transaction commits.
+This model lets you combine command operations with other database writes in a single atomic unit. You can originate a command and update related records together, knowing that either all operations succeed or none do.
+See [Transactions](/sdk/custom-data-transactions/) for more on using `transaction.atomic()` in your plugins.
 #####  Context Overview 
 Each command lifecycle event provides specific context to the handler, depending on the stage of the command lifecycle.
 **Base Context (All Events Except`PRE_COMMAND_ORIGINATE`)**:
@@ -40572,6 +41014,7 @@ Attribute | Description
 `NAME` | The display title shown on the tab (supports emojis)  
 `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
 `PRIORITY` | Controls tab order — lower values appear first. Defaults to `0`  
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
 Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
 > **⚠️ Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
     ```python
@@ -40719,6 +41162,17 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
       "readme": "./README.md"
     }
     ```
+##  Opening an Application on Load 
+You can configure an application to open **automatically** , without the user clicking its icon, by enabling the **Open on load** setting for that application in your instance settings.
+To enable it, go to the Plugins_IO > Applications section of your instance settings (`/admin/plugin_io/application/`), open the application you want, check **Open on load** , and save. If you don't have access to this setting, reach out to Canvas Support.
+Behavior depends on the application's scope:
+Scope | When it opens  
+---|---  
+`global` | Automatically when the app shell first loads.  
+`patient_specific` | Automatically when a patient chart is opened.  
+This is an instance-level setting configured per application in your instance settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is preserved when the plugin is reinstalled or updated.
+> **Warning:** **Enable Open on load for at most one application per scope.** There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two `patient_specific` apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load. 
+> **Note:** This is distinct from a Note Application's `open_by_default()`, which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
 ##  Notification Badges 
 You can display a notification badge — a small count — on the icon of a `global` or `patient_specific` application: in the app drawer, or on the panel when the application sets `show_in_panel`. A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 ###  Initial count on load 
@@ -42973,9 +43427,9 @@ Given these considerations, the platform maintains a strict and judicious approa
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/secrets/
 Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's `CANVAS_MANIFEST.json` as **variables** , set at install time or through the Admin UI, and read from `self.secrets` at runtime.
-Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification).
-###  Declaring variables in `CANVAS_MANIFEST.json`
-Declare each variable as an object with a `name` and an optional `sensitive` flag (defaults to `false`):
+Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification). All variable values are write-only through the CLI and API.
+###  Declaring Variables in `CANVAS_MANIFEST.json`
+Variables are declared in your plugin's `CANVAS_MANIFEST.json` file under the top-level `variables` field. Each variable is an object with a `name` and an optional `sensitive` flag (defaults to `false`). Variables marked as `sensitive: true` are write-only and behave like secrets. These declared variables become available for configuration in the Canvas Admin UI when the plugin is installed.
     ```json
     {
       "sdk_version": "0.1.4",
@@ -42992,19 +43446,25 @@ Declare each variable as an object with a `name` and an optional `sensitive` fla
       },
       "variables": [
         {"name": "API_TOKEN", "sensitive": true},
+        {"name": "WEBHOOK_URL"},
         {"name": "LOG_LEVEL", "sensitive": false}
       ],
       "tags": {}
     }
     ```
+Field | Type | Required | Description  
+---|---|---|---  
+`name` | string | Yes | The variable name used in your plugin code  
+`sensitive` | boolean | No | When `true`, marks the variable as sensitive for display purposes (default: `false`)  
 ####  Legacy `secrets` array (deprecated) 
 The flat `secrets` array is still accepted for backwards compatibility:
     ```json
     "secrets": ["API_TOKEN"]
     ```
 It emits a deprecation warning during `canvas validate-manifest` and is mapped internally to `variables` entries with `sensitive: false`. To preserve sensitive treatment, migrate to the `variables` schema with `sensitive: true` and re-install the plugin.
+> **Warning:** **Deprecation Notice:** The legacy `secrets` array format is deprecated. Use the `variables` format shown above instead. The legacy format will continue to work but displays a deprecation warning during `canvas validate-manifest`. 
 > ⚠️ **Pre-existing values default to non-sensitive.** Any plugin secret that existed before Canvas 1.305.0 — or any value configured via the legacy `secrets:` array — is stored with `sensitive: false`. It will appear in plain text in the Admin UI until the owning plugin is migrated to the `variables` schema with `sensitive: true` and re-installed.
-###  Configuring values from the CLI 
+###  Configuring Variables from the CLI 
 Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
 Provide values during install:
     ```console
@@ -43030,22 +43490,23 @@ Run `canvas config list <plugin_name>` to see which variables are configured for
     ```
 To read a value, use the Django Admin UI (access is gated by managing-user permissions).
 > _The`--variable` flag, `canvas config list` sensitive marking, and Admin UI masking require Canvas CLI 0.146.0 or newer. Upgrade with `pip install --upgrade canvas`._
-###  Configuring values in the Admin UI 
+###  Configuring Variables in the Admin UI 
 After install you can also set values through the Admin interface.
 Navigation path: `Home` › `Plugin_IO` › `Plugins` › `(your plugin)`
 Or, go directly to:
     https://<your_canvas_instance>/admin/plugin_io/plugin/<plugin_id>/change/
-On this page, you will find input fields for each variable declared in your manifest. Sensitive values display as `SENSITIVE` and are no longer rendered in the form HTML — submit a new value to overwrite, or leave the field blank to keep the existing value. Non-sensitive values display their current value and can be edited inline.
-![Setting plugin secrets](/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png)
-Plugin secret access can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its values (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI.
-###  Accessing values in your plugin 
-All variables and secrets — sensitive and non-sensitive alike — are exposed to your plugin code through `self.secrets`, a Python dictionary keyed by variable name:
+On this page, you will find input fields for each variable defined in your manifest. Sensitive values display as `SENSITIVE` and are no longer rendered in the form HTML — submit a new value to overwrite, or leave the field blank to keep the existing value. Non-sensitive values display their current value and can be edited inline.
+![Setting plugin variables](/assets/images/sdk/secrets/plugins_secrets_settings_with_permissions.png)
+Sensitive variables can be protected by managing user permissions. Only users explicitly assigned as "managing users" for a plugin can view or modify its sensitive variables (as well as other sensitive settings like the plugin package file download link). Other users can see basic plugin details and enable or disable plugins, but they will not be able to access or change sensitive variable values. To add or remove managing users for a plugin, use the "Managing users" section on the plugin detail page in the Admin UI. This ensures that sensitive configuration, such as API tokens, remains visible only to authorized personnel.
+###  Accessing Variables in Your Plugin 
+All variables — sensitive and non-sensitive alike — are exposed to your plugin code through `self.secrets`, a Python dictionary keyed by variable name:
     ```python
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.effects import Effect
     class MyHandler(BaseHandler):
         def compute(self) -> list[Effect]:
             api_token = self.secrets["API_TOKEN"]
+            webhook_url = self.secrets["WEBHOOK_URL"]
             log_level = self.secrets["LOG_LEVEL"]
             ...
     ```

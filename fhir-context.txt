@@ -31229,7 +31229,7 @@ The request requires user authorization.
 ### 
 A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html>   
-Organizations come from three different Canvas data types: Organizations, Vendors, and Insurers. You can manage these resources in Canvas Settings. FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
+Organizations come from four different Canvas data types: Organizations, Vendors, Insurers, and Service Providers. Organizations, Vendors, and Insurers can be managed in Canvas Settings. Service Providers are created automatically when an external provider is referenced, such as when a referral or imaging order is placed, when an external member is added to a patient's Care Team, or when an inbound fax is received. They appear as Organization participants on patient [Care Teams](/api/careteam). FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
 ### Endpoints
 get /Organization/{id} get /Organization
 get
@@ -32110,7 +32110,7 @@ For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor s
   - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string required
-Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
 display 
 string 
 valueCodeableConcept 
@@ -32531,7 +32531,7 @@ For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor s
   - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string 
-Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
 display 
 string 
 valueCodeableConcept 
@@ -33014,7 +33014,7 @@ For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor s
   - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string required
-Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
 display 
 string 
 valueCodeableConcept 
@@ -33530,7 +33530,7 @@ For known race / ethnicity codes use the OID; for `ASKU` use the v3-NullFlavor s
   - http://terminology.hl7.org/CodeSystem/v3-NullFlavor 
 code 
 string 
-Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
 display 
 string 
 valueCodeableConcept 
