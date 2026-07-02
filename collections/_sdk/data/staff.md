@@ -62,6 +62,8 @@ staff.top_role_abbreviation
 # MD
 ```
 
+When a staff member holds more than one role, `top_clinical_role` looks only at roles in a clinical domain — those whose `domain` is `CLINICAL` or `HYBRID` — and returns the one with the highest `domain_privilege_level`. Administrative roles are never selected, even if they carry a higher privilege level. If the staff member has no clinical or hybrid roles, both `top_clinical_role` and `top_role_abbreviation` are `None`. Because `credentialed_name` appends `top_role_abbreviation`, it reflects the same highest-privilege clinical role.
+
 To get `Staff` licenses. 
 
 ```python
