@@ -2523,6 +2523,51 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+#### Surescripts
+
+Surescripts response events fire when the platform receives a response from Surescripts after a corresponding request effect is executed. These events let plugins react to insurance eligibility checks and other Surescripts services.
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_ELIGIBILITY_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns an eligibility response after a <code>SendSurescriptsEligibilityRequestEffect</code> is executed. The response contains the patient's insurance plan information and coverage details. See <a href='/sdk/effect-surescripts/#handling-eligibility-responses'>Handling Eligibility Responses</a> for the typed response data classes and an example handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"plans": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_BENEFITS_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns a benefits response after a <code>SendSurescriptsBenefitsRequestEffect</code> is executed. The response contains formulary and coverage details for the requested medication, including copays, quantity limits, and therapeutic alternatives. See <a href='/sdk/effect-surescripts/#handling-benefits-responses'>Handling Benefits Responses</a> for the typed response data classes and an example handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"medication_ndc": str
+"coverages": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Messaging
 
 <table>
@@ -23712,7 +23757,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
-    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-embedded-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
   </thead>
   <tbody>
     <tr>
