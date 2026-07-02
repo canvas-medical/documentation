@@ -264,7 +264,7 @@ Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [App
 | UPDATE_APPOINTMENT | Update an appointment. |
 | RESCHEDULE_APPOINTMENT | Reschedule an appointment. |
 | CANCEL_APPOINTMENT | Cancel an appointment. |
-| REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state. |
+| REVERT_APPOINTMENT | Revert a cancelled, converted, or no-showed appointment back to the booked state. |
 | ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total). |
 | REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment. |
 | UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment. |
@@ -489,11 +489,13 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 ### Surescripts
 
+Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
+
 | Effect | Description |
 |---|---|
-| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. |
-| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. |
-| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
+| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. See [Eligibility](/sdk/effect-surescripts/#eligibility). |
+| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. See [Benefits](/sdk/effect-surescripts/#benefits). |
+| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. See [Medication History](/sdk/effect-surescripts/#medication-history). |
 
 
 ### Data Integration

@@ -132,6 +132,7 @@ url = staff.signature_url
 | supervising_team           | [Staff](#staff)[]                                               |
 | default_supervising_provider | [Staff](#staff)                                               |
 | notes                      | Note[]                                                          |
+| supervised_notes           | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
 | assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |

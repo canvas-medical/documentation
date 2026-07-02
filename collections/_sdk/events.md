@@ -1509,6 +1509,44 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_FIELDS_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a clinical document's fields are updated. This fires when a Lab Report, Imaging Report, or Specialist Consult Report is parsed and its values are saved. The <code>updated_fields</code> list contains each changed field with its new and previous values.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"patient":
+  "id": pt_id
+"updated_fields":
+    "name": str
+    "value": str | int | float | bool
+    "previous_value": str | int | float | bool | None
+"document_type":
+  "key": str
+  "name": str
+  "report_type": str
+  "template_type": str
+"updated_at": datetime str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Conditions
 
 <table>
@@ -2485,6 +2523,51 @@ The following events fire when a prescription's status changes during the e-pres
   </tbody>
 </table>
 
+#### Surescripts
+
+Surescripts response events fire when the platform receives a response from Surescripts after a corresponding request effect is executed. These events let plugins react to insurance eligibility checks and other Surescripts services.
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_ELIGIBILITY_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns an eligibility response after a <code>SendSurescriptsEligibilityRequestEffect</code> is executed. The response contains the patient's insurance plan information and coverage details. See <a href='/sdk/effect-surescripts/#handling-eligibility-responses'>Handling Eligibility Responses</a> for the typed response data classes and an example handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"plans": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SURESCRIPTS_BENEFITS_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when Surescripts returns a benefits response after a <code>SendSurescriptsBenefitsRequestEffect</code> is executed. The response contains formulary and coverage details for the requested medication, including copays, quantity limits, and therapeutic alternatives. See <a href='/sdk/effect-surescripts/#handling-benefits-responses'>Handling Benefits Responses</a> for the typed response data classes and an example handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>empty</pre></td>
+      <td><pre>"correlation_id": str
+"patient_id": str
+"medication_ndc": str
+"coverages": list[dict]
+"error": str or None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Messaging
 
 <table>
@@ -2600,6 +2683,46 @@ The following events fire when a prescription's status changes during the e-pres
       <td><pre>"note_id": note_id,
 "patient_id": pt_id,
 "state": <a href="/sdk/data-note/#notestates">str</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is updated, including changes to fields, commands, or body content.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_id
+"type": <a href='/sdk/data-note/'>Note</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id
+"user":
+    "id": staff_key</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23634,7 +23757,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
-    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-embedded-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
   </thead>
   <tbody>
     <tr>
