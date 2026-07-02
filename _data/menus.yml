@@ -782,6 +782,8 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Embedded Applications"
+    url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
 
