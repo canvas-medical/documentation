@@ -1,5 +1,5 @@
 ---
-slug: /
+permalink: /api/
 title: "Introduction "
 layout: apilandingpage
 ---
