@@ -98,6 +98,8 @@ plugins:
 
 ### Exclude from processing
 exclude:
+  - .devbox
+  - .venv
   - Gemfile
   - Gemfile.lock
   - README.md
