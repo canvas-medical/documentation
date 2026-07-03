@@ -45,6 +45,7 @@ defaults:
       path          : "collections/_api/**/*"
     values:
       layout        : "api"
+      excerpt_separator: ""
   - scope:
       path          : "collections/_documentation/**/*"
     values:
