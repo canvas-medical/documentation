@@ -638,6 +638,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Populating Command Fields"
+    url: /guides/populating-command-fields/
+    description: Look up the codes, ids, and enum values behind autocomplete and dropdown command fields
+    uses:
+      - sdk
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/

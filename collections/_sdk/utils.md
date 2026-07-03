@@ -341,6 +341,8 @@ The response contains a `results` list; each entry looks like:
 }
 ```
 
+Each result's `clinical_quantities` array supplies the values for a [`ClinicalQuantity`](/sdk/commands/#clinicalquantity) on prescribe commands — `representative_ndc`, `erx_ncpdp_script_quantity_qualifier_code` → `ncpdp_quantity_qualifier_code`, and `clinical_quantity_description` → `description`.
+
 #### `GET /fdb/grouped-medication/{med_medication_id}/` — look up by FDB code
 
 Fetch one or more medications by FDB code. Pass a single `med_medication_id`, or a comma-separated list of ids, as the path segment.
@@ -360,14 +362,32 @@ response_json = ontologies_http.get_json(
 ).json()
 ```
 
-Returns the same `results` shape as the text/RxNorm search above:
+Returns the same full `results` shape as the text/RxNorm search above — each entry includes every field, including `clinical_quantities`:
 
 ```json
 {
   "results": [
     {
+      "description_and_quantity": "Athenol 325 mg tablet",
       "med_medication_id": 123456,
+      "search_terms": "Athenol 325 mg tablet|ACETAMINOPHEN ORAL|...|TYLENOL|...",
       "med_medication_description": "Athenol 325 mg tablet",
+      "clinical_quantities": [
+        {
+          "erx_quantity": "1.0000000",
+          "representative_ndc": "11822317640",
+          "clinical_quantity_description": "tablet",
+          "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+          "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
+        }
+      ],
+      "etc_path_id": [3645, 574, 578, 577],
+      "etc_path_name": [
+        "Analgesic, Anti-inflammatory or Antipyretic",
+        "Analgesic, Anti-inflammatory or Antipyretic - Non-Opioid",
+        "Analgesic or Antipyretic Non-Opioid and Combinations",
+        "Analgesic or Antipyretic Non-Opioid"
+      ],
       "rxnorm_rxcui": "313782"
     }
   ]
@@ -428,18 +448,54 @@ response_json = ontologies_http.get_json(
 ).json()
 ```
 
-The response is a dictionary keyed by NDC; each value is a medication object in the same format as the single-NDC lookup above:
+The response is a dictionary keyed by NDC; each value is the full medication object (same shape as the single-NDC lookup above), including `clinical_quantities`:
 
 ```json
 {
   "76420037215": {
+    "description_and_quantity": "Aphen 325 mg tablet",
     "med_medication_id": 572345,
+    "search_terms": "Aphen 325 mg tablet|APHEN 325 MG TABLET|ACETAMINOPHEN 325 MG TABLET",
     "med_medication_description": "Aphen 325 mg tablet",
+    "clinical_quantities": [
+      {
+        "erx_quantity": "1.0000000",
+        "representative_ndc": "76420037215",
+        "clinical_quantity_description": "tablet",
+        "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+        "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
+      }
+    ],
+    "etc_path_id": [3645, 574, 578, 577],
+    "etc_path_name": [
+      "Analgesic, Anti-inflammatory or Antipyretic",
+      "Analgesic, Anti-inflammatory or Antipyretic - Non-Opioid",
+      "Analgesic or Antipyretic Non-Opioid and Combinations",
+      "Analgesic or Antipyretic Non-Opioid"
+    ],
     "rxnorm_rxcui": "313782"
   },
   "11822317640": {
+    "description_and_quantity": "Athenol 325 mg tablet",
     "med_medication_id": 436095,
+    "search_terms": "Athenol 325 mg tablet|ACETAMINOPHEN ORAL|...|TYLENOL|...",
     "med_medication_description": "Athenol 325 mg tablet",
+    "clinical_quantities": [
+      {
+        "erx_quantity": "1.0000000",
+        "representative_ndc": "11822317640",
+        "clinical_quantity_description": "tablet",
+        "erx_ncpdp_script_quantity_qualifier_code": "C48542",
+        "erx_ncpdp_script_quantity_qualifier_description": "Tablet"
+      }
+    ],
+    "etc_path_id": [3645, 574, 578, 577],
+    "etc_path_name": [
+      "Analgesic, Anti-inflammatory or Antipyretic",
+      "Analgesic, Anti-inflammatory or Antipyretic - Non-Opioid",
+      "Analgesic or Antipyretic Non-Opioid and Combinations",
+      "Analgesic or Antipyretic Non-Opioid"
+    ],
     "rxnorm_rxcui": "313782"
   }
 }
@@ -761,7 +817,9 @@ The response contains a `results` list of SNOMED concepts:
 
 **Used by:** the [Prescribe](/sdk/commands/#prescribe) safety screening; also callable directly from a plugin (it is not tied to a command field).
 
-Canvas's drug–allergy screening — the same FDB-backed check the chart runs when a provider adds a medication — is available through `ontologies_http`. It does **not** run automatically when a medication is created outside the in-chart command flow (a `MedicationStatement` written via the FHIR API is stored as-is with no screening), so run it yourself when you need the result.
+{% include alert.html type="info" content="Canvas runs this screening automatically on staged medication commands in the UI and displays the results to the provider. If you are using the SDK to automate the charting of these commands, that interactive screening may not surface — you may want to run this check yourself." %}
+
+Canvas's drug–allergy screening — the same FDB-backed check the chart runs when a provider adds a medication — is available through `ontologies_http`.
 
 `GET /fdb/medication-allergy/` takes a candidate medication and the patient's allergy list, both as JSON-encoded query parameters:
 
@@ -833,6 +891,8 @@ The response is a list of interaction objects — one per matched allergy, disti
 ### Screening for drug–drug interactions
 
 **Used by:** the [Prescribe](/sdk/commands/#prescribe) safety screening; also callable directly from a plugin (it is not tied to a command field).
+
+{% include alert.html type="info" content="Canvas runs this screening automatically on staged medication commands in the UI and displays the results to the provider. If you are using the SDK to automate the charting of these commands, that interactive screening may not surface — you may want to run this check yourself." %}
 
 The sibling `GET /fdb/medication-list-interaction/` endpoint checks a single candidate medication against the patient's existing medication list. It checks the candidate against each existing med — it does **not** check the existing meds against each other. Both inputs are JSON-encoded query parameters:
 
@@ -906,8 +966,6 @@ for new_med in new_meds:
     # screen new_med against `existing`, then:
     existing.append(new_med)  # so the next new med is checked against it too
 ```
-
-> **Note:** The interaction-screening endpoints (`/fdb/medication-allergy/` and `/fdb/medication-list-interaction/`) are lower-level ontologies endpoints and may change. Cover their behavior with tests and handle non-`200` responses defensively.
 
 ## Making requests to the Pharmacy service
 
