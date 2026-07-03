@@ -232,9 +232,50 @@ $ canvas validate [OPTIONS] PLUGIN_NAME
 This command runs full pre-flight validation combining:
 
 1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
-2. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
+2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes before any code runs.
+3. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
 
-**Sandbox-load validation** executes each handler module in the plugin sandbox to catch:
+#### Static lint
+
+Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
+
+```console
+$ canvas validate my_plugin
+  ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
+
+These issues will fail on the instance (sandbox / Custom Data):
+  ✗ my_plugin/handlers/protocol.py:18  [setattr-blocked]  `setattr()` is blocked by the sandbox. Use direct attribute assignment (`obj.attr = value`) instead.
+```
+
+**Sandbox constructs (errors).** These compile under RestrictedPython but are rejected when a handler runs on the instance, so a plain sandbox load can miss them. See [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#forbidden-constructs) for the full list and the allowed alternatives.
+
+| Rule code | Flags |
+| --- | --- |
+| `setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value` |
+| `delattr-blocked` | `delattr(obj, "x")` — use `del obj.x` |
+| `bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data |
+| `type-3arg-blocked` | `type(name, bases, dict)` dynamic class creation — declare the class with `class …:` |
+| `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v` |
+
+`@dataclass(frozen=True)` and `@dataclass(slots=True)` load and run fine in the sandbox and are intentionally not flagged.
+
+**Custom Data (errors).** Both leave tables silently uncreated, so queries fail at runtime. See [Custom Models](/sdk/custom-data-custom-models/) and the [Quick Start](/sdk/custom-data-quick-start/) for setup.
+
+| Rule code | Flags |
+| --- | --- |
+| `custom-model-wrong-dir` | A `CustomModel` subclass defined outside `<plugin>/models/` — Canvas only loads models from that directory |
+| `missing-custom-data-block` | CustomModels are present but the manifest has no `custom_data` block |
+
+**Custom Data (warnings).** These don't block validation but usually indicate a bug:
+
+| Rule code | Flags |
+| --- | --- |
+| `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…` |
+| `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly |
+
+#### Sandbox-load validation
+
+After the static lint passes, sandbox-load validation executes each handler module in the plugin sandbox to catch:
 
 - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
 - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
