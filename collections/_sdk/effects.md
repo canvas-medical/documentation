@@ -171,6 +171,7 @@ The following effects are available to be applied in Canvas.
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
+| SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
@@ -263,7 +264,7 @@ Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [App
 | UPDATE_APPOINTMENT | Update an appointment. |
 | RESCHEDULE_APPOINTMENT | Reschedule an appointment. |
 | CANCEL_APPOINTMENT | Cancel an appointment. |
-| REVERT_APPOINTMENT | Revert a checked-in or cancelled appointment back to the booked state. |
+| REVERT_APPOINTMENT | Revert a cancelled, converted, or no-showed appointment back to the booked state. |
 | ADD_APPOINTMENT_LABEL | Add one or more labels to an appointment (max 3 total). |
 | REMOVE_APPOINTMENT_LABEL | Remove one or more labels from an appointment. |
 | UPSERT_APPOINTMENT_METADATA | Add or update metadata on an appointment. |
@@ -488,11 +489,13 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 ### Surescripts
 
+Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
+
 | Effect | Description |
 |---|---|
-| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. |
-| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. |
-| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. |
+| SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. See [Eligibility](/sdk/effect-surescripts/#eligibility). |
+| SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. See [Benefits](/sdk/effect-surescripts/#benefits). |
+| SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. See [Medication History](/sdk/effect-surescripts/#medication-history). |
 
 
 ### Data Integration
@@ -552,6 +555,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
+| POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
 | Prescribe | `*_PRESCRIBE_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Questionnaire | `*_QUESTIONNAIRE_COMMAND` | |
 | Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only |

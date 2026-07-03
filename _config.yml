@@ -45,6 +45,7 @@ defaults:
       path          : "collections/_api/**/*"
     values:
       layout        : "api"
+      excerpt_separator: ""
   - scope:
       path          : "collections/_documentation/**/*"
     values:
@@ -105,8 +106,16 @@ exclude:
   - _src
   - amplify.yml
   - config
+  - context_extractor.py
+  - customHttp.yml
+  - generate-context.py
+  - generate-llms.py
   - icon.png
+  - mypy.ini
   - node_modules
+  - pyproject.toml
+  - test-code-blocks.py
+  - uv.lock
   - optimization-fix
   - optimization-fix-this-file-is-ignored.js
   - package.json

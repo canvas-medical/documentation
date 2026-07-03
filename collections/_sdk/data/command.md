@@ -111,6 +111,7 @@ The following table shows the different command `schema_key` values with links t
 | medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)        |
 | perform             | [Perform](/sdk/commands/#perform)                                |
 | plan                | [Plan](/sdk/commands/#plan)                                      |
+| pocLabTest          | [POCLabTest](/sdk/commands/#poclabtest)                          |
 | prescribe           | [Prescribe](/sdk/commands/#prescribe)                            |
 | questionnaire       | [Questionnaire](/sdk/commands/#questionnaire)                    |
 | reasonForVisit      | [ReasonForVisit](/sdk/commands/#reasonforvisit)                  |

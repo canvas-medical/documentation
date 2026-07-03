@@ -155,6 +155,60 @@ class MyHandler(BaseHandler):
         return [add_task_comment.apply()]
 ```
 
+## Creating a task and a comment together
+
+`AddTaskComment` requires the `task_id` of an existing task. To create a brand new
+task **and** add a comment to it in a single `compute()` return, supply your own
+`id` to `AddTask` and reuse that same value as the `task_id` on `AddTaskComment`.
+Because the `id` on `AddTask` is optional and is generated for you when omitted,
+the trick is simply to generate it yourself so you can reference it on the comment.
+
+There is no need to create the task first and listen for a follow-up event — just
+return both effects from the same handler, with the `AddTask` effect before the
+`AddTaskComment` effect.
+
+```python
+import uuid
+
+import arrow
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.task import AddTask, AddTaskComment, TaskStatus
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    RESPONDS_TO = [
+        EventType.Name(EventType.LAB_REPORT_CREATED),
+    ]
+
+    def compute(self) -> list[Effect]:
+        # Generate the task id up front so the comment can reference it.
+        task_id = str(uuid.uuid4())
+
+        add_task = AddTask(
+            id=task_id,
+            title="Please call the patient with their test results.",
+            due=arrow.utcnow().shift(days=1).datetime,
+            status=TaskStatus.OPEN,
+        )
+
+        add_task_comment = AddTaskComment(
+            task_id=task_id,
+            body="Results flagged abnormal — follow up today.",
+        )
+
+        # Order matters: the task must be created before the comment.
+        return [add_task.apply(), add_task_comment.apply()]
+```
+
+> **Note:** The effects are applied in the order they are returned, so the `AddTask`
+> effect must come before the `AddTaskComment` effect that references it. Both
+> effects must be returned from the same handler — don't split them across separate
+> handlers or plugins, and don't defer either effect, since that breaks the ordering
+> the comment relies on.
+
 <br/>
 <br/>
 <br/>

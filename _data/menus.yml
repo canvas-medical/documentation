@@ -25,6 +25,8 @@ api_canvas_fhir:
     url: /api/quickstart/
   - title: "Customer Authentication"
     url: /api/customer-authentication/
+  - title: "Third-Party Developer Access"
+    url: /api/developer-access/
   - title: Authentication Best Practices
     url: /api/authentication-best-practices/
   - title: "Conditional Requests"
@@ -494,9 +496,9 @@ education_series:
   - title: "Sandboxing and Allowed Imports"
     url: /learn/sandboxing-and-allowed-imports/
     description: Learn about sandboxing and allowed imports in the Canvas SDK
-  - title: "Secrets"
+  - title: "Variables"
     url: /learn/secrets/
-    description: Learn about secrets in the Canvas SDK
+    description: Learn about plugin variables and secrets in the Canvas SDK
   - title: "Caching"
     url: /learn/caching/
     description: Learn about caching in the Canvas SDK
@@ -638,6 +640,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Populating Command Fields"
+    url: /guides/populating-command-fields/
+    description: Look up the codes, ids, and enum values behind autocomplete and dropdown command fields
+    uses:
+      - sdk
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
@@ -688,7 +696,7 @@ sdk_overview:
     url: /sdk/questionnaires/
   - title: "Sandboxing and Allowed Imports"
     url: /sdk/sandboxing-and-allowed-imports/
-  - title: "Secrets"
+  - title: "Variables"
     url: /sdk/secrets/
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/
@@ -726,14 +734,20 @@ commands_module:
     description: Create plugin-defined commands that embed read-only HTML content in a note.
 
 example_plugins:
+  - title: "API Samples"
+    url: /sdk/example-api_samples/
+  - title: "Charting Interface"
+    identifier: charting
+  - title: "Patient Portal Customization"
+    identifier: portal_customization
+  - title: "Integrations"
+    identifier: integrations
+
+charting:
   - title: "Abnormal Lab Task Notification"
     url: /sdk/example-abnormal_lab_task_notification/
   - title: "AI Note Titles"
     url: /sdk/example-ai_note_titles/
-  - title: "API Samples"
-    url: /sdk/example-api_samples/
-  - title: "AWS S3"
-    url: /sdk/example-aws_s3/
   - title: "Charting API Examples"
     url: /sdk/example-charting_api_examples/
   - title: "Example Chart Application"
@@ -742,18 +756,10 @@ example_plugins:
     url: /sdk/example-extend_ai_pdf/
   - title: "Group Items in Patient Chart"
     url: /sdk/example-patient_summary_chart_groups/
-  - title: "LLM"
-    url: /sdk/example-llm/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
-  - title: "Patient Portal Customization"
-    identifier: portal_customization
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
-  - title: "SendGrid Email"
-    url: /sdk/example-sendgrid_email/
-  - title: "Twilio SMS/MMS"
-    url: /sdk/example-twilio_sms_mms/
   - title: "Upsert Patient Metadata"
     url: /sdk/example-upsert_patient_metadata/
   - title: "Vitals Visualizer"
@@ -765,6 +771,16 @@ portal_customization:
   - title: "Launch an Application"
     url: /sdk/example-portal-customization-launch_application/
 
+integrations:
+  - title: "AWS S3"
+    url: /sdk/example-aws_s3/
+  - title: "LLM"
+    url: /sdk/example-llm/
+  - title: "SendGrid Email"
+    url: /sdk/example-sendgrid_email/
+  - title: "Twilio SMS/MMS"
+    url: /sdk/example-twilio_sms_mms/
+  
 sdk_handlers:
   - title: "Action Buttons"
     url: /sdk/handlers-action-buttons/
@@ -774,6 +790,8 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Embedded Applications"
+    url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
 
@@ -796,6 +814,9 @@ effects_module:
   - title: "Appointments"
     url: /sdk/effect-notes/#appointment-effect
     description: Create, update, and cancel patient appointments.
+  - title: "Application Notification Badge"
+    url: /sdk/effect-application-notification-badge/
+    description: Display and update a notification badge count on an application icon.
   - title: "Banner Alerts"
     url: /sdk/effect-banner-alerts/
     description: Contextual information in a patient's chart.
@@ -916,6 +937,9 @@ effects_module:
   - title: "Staff Metadata"
     url: /sdk/effect-staff-metadata/
     description: Interact with staff metadata.
+  - title: "Surescripts"
+    url: /sdk/effect-surescripts/
+    description: Query insurance eligibility, medication history, and benefits through Surescripts.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
@@ -956,6 +980,9 @@ data_module:
   - title: "ChargeDescriptionMaster"
     url: /sdk/data-charge-description-master/
     description: Billing charges in Canvas that can be added to the note footer.
+  - title: "ChartSectionReview"
+    url: /sdk/data-chart-section-review/
+    description: Reviewed chart sections captured on a note, with their pre-rendered title and narrative content.
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
@@ -971,6 +998,9 @@ data_module:
   - title: "Condition"
     url: /sdk/data-condition/
     description: Condition, diagnosis, or reason for seeking medical attention.
+  - title: "ContentType"
+    url: /sdk/data-content-type/
+    description: Django content type ids used for generic relations and permalink generation.
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
@@ -1061,6 +1091,9 @@ data_module:
   - title: "PayorSpecificCharge"
     url: /sdk/data-payor-specific-charge/
     description: A billing charge specific to a certain transactor in Canvas.
+  - title: "PluginCommand"
+    url: /sdk/data-plugin-command/
+    description: Custom commands registered by plugins via the manifest configuration.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
@@ -1112,6 +1145,9 @@ data_module:
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
+  - title: "VisualExamFinding"
+    url: /sdk/data-visual-exam-finding/
+    description: Visual exam findings captured on a note — a titled image with a narrative description.
 
 custom_data_module:
   - title: "Quick Start"

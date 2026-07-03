@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ImagingOrder`, `ImagingReview` and `ImagingReport` models represent imaging results.
+The `ImagingOrder`, `ImagingReview`, `ImagingReport`, and `ImagingReportCoding` models represent imaging results.
 
 ## Basic Usage
 
@@ -49,6 +49,21 @@ orders = ImagingOrder.objects.filter(status="completed")
 reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
+
+### By ValueSet
+
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
+`ImagingReport` supports `ValueSet` filtering through the `find` method on its model manager:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReport
+from canvas_sdk.value_set.v2022.diagnostic_study import Mammography
+
+reports = ImagingReport.objects.find(Mammography)
+```
+
+`find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
 
 ## Related Tasks
 To retrieve an Imaging Order's related tasks, use the `get_task_objects` method on the ImagingOrder object.
@@ -125,6 +140,20 @@ tasks = imaging_order.get_task_objects().all()
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+
+### ImagingReportCoding
+
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| report        | [ImagingReport](#imagingreport) |
+| system        | String                          |
+| version       | String                          |
+| code          | String                          |
+| display       | String                          |
+| user_selected | Boolean                         |
+| value         | String                          |
 
 ## Enumeration types
 
