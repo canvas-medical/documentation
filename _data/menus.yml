@@ -25,6 +25,8 @@ api_canvas_fhir:
     url: /api/quickstart/
   - title: "Customer Authentication"
     url: /api/customer-authentication/
+  - title: "Third-Party Developer Access"
+    url: /api/developer-access/
   - title: Authentication Best Practices
     url: /api/authentication-best-practices/
   - title: "Conditional Requests"
