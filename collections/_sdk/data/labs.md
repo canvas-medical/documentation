@@ -369,7 +369,7 @@ for report in lab_reports:
 | dbid                 | Integer                               |
 | created              | DateTime                              |
 | modified             | DateTime                              |
-| review_mode          | String                                |
+| review_mode          | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |

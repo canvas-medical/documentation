@@ -16,8 +16,10 @@
     background-color: #24292e;
     border-radius: 3px;
     box-shadow: 0px 0px 1px 2px #e5eaec;
-    max-width: 350px;
-    height: 325px;
+    width: 480px;
+    max-width: 100%;
+    height: auto;
+    overflow: hidden;
     margin: 0px 10px 20px 10px;
   
     .handler-card-header {
@@ -34,7 +36,8 @@
     }
   
     img {
-      max-width: 350px;
+      width: 100%;
+      display: block;
     }
 
     img.hover-secondary {

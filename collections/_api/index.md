@@ -1,5 +1,5 @@
 ---
-slug: /
+permalink: /api/
 title: "Introduction "
 layout: apilandingpage
 ---
@@ -16,7 +16,11 @@ There is a [Bruno](https://www.usebruno.com/) Collection that allows easy access
     <img src="https://fetch.usebruno.com/button.svg" alt="Fetch in Bruno" style="width: 130px; height: 30px;" width="128" height="32"></a>
 
 ## Who can access this API?
-While Canvas intends to make portions of this API accessible to third-parties in the near future (with patient authorization), it is currently limited to practices and organizations utilizing Canvas Medical as their EHR as well as their trusted partners.
+Canvas Medical is certified to ONC's §170.315(g)(10) Standardized API. There are three ways to access it:
+
+- **Practices and organizations using Canvas as their EHR** can access the API for their own patients and operations.
+- **Patients** can authorize third-party applications to access their own health information through the SMART on FHIR authorization flow.
+- **Third-party developers** can request access following the process described in [Third-Party Developer Access](/api/developer-access/).
 
 ## Terms of Use
 You can access our full terms of use [here](/api/terms-of-use)

@@ -25,6 +25,8 @@ api_canvas_fhir:
     url: /api/quickstart/
   - title: "Customer Authentication"
     url: /api/customer-authentication/
+  - title: "Third-Party Developer Access"
+    url: /api/developer-access/
   - title: Authentication Best Practices
     url: /api/authentication-best-practices/
   - title: "Conditional Requests"
@@ -635,6 +637,12 @@ guides_list:
   - title: "Set default homepage by user"
     url: /guides/set-default-homepage/
     description: How to change the default homepage for users in your organization
+    uses:
+      - sdk
+
+  - title: "Populating Command Fields"
+    url: /guides/populating-command-fields/
+    description: Look up the codes, ids, and enum values behind autocomplete and dropdown command fields
     uses:
       - sdk
 
