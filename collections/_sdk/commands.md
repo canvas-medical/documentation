@@ -367,6 +367,12 @@ class Handler(BaseHandler):
         ]
 ```
 
+## Command Validation
+
+Beyond the built-in validation each command performs on its own fields, you can add your **own** validation rules to a command and surface error messages to the user directly in the Canvas UI. A handler responds to a command's validation event (for example, `PLAN_COMMAND__POST_VALIDATION`) and returns a [Command Validation effect](/sdk/effect-command-validation/) containing one or more error messages. This is useful for enforcing organization-specific business rules — such as requiring a field, restricting certain combinations, or blocking a command until an external condition is met — before the command can be committed.
+
+See the [Command Validation effect](/sdk/effect-command-validation/) documentation for the full API and examples.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -1328,13 +1334,14 @@ Built-in validations ensure that:
 
 | Name          | Type              | Required to commit | Description                                                                                                          |
 |---------------|-------------------|--------------------|----------------------------------------------------------------------------------------------------------------------|
-| `template`    | _UUID \| string_  | `true`             | The UUID of the active POC `LabReportTemplate`. Accepts UUID instances or UUID-formatted strings.                    |
-| `indications` | _list[string]_    | `false`            | ICD-10 diagnosis codes justifying the test.                                                                          |
-| `test_values` | _list[TestValue]_ | `false`            | The measured values, each tagged with its template-field label. See `TestValue` below.                               |
+| `template`    | _UUID \| string_  | `true`             | The UUID of the active POC [`LabReportTemplate`](/sdk/data-lab-report-template/#labreporttemplate). Accepts UUID instances or UUID-formatted strings.                    |
+| `indications` | _list[string]_    | `false`            | ICD-10 diagnosis codes justifying the test. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                          |
+| `test_values` | _list[[TestValue](#poclabtest-testvalue)]_ | `false`            | The measured values, each tagged with its template-field label. See [`TestValue`](#poclabtest-testvalue) below.                               |
 | `remarks`     | _string (≤512)_   | `false`            | Free-text comments from the clinician.                                                                               |
 
 **Enums and Types**:
 
+<a id="poclabtest-testvalue"></a>
 **`TestValue`**
 
 A dataclass representing a single measured value within a POC lab test result.
@@ -2588,4 +2595,8 @@ from canvas_sdk.commands.commands.review import ReportReviewCommunicationMethod
 | `DELEGATED_LETTER`                  | `"DL"`| Delegated letter to be sent to patient                     |
 | `ALREADY_LEFT_MESSAGE`              | `"AM"`| Already left message for patient                           |
 | `ALREADY_REVIEWED_WITH_PATIENT`     | `"AR"`| Already reviewed with patient                              |
+
+<br/>
+<br/>
+<br/>
 

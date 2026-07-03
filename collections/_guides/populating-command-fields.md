@@ -73,13 +73,13 @@ The richest autocompletes in the UI search a clinical terminology in real time: 
 
 | Command field | Helper |
 |---------------|--------|
-| Prescribe / MedicationStatement / Refill medication (`fdb_code`) | [Searching for medications](/sdk/utils/#searching-for-medications) (Ontologies) |
+| Prescribe / MedicationStatement / Refill / AdjustPrescription medication (`fdb_code`, `new_fdb_code`) | [Searching for medications](/sdk/utils/#searching-for-medications) (Ontologies) |
 | Allergy allergen | [Searching for allergens](/sdk/utils/#searching-for-allergens) (Ontologies) |
 | Diagnose / Assess-adjacent ICD-10 codes | [Looking up clinical codes](/sdk/utils/#looking-up-clinical-codes) (Ontologies) |
 | Family History, Surgical History, Instruct concepts | [Searching clinical concepts](/sdk/utils/#searching-clinical-concepts) (Ontologies) |
 | Prescribe pharmacy (`pharmacy`) | [Searching for pharmacies](/sdk/utils/#searching-for-pharmacies) (Pharmacy) |
 | ImagingOrder image code | [Searching for imaging codes](/sdk/utils/#searching-for-imaging-codes) (Science) |
-| Refer / care-team service providers | [Searching for contacts and service providers](/sdk/utils/#searching-for-contacts-and-service-providers) (Science) |
+| Refer / ImagingOrder / care-team service providers (including imaging centers) | [Searching for contacts and service providers](/sdk/utils/#searching-for-contacts-and-service-providers) (Science) |
 
 For example, the UI autocompletes a diagnosis; a plugin searches ICD-10 and passes the code it finds:
 
@@ -121,9 +121,26 @@ prescribe = PrescribeCommand(
 )
 ```
 
+## Interaction screening for medication commands
+
+In the Canvas UI, when a provider stages a medication command (such as Prescribe), Canvas automatically runs **drug–allergy** and **drug–drug** interaction screening and shows the results to the provider. When you originate or commit medication commands with the SDK — outside that interactive flow — this screening does **not** run automatically.
+
+If you want the same safety net, you can opt in to running the checks yourself against the patient's allergy and medication lists using the ontologies screening endpoints, then act on the results before the command is committed:
+
+| Check | Helper |
+|-------|--------|
+| Drug–allergy | [Screening for drug–allergy interactions](/sdk/utils/#screening-for-drugallergy-interactions) (Ontologies) |
+| Drug–drug | [Screening for drug–drug interactions](/sdk/utils/#screening-for-drugdrug-interactions) (Ontologies) |
+
+This is opt-in: only add it if your workflow charts medications programmatically and you want to reproduce the interaction warnings a provider would see in the UI.
+
 ## Tips
 
-- **Check the field description first.** Each command field says whether it wants a code, an id, or an enum — and links to the data module or utils endpoint that supplies it.
+- **Check the field description first.** Each command field in the [Commands reference](/sdk/commands/#commands) says whether it wants a code, an id, or an enum — and links to the data module or utils endpoint that supplies it.
 - **Match the UI's scoping.** If a field references something on the chart, query it `for_patient(...)` so you don't attach another patient's record.
 - **Handle "no match."** A search or query can come back empty. Decide what your plugin should do (skip the field, raise, or fall back) rather than passing a guess.
 - **Don't hard-code codes you can't verify.** Terminologies change; look values up so you stay in sync with what the chart would offer.
+
+<br/>
+<br/>
+<br/>

@@ -1226,3 +1226,7 @@ The response contains a `results` list of contact objects:
 ```
 
 Pass a selected contact as the `service_provider` on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), or other commands that accept a `ServiceProvider`; its `businessFax` and `businessAddress` also drive outbound faxing.
+
+<br/>
+<br/>
+<br/>
