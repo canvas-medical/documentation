@@ -1,4 +1,5 @@
 ---
+slug: move-commands-2024-12-12
 title: Move Uncommitted Commands
 tags: beta ui
 date: 2024-12-12
