@@ -27,6 +27,16 @@ Third-party developers do not need to be an existing Canvas customer to request 
 
 We do not condition access on fees or royalties for the rights the API Condition of Certification protects, non-compete or exclusive-dealing terms, unrelated licenses, transfer of your intellectual property, Canvas-specific testing or certification, or reciprocal access to your application's data.
 
+## What we verify
+
+Verification confirms the authenticity of your organization and your application. It is limited to identity and does not evaluate the merits of your product. We apply the same criteria to every API user. You provide:
+
+- **Organization identity** — your registered legal business name and a verifiable business identifier, such as control of your organization's domain, a state business registration, or a D-U-N-S number.
+- **A domain-verified contact** — a named representative reachable at an email address on your organization's domain who can act on the organization's behalf.
+- **Application details** — the application name, a description of its intended use, the access model (patient-directed or population/bulk), and the redirect URIs or registered endpoints it will use.
+- **Attestations** — that the application has a published privacy policy and terms, that it will access data only as authorized by the patient (patient-directed access) or the organization (population/bulk access), and that you will comply with applicable law.
+- **Agreement to our [Terms of Use](/api/terms-of-use/).**
+
 ## Sandbox access
 
 We provision a sandbox so your team can build and test before production enablement. Request sandbox credentials as part of step 1 above. Sandbox base URLs follow the pattern `https://fumage-<sandbox-name>.canvasmedical.com`; see the [Quickstart](/api/quickstart/) for making your first request.
@@ -37,7 +47,7 @@ Once you have access to an instance (sandbox or production), register your appli
 
 ## Fees
 
-{{CONFIRM: fee schedule and link}} Any permitted fees are limited to the recovery of costs reasonably incurred to develop, deploy, and host the certified API technology, consistent with 45 CFR 170.404(a). Fees, if any, are published in full so you can evaluate them before requesting access.
+There is no fee to register, verify, or enable a third-party application for access to the API.
 
 ## Service base URLs
 
