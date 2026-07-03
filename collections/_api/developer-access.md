@@ -21,7 +21,7 @@ A practice or organization using Canvas as its EHR authorizes access to data acr
 
 Third-party developers do not need to be an existing Canvas customer to request access. To begin:
 
-1. Contact us at {{CONFIRM: developer-access intake address}} with your organization name, a description of your application, the access model you need (patient-directed or population/bulk), and a technical point of contact.
+1. Contact us at [developer-access@canvasmedical.com](mailto:developer-access@canvasmedical.com) with your organization name, a description of your application, the access model you need (patient-directed or population/bulk), and a technical point of contact.
 2. We complete an authenticity-verification review. This process is objective and applied uniformly to all API users, and we complete it within **ten business days** of receiving your request.
 3. Once verification is complete, we register and enable your application for production use within **five business days**.
 
