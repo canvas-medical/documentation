@@ -89,6 +89,36 @@ plugin via the Canvas UI on your plugin's configuration page
             <img class="hover-secondary" src="/assets/images/sdk/handlers/payment-processor-in-action.png" alt="Illustration of a credit card payment being approved."/>
         </div>
     </a>
+    <a href="/sdk/handlers-embedded-applications/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Embedded Application</h2>
+                <span>Render a tab inside a note, or replace the built-in scheduling modal.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/EmbeddedApplication-cropped.png" alt="Abridged source code of a NoteApplication and SchedulingApplication implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/embedded-application-in-action.png" alt="An embedded application rendered inside the Canvas UI."/>
+        </div>
+    </a>
+    <a href="/sdk/patient-chart-summary-custom-section-handler/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Patient Chart Summary Custom Section</h2>
+                <span>Serve content into a custom section of the patient chart summary.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/PatientChartSummaryCustomSection-cropped.png" alt="Abridged source code of a patient chart summary custom section handler implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/patient-chart-summary-custom-section-handler-in-action.png" alt="A custom section rendered in the patient chart summary."/>
+        </div>
+    </a>
+    <a href="/sdk/handlers-simple-api/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>SimpleAPI</h2>
+                <span>Define HTTP and WebSocket API endpoints in your plugin.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/SimpleAPI-cropped.png" alt="Abridged source code of a SimpleAPI route implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/simple-api-response.png" alt="A curl request to a SimpleAPI route and its JSON response."/>
+        </div>
+    </a>
 </div>
 
 

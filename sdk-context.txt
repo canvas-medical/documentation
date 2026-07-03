@@ -37064,7 +37064,7 @@ Target | Context object
 For more information on these events, see [Applications](/sdk/handlers-applications).
 APPLICATION__ON_GET  
 ---  
-Occurs when Canvas requests the available applications for a given scope. Handled automatically by [Note Applications](/sdk/handlers-applications/#note-applications) to return application metadata via the `SHOW_APPLICATION` effect.  
+Occurs when Canvas requests the available applications for a given scope. Handled automatically by [Note Applications](/sdk/handlers-embedded-applications/#note-applications) to return application metadata via the `SHOW_APPLICATION` effect.  
 Target | Context object  
     scope
 | 
@@ -41358,7 +41358,6 @@ Scope | Description
 `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page  
 `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/)  
 `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/)  
-`scheduling` | Replaces the built-in scheduling modal at all entry points. See Scheduling Applications  
 ###  Full Chart Scope 
 Applications with the `full_chart` scope appear as navigation tabs at the top of the patient chart, alongside the default "Chart" and "Profile" tabs. This is ideal for building comprehensive patient-level views or dashboards.
     ```json
@@ -41373,197 +41372,9 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 ##  Provider Companion Applications 
 Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
 See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
-##  Note Applications 
-Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
-###  Implementing a Note Application 
-To create a Note Application, your handler class should inherit from `NoteApplication` and define two required class attributes:
-Attribute | Description  
----|---  
-`NAME` | The display title shown on the tab (supports emojis)  
-`IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
-`PRIORITY` | Controls tab order — lower values appear first. Defaults to `0`  
-> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
-Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
-> **⚠️ Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
-    ```python
-    from canvas_sdk.effects import Effect
-    from canvas_sdk.effects.launch_modal import LaunchModalEffect
-    from canvas_sdk.handlers.application import NoteApplication
-    class PatientIntakeApp(NoteApplication):
-        """Note application for patient intake workflow."""
-        NAME = "📋 Patient Intake"
-        IDENTIFIER = "my_plugin__patient_intake"
-        def on_open(self) -> Effect | list[Effect]:
-            """Launch the intake form when the tab is clicked."""
-            note_id = self.event.context.get("note_id")
-            patient_id = self.event.context.get("patient", {}).get("id")
-            return LaunchModalEffect(
-                target=LaunchModalEffect.TargetType.NOTE,
-                content="<html>Your form HTML here</html>",
-                title="Patient Intake Form"
-            ).apply()
-    ```
-![note applications](/assets/images/note-application-tabs.png)
-###  Context and Event Data 
-Both `on_open()` and `handle()` have access to context data through `self.event.context`:
-Key | Description  
----|---  
-`note_id` | The database ID of the current note  
-`note` | A dict containing the note's external `id` (UUID)  
-`patient` | A dict containing the patient's `id` (key)  
-`user` | Information about the current user  
-####  `on_open()` — recommended 
-When using `on_open()`, the patient is available through `self.event.context`:
-    ```python
-    from canvas_sdk.effects import Effect
-    def on_open(self) -> Effect | list[Effect]:
-        note_id = self.event.context.get("note_id")
-        patient_id = self.event.context.get("patient", {}).get("id")
-        ...
-    ```
-`self.event.target.id` contains the application identifier used internally for routing, not the patient.
-####  `handle()` — deprecated 
-When using the deprecated `handle()`, `self.event.target.id` is automatically set to the patient UUID before `handle()` is called, preserving the original behavior that old plugins relied on:
-    ```python
-    from canvas_sdk.effects import Effect
-    def handle(self) -> list[Effect]:
-        patient_id = self.event.target.id  # backfilled from patient context
-        ...
-    ```
-> **Note:** This backfilling only happens when `handle()` is called. Plugins that override `on_open()` directly should read the patient from `self.event.context` as shown above.
-Property | `on_open()` | `handle()` (deprecated)  
----|---|---  
-`self.event.target.id` | Application identifier (for routing) | Patient UUID (backfilled)  
-`self.event.context["patient"]["id"]` | Patient UUID | Patient UUID  
-`self.event.actor` | Authenticated user | Authenticated user  
-###  Controlling Visibility 
-You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `on_open()`:
-    ```python
-    from canvas_sdk.effects import Effect
-    from canvas_sdk.effects.launch_modal import LaunchModalEffect
-    from canvas_sdk.handlers.application import NoteApplication
-    class ConditionalIntakeApp(NoteApplication):
-        NAME = "📋 Intake"
-        IDENTIFIER = "my_plugin__conditional_intake"
-        def visible(self) -> bool:
-            """Only show for specific conditions."""
-            # Add your visibility logic here
-            return True
-        def on_open(self) -> Effect | list[Effect]:
-            return LaunchModalEffect(
-                target=LaunchModalEffect.TargetType.NOTE,
-                content="<html>Form content</html>",
-                title="Intake"
-            ).apply()
-    ```
-###  Opening by Default 
-You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
-    ```python
-    from canvas_sdk.effects import Effect
-    from canvas_sdk.effects.launch_modal import LaunchModalEffect
-    from canvas_sdk.handlers.application import NoteApplication
-    class AutoOpenApp(NoteApplication):
-        NAME = "📋 Intake"
-        IDENTIFIER = "my_plugin__auto_open_intake"
-        def open_by_default(self) -> bool:
-            """Open automatically when the note is viewed."""
-            return True
-        def on_open(self) -> Effect | list[Effect]:
-            return LaunchModalEffect(
-                target=LaunchModalEffect.TargetType.NOTE,
-                content="<html>Form content</html>",
-                title="Intake"
-            ).apply()
-    ```
-###  Tab Ordering 
-You can control the order in which Note Application tabs appear by setting the `PRIORITY` class attribute. Tabs are sorted in ascending order, so lower values appear first. The default is `0`.
-    ```python
-    from canvas_sdk.handlers.application import NoteApplication
-    class HighPriorityApp(NoteApplication):
-        NAME = "First Tab"
-        IDENTIFIER = "my_plugin__first"
-        PRIORITY = 1
-    class LowPriorityApp(NoteApplication):
-        NAME = "Second Tab"
-        IDENTIFIER = "my_plugin__second"
-        PRIORITY = 10
-    ```
-##  Scheduling Applications 
-Scheduling Applications replace the built-in scheduling modal throughout Canvas. When you install a plugin with a scheduling application, it takes over all scheduling entry points: the schedule page, patient chart, calendar drag-and-drop, calendar reschedule, and note reschedule flows.
-###  Implementing a Scheduling Application 
-To create a Scheduling Application, your handler class should inherit from `SchedulingApplication` and define two required class attributes:
-Attribute | Description  
----|---  
-`NAME` | The display title shown in the modal  
-`IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
-Your class must implement the `on_open()` method, which is called when a scheduling action is triggered. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect`.
-    ```python
-    from canvas_sdk.effects import Effect
-    from canvas_sdk.effects.launch_modal import LaunchModalEffect
-    from canvas_sdk.handlers.application import SchedulingApplication
-    class CustomScheduler(SchedulingApplication):
-        """Scheduling application for custom appointment booking."""
-        NAME = "Schedule Appointment"
-        IDENTIFIER = "my_plugin__scheduler"
-        def on_open(self) -> Effect | list[Effect]:
-            """Launch the scheduling form when triggered."""
-            patient = self.event.context.get("patient", {})
-            provider = self.event.context.get("provider", {})
-            start = self.event.context.get("start", "")
-            mode = self.event.context.get("mode", "schedule")
-            return LaunchModalEffect(
-                url=f"https://scheduler.example.com/book?patient={patient.get('id', '')}&provider={provider.get('id', '')}&start={start}&mode={mode}",
-                title="Schedule Appointment"
-            ).apply()
-    ```
-###  Context Data 
-When `on_open()` is called, scheduling context is available through `self.event.context`. The available keys depend on which entry point triggered the scheduling action.
-####  Entity Objects 
-Entities are delivered as `{"id": <external id>}` objects, resolvable with the conventional `.objects.get(id=...)`:
-Field | Resolves To | Value | Available From  
----|---|---|---  
-`patient` | [Patient](/sdk/data-patient/#patient) | `{"id": <patient id>}` | Patient chart, reschedule flows  
-`provider` | [Staff](/sdk/data-staff/#staff) | `{"id": <staff id>}` | Calendar, patient chart  
-`location` | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | `{"id": <practice location id>}` | Current location context  
-`appointment` | [Appointment](/sdk/data-appointment/#appointment) | `{"id": <appointment id>}` | Reschedule flows  
-`note` | [Note](/sdk/data-note/#note) | `{"id": <note id>}` | Note reschedule flow  
-####  Scalar Values 
-Key | Description  
----|---  
-`start` | ISO-8601 datetime of the selected slot (all entry points)  
-`end` | ISO-8601 datetime for the slot end (calendar drag-and-drop only)  
-`duration` | Slot length in minutes (reschedule flows only). Either `end` or `duration` is present, never both  
-`mode` | One of `schedule`, `reschedule`, or `followup`  
-`origin` | The launching surface: `schedule_page`, `patient_chart`, `calendar`, `calendar_reschedule`, or `note_reschedule`  
-When `end` is not provided, derive it from `start + duration`.
-####  Origins 
-`origin` tells you which surface launched the scheduling action, which in turn determines the `mode` and whether the slot length arrives as `end` or `duration`:
-`origin` | Launching surface | `mode` | Slot length  
----|---|---|---  
-`schedule_page` | **New appointment** from the schedule page (no patient context) | `schedule` or `followup` | neither (`start` only)  
-`patient_chart` | **New appointment** from a patient's chart | `schedule` or `followup` | neither (`start` only)  
-`calendar` | Drag-and-drop on the calendar to create a slot | `schedule` | `end`  
-`calendar_reschedule` | Rescheduling an existing appointment from the calendar | `reschedule` | `duration`  
-`note_reschedule` | Rescheduling an appointment from within a note | `reschedule` | `duration`  
-Which entities accompany each origin is shown in the Entity Objects table's "Available From" column above — for example, `patient_chart` and the reschedule flows include a `patient`, while `schedule_page` and `calendar` do not.
-###  Manifest Configuration 
-Register your scheduling application in the `CANVAS_MANIFEST.json`. The application's `scope` **must** be set to `"scheduling"` — this is what tells Canvas to use it as the scheduling-modal override:
-    ```json
-    {
-      "components": {
-        "applications": [
-          {
-            "class": "my_plugin.apps.scheduler:CustomScheduler",
-            "name": "Custom Scheduler",
-            "description": "Custom appointment scheduling",
-            "scope": "scheduling"
-          }
-        ]
-      }
-    }
-    ```
-> **Important:** The `scope` must be exactly `"scheduling"`. With any other value the application will not take over the scheduling flows, and the built-in modal will continue to be used.
-When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
+##  Embedded Applications 
+Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 ##  Panel Display 
 If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can add the `show_in_panel` attribute. If you've added more than one application to that panel, you can set their priorities using the `panel_priority` attribute.
 For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be rendered. For more info on the format of the `url_permissions` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.
@@ -41616,7 +41427,7 @@ Scope | When it opens
 `patient_specific` | Automatically when a patient chart is opened.  
 This is an instance-level setting configured per application in your instance settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is preserved when the plugin is reinstalled or updated.
 > **Warning:** **Enable Open on load for at most one application per scope.** There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two `patient_specific` apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load. 
-> **Note:** This is distinct from a Note Application's `open_by_default()`, which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
+> **Note:** This is distinct from a Note Application's [`open_by_default()`](/sdk/handlers-embedded-applications/#opening-by-default), which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
 ##  Notification Badges 
 You can display a notification badge — a small count — on the icon of a `global` or `patient_specific` application: in the app drawer, or on the panel when the application sets `show_in_panel`. A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 ###  Initial count on load 
@@ -41722,6 +41533,226 @@ This example `CronTask` shows an extremely basic example that just logs the time
 Here's what this scheduled task would output in the logs:
 `INFO 2024-07-18 18:47:00,000 The current time is 2024-07-18T18:47:00.000000+00:00`
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers-crontask/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
+Embedded applications render **inside a specific Canvas surface** — a tab within a note, or the scheduling modal — rather than as an icon in the app drawer. They are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class, register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders it in the appropriate surface.
+There are two kinds:
+Base class | Surface  
+---|---  
+`NoteApplication` | A tab within a patient's note  
+`SchedulingApplication` | Replaces the built-in scheduling modal at every entry point  
+##  How embedded applications work 
+Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one by subclassing `NoteApplication` or `SchedulingApplication` and registering it under `handlers` in your `CANVAS_MANIFEST.json` — everything else is inherited from that parent class.
+Because the parent class defines the behavior, there's very little to configure:
+  - The **surface** comes from the class you inherit — `NoteApplication` renders as a tab in a note, and `SchedulingApplication` replaces the scheduling modal. You don't set a `scope` or an `icon`.
+  - Canvas **renders them on demand** : when a note opens or a scheduling action is triggered, Canvas asks which embedded application is installed for that surface and renders the one your handler returns. They aren't persisted as drawer applications, so they don't appear in the app drawer or under Plugins_IO > Applications.
+  - If no embedded application is installed for a surface, Canvas falls back to its built-in behavior — an unmodified note, or the built-in scheduling modal.
+Since the surface and scope are inherited from the parent class, register these under `handlers` rather than `applications`.
+##  Note Applications 
+Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
+###  Implementing a Note Application 
+To create a Note Application, your handler class should inherit from `NoteApplication` and define the following class attributes:
+Attribute | Description  
+---|---  
+`NAME` | (Required) The display title shown on the tab (supports emojis)  
+`IDENTIFIER` | (Required) A unique key for the application (recommended format: `plugin_name__app_name`)  
+`PRIORITY` | (Optional) Controls tab order — lower values appear first. Defaults to `0`  
+> **Tip:** If your Note Application is named "Note", it may cause confusion with the built-in Note tab. Users can rename the built-in tab by updating the Constance Config setting `NOTE_BODY_TAB_LABEL` in your instance Settings, to avoid duplication.
+Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
+> **⚠️ Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import NoteApplication
+    class PatientIntakeApp(NoteApplication):
+        """Note application for patient intake workflow."""
+        NAME = "📋 Patient Intake"
+        IDENTIFIER = "my_plugin__patient_intake"
+        def on_open(self) -> Effect | list[Effect]:
+            """Launch the intake form when the tab is clicked."""
+            note_id = self.event.context.get("note_id")
+            patient_id = self.event.context.get("patient", {}).get("id")
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.NOTE,
+                content="<html>Your form HTML here</html>",
+                title="Patient Intake Form"
+            ).apply()
+    ```
+![note applications](/assets/images/note-application-tabs.png)
+###  Manifest Configuration 
+Register your Note Application under the `handlers` section of your `CANVAS_MANIFEST.json`. There is no `scope` or `icon` — the note tab is driven by the `NoteApplication` base class and the `NAME`/`IDENTIFIER` class attributes.
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.apps.intake:PatientIntakeApp",
+            "description": "In-note patient intake tab."
+          }
+        ]
+      }
+    }
+    ```
+###  Context and Event Data 
+Both `on_open()` and `handle()` have access to context data through `self.event.context`:
+Key | Description  
+---|---  
+`note_id` | The database ID of the current note  
+`note` | A dict containing the note's external `id` (UUID)  
+`patient` | A dict containing the patient's `id` (key)  
+`user` | Information about the current user  
+####  `on_open()` — recommended 
+When using `on_open()`, the patient is available through `self.event.context`:
+    ```python
+    from canvas_sdk.effects import Effect
+    def on_open(self) -> Effect | list[Effect]:
+        note_id = self.event.context.get("note_id")
+        patient_id = self.event.context.get("patient", {}).get("id")
+        ...
+    ```
+`self.event.target.id` contains the application identifier used internally for routing, not the patient.
+####  `handle()` — deprecated 
+When using the deprecated `handle()`, `self.event.target.id` is automatically set to the patient UUID before `handle()` is called, preserving the original behavior that old plugins relied on:
+    ```python
+    from canvas_sdk.effects import Effect
+    def handle(self) -> list[Effect]:
+        patient_id = self.event.target.id  # backfilled from patient context
+        ...
+    ```
+> **Note:** This backfilling only happens when `handle()` is called. Plugins that override `on_open()` directly should read the patient from `self.event.context` as shown above.
+Property | `on_open()` | `handle()` (deprecated)  
+---|---|---  
+`self.event.target.id` | Application identifier (for routing) | Patient UUID (backfilled)  
+`self.event.context["patient"]["id"]` | Patient UUID | Patient UUID  
+`self.event.actor` | Authenticated user | Authenticated user  
+###  Controlling Visibility 
+You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `on_open()`:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import NoteApplication
+    class ConditionalIntakeApp(NoteApplication):
+        NAME = "📋 Intake"
+        IDENTIFIER = "my_plugin__conditional_intake"
+        def visible(self) -> bool:
+            """Only show for specific conditions."""
+            # Add your visibility logic here
+            return True
+        def on_open(self) -> Effect | list[Effect]:
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.NOTE,
+                content="<html>Form content</html>",
+                title="Intake"
+            ).apply()
+    ```
+###  Opening by Default 
+You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import NoteApplication
+    class AutoOpenApp(NoteApplication):
+        NAME = "📋 Intake"
+        IDENTIFIER = "my_plugin__auto_open_intake"
+        def open_by_default(self) -> bool:
+            """Open automatically when the note is viewed."""
+            return True
+        def on_open(self) -> Effect | list[Effect]:
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.NOTE,
+                content="<html>Form content</html>",
+                title="Intake"
+            ).apply()
+    ```
+###  Tab Ordering 
+You can control the order in which Note Application tabs appear by setting the `PRIORITY` class attribute. Tabs are sorted in ascending order, so lower values appear first. The default is `0`.
+    ```python
+    from canvas_sdk.handlers.application import NoteApplication
+    class HighPriorityApp(NoteApplication):
+        NAME = "First Tab"
+        IDENTIFIER = "my_plugin__first"
+        PRIORITY = 1
+    class LowPriorityApp(NoteApplication):
+        NAME = "Second Tab"
+        IDENTIFIER = "my_plugin__second"
+        PRIORITY = 10
+    ```
+> **Note:** Note Applications do not support [notification badges](/sdk/handlers-applications/#notification-badges).
+##  Scheduling Applications 
+Scheduling Applications replace the built-in scheduling modal throughout Canvas. When you install a plugin with a scheduling application, it takes over all scheduling entry points: the schedule page, patient chart, calendar drag-and-drop, calendar reschedule, and note reschedule flows.
+###  Implementing a Scheduling Application 
+To create a Scheduling Application, your handler class should inherit from `SchedulingApplication` and define two required class attributes:
+Attribute | Description  
+---|---  
+`NAME` | The display title shown in the modal  
+`IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`)  
+Your class must implement the `on_open()` method, which is called when a scheduling action is triggered. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect`.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import SchedulingApplication
+    class CustomScheduler(SchedulingApplication):
+        """Scheduling application for custom appointment booking."""
+        NAME = "Schedule Appointment"
+        IDENTIFIER = "my_plugin__scheduler"
+        def on_open(self) -> Effect | list[Effect]:
+            """Launch the scheduling form when triggered."""
+            patient = self.event.context.get("patient", {})
+            provider = self.event.context.get("provider", {})
+            start = self.event.context.get("start", "")
+            mode = self.event.context.get("mode", "schedule")
+            return LaunchModalEffect(
+                url=f"https://scheduler.example.com/book?patient={patient.get('id', '')}&provider={provider.get('id', '')}&start={start}&mode={mode}",
+                title="Schedule Appointment"
+            ).apply()
+    ```
+###  Context Data 
+When `on_open()` is called, scheduling context is available through `self.event.context`. The available keys depend on which entry point triggered the scheduling action.
+####  Entity Objects 
+Entities are delivered as `{"id": <external id>}` objects, resolvable with the conventional `.objects.get(id=...)`:
+Field | Resolves To | Value | Available From  
+---|---|---|---  
+`patient` | [Patient](/sdk/data-patient/#patient) | `{"id": <patient id>}` | Patient chart, reschedule flows  
+`provider` | [Staff](/sdk/data-staff/#staff) | `{"id": <staff id>}` | Calendar, patient chart  
+`location` | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | `{"id": <practice location id>}` | Current location context  
+`appointment` | [Appointment](/sdk/data-appointment/#appointment) | `{"id": <appointment id>}` | Reschedule flows  
+`note` | [Note](/sdk/data-note/#note) | `{"id": <note id>}` | Note reschedule flow  
+####  Scalar Values 
+Key | Description  
+---|---  
+`start` | ISO-8601 datetime of the selected slot (all entry points)  
+`end` | ISO-8601 datetime for the slot end (calendar drag-and-drop only)  
+`duration` | Slot length in minutes (reschedule flows only). Either `end` or `duration` is present, never both  
+`mode` | One of `schedule`, `reschedule`, or `followup`  
+`origin` | The launching surface: `schedule_page`, `patient_chart`, `calendar`, `calendar_reschedule`, or `note_reschedule`  
+When `end` is not provided, derive it from `start + duration`.
+####  Origins 
+`origin` tells you which surface launched the scheduling action, which in turn determines the `mode` and whether the slot length arrives as `end` or `duration`:
+`origin` | Launching surface | `mode` | Slot length  
+---|---|---|---  
+`schedule_page` | **New appointment** from the schedule page (no patient context) | `schedule` or `followup` | neither (`start` only)  
+`patient_chart` | **New appointment** from a patient's chart | `schedule` or `followup` | neither (`start` only)  
+`calendar` | Drag-and-drop on the calendar to create a slot | `schedule` | `end`  
+`calendar_reschedule` | Rescheduling an existing appointment from the calendar | `reschedule` | `duration`  
+`note_reschedule` | Rescheduling an appointment from within a note | `reschedule` | `duration`  
+Which entities accompany each origin is shown in the Entity Objects table's "Available From" column above — for example, `patient_chart` and the reschedule flows include a `patient`, while `schedule_page` and `calendar` do not.
+###  Manifest Configuration 
+Register your Scheduling Application under the `handlers` section of your `CANVAS_MANIFEST.json`. There is **no** `scope` or `icon` — inheriting from `SchedulingApplication` is what tells Canvas to use it as the scheduling-modal override.
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.apps.scheduler:CustomScheduler",
+            "description": "Custom appointment scheduling that overrides the built-in modal."
+          }
+        ]
+      }
+    }
+    ```
+When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
+----- END PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-http/
@@ -42269,7 +42300,7 @@ All handlers inherit from [BaseHandler](/sdk/handlers-basehandler/), which means
       - `CUSTOMER_IDENTIFIER` — the instance's subdomain (e.g. `acme` for `acme.canvasmedical.com`).
       - `INSTALLATION_TIME_ZONE` — the instance's configured time zone as an IANA name (e.g. `America/Los_Angeles`). Useful for rendering times to the customer's clinicians, scheduling work in their local day, or formatting dates in user-facing output.
     - Example: `self.environment['CUSTOMER_IDENTIFIER']`
-## [ Action Button  Add a button that executes your custom code when clicked. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/ActionButton.png) ![Image of an action button in a note header.](/assets/images/sdk/handlers/action-button-in-action.png) ](/sdk/handlers-action-buttons/) ## [ Application  Launch an iframe when your icon is clicked in the app drawer. ![Abridged source code of an application implementation.](/assets/images/sdk/handlers/Application-cropped.png) ![Image of application icons in the app drawer.](/assets/images/sdk/handlers/application-applied.png) ](/sdk/handlers-applications/) ## [ Cron Task  Execute your code on a cron-like schedule. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/CronTask-cropped.png) ![Picture of Mr. Cron, the little time monster that remembers which tasks should be executed at any given time.](/assets/images/sdk/handlers/mr-cron.png) ](/sdk/handlers-crontask/) ## [ Base Handler  Respond to events with your custom code. ![Abridged source code of a base handler implementation.](/assets/images/sdk/handlers/BaseHandler-cropped.png) ![Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'.](/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png) ](/sdk/handlers-basehandler/)
+## [ Action Button  Add a button that executes your custom code when clicked. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/ActionButton.png) ![Image of an action button in a note header.](/assets/images/sdk/handlers/action-button-in-action.png) ](/sdk/handlers-action-buttons/) ## [ Application  Launch an iframe when your icon is clicked in the app drawer. ![Abridged source code of an application implementation.](/assets/images/sdk/handlers/Application-cropped.png) ![Image of application icons in the app drawer.](/assets/images/sdk/handlers/application-applied.png) ](/sdk/handlers-applications/) ## [ Cron Task  Execute your code on a cron-like schedule. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/CronTask-cropped.png) ![Picture of Mr. Cron, the little time monster that remembers which tasks should be executed at any given time.](/assets/images/sdk/handlers/mr-cron.png) ](/sdk/handlers-crontask/) ## [ Base Handler  Respond to events with your custom code. ![Abridged source code of a base handler implementation.](/assets/images/sdk/handlers/BaseHandler-cropped.png) ![Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'.](/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png) ](/sdk/handlers-basehandler/) ## [ Embedded Application  Render a tab inside a note, or replace the built-in scheduling modal. ![Abridged source code of a NoteApplication and SchedulingApplication implementation.](/assets/images/sdk/handlers/EmbeddedApplication-cropped.png) ![An embedded application rendered inside the Canvas UI.](/assets/images/sdk/handlers/embedded-application-in-action.png) ](/sdk/handlers-embedded-applications/) ## [ Patient Chart Summary Custom Section  Serve content into a custom section of the patient chart summary. ![Abridged source code of a patient chart summary custom section handler implementation.](/assets/images/sdk/handlers/PatientChartSummaryCustomSection-cropped.png) ![A custom section rendered in the patient chart summary.](/assets/images/sdk/handlers/patient-chart-summary-custom-section-handler-in-action.png) ](/sdk/patient-chart-summary-custom-section-handler/) ## [ SimpleAPI  Define HTTP and WebSocket API endpoints in your plugin. ![Abridged source code of a SimpleAPI route implementation.](/assets/images/sdk/handlers/SimpleAPI-cropped.png) ![A curl request to a SimpleAPI route and its JSON response.](/assets/images/sdk/handlers/simple-api-response.png) ](/sdk/handlers-simple-api/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers/
 
 
