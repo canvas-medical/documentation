@@ -92,6 +92,8 @@ instructions = Instruction.objects.filter(note__id="2c91b0d8-7b9d-4ef1-89e2-1f9a
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python

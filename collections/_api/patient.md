@@ -226,7 +226,7 @@ sections:
                         type: string
                         required_in: create, update
                         description: >-
-                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
                       - name: display
                         type: string
                   - name: valueCodeableConcept

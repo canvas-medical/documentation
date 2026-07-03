@@ -256,6 +256,11 @@ def check(fail_fast: bool = False, quiet: bool = False) -> None:
         if "node_modules" in markdown_file:
             continue
 
+        # Skip build output (_site/): generate-llms.py writes a .md mirror of
+        # every page there, and those are validated via their collection source.
+        if markdown_file.startswith("_site/") or "/_site/" in markdown_file:
+            continue
+
         # Choosing to skip generated example plugin documentation.
         # These docs include whole files directly from the plugin, which may
         # reference other files within that plugin package. Those imports will

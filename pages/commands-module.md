@@ -122,7 +122,7 @@ Commands migrated to the new framework will function similarly if not identicall
     <tr>
       <td>Lab Order</td>
       <td><span class="tag-complete"> Released - GA </span> </td>
-      <td><ul><li>The indications drop down defaults with active conditions as quick picks</li><li>Validation will prevent sending orders if a patient does not have an address or if the provider does not have an NPI</li></ul> </td>
+      <td><ul><li>The indications drop down defaults with active conditions as quick picks</li><li>Validation will prevent sending orders if a patient does not have an address or phone number, or if the provider does not have an NPI</li></ul> </td>
     </tr>
     <tr>
       <td>Family History</td>
