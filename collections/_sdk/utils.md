@@ -352,6 +352,8 @@ Fetch one or more medications by FDB code. Pass a single `med_medication_id`, or
 | `med_medication_id` (path)  | int, or comma-separated ints  | One or more FDB medication ids.    |
 
 ```python
+from canvas_sdk.utils.http import ontologies_http
+
 # single FDB code
 response_json = ontologies_http.get_json("/fdb/grouped-medication/123456/").json()
 
@@ -403,6 +405,8 @@ Resolve a single NDC to its medication.
 | `ndc` (path) | string | The NDC to resolve.     |
 
 ```python
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json("/fdb/ndc-to-medication/76420037215/").json()
 ```
 
@@ -443,6 +447,8 @@ Resolve several NDCs at once. Pass a comma-separated list of NDCs as the path se
 | `ndcs` (path) | comma-separated strings    | The NDCs to resolve.    |
 
 ```python
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     "/fdb/ndcs-to-medications/76420037215,11822317640/"
 ).json()
@@ -549,6 +555,9 @@ Look up allergen concepts mapped to an external code. Query parameters:
 | `code`    | string | The external code to match, in `{system}\|{code}` form — e.g. `rxnorm\|217013`.   |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/fdb/allergen?{urlencode({'code': 'rxnorm|217013'})}"
 ).json()
@@ -578,6 +587,9 @@ Resolve a specific allergen concept by id — for example, to confirm a stored a
 | `dam_allergen_concept_id_type` | int  | The allergen category — `1` (allergy group), `2` (medication), or `6` (ingredient). |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/fdb/allergy/?{urlencode({'dam_allergen_concept_id': 19561, 'dam_allergen_concept_id_type': 6})}"
 ).json()
@@ -668,6 +680,9 @@ Search vaccines by name or code. Query parameters:
 | `cvx_code`     | string | Optional. Filter to a specific CVX code.              |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/cpt/immunization/?{urlencode({'name_or_code': 'influenza'})}"
 ).json()
@@ -736,6 +751,9 @@ Search SNOMED family relationships (mother, father, sibling, …).
 | `term__icontains` | string | Case-insensitive substring match on the relationship term.   |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/snomed/family-relation/?{urlencode({'term__icontains': 'mother'})}"
 ).json()
@@ -765,6 +783,9 @@ Search SNOMED instructions.
 | `term__icontains` | string | Case-insensitive substring match on the instruction term.   |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/snomed/instruction/?{urlencode({'term__icontains': 'physical therapy'})}"
 ).json()
@@ -795,6 +816,9 @@ Search SNOMED procedures.
 | `limit`   | int    | Optional. Maximum number of results.   |
 
 ```python
+from urllib.parse import urlencode
+from canvas_sdk.utils.http import ontologies_http
+
 response_json = ontologies_http.get_json(
     f"/snomed/procedures/?{urlencode({'search': 'appendectomy'})}"
 ).json()
@@ -863,12 +887,13 @@ def screen_medication_against_allergies(patient: Patient, considered_med: Medica
     if not considered_codings or not allergy_ids:
         return []  # nothing to screen → "all clear"
 
-    return ontologies_http.get_json(
-        f"/fdb/medication-allergy/?{urlencode({
-            'consideredMedication': json.dumps(considered_codings),
-            'allergyList': json.dumps(allergy_ids),
-        })}"
-    ).json()
+    params = urlencode(
+        {
+            "consideredMedication": json.dumps(considered_codings),
+            "allergyList": json.dumps(allergy_ids),
+        }
+    )
+    return ontologies_http.get_json(f"/fdb/medication-allergy/?{params}").json()
 ```
 
 The response is a list of interaction objects — one per matched allergy, distinguishing a direct match from a cross-sensitive one (e.g. a penicillin allergy against a cephalosporin). An empty list `[]` means no interactions (all clear):
@@ -907,9 +932,18 @@ The sibling `GET /fdb/medication-list-interaction/` endpoint checks a single can
 import json
 from urllib.parse import urlencode
 
+from canvas_sdk.commands.constants import CodeSystems
 from canvas_sdk.utils.http import ontologies_http
 from canvas_sdk.v1.data import Medication, Patient
-# reuse fdb_codings() from the drug–allergy example above
+
+
+def fdb_codings(med: Medication) -> list[list[str]]:
+    """The medication's FDB codings as [code, "FDB"] pairs."""
+    return [
+        [c.code, "FDB"]
+        for c in med.codings.all()
+        if c.code and c.system == CodeSystems.FDB
+    ]
 
 
 def screen_drug_drug(patient: Patient, considered_med: Medication) -> list[dict]:
@@ -926,11 +960,14 @@ def screen_drug_drug(patient: Patient, considered_med: Medication) -> list[dict]
     if not considered_medication or not medication_list:
         return []
 
+    params = urlencode(
+        {
+            "consideredMedication": json.dumps(considered_medication),
+            "medicationList": json.dumps(medication_list),
+        }
+    )
     return ontologies_http.get_json(
-        f"/fdb/medication-list-interaction/?{urlencode({
-            'consideredMedication': json.dumps(considered_medication),
-            'medicationList': json.dumps(medication_list),
-        })}"
+        f"/fdb/medication-list-interaction/?{params}"
     ).json()
 ```
 
@@ -961,6 +998,11 @@ The response is a list of interaction objects, one per interacting pair:
 **Screening several new medications at once:** checking each new med only against the patient's *current* list misses interactions *between* the new meds. Accumulate — after screening each new med, add it to the list you screen the next one against:
 
 ```python
+from canvas_sdk.v1.data import Medication, Patient
+
+patient = Patient.objects.get(id="e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b")
+new_meds = list(Medication.objects.none())  # the medications you're about to add
+
 existing = list(Medication.objects.for_patient(patient).active())
 for new_med in new_meds:
     # screen new_med against `existing`, then:
@@ -1162,7 +1204,13 @@ The response contains a `results` list of imaging report templates:
 Use the returned `code` on the command:
 
 ```python
+from urllib.parse import urlencode
+
 from canvas_sdk.commands import ImagingOrderCommand
+from canvas_sdk.utils.http import science_http
+
+params = {"query": "chest x-ray", "format": "json", "limit": 10}
+response_json = science_http.get_json(f"/parse-templates/imaging-reports/?{urlencode(params)}").json()
 
 command = ImagingOrderCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",

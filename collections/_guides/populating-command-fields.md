@@ -49,6 +49,8 @@ Many fields reference something that already exists in Canvas: a condition on th
 from canvas_sdk.commands import AssessCommand
 from canvas_sdk.v1.data import Condition
 
+patient_id = "e5f6a7b8-9c0d-4e1f-8a2b-3c4d5e6f7a8b"
+
 # The UI would let the provider pick from conditions already on the chart.
 # In a plugin, query for it and pass its id.
 condition = (
@@ -108,6 +110,11 @@ A single command often draws on more than one source. A Prescribe command, for i
 
 ```python
 from canvas_sdk.commands import PrescribeCommand
+from canvas_sdk.v1.data import Staff
+
+fdb_code = "..."               # from the medication search (utils)
+ncpdp_id = "..."               # from the pharmacy search (utils)
+staff = Staff.objects.first()  # the prescriber
 
 prescribe = PrescribeCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
@@ -117,7 +124,6 @@ prescribe = PrescribeCommand(
     prescriber_id=staff.id,          # data module: Staff reference table
     substitutions=PrescribeCommand.Substitutions.ALLOWED,  # enum
     quantity_to_dispense=30,
-    ...
 )
 ```
 
