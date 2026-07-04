@@ -118,11 +118,12 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
-Before uploading, `canvas install` runs pre-flight validation:
+Before uploading, `canvas install` runs the same pre-flight validation as [`canvas validate`](#canvas-validate):
 - Manifest validation (schema, tags, handler resolution)
+- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
 - Sandbox-load validation (imports every handler in the sandbox)
 
-If any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin reaches your instance. Run `canvas validate` first for detailed per-handler results.
+If the static lint reports an error, or any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin is built or uploaded, so it never reaches your instance. Run `canvas validate` first for detailed per-handler results.
 
 The CLI automatically excludes common build artifacts from the plugin bundle:
 - `__pycache__` directories
@@ -264,7 +265,7 @@ These issues will fail on the instance (sandbox / Custom Data):
 | Rule code | Flags |
 | --- | --- |
 | `custom-model-wrong-dir` | A `CustomModel` subclass defined outside `<plugin>/models/` — Canvas only loads models from that directory |
-| `missing-custom-data-block` | CustomModels are present but the manifest has no `custom_data` block |
+| `missing-custom-data-block` | CustomModels are present but the manifest has no `custom_data` block (an empty block counts as missing — it must be non-empty) |
 
 **Custom Data (warnings).** These don't block validation but usually indicate a bug:
 
@@ -298,7 +299,7 @@ The command exits with code 1 if any handler fails validation.
 
 A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
 
-{% include alert.html type="info" content="<code>canvas install</code> runs the same sandbox-load validation before uploading, so violations are caught before they reach your instance." %}
+{% include alert.html type="info" content="<code>canvas install</code> runs this same static lint and sandbox-load validation before uploading, so violations are caught before they reach your instance." %}
 
 ### `canvas validate-manifest`
 
@@ -359,7 +360,7 @@ Error: these handler classes won't be found by the plugin runner with the curren
 CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
 ```
 
-{% include alert.html type="info" content="<code>canvas install</code> runs both manifest validation and sandbox-load validation before uploading. Use <code>canvas validate</code> for a full pre-flight check with detailed per-handler output." %}
+{% include alert.html type="info" content="<code>canvas install</code> runs manifest validation, the static lint, and sandbox-load validation before uploading. Use <code>canvas validate</code> for a full pre-flight check with detailed per-handler output." %}
 
 ### `canvas logs`
 
