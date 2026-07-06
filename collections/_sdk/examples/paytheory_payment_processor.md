@@ -14,7 +14,7 @@ This Canvas EMR plugin integrates [Pay Theory](https://paytheory.com) as a custo
 * Renders tokenization forms with the [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform) effect and [Django templates](/sdk/layout-effect/#custom-html-and-django-templates)
 * Charges cards and returns a [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction) effect
 * Lists, adds, and removes saved cards with the [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod), [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse), and [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse) effects
-* Reads configuration from plugin [secrets](/sdk/secrets/) and declares `url_permissions` for the Pay Theory JS SDK
+* Reads configuration from plugin [variables](/sdk/secrets/) and declares `url_permissions` for the Pay Theory JS SDK
 
 ## CANVAS_MANIFEST.json
 
@@ -31,7 +31,7 @@ This Canvas EMR plugin integrates [Pay Theory](https://paytheory.com) as a custo
         }
     ],
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "paytheory_payment_processor.handlers.paytheory_payment_processor:PayTheoryPaymentProcessor",
                 "description": "Handles credit card payments, tokenization, and payment method management via PayTheory",
@@ -47,7 +47,13 @@ This Canvas EMR plugin integrates [Pay Theory](https://paytheory.com) as a custo
         "effects": [],
         "views": []
     },
-    "secrets": ["paytheory_merchant_id", "paytheory_public_key", "paytheory_secret_key", "paytheory_partner", "paytheory_environment"],
+    "variables": [
+        {"name": "paytheory_merchant_id", "sensitive": true},
+        {"name": "paytheory_public_key"},
+        {"name": "paytheory_secret_key", "sensitive": true},
+        {"name": "paytheory_partner"},
+        {"name": "paytheory_environment"}
+    ],
     "tags": {},
     "references": [],
     "license": "",

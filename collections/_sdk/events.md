@@ -51,7 +51,7 @@ The actor is available in the following contexts:
 - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
-- [**Payment processor**](/sdk/handlers-payment-processors/) events — all `REVENUE__PAYMENT_PROCESSOR__*` events
+- **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python

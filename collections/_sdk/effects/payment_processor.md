@@ -83,7 +83,7 @@ def charge(
 
 Represents a patient's saved payment method, returned in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST`.
 
-Canvas does not store these cards itself. Saved payment methods live with your third-party payment provider, and your processor is responsible for persisting them there when a card is added and deleting them when a card is removed. Canvas simply asks your handler for the current list each time it needs to display saved cards, so there is no internal payment method table to expose to the SDK — the values you return here are rendered directly.
+The cards managed by your custom processor live with your third-party payment provider — your processor is responsible for persisting them there when a card is added and deleting them when a card is removed. Canvas does not persist them for you; it asks your handler for the current list each time it needs to display saved cards, and the values you return here are rendered directly.
 
 | Attribute             |          | Type           | Description                                 |
 |-----------------------|----------|----------------|---------------------------------------------|
