@@ -141,7 +141,7 @@ class Handler(BaseHandler):
 
 The `ScribeParser` delegates the parsing of each transcript section to specific section parsers.
 
-```python
+```python?partial=true
 from ai_scribe.parsers.base import TranscriptParser
 
 
@@ -175,7 +175,7 @@ class ScribeParser(TranscriptParser):
 #### 3. Section Parsers
 
 Each section parser extracts relevant information from its section and produces commands.
-```python
+```python?partial=true
 from typing import Any, Sequence
 from ai_scribe.parsers.base import CommandParser, ParsedContent
 from canvas_sdk.commands.commands.plan import PlanCommand
@@ -195,7 +195,7 @@ Suppose you want to parse the "Appointments" section into a `TaskCommand` for fo
 
 #### Define the Parser
 
-```python
+```python?partial=true
 from typing import Sequence, Any
 from canvas_sdk.commands import TaskCommand
 from ai_scribe.parsers.base import CommandParser, ParsedContent
@@ -232,7 +232,7 @@ class ScribeParser:
 
 To replace `ScribeParser`, define your custom parser.
 
-```python
+```python?partial=true
 from ai_scribe.parsers.base import (
     ParsedContent,
     TranscriptParser,

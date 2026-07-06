@@ -1,7 +1,7 @@
 ---
 title: Use self.event.target.id and self.event.context as Replacements for Deprecated Methods
 tags: plugins
-layout: product updates
+layout: productupdates
 date: 2025-01-06
 ---
 

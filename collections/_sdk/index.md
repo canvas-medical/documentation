@@ -1,5 +1,5 @@
 ---
-slug: /
+permalink: /sdk/
 title: "The Canvas SDK"
 layout: sdk
 ---

@@ -1,4 +1,5 @@
 ---
+slug: cursor-focus-2025-01-30
 title: Maintains Cursor Focus when Adding Commands
 date: 2025-01-30 20:00:00
 tags: ui
