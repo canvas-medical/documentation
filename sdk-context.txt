@@ -23180,7 +23180,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -23419,12 +23419,12 @@ HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Mo
 ###  Revenue / Payment Processor 
 Effect | Description  
 ---|---  
-REVENUE__PAYMENT_PROCESSOR__METADATA | Can be used to provide payment processor metadata.  
-REVENUE__PAYMENT_PROCESSOR__FORM | Can be used to provide a payment processor form.  
-REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Can be used to process a credit card transaction.  
-REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Can be used to manage a payment method.  
-REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Can be used to respond to an add payment method request.  
-REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Can be used to respond to a remove payment method request.  
+REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module.  
+REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module.  
+REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module.  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Returns a patient's saved payment method. Use the [PaymentMethod](/sdk/payment-processor-effect/#paymentmethod) class in the effects module.  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Returns the result of adding a payment method. Use the [AddPaymentMethodResponse](/sdk/payment-processor-effect/#addpaymentmethodresponse) class in the effects module.  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Returns the result of removing a payment method. Use the [RemovePaymentMethodResponse](/sdk/payment-processor-effect/#removepaymentmethodresponse) class in the effects module.  
 ###  Surescripts 
 Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
 Effect | Description  
@@ -23570,6 +23570,7 @@ The actor is available in the following contexts:
   - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
   - **Claim events** — `CLAIM__CONDITIONS`
   - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
+  - **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
   - **Patient portal events** — all `PATIENT_PORTAL__*` events
     ```python
     from canvas_sdk.effects import Effect
@@ -37047,6 +37048,69 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+###  Payment Processor Events 
+These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see Event Actor). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
+The `identifier` is the unique id of the payment processor handler the event is intended for. Canvas derives it from the handler's class (its module path and class name) and exposes it on the handler as `self.identifier`; it is the same value the handler advertises via the [`PaymentProcessorMetadata`](/sdk/payment-processor-effect/#paymentprocessormetadata) effect when responding to `REVENUE__PAYMENT_PROCESSOR__LIST`.
+REVENUE__PAYMENT_PROCESSOR__LIST  
+---  
+Occurs when Canvas gathers the list of available payment processors. A handler responds with a [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) effect.  
+Target | Context object  
+    None
+| 
+    "payment_type": str  # optional, e.g. "card"  
+REVENUE__PAYMENT_PROCESSOR__SELECTED  
+---  
+Occurs when a payment processor is selected. A handler responds with one or more [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) effects.  
+Target | Context object  
+    None
+| 
+    "identifier": str
+    "intent": str  # optional, "pay" | "add_card"
+    "patient":
+        "id": str  # optional  
+REVENUE__PAYMENT_PROCESSOR__CHARGE  
+---  
+Occurs when a card is charged. A handler responds with a [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) effect.  
+Target | Context object  
+    None
+| 
+    "identifier": str
+    "amount": str
+    "token": str
+    "additional_context": str  # optional
+    "patient":
+        "id": str  # optional  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST  
+---  
+Occurs when Canvas lists a patient's saved payment methods. A handler responds with one or more [PaymentMethod](/sdk/payment-processor-effect/#paymentmethod) effects.  
+Target | Context object  
+    None
+| 
+    "identifier": str
+    "patient":
+        "id": str  # optional  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD  
+---  
+Occurs when a payment method is added for a patient. A handler responds with an [AddPaymentMethodResponse](/sdk/payment-processor-effect/#addpaymentmethodresponse) effect.  
+Target | Context object  
+    None
+| 
+    "identifier": str
+    "token": str
+    "additional_context": str  # optional
+    "patient":
+        "id": str  
+REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE  
+---  
+Occurs when a payment method is removed for a patient. A handler responds with a [RemovePaymentMethodResponse](/sdk/payment-processor-effect/#removepaymentmethodresponse) effect.  
+Target | Context object  
+    None
+| 
+    "identifier": str
+    "token": str
+    "patient":
+        "id": str  
+###  Patient Portal Events 
 APPLICATION__ON_CONTEXT_CHANGE  
 ---  
 Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.  
@@ -39501,6 +39565,125 @@ This file defines two custom handlers, `Conditions` and `Medications`, using the
 ----- END PAGE https://docs.canvasmedical.com/sdk/example-patient_summary_chart_groups/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/example-paytheory_payment_processor/
+> **Note:** [View the source](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/paytheory-payment-processor) for this plugin on GitHub. 
+This Canvas EMR plugin integrates [Pay Theory](https://paytheory.com) as a custom credit card [payment processor](/sdk/handlers-payment-processors/), letting Canvas collect payments and manage a patient's saved cards through a third-party provider instead of the built-in Stripe integration.
+##  SDK Features 
+  - Extends the [`CardPaymentProcessor`](/sdk/handlers-payment-processors/#cardpaymentprocessor) handler
+  - Responds to the [`REVENUE__PAYMENT_PROCESSOR__*` events](/sdk/events/#payment-processor-events)
+  - Renders tokenization forms with the [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform) effect and [Django templates](/sdk/layout-effect/#custom-html-and-django-templates)
+  - Charges cards and returns a [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction) effect
+  - Lists, adds, and removes saved cards with the [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod), [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse), and [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse) effects
+  - Reads configuration from plugin [variables](/sdk/secrets/) and declares `url_permissions` for the Pay Theory JS SDK
+##  CANVAS_MANIFEST.json 
+    ```json
+    {
+        "sdk_version": "0.1.4",
+        "plugin_version": "0.0.1",
+        "name": "paytheory_payment_processor",
+        "description": "PayTheory credit card payment processor integration",
+        "url_permissions": [
+            {
+                "url": "https://*.sdk.paytheory.com/index.js",
+                "permissions": ["SCRIPTS"]
+            }
+        ],
+        "components": {
+            "handlers": [
+                {
+                    "class": "paytheory_payment_processor.handlers.paytheory_payment_processor:PayTheoryPaymentProcessor",
+                    "description": "Handles credit card payments, tokenization, and payment method management via PayTheory",
+                    "data_access": {
+                        "event": "",
+                        "read": [],
+                        "write": []
+                    }
+                }
+            ],
+            "commands": [],
+            "content": [],
+            "effects": [],
+            "views": []
+        },
+        "variables": [
+            {"name": "paytheory_merchant_id", "sensitive": true},
+            {"name": "paytheory_public_key"},
+            {"name": "paytheory_secret_key", "sensitive": true},
+            {"name": "paytheory_partner"},
+            {"name": "paytheory_environment"}
+        ],
+        "tags": {},
+        "references": [],
+        "license": "",
+        "readme": "./README.md"
+    }
+    ```
+The `url_permissions` above are abbreviated — the full manifest lists every Pay Theory SDK, token-service, and tags-static URL across the production, sandbox, and lab environments.
+##  handlers/ 
+###  paytheory_payment_processor.py 
+**Purpose and Functionality**
+This file defines `PayTheoryPaymentProcessor`, a subclass of `CardPaymentProcessor`. It implements the methods Canvas calls throughout a payment workflow: rendering the tokenization forms, charging a card, and listing/adding/removing a patient's saved cards. Card data is tokenized client-side by Pay Theory's JS SDK, so the plugin never handles raw card numbers.
+**Core Logic**
+  - `payment_form` / `add_card_form` render the Pay Theory JS SDK form (via a Django template) for paying or saving a card.
+  - `charge` sends the tokenized payment method to Pay Theory's GraphQL API and maps the result onto a `CardTransaction`, treating `PENDING`/`SETTLED`/`SUCCESS`/`SUCCEEDED` statuses as successful.
+  - `payment_methods` maps a patient to a Pay Theory payor (via `canvas_patient_id` metadata) and returns their saved cards as `PaymentMethod` effects.
+  - `add_payment_method` / `remove_payment_method` save and disable cards for the patient's payor.
+    ```python
+    from decimal import Decimal
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import (
+        AddPaymentMethodResponse,
+        CardTransaction,
+        PaymentMethod,
+        PaymentProcessorForm,
+        RemovePaymentMethodResponse,
+    )
+    from canvas_sdk.handlers.payment_processors.card import CardPaymentProcessor
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    class PayTheoryPaymentProcessor(CardPaymentProcessor):
+        """Custom payment processor for handling credit card payments with PayTheory."""
+        def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
+            content = render_to_string(
+                "templates/form.html",
+                {
+                    "intent": self.PaymentIntent.PAY,
+                    "public_api_key": self.public_api_key,
+                    "sdk_url": self.sdk_url,
+                },
+            )
+            return PaymentProcessorForm(content=content, intent=self.PaymentIntent.PAY)
+        def charge(
+            self, amount: Decimal, token: str, patient: Patient | None = None, **kwargs: Any
+        ) -> CardTransaction:
+            transaction = self.api.create_transaction(
+                TransactionInput(payment_method_id=token, amount=amount)
+            )
+            status = (transaction.get("status") or "").upper()
+            return CardTransaction(
+                success=status in SUCCESS_STATUSES,
+                transaction_id=transaction["transaction_id"],
+                api_response=transaction,
+            )
+        def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
+            if not patient:
+                return []
+            payor_id = self.get_or_create_payor_id(patient)
+            if not payor_id:
+                return []
+            return [self._to_payment_method(m) for m in self.api.get_payment_methods(payor_id=payor_id)]
+        def add_payment_method(
+            self, token: str, patient: Patient, **kwargs: Any
+        ) -> AddPaymentMethodResponse:
+            return AddPaymentMethodResponse(success=True)
+        def remove_payment_method(self, token: str, patient: Patient) -> RemovePaymentMethodResponse:
+            result = self.api.disable_payment_method(payment_method_id=token)
+            return RemovePaymentMethodResponse(success=result)
+    ```
+The excerpt above is abridged; see the [source on GitHub](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/paytheory-payment-processor) for the full implementation, the Pay Theory API client, and the form template.
+----- END PAGE https://docs.canvasmedical.com/sdk/example-paytheory_payment_processor/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/example-portal-customization-launch_application/
 > **Note:** [View the source](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page) for this plugin on GitHub. 
 This plugin demonstrates how to embed custom patient facing content and tools to the Canvas patient portal. It provides an example of how to expose new patient-facing content or features, such as educational materials, forms, or interactive tools. On open, the plugin can launch an application and return effects to update the portal UI or patient data as needed.
@@ -41717,6 +41900,267 @@ When installed, this application replaces the built-in scheduling modal. If no s
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-payment-processors/
+The Canvas SDK provides a way to define custom payment processors that enables Canvas to:
+  - Handle payment-related workflows within the platform
+  - Integrate with third-party payment providers
+  - Manage payment methods for patients
+Custom payment processors enable flexibility, allowing developers to replace Stripe with other payment providers. Currently, only credit card payment processors are supported.
+##  Payment Processor Handler 
+All payment processors are implemented as subclasses of the abstract `PaymentProcessor` handler. This defines the base contract for:
+  - Selecting a processor
+  - Charging payments
+  - Listing, adding, and removing payment methods
+You can find it in:
+    ```python
+    from canvas_sdk.handlers.payment_processors.base import PaymentProcessor
+    ```
+`PaymentProcessor` is an abstract base that wires up event handling but does not define the methods a plugin needs to implement. You should not subclass it directly — instead, extend one of its typed subclasses. Currently the only supported type is `CardPaymentProcessor`, which is where the methods you need to define are declared.
+* * *
+##  CardPaymentProcessor 
+If your custom processor deals with card payments, extend the `CardPaymentProcessor`, which provides additional structure.
+    ```python
+    from canvas_sdk.handlers.payment_processors.card import CardPaymentProcessor
+    ```
+In the plugin, this is implemented as:
+    ```python
+    from canvas_sdk.handlers.payment_processors.card import (
+        CardPaymentProcessor,
+    )
+    class PayTheoryPaymentProcessor(CardPaymentProcessor):
+        ...  # Your implementation here
+    ```
+* * *
+##  Defining a `CardPaymentProcessor`
+When implementing a `CardPaymentProcessor`, you must define how Canvas should display forms for adding and charging cards, how to process those payments, and how to manage saved payment methods.
+In order to implement a `CardPaymentProcessor`, you should override and implement the following methods grouped into three main categories:
+  - Displaying forms
+  - Charging a card
+  - Managing payment methods
+###  Displaying Forms 
+The forms you return via [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform) are rendered directly as **inner HTML** within the Canvas application. These forms must define a small contract of JavaScript behaviors to allow Canvas to communicate with them.
+These methods define the HTML content that will be rendered inside Canvas to collect card data for payments or adding new cards. They must comply with the Form Workflow.
+These forms render wherever Canvas collects a card payment or manages saved payment methods, including:
+  - the **provider UI** — the Revenue module and the patient profile payment/insurance area
+  - the **Patient Portal** — when a patient makes a payment or manages their saved cards
+####  Payment Form 
+Triggered when a user selects the credit card payment option. This method should return the HTML form used to collect and tokenize the payment details.
+    ```python
+    from canvas_sdk.effects.payment_processor import PaymentProcessorForm
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
+        content = render_to_string("templates/payment_form.html")
+        return PaymentProcessorForm(intent="pay", content=content)
+    ```
+* * *
+####  Add Card Form 
+Triggered when a user initiates the process of adding a new card to a patient's saved payment methods. This method should return the HTML form used to collect and tokenize the new card information.
+    ```python
+    from canvas_sdk.effects.payment_processor import PaymentProcessorForm
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    def add_card_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
+        content = render_to_string(
+            "templates/add_card_form.html",
+            {"payor_id": self.api.get_default_payor_id()},
+        )
+        return PaymentProcessorForm(intent="add_card", content=content)
+    ```
+* * *
+###  Charging a Card 
+Handles the actual payment. This method is triggered after tokenization and is responsible for charging the card. It returns a [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction) effect describing the result of the charge:
+    ```python
+    from decimal import Decimal
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import (
+      CardTransaction,
+      PaymentProcessorForm
+    )
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    def charge(
+        self,
+        amount: Decimal,
+        token: str,
+        patient: Patient | None = None,
+        **kwargs: Any
+    ) -> CardTransaction:
+        payload = {
+            "token": token,
+            "amount": int(amount * 100),
+            "currency": "usd",
+            "metadata": {"patient_id": patient.id},
+        }
+        result = self.api.charge(payload)
+        return CardTransaction(
+            transaction_id=result["transaction_id"],
+            success=True,
+            api_response=result,
+        )
+    ```
+####  Additional Context 
+The `charge` method accepts `**kwargs` which can contain additional context passed from the payment form. This is useful when you need to pass extra information from the tokenization response (e.g., payment method details, transaction metadata) to the charge handler.
+The additional context is passed via the second argument of `setToken` in your form's JavaScript (see Form Workflow). Canvas processes the `additional_context` as follows:
+Input Type | Example | Passed to `charge` as  
+---|---|---  
+JSON object string | `'{"key": "value"}'` | `key="value"` (unpacked as kwargs)  
+`None` | `null` | `additional_context=None`  
+Plain string | `"some text"` | `additional_context="some text"`  
+JSON number string | `"123"` | `additional_context=123`  
+JSON boolean string | `"true"` | `additional_context=True`  
+Example using additional context:
+    ```python
+    from decimal import Decimal
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import (
+      CardTransaction,
+      PaymentProcessorForm
+    )
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    def charge(
+        self,
+        amount: Decimal,
+        token: str,
+        patient: Patient | None = None,
+        **kwargs: Any
+    ) -> CardTransaction:
+        # Access additional context from kwargs
+        # If setToken was called with a JSON object like {"zip_code": "60007", "city": "Chicago"},
+        # these will be available as kwargs
+        zip_code = kwargs.get("zip_code")
+        city = kwargs.get("city")
+        # Or if a non-dict value was passed, it will be in additional_context
+        raw_context = kwargs.get("additional_context")
+        # ... rest of implementation
+    ```
+* * *
+###  Managing Payment Methods 
+These methods define how Canvas lists, stores, and deletes saved cards associated with a patient.
+####  List 
+Returns the patient's saved cards as a list of [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod) effects, which Canvas renders when displaying stored payment methods.
+    ```python
+    from canvas_sdk.effects.payment_processor import PaymentMethod
+    from canvas_sdk.v1.data import Patient
+    def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
+       return [
+                PaymentMethod(
+                    payment_method_id="pm_1",
+                    brand="Visa",
+                    expiration_year=2025,
+                    expiration_month=12,
+                    card_holder_name="John Doe",
+                    postal_code="12345",
+                    card_last_four_digits="1234",
+                )
+            ]
+    ```
+####  Add 
+Stores a new card for the patient using the tokenized card data and returns an [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse) effect indicating whether the card was saved.
+    ```python
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
+    from canvas_sdk.v1.data import Patient
+    def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> AddPaymentMethodResponse:
+        return AddPaymentMethodResponse(success=True)
+    ```
+#####  Additional Context 
+The `add_payment_method` method accepts `**kwargs` which can contain additional context passed from the add card form. This is useful when you need to pass extra information from the tokenization response to the `add_payment_method` handler.
+The additional context is passed via the second argument of `setToken` in your form's JavaScript (see Form Workflow). Canvas processes the `additional_context` as follows:
+Input Type | Example | Passed to `add_payment_method` as  
+---|---|---  
+JSON object string | `'{"key": "value"}'` | `key="value"` (unpacked as kwargs)  
+`None` | `null` | `additional_context=None`  
+Plain string | `"some text"` | `additional_context="some text"`  
+JSON number string | `"123"` | `additional_context=123`  
+JSON boolean string | `"true"` | `additional_context=True`  
+Example using additional context:
+    ```python
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
+    from canvas_sdk.v1.data import Patient
+    def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> AddPaymentMethodResponse:
+        # Access additional context from kwargs
+        # If setToken was called with a JSON object like {"zip_code": "60007", "city": "Chicago"},
+        # these will be available as kwargs
+        zip_code = kwargs.get("zip_code")
+        city = kwargs.get("city")
+        # Or if a non-dict value was passed, it will be in additional_context
+        raw_context = kwargs.get("additional_context")
+        # ... rest of implementation
+        return AddPaymentMethodResponse(success=True)
+    ```
+####  Remove 
+Deletes the patient's saved card identified by `token` and returns a [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse) effect indicating whether the card was removed.
+    ```python
+    from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
+    from canvas_sdk.v1.data import Patient
+    def remove_payment_method(self, token: str, patient: Patient) -> RemovePaymentMethodResponse:
+        return RemovePaymentMethodResponse(success=True)
+    ```
+* * *
+##  Form Workflow 
+Payment and Add Card forms are rendered as inner HTML inside Canvas. These forms must implement the following communication contract via JavaScript:
+###  1\. Notify readiness 
+This should be called once the form has fully loaded and is ready for user interaction. Canvas waits for this signal to show the form.
+    ```js
+    window.parent.setFormIsReady();
+    ```
+###  2\. Submit token after success 
+Once the card details are validated and tokenized, this method must be called to pass the token back to Canvas. This token will then be used to charge or store the card.
+    ```js
+    window.parent.setToken("tok_123abc");
+    ```
+You can optionally pass a second argument with additional context that will be forwarded to the `charge` or `add_payment_method` methods. This is useful for passing extra data from the tokenization response:
+    ```js
+    // Pass additional context as a JSON-serializable object
+    window.parent.setToken("tok_123abc", { zip_code: "111", city: "Chicago" });
+    // Or pass the raw tokenization result
+    const result = await paymentProvider.tokenize(cardDetails);
+    window.parent.setToken(result.token, result);
+    ```
+The additional context will be available in the `charge` and `add_payment_method` method's `**kwargs`. See the Charge section for details on how different value types are handled.
+###  3\. Report validation status 
+Call this every time the validity of the form changes (e.g., input becomes valid or invalid). Canvas uses this to enable or disable the ability to submit the form programmatically.
+    ```js
+    window.parent.setFormIsValid(true); // or false
+    ```
+###  4\. Handle errors 
+Call this to notify Canvas of any form-level errors (e.g., failed tokenization, invalid input). The message should help users understand what went wrong.
+    ```js
+    window.parent.setError("Invalid card details");
+    ```
+###  5\. Submit button 
+The HTML form must include a button with `id="submit"`. This button is required, should remain hidden from the user, and will be clicked programmatically by Canvas when the form is considered valid and ready to be submitted.
+    ```html
+    <button type="submit" id="submit" hidden>Submit</button>
+    ```
+###  6\. Define teardown function 
+This function will be called automatically when the form is unmounted or replaced. Use it to remove any event listeners or free up memory/resources.
+    ```js
+    window.teardown = () => {
+      // Cleanup listeners, state, etc.
+    };
+    ```
+* * *
+##  Tokenization Flow 
+Tokenization is the process where the sensitive card information is securely transformed into a token that can be safely used by Canvas to perform charges or save cards.
+When implementing a payment processor, it's expected that your HTML forms integrate with your provider's frontend SDK to:
+  - Collect and validate card input
+  - Tokenize the card using the provider's secure API
+  - Call `window.parent.setToken(token)` with the result
+Canvas does not handle raw card input. Tokenization **must** be handled entirely by the payment provider's frontend tools within the form.
+Before building a plugin, ensure:
+  - Your provider offers secure frontend tokenization
+  - You can integrate with their JavaScript SDK
+  - You can submit token data from the form via `setToken`
+* * *
+##  Example Plugin 
+For a complete, working reference, see the [PayTheory Payment Processor](/sdk/example-paytheory_payment_processor/) example plugin. It implements a custom `CardPaymentProcessor` that replaces the standard Stripe integration with [Pay Theory](https://paytheory.com), covering tokenization forms, charging, and saved payment method management.
+----- END PAGE https://docs.canvasmedical.com/sdk/handlers-payment-processors/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-http/
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance. Developers can define the routes and implement the code that will handle incoming HTTP requests.
 This feature allows developers to create endpoints that can receive webhook events from other services. An endpoint receiving a request can invoke Effects in a Canvas instance, send another request to a different service, or simply return a response back to the requester.
@@ -42262,7 +42706,7 @@ All handlers inherit from [BaseHandler](/sdk/handlers-basehandler/), which means
       - `CUSTOMER_IDENTIFIER` — the instance's subdomain (e.g. `acme` for `acme.canvasmedical.com`).
       - `INSTALLATION_TIME_ZONE` — the instance's configured time zone as an IANA name (e.g. `America/Los_Angeles`). Useful for rendering times to the customer's clinicians, scheduling work in their local day, or formatting dates in user-facing output.
     - Example: `self.environment['CUSTOMER_IDENTIFIER']`
-## [ Action Button  Add a button that executes your custom code when clicked. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/ActionButton.png) ![Image of an action button in a note header.](/assets/images/sdk/handlers/action-button-in-action.png) ](/sdk/handlers-action-buttons/) ## [ Application  Launch an iframe when your icon is clicked in the app drawer. ![Abridged source code of an application implementation.](/assets/images/sdk/handlers/Application-cropped.png) ![Image of application icons in the app drawer.](/assets/images/sdk/handlers/application-applied.png) ](/sdk/handlers-applications/) ## [ Cron Task  Execute your code on a cron-like schedule. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/CronTask-cropped.png) ![Picture of Mr. Cron, the little time monster that remembers which tasks should be executed at any given time.](/assets/images/sdk/handlers/mr-cron.png) ](/sdk/handlers-crontask/) ## [ Base Handler  Respond to events with your custom code. ![Abridged source code of a base handler implementation.](/assets/images/sdk/handlers/BaseHandler-cropped.png) ![Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'.](/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png) ](/sdk/handlers-basehandler/) ## [ Embedded Application  Render a tab inside a note, or replace the built-in scheduling modal. ![Abridged source code of a NoteApplication and SchedulingApplication implementation.](/assets/images/sdk/handlers/EmbeddedApplication-cropped.png) ![An embedded application rendered inside the Canvas UI.](/assets/images/sdk/handlers/embedded-application-in-action.png) ](/sdk/handlers-embedded-applications/) ## [ Patient Chart Summary Custom Section  Serve content into a custom section of the patient chart summary. ![Abridged source code of a patient chart summary custom section handler implementation.](/assets/images/sdk/handlers/PatientChartSummaryCustomSection-cropped.png) ![A custom section rendered in the patient chart summary.](/assets/images/sdk/handlers/patient-chart-summary-custom-section-handler-in-action.png) ](/sdk/patient-chart-summary-custom-section-handler/) ## [ SimpleAPI  Define HTTP and WebSocket API endpoints in your plugin. ![Abridged source code of a SimpleAPI route implementation.](/assets/images/sdk/handlers/SimpleAPI-cropped.png) ![A curl request to a SimpleAPI route and its JSON response.](/assets/images/sdk/handlers/simple-api-response.png) ](/sdk/handlers-simple-api/)
+## [ Action Button  Add a button that executes your custom code when clicked. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/ActionButton.png) ![Image of an action button in a note header.](/assets/images/sdk/handlers/action-button-in-action.png) ](/sdk/handlers-action-buttons/) ## [ Application  Launch an iframe when your icon is clicked in the app drawer. ![Abridged source code of an application implementation.](/assets/images/sdk/handlers/Application-cropped.png) ![Image of application icons in the app drawer.](/assets/images/sdk/handlers/application-applied.png) ](/sdk/handlers-applications/) ## [ Cron Task  Execute your code on a cron-like schedule. ![Abridged source code of an action button implementation.](/assets/images/sdk/handlers/CronTask-cropped.png) ![Picture of Mr. Cron, the little time monster that remembers which tasks should be executed at any given time.](/assets/images/sdk/handlers/mr-cron.png) ](/sdk/handlers-crontask/) ## [ Base Handler  Respond to events with your custom code. ![Abridged source code of a base handler implementation.](/assets/images/sdk/handlers/BaseHandler-cropped.png) ![Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'.](/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png) ](/sdk/handlers-basehandler/) ## [ Payment Processor  Integrate a third-party payment provider to charge cards and manage saved payment methods. ![Abridged source code of a payment processor implementation.](/assets/images/sdk/handlers/PaymentProcessor-cropped.png) ![Illustration of a credit card payment being approved.](/assets/images/sdk/handlers/payment-processor-in-action.png) ](/sdk/handlers-payment-processors/) ## [ Embedded Application  Render a tab inside a note, or replace the built-in scheduling modal. ![Abridged source code of a NoteApplication and SchedulingApplication implementation.](/assets/images/sdk/handlers/EmbeddedApplication-cropped.png) ![An embedded application rendered inside the Canvas UI.](/assets/images/sdk/handlers/embedded-application-in-action.png) ](/sdk/handlers-embedded-applications/) ## [ Patient Chart Summary Custom Section  Serve content into a custom section of the patient chart summary. ![Abridged source code of a patient chart summary custom section handler implementation.](/assets/images/sdk/handlers/PatientChartSummaryCustomSection-cropped.png) ![A custom section rendered in the patient chart summary.](/assets/images/sdk/handlers/patient-chart-summary-custom-section-handler-in-action.png) ](/sdk/patient-chart-summary-custom-section-handler/) ## [ SimpleAPI  Define HTTP and WebSocket API endpoints in your plugin. ![Abridged source code of a SimpleAPI route implementation.](/assets/images/sdk/handlers/SimpleAPI-cropped.png) ![A curl request to a SimpleAPI route and its JSON response.](/assets/images/sdk/handlers/simple-api-response.png) ](/sdk/handlers-simple-api/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers/
 
 
@@ -43106,6 +43550,114 @@ When an effect is prepared, the model validates inputs and returns structured er
   - This effect only triggers a verification send for the contact point. It does not mark the contact as verified — verification completion is handled by the platform when the patient completes the challenge.
   - The effect relies on `PatientContactPoint` existing in the database. If your integration creates contact points in the same operation, ensure they are persisted before emitting this effect.
 ----- END PAGE https://docs.canvasmedical.com/sdk/patient-portal/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/payment-processor-effect/
+These effects are returned from a custom [Payment Processor](/sdk/handlers-payment-processors/) handler in response to the `REVENUE__PAYMENT_PROCESSOR__*` [events](/sdk/events/#payment-processor-events). Each effect is the handler's reply to a specific stage of a payment workflow — advertising the processor, rendering a form, charging a card, or managing a patient's saved payment methods.
+All of the classes below are importable from `canvas_sdk.effects.payment_processor`.
+##  PaymentProcessorMetadata 
+Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCESSOR__LIST`. Canvas uses it to discover which processors are installed and to route later events (charge, add card, etc.) to the right handler.
+**You normally never construct this yourself.** The base `PaymentProcessor` handler builds and returns it automatically through its `metadata()` method, which fills in:
+  - `identifier` — a stable, unique id derived from your handler class (its module path and class name), exposed as `self.identifier`. Canvas includes this `identifier` in every subsequent payment processor event so your handler knows the event is meant for it.
+  - `type` — the processor's `TYPE` class attribute (for example, `CardPaymentProcessor` sets this to `CARD`).
+Because the base handler already responds to `REVENUE__PAYMENT_PROCESSOR__LIST` with this effect, you only need to construct it directly in advanced cases where you override that default behavior.
+Attribute |  | Type | Description  
+---|---|---|---  
+identifier | required | String | Unique identifier of the payment processor. Generated automatically per handler.  
+type | required | PaymentProcessorType | The kind of processor. Currently only `CARD` is supported.  
+###  PaymentProcessorType 
+Value | Description  
+---|---  
+`CARD` | A card-based processor.  
+##  PaymentProcessorForm 
+Returns the HTML form used to collect and tokenize card details, in response to `REVENUE__PAYMENT_PROCESSOR__SELECTED`. The `content` is rendered as inner HTML inside Canvas and must implement the [Form Workflow](/sdk/handlers-payment-processors/#form-workflow).
+Attribute |  | Type | Description  
+---|---|---|---  
+intent | required | String | The purpose of the form. One of `"pay"` or `"add_card"`.  
+content | required | String | The HTML content to render inside Canvas.  
+    ```python
+    from canvas_sdk.effects.payment_processor import PaymentProcessorForm
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data import Patient
+    def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
+        content = render_to_string("templates/payment_form.html")
+        return PaymentProcessorForm(intent="pay", content=content)
+    ```
+##  CardTransaction 
+Returns the result of charging a card, in response to `REVENUE__PAYMENT_PROCESSOR__CHARGE`.
+Attribute |  | Type | Description  
+---|---|---|---  
+success | required | Boolean | Whether the charge succeeded.  
+transaction_id | required | String | None | The identifier of the transaction, if one was created.  
+api_response | required | Dictionary | The raw response returned by the payment provider.  
+error_code | optional | String | None | An error code describing why the charge failed, if applicable.  
+    ```python
+    from decimal import Decimal
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import CardTransaction
+    from canvas_sdk.v1.data import Patient
+    def charge(
+        self, amount: Decimal, token: str, patient: Patient | None = None, **kwargs: Any
+    ) -> CardTransaction:
+        return CardTransaction(
+            success=True,
+            transaction_id="txn_123",
+            api_response={"status": "succeeded"},
+        )
+    ```
+##  PaymentMethod 
+Represents a patient's saved payment method, returned in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST`.
+The cards managed by your custom processor live with your third-party payment provider — your processor is responsible for persisting them there when a card is added and deleting them when a card is removed. Canvas does not persist them for you; it asks your handler for the current list each time it needs to display saved cards, and the values you return here are rendered directly.
+Attribute |  | Type | Description  
+---|---|---|---  
+payment_method_id | required | String | The identifier of the saved payment method.  
+brand | required | String | The card brand (e.g. `"Visa"`).  
+card_holder_name | required | String | None | The name of the card holder.  
+expiration_year | required | Integer | The card's expiration year.  
+expiration_month | required | Integer | The card's expiration month.  
+card_last_four_digits | required | String | The last four digits of the card number.  
+postal_code | optional | String | None | The billing postal code.  
+country | optional | String | None | The billing country.  
+    ```python
+    from canvas_sdk.effects.payment_processor import PaymentMethod
+    from canvas_sdk.v1.data import Patient
+    def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
+        return [
+            PaymentMethod(
+                payment_method_id="pm_1",
+                brand="Visa",
+                card_holder_name="John Doe",
+                expiration_year=2030,
+                expiration_month=12,
+                card_last_four_digits="4242",
+                postal_code="12345",
+            )
+        ]
+    ```
+##  AddPaymentMethodResponse 
+Returns the result of adding a payment method, in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD`.
+Attribute |  | Type | Description  
+---|---|---|---  
+success | required | Boolean | Whether the payment method was added.  
+    ```python
+    from typing import Any
+    from canvas_sdk.effects.payment_processor import AddPaymentMethodResponse
+    from canvas_sdk.v1.data import Patient
+    def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> AddPaymentMethodResponse:
+        return AddPaymentMethodResponse(success=True)
+    ```
+##  RemovePaymentMethodResponse 
+Returns the result of removing a payment method, in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE`.
+Attribute |  | Type | Description  
+---|---|---|---  
+success | required | Boolean | Whether the payment method was removed.  
+    ```python
+    from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
+    from canvas_sdk.v1.data import Patient
+    def remove_payment_method(self, token: str, patient: Patient) -> RemovePaymentMethodResponse:
+        return RemovePaymentMethodResponse(success=True)
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/payment-processor-effect/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/plugin-logs/

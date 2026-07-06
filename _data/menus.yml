@@ -759,6 +759,8 @@ charting:
     url: /sdk/example-patient_summary_chart_groups/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
+  - title: "PayTheory Payment Processor"
+    url: /sdk/example-paytheory_payment_processor/
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
   - title: "Upsert Patient Metadata"
@@ -795,6 +797,9 @@ sdk_handlers:
     url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
+  - title: "Payment Processors"
+    url: /sdk/handlers-payment-processors/
+    identifier: payment_processors_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -923,6 +928,9 @@ effects_module:
   - title: "Patient Timeline"
     url: /sdk/effect-patient-timeline/
     description: Configure a patient's timeline by excluding specific note types.
+  - title: "Payment Processor"
+    url: /sdk/payment-processor-effect/
+    description: Effects returned by custom payment processors.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
