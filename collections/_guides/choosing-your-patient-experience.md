@@ -263,6 +263,8 @@ Examples:
 
 Where FHIR gives you standard resources, **SimpleAPI lets you define your own** — you own the URL, the request, and the JSON response shape, all running inside a Canvas plugin. Instead of bending your app to fit a generic API, you build the endpoint your app actually wants and call it directly.
 
+_New to the idea? Read the announcement: [Introducing Custom API Endpoints with the Canvas SDK](https://www.canvasmedical.com/articles/introducing-custom-api-endpoints)._
+
 This is where SimpleAPI shines:
 
 - **Shape the payload to your UI.** Return exactly the fields a screen needs, already assembled — no over-fetching, no reshaping FHIR bundles on the client.
@@ -288,6 +290,7 @@ Real-world examples (MSF):
 - [lab-result-api](https://github.com/medical-software-foundation/canvas/tree/main/extensions/lab-result-api) — one `GET /lab-result/<id>` returns a lab report with its patient, originating order, ordering provider, and nested result values assembled into a single response. A textbook "collapse many calls into one, shaped to your UI" endpoint.
 - [cpt-billing-api](https://github.com/medical-software-foundation/canvas/tree/main/extensions/cpt-billing-api) — a write endpoint that adds CPT billing line items to a note from an external caller.
 - [note-command-api](https://github.com/medical-software-foundation/canvas/tree/main/extensions/note-command-api) — read notes with enhanced command data, and create notes via `POST /create-note` with flexible identifier lookup.
+- [custom-observation-management](https://github.com/medical-software-foundation/canvas/tree/main/extensions/custom-observation-management) — an API-key-authed read/write API over a clinical resource: `GET` a single observation, a filtered list, or the available filters, and `POST` to record a new one.
 
 ### Events → webhooks — Canvas pushes changes to your app the moment they happen
 
@@ -295,7 +298,7 @@ Instead of your app constantly polling Canvas asking "anything new?", **let Canv
 
 Why reach for webhooks:
 
-- **Real-time sync, no polling.** Keep an external system current — a billing platform, a CRM, a data warehouse, your own app's database — the moment data changes, instead of nightly jobs that are always a little stale.
+- **Real-time sync, no polling.** Keep an external system current — a billing platform, a CRM, a data warehouse, your own app's database — the moment data changes, instead of nightly jobs that are always a little stale. For example, a patient gives the front desk an updated address; a webhook pushes that change to your app so it's already reflected the next time they log in to your portal.
 - **Trigger downstream workflows.** Fire an appointment reminder, page a care team, kick off a prior-auth, or open a ticket in your system as soon as the triggering event lands.
 - **Fan out from one event.** A single Canvas change can notify several systems at once, each with the payload it needs.
 - **Lower latency and load.** You react in seconds and skip the wasted requests — and the changes missed between polls — that polling brings.
