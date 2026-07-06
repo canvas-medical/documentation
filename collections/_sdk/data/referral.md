@@ -65,6 +65,17 @@ reports = ReferralReport.objects.find(DialysisServices)
 
 `find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
 
+### Committed records
+
+The `committed` method returns `Referral` and `ReferralReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.referral import Referral, ReferralReview
+
+committed_referrals = Referral.objects.committed()
+committed_reviews = ReferralReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Referral's related tasks, use the `get_task_objects` method on the Referral object.
 

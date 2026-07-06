@@ -48,6 +48,16 @@ from canvas_sdk.v1.data.goal import Goal, GoalAchievementStatus
 goals = Goal.objects.filter(achievement_status=GoalAchievementStatus.IN_PROGRESS)
 ```
 
+### Committed goals
+
+The `committed` method returns goals that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.goal import Goal
+
+committed_goals = Goal.objects.committed()
+```
+
 ## Attributes
 
 ### Goal
