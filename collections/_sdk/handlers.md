@@ -79,6 +79,16 @@ plugin via the Canvas UI on your plugin's configuration page
             <img class="hover-secondary" src="/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png" alt="Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'."/>
         </div>
     </a>
+    <a href="/sdk/handlers-payment-processors/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Payment Processor</h2>
+                <span>Integrate a third-party payment provider to charge cards and manage saved payment methods.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/PaymentProcessor-cropped.png" alt="Abridged source code of a payment processor implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/payment-processor-in-action.png" alt="Illustration of a credit card payment being approved."/>
+        </div>
+    </a>
     <a href="/sdk/handlers-embedded-applications/">
         <div class="handler-card">
             <div class="handler-card-header">
