@@ -480,12 +480,12 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | Effect | Description |
 |---|---|
 | REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/). |
-| REVENUE__PAYMENT_PROCESSOR__METADATA | Can be used to provide payment processor metadata. |
-| REVENUE__PAYMENT_PROCESSOR__FORM | Can be used to provide a payment processor form. |
-| REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Can be used to process a credit card transaction. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Can be used to manage a payment method. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Can be used to respond to an add payment method request. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Can be used to respond to a remove payment method request. |
+| REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Returns a patient's saved payment method. Use the [PaymentMethod](/sdk/payment-processor-effect/#paymentmethod) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Returns the result of adding a payment method. Use the [AddPaymentMethodResponse](/sdk/payment-processor-effect/#addpaymentmethodresponse) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Returns the result of removing a payment method. Use the [RemovePaymentMethodResponse](/sdk/payment-processor-effect/#removepaymentmethodresponse) class in the effects module. |
 
 
 ### Surescripts

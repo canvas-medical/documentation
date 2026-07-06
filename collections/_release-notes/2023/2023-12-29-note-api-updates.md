@@ -1,4 +1,5 @@
 ---
+slug: note-api-updates-2023-12-29
 title: Enhancements to Note API 
 date: 2023-12-29
 tags: beta api

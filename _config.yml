@@ -45,6 +45,7 @@ defaults:
       path          : "collections/_api/**/*"
     values:
       layout        : "api"
+      excerpt_separator: ""
   - scope:
       path          : "collections/_documentation/**/*"
     values:
@@ -97,6 +98,8 @@ plugins:
 
 ### Exclude from processing
 exclude:
+  - .devbox
+  - .venv
   - Gemfile
   - Gemfile.lock
   - README.md
