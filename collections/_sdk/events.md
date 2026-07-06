@@ -23253,9 +23253,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"slots_by_provider": dict</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23272,8 +23272,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23291,9 +23291,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"appointment_types": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"appointment_types": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23310,8 +23310,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23329,9 +23329,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"locations": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"locations": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23348,8 +23348,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23367,9 +23367,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"providers": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"providers": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
