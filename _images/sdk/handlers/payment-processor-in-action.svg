@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="440" viewBox="0 0 700 440">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eef2fb"/>
+      <stop offset="1" stop-color="#dbe4f5"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b6fe0"/>
+      <stop offset="1" stop-color="#7a4de0"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7d774"/>
+      <stop offset="1" stop-color="#e0a94d"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="700" height="440" fill="url(#bg)"/>
+
+  <!-- floating card -->
+  <g transform="translate(150 110) rotate(-8 200 120)">
+    <rect x="0" y="0" width="400" height="240" rx="26" fill="url(#card)"/>
+    <rect x="0" y="0" width="400" height="240" rx="26" fill="#ffffff" opacity="0.06"/>
+
+    <!-- chip -->
+    <rect x="40" y="60" width="58" height="44" rx="8" fill="url(#chip)"/>
+    <line x1="69" y1="60" x2="69" y2="104" stroke="#c9902f" stroke-width="2"/>
+    <line x1="40" y1="82" x2="98" y2="82" stroke="#c9902f" stroke-width="2"/>
+
+    <!-- contactless -->
+    <path d="M120 66 a26 26 0 0 1 0 32" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+    <path d="M132 58 a40 40 0 0 1 0 48" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+
+    <!-- number -->
+    <g fill="#ffffff" opacity="0.92">
+      <rect x="40" y="140" width="60" height="14" rx="4"/>
+      <rect x="112" y="140" width="60" height="14" rx="4"/>
+      <rect x="184" y="140" width="60" height="14" rx="4"/>
+      <rect x="256" y="140" width="60" height="14" rx="4"/>
+    </g>
+
+    <!-- name / expiry -->
+    <rect x="40" y="186" width="150" height="12" rx="4" fill="#ffffff" opacity="0.7"/>
+    <rect x="300" y="186" width="60" height="12" rx="4" fill="#ffffff" opacity="0.7"/>
+  </g>
+
+  <!-- success check badge -->
+  <g transform="translate(470 250)">
+    <circle cx="0" cy="0" r="46" fill="#2ec07f"/>
+    <circle cx="0" cy="0" r="46" fill="#ffffff" opacity="0.08"/>
+    <path d="M-20 2 L-6 17 L22 -16" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

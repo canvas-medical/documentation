@@ -434,19 +434,19 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 
 ### Patient Portal
 
-Check out the [Patient Portal](/sdk/patient-portal/) and [Form Result](/sdk/form-result-effect/) documentation.
+Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 
 | Effect | Description |
 |---|---|
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
-| SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. |
+| SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE | Show the 'reschedule' button on the appointment card. |
 | PATIENT_PORTAL__SEND_INVITE | Trigger a portal invitation for a user. |
-| PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send a contact verification in the patient portal. |
+| PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send an email or SMS verification to a patient contact point. Works for any patient contact point, not just the portal. Check out [Send Contact Verification](/sdk/effect-send-contact-verification/). |
 | PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS | Modify slot availability in the patient portal appointment scheduler. |
 | PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH_RESULTS | Modify appointment types in the patient portal before a search. |
 | PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH_RESULTS | Modify appointment types in the patient portal after a search. |
@@ -479,12 +479,12 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 | Effect | Description |
 |---|---|
-| REVENUE__PAYMENT_PROCESSOR__METADATA | Can be used to provide payment processor metadata. |
-| REVENUE__PAYMENT_PROCESSOR__FORM | Can be used to provide a payment processor form. |
-| REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Can be used to process a credit card transaction. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Can be used to manage a payment method. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Can be used to respond to an add payment method request. |
-| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Can be used to respond to a remove payment method request. |
+| REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD | Returns a patient's saved payment method. Use the [PaymentMethod](/sdk/payment-processor-effect/#paymentmethod) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__ADD_RESPONSE | Returns the result of adding a payment method. Use the [AddPaymentMethodResponse](/sdk/payment-processor-effect/#addpaymentmethodresponse) class in the effects module. |
+| REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHOD__REMOVE_RESPONSE | Returns the result of removing a payment method. Use the [RemovePaymentMethodResponse](/sdk/payment-processor-effect/#removepaymentmethodresponse) class in the effects module. |
 
 
 ### Surescripts
