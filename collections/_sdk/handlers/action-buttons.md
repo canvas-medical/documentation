@@ -249,21 +249,33 @@ Footer buttons that move a note through its states — Sign, Amend, Check in, an
 - derives its `BUTTON_TITLE` and `BUTTON_KEY` from the state (set `BUTTON_TITLE` explicitly to relabel it);
 - on click, emits the effect that performs the transition and reloads the footer.
 
-`LOCKED` and `SIGNED` are the same transition shown differently: the `LOCKED` button is hidden for note types that require a signature, and the `SIGNED` button is hidden for those that don't.
+Locking and signing carry extra rules, so the SDK ships two `NoteStateActionButton` subclasses that encapsulate them. Use these instead of subclassing `NoteStateActionButton` directly for those two transitions:
+
+- **`LockNoteActionButton`** — locks the note. Shown only for note types that **don't** require a signature.
+- **`SignNoteActionButton`** — signs the note. Shown only for note types that **do** require a signature. It locks the note first when it isn't already locked, so a note can be signed repeatedly — including by multiple users — and is only re-locked after an amend. It also hides itself once the current user has signed since the note was last locked.
+
+`Discharge` is shown only for inpatient note types; the base class applies that gate for you.
 
 ```python
-from canvas_sdk.handlers.action_button import NoteStateActionButton
+from canvas_sdk.handlers.action_button import (
+    LockNoteActionButton,
+    NoteStateActionButton,
+    SignNoteActionButton,
+)
 from canvas_sdk.v1.data.note import NoteStates
 
 
-class LockNoteButton(NoteStateActionButton):
-    STATE_ACTION = NoteStates.LOCKED
+# Lock and Sign subclass the specialized bases — STATE_ACTION and their extra
+# rules are already set on those classes.
+class LockNoteButton(LockNoteActionButton):
+    pass
 
 
-class SignNoteButton(NoteStateActionButton):
-    STATE_ACTION = NoteStates.SIGNED
+class SignNoteButton(SignNoteActionButton):
+    pass
 
 
+# Every other transition subclasses NoteStateActionButton and sets STATE_ACTION.
 class UnlockNoteButton(NoteStateActionButton):
     STATE_ACTION = NoteStates.UNLOCKED
 
@@ -322,17 +334,14 @@ class HideDefaultStateButtons(BaseHandler):
 
 #### Customizing when a button appears
 
-Override `visible()` to layer your own rules on top of the built-in state check — call `super().visible()` first so you keep the transition validity, then add your conditions. This Sign button is hidden while the note still has staged (uncommitted) commands, because a note can't be signed until its commands are committed (reason-for-visit is auto-managed and doesn't block signing, so it's excluded):
+Override `visible()` to layer your own rules on top of the built-in checks — call `super().visible()` first so you keep everything the base already enforces, then add your conditions. Subclassing `SignNoteActionButton` means `super().visible()` still applies the sign-specific rules (signature-required, lock-first, and already-signed). This Sign button additionally hides itself while the note has staged (uncommitted) commands, because a note can't be signed until its commands are committed (reason-for-visit is auto-managed and doesn't block signing, so it's excluded):
 
 ```python
-from canvas_sdk.handlers.action_button import NoteStateActionButton
+from canvas_sdk.handlers.action_button import SignNoteActionButton
 from canvas_sdk.v1.data.command import Command
-from canvas_sdk.v1.data.note import NoteStates
 
 
-class SignNoteButton(NoteStateActionButton):
-    STATE_ACTION = NoteStates.SIGNED
-
+class SignNoteButton(SignNoteActionButton):
     def visible(self) -> bool:
         if not super().visible():
             return False
@@ -404,7 +413,7 @@ class ReloadFooterOnNoteStateChange(BaseHandler):
 
 A complete, working plugin that ties these patterns together is available as the [**note-lifecycle-example**](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/note-lifecycle-example) plugin. It demonstrates:
 
-- a full set of state-responsive footer buttons built on `NoteStateActionButton` (Lock, Sign, Unlock, Push charges, Check in, No show, Cancel, Restore, Delete, Discharge), each appearing only when its transition is valid from the note's current state;
+- a full set of state-responsive footer buttons (Lock, Sign, Unlock, Push charges, Check in, No show, Cancel, Restore, Delete, Discharge), each appearing only when its transition is valid from the note's current state — Lock and Sign built on `LockNoteActionButton` and `SignNoteActionButton`, the rest on `NoteStateActionButton`;
 - a `HideDefaultStateButtons` handler that hides Canvas's native footer buttons so the plugin's buttons replace them;
 - `ReloadFooterOnCommandCommit` and `ReloadFooterOnNoteStateChange` handlers that keep the visible button set in sync as the note evolves.
 

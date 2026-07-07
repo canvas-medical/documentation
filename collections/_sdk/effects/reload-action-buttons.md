@@ -13,7 +13,7 @@ Emit one from any handler's `compute()` or `handle()` — not only from an `Acti
 
 ## ReloadNoteActionButtonsEffect
 
-Re-evaluates every button bound to a note.
+Re-evaluates every button bound to a note. It also re-reads the note's [footer configuration](/sdk/effect-note-footer-configuration/) (by re-firing `NOTE_FOOTER__GET_CONFIGURATION`), so a plugin that toggles `hide_default_state_buttons` can refresh whether Canvas's native footer buttons are hidden without a full page reload.
 
 ### Fields
 
