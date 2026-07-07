@@ -937,6 +937,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Redirect"
+    url: /sdk/effect-redirect/
+    description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
   - title: "Send Contact Verification"
     url: /sdk/effect-send-contact-verification/
     description: Send an email or SMS verification to a patient contact point.
