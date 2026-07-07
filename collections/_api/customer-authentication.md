@@ -167,6 +167,54 @@ For applications that need to make API calls on behalf of specific Canvas users 
 2. **Ongoing access:** Before making API calls, check if the access token is still valid. If expired, use the stored refresh token to get a new one.
 3. **Token storage:** Access tokens last 10 hours. Refresh tokens are non-expiring but single-use — always store the latest one returned from a refresh.
 
+## Patient Scoped Tokens
+
+Canvas supports patient scoped tokens. These are access tokens requested on behalf of a specific patient and have read/write access to that patient's records only.
+
+To acquire a patient scoped token, you will need to include some parameters in the body of your token request:
+- A `client_id` and `client_secret` that your application will use to [authenticate with Canvas](#client-credentials).
+- The Canvas resource id for the `patient` the token will be scoped to
+- A `scope` parameter with space separated patient level scopes requested for the token.
+  - Additional requested scopes should follow the pattern `patient/<ResourceName>.<read/write/*>`
+    - `patient/Appointment.*`
+    - `patient/Appointment.read patient/Appointment.write`
+    - `patient/Patient.read`
+    - `patient/Practitioner.read`
+  - Canvas provides support for the wildcard character, but highly recommends only requesting the minimal scopes and access needed and using it as a convenience when both read and write are truly required for the application.
+
+See [Resources by context](#resources-by-context) for the full list of resources a `patient/` scope can read and write.
+
+### Example curl request
+
+```bash
+curl --location --request POST \
+      'https://<your_subdomain_here>.canvasmedical.com/auth/token/' \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data-urlencode 'grant_type=client_credentials' \
+      --data-urlencode 'client_id=<client_id_from_Canvas>' \
+      --data-urlencode 'client_secret=<client_secret_from_Canvas>' \
+      --data-urlencode 'patient=abc123' \
+      --data-urlencode 'scope=patient/Patient.read patient/Appointment.* patient/Practitioner.read'
+```
+
+### Expected Response Body
+
+```json
+{
+  "access_token": "<the_access_token_to_use_in_your_request>", 
+  "expires_in": 36000, 
+  "token_type": "Bearer", 
+  "scope": "patient/Patient.read patient/Appointment.* patient/Practitioner.read", 
+  "smart_style_url": "https://canvas-storages.s3.us-west-2.amazonaws.com/fhir-static-resources/smart-style.json", 
+  "patient": "abc123", 
+  "need_patient_banner": true
+}
+```
+
+Using this access token in subsequent requests ensures that records referencing other patients cannot be retrieved through accidental or malicious misuse of the token. Canvas will also deny requests for any resource types which were not included in `scope` of the token request and requests for resource types which do not support patient-scoped tokens.
+
+**Note:** A patient scoped token must include which patient scopes are being requested. Token requests that include the patient parameter but are missing scope or request invalid scopes will be rejected.
+
 ## Scopes
 
 Scopes control which parts of the API the token can access.
