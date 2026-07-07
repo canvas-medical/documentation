@@ -1,4 +1,5 @@
 ---
+slug: commands-beta-2024-07-11
 title: SDK Allergy, Remove Allergy, and Family History Commands Available for Beta Testing
 tags: beta sdk
 date: 2024-07-11

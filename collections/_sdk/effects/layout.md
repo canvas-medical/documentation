@@ -365,39 +365,6 @@ Modal overlays can now be dynamically resized by embedded applications using the
 
 This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
 
-## Portal Landing Page Widgets
-
-The `PortalWidget` class allows you to add widgets of various sizes to the patient portal landing page. You can fully customize your widgets or leverage ready-made widgets provided by Canvas, such as Appointments and Messaging.
-
-### Example Usage
-
-```python
-from canvas_sdk.effects.widgets import PortalWidget
-
-class PortalWidgetHandler:
-    def compute(self):
-        portal_widget = PortalWidget(
-            url="https://example.com/info",
-            size=PortalWidget.Size.COMPACT,
-            priority=25
-        )
-        return [portal_widget.apply()]
-```
-
-The `PortalWidget` class has the following properties:
-
-- **url**: A string containing the URL to load within the widget. If either `content` or `component` is specified, an error will be raised.
-- **content**: A string containing the content to be displayed directly within the widget. If either `url` or `component` is provided, an error will be raised.
-- **component**: Choose one of ready-made widgets made by Canvas. If either `url` or `content` is provided, an error will be raised. The available ready-made widgets include:
-  - `APPOINTMENTS`: Displays upcoming appointments.
-  - `MESSAGING`: Enables quick messaging.
-- **Size**: Determines the widget's layout on the frontend grid:
-  - `EXPANDED`: Fills an entire row (12 columns).
-  - `MEDIUM`: Occupies 8 columns.
-  - `COMPACT`: Occupies 4 columns.
-  - **Note: All sizes have a fixed height of 300px.**
-- **priority**: This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
-
 ## Custom HTML and Django Templates
 
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.

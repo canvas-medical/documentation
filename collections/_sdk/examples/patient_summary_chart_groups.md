@@ -25,11 +25,11 @@ A plugin that groups Psychiatry conditions and medications in the patient summar
     "components": {
         "handlers": [
             {
-                "class": "patient_summary_chart_groups.handlers.my_protocol:Conditions",
+                "class": "patient_summary_chart_groups.handlers.my_handler:Conditions",
                 "description": "A handler that groups Psychiatry conditions"
             },
             {
-                "class": "patient_summary_chart_groups.handlers.my_protocol:Medications",
+                "class": "patient_summary_chart_groups.handlers.my_handler:Medications",
                 "description": "A handler that groups Psychiatry medications"
             }
         ],

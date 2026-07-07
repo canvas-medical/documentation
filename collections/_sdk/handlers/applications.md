@@ -199,6 +199,7 @@ The `scope` attribute determines where your application is visible within Canvas
 | `full_chart` | Displayed as a tab in the patient chart navigation menu alongside Chart and Profile |
 | `provider_menu_item` | Displayed as a menu item in the provider menu |
 | `portal_menu_item` | Displayed as a menu item in the patient portal |
+| `provider_companion` | Visible on the [Provider Companion](/sdk/companion/) main page (legacy, use `provider_companion_global` for new apps) |
 | `provider_companion_global` | In the app launcher on the [Provider Companion](/sdk/companion/) main page |
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
@@ -217,166 +218,17 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 }
 ```
 
-## Note Applications
+## Provider Companion Applications
 
-Note Applications appear as tabs within a patient's note, allowing you to embed custom interfaces directly in the clinical documentation workflow.
+Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
 
-### Implementing a Note Application
+See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
 
-To create a Note Application, your handler class should inherit from `NoteApplication` and define two required class attributes:
+## Embedded Applications
 
-| Attribute    | Description                                                                    |
-|--------------|--------------------------------------------------------------------------------|
-| `NAME`       | The display title shown on the tab (supports emojis)                           |
-| `IDENTIFIER` | A unique key for the application (recommended format: `plugin_name__app_name`) |
-| `PRIORITY`   | Controls tab order — lower values appear first. Defaults to `0`                |
+Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
 
-Your class must implement the `on_open()` method, which is called when the user clicks on the tab. This method should return an `Effect` or list of `Effect`s, typically a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.NOTE`
-
-> **⚠️  Important** If you have an existing plugin that overrides `handle()`, it will continue to work. However, `handle()` is deprecated — migrate to `on_open()` at your earliest convenience.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import NoteApplication
-
-
-class PatientIntakeApp(NoteApplication):
-    """Note application for patient intake workflow."""
-
-    NAME = "📋 Patient Intake"
-    IDENTIFIER = "my_plugin__patient_intake"
-
-    def on_open(self) -> Effect | list[Effect]:
-        """Launch the intake form when the tab is clicked."""
-        note_id = self.event.context.get("note_id")
-        patient_id = self.event.context.get("patient", {}).get("id")
-
-        return LaunchModalEffect(
-            target=LaunchModalEffect.TargetType.NOTE,
-            content="<html>Your form HTML here</html>",
-            title="Patient Intake Form"
-        ).apply()
-```
-
-<div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/note-application-tabs.png" alt="note applications" /></div>
-
-### Context and Event Data
-
-Both `on_open()` and `handle()` have access to context data through `self.event.context`:
-
-| Key       | Description                                       |
-|-----------|---------------------------------------------------|
-| `note_id` | The database ID of the current note               |
-| `note`    | A dict containing the note's external `id` (UUID) |
-| `patient` | A dict containing the patient's `id` (key)        |
-| `user`    | Information about the current user                |
-
-#### `on_open()` — recommended
-
-When using `on_open()`, the patient is available through `self.event.context`:
-
-```python
-from canvas_sdk.effects import Effect
-
-def on_open(self) -> Effect | list[Effect]:
-    note_id = self.event.context.get("note_id")
-    patient_id = self.event.context.get("patient", {}).get("id")
-    ...
-```
-
-`self.event.target.id` contains the application identifier used internally for routing, not the patient.
-
-#### `handle()` — deprecated
-
-When using the deprecated `handle()`, `self.event.target.id` is automatically set to the patient UUID before `handle()` is called, preserving the original behavior that old plugins relied on:
-
-```python
-from canvas_sdk.effects import Effect
-
-def handle(self) -> list[Effect]:
-    patient_id = self.event.target.id  # backfilled from patient context
-    ...
-```
-
-> **Note:** This backfilling only happens when `handle()` is called. Plugins that override `on_open()` directly should read the patient from `self.event.context` as shown above.
-
-| Property                              | `on_open()`                          | `handle()` (deprecated)   |
-|---------------------------------------|--------------------------------------|---------------------------|
-| `self.event.target.id`                | Application identifier (for routing) | Patient UUID (backfilled) |
-| `self.event.context["patient"]["id"]` | Patient UUID                         | Patient UUID              |
-| `self.event.actor`                    | Authenticated user                   | Authenticated user        |
-
-### Controlling Visibility
-
-You can control when your Note Application tab is visible by overriding the `visible()` method. This method has access to the same context and event data as `on_open()`:
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import NoteApplication
-
-
-class ConditionalIntakeApp(NoteApplication):
-    NAME = "📋 Intake"
-    IDENTIFIER = "my_plugin__conditional_intake"
-
-    def visible(self) -> bool:
-        """Only show for specific conditions."""
-        # Add your visibility logic here
-        return True
-
-    def on_open(self) -> Effect | list[Effect]:
-        return LaunchModalEffect(
-            target=LaunchModalEffect.TargetType.NOTE,
-            content="<html>Form content</html>",
-            title="Intake"
-        ).apply()
-```
-
-### Opening by Default
-
-You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
-from canvas_sdk.handlers.application import NoteApplication
-
-
-class AutoOpenApp(NoteApplication):
-    NAME = "📋 Intake"
-    IDENTIFIER = "my_plugin__auto_open_intake"
-
-    def open_by_default(self) -> bool:
-        """Open automatically when the note is viewed."""
-        return True
-
-    def on_open(self) -> Effect | list[Effect]:
-        return LaunchModalEffect(
-            target=LaunchModalEffect.TargetType.NOTE,
-            content="<html>Form content</html>",
-            title="Intake"
-        ).apply()
-```
-
-### Tab Ordering
-
-You can control the order in which Note Application tabs appear by setting the `PRIORITY` class attribute. Tabs are sorted in ascending order, so lower values appear first. The default is `0`.
-
-```python
-from canvas_sdk.handlers.application import NoteApplication
-
-class HighPriorityApp(NoteApplication):
-    NAME = "First Tab"
-    IDENTIFIER = "my_plugin__first"
-    PRIORITY = 1
-
-class LowPriorityApp(NoteApplication):
-    NAME = "Second Tab"
-    IDENTIFIER = "my_plugin__second"
-    PRIORITY = 10
-```
+See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
 ## Panel Display
 
@@ -428,6 +280,35 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
   "readme": "./README.md"
 }
 ```
+
+## Opening an Application on Load
+
+You can configure an application to open **automatically**, without the user
+clicking its icon, by enabling the **Open on load** setting for that application
+in your instance settings.
+
+To enable it, go to the Plugins_IO > Applications section of your instance settings
+(`/admin/plugin_io/application/`), open the application you want, check
+**Open on load**, and save. If you don't have access to this setting, reach out
+to Canvas Support.
+
+Behavior depends on the application's [scope](#application-scopes):
+
+| Scope              | When it opens                                    |
+|--------------------|--------------------------------------------------|
+| `global`           | Automatically when the app shell first loads.    |
+| `patient_specific` | Automatically when a patient chart is opened.    |
+
+This is an instance-level setting configured per application in your instance
+settings. It is **not** part of `CANVAS_MANIFEST.json`, so the value you set is
+preserved when the plugin is reinstalled or updated.
+
+{% include alert.html type="warning" content="<b>Enable Open on load for at most one application per scope.</b> There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two <code>patient_specific</code> apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load." %}
+
+> **Note:** This is distinct from a Note Application's
+> [`open_by_default()`](/sdk/handlers-embedded-applications/#opening-by-default), which controls which **tab** is
+> active when a note is viewed. **Open on load** controls whether a `global` or
+> `patient_specific` application opens automatically on app/chart load.
 
 ## Notification Badges
 
@@ -490,7 +371,7 @@ The badge event context contains:
 | `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
 | `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
 
-> **Note:** Note Applications (`NoteApplication` / `EmbeddedApplication`) do not
+> **Note:** Note Applications (`NoteApplication`) do not
 > support notification badges.
 
 ### Live updates

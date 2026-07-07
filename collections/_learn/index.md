@@ -1,5 +1,5 @@
 ---
-slug: /
+permalink: /learn/
 title: "Developer Education"
 layout: "educationlandingpage"
 hidden: true
