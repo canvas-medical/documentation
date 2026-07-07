@@ -796,6 +796,8 @@ sdk_handlers:
     url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
+  - title: "Payment Processor"
+    url: /sdk/handlers-payment-processor/
   - title: "Payment Processors"
     url: /sdk/handlers-payment-processors/
     identifier: payment_processors_handlers
