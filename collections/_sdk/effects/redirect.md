@@ -16,11 +16,13 @@ Provide **exactly one** destination:
 
 By default the navigation replaces the current tab. Set `target` to `RedirectEffect.TargetType.NEW_TAB` to open a `url` destination in a new tab instead.
 
+> **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{key}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+
 ## Attributes
 
 | Name             | Type                          | Required | Description                                                                                                   |
 |------------------|-------------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| `url`            | `str`                         | Yes\*    | A full external URL or internal Canvas path composed by the plugin. Non-empty.                                |
+| `url`            | `str`                         | Yes\*    | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty. |
 | `application_id` | `str`                         | Yes\*    | The identifier of a Canvas application to open. Must exist and be enabled.                                     |
 | `target`         | [`TargetType`](#targettype)   | No       | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`.                                          |
 
