@@ -51,6 +51,7 @@ The actor is available in the following contexts:
 - **Lab order command events** — `LAB_ORDER_COMMAND__PRE_SEND`, `HEALTH_GORILLA_LAB_ORDER_PREPARED`
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
+- **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
@@ -23253,9 +23254,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"slots_by_provider": dict</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23272,8 +23273,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23291,9 +23292,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"appointment_types": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"appointment_types": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23310,8 +23311,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23329,9 +23330,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"locations": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"locations": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23348,8 +23349,8 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>None</pre></td>
     </tr>
   </tbody>
@@ -23367,9 +23368,9 @@ shape only; dynamic per-field entries appear alongside.
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>None</pre></td>
-      <td><pre>None</pre></td>
-      <td><pre>"providers": list[dict]</pre></td>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"providers": [{"id", "title"}]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23757,7 +23758,7 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
 <table>
   <thead>
     <tr><th colspan="2">APPLICATION__ON_GET</th></tr>
-    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas requests the available applications for a given scope. Handled automatically by <a href="/sdk/handlers-embedded-applications/#note-applications">Note Applications</a> to return application metadata via the <code>SHOW_APPLICATION</code> effect.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -23798,6 +23799,133 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
     </tr>
   </tbody>
 </table>
+
+### Payment Processor Events
+
+These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see [Event Actor](#event-actor)). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
+
+The `identifier` is the unique id of the payment processor handler the event is intended for. Canvas derives it from the handler's class (its module path and class name) and exposes it on the handler as `self.identifier`; it is the same value the handler advertises via the [`PaymentProcessorMetadata`](/sdk/payment-processor-effect/#paymentprocessormetadata) effect when responding to `REVENUE__PAYMENT_PROCESSOR__LIST`.
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__LIST</th></tr>
+    <tr><td colspan="2">Occurs when Canvas gathers the list of available payment processors. A handler responds with a <a href="/sdk/payment-processor-effect/#paymentprocessormetadata">PaymentProcessorMetadata</a> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"payment_type": str  # optional, e.g. "card"</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when a payment processor is selected. A handler responds with one or more <a href="/sdk/payment-processor-effect/#paymentprocessorform">PaymentProcessorForm</a> effects.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"identifier": str
+"intent": str  # optional, "pay" | "add_card"
+"patient":
+    "id": str  # optional</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__CHARGE</th></tr>
+    <tr><td colspan="2">Occurs when a card is charged. A handler responds with a <a href="/sdk/payment-processor-effect/#cardtransaction">CardTransaction</a> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"identifier": str
+"amount": str
+"token": str
+"additional_context": str  # optional
+"patient":
+    "id": str  # optional</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST</th></tr>
+    <tr><td colspan="2">Occurs when Canvas lists a patient's saved payment methods. A handler responds with one or more <a href="/sdk/payment-processor-effect/#paymentmethod">PaymentMethod</a> effects.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"identifier": str
+"patient":
+    "id": str  # optional</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD</th></tr>
+    <tr><td colspan="2">Occurs when a payment method is added for a patient. A handler responds with an <a href="/sdk/payment-processor-effect/#addpaymentmethodresponse">AddPaymentMethodResponse</a> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"identifier": str
+"token": str
+"additional_context": str  # optional
+"patient":
+    "id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE</th></tr>
+    <tr><td colspan="2">Occurs when a payment method is removed for a patient. A handler responds with a <a href="/sdk/payment-processor-effect/#removepaymentmethodresponse">RemovePaymentMethodResponse</a> effect.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"identifier": str
+"token": str
+"patient":
+    "id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Patient Portal Events
 
 <table>
   <thead>

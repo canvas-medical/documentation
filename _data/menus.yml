@@ -25,6 +25,8 @@ api_canvas_fhir:
     url: /api/quickstart/
   - title: "Customer Authentication"
     url: /api/customer-authentication/
+  - title: "Third-Party Developer Access"
+    url: /api/developer-access/
   - title: Authentication Best Practices
     url: /api/authentication-best-practices/
   - title: "Conditional Requests"
@@ -521,6 +523,13 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Choosing Your Patient Experience"
+    url: /guides/choosing-your-patient-experience/
+    description: Decide whether to use, extend, or replace the built-in patient portal
+    uses:
+      - sdk
+      - fhir_api
+
   - title: "Building a Custom Portal Landing Page"
     url: /guides/custom-landing-page/
     description: Customize a patient's landing page with interactive and relevant widgets
@@ -555,12 +564,6 @@ guides_list:
   - title: "Creating, Implementing, and Extending a Scribe Parser"
     url: /guides/scribe-ai-parser/
     description: Creating, Implementing, and Extending a Scribe Parser
-    uses:
-      - sdk
-
-  - title: "Implementing Patient Portal Forms"
-    url: /guides/patient-portal-forms/
-    description: Surface Forms Within the Patient Portal
     uses:
       - sdk
 
@@ -635,6 +638,12 @@ guides_list:
   - title: "Set default homepage by user"
     url: /guides/set-default-homepage/
     description: How to change the default homepage for users in your organization
+    uses:
+      - sdk
+
+  - title: "Populating Command Fields"
+    url: /guides/populating-command-fields/
+    description: Look up the codes, ids, and enum values behind autocomplete and dropdown command fields
     uses:
       - sdk
 
@@ -750,6 +759,8 @@ charting:
     url: /sdk/example-patient_summary_chart_groups/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
+  - title: "PayTheory Payment Processor"
+    url: /sdk/example-paytheory_payment_processor/
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
   - title: "Upsert Patient Metadata"
@@ -782,8 +793,13 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Embedded Applications"
+    url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
+  - title: "Payment Processors"
+    url: /sdk/handlers-payment-processors/
+    identifier: payment_processors_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -858,9 +874,6 @@ effects_module:
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
-  - title: "Form Result"
-    url: /sdk/form-result-effect/
-    description: Effect for dynamically displaying forms in the Patient Portal.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
@@ -915,6 +928,9 @@ effects_module:
   - title: "Patient Timeline"
     url: /sdk/effect-patient-timeline/
     description: Configure a patient's timeline by excluding specific note types.
+  - title: "Payment Processor"
+    url: /sdk/payment-processor-effect/
+    description: Effects returned by custom payment processors.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
@@ -924,6 +940,9 @@ effects_module:
   - title: "Redirect"
     url: /sdk/redirect-effect/
     description: Navigate the Canvas frontend to an internal path or external URL.
+  - title: "Send Contact Verification"
+    url: /sdk/effect-send-contact-verification/
+    description: Send an email or SMS verification to a patient contact point.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.
@@ -1194,5 +1213,3 @@ releasenotes_betas:
     url: /product-updates/cancelrx/
   - title: "Commands Module"
     url: /product-updates/commands-module/
-  - title: "Patient Portal"
-    url: /product-updates/patient-portal/
