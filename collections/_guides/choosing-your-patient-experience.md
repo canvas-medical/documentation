@@ -114,7 +114,7 @@ You can put your organization's identity on the portal without building anything
 
 What stays **Canvas-driven** and isn't branded per organization:
 
-- **The portal URL** — patients sign in at `https://<your-instance>.canvasmedical.com/app`.
+- **The portal URL** — patients sign in at `https://<your-instance>.canvasmedical.com/app/`.
 - **The login flow** — the sign-in and verification screens are Canvas's.
 - **Sign-in & verification emails** — these are sent from a fixed `no-reply@canvasmedical.com` (a separate path from the patient-message sender above), so they can't be rebranded.
 
