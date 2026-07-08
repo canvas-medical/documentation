@@ -663,6 +663,9 @@ sdk:
 sdk_overview:
   - title: "Introduction"
     url: /sdk/
+  - title: "Agent Runner Framework"
+    url: /sdk/agents/
+    identifier: sdk_agents
   - title: "Caching Module"
     url: /sdk/caching/
   - title: "Clients Module"
@@ -783,7 +786,23 @@ integrations:
     url: /sdk/example-sendgrid_email/
   - title: "Twilio SMS/MMS"
     url: /sdk/example-twilio_sms_mms/
-  
+
+sdk_agents:
+  - title: "Quick Start"
+    url: /sdk/agents-quick-start/
+  - title: "Lifecycle"
+    url: /sdk/agents-lifecycle/
+  - title: "Managing State"
+    url: /sdk/agents-managing-state/
+  - title: "Tools"
+    url: /sdk/agents-tools/
+  - title: "Prompts"
+    url: /sdk/agents-prompts/
+  - title: "Testing"
+    url: /sdk/agents-testing/
+  - title: "Auditing"
+    url: /sdk/agents-auditing/
+
 sdk_handlers:
   - title: "Action Buttons"
     url: /sdk/handlers-action-buttons/
