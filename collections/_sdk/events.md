@@ -1047,7 +1047,7 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
       <td><pre>"appointment":
     "id": appointment_id
-"patient":
+"patient":  # present only when the appointment has a patient
     "id": pt_id</pre></td>
     </tr>
   </tbody>
@@ -1068,7 +1068,7 @@ These events fire as a result of records being created, updated, or deleted.
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
       <td><pre>"appointment":
     "id": appointment_id
-"patient":
+"patient":  # present only when the appointment has a patient
     "id": pt_id</pre></td>
     </tr>
   </tbody>
