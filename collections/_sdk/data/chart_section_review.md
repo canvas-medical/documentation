@@ -73,6 +73,16 @@ medication_reviews = ChartSectionReview.objects.filter(
 )
 ```
 
+### Committed reviews
+
+The `committed` method returns chart section reviews that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.chart_section_review import ChartSectionReview
+
+committed_reviews = ChartSectionReview.objects.committed()
+```
+
 ## Working with entries
 
 `entries` is a list of integer `dbid` values identifying the records that were reviewed in the section. Which model those `dbid`s belong to depends on the review's `section`:

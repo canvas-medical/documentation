@@ -60,6 +60,16 @@ from canvas_sdk.v1.data.detected_issue import DetectedIssue
 detected_issues = DetectedIssue.objects.filter(status="active")
 ```
 
+### Committed detected issues
+
+The `committed` method returns detected issues that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.detected_issue import DetectedIssue
+
+committed_detected_issues = DetectedIssue.objects.committed()
+```
+
 ## Attributes
 
 ### DetectedIssue

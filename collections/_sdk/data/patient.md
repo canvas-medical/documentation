@@ -156,7 +156,7 @@ if photo:
 | start       | Date                                                    |
 | end         | Date                                                    |
 | country     | String                                                  |
-| state       | String                                                  |
+| state       | [AddressState](/sdk/data-enumeration-types/#addressstate) |
 | patient     | [Patient](#patient)                                     |
 
 ```python

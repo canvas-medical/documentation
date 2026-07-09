@@ -65,6 +65,17 @@ reports = ImagingReport.objects.find(Mammography)
 
 `find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
 
+### Committed records
+
+The `committed` method returns `ImagingOrder` and `ImagingReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview
+
+committed_orders = ImagingOrder.objects.committed()
+committed_reviews = ImagingReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Imaging Order's related tasks, use the `get_task_objects` method on the ImagingOrder object.
 
