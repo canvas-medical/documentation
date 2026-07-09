@@ -1045,7 +1045,10 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td><pre>"id": appointmentmetadata_id
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"appointment":
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1063,7 +1066,10 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td><pre>"id": appointmentmetadata_id
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"appointment":
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
