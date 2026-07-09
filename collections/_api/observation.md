@@ -45,7 +45,13 @@ sections:
             4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
             5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
             6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
-              
+
+            <br><br>
+
+            <!-- REVIEW: clinical-accuracy sign-off required -->
+            <!-- source: discussion #538 -->
+            <b>LOINC codes on lab orders:</b> Canvas lab orders are placed using a lab-specific identifier or a CPT code, not a LOINC code, so an ordered lab test generally does not carry a LOINC code at order time. The lab vendor should be treated as the source of truth for the appropriate panel-level LOINC code. A generic LOINC code for a laboratory result exists and will work, but a more specific code obtained directly from the lab vendor is preferable, because there can be slight variation between what is ordered and what the lab actually performs.
+
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
