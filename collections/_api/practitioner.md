@@ -10,6 +10,7 @@ sections:
          A person who is directly or indirectly involved in the provisioning of healthcare.<br><br>
          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html)<br><br>
           To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
+          A patient's care team membership is set and updated through the FHIR <a href="/api/careteam">CareTeam</a> endpoint, not through the SDK.<br><br>
           
         attributes:
           - name: id
@@ -306,9 +307,10 @@ sections:
           - name: _id
             type: string
             description: A Canvas-issued unique identifier
+          # source: discussion #1708
           - name: include-non-schedulable-practitioners
             type: boolean
-            description: By default, only schedulable practitioners are displayed. Passing this parameter as "true" will return both schedulable and non-schedulable practitioners.
+            description: By default, only schedulable practitioners are displayed. A practitioner is considered schedulable when at least one of their roles is included in the organization's `SCHEDULABLE_STAFF_ROLES` setting; practitioners whose roles are not in that list (for example, a Medical Assistant) are excluded from search results regardless of their `active` status or other search parameters. Passing this parameter as "true" will return both schedulable and non-schedulable practitioners.
           - name: active
             type: string
             description: Search by `active` status ("true" or "false" - case insensitive). By default if this param is not present, it will return practitioners with `active` set to True ("true").
@@ -334,7 +336,8 @@ sections:
           responses: [200, 401, 403, 404]
           example_request: practitioner-read-request
           example_response: practitioner-read-response
-          description: Read a Practitioner resource
+          # source: discussion #1708
+          description: Read a Practitioner resource. Unlike search, reading a Practitioner by id returns that practitioner regardless of their role or `active` status, so a practitioner that does not appear in search results (for example, a non-schedulable role) can still be retrieved directly by id.
 
         update:
           responses: [200, 400, 401, 403, 404, 405, 412, 422]

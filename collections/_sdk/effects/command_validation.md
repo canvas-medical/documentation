@@ -170,6 +170,10 @@ When validation errors are returned, the Canvas UI shows them to the user — th
 
 > **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
 
+<!-- source: discussion #1513 -->
+<!-- source: discussion #822 -->
+{% include alert.html type="info" content="This effect is the supported way to require fields — or run any custom validation, such as validating a free-text date entered in a questionnaire — <b>before a command is committed</b>. It is distinct from pre-lock note validation: pre-lock validation only prevents the note from being locked, and the underlying command (for example, a questionnaire) is still committed. Command validation blocks the commit itself and surfaces the error to the user. See the <a href='https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/command-validation/command_validation'><code>command-validation</code> example plugin</a>, which can be tailored to require all questions on a questionnaire to be answered, or to look only at specific questions or questionnaires." %}
+
 ## Block a deletion
 
 Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler to block its deletion. Unlike `__POST_VALIDATION`, this works through **both** the Canvas UI and the SDK [commands module](/sdk/commands/): the deletion is aborted, the surrounding transaction is rolled back, and the error messages are returned to whatever initiated the delete — a [`delete()`](/sdk/commands/) call or a delete in the UI. For SDK-initiated deletes, the error is written to `canvas logs`. Pre-delete events follow the pattern:

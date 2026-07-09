@@ -462,6 +462,9 @@ This enables embedded applications to optimize their display area based on conte
 
 ## Custom HTML and Django Templates
 
+<!-- source: discussion #461 -->
+There are two ways to render content in a side drawer or modal: load a hosted page in an iframe by setting the effect's `url` (see [Implementing an Application](/sdk/handlers-applications/#implementing-an-application)), or supply custom HTML rendered from a Django template. Only HTML is supported for the template option — you cannot render a React application this way, though you can render static markup populated with data your plugin has assembled.
+
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 
 ```python
@@ -569,6 +572,9 @@ To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, 
 - **Requesting clipboard read access**: If the site in your modal or widget needs to read from the user's clipboard, `'CLIPBOARD_READ'` must be in the URL's permissions list.
 - **Requesting clipboard write access**: If the site in your modal or widget needs to write to the user's clipboard, `'CLIPBOARD_WRITE'` must be in the URL's permissions list.
 - **Allowing browser access to cookies from the iframe's origin**: If you want the loaded URL to access cookies for its domain, `'ALLOW_SAME_ORIGIN'` must be in the URL's permissions list. If the URL you're loading requires authentication, this will prevent your user from having to log in each time the modal is launched.
+
+<!-- source: discussion #525 -->
+{% include alert.html type="info" content="Adding <code>'ALLOW_SAME_ORIGIN'</code> triggers the iframe sandbox, which currently disables popups (the <code>allow-popups</code> sandbox permission). If your embedded content relies on opening a popup window — for example, a popup-based authentication flow with an external identity provider — be aware that <code>allow-same-origin</code> and <code>allow-popups</code> cannot both be enabled at this time." %}
 
 The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
 

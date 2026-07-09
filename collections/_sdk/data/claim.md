@@ -43,6 +43,58 @@ for alert in active_alerts:
     print(f"[{alert.intent}] {alert.narrative}")
 ```
 
+<!-- source: discussion #1274 -->
+## When a claim is created
+
+A claim is automatically created for an appointment/note only when the note's `NoteType` has `is_billable` set to `True`. Note types with `is_billable` set to `False` (for example, a "Historical Note") create a note but no claim. If you rely on a claim existing for a note, check the `NoteType.is_billable` flag (see [NoteType](/sdk/data-note/#notetype)) rather than assuming every appointment produces a claim.
+
+<!-- source: discussion #1642 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Computing patient-allocated charges
+
+To determine how much has been allocated/charged to the patient on a claim, add the current patient balance to what the patient has already paid:
+
+```python
+from canvas_sdk.v1.data.claim import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+patient_allocated = claim.patient_balance + claim.total_patient_paid
+```
+
+- `patient_balance` is a database field holding the amount still owed by the patient. It is kept in sync via signals as coverage postings transfer money to the patient, as coverage is added or removed, and as the patient makes payments — so it reflects the current allocation without requiring you to aggregate line item transfers.
+- `total_patient_paid` is the sum of `paid_amount` across the patient's active postings.
+
+Because `patient_balance` is maintained directly (including when coverage is added after a note is signed, in which case it is auto-adjusted), this sum is correct for both self-pay and insured claims, including the edge case where a self-pay claim has no postings at all. See also the related `Claim` computed properties documented in the [Attributes](#claim) section (`total_charges`, `total_paid`, `total_payer_paid`, `total_adjusted`, `balance`, and `aggregate_coverage_balance`).
+
+<!-- source: discussion #1407 -->
+## Detecting claim changes in the read replica
+
+The `quality_and_revenue_claim.last_modified` column does not update when a claim only moves between queues (the `current_queue_id` changes). Queue movements are sometimes recorded as rows in the `quality_and_revenue_claimstatechangeevent` table instead of updating the claim's modified timestamp. To find claims that changed for any reason in the read replica, take the most recent of the two timestamps with `GREATEST(claim.modified, claimstatechangeevent.modified)`:
+
+```sql
+SELECT
+    c.id AS claim_id,
+    GREATEST(c.modified, csc.modified) AS claim_modified,
+    c.created AS claim_created,
+    q.name AS current_queue
+FROM quality_and_revenue_claim c
+    -- Latest claim state change event per claim
+    LEFT JOIN LATERAL (
+        SELECT id, modified, queue_entered_id
+        FROM quality_and_revenue_claimstatechangeevent
+        WHERE claim_id = c.id
+        ORDER BY modified DESC, id DESC
+        LIMIT 1
+    ) csc ON TRUE
+    LEFT JOIN quality_and_revenue_queue q
+        ON c.current_queue_id = q.id
+WHERE
+    c.modified >= NOW() - INTERVAL '1 day'
+    OR csc.modified >= NOW() - INTERVAL '1 day'
+ORDER BY 2;
+```
+
 ## Filtering
 
 ```python

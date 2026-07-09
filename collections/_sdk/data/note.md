@@ -140,6 +140,68 @@ for item in note.body:
         print(f"Command data: {command.data}")
 ```
 
+<!-- source: discussion #1021 -->
+### Export a note's documentation when it is locked
+
+To react when a note is locked (for example, to export its documentation to an external system), listen for the `NOTE_STATE_CHANGE_EVENT_CREATED` event and check that the new state is locked. The event context contains the note ID, which you can use to load the `Note` and iterate over its associated commands:
+
+```python
+import json
+
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.note import Note
+from logger import log
+
+
+class NoteRetrieval(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self):
+        event_context = self.event.context
+
+        note = Note.objects.get(dbid=event_context["note_id"])
+        # a note has 0 to many commands
+        for command in note.commands.all():
+            log.info(command.schema_key)
+            log.info(json.dumps(command.data, indent=2))
+        return []
+```
+
+You can either send the command data to your application directly as an effect of this listener, or send only the note ID and let your application fetch the documentation later through a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint you stand up in Canvas.
+
+<!-- source: discussion #1022 -->
+### Fetch command details from a command lifecycle event
+
+When a command lifecycle event such as `LAB_ORDER_COMMAND__POST_COMMIT` fires, `self.target` contains the command's `id`. Use that ID to load the [`Command`](/sdk/data-command/) data record and read its `data` JSON — either to act on it inside the listener, or to expose it through a [`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute) endpoint your application can query later by command ID:
+
+```python
+import json
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.v1.data.command import Command
+
+
+class CommandAPI(SimpleAPIRoute):
+    PATH = "/routes/commands/<id>"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def get(self) -> list[Response | Effect]:
+        command_id = self.request.path_params["id"]
+        command = Command.objects.get(id=command_id)
+
+        return [
+            JSONResponse(json.dumps(command.data), status_code=HTTPStatus.OK)
+        ]
+```
+
+Your application would then GET `https://<your-instance>.canvasmedical.com/plugin-io/api/<plugin_name>/routes/commands/<id>`.
+
 ### Retrieve the audit history for a note
 
 The audit history for a note can be found using the [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent)
@@ -223,6 +285,32 @@ url = document.document_url if document else None
 
 {% include alert.html type="info" content="A note can be locked more than once. Each lock captures its own PDF, and Canvas supersedes the earlier ones — so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version. Only encounter, inpatient, and review note types are captured this way; other note types have no PDF." %}
 
+<!-- source: discussion #1533 -->
+### Determine if a note is signed
+
+For note types where `is_sig_required` is `True`, the terminal state is `SGN` (Signed) rather than `LKD` (Locked). To check whether a note is currently signed, retrieve its [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent) and compare against `NoteStates.SIGNED`:
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+current_state = CurrentNoteStateEvent.objects.filter(note=note).first()
+is_signed = current_state is not None and current_state.state == NoteStates.SIGNED
+```
+
+Because a note can be signed, amended, and re-signed, the full state history lives in [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent). To get the signer and the timestamp of the most recent signature, query for the latest `SGN` event and read its `originator` (the [`CanvasUser`](/sdk/data-canvasuser) who signed) and `created` timestamp:
+
+```python
+sign_event = NoteStateChangeEvent.objects.filter(
+    note=note,
+    state=NoteStates.SIGNED,
+).order_by("-created").first()
+
+if sign_event:
+    signed_at = sign_event.created
+    signed_by = sign_event.originator  # CanvasUser who signed
+```
+
 ### Find all open notes
 
 You can find all open notes by retrieving the note records with a current
@@ -281,7 +369,8 @@ claim = note.get_claim()
 
 ### Get the NoteType of a given note
 
-To get the note type for a specific note, use the `note_type_version` attribute which provides access to the related `NoteType` object:
+<!-- source: discussion #1150 -->
+The `note.note_type` attribute can return `None`. To reliably resolve a note's type, use the `note_type_version` attribute instead, which provides access to the related `NoteType` object:
 
 ```python
 from canvas_sdk.v1.data.note import Note

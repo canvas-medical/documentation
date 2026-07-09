@@ -131,6 +131,9 @@ class MyHandler(BaseHandler):
 
 To add a comment to a task, import the `AddTaskComment` class and create an instance of it.
 
+<!-- source: discussion #787 -->
+{% include alert.html type="warning" content="Task creation is asynchronous, so the task's id is not available within the same <code>compute()</code> that returns the <code>AddTask</code> effect — reading <code>add_task.task.id</code> there returns <code>None</code>, and an <code>AddTaskComment</code> built from it fails because <code>task_id</code> is required. To comment on a newly created task, split the work across two handlers: the first returns <code>[add_task.apply()]</code> to create the task; the second listens for the <a href='/sdk/events/#tasks'>TASK_CREATED event</a> and then returns the <code>AddTaskComment</code> effect. If you need to carry data between the two steps, use the <a href='/sdk/caching/'>caching function</a>." %}
+
 | Attribute |          | Type           | Description                                                     |
 |-----------|----------|----------------|-----------------------------------------------------------------|
 | task_id   | required | string         | The id of the task being updated.                               |

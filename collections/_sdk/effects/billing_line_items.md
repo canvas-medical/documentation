@@ -63,6 +63,25 @@ class MyHandler(BaseHandler):
 
 You don't set the line item's description in your plugin. When the line item is created, Canvas matches the `cpt` to a [ChargeDescriptionMaster](/sdk/data-charge-description-master/) charge and populates the description from that charge's `short_name`, truncated to 255 characters. If no charge matches the `cpt`, the description is left empty.
 
+<!-- source: discussion #1376 -->
+### Adding billing codes from an external system
+
+To populate diagnosis and CPT codes in a note footer from an external billing system, expose a [Simple API](/sdk/handlers-simple-api-http/) endpoint that accepts a payload (for example, a note id, a CPT code, units, and a list of ICD-10 codes), resolves the relevant note and assessments, and returns an `AddBillingLineItem` effect. The `assessment_ids` map to the note's assessments and act as the diagnosis pointers for the line item. A complete reference implementation is available in the [`cpt-billing-api` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/cpt-billing-api/cpt_billing_api).
+
+```python?partial=true
+from canvas_sdk.effects.billing_line_item import AddBillingLineItem
+
+effect = AddBillingLineItem(
+    note_id=note_id,
+    cpt=cpt_code,
+    units=units,
+    assessment_ids=assessment_ids,
+)
+return [effect.apply(), json_response]
+```
+
+{% include alert.html type="warning" content="The billing line item is added to the note footer, not directly to a claim. As with any billing change, it must be applied before the note is locked (locking pushes charges to the claim). If the API call succeeds but nothing appears on the note, confirm the note is unlocked and that the <code>note_id</code> resolves to the intended note." %}
+
 ## Updating a Billing Line Item
 
 To update a billing line item to a note, import the `UpdateBillingLineItem` class, create an

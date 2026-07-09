@@ -37,6 +37,11 @@ patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 observations = Observation.objects.for_patient(patient_id)
 ```
 
+<!-- source: discussion #720 -->
+## Accessing questionnaire scores
+
+The `QuestionnaireResult` model (and its `score`) is not exposed in the SDK data model. When a questionnaire result is created, an `Observation` is created alongside it, so questionnaire scores are accessible through the patient's observations rather than through `QuestionnaireResult`. There is no clean 1:1 mapping, so filter on the observation [codings](#codings) to find the score observation you are looking for.
+
 ## Codings
 
 The codings for an observation can be accessed with the `codings` attribute on an `Observation` object:

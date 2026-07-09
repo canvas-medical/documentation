@@ -11,12 +11,18 @@ The `PatientMetadata` effect provides a flexible key-value storage system for pa
 
 Patient metadata serves as a powerful extension mechanism for storing custom patient-related information that doesn't fit within the standard patient data model. It uses the `.upsert(value)` method to apply a value to the key attributed with the Metadata effect object.
 
+<!-- source: discussion #612 -->
+{% include alert.html type="info" content="For storing mutable custom patient fields — such as a status or risk score that is not part of the standard Patient data model — the patient metadata key-value effect is the recommended approach rather than questionnaires (a questionnaire creates a new record on each update). You can also surface these values to end users by building a custom form in the demographics section of the profile with the <a href='/sdk/patient-metadata-create-form-effect/'>Patient Metadata Create form effect</a>, though displaying the fields is optional — a plugin can set the data without exposing a form." %}
+
 ## Attributes
 
 | Attribute    | Type  | Description                                                         | Required |
 |--------------|-------|---------------------------------------------------------------------|----------|
 | `patient_id` | `str` | Id of the [Patient(/sdk/data-patient/)] record to associate metadata with                 | Yes      |
-| `key`        | `str` | Unique identifier for the metadata entry within the patient context | Yes      |
+| `key`        | `str` | Unique identifier for the metadata entry within the patient context. Maximum 32 characters. | Yes      |
+
+<!-- source: discussion #1553 -->
+{% include alert.html type="warning" content="The patient metadata <code>key</code> has a maximum length of <b>32 characters</b>. Supplying a longer key causes patient demographics updates to fail at submit time, including updates to fields unrelated to the metadata. Keep keys within this limit." %}
 
 ## Methods
 
