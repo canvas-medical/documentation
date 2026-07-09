@@ -95,6 +95,9 @@ On a `TXT` question, `value` carries default text for the answer rather than a s
 }
 ```
 
+<!-- source: discussion #1003 -->
+**Question toggle default:** For Physical Exam (`EXAM`) questionnaires, the per-question enable/disable toggle cannot be set to default-untoggled through the YAML (setting the response `value` to `0` does not control the toggle). To start a question toggled off, set up a plugin that listens for the command origination event and uses the [toggle-questions feature](/sdk/commands/#toggle-questions-feature) to disable the question.
+
 #### enabled_conditions[]
 
 | Key             | Required | Type        | Description                                                                                                  |
@@ -371,6 +374,16 @@ In this example:
 - **Q2** only appears if Q1 is answered "Yes" (using `=` with `value_code`).
 - **Q3** only appears if Q1 is "Yes" **and** Q2 has been answered (using `enabled_behavior: all` with two conditions).
 
+<!-- source: discussion #1602 -->
+Only the comparison operators `=`, `!=`, `exists`, and `not_exists` are supported. Numeric comparison operators (`<`, `>`, `<=`, `>=`) are not supported because question responses are stored as strings (free text, single select, and multi select), so there are no numeric values to compare.
+
+#### Editing branching in the Questionnaire Builder
+
+<!-- source: discussion #1602 -->
+The Questionnaire Builder UI can create, update, and delete this branching logic. To edit it: choose **Edit Existing Form**, select the question that needs conditional logic, and open the **Field Rules** tab to view or edit the conditions. The **YAML** tab reflects the resulting `enabled_behavior` and `enabled_conditions`, and the **Preview** tab lets you test the logic as you answer questions. (Access to the Questionnaire Builder is permissioned; contact Canvas support if it is not available to your users.)
+
+Note that editing a questionnaire — whether through YAML or the Questionnaire Builder — versions it: a new questionnaire is created and the previous version is marked inactive.
+
 #### Loading a definition from YAML
 
 `questionnaire_from_yaml` reads a template out of your plugin package and returns it as a `QuestionnaireConfig`, validated against the schema on the way:
@@ -576,6 +589,9 @@ The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medica
 
 - adds a narrative to the command in the UI.
 - appears in the Social Determinants section on the left of the chart, when the questionnaire is configured to show there. [Questionnaires](#field-reference) covers the `display_result_in_social_history_section` setting.
+
+<!-- source: discussion #1404 -->
+{% include alert.html type="info" content="The <code>narrative</code> property is the customer-facing string shown alongside the result — it is separate from the numeric <code>score</code>. Use <code>score</code> to store the calculated numeric value and <code>narrative</code> to provide a more user-friendly description, for example <code>'Score: {score}'</code> or <code>'A score of {score} indicates {result}'</code>, giving providers context for how to react to the score. Note that whether a result appears in the Social Determinants section depends on how the questionnaire itself was configured to display there (via the SDK YAML <code>display_results_in_social_history_section</code> / <code>display_result_in_social_history_section</code> attributes, the <b>Display in Social Determinants</b> checkbox in the Questionnaire Builder, or the <code>use_in_shx</code> column when uploading via Google Sheets) — not on the effect alone." %}
 
 ### Attributes
 
