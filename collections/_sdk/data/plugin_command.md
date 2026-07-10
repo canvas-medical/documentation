@@ -67,8 +67,8 @@ if plugin_command:
 - **id**: The unique UUID identifier for the plugin command.
 - **dbid**: The internal database primary key.
 - **name**: The registered name of the command (e.g., `RiskAssessment`).
-- **command_key**: The command key declared in the plugin's manifest (e.g., `riskAssessment`). This identifies the logical command; multiple rows can share a `command_key`, one per content version.
-- **schema_key**: The content-versioned identifier for this row, derived from the `command_key` and a hash of the command's `label` and `section`. Changing a command's label or section produces a new `schema_key` and a new row. This identifier is internal to the `PluginCommand` table; chart command lines store the bare `command_key` instead (see [`Command.schema_key`](/sdk/data-command/#command)), so a command always renders with its current label, and plugin authors query chart commands by the manifest key with `Command.objects.filter(schema_key="riskAssessment")`.
+- **command_key**: The command key declared in the plugin's manifest (e.g., `riskAssessment`). A plugin has exactly one `PluginCommand` row per `command_key`, and its value always matches `schema_key`.
+- **schema_key**: The identifier for the command's data schema. This is always the same as the `command_key` — the bare key from the plugin's manifest. Chart command lines store this same key (see [`Command.schema_key`](/sdk/data-command/#command)), so plugin authors can query chart commands by the manifest key with `Command.objects.filter(schema_key="riskAssessment")`.
 - **label**: The user-friendly display label for the command (e.g., `Risk Assessment`).
 - **section**: The chart section where the command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`.
 - **plugin_name**: The name of the plugin that registered the command.
