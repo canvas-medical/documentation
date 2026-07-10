@@ -29,24 +29,24 @@ Every effect references a report by one of two handles:
 
 | Handle        | What it is                                                        | When to use it                                          |
 | ------------- |-------------------------------------------------------------------|---------------------------------------------------------|
-| `external_id` | A stable identifier your plugin assigns when it creates a report. | The report your plugin created. Required on `create()`. |
+| `reference_id` | A stable identifier your plugin assigns when it creates a report. | The report your plugin created. Required on `create()`. |
 | `report_id`   | The [LabReport](/sdk/data-labs/)'s `id`.                          | Any report — including ones your plugin didn't create.  |
 
 Effects are fire-and-forget, so `create()` does not return the new report's `report_id`. Use the
-`external_id` you assigned as your handle for the later `attach`/`update`/`enter_in_error` calls.
+`reference_id` you assigned as your handle for the later `attach`/`update`/`enter_in_error` calls.
 If you need the `report_id` (for example to act on a report your plugin did not create), read it
 from the `LAB_REPORT_CREATED` event or query the [LabReport](/sdk/data-labs/) data model by
 `reference_id` (the handle you assigned is stored there; the data model's own `external_id` is
 reserved for electronic/Health-Gorilla feed ids).
 
-Namespace your `external_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't
+Namespace your `reference_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't
 collide with report ids from other inbound-lab sources.
 
 ## Attributes
 
 | Name             | Type                 | Description                                                                                                     |
 | ---------------- | -------------------- |-----------------------------------------------------------------------------------------------------------------|
-| `external_id`    | `str` or `None`      | The plugin-assigned handle. **Required** when creating; usable as the handle for other operations.              |
+| `reference_id`    | `str` or `None`      | The plugin-assigned handle. **Required** when creating; usable as the handle for other operations.              |
 | `report_id`      | `UUID` or `None`     | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. |
 | `patient_id`     | `str` or `None`      | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.                                           |
 | `report_name`    | `str` or `None`      | Human-readable report name (maps to the report's document name).                                                |
@@ -60,10 +60,10 @@ Create a lab report decoupled from its results — no order, no PDF, and no valu
 
 #### Validation
 
-- `external_id` is **required** (it is your handle for attaching results later).
+- `reference_id` is **required** (it is your handle for attaching results later).
 - `patient_id` is **required**.
 - `report_id` must **not** be set (creation assigns the id).
-- The `external_id` must not already be in use by an existing report.
+- The `reference_id` must not already be in use by an existing report.
 
 #### Example
 
@@ -76,7 +76,7 @@ from canvas_sdk.v1.data.patient import Patient
 patient = Patient.objects.first()
 
 report = LabReport(
-    external_id="my-plugin:batch-2026-06-17:img-44",
+    reference_id="my-plugin:batch-2026-06-17:img-44",
     patient_id=patient.id,
     report_name="CBC (scanned 2026-06-17)",
     date_performed=datetime.datetime.now(),
@@ -91,7 +91,7 @@ Update report metadata, such as renaming it via `report_name`. Only the fields y
 
 #### Validation
 
-- Exactly one handle (`external_id` or `report_id`) is **required**.
+- Exactly one handle (`reference_id` or `report_id`) is **required**.
 - At least one mutable field (`report_name` or `date_performed`) must be provided.
 - The report must not already be entered-in-error or reviewed by a provider.
 
@@ -101,7 +101,7 @@ Update report metadata, such as renaming it via `report_name`. Only the fields y
 from canvas_sdk.effects.lab_report import LabReport
 
 renamed = LabReport(
-    external_id="my-plugin:batch-2026-06-17:img-44",
+    reference_id="my-plugin:batch-2026-06-17:img-44",
     report_name="Complete Blood Count",
 )
 
@@ -115,7 +115,7 @@ report from active views and also marks the report's observations entered-in-err
 
 #### Validation
 
-- A handle (`external_id` or `report_id`) is **required**.
+- A handle (`reference_id` or `report_id`) is **required**.
 - Any other field is ignored (not rejected).
 - The report must not already be entered-in-error or reviewed by a provider.
 
@@ -124,7 +124,7 @@ report from active views and also marks the report's observations entered-in-err
 ```python?partial=True
 from canvas_sdk.effects.lab_report import LabReport
 
-voided = LabReport(external_id="my-plugin:batch-2026-06-17:img-44")
+voided = LabReport(reference_id="my-plugin:batch-2026-06-17:img-44")
 
 effect = voided.enter_in_error()
 ```
@@ -132,7 +132,7 @@ effect = voided.enter_in_error()
 ## Attaching results
 
 Once results are available, attach them with the `attach_results` method on `LabReport`. The report
-handle comes from the `LabReport` instance (`report_id` or `external_id`); the method takes a list of
+handle comes from the `LabReport` instance (`report_id` or `reference_id`); the method takes a list of
 `LabTest`s, each grouping the `LabValue`s measured for it — so the values for one test are bundled
 under that test in the chart. Attaching is **additive**: it appends tests and values without removing
 any already on the report, and Canvas creates an observation for each value automatically.
@@ -187,7 +187,7 @@ the stored coding name.
 
 #### Validation
 
-- Exactly one of `external_id` or `report_id` is **required**.
+- Exactly one of `reference_id` or `report_id` is **required**.
 - At least one `LabTest` is **required**, and each `LabTest` requires at least one `LabValue`.
 - The report must exist and must not be entered-in-error or reviewed by a provider.
 
@@ -210,7 +210,7 @@ class LabResultsAPI(APIKeyAuthMixin, SimpleAPIRoute):
     def post(self) -> list[Response]:
         body = self.request.json()
         return [
-            LabReport(external_id=body["external_id"]).attach_results(
+            LabReport(reference_id=body["reference_id"]).attach_results(
                 [
                     LabTest(
                         ontology_test_code=test.get("order_code", ""),
@@ -237,7 +237,7 @@ class LabResultsAPI(APIKeyAuthMixin, SimpleAPIRoute):
                     for test in body["tests"]
                 ]
             ),
-            JSONResponse({"external_id": body["external_id"]}, status_code=202),
+            JSONResponse({"reference_id": body["reference_id"]}, status_code=202),
         ]
 ```
 
@@ -245,13 +245,13 @@ class LabResultsAPI(APIKeyAuthMixin, SimpleAPIRoute):
 
 The four effects compose into the asynchronous OCR workflow:
 
-1. A scanned report arrives. The plugin calls `LabReport(external_id=..., patient_id=..., ...).create()`,
-   keying off an `external_id` it controls.
+1. A scanned report arrives. The plugin calls `LabReport(reference_id=..., patient_id=..., ...).create()`,
+   keying off an `reference_id` it controls.
 2. Days later, the OCR service finishes. The plugin calls
-   `LabReport(external_id=...).attach_results([LabTest(..., values=[LabValue(...)])])` to attach the
+   `LabReport(reference_id=...).attach_results([LabTest(..., values=[LabValue(...)])])` to attach the
    abstracted tests and values — the report's observations populate from there.
-3. To fix the report name, the plugin calls `LabReport(external_id=..., report_name=...).update()`.
-4. If the report was filed in error, the plugin calls `LabReport(external_id=...).enter_in_error()`.
+3. To fix the report name, the plugin calls `LabReport(reference_id=..., report_name=...).update()`.
+4. If the report was filed in error, the plugin calls `LabReport(reference_id=...).enter_in_error()`.
 
 ## Related
 
