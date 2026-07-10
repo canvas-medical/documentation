@@ -17,63 +17,63 @@ With these effects a plugin can:
 - **Update** report metadata, such as its name.
 - **Enter-in-error** a report so a user can self-correct a mistake.
 
+A created report is linked to the patient you supply. It starts **empty** — until you attach results it
+holds no tests or values, so it's a placeholder on the chart. Attaching results fills the report in and
+creates the observations behind its values, at which point it reads like any other lab report. It is
+**not** a Data Integration document, so it never appears in the Data Integration queue, and Canvas
+creates the report's diagnostic report and renders a document from its data automatically.
+
 ## Identifying a report
 
 Every effect references a report by one of two handles:
 
-| Handle        | What it is                                      | When to use it                                          |
-| ------------- |-------------------------------------------------|---------------------------------------------------------|
-| `external_id` | A stable identifier when a report is created.   | The report your plugin created. Required on `create()`. |
-| `report_id`   | The report's Canvas `externally_exposable_id`.  | Any report — including ones your plugin didn't create.  |
+| Handle        | What it is                                                        | When to use it                                          |
+| ------------- |-------------------------------------------------------------------|---------------------------------------------------------|
+| `external_id` | A stable identifier your plugin assigns when it creates a report. | The report your plugin created. Required on `create()`. |
+| `report_id`   | The [LabReport](/sdk/data-labs/)'s `id`.                          | Any report — including ones your plugin didn't create.  |
 
 Effects are fire-and-forget, so `create()` does not return the new report's `report_id`. Use the
 `external_id` you assigned as your handle for the later `attach`/`update`/`enter_in_error` calls.
-If you need the Canvas `report_id` (for example to act on a report your plugin did not create),
-read it from the `LAB_REPORT_CREATED` event or query the `LabReport` data model by `external_id`.
+If you need the `report_id` (for example to act on a report your plugin did not create), read it
+from the `LAB_REPORT_CREATED` event or query the [LabReport](/sdk/data-labs/) data model by
+`external_id`.
 
 Namespace your `external_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't
 collide with report ids from other inbound-lab sources.
 
 ## Attributes
 
-| Name             | Type                          | Description                                                                                                      |
-| ---------------- | ----------------------------- |------------------------------------------------------------------------------------------------------------------|
-| `external_id`    | `str` or `None`               | The plugin-assigned handle. **Required** when creating; usable as the handle for other operations.               |
-| `report_id`      | `UUID` or `None`              | The report's Canvas `externally_exposable_id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. |
-| `patient_id`     | `str` or `None`               | The patient's `key`. **Required** when creating.                                                                 |
-| `report_name`    | `str` or `None`               | Human-readable report name (maps to the report's document name).                                                 |
-| `date_performed` | `datetime` or `None`          | The report's effective/displayed date (also sets `original_date` server-side).                                   |
+| Name             | Type                 | Description                                                                                                     |
+| ---------------- | -------------------- |-----------------------------------------------------------------------------------------------------------------|
+| `external_id`    | `str` or `None`      | The plugin-assigned handle. **Required** when creating; usable as the handle for other operations.              |
+| `report_id`      | `UUID` or `None`     | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. |
+| `patient_id`     | `str` or `None`      | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.                                           |
+| `report_name`    | `str` or `None`      | Human-readable report name (maps to the report's document name).                                                |
+| `date_performed` | `datetime` or `None` | The report's effective/displayed date. If omitted on `create`, it defaults to the creation time — correct it later via `update`. |
 
 ## Methods
 
-The examples below share this setup:
-
-```python
-import datetime
-
-from canvas_sdk.effects.lab_report import LabReport, LabValue
-from canvas_sdk.v1.data.patient import Patient
-
-patient = Patient.objects.first()
-```
-
-### create() → Effect
+### create()
 
 Create a lab report decoupled from its results — no order, no PDF, and no values required.
-
-- **Effect Type:** `CREATE_LAB_REPORT`
-- **Payload:** `{ "data": { external_id, patient_id, report_name, date_performed } }`
 
 #### Validation
 
 - `external_id` is **required** (it is your handle for attaching results later).
 - `patient_id` is **required**.
-- `report_id` must **not** be set (creation assigns the Canvas id).
+- `report_id` must **not** be set (creation assigns the id).
 - The `external_id` must not already be in use by an existing report.
 
 #### Example
 
 ```python?partial=True
+import datetime
+
+from canvas_sdk.effects.lab_report import LabReport
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.first()
+
 report = LabReport(
     external_id="my-plugin:batch-2026-06-17:img-44",
     patient_id=patient.id,
@@ -81,136 +81,174 @@ report = LabReport(
     date_performed=datetime.datetime.now(),
 )
 
-effect_create = report.create()
+effect = report.create()
 ```
 
-### update() → Effect
+### update()
 
 Update report metadata, such as renaming it via `report_name`. Only the fields you set are sent.
-
-- **Effect Type:** `UPDATE_LAB_REPORT`
-- **Payload:** `{ "data": { <handle>, <dirty_fields> } }`
 
 #### Validation
 
 - Exactly one handle (`external_id` or `report_id`) is **required**.
 - At least one mutable field (`report_name` or `date_performed`) must be provided.
-- The report must not be entered-in-error.
+- The report must not already be entered-in-error or reviewed by a provider.
 
 #### Example
 
 ```python?partial=True
+from canvas_sdk.effects.lab_report import LabReport
+
 renamed = LabReport(
     external_id="my-plugin:batch-2026-06-17:img-44",
     report_name="Complete Blood Count",
 )
 
-effect_update = renamed.update()
+effect = renamed.update()
 ```
 
-### enter_in_error() → Effect
+### enter_in_error()
 
-Mark a report as entered-in-error. Use this when a report was filed incorrectly and should be
-flagged rather than left in place.
-
-- **Effect Type:** `ENTER_IN_ERROR_LAB_REPORT`
-- **Payload:** `{ "data": { <handle> } }`
-- Only the handle is sent; any other field on the instance is ignored.
+Flag a report as entered-in-error — use it when a report was filed incorrectly. This removes the
+report from active views and also marks the report's observations entered-in-error.
 
 #### Validation
 
 - A handle (`external_id` or `report_id`) is **required**.
 - Any other field is ignored (not rejected).
-- The report must not already be entered-in-error.
+- The report must not already be entered-in-error or reviewed by a provider.
 
 #### Example
 
 ```python?partial=True
+from canvas_sdk.effects.lab_report import LabReport
+
 voided = LabReport(external_id="my-plugin:batch-2026-06-17:img-44")
 
-effect_error = voided.enter_in_error()
+effect = voided.enter_in_error()
 ```
 
 ## Attaching results
 
 Once results are available, attach them with the `attach_results` method on `LabReport`. The report
-handle comes from the `LabReport` instance (`report_id` or `external_id`); the method takes the list
-of `LabValue`s. Attaching is **additive** — it appends tests and values without removing any already
-on the report.
-
-- **Effect Type:** `ATTACH_LAB_REPORT_RESULTS`
-- **Payload:** `{ "data": { report_id, external_id, lab_values } }`
+handle comes from the `LabReport` instance (`report_id` or `external_id`); the method takes a list of
+`LabTest`s, each grouping the `LabValue`s measured for it — so the values for one test are bundled
+under that test in the chart. Attaching is **additive**: it appends tests and values without removing
+any already on the report, and Canvas creates an observation for each value automatically.
 
 ### Arguments
 
-| Name         | Type             | Description                                                                                           |
-| ------------ | ---------------- |-------------------------------------------------------------------------------------------------------|
-| `lab_values` | `list[LabValue]` | The results to attach. At least one is required. The report handle comes from the `LabReport` instance. |
+| Name        | Type            | Description                                                                                            |
+| ----------- | --------------- |--------------------------------------------------------------------------------------------------------|
+| `lab_tests` | `list[LabTest]` | The tests to attach. At least one is required. The report handle comes from the `LabReport` instance.  |
+
+### `LabTest`
+
+A `LabTest` is a test that was performed — an ordered panel or a single analyte — and it groups its
+result values (a result test can carry many values). `ontology_test_code`/`ontology_test_name` are
+the lab's **order/compendium** code and name — *not* LOINC. LOINC is supplied separately via `codings`
+(see [`CodingData`](#codingdata) below).
+
+| Name                 | Type                         | Description                                                                                        |
+| -------------------- | ---------------------------- |----------------------------------------------------------------------------------------------------|
+| `ontology_test_code` | `str`                        | The lab's order/compendium code for the test. Defaults to empty string.                            |
+| `ontology_test_name` | `str`                        | Human-readable test name. Defaults to empty string.                                                |
+| `codings`            | `list[CodingData]` or `None` | The test's LOINC coding(s); only LOINC-system codings are stored.                                  |
+| `values`             | `list[LabValue]`             | The result values for this test. **At least one is required.**                                     |
 
 ### `LabValue`
 
-Each `LabValue` describes one result. Canvas records it as a lab test plus its value on the report.
+Each `LabValue` is one measured result on its test.
 
-| Name                 | Type  | Description                                                        |
-| -------------------- | ----- | ------------------------------------------------------------------ |
-| `ontology_test_code` | `str` | The test's ontology code (e.g. a LOINC code). Required.            |
-| `ontology_test_name` | `str` | Human-readable test name. Defaults to empty string.                |
-| `value`              | `str` | The result value. Required.                                        |
-| `units`              | `str` | Unit of measure (e.g. `"g/dL"`). Defaults to empty string.         |
-| `reference_range`    | `str` | Reference range as free text. Defaults to empty string.            |
-| `abnormal_flag`      | `str` | Abnormal flag (e.g. `"H"`, `"L"`). Defaults to empty string.       |
-| `observation_status` | `ObservationStatus` | FHIR status enum: `final` (default), `preliminary`, `amended`, `corrected`, `cancelled`, `registered`, `unknown`, `entered-in-error`. |
-| `comment`            | `str` | Free-text comment. Defaults to empty string.                       |
+| Name                 | Type                         | Description                                                        |
+| -------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| `value`              | `str`                        | The result value. Required.                                        |
+| `units`              | `str`                        | Unit of measure (e.g. `"g/dL"`). Defaults to empty string.         |
+| `reference_range`    | `str`                        | Reference range as free text. Defaults to empty string.            |
+| `abnormal_flag`      | `AbnormalFlag` or `None`     | Flags the value against its reference range, e.g. `AbnormalFlag.HIGH` (`"H"`) or `AbnormalFlag.LOW` (`"L"`). Defaults to `None`. |
+| `observation_status` | `ObservationStatus`          | Status enum: `final` (default), `preliminary`, `amended`, `corrected`, `cancelled`, `registered`, `unknown`, `entered-in-error`. |
+| `comment`            | `str`                        | Free-text comment. Defaults to empty string.                       |
+| `codings`            | `list[CodingData]` or `None` | The value's LOINC coding(s); only LOINC-system codings are stored. |
+
+### `CodingData`
+
+A coding attached to a test or a value, reused from the [`Observation`](/sdk/effect-observation/)
+effect. Only codings whose `system` is `http://loinc.org` are persisted, and the `display` becomes
+the stored coding name.
+
+| Name            | Type   | Description                                            |
+| --------------- | ------ | ------------------------------------------------------ |
+| `code`          | `str`  | The LOINC code (e.g. `"718-7"`). Required.             |
+| `display`       | `str`  | Human-readable display; stored as the coding's name.   |
+| `system`        | `str`  | Coding system URI. Use `"http://loinc.org"`.           |
+| `version`       | `str`  | Optional coding-system version. Defaults to empty.     |
+| `user_selected` | `bool` | Whether a user selected this coding. Defaults to `False`. |
 
 #### Validation
 
 - Exactly one of `external_id` or `report_id` is **required**.
-- At least one `LabValue` is **required**.
-- The report must exist and must not be junked or entered-in-error.
+- At least one `LabTest` is **required**, and each `LabTest` requires at least one `LabValue`.
+- The report must exist and must not be entered-in-error or reviewed by a provider.
 
 #### Example
 
 A SimpleAPI route an OCR service calls once it has abstracted the values:
 
 ```python
-from canvas_sdk.effects.lab_report import LabReport, LabValue
+from canvas_sdk.effects.lab_report import LabReport, LabTest, LabValue
+from canvas_sdk.effects.observation import CodingData
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+
+LOINC = "http://loinc.org"
 
 
-class LabResultsAPI(SimpleAPIRoute):
+class LabResultsAPI(APIKeyAuthMixin, SimpleAPIRoute):
     PATH = "/lab-results"
-
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["ingest-api-key"]
 
     def post(self) -> list[Response]:
         body = self.request.json()
         return [
             LabReport(external_id=body["external_id"]).attach_results(
                 [
-                    LabValue(
-                        ontology_test_code=value["code"],
-                        ontology_test_name=value.get("name", ""),
-                        value=value["value"],
-                        units=value.get("units", ""),
-                        reference_range=value.get("reference_range", ""),
+                    LabTest(
+                        ontology_test_code=test.get("order_code", ""),
+                        ontology_test_name=test.get("name", ""),
+                        codings=(
+                            [CodingData(code=test["loinc"], display=test.get("name", ""), system=LOINC)]
+                            if test.get("loinc")
+                            else None
+                        ),
+                        values=[
+                            LabValue(
+                                value=value["value"],
+                                units=value.get("units", ""),
+                                reference_range=value.get("reference_range", ""),
+                                codings=(
+                                    [CodingData(code=value["loinc"], display=value.get("name", ""), system=LOINC)]
+                                    if value.get("loinc")
+                                    else None
+                                ),
+                            )
+                            for value in test["values"]
+                        ],
                     )
-                    for value in body["values"]
+                    for test in body["tests"]
                 ]
             ),
             JSONResponse({"external_id": body["external_id"]}, status_code=202),
         ]
 ```
 
-## Workflow
+## Example Workflow
 
 The four effects compose into the asynchronous OCR workflow:
 
 1. A scanned report arrives. The plugin calls `LabReport(external_id=..., patient_id=..., ...).create()`,
    keying off an `external_id` it controls.
-2. Days later, the OCR service finishes. The plugin calls `LabReport(external_id=...).attach_results([...])`
-   to attach the abstracted results — the report's observations and FHIR resources populate from there.
+2. Days later, the OCR service finishes. The plugin calls
+   `LabReport(external_id=...).attach_results([LabTest(..., values=[LabValue(...)])])` to attach the
+   abstracted tests and values — the report's observations populate from there.
 3. To fix the report name, the plugin calls `LabReport(external_id=..., report_name=...).update()`.
 4. If the report was filed in error, the plugin calls `LabReport(external_id=...).enter_in_error()`.
 
