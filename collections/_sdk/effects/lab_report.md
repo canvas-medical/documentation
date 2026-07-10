@@ -36,7 +36,8 @@ Effects are fire-and-forget, so `create()` does not return the new report's `rep
 `external_id` you assigned as your handle for the later `attach`/`update`/`enter_in_error` calls.
 If you need the `report_id` (for example to act on a report your plugin did not create), read it
 from the `LAB_REPORT_CREATED` event or query the [LabReport](/sdk/data-labs/) data model by
-`external_id`.
+`reference_id` (the handle you assigned is stored there; the data model's own `external_id` is
+reserved for electronic/Health-Gorilla feed ids).
 
 Namespace your `external_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't
 collide with report ids from other inbound-lab sources.
