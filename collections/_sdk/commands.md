@@ -1429,7 +1429,12 @@ command.set_test_value("pH", "6.8")
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
 ```python
-existing_prescribe.send(practice_location_override=location_id)
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
 ```
 
 - `practice_location_override` is the `id` of a practice location. When set, that location's business name, phone, fax, and street address replace the prescriber's default on the outgoing prescription.
