@@ -7,12 +7,14 @@ hidden: false
 
 Notification badges let your plugin surface a count on an
 [application](/sdk/handlers-applications/) icon — the small number that
-indicates, for example, how many unread items are waiting. Badges are shown only
-for applications scoped [`global`](/sdk/handlers-applications/#application-scopes)
-or [`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
+indicates, for example, how many unread items are waiting. Badges are shown for
+applications scoped [`global`](/sdk/handlers-applications/#application-scopes) or
+[`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
 icon in the app drawer, or, when the application sets `show_in_panel`, on the panel
-alongside the other panel buttons. Applications in other scopes (`full_chart`,
-`provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not
+alongside the other panel buttons — and for
+[`provider_menu_item`](/sdk/handlers-applications/#application-scopes) applications,
+next to their label in the provider menu. Applications in other scopes
+(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
 display badges.
 
 There are two ways a badge is set:
