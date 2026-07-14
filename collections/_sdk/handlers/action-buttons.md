@@ -233,10 +233,12 @@ class SignButton(NoteStateActionButton):
     STATE_ACTION = NoteStates.SIGNED
 ```
 
+Canvas ships two ready-to-use `NoteStateActionButton` subclasses: `LockNoteActionButton` and `SignNoteActionButton`. Register either one directly in your `CANVAS_MANIFEST.json` to add a Lock or Sign button without defining your own subclass. `LockNoteActionButton` is offered only for note types that do not require a signature, and `SignNoteActionButton` is offered only for note types that do. The Sign button locks the note first when it is not already locked, and it is hidden once you have signed the note since the last lock.
+
 Each button is configured automatically based on its `STATE_ACTION`:
 
 - **`BUTTON_LOCATION`** is always `NOTE_FOOTER`.
-- **`BUTTON_TITLE`** defaults to an imperative label for the target state, such as `Lock`, `Sign`, `Push charges`, `Check in`, `No show`, `Delete`, `Restore`, `Discharge`, or `Cancel`. Set `BUTTON_TITLE` explicitly to override it.
+- **`BUTTON_TITLE`** defaults to an imperative label for the target state, such as `Lock`, `Unlock`, `Sign`, `Push charges`, `Check in`, `No show`, `Delete`, `Restore`, `Discharge`, or `Cancel`. Set `BUTTON_TITLE` explicitly to override it.
 - **`BUTTON_KEY`** defaults to `note_state_action__<state value>`, for example `note_state_action__LKD`. Set `BUTTON_KEY` explicitly to override it.
 
 When the button is clicked, the appropriate note or appointment effect is applied and the note's action buttons are reloaded so the footer reflects the new state.

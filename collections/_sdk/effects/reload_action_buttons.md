@@ -18,11 +18,11 @@ Reloads the action buttons rendered for a note (for example, buttons in the `NOT
 
 ### Attributes
 
-| Attribute | Type  | Description                         | Required |
-|-----------|-------|-------------------------------------|----------|
-| `id`      | `str` | Identifier of the note to reload    | Yes      |
+| Attribute | Type   | Description                      | Required |
+|-----------|--------|----------------------------------|----------|
+| `id`      | `UUID` | Identifier of the note to reload | Yes      |
 
-**Note**: `id` must be a valid, existing Note. Calling `apply()` raises a `ValidationError` if no note with that ID exists.
+**Note**: `id` accepts the note's UUID (a `UUID` or its string form) and must reference a valid, existing Note. Calling `apply()` raises a `ValidationError` if no note with that ID exists.
 
 ### Example Usage
 
