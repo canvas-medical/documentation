@@ -143,7 +143,7 @@ Returns an Effect that sends a signed command.
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `practice_location_override` | `str \| UUID` | No | `None` | [Prescribe](#prescribe) only. The `id` of a practice location whose address is used as the prescriber address on the outgoing prescription, overriding the prescriber's primary location. See [Prescribe](#prescribe) for behavior and limitations. |
+| `practice_location_override` | `str \| UUID` | No | `None` | [Prescribe](#prescribe) only. The `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation) whose address is used as the prescriber address on the outgoing prescription, overriding the prescriber's primary location. See [Prescribe](#prescribe) for behavior and limitations. |
 
 **Example**:
 
