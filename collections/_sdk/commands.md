@@ -1437,7 +1437,7 @@ def compute():
     return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
 ```
 
-- `practice_location_override` is the `id` of a practice location. When set, that location's business name, phone, fax, and street address replace the prescriber's default on the outgoing prescription.
+- `practice_location_override` is the `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation). When set, that location's business name, phone, fax, and street address replace the prescriber's default on the outgoing prescription.
 - If the id does not correspond to an existing practice location, the send raises an error rather than falling back to the default address.
 - The override applies only to `send()`-initiated (plugin-driven) prescriptions. It does not affect prescriptions a clinician sends from the charting UI.
 
