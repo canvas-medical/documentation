@@ -43,6 +43,7 @@ The actor is available in the following contexts:
 - **Note state change events** — `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`, `NOTE_STATE_CHANGE_EVENT_CREATED`, `NOTE_STATE_CHANGE_EVENT_UPDATED`
 - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
+- **Note footer events** — `NOTE_FOOTER__GET_CONFIGURATION`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
 - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
 - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
@@ -1045,7 +1046,10 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td><pre>"id": appointmentmetadata_id
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"appointment":
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1063,7 +1067,10 @@ These events fire as a result of records being created, updated, or deleted.
     <tr>
       <td><pre>"id": appointmentmetadata_id
 "type": <a href='/sdk/data-appointment/#appointmentmetadata'>AppointmentMetadata</a></pre></td>
-      <td><pre>empty</pre></td>
+      <td><pre>"appointment":
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23747,6 +23754,25 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Note Footer Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_FOOTER__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a note's footer is loaded. Allows plugins to configure the footer — for example, to hide Canvas's default state-transition buttons so plugin-provided buttons replace them. See the <a href='/sdk/effect-note-footer-configuration/'>Note Footer Configuration effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>note_id</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>

@@ -270,7 +270,7 @@ I hope you found this helpful. Happy coding, we can't wait to see what you build
 This guide provides examples of how to leverage patient data to personalize the portal landing page, and explains how to integrate the ready-made widgets provided by Canvas.
 > **Info:** This guide assumes pre-existing knowledge of the Canvas SDK. If you're starting from scratch, you may want to read and implement [Your First Plugin (with Claude Code)](/guides/your-first-plugin-with-claude-code/) before working through this exercise. 
 ##  What Are Widgets in the Patient Portal? 
-[Widgets](/sdk/layout-effect/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. They can display key details like upcoming appointments. Widgets can be fully customized with unique content or leverage ready-made components—such as Appointments and Messaging provided by Canvas to ensure consistency and ease of use. These widgets are organized on the landing page using a grid layout, which supports various sizes to optimize the visual presentation and responsiveness across different devices.
+[Widgets](/sdk/patient-portal/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. They can display key details like upcoming appointments. Widgets can be fully customized with unique content or leverage ready-made components—such as Appointments and Messaging provided by Canvas to ensure consistency and ease of use. These widgets are organized on the landing page using a grid layout, which supports various sizes to optimize the visual presentation and responsiveness across different devices.
 ##  How to add a Widget? 
 A widget can be added by listening to the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event and returning one or several `PortalWidget`
 ###  Step 1: Initialize a plugin 
@@ -987,84 +987,6 @@ You can also group detected issues, such as coding gaps, using the same approach
     ```
 **Note:** The context structure for detected issues differs from conditions and medications. The `PATIENT_CHART__DETECTED_ISSUES` event context includes only the `id` field for each detected issue. If you need additional information (such as evidence, status, or code) to determine grouping logic, you'll need to query the detected issue data using the Canvas SDK's data models.
 ----- END PAGE https://docs.canvasmedical.com/guides/patient-chart-group-items/
-
-
------ BEGIN PAGE https://docs.canvasmedical.com/guides/patient-portal-forms/
-The Canvas SDK enables custom patient engagement workflows by dynamically displaying forms (questionnaires) within the Patient Portal. This guide walks through implementing a plugin that automatically assigns forms based on a patient's appointment type and previously completed forms. The patient's responses are stored as Interviews, and the developer can choose to generate a Questionnaire Command within a Note.
-##  What you'll learn: 
-  - Use the [`FormResult`](/sdk/form-result-effect) effect to display questionnaires dynamically.
-  - Fetch patient [appointments](/sdk/data-appointment/) and [interviews](/sdk/data-questionnaire/).
-  - Control when forms should be shown or hidden.
-  - Optionally create a Questionnaire Command inside a Note.
-##  Example 
-This example assigns intake questionnaires based on the presence of upcoming appointments and adds the completed questionnaires to the visit, authored by the patient.
-    ```python
-    from canvas_sdk.effects.patient_portal.form_result import FormResult
-    from canvas_sdk.events import EventType
-    from canvas_sdk.handlers import BaseHandler
-    from canvas_sdk.v1.data import Patient, Appointment, Interview, Note, Questionnaire
-    from canvas_sdk.v1.data.appointment import AppointmentProgressStatus
-    import arrow
-    # 1
-    INTAKE_QUESTIONNAIRES = [
-      "Insurance Details",
-      "Preferred Pharmacy Details",
-      "Social History",
-    ]
-    class Handler(BaseHandler):
-      """Handler for processing Patient Portal form requests and generating form effects."""
-      RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_FORMS)
-      def _get_upcoming_appointment_note_id(self, appointments, note_type_names):
-        """Retrieve the note_id for the first confirmed future appointment matching given note type names."""
-        now = arrow.now().date()
-        return appointments.filter(
-          status=AppointmentProgressStatus.CONFIRMED,
-          start_time__gt=now,
-          note_type__name__in=note_type_names
-        ).values_list("note__id", flat=True).first()
-      def compute(self):
-        """Compute and return a list of FormResult effects based on upcoming appointments."""
-        # 2
-        patient = Patient.objects.get(id=self.target)
-        patient_appointments = patient.appointments
-        completed_forms = set(
-          Interview.objects.filter(
-            patient=patient,
-            entered_in_error_id__isnull=True,
-            questionnaires__name__in=INTAKE_QUESTIONNAIRES
-          ).values_list("questionnaires__name", flat=True)
-        )
-        forms = []
-        # Assign Intake Forms for new patients
-        if note_id := self._get_upcoming_appointment_note_id(patient_appointments, ["Telehealth", "Office visit"]):
-          missing_intake_forms = [qname for qname in INTAKE_QUESTIONNAIRES if qname not in completed_forms]
-          missing_intake_questionnaire_ids = Questionnaire.objects.filter(name__in=missing_intake_forms).values_list("id",
-                                                                                                                     flat=True)
-          #3
-          forms = [
-            FormResult(questionnaire_id=qid, create_command=True, note_id=note_id).apply()
-            for qid in missing_intake_questionnaire_ids
-          ]
-        return forms
-    ```
-###  How It Works 
-  1. **On each Patient Portal page load** , the plugin evaluates which forms to show. 
-     - The example above defines the questionnaire by name. This is an effective way to leverage the same plugin across instances, as questionnaire IDs will differ. You could also filter based on a prefix so that all questionnaires that start with `Portal_` show.
-  2. Forms are automatically assigned based on: 
-     - **Upcoming Appointments**
-     - **Previously completed forms**
-  3. If applicable, the response can create a Questionnaire Command inside a Note using the [form result effect](/sdk/form-result-effect/).
-  4. The developer is responsible for ensuring that forms do not persist unnecessarily.
-##  Adding Form Logic in a Handler 
-We define a **Handler** that listens for `PATIENT_PORTAL__GET_FORMS` events and determines which forms need to be displayed.
-##  Best Practices 
-  - **Prevent Duplicate Forms:** Since this logic runs on every page load, check **existing responses** before assigning new forms.
-##  Summary 
-  - This plugin **automatically assigns Patient Portal forms** based on upcoming appointments.
-  - Forms are created as **Questionnaires** , and responses are stored as **Interviews**.
-  - The developer can **optionally** create a **Questionnaire Command** inside a **Note**.
-  - **Forms are re-evaluated on each page load** , so plugin developers must ensure they don't persist unnecessarily.
------ END PAGE https://docs.canvasmedical.com/guides/patient-portal-forms/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/guides/profile-additional-fields/
@@ -22429,6 +22351,35 @@ code | Yes* | string | The code identifying the questionnaire within the code sy
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-questionnaires/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-send-contact-verification/
+The `SendContactVerification` effect instructs Canvas to send a verification (for example, an email or SMS code) to a specific Patient Contact Point. Use it to verify a patient's email address or phone number — for example, before relying on that channel for outbound communications, or before enabling patient-portal features that require a verified contact channel. It applies to any patient contact point; it isn't tied to the patient portal.
+Attribute | Type | Description  
+---|---|---  
+`contact_point_id` | `str` or `UUID` | The id of the [`PatientContactPoint`](/sdk/effect-patient/#patientcontactpoint) to verify.  
+##  Validation & Errors 
+When an effect is prepared, the model validates inputs and returns structured error details if something is invalid.
+  - **Contact Point Exists** — The effect verifies the provided `contact_point_id` maps to an existing `PatientContactPoint` record. If no matching record exists the effect will include an error detail with message: `Patient Contact Point does not exist`.
+##  Caveats 
+  - Emitting this effect will trigger a save to the associated `PatientContactPoint`. If your plugin sends `SendContactVerification` in direct response to a `PATIENT_CONTACT_POINT_UPDATED` event, the save triggered by the effect can cause the same event to fire again, producing an infinite event loop. To avoid this, debounce or detect origin (for example, ignore updates originating from the plugin runner or set a transient flag on the model) before emitting the effect in response to contact point update events.
+##  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.send_contact_verification import SendContactVerificationEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED)
+        def compute(self) -> list[Effect]:
+            contact_point_id = self.event.target.id
+            verification_effect = SendContactVerificationEffect(contact_point_id=contact_point_id)
+            return [verification_effect.apply()]
+    ```
+##  Notes 
+  - This effect only triggers a verification send for the contact point. It does not mark the contact as verified — verification completion is handled by the platform when the patient completes the challenge.
+  - The effect relies on `PatientContactPoint` existing in the database. If your integration creates contact points in the same operation, ensure they are persisted before emitting this effect.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-send-contact-verification/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-staff-external-identifier/
 Manage external identifiers on a staff member from a plugin. `StaffExternalIdentifier` is a single effect class with three methods — `.create()`, `.update()`, and `.delete()` — and which fields are required depends on the operation.
 ##  Methods 
@@ -23180,7 +23131,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Form Result Effect for dynamically displaying forms in the Patient Portal. ](/sdk/form-result-effect/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -23386,18 +23337,18 @@ UPDATE_CLAIM_PROVIDER | Update the provider on a claim.
 UPSERT_CLAIM_METADATA | Add or update metadata on a claim.  
 UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim.  
 ###  Patient Portal 
-Check out the [Patient Portal](/sdk/patient-portal/) and [Form Result](/sdk/form-result-effect/) documentation.
+Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 Effect | Description  
 ---|---  
 PORTAL_WIDGET | Add widgets to the patient portal landing page.  
-SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal.  
+SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items).  
 PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application.  
 PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal.  
 PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card.  
 PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card.  
 PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE | Show the 'reschedule' button on the appointment card.  
 PATIENT_PORTAL__SEND_INVITE | Trigger a portal invitation for a user.  
-PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send a contact verification in the patient portal.  
+PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send an email or SMS verification to a patient contact point. Works for any patient contact point, not just the portal. Check out [Send Contact Verification](/sdk/effect-send-contact-verification/).  
 PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS | Modify slot availability in the patient portal appointment scheduler.  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH_RESULTS | Modify appointment types in the patient portal before a search.  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH_RESULTS | Modify appointment types in the patient portal after a search.  
@@ -36776,65 +36727,65 @@ PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH
 ---  
 Occurs after the appointment slots search has been done, allowing the values to be modified  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
-    "slots_by_provider": dict  
+    "slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH  
 ---  
 Occurs before appointment types are resolved, allowing the internal values to be bypassed  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
     None  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH  
 ---  
 Occurs after appointment types are resolved, allowing the internal values to be modified  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
-    "appointment_types": list[dict]  
+    "appointment_types": [{"id", "title"}]  
 PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__PRE_SEARCH  
 ---  
 Occurs before appointment locations are resolved, allowing the internal values to be bypassed  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
     None  
 PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH  
 ---  
 Occurs after appointment locations are resolved, allowing the internal values to be modified  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
-    "locations": list[dict]  
+    "locations": [{"id", "title"}]  
 PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__PRE_SEARCH  
 ---  
 Occurs before appointment providers are resolved, allowing the internal values to be bypassed  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
     None  
 PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH  
 ---  
 Occurs after appointment providers are resolved, allowing the internal values to be modified  
 Target | Target type | Context object  
-    None
+    patient_id
 | 
-    None
+    [Patient](/sdk/data-patient/)
 | 
-    "providers": list[dict]  
+    "providers": [{"id", "title"}]  
 PATIENT_PORTAL__GET_FORMS  
 ---  
 Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value  
@@ -41189,24 +41140,6 @@ The pages below showcase example plugins written with the Canvas SDK. All pages 
 ----- END PAGE https://docs.canvasmedical.com/sdk/examples/
 
 
------ BEGIN PAGE https://docs.canvasmedical.com/sdk/form-result-effect/
-##  Overview 
-Forms are a key part of the Patient Portal experience. They allow developers to dynamically display questionnaires to patients based on various criteria and optionally create a Questionnaire Command within a Note. Since these effects are evaluated on every page load, it's essential to ensure that only the appropriate forms are shown.
-##  Structure 
-A Form Result effect consists of the following properties:
-  - **questionnaire_id** : The unique identifier for the Questionnaire.
-  - **create_command** : A boolean flag that, when set to `True`, creates a Questionnaire Command within a Note.
-  - **note_id** : Optionally associates the effect with an existing Note.
-These properties ensure that the effect integrates seamlessly with the rest of the Canvas SDK.
-###  **Attributes**
-Attribute | Type | Description  
----|---|---  
-`questionnaire_id` | `str` | `UUID` | The unique ID of the Questionnaire.  
-`create_command` | `bool` | If `True`, a Questionnaire Command is created inside a Note.  
-`note_id` | `str` | `UUID` | `None` | Associates the response with an existing Note if applicable.  
------ END PAGE https://docs.canvasmedical.com/sdk/form-result-effect/
-
-
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-action-buttons/
 Action buttons are UI elements that trigger specific actions when clicked in the Canvas UI. These buttons can be placed in different locations and can interact with runtime data to execute custom code.
 ##  Overview 
@@ -42967,32 +42900,6 @@ Modal overlays can now be dynamically resized by embedded applications using the
     </script>
     ```
 This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
-##  Portal Landing Page Widgets 
-The `PortalWidget` class allows you to add widgets of various sizes to the patient portal landing page. You can fully customize your widgets or leverage ready-made widgets provided by Canvas, such as Appointments and Messaging.
-###  Example Usage 
-    ```python
-    from canvas_sdk.effects.widgets import PortalWidget
-    class PortalWidgetHandler:
-        def compute(self):
-            portal_widget = PortalWidget(
-                url="https://example.com/info",
-                size=PortalWidget.Size.COMPACT,
-                priority=25
-            )
-            return [portal_widget.apply()]
-    ```
-The `PortalWidget` class has the following properties:
-  - **url** : A string containing the URL to load within the widget. If either `content` or `component` is specified, an error will be raised.
-  - **content** : A string containing the content to be displayed directly within the widget. If either `url` or `component` is provided, an error will be raised.
-  - **component** : Choose one of ready-made widgets made by Canvas. If either `url` or `content` is provided, an error will be raised. The available ready-made widgets include: 
-    - `APPOINTMENTS`: Displays upcoming appointments.
-    - `MESSAGING`: Enables quick messaging.
-  - **Size** : Determines the widget's layout on the frontend grid: 
-    - `EXPANDED`: Fills an entire row (12 columns).
-    - `MEDIUM`: Occupies 8 columns.
-    - `COMPACT`: Occupies 4 columns.
-    - **Note: All sizes have a fixed height of 300px.**
-  - **priority** : This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
 ##  Custom HTML and Django Templates 
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
     ```python
@@ -43410,9 +43317,124 @@ Attribute | Type | Description
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-portal/
-The Canvas SDK allows you to configure the patient portal.
+The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
+##  Configure Portal Menu Items 
+Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
+The list you return **replaces** the built-in menu — include every built-in item you want shown, in the order you want them to appear (**the list order is the navigation order**), and omit any you want hidden.
+An item only appears if its page is **also enabled in your portal settings** (the `PATIENT_APP_*` settings managed by Canvas Support — see [Managing the Patient Portal](https://canvas-medical.help.usepylon.com/articles/7348270931-managing-the-patient-portal)). This effect selects and orders among the _enabled_ pages: it can hide or reorder them, but it can't surface a page that's turned off. Patient-portal [applications](/sdk/handlers-applications/) aren't part of this list — they're appended to the navigation after the built-in items through their own registration.
+Attribute | Type | Description  
+---|---|---  
+`items` | list[`MenuItems`] | The built-in menu items to show, in navigation order (at least one). Replaces the default set — omit an item to hide it.  
+**`MenuItems`** values:
+Member | Value | Menu item  
+---|---|---  
+`APPOINTMENTS` | `"appointments"` | Appointments  
+`MESSAGING` | `"messaging"` | Messaging  
+`MY_HEALTH` | `"my_health"` | My Health  
+`PAYMENTS` | `"payments"` | Payments  
+`LABS` | `"labs"` | Lab results  
+`CONTACT` | `"contact"` | Contact  
+`RECORDS` | `"records"` | Health Records  
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_portal_menu_configuration import PatientPortalMenuConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__MENU_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [
+                PatientPortalMenuConfiguration(
+                    items=[
+                        PatientPortalMenuConfiguration.MenuItems.APPOINTMENTS,
+                        PatientPortalMenuConfiguration.MenuItems.MESSAGING,
+                    ]
+                ).apply()
+            ]
+    ```
+##  Portal Landing Page Widgets 
+The `PortalWidget` class adds widgets to the patient portal landing page. Return `PortalWidget` effects from a handler on the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event. You can fully customize a widget or use a ready-made one provided by Canvas (Appointments, Messaging).
+The `PortalWidget` class has the following attributes:
+Attribute | Type | Description  
+---|---|---  
+`url` | `str` | A URL to load within the widget.  
+`content` | `str` | Content to display directly within the widget.  
+`component` | `Component` | A ready-made Canvas widget: `APPOINTMENTS` (upcoming appointments) or `MESSAGING` (quick messaging).  
+`size` | `Size` | Widget width on the grid: `EXPANDED` (12 columns), `MEDIUM` (8 columns), or `COMPACT` (4 columns). All are 300px tall. Defaults to `EXPANDED`.  
+`priority` | `int` | Orders widgets within the portal; a lower number is higher priority. Defaults to `100`.  
+**Validation:** exactly one of `url`, `content`, or `component` must be set — providing more than one, or none, raises an error.
+###  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.widgets import PortalWidget
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [
+                PortalWidget(
+                    url="https://example.com/info",
+                    size=PortalWidget.Size.COMPACT,
+                    priority=25,
+                ).apply()
+            ]
+    ```
+For a full walkthrough with examples, see the [Custom Landing Page guide](/guides/custom-landing-page/). Example plugins: [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin), and the MSF [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) (a "Need to be seen today?" widget).
+##  Customize Appointment Cards 
+Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
+Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
+###  Hide 'Cancel' button 
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED` and return a `PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE` effect with `{"result": False}` to hide the Cancel button.
+    ```python
+    import json
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED)
+        def compute(self) -> list[Effect]:
+            return [
+              Effect(
+                type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE,
+                payload=json.dumps({"result": False}))
+            ]
+    ```
+###  Hide 'Reschedule' button 
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED` and return a `PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE` effect with `{"result": False}` to hide the Reschedule button.
+    ```python
+    import json
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED)
+        def compute(self) -> list[Effect]:
+            return [
+              Effect(
+                type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE,
+                payload=json.dumps({"result": False}))
+            ]
+    ```
+###  Hide 'Join' button 
+This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": True}` to show the join link.
+    ```python
+    import json
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class MyHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK)
+        def compute(self) -> list[Effect]:
+            return [
+              Effect(
+                type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
+                payload=json.dumps({"result": True}))
+            ]
+    ```
 ##  Configuring the Patient Portal 
-To configure the patient portal, you can use the `PatientPortalApplicationConfiguration` effect
+Return a `PatientPortalApplicationConfiguration` effect from a handler on the `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` event to set application-level portal options. Today this controls whether the self-scheduling entry points appear; pair it with Shape Self-Scheduling to control _what_ patients can book.
 Attribute | Type | Description  
 ---|---|---  
 can_schedule_appointments | bool | If the patient is allowed to book or reschedule appointments  
@@ -43430,125 +43452,255 @@ can_schedule_appointments | bool | If the patient is allowed to book or reschedu
               ).apply()
             ]
     ```
-##  Customize Landing Page (Portal Widgets) 
-To customize the landing page you can leverage the [Portal Widgets](/sdk/layout-effect/#portal-landing-page-widgets) effect.
-Visit our guide [Tailoring Portal Landing Page](/guides/custom-landing-page/) for examples.
-##  Customize Appointment Cards 
-Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
-###  Hide 'Cancel' button 
+##  Shape Self-Scheduling 
+When patients self-schedule, you can filter or reorder what they're offered _before they see it_ — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a`_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
+Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
+###  Filter available slots 
+Respond to `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS`.
+**Target:** `self.target` is the [Patient](/sdk/data-patient/#patient) id.
+**Context:** `self.context["slots_by_provider"]` — a JSON string of `{provider: {date: [{"start", "end"}, ...]}}`, keyed by [Staff](/sdk/data-staff/#staff) id, where each `start`/`end` is an ISO-8601 datetime.
+Example — enforce a 48-hour minimum lead time so patients can't self-book last minute:
+    ```python
+    import json
+    import arrow
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    # Patients must book at least this far ahead — no last-minute self-scheduling
+    MIN_LEAD_TIME_HOURS = 48
+    class SlotFilter(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH)
+        def compute(self) -> list[Effect]:
+            # slots_by_provider maps each provider to {date: [{"start": ..., "end": ...}, ...]}
+            slots_by_provider = json.loads(self.context.get("slots_by_provider") or "{}")
+            cutoff = arrow.now().shift(hours=MIN_LEAD_TIME_HOURS)
+            filtered = {}
+            for provider, dates in slots_by_provider.items():
+                # drop any slot starting before the cutoff
+                kept = {
+                    date: [slot for slot in slots if arrow.get(slot["start"]) >= cutoff]
+                    for date, slots in dates.items()
+                }
+                # then drop empty dates, and providers left with no slots
+                kept = {date: slots for date, slots in kept.items() if slots}
+                if kept:
+                    filtered[provider] = kept
+            return [
+                Effect(
+                    type=EffectType.PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS,
+                    payload=json.dumps({"slots_by_provider": filtered}),
+                )
+            ]
+    ```
+###  Filter appointment types 
+Respond to `PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH_RESULTS`.
+**Target:** `self.target` is the [Patient](/sdk/data-patient/#patient) id.
+**Context:** `self.context["appointment_types"]` — a list of `{"id", "title"}` entries, where `id` is a [NoteType](/sdk/data-note/#notetype) id (its `unique_identifier`) and `title` is the note type's name.
+Example — only let patients self-book a specific set of visit types (e.g. keep follow-ups and telehealth, hide new-patient intakes):
     ```python
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
-    class MyHandler(BaseHandler):
-        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED)
+    # Visit types patients are allowed to self-book
+    PATIENT_BOOKABLE_TYPES = {"Follow-up", "Telehealth visit"}
+    class AppointmentTypeFilter(BaseHandler):
+        RESPONDS_TO = EventType.Name(
+            EventType.PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH
+        )
         def compute(self) -> list[Effect]:
+            # each entry is {"id": ..., "title": ...}
+            appointment_types = self.context.get("appointment_types", [])
+            filtered = [t for t in appointment_types if t["title"] in PATIENT_BOOKABLE_TYPES]
             return [
-              Effect(
-                type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE,
-                payload=json.dumps({"result": False}))
+                Effect(
+                    type=EffectType.PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__POST_SEARCH_RESULTS,
+                    payload=json.dumps({"appointment_types": filtered}),
+                )
             ]
     ```
-###  Hide 'Reschedule' button 
+###  Filter locations 
+Respond to `PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH_RESULTS`.
+**Target:** `self.target` is the [Patient](/sdk/data-patient/#patient) id.
+**Context:** `self.context["locations"]` — a list of `{"id", "title"}` entries, where `id` is a [PracticeLocation](/sdk/data-practicelocation/#practicelocation) id and `title` is its full name.
+Example — only show locations where the patient has been seen before:
     ```python
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
-    class MyHandler(BaseHandler):
-        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED)
+    from canvas_sdk.v1.data import Appointment
+    class LocationFilter(BaseHandler):
+        RESPONDS_TO = EventType.Name(
+            EventType.PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH
+        )
         def compute(self) -> list[Effect]:
+            locations = self.context.get("locations", [])
+            seen_location_ids = {
+                str(loc_id)
+                for loc_id in Appointment.objects.filter(patient__id=self.target)
+                .exclude(location__isnull=True)
+                .values_list("location__id", flat=True)
+            }
+            filtered = [loc for loc in locations if loc["id"] in seen_location_ids]
             return [
-              Effect(
-                type=EffectType.PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE,
-                payload=json.dumps({"result": False}))
+                Effect(
+                    type=EffectType.PATIENT_PORTAL__APPOINTMENTS__FORM_LOCATIONS__POST_SEARCH_RESULTS,
+                    payload=json.dumps({"locations": filtered}),
+                )
             ]
     ```
-###  Hide 'Join' button 
-This button shows on telehealth appointments
+###  Filter providers 
+Respond to `PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH_RESULTS`.
+**Target:** `self.target` is the [Patient](/sdk/data-patient/#patient) id.
+**Context:** `self.context["providers"]` — a list of `{"id", "title"}` entries, where `id` is a [Staff](/sdk/data-staff/#staff) id and `title` is the provider's name and roles.
+Example — only offer the patient's own care-team providers:
     ```python
     import json
     from canvas_sdk.effects import Effect, EffectType
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
-    class MyHandler(BaseHandler):
-        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK)
+    from canvas_sdk.v1.data import CareTeamMembership
+    from canvas_sdk.v1.data.care_team import CareTeamMembershipStatus
+    class ProviderFilter(BaseHandler):
+        RESPONDS_TO = EventType.Name(
+            EventType.PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH
+        )
         def compute(self) -> list[Effect]:
+            providers = self.context.get("providers", [])
+            care_team_ids = {
+                str(staff_id)
+                for staff_id in CareTeamMembership.objects.filter(
+                    patient__id=self.target, status=CareTeamMembershipStatus.ACTIVE
+                ).values_list("staff__id", flat=True)
+            }
+            filtered = [p for p in providers if p["id"] in care_team_ids]
             return [
-              Effect(
-                type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
-                payload=json.dumps({"result": True}))
+                Effect(
+                    type=EffectType.PATIENT_PORTAL__APPOINTMENTS__FORM_PROVIDERS__POST_SEARCH_RESULTS,
+                    payload=json.dumps({"providers": filtered}),
+                )
             ]
     ```
-##  Update User 
-This effect is intended for updating a user's phone number or email. In the future, we may expand its capabilities to support additional attributes, but for now, only these two are supported.
+##  Forms 
+Forms let you dynamically display questionnaires to patients in the portal based on your own criteria, and commit each response to the patient's chart as a Questionnaire Command when they submit. Because your handler runs on every portal page load, return only the forms that should currently appear.
+> **Warning:** Set `create_command=True` on almost every form. It's what puts the patient's response in the chart — as a committed Questionnaire Command in a note. Without it, the response is saved only as an Interview and never surfaces in the chart, so the care team won't see it. Leave it off only when you have a specific reason. 
+Respond to the `PATIENT_PORTAL__GET_FORMS` event and return a `FormResult` effect for each questionnaire to show.
 Attribute | Type | Description  
 ---|---|---  
-`user_dbid` | `str | UUID` | The unique ID of the User.  
-`phone_number` | `str` | Specifies the phone number to be stored.  
-`email` | `str` | Specifies the email to be stored.  
+`questionnaire_id` | `str` | `UUID` | The unique ID of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) to show.  
+`create_command` | `bool` | **Strongly recommended`True`.** Commits the response as a Questionnaire Command in a note so it appears in the chart. When `False` (the default), the response is saved only as an Interview and never appears in a note.  
+`note_id` | `str` | `UUID` | `None` | The [Note](/sdk/data-note/#note) to place the command on. Only used when `create_command` is `True`; if omitted, Canvas creates and locks a new note for it. Has no effect on its own.  
+**Example** — assign intake questionnaires when a patient has a confirmed upcoming visit, skipping any they've already completed:
+    ```python
+    import arrow
+    from canvas_sdk.effects.patient_portal.form_result import FormResult
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Interview, Patient, Questionnaire
+    from canvas_sdk.v1.data.appointment import AppointmentProgressStatus
+    INTAKE_QUESTIONNAIRES = ["Insurance Details", "Preferred Pharmacy Details", "Social History"]
+    APPOINTMENT_NOTE_TYPES = ["Telehealth", "Office visit"]
+    class Handler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_FORMS)
+        def _upcoming_appointment_note_id(self, appointments):
+            return appointments.filter(
+                status=AppointmentProgressStatus.CONFIRMED,
+                start_time__gt=arrow.now().date(),
+                note_type__name__in=APPOINTMENT_NOTE_TYPES,
+            ).values_list("note__id", flat=True).first()
+        def compute(self):
+            patient = Patient.objects.get(id=self.target)
+            # Only assign intake forms when there's a confirmed upcoming visit
+            note_id = self._upcoming_appointment_note_id(patient.appointments)
+            if not note_id:
+                return []
+            # Which intake questionnaires are already completed *on this visit's note*.
+            # committed() automatically drops entered-in-error and uncommitted interviews.
+            # The same intake form is expected each visit, so scope the check to this note
+            # rather than the whole patient.
+            completed = set(
+                Interview.objects.for_patient(patient.id)
+                .committed()
+                .filter(note_id=note_id, questionnaires__name__in=INTAKE_QUESTIONNAIRES)
+                .values_list("questionnaires__name", flat=True)
+            )
+            missing = [name for name in INTAKE_QUESTIONNAIRES if name not in completed]
+            missing_ids = Questionnaire.objects.filter(name__in=missing).values_list("id", flat=True)
+            return [
+                FormResult(questionnaire_id=qid, create_command=True, note_id=note_id).apply()
+                for qid in missing_ids
+            ]
+    ```
+**Best practices:**
+  - **Match questionnaires by name, not ID — it always resolves to the latest version.** When a questionnaire is updated, the previous version is archived with a `(v#)` suffix on its name (e.g. `Social History (v1)`) while the current version keeps the clean name. Filtering by the exact name therefore returns only the latest version, and (as a bonus) stays portable across instances, where IDs differ.
+  - **Prevent duplicates — but scope the check.** This logic runs on every page load, so check existing committed `Interview` responses before assigning a form again. Because the same intake form is typically expected at every visit, scope that check to the current appointment's `note_id` rather than the whole patient (use `.committed()` so entered-in-error responses are ignored automatically).
+  - **Don't let forms linger.** Return a questionnaire only while it should be shown; once it's completed or no longer relevant, stop returning it.
+  - **Always land responses in the chart.** Set `create_command=True` so each submission is committed as a Questionnaire Command; pass a `note_id` to target a specific note, or omit it to let Canvas create one. Without `create_command`, the response is only an Interview and the care team won't see it.
+Real-world example: the MSF [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) extension assigns questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, posting responses back to the chart.
+##  User Login 
+These effects manage a patient's portal **user account** — the login they use to access the portal. Invites and password resets are sent to the email or phone linked on the user, so make sure those contact points are actually **verified** before you invite a patient or rely on an updated value. Trigger a verification with the [Send Contact Verification](/sdk/effect-send-contact-verification/) effect.
+###  Update User 
+The `UpdateUserEffect` updates a portal user's phone number or email. In the future this may support additional attributes, but for now only these two are supported. It isn't tied to a specific portal event — emit it from whatever handler fits your workflow (a common one is keeping the portal user in sync in response to `PATIENT_CONTACT_POINT_UPDATED`, as below).
+Attribute | Type | Required | Description  
+---|---|---|---  
+`user_dbid` | `int` | `true` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to update.  
+`phone_number` | `str` | `false`* | The phone number to store.  
+`email` | `str` | `false`* | The email to store.  
+**Validation:** at least one of `phone_number` or `email` must be provided, and `user_dbid` must resolve to an existing user (otherwise the effect returns a `User does not exist` error).
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.update_user import UpdateUserEffect
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import PatientContactPoint
-    class ContactPoint(BaseHandler):
-        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)]
+    from canvas_sdk.v1.data.common import ContactPointSystem
+    class SyncPortalUser(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)
         def compute(self) -> list[Effect]:
             contact_point = PatientContactPoint.objects.get(id=self.target)
-            patient = contact_point.patient
-            return [
-                UpdateUserEffect(user_dbid=patient.user.dbid, email="test@email.com", phone_number="1234567890").apply(),
-            ]
+            # Only sync verified contact points. last_verified is set once the patient
+            # completes the verification challenge (see Send Contact Verification); until
+            # then the value shouldn't be trusted as the account's login channel.
+            if not contact_point.last_verified:
+                return []
+            user = contact_point.patient.user
+            # Only update when the value actually changed. Emitting an effect that sets the
+            # user to what it already is is a no-op — and can retrigger
+            # PATIENT_CONTACT_POINT_UPDATED, causing an update loop.
+            if contact_point.system == ContactPointSystem.EMAIL and user.email != contact_point.value:
+                return [UpdateUserEffect(user_dbid=user.dbid, email=contact_point.value).apply()]
+            if contact_point.system == ContactPointSystem.PHONE and user.phone_number != contact_point.value:
+                return [UpdateUserEffect(user_dbid=user.dbid, phone_number=contact_point.value).apply()]
+            return []
     ```
-##  Send Invite 
-This effect triggers a portal invitation that allows the patient to register or activate their account on the patient portal.
-Attribute | Type | Description  
----|---|---  
-`user_dbid` | `str | UUID` | The unique ID of the User.  
+###  Send Invite 
+The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
+Attribute | Type | Required | Description  
+---|---|---|---  
+`user_dbid` | `int` | `true` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite.  
+**Validation:** `user_dbid` must resolve to an existing user (otherwise the effect returns a `User does not exist` error).
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.send_invite import SendInviteEffect
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from canvas_sdk.v1.data import PatientContactPoint
-    class ContactPoint(BaseHandler):
-        RESPONDS_TO = [EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)]
+    class InviteVerifiedPatient(BaseHandler):
+        # Verification completes with a save that fires this event
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)
         def compute(self) -> list[Effect]:
             contact_point = PatientContactPoint.objects.get(id=self.target)
-            patient = contact_point.patient
-            return [
-                SendInviteEffect(user_dbid=patient.user.dbid).apply(),
-            ]
+            # Only invite once the contact point is actually verified — that's the
+            # channel the invitation will be delivered to.
+            if not contact_point.last_verified:
+                return []
+            user = contact_point.patient.user
+            # Only invite once: skip if there's no portal user yet, or they've already registered
+            if user is None or user.is_portal_registered:
+                return []
+            return [SendInviteEffect(user_dbid=user.dbid).apply()]
     ```
-##  Send Contact Verification 
-The `SendContactVerification` effect instructs Canvas to send a verification (for example, an email or SMS code) to a specific Patient Contact Point. Typical uses are verifying a patient's email address or phone number before enabling patient-portal features that require a verified contact channel.
-Attribute | Type | Description  
----|---|---  
-`contact_point_id` | `str` or `UUID` | The id of the [`PatientContactPoint`](/sdk/effect-patient/#patientcontactpoint) to verify.  
-###  Validation & Errors 
-When an effect is prepared, the model validates inputs and returns structured error details if something is invalid.
-  - **Contact Point Exists** — The effect verifies the provided `contact_point_id` maps to an existing `PatientContactPoint` record. If no matching record exists the effect will include an error detail with message: `Patient Contact Point does not exist`.
-###  Caveats 
-  - Emitting this effect will trigger a save to the associated `PatientContactPoint`. If your plugin sends `SendContactVerification` in direct response to a `PATIENT_CONTACT_POINT_UPDATED` event, the save triggered by the effect can cause the same event to fire again, producing an infinite event loop. To avoid this, debounce or detect origin (for example, ignore updates originating from the plugin runner or set a transient flag on the model) before emitting the effect in response to contact point update events.
-###  Example Usage 
-    ```python
-    from canvas_sdk.effects import Effect
-    from canvas_sdk.effects.send_contact_verification import SendContactVerificationEffect
-    from canvas_sdk.events import EventType
-    from canvas_sdk.handlers import BaseHandler
-    class MyHandler(BaseHandler):
-        RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED)
-        def compute(self) -> list[Effect]:
-            contact_point_id = self.event.target
-            verification_effect = SendContactVerificationEffect(contact_point_id=contact_point_id)
-            return [verification_effect.apply()]
-    ```
-###  Notes 
-  - This effect only triggers a verification send for the contact point. It does not mark the contact as verified — verification completion is handled by the platform when the patient completes the challenge.
-  - The effect relies on `PatientContactPoint` existing in the database. If your integration creates contact points in the same operation, ensure they are persisted before emitting this effect.
 ----- END PAGE https://docs.canvasmedical.com/sdk/patient-portal/
 
 

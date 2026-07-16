@@ -123,6 +123,16 @@ for note_task in note_tasks:
     print(f"Initial comment: {note_task.internal_comment}")
 ```
 
+## Committed note tasks
+
+The `committed` method on the `NoteTask` model manager returns note tasks whose underlying Task command has been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.task import NoteTask
+
+committed_note_tasks = NoteTask.objects.committed()
+```
+
 ## Attributes
 
 ### Task

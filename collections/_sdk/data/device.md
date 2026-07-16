@@ -44,6 +44,16 @@ from canvas_sdk.v1.data.device import Device
 devices = Device.objects.filter(manufacturer="ACME Biomedical", lot_number="M320")
 ```
 
+### Committed devices
+
+The `committed` method returns devices that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.device import Device
+
+committed_devices = Device.objects.committed()
+```
+
 ## Attributes
 
 ### Device
