@@ -74,6 +74,34 @@ The `ActionButton` class defines several locations where the button can be place
 | `CHART_SUMMARY_CODING_GAPS_SECTION`         | The button will appear in the Coding Gaps section of the chart summary.         |
 
 
+## Dynamic, state-responsive buttons
+
+Action buttons are not rendered once and cached. Canvas re-evaluates every `ActionButton` handler each time its location loads — and again whenever the location is [reloaded](#reloading-buttons). On each evaluation Canvas fires the `SHOW_*_BUTTON` event for that location and your handler's `visible()` method decides whether the button is included.
+
+This is what makes buttons *dynamic*: because `visible()` runs against live data every time, the same button can appear, disappear, or change its title depending on the note, the patient, or the logged-in user.
+
+### Reading the runtime context
+
+Inside `visible()`, `compute()`, and `handle()` you can read the event context to make decisions. When responding to a `SHOW_*_BUTTON` event, the following are available:
+
+| Accessor                        | Description                                                                                                                                    |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.       |
+| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-key>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
+| `self.event.target.id`          | The key of the patient the button is rendered for.                                                                                             |
+
+### Reloading buttons
+
+Because visibility is computed from live data, Canvas needs to know *when* to re-evaluate it. A button's location is reloaded automatically after its own `handle()` runs, but you will often want to reload in response to something else changing — for example, recomputing the footer after a command is committed, or after the note transitions to a new state.
+
+Return one of these [Reload Action Buttons](/sdk/effect-reload-action-buttons/) effects (imported from `canvas_sdk.effects.action_button`) from any handler's `handle()` or `compute()` to refresh a location's buttons:
+
+- `ReloadNoteActionButtonsEffect(id=<note external id>)` — re-evaluates every button bound to that note.
+- `ReloadPatientActionButtonsEffect(id=<patient id>)` — re-evaluates every button bound to that patient.
+
+A reload re-fires the `SHOW_*_BUTTON` events, so every button recomputes `visible()` from scratch — the button set is rebuilt rather than patched. Any handler can emit a reload, not just an `ActionButton`; Example 4 below uses plain event handlers to keep the footer in sync as the note changes.
+
+
 ## Example Implementations
 
 ### Example 1: Log Information When Button is Clicked
@@ -212,3 +240,181 @@ class VitalsButtonHandler(ActionButton):
         # Optionally, make the button visible only under specific conditions
         return True
 ```
+
+### Example 4: Drive a note through its lifecycle with `NoteStateActionButton`
+
+Footer buttons that move a note through its states — Sign, Amend, Check in, and so on - are common enough that the SDK ships a specialized base class, `NoteStateActionButton`. Subclass it and set `STATE_ACTION` to the `NoteStates` value the button transitions the note into. With no further code, each button:
+
+- appears **only when that transition is valid** from the note's current state - so the same button shows or hides automatically as the note moves through its lifecycle;
+- derives its `BUTTON_TITLE` and `BUTTON_KEY` from the state (set `BUTTON_TITLE` explicitly to relabel it);
+- on click, emits the effect that performs the transition and reloads the footer.
+
+Locking and signing carry extra rules, so the SDK ships two `NoteStateActionButton` subclasses that encapsulate them. Use these instead of subclassing `NoteStateActionButton` directly for those two transitions:
+
+- **`LockNoteActionButton`** — locks the note. Shown only for note types that **don't** require a signature.
+- **`SignNoteActionButton`** — signs the note. Shown only for note types that **do** require a signature. It locks the note first when it isn't already locked, so a note can be signed repeatedly — including by multiple users — and is only re-locked after an amend. It also hides itself once the current user has signed since the note was last locked.
+
+`Discharge` is shown only for inpatient note types; the base class applies that gate for you.
+
+```python
+from canvas_sdk.handlers.action_button import (
+    LockNoteActionButton,
+    NoteStateActionButton,
+    SignNoteActionButton,
+)
+from canvas_sdk.v1.data.note import NoteStates
+
+
+# Lock and Sign subclass the specialized bases — STATE_ACTION and their extra
+# rules are already set on those classes.
+class LockNoteButton(LockNoteActionButton):
+    pass
+
+
+class SignNoteButton(SignNoteActionButton):
+    pass
+
+
+# Every other transition subclasses NoteStateActionButton and sets STATE_ACTION.
+class UnlockNoteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.UNLOCKED
+
+
+class PushChargesNoteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.PUSHED
+
+
+class CheckInAppointmentButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.CONVERTED
+
+
+class NoShowAppointmentButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.NOSHOW
+
+
+class CancelAppointmentButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.CANCELLED
+
+
+class RestoreAppointmentButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.REVERTED
+
+
+class DeleteNoteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.DELETED
+
+
+class RestoreNoteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.UNDELETED
+
+
+class DischargeNoteButton(NoteStateActionButton):
+    STATE_ACTION = NoteStates.DISCHARGED
+```
+
+Register each button as a handler in your `CANVAS_MANIFEST.json`, exactly like any other `ActionButton`.
+
+#### Replacing Canvas's default footer buttons
+
+Your state buttons appear *alongside* Canvas's built-in state-transition buttons by default. To hide the native ones so yours replace them, answer the `NOTE_FOOTER__GET_CONFIGURATION` event with a [`NoteFooterConfiguration`](/sdk/effect-note-footer-configuration/) effect. Footer suppression is configured once per note (not per button):
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note_footer_configuration import NoteFooterConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class HideDefaultStateButtons(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_FOOTER__GET_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [NoteFooterConfiguration(hide_default_state_buttons=True).apply()]
+```
+
+#### Customizing when a button appears
+
+Override `visible()` to layer your own rules on top of the built-in checks — call `super().visible()` first so you keep everything the base already enforces, then add your conditions. Subclassing `SignNoteActionButton` means `super().visible()` still applies the sign-specific rules (signature-required, lock-first, and already-signed). This Sign button additionally hides itself while the note has staged (uncommitted) commands, because a note can't be signed until its commands are committed (reason-for-visit is auto-managed and doesn't block signing, so it's excluded):
+
+```python
+from canvas_sdk.handlers.action_button import SignNoteActionButton
+from canvas_sdk.v1.data.command import Command
+
+
+class SignNoteButton(SignNoteActionButton):
+    def visible(self) -> bool:
+        if not super().visible():
+            return False
+        note_id = self.event.context.get("note_id")
+        return not (
+            Command.objects.filter(note_id=note_id, state="staged")
+            .exclude(schema_key="reasonForVisit")
+            .exists()
+        )
+```
+
+You can gate on anything in the [runtime context](#reading-the-runtime-context). For example, to show a button only to the note's provider, compare the logged-in user against the note's provider (`note.provider.id` and the user id are both Staff keys):
+
+```python?partial=true
+    def visible(self) -> bool:
+        if not super().visible():
+            return False
+
+        note_id = self.event.context.get("note_id")
+        user_id = (self.event.context.get("user") or {}).get("id")
+        if not note_id or not user_id:
+            return False
+
+        note = Note.objects.filter(dbid=note_id).first()
+        return note is not None and note.provider.id == user_id
+```
+
+#### Keeping the footer in sync
+
+`visible()` is only re-evaluated when the footer is [reloaded](#reloading-buttons). A transition triggered by one of these buttons reloads the footer automatically, but changes from elsewhere don't — so pair the buttons with handlers that reload the footer when the note changes by another path. For example, reload whenever a command is committed (so the Sign button reappears the instant the last command is committed) and whenever the note's state changes:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.action_button import ReloadNoteActionButtonsEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.command import Command
+
+
+class ReloadFooterOnCommandCommit(BaseHandler):
+    """Reload the footer whenever any command is committed."""
+
+    RESPONDS_TO = [
+        EventType.Name(value)
+        for value in EventType.values()
+        if EventType.Name(value).endswith("_COMMAND__POST_COMMIT")
+    ]
+
+    def compute(self) -> list[Effect]:
+        command = Command.objects.filter(id=self.event.target.id).first()
+        if not command or not command.note:
+            return []
+        return [ReloadNoteActionButtonsEffect(id=str(command.note.id)).apply()]
+
+
+class ReloadFooterOnNoteStateChange(BaseHandler):
+    """Reload the footer whenever the note transitions to a new state."""
+
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        note_id = self.event.context.get("note_id")
+        if not note_id:
+            return []
+        return [ReloadNoteActionButtonsEffect(id=note_id).apply()]
+```
+
+## Reference plugin
+
+A complete, working plugin that ties these patterns together is available as the [**note-lifecycle-example**](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/note-lifecycle-example) plugin. It demonstrates:
+
+- a full set of state-responsive footer buttons (Lock, Sign, Unlock, Push charges, Check in, No show, Cancel, Restore, Delete, Discharge), each appearing only when its transition is valid from the note's current state — Lock and Sign built on `LockNoteActionButton` and `SignNoteActionButton`, the rest on `NoteStateActionButton`;
+- a `HideDefaultStateButtons` handler that hides Canvas's native footer buttons so the plugin's buttons replace them;
+- `ReloadFooterOnCommandCommit` and `ReloadFooterOnNoteStateChange` handlers that keep the visible button set in sync as the note evolves.
+
+Use it as a starting point for your own footer.
