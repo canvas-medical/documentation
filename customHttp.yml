@@ -1,0 +1,23 @@
+# AWS Amplify custom response headers.
+#
+# Amplify reads custom headers from this file (repo root), NOT from a
+# customHeaders block in amplify.yml — that location is deprecated and silently
+# ignored. See docs.aws.amazon.com/amplify/latest/userguide/custom-headers.html.
+#
+# Keep the LLM-facing markdown mirrors and llms.txt/llms-full.txt out of search
+# results so they don't compete with the canonical HTML pages. (Content-Type is
+# set by Amplify's own MIME mapping — .md already serves as text/markdown — and
+# cannot be overridden here, so only X-Robots-Tag is set.)
+customHeaders:
+  - pattern: '**/*.md'
+    headers:
+      - key: 'X-Robots-Tag'
+        value: 'noindex'
+  - pattern: '/llms.txt'
+    headers:
+      - key: 'X-Robots-Tag'
+        value: 'noindex'
+  - pattern: '/llms-full.txt'
+    headers:
+      - key: 'X-Robots-Tag'
+        value: 'noindex'

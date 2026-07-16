@@ -71,6 +71,8 @@ immunizations = Immunization.objects.filter(status="completed")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -78,6 +80,26 @@ from canvas_sdk.v1.data.immunization import Immunization
 from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
 
 immunizations = Immunization.objects.find(InfluenzaVaccine)
+```
+
+### Committed and active records
+
+The `committed` method returns immunizations that have been committed and not entered in error. The `active` method is an alias for `committed` and returns the same records:
+
+```python
+from canvas_sdk.v1.data.immunization import Immunization
+
+committed_immunizations = Immunization.objects.committed()
+active_immunizations = Immunization.objects.active()
+```
+
+The same methods are available on the `ImmunizationStatement` model manager:
+
+```python
+from canvas_sdk.v1.data.immunization import ImmunizationStatement
+
+committed_statements = ImmunizationStatement.objects.committed()
+active_statements = ImmunizationStatement.objects.active()
 ```
 
 ## Immunization Statements
@@ -115,6 +137,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | route                         | String                                          |
 | frequency_normalized_per_day  | Float                                           |
 | deleted                       | Boolean                                         |
+| committer                     | [CanvasUser](/sdk/data-canvasuser)             |
+| entered_in_error              | [CanvasUser](/sdk/data-canvasuser)             |
 | codings                       | [ImmunizationCoding](#immunizationcoding)[]    |
 
 ### ImmunizationCoding
@@ -143,6 +167,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | comment          | String                                                            |
 | reason_not_given | [ImmunizationReasonsNotGiven](#immunizationreasonsnotgiven)      |
 | deleted          | Boolean                                                           |
+| committer        | [CanvasUser](/sdk/data-canvasuser)                              |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser)                              |
 | coding           | [ImmunizationStatementCoding](#immunizationstatementcoding)[]    |
 
 ### ImmunizationStatementCoding

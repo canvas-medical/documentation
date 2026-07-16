@@ -50,6 +50,32 @@ reports = ReferralReport.objects.filter(requires_signature=True)
 reviews = ReferralReview.objects.filter(status="completed")
 ```
 
+### By ValueSet
+
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
+`ReferralReport` supports `ValueSet` filtering through the `find` method on its model manager:
+
+```python
+from canvas_sdk.v1.data.referral import ReferralReport
+from canvas_sdk.value_set.v2022.procedure import DialysisServices
+
+reports = ReferralReport.objects.find(DialysisServices)
+```
+
+`find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
+
+### Committed records
+
+The `committed` method returns `Referral` and `ReferralReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.referral import Referral, ReferralReview
+
+committed_referrals = Referral.objects.committed()
+committed_reviews = ReferralReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Referral's related tasks, use the `get_task_objects` method on the Referral object.
 
@@ -111,6 +137,7 @@ tasks = referral.get_task_objects().all()
 | priority           | Boolean                                                               |
 | original_date      | Date                                                                  |
 | review             | [ReferralReview](#referralreview)                                     |
+| codings            | [ReferralReportCoding](#referralreportcoding)[]                       |
 
 ### ReferralReview
 
@@ -130,3 +157,20 @@ tasks = referral.get_task_objects().all()
 | note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
+
+### ReferralReportCoding
+
+| Field Name    | Type                              |
+|---------------|-----------------------------------|
+| dbid          | Integer                           |
+| report        | [ReferralReport](#referralreport) |
+| system        | String                            |
+| version       | String                            |
+| code          | String                            |
+| display       | String                            |
+| user_selected | Boolean                           |
+| value         | String                            |
+
+<br/>
+<br/>
+<br/>

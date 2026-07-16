@@ -359,6 +359,19 @@ for report in lab_reports:
                 print(f"  {coding.name}: {value.value} {value.units} (Flag: {value.abnormal_flag})")
 ```
 
+### Committed records
+
+The `committed` method returns `LabReport`, `LabReview`, `LabOrder`, and `LabOrderReason` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.lab import LabReport, LabReview, LabOrder, LabOrderReason
+
+committed_reports = LabReport.objects.committed()
+committed_reviews = LabReview.objects.committed()
+committed_orders = LabOrder.objects.committed()
+committed_order_reasons = LabOrderReason.objects.committed()
+```
+
 ## Attributes
 
 ### LabReport
@@ -369,7 +382,7 @@ for report in lab_reports:
 | dbid                 | Integer                               |
 | created              | DateTime                              |
 | modified             | DateTime                              |
-| review_mode          | String                                |
+| review_mode          | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |
