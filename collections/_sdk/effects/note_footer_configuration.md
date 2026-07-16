@@ -5,9 +5,9 @@ excerpt: "Configure a note's footer — for example, hide Canvas's default state
 hidden: false
 ---
 
-`NoteFooterConfiguration` controls the note footer at the note level (rather than per button). Return it from a handler that responds to the `NOTE_FOOTER__GET_CONFIGURATION` event — Canvas requests the footer configuration once per note as the footer loads.
+The `NoteFooterConfiguration` effect configures the note footer at the note level (rather than per button). Its primary use is hiding Canvas's default state-transition buttons — Lock, Sign, Push charges, Delete, and so on — so that a plugin can supply its own footer buttons in their place, such as with [Note State Action Buttons](/sdk/handlers-action-buttons/#note-state-action-buttons).
 
-Its primary use is hiding Canvas's built-in state-transition buttons (Lock, Sign, Unlock, …) so that [action buttons](/sdk/handlers-action-buttons/) provided by a plugin can replace them.
+Return this effect in response to the `NOTE_FOOTER__GET_CONFIGURATION` event, which fires when a note's footer is loaded. If your handler does not return a configuration, the default state-transition buttons remain visible.
 
 ---
 
@@ -19,11 +19,11 @@ As a note's footer loads, Canvas fires `NOTE_FOOTER__GET_CONFIGURATION` targetin
 
 | Property          | Value        | Description                                          |
 |-------------------|--------------|------------------------------------------------------|
-| `event.target.id` | `str` (UUID) | The external id of the note whose footer is loading. |
+| `event.target.id` | `str` (UUID) | The external id of the [Note](/sdk/data-note/#note) whose footer is loading. |
 | `event.actor`     | user         | The logged-in user viewing the note, when available. |
 | `event.context`   | `{}`         | Empty — no additional context is provided.           |
 
-### Fields
+### Attributes
 
 | Field                        | Type   | Default | Description                                                         |
 |------------------------------|--------|---------|---------------------------------------------------------------------|
