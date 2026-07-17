@@ -71,7 +71,6 @@ committed_goals = Goal.objects.committed()
 | originator         | [CanvasUser](/sdk/data-canvasuser)              |
 | committer          | [CanvasUser](/sdk/data-canvasuser)              |
 | entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
-| deleted            | Boolean                                         |
 | patient            | [Patient](/sdk/data-patient/#patient)           |
 | note               | [Note](/sdk/data-note)                          |
 | lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |

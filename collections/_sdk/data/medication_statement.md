@@ -83,7 +83,6 @@ committed_medication_statements = MedicationStatement.objects.committed()
 | dose_frequency            | Number                                |
 | dose_frequency_interval   | String                                |
 | sig_original_input        | String                                |
-| deleted                   | Boolean                               |
 
 <br/>
 <br/>
