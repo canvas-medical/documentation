@@ -10366,7 +10366,6 @@ id | UUID
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -10487,6 +10486,9 @@ location | PracticeLocation
 description | String  
 external_identifiers | AppointmentExternalIdentifier[]  
 metadata | AppointmentMetadata[]  
+children | Appointment[]  
+appointment_rescheduled_to | Appointment[]  
+labels | [TaskLabel](/sdk/data-task/#tasklabel)[]  
 ###  AppointmentExternalIdentifier 
 Field Name | Type  
 ---|---  
@@ -10562,7 +10564,6 @@ dbid | Integer |
 created | DateTime |   
 modified | DateTime |   
 originator | [CanvasUser](/sdk/data-canvasuser) |   
-deleted | Boolean |   
 entered_in_error | [CanvasUser](/sdk/data-canvasuser) |   
 committer | [CanvasUser](/sdk/data-canvasuser) |   
 patient | [Patient](/sdk/data-patient/#patient) |   
@@ -10575,6 +10576,7 @@ background | String |
 care_team | String |   
 treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |   
 billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[] |   
+referrals | [Referral](/sdk/data-referral)[] |   
 ##  Enumeration types 
 ###  Assessment Status 
 Value | Label  
@@ -10612,6 +10614,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 Field Name | Type  
 ---|---  
 dbid | Integer  
+id | UUID  
 created | DateTime  
 modified | DateTime  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -10714,6 +10717,8 @@ command_type | String
 command_id | Integer  
 status | BillingLineItemStatus  
 assessments | [Assessment](/sdk/data-assessment)[]  
+modifiers | BillingLineItemModifier[]  
+claimlineitem_set | [ClaimLineItem](/sdk/data-claim/#claimlineitem)[]  
 ###  BillingLineItemModifier 
 Field Name | Type  
 ---|---  
@@ -10784,6 +10789,7 @@ subdomain | String
 active | Boolean  
 state | BusinessLineState  
 organization | [Organization](/sdk/data-organization)  
+patients | QuerySet[[Patient](/sdk/data-patient/#patient)]  
 ##  Enumeration types 
 ###  BusinessLineState 
 Value | Label  
@@ -10858,6 +10864,7 @@ ends_at | DateTime | The end date and time of the event
 recurrence | String | Recurrence rule for recurring events  
 recurrence_ends_at | DateTime | The date and time when the recurrence pattern ends  
 recurring_parent_event | Event | The parent event  
+exceptions | Event[] | Exception (override) events for this recurring parent event  
 original_starts_at | DateTime | The original start time for recurring event exceptions  
 is_all_day | Boolean | Whether this is an all-day event (default: false)  
 is_cancelled | Boolean | Whether this event has been cancelled (default: false)  
@@ -10912,6 +10919,14 @@ phone_number | String
 is_staff | Boolean  
 is_portal_registered | Boolean  
 last_invite_date_time | DateTime  
+person_subclass | [Staff](/sdk/data-staff/#staff) | [Patient](/sdk/data-patient/#patient)  
+staff | [Staff](/sdk/data-staff/#staff)  
+patient | [Patient](/sdk/data-patient/#patient)  
+sent_messages | [Message](/sdk/data-message/#message)[]  
+received_messages | [Message](/sdk/data-message/#message)[]  
+commands_originated | [Command](/sdk/data-command/#command)[]  
+commands_committed | [Command](/sdk/data-command/#command)[]  
+commands_entered_in_error | [Command](/sdk/data-command/#command)[]  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-canvasuser/
 
 
@@ -11028,6 +11043,7 @@ effective_date | Date
 end_date | Date  
 code_system | CDMCodeSystem  
 ndc_code | String  
+transactor_charges | QuerySet[[PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)]  
 ##  Enumeration types 
 ###  CDMCodeSystem 
 Value | Label  
@@ -11141,12 +11157,14 @@ id | UUID
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
-deleted | Boolean  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note/#note)  
 section | ChartSectionReviewSection  
 entries | Integer[] (`dbid`s of the reviewed records — see Working with entries)  
 content | String (newline-separated bullet items)  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 ##  Enumeration types 
 ###  ChartSectionReviewSection 
 Value | Label  
@@ -11228,6 +11246,11 @@ banner_alerts | ClaimBannerAlert[]
 provider | ClaimProvider  
 incident_to | Boolean  
 supervising_provider | ClaimSupervisingProvider  
+latest_invoice | Invoice  
+patient | ClaimPatient  
+coverages | ClaimCoverage[]  
+submissions | ClaimSubmission[]  
+postings | [BasePosting](/sdk/data-posting/#baseposting)[]  
 **Computed Properties** :
   - `total_charges`: Total charges for active line items
   - `total_paid`: Sum of paid amounts from postings
@@ -11359,7 +11382,7 @@ dbid | Integer
 claim | Claim  
 created | DateTime  
 modified | DateTime  
-deleted | Boolean  
+originator | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 comment | String  
@@ -11367,6 +11390,7 @@ comment | String
 Represents banner alerts associated with a claim. Banner alerts are displayed in the UI to surface important information about a claim. To create or remove `ClaimBannerAlert` records, see [Claim Effects](/sdk/effect-claims/#add-banner).
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
 claim | Claim  
 plugin_name | String  
@@ -11515,13 +11539,15 @@ claim_index | Integer
 Represents a payment plan between a patient and provider.
 Field Name | Type  
 ---|---  
+dbid | Integer  
 creator | [CanvasUser](/sdk/data-canvasuser/)  
 patient | [Patient](/sdk/data-patient/)  
 total_amount | Decimal  
 status | InstallmentPlanStatus  
 expected_payoff_date | Date  
-created_at | DateTime  
-updated_at | DateTime  
+created | DateTime  
+modified | DateTime  
+claims | Claim[]  
 ##  Enumeration types 
 ###  ClaimLineItemStatus 
 Value | Label  
@@ -11725,6 +11751,10 @@ schema_key | String
 data | JSON  
 origination_source | String  
 custom_html | String (optional)  
+anchor_object_type | String  
+anchor_object_dbid | Integer  
+anchor_object | Model (optional)  
+metadata | QuerySet[[CommandMetadata](/sdk/data-command/#commandmetadata)]  
 The `custom_html` field stores HTML content that is rendered alongside the command in the note. This field is optional and defaults to `None`. Use the [`set_custom_html`](/sdk/commands/#set_custom_html) method to set or clear this field on a staged command.
 ###  CommandMetadata 
 `CommandMetadata` stores custom key-value pairs associated with a command. Metadata can be upserted using the `upsert_metadata` method on any command effect class — see [CommandMetadata Effect](/sdk/effect-command-metadata/) for full details.
@@ -11788,11 +11818,13 @@ You can combine multiple filters:
 Field Name | Type  
 ---|---  
 dbid | Integer  
+id | UUID  
 active | Boolean  
 formulation | String  
 potency_unit_code | PotencyUnit  
 controlled_substance | ControlledSubstanceSchedule  
 controlled_substance_ndc | String  
+compound_medication | QuerySet[[Prescription](/sdk/data-prescription/#prescription)]  
 ##  Enumeration types 
 ###  PotencyUnit 
 Value | Label  
@@ -11893,7 +11925,6 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
-deleted | Boolean  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -11904,6 +11935,7 @@ codings | ConditionCoding[]
 lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[]  
 notes | String  
 surgical | Boolean  
+assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
 ###  ConditionCoding 
 Field Name | Type  
 ---|---  
@@ -12102,6 +12134,7 @@ modified | DateTime
 patient | [Patient](/sdk/data-patient/#patient)  
 guarantor | [Patient](/sdk/data-patient/#patient)  
 subscriber | [Patient](/sdk/data-patient/#patient)  
+subscriber_identifier | String  
 patient_relationship_to_subscriber | CoverageRelationshipCode  
 issuer | Transactor  
 id_number | String  
@@ -12122,6 +12155,7 @@ comments | Text
 stack | CoverageStack  
 snapshot | [Snapshot](/sdk/data-snapshot/#snapshot)  
 eligibility_summary | EligibilitySummary  
+claim_coverages | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]  
 ###  Transactor 
 Field Name | Type  
 ---|---  
@@ -12153,6 +12187,8 @@ coverage_types | TransactorCoverageType[]
 addresses | TransactorAddress[]  
 coverages | Coverage[]  
 phones | TransactorPhone[]  
+specific_charges | [PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)[]  
+remits | [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice)[]  
 ###  TransactorAddress 
 Field Name | Type  
 ---|---  
@@ -12376,7 +12412,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 identified | DateTime  
-deleted | Boolean  
 originator | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
@@ -12446,7 +12481,6 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note_id | Integer  
-deleted | Boolean  
 labeled_contains_NRL | Boolean  
 assigning_authority | String  
 scoping_entity | String  
@@ -12603,6 +12637,7 @@ state | EncounterState
 medium | EncounterMedium  
 start_time | DateTime  
 end_time | DateTime  
+document_references | QuerySet[[DocumentReference](/sdk/data-document-reference/#documentreference)]  
 ##  Enumeration types 
 ###  EncounterState 
 Name | Value  
@@ -12866,6 +12901,7 @@ patient | [Patient](/sdk/data-patient/#patient)
 visit_identifier | String  
 information_source | String  
 facility_name | String  
+visit_events | QuerySet[ExternalEvent]  
 ##  Common Event Types 
 External events typically use HL7 ADT event types:
 Event Type | Description  
@@ -12926,7 +12962,8 @@ name | String
 npi_number | String  
 phone_number | String  
 fax_number | String  
-active | Boolean
+active | Boolean  
+patient_facilities | QuerySet[[PatientFacilityAddress](/sdk/data-patient/#patientfacilityaddress)]
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-facility/
 
 
@@ -13151,7 +13188,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -13166,6 +13202,7 @@ ordering_provider | [Staff](/sdk/data-staff/#staff)
 priority | String  
 delegated | Boolean  
 task_ids | String  
+results | ImagingReport[]  
 ###  ImagingReview 
 Field Name | Type  
 ---|---  
@@ -13174,8 +13211,8 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod)  
 internal_comment | String  
 message_to_patient | String  
@@ -13313,9 +13350,11 @@ take_quantity | Float
 dose_form | String  
 route | String  
 frequency_normalized_per_day | Float  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+created | DateTime  
+modified | DateTime  
 codings | ImmunizationCoding[]  
 ###  ImmunizationCoding 
 Field Name | Type  
@@ -13339,9 +13378,11 @@ date | Date
 evidence | String  
 comment | String  
 reason_not_given | ImmunizationReasonsNotGiven  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+created | DateTime  
+modified | DateTime  
 coding | ImmunizationStatementCoding[]  
 ###  ImmunizationStatementCoding 
 Field Name | Type  
@@ -13450,7 +13491,6 @@ modified | DateTime
 originator | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note/#note)  
 narrative | String  
@@ -13630,6 +13670,7 @@ active | Boolean | Indicates whether the lab partner is currently active.
 electronic_ordering_enabled | Boolean | Indicates if electronic ordering is enabled for this lab partner.  
 keywords | Text | Keywords associated with the lab partner.  
 default_lab_account_number | String | The default lab account number used for orders.  
+available_tests | LabPartnerTest[] | The tests offered by this lab partner (reverse relation, accessible via `available_tests`).  
 ###  LabPartnerTest Attributes 
 Field Name | Type | Description  
 ---|---|---  
@@ -14084,11 +14125,13 @@ custom_document_name | String
 originator | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 values | LabValue[]  
 tests | LabTest[]  
+ordered_tests | LabTest[]  
+result_tests | LabTest[]  
 remarks | LabReportRemark[]  
 diagnostic_reports | DiagnosticReport[]  
+laborder_set | LabOrder[]  
 ###  LabReportRemark 
 Field Name | Type  
 ---|---  
@@ -14116,7 +14159,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 internal_comment | String  
@@ -14126,7 +14168,6 @@ note | [Note](/sdk/data-note/#note)
 patient | [Patient](/sdk/data-patient/#patient)  
 patient_communication_method | String  
 reports | LabReport[]  
-tests | LabTest[]  
 ###  LabValue 
 Field Name | Type  
 ---|---  
@@ -14163,7 +14204,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -14188,6 +14228,7 @@ labcorp_abn_url | URL
 reasons | LabOrderReason[]  
 tests | LabTest[]  
 reports | LabReport[]  
+laborder_set | LabOrder[]  
 ###  LabOrderReason 
 Field Name | Type  
 ---|---  
@@ -14195,7 +14236,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 order | LabOrder  
@@ -14207,10 +14247,6 @@ Field Name | Type
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
-originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
-committer | [CanvasUser](/sdk/data-canvasuser)  
-entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 reason | LabOrderReason  
 condition | [Condition](/sdk/data-condition)  
 ###  LabTest 
@@ -14219,8 +14255,6 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
-created | DateTime  
-modified | DateTime  
 ontology_test_name | String  
 ontology_test_code | String  
 status | LabTestOrderStatus  
@@ -14392,7 +14426,8 @@ modified | DateTime |
 content | String | The rendered letter content  
 printed | DateTime | When the letter was printed (null if not printed)  
 note | [Note](/sdk/data-note/) | The note this letter is associated with  
-staff | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable)
+staff | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable)  
+letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-letter/
 
 
@@ -14645,7 +14680,6 @@ Field Name | Type
 id | UUID  
 dbid | Integer  
 patient | [Patient](/sdk/data-patient/#patient)  
-deleted | Boolean  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 status | String  
@@ -14659,6 +14693,8 @@ erx_quantity | String
 codings | MedicationCoding[]  
 medication_statements | [MedicationStatement](/sdk/data-medication-statement)[]  
 stopmedicationevent_set | [StopMedicationEvent](/sdk/data-stop-medication-event)[]  
+prescriptions | [Prescription](/sdk/data-prescription)[]  
+previous_medications | [Prescription](/sdk/data-prescription)[]  
 ###  MedicationCoding 
 Field Name | Type  
 ---|---  
@@ -14697,6 +14733,8 @@ Name | Type | Description
 `recipient` | [CanvasUser](/sdk/data-canvasuser) | The user who received the message. May be null.  
 `note` | [Note](/sdk/data-note) | Associated note (if any) for contextual linkage. May be null.  
 `read` | `DateTime` | Timestamp when the recipient read the message. Null if unread.  
+`transmissions` | QuerySet[MessageTransmission] | The delivery transmissions associated with this message.  
+`message` | QuerySet[MessageAttachment] | The file attachments associated with this message.  
 ##  MessageAttachment 
 Represents a file attachment linked to a message.
 ###  Fields 
@@ -14931,12 +14969,14 @@ body | JSON | Array of objects representing the note structure. Each object has 
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
 supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
+last_modified_by_staff | [Staff](/sdk/data-staff/#staff) | The staff member who last modified the note  
 checksum | String |   
 billing_note | String |   
 related_data | JSON | Can contain one key, `roomNumber`, if the Note is an inpatient stay.  
 datetime_of_service | DateTime |   
 place_of_service | String |   
 encounter | [Encounter](/sdk/data-encounter) |   
+location | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note  
 commands | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note  
 note_tasks | QuerySet[[NoteTask](/sdk/data-task)] | All tasks associated with this note  
 metadata | QuerySet[NoteMetadata] | All metadata key-value pairs associated with this note  
@@ -14945,9 +14985,21 @@ imaging_reviews | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | 
 referral_reviews | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note  
 chart_section_reviews | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note  
 visual_exam_findings | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note  
+state_history | QuerySet[NoteStateChangeEvent] | The note's state-change audit history  
+current_state | CurrentNoteStateEvent | The note's current state event  
+assessments | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note  
+goals | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note  
+instructions | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note  
+immunizations | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note  
+claims | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)  
+letter | [Letter](/sdk/data-letter/#letter) | The letter associated with this note, if any  
+referral_set | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note  
+laborder_set | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note  
+appointment_set | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note  
 ###  NoteType 
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
@@ -14977,6 +15029,8 @@ allow_custom_title | Boolean
 is_scheduleable_via_patient_portal | Boolean  
 online_duration | Integer  
 is_sig_required | Boolean  
+notes | QuerySet[Note]  
+appointments | QuerySet[[Appointment](/sdk/data-appointment/#appointment)]  
 ###  NoteMetadata 
 Field Name | Type  
 ---|---  
@@ -15172,7 +15226,6 @@ modified | DateTime
 originator | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 patient | [Patient](/sdk/data-patient/#patient)  
 is_member_of | Observation  
 category | String (comma-separated list of categories  
@@ -15262,6 +15315,11 @@ tax_id_type | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)
 group_npi_number | String  
 group_taxonomy_number | String  
 include_zz_qualifier | Boolean  
+main_location | [PracticeLocation](/sdk/data-practicelocation/#practicelocation)  
+practice_locations | QuerySet[[PracticeLocation](/sdk/data-practicelocation/#practicelocation)]  
+addresses | QuerySet[OrganizationAddress]  
+telecom | QuerySet[OrganizationContactPoint]  
+business_lines | QuerySet[[BusinessLine](/sdk/data-business-line/#businessline)]  
 ##  OrganizationAddress 
 The `OrganizationAddress` model represents a physical or mailing address associated with an Organization. Multiple addresses can be linked to a single Organization, each with its own type and details.
 ###  Attributes 
@@ -15375,6 +15433,7 @@ show_in_patient_portal | Boolean
 summary | String  
 document | String  
 document_url | String (property) — presigned S3 URL  
+patient_consent | QuerySet[PatientConsent]  
 ###  PatientConsentRejectionCoding 
 Field Name | Type  
 ---|---  
@@ -15384,6 +15443,7 @@ version | String
 code | String  
 display | String  
 user_selected | Boolean  
+patient_consents | QuerySet[PatientConsent]  
 ##  Enumeration types 
 ###  PatientConsentStatus 
 Value | Label  
@@ -15454,6 +15514,9 @@ Field Name | Type
 id | UUID  
 name | String  
 members | [Patient](/sdk/data-patient/)[]  
+created | DateTime  
+modified | DateTime  
+patientgroupmember_set | PatientGroupMember[]  
 ###  PatientGroupMember 
 Field Name | Type  
 ---|---  
@@ -15555,7 +15618,7 @@ devices | [Device](/sdk/data-device/#device)[]
 external_identifiers | PatientExternalIdentifier[]  
 identification_cards | PatientIdentificationCard[]  
 imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
-imaging_reports | [ImagingReport](/sdk/data-imaging/#imagingreport)[]  
+imaging_results | [ImagingReport](/sdk/data-imaging/#imagingreport)[]  
 imaging_reviews | [ImagingReview](/sdk/data-imaging/#imagingreview)[]  
 interviews | [Interview](/sdk/data-questionnaire/#interview)[]  
 lab_orders | [LabOrder](/sdk/data-labs/#laborder)[]  
@@ -15566,6 +15629,7 @@ metadata | PatientMetadata[]
 observations | [Observation](/sdk/data-observation/#observation)[]  
 photos | PatientPhoto[]  
 preferred_pharmacy | JSON  
+preferred_pharmacies | JSON  
 protocol_overrides | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]  
 settings | PatientSetting  
 subscribed_coverages | [Coverage](/sdk/data-coverage/#coverage)[]  
@@ -15575,6 +15639,31 @@ user | [CanvasUser](/sdk/data-canvasuser/)[]
 patient_groups | [PatientGroup](/sdk/data-patient-group/)[]  
 chart_section_reviews | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]  
 visual_exam_findings | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]  
+assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
+patient_visits | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]  
+patient_events | [ExternalEvent](/sdk/data-external-event/#externalevent)[]  
+medication_statements | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement)[]  
+diagnostic_reports | DiagnosticReport[]  
+medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[]  
+medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[]  
+payments | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]  
+protocol_currents | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]  
+stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[]  
+banner_alerts | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]  
+immunizations | [Immunization](/sdk/data-immunization/#immunization)[]  
+immunization_statements | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]  
+integration_tasks | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]  
+installment_plans | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]  
+uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[]  
+patient_consent | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]  
+goals | [Goal](/sdk/data-goal/#goal)[]  
+instructions | [Instruction](/sdk/data-instruction/#instruction)[]  
+appointments | [Appointment](/sdk/data-appointment/#appointment)[]  
+notes | [Note](/sdk/data-note/#note)[]  
+prescriptions | [Prescription](/sdk/data-prescription/#prescription)[]  
+referral_reviews | [ReferralReview](/sdk/data-referral/#referralreview)[]  
+referral_reports | [ReferralReport](/sdk/data-referral/#referralreport)[]  
+invoices | Invoice[]  
 ###  PatientAddress 
 Field Name | Type  
 ---|---  
@@ -15857,6 +15946,7 @@ description | String
 entered_in_error | [CanvasUser](/sdk/data-canvasuser/)  
 created | DateTime  
 modified | DateTime  
+correction_postings | QuerySet[BasePosting]  
 **Computed Properties** :
   - `paid_amount`: Total paid
   - `contractual_adjusted_amount`: Adjustments marked as write-offs
@@ -15898,6 +15988,8 @@ created | DateTime
 modified | DateTime  
 discount | Discount  
 payer | [Patient](/sdk/data-patient/)  
+postings | QuerySet[PatientPosting]  
+copays | QuerySet[PatientPosting]  
 **Computed Properties** :
   - `total_posted_amount`: Sum of all posted amounts
   - `discounted_amount`: Sum of discounted amounts
@@ -15913,6 +16005,7 @@ created | DateTime
 modified | DateTime  
 transactor | [Transactor](/sdk/data-coverage/#transactor/)  
 era_id | String  
+postings | QuerySet[CoveragePosting]  
 **Computed Properties** :
   - `total_posted_amount`: Sum of all posted amounts
 ###  PaymentCollection 
@@ -15929,6 +16022,7 @@ deposit_date | Date
 description | String  
 created | DateTime  
 modified | DateTime  
+postings | QuerySet[BasePosting]  
 ###  NewLineItemPayment 
 Represents a payment applied to a billing line item within a claim.
 Field Name | Type  
@@ -15980,6 +16074,7 @@ adjustment_code | String
 discount | Decimal  
 created | DateTime  
 modified | DateTime  
+patient_postings | QuerySet[BulkPatientPosting]  
 ##  Enumeration types 
 ###  PostingMethods 
 Value | Label  
@@ -16048,6 +16143,8 @@ group_npi_number | String
 taxonomy_number | String  
 include_zz_qualifier | Boolean  
 addresses | PracticeLocationAddress  
+settings | PracticeLocationSetting  
+telecom | PracticeLocationContactPoint  
 ###  PracticeLocationAddress 
 Field Name | Type  
 ---|---  
@@ -16184,9 +16281,9 @@ message_id | String
 prescription_order_number | String  
 reason_code | String  
 error_message | String  
-deleted | Boolean  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
+originator | [CanvasUser](/sdk/data-canvasuser)  
 created | DateTime  
 modified | DateTime  
 ##  Enumeration types 
@@ -16320,7 +16417,6 @@ id | UUID
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -16508,7 +16604,6 @@ Field Name | Type
 ---|---  
 id | UUID  
 dbid | Integer  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 status | String  
@@ -16523,6 +16618,7 @@ progress_status | String
 created | DateTime  
 modified | DateTime  
 interview_responses | InterviewQuestionResponse[]  
+assessment_set | [Assessment](/sdk/data-assessment/#assessment)[]  
 ###  InterviewQuestionResponse 
 Field Name | Type  
 ---|---  
@@ -16566,6 +16662,7 @@ display | String | The human-readable display name for the concept.
 system | String | The coding system (e.g., `http://snomed.info/sct`).  
 version | String | The version of the coding system.  
 duration | Array of Duration | An array of durations (as Python `timedelta` objects) associated with the coding.  
+user_selected | Boolean | The active/inactive flag for this reason-for-visit coding: `True` = active, `False` = inactive.  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-reason-for-visit/
 
 
@@ -16631,7 +16728,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -16645,8 +16741,10 @@ notes | String
 date_referred | DateTime  
 internal_comment | String  
 forwarded | Boolean  
+ignored | Boolean  
 internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)  
 task_ids | String  
+reports | ReferralReport[]  
 ###  ReferralReport 
 Field Name | Type  
 ---|---  
@@ -16678,7 +16776,6 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 internal_comment | String  
@@ -16687,6 +16784,7 @@ status | String
 note | [Note](/sdk/data-note/#note)  
 patient | [Patient](/sdk/data-patient/#patient)  
 patient_communication_method | String  
+reports | ReferralReport[]  
 ###  ReferralReportCoding 
 Field Name | Type  
 ---|---  
@@ -16739,7 +16837,10 @@ business_phone | String
 business_address | String  
 specialty | String  
 practice_name | String  
-notes | String
+notes | String  
+imaging_orders | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)]  
+referrals | QuerySet[[Referral](/sdk/data-referral/#referral)]  
+integration_tasks | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)]
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-serviceprovider/
 
 
@@ -16783,8 +16884,7 @@ created | DateTime
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
-entered_in_error | Boolean  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 title | String  
 description | String  
 coverage | [Coverage](/sdk/data-coverage/#coverage)  
@@ -16975,6 +17075,9 @@ tax_id | String
 tax_id_type | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)  
 spi_number | String  
 personal_meeting_room_link | URL  
+language | Language  
+language_secondary | Language  
+schedule_column_ordering | Integer  
 state | JSON  
 user | [CanvasUser](/sdk/data-canvasuser)  
 signature | String  
@@ -16990,6 +17093,22 @@ teams | [Team](/sdk/data-team/#team)[]
 telecom | StaffContactPoint[]  
 external_identifiers | StaffExternalIdentifier[]  
 metadata | StaffMetadata[]  
+addresses | StaffAddress[]  
+photos | StaffPhoto[]  
+roles | StaffRole[]  
+licenses | StaffLicense[]  
+letters | [Letter](/sdk/data-letter/#letter)[]  
+imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
+immunizations_given | [Immunization](/sdk/data-immunization/#immunization)[]  
+supervising_prescriptions | [Prescription](/sdk/data-prescription/#prescription)[]  
+default_patients | [Patient](/sdk/data-patient/#patient)[]  
+medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[]  
+transmissions_delivered | [MessageTransmission](/sdk/data-message/#messagetransmission)[]  
+integration_task_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]  
+assignee_note_tasks | [NoteTask](/sdk/data-task/#notetask)[]  
+appointment_set | [Appointment](/sdk/data-appointment/#appointment)[]  
+prescription_set | [Prescription](/sdk/data-prescription/#prescription)[]  
+note_set | [Note](/sdk/data-note/#note)[]  
 ###  StaffContactPoint 
 Field Name | Type  
 ---|---  
@@ -17276,6 +17395,7 @@ modified | DateTime
 creator | [Staff](/sdk/data-staff/#staff)  
 assignee | [Staff](/sdk/data-staff/#staff)  
 patient | [Patient](/sdk/data-patient/#patient)  
+team | [Team](/sdk/data-team/)  
 task_type | TaskType  
 tag | String  
 title | String  
@@ -17297,7 +17417,6 @@ modified | DateTime
 originator | [CanvasUser](/sdk/data-canvas-user/)  
 committer | [CanvasUser](/sdk/data-canvas-user/)  
 entered_in_error | [CanvasUser](/sdk/data-canvas-user/)  
-deleted | Boolean  
 note | [Note](/sdk/data-note/#note)  
 task | Task  
 patient | [Patient](/sdk/data-patient/#patient)  
@@ -17307,7 +17426,6 @@ original_team | [Team](/sdk/data-team/)
 original_role | [CareTeamRole](/sdk/data-care-team/#careteamrole)  
 original_due | DateTime  
 internal_comment | String  
-labels | TaskLabel[]  
 ###  TaskComment 
 Field Name | Type  
 ---|---  
@@ -17318,6 +17436,7 @@ modified | DateTime
 creator | [Staff](/sdk/data-staff/#staff)  
 task | [Task](/sdk/data-task/#task)  
 body | String  
+referral | [Referral](/sdk/data-referral/)  
 ###  TaskLabel 
 Field Name | Type  
 ---|---  
@@ -17331,6 +17450,7 @@ name | String
 active | Boolean  
 modules | TaskLabelModule  
 claims | [Claim](/sdk/data-claim)[]  
+appointments | [Appointment](/sdk/data-appointment/)[]  
 ###  TaskMetadata 
 Field Name | Type  
 ---|---  
@@ -17442,6 +17562,12 @@ name | String
 responsibilities | Array[TeamResponsibility]  
 members | [Staff](/sdk/data-staff/#staff)[]  
 group_id | UUID  
+telecom | TeamContactPoint[]  
+tasks | [Task](/sdk/data-task/#task)[]  
+document_references | [DocumentReference](/sdk/data-document-reference/#documentreference)[]  
+integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]  
+uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[]  
+referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[]  
 ###  TeamContactPoint 
 Field Name | Type  
 ---|---  
@@ -17528,14 +17654,14 @@ dbid | Integer
 created | DateTime  
 modified | DateTime  
 originator | [CanvasUser](/sdk/data-canvasuser)  
-deleted | Boolean  
 committer | [CanvasUser](/sdk/data-canvasuser)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 internal_comment | String  
 message_to_patient | String  
 status | String  
 patient | [Patient](/sdk/data-patient/#patient)  
-patient_communication_method | String
+patient_communication_method | String  
+reports | QuerySet[UncategorizedClinicalDocument]
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-uncategorized-clinical-document/
 
 
@@ -17704,6 +17830,9 @@ note | [Note](/sdk/data-note/#note)
 image | String (S3 key)  
 title | String  
 narrative | String  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 image_url | String (property) — presigned S3 URL
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-visual-exam-finding/
 
