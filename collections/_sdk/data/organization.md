@@ -48,6 +48,11 @@ organization = Organization.objects.first()
 | group_npi_number      | String                                              |
 | group_taxonomy_number | String                                              |
 | include_zz_qualifier  | Boolean                                             |
+| main_location         | [PracticeLocation](/sdk/data-practicelocation/#practicelocation)            |
+| practice_locations    | QuerySet[[PracticeLocation](/sdk/data-practicelocation/#practicelocation)]  |
+| addresses             | QuerySet[[OrganizationAddress](#organizationaddress)]                       |
+| telecom               | QuerySet[[OrganizationContactPoint](#organizationcontactpoint)]             |
+| business_lines        | QuerySet[[BusinessLine](/sdk/data-business-line/#businessline)]             |
 
 ## OrganizationAddress
 

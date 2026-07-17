@@ -146,6 +146,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | creator    | [Staff](/sdk/data-staff/#staff)       |
 | assignee   | [Staff](/sdk/data-staff/#staff)       |
 | patient    | [Patient](/sdk/data-patient/#patient) |
+| team       | [Team](/sdk/data-team/)               |
 | task_type  | [TaskType](#tasktype)                 |
 | tag        | String                                |
 | title      | String                                |
@@ -179,7 +180,6 @@ committed_note_tasks = NoteTask.objects.committed()
 | original_role     | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
 | original_due      | DateTime                                |
 | internal_comment  | String                                  |
-| labels            | [TaskLabel](#tasklabel)[]               |
 
 ### TaskComment
 
@@ -192,6 +192,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | creator    | [Staff](/sdk/data-staff/#staff) |
 | task       | [Task](/sdk/data-task/#task)    |
 | body       | String                          |
+| referral   | [Referral](/sdk/data-referral/) |
 
 ### TaskLabel
 
@@ -207,6 +208,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
+| appointments     | [Appointment](/sdk/data-appointment/)[]             |
 
 ### TaskMetadata
 

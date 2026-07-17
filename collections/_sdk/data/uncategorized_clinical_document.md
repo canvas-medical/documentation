@@ -88,3 +88,4 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | status                       | String                                 |
 | patient                      | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method | String                                 |
+| reports                      | QuerySet[[UncategorizedClinicalDocument](#uncategorizedclinicaldocument)] |

@@ -139,6 +139,9 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | deleted                       | Boolean                                         |
 | committer                     | [CanvasUser](/sdk/data-canvasuser)             |
 | entered_in_error              | [CanvasUser](/sdk/data-canvasuser)             |
+| originator                    | [CanvasUser](/sdk/data-canvasuser)             |
+| created                       | DateTime                                        |
+| modified                      | DateTime                                        |
 | codings                       | [ImmunizationCoding](#immunizationcoding)[]    |
 
 ### ImmunizationCoding
@@ -169,6 +172,9 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | deleted          | Boolean                                                           |
 | committer        | [CanvasUser](/sdk/data-canvasuser)                              |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)                              |
+| originator       | [CanvasUser](/sdk/data-canvasuser)                              |
+| created          | DateTime                                                          |
+| modified         | DateTime                                                          |
 | coding           | [ImmunizationStatementCoding](#immunizationstatementcoding)[]    |
 
 ### ImmunizationStatementCoding

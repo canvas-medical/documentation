@@ -150,6 +150,9 @@ elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
 | section    | [ChartSectionReviewSection](#chartsectionreviewsection)   |
 | entries    | Integer[] (`dbid`s of the reviewed records — see [Working with entries](#working-with-entries)) |
 | content    | String (newline-separated bullet items)                   |
+| originator | [CanvasUser](/sdk/data-canvasuser)                        |
+| committer  | [CanvasUser](/sdk/data-canvasuser)                        |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser)                  |
 
 ## Enumeration types
 

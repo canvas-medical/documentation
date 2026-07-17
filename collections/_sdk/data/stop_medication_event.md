@@ -73,6 +73,7 @@ committed_stop_medication_events = StopMedicationEvent.objects.committed()
 | created          | DateTime                              |
 | modified         | DateTime                              |
 | rationale        | String                                |
+| deleted          | Boolean                               |
 
 <br/>
 <br/>

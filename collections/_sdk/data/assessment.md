@@ -78,6 +78,7 @@ committed_assessments = Assessment.objects.committed()
 | care_team           | String                                                  |
 | treatments_stated   | [MedicationStatement](/sdk/data-medication-statement)[] |
 | billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[]        |
+| referrals           | [Referral](/sdk/data-referral)[]                        |
 
 ## Enumeration types
 

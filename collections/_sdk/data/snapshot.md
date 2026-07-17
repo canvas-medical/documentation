@@ -63,7 +63,7 @@ url = image.image_url
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |
 | deleted          | Boolean                            |
-| entered_in_error | Boolean                            |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | title            | String                             |
 | description      | String                             |
 | coverage         | [Coverage](/sdk/data-coverage/#coverage) |

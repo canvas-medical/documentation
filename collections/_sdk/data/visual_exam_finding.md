@@ -100,5 +100,9 @@ committed_findings = VisualExamFinding.objects.committed()
 | image      | String (S3 key)                       |
 | title      | String                                |
 | narrative  | String                                |
+| deleted    | Boolean                               |
+| originator | [CanvasUser](/sdk/data-canvasuser)    |
+| committer  | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | image_url  | String (property) — presigned S3 URL  |
 

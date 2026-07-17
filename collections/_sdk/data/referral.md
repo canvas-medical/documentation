@@ -111,8 +111,10 @@ tasks = referral.get_task_objects().all()
 | date_referred         | DateTime                                                       |
 | internal_comment      | String                                                         |
 | forwarded             | Boolean                                                        |
+| ignored               | Boolean                                                        |
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
+| reports               | [ReferralReport](#referralreport)[]                            |
 
 ### ReferralReport
 
@@ -157,6 +159,7 @@ tasks = referral.get_task_objects().all()
 | note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
+| reports                       | [ReferralReport](#referralreport)[]    |
 
 ### ReferralReportCoding
 

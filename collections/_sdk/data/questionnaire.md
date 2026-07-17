@@ -229,6 +229,7 @@ interviews = (
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
 
 ### InterviewQuestionResponse
 

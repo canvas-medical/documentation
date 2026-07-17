@@ -112,6 +112,7 @@ tasks = imaging_order.get_task_objects().all()
 | priority            | String                                                         |
 | delegated           | Boolean                                                        |
 | task_ids            | String                                                         |
+| results             | [ImagingReport](#imagingreport)[]                              |
 
 ### ImagingReview
 
@@ -124,6 +125,7 @@ tasks = imaging_order.get_task_objects().all()
 | originator                   | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | deleted                      | Boolean                                                                                           |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)                                                                |
+| entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |
 | internal_comment             | String                                                                                            |
 | message_to_patient           | String                                                                                            |

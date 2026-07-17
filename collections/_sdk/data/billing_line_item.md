@@ -91,6 +91,8 @@ For examples of how to use the BillingLineItem data class with the BillingLineIt
 | command_id   | Integer                                         |
 | status       | [BillingLineItemStatus](#billinglineitemstatus) |
 | assessments  | [Assessment](/sdk/data-assessment)[]            |
+| modifiers    | [BillingLineItemModifier](#billinglineitemmodifier)[] |
+| claimlineitem_set | [ClaimLineItem](/sdk/data-claim/#claimlineitem)[] |
 
 ### BillingLineItemModifier
 

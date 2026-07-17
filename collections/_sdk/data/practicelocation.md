@@ -84,6 +84,8 @@ Please note that the content of each `value` field can contain any value that is
 | taxonomy_number           | String                                                |
 | include_zz_qualifier      | Boolean                                               |
 | addresses                 | [PracticeLocationAddress](#practicelocationaddress[]) |
+| settings                  | [PracticeLocationSetting](#practicelocationsetting[]) |
+| telecom                   | [PracticeLocationContactPoint](#practicelocationcontactpoint[]) |
 
 ### PracticeLocationAddress
 

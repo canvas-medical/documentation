@@ -402,8 +402,11 @@ committed_order_reasons = LabOrderReason.objects.committed()
 | deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
+| ordered_tests        | [LabTest](#labtest)[]                 |
+| result_tests         | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
+| laborder_set         | [LabOrder](#laborder)[]               |
 
 ### LabReportRemark
 
@@ -448,7 +451,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
 | reports                      | [LabReport](#labreport)[]             |
-| tests                        | [LabTest](#labtest)[]                 |
 
 ### LabValue
 
@@ -516,6 +518,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
+| laborder_set              | [LabOrder](#laborder)[]                           |
 
 ### LabOrderReason
 
@@ -539,10 +542,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | dbid               | Integer                               |
 | created            | DateTime                              |
 | modified           | DateTime                              |
-| originator         | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted            | Boolean                               |
-| committer          | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
 | reason             | [LabOrderReason](#laborderreason)     |
 | condition          | [Condition](/sdk/data-condition)      |
 
@@ -554,8 +553,6 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 |-----------------------------|-------------------------------------------|
 | id                          | UUID                                      |
 | dbid                        | Integer                                   |
-| created                     | DateTime                                  |
-| modified                    | DateTime                                  |
 | ontology_test_name          | String                                    |
 | ontology_test_code          | String                                    |
 | status                      | [LabTestOrderStatus](#labtestorderstatus) |
