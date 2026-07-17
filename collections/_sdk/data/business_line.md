@@ -70,6 +70,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | active       | Boolean                                 |
 | state        | [BusinessLineState](#businesslinestate) |
 | organization | [Organization](/sdk/data-organization)  |
+| patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
 
 ## Enumeration types
 
