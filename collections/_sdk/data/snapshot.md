@@ -62,7 +62,6 @@ url = image.image_url
 | modified         | DateTime                           |
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |
-| deleted          | Boolean                            |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | title            | String                             |
 | description      | String                             |

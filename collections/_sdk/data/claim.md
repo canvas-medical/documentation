@@ -250,7 +250,6 @@ Represents a free-text comment made on a Claim.
 | claim            | [Claim](#claim)                    |
 | created          | DateTime                           |
 | modified         | DateTime                           |
-| deleted          | Boolean                            |
 | originator       | [CanvasUser](/sdk/data-canvasuser) |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |

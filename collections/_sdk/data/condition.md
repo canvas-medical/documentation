@@ -90,7 +90,6 @@ conditions = Condition.objects.find(Diabetes)
 |-----------------------------|----------------------------------------------------------------------------|
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
-| deleted                     | Boolean                                                                    |
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
 | committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |

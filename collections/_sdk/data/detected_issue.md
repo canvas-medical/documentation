@@ -81,7 +81,6 @@ committed_detected_issues = DetectedIssue.objects.committed()
 | created                 | DateTime                                          |
 | modified                | DateTime                                          |
 | identified              | DateTime                                          |
-| deleted                 | Boolean                                           |
 | originator              | [CanvasUser](/sdk/data-canvasuser)                |
 | committer               | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error        | [CanvasUser](/sdk/data-canvasuser)                |

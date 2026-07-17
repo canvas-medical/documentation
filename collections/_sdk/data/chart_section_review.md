@@ -144,7 +144,6 @@ elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
 | dbid       | Integer                                                   |
 | created    | DateTime                                                  |
 | modified   | DateTime                                                  |
-| deleted    | Boolean                                                   |
 | patient    | [Patient](/sdk/data-patient/#patient)                     |
 | note       | [Note](/sdk/data-note/#note)                              |
 | section    | [ChartSectionReviewSection](#chartsectionreviewsection)   |

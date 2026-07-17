@@ -170,7 +170,6 @@ committed_note_tasks = NoteTask.objects.committed()
 | originator        | [CanvasUser](/sdk/data-canvas-user/)    |
 | committer         | [CanvasUser](/sdk/data-canvas-user/)    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvas-user/)    |
-| deleted           | Boolean                                 |
 | note              | [Note](/sdk/data-note/#note)            |
 | task              | [Task](#task)                           |
 | patient           | [Patient](/sdk/data-patient/#patient)   |

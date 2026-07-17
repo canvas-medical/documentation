@@ -399,7 +399,6 @@ committed_order_reasons = LabOrderReason.objects.committed()
 | originator           | [CanvasUser](/sdk/data-canvasuser)    |
 | committer            | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
 | ordered_tests        | [LabTest](#labtest)[]                 |
@@ -441,7 +440,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                      | DateTime                              |
 | modified                     | DateTime                              |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted                      | Boolean                               |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)    |
 | internal_comment             | String                                |
@@ -493,7 +491,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                   | DateTime                                          |
 | modified                  | DateTime                                          |
 | originator                | [CanvasUser](/sdk/data-canvasuser)                |
-| deleted                   | Boolean                                           |
 | committer                 | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
@@ -528,7 +525,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created           | DateTime                                              |
 | modified          | DateTime                                              |
 | originator        | [CanvasUser](/sdk/data-canvasuser)                    |
-| deleted           | Boolean                                               |
 | committer         | [CanvasUser](/sdk/data-canvasuser)                    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                    |
 | order             | [LabOrder](#laborder)                                 |

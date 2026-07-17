@@ -214,7 +214,6 @@ interviews = (
 |----------------------|----------------------------------------------------------------|
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
-| deleted              | Boolean                                                        |
 | committer            | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |

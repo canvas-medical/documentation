@@ -123,7 +123,6 @@ cessation_counseling = (
 | originator       | [CanvasUser](/sdk/data-canvasuser)          |
 | committer        | [CanvasUser](/sdk/data-canvasuser)          |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)          |
-| deleted          | Boolean                                     |
 | patient          | [Patient](/sdk/data-patient/#patient)       |
 | note             | [Note](/sdk/data-note/#note)                |
 | narrative        | String                                      |

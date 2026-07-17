@@ -97,7 +97,6 @@ tasks = imaging_order.get_task_objects().all()
 | created             | DateTime                                                       |
 | modified            | DateTime                                                       |
 | originator          | [CanvasUser](/sdk/data-canvasuser)                             |
-| deleted             | Boolean                                                        |
 | committer           | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
@@ -123,7 +122,6 @@ tasks = imaging_order.get_task_objects().all()
 | created                      | DateTime                                                                                          |
 | modified                     | DateTime                                                                                          |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)                                                                |
-| deleted                      | Boolean                                                                                           |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |

@@ -65,7 +65,6 @@ committed_assessments = Assessment.objects.committed()
 | created             | DateTime                                                |
 | modified            | DateTime                                                |
 | originator          | [CanvasUser](/sdk/data-canvasuser)                      |     |
-| deleted             | Boolean                                                 |
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                      |
 | committer           | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient             | [Patient](/sdk/data-patient/#patient)                   |
