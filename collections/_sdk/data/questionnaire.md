@@ -214,7 +214,6 @@ interviews = (
 |----------------------|----------------------------------------------------------------|
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
-| deleted              | Boolean                                                        |
 | committer            | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |
@@ -229,6 +228,7 @@ interviews = (
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
 
 ### InterviewQuestionResponse
 

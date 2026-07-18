@@ -91,7 +91,6 @@ medications = Medication.objects.find(AdhdMedications)
 | id                             | UUID                                                     |
 | dbid                           | Integer                                                  |
 | patient                        | [Patient](/sdk/data-patient/#patient)                    |
-| deleted                        | Boolean                                                  |
 | entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
 | committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
 | status                         | String                                                   |
@@ -105,6 +104,8 @@ medications = Medication.objects.find(AdhdMedications)
 | codings                        | [MedicationCoding](#medicationcoding)[]                  |
 | medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
 | stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
+| prescriptions                  | [Prescription](/sdk/data-prescription)[]                 |
+| previous_medications           | [Prescription](/sdk/data-prescription)[]                 |
 
 ### MedicationCoding
 

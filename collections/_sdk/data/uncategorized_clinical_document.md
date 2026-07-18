@@ -80,7 +80,6 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | created                      | DateTime                               |
 | modified                     | DateTime                               |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)     |
-| deleted                      | Boolean                                |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)     |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)     |
 | internal_comment             | String                                 |
@@ -88,3 +87,4 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | status                       | String                                 |
 | patient                      | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method | String                                 |
+| reports                      | QuerySet[[UncategorizedClinicalDocument](#uncategorizedclinicaldocument)] |

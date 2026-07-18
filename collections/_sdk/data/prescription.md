@@ -128,9 +128,9 @@ committed_prescriptions = Prescription.objects.committed()
 | prescription_order_number     | String                                               |
 | reason_code                   | String                                               |
 | error_message                 | String                                               |
-| deleted                       | Boolean                                              |
 | entered_in_error              | [CanvasUser](/sdk/data-canvasuser)                   |
 | committer                     | [CanvasUser](/sdk/data-canvasuser)                   |
+| originator                    | [CanvasUser](/sdk/data-canvasuser)                   |
 | created                       | DateTime                                             |
 | modified                      | DateTime                                             |
 

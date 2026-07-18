@@ -305,12 +305,14 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
+| last_modified_by_staff | [Staff](/sdk/data-staff/#staff)      | The staff member who last modified the note                                                                                                                                                          |
 | checksum            | String                                 |                                                                                                                                                                                                      |
 | billing_note        | String                                 |                                                                                                                                                                                                      |
 | related_data        | JSON                                   | Can contain one key, `roomNumber`, if the Note is an inpatient stay.                                                                                                                                 |
 | datetime_of_service | DateTime                               |                                                                                                                                                                                                      |
 | place_of_service    | String                                 |                                                                                                                                                                                                      |
 | encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
+| location            | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note                                                                                                                             |
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 | metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
@@ -319,11 +321,23 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | referral_reviews            | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note                                                                                                                                              |
 | chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
 | visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
+| state_history       | QuerySet[[NoteStateChangeEvent](#notestatechangeevent)] | The note's state-change audit history                                                                                                                                       |
+| current_state       | [CurrentNoteStateEvent](#currentnotestateevent) | The note's current state event                                                                                                                                                      |
+| assessments         | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note                                                                                                                                  |
+| goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |
+| instructions        | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note                                                                                                                              |
+| immunizations       | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note                                                                                                                           |
+| claims              | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)                                                                                                                       |
+| letter              | [Letter](/sdk/data-letter/#letter) | The letter associated with this note, if any                                                                                                                                                        |
+| referral_set        | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note                                                                                                                                            |
+| laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
+| appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
 
 ### NoteType
 
 | Field Name                                  | Type                                               |
 | ------------------------------------------- | -------------------------------------------------- |
+| id                                          | UUID                                               |
 | dbid                                        | Integer                                            |
 | created                                     | DateTime                                           |
 | modified                                    | DateTime                                           |
@@ -353,6 +367,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | is_scheduleable_via_patient_portal          | Boolean                                            |
 | online_duration                             | Integer                                            |
 | is_sig_required                             | Boolean                                            |
+| notes                                       | QuerySet[[Note](#note)]                            |
+| appointments                                | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] |
 
 ### NoteMetadata
 

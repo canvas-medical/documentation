@@ -59,3 +59,6 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 | specialty        | String  |
 | practice_name    | String  |
 | notes            | String  |
+| imaging_orders    | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)] |
+| referrals         | QuerySet[[Referral](/sdk/data-referral/#referral)] |
+| integration_tasks | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)] |

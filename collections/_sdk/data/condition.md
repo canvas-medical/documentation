@@ -90,7 +90,6 @@ conditions = Condition.objects.find(Diabetes)
 |-----------------------------|----------------------------------------------------------------------------|
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
-| deleted                     | Boolean                                                                    |
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
 | committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |
@@ -101,6 +100,7 @@ conditions = Condition.objects.find(Diabetes)
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
+| assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
 
 ### ConditionCoding
 

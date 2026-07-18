@@ -97,7 +97,6 @@ tasks = referral.get_task_objects().all()
 | created               | DateTime                                                       |
 | modified              | DateTime                                                       |
 | originator            | [CanvasUser](/sdk/data-canvasuser)                             |
-| deleted               | Boolean                                                        |
 | committer             | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
@@ -111,8 +110,10 @@ tasks = referral.get_task_objects().all()
 | date_referred         | DateTime                                                       |
 | internal_comment      | String                                                         |
 | forwarded             | Boolean                                                        |
+| ignored               | Boolean                                                        |
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
+| reports               | [ReferralReport](#referralreport)[]                            |
 
 ### ReferralReport
 
@@ -148,7 +149,6 @@ tasks = referral.get_task_objects().all()
 | created                       | DateTime                               |
 | modified                      | DateTime                               |
 | originator                    | [CanvasUser](/sdk/data-canvasuser)     |
-| deleted                       | Boolean                                |
 | committer                     | [CanvasUser](/sdk/data-canvasuser)     |
 | entered_in_error              | [CanvasUser](/sdk/data-canvasuser)     |
 | internal_comment              | String                                 |
@@ -157,6 +157,7 @@ tasks = referral.get_task_objects().all()
 | note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
+| reports                       | [ReferralReport](#referralreport)[]    |
 
 ### ReferralReportCoding
 

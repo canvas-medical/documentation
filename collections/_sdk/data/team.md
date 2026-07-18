@@ -96,6 +96,12 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 | responsibilities | Array[[TeamResponsibility](#teamresponsibility)] |
 | members          | [Staff](/sdk/data-staff/#staff)[]                |
 | group_id         | UUID                                             |
+| telecom          | [TeamContactPoint](#teamcontactpoint)[]          |
+| tasks            | [Task](/sdk/data-task/#task)[]                   |
+| document_references | [DocumentReference](/sdk/data-document-reference/#documentreference)[] |
+| integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
+| uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[] |
+| referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[] |
 
 ### TeamContactPoint
 
