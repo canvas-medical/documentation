@@ -6,9 +6,11 @@ guide_for:
 - /api/patient/
 ---
 
-Canvas can point a **dev** instance at our staging services so you can build and validate e-prescribing and pharmacy workflows — NewRx, eligibility, benefit, and medication-history requests — against Surescripts staging, without sending real prescriptions or touching production data.
+Canvas can point a **non-production (dev or staging)** instance at our staging services so you can build and validate e-prescribing and pharmacy workflows — NewRx, eligibility, benefit, and medication-history requests — against Surescripts staging, without sending real prescriptions or touching production data.
 
 This is a **beta** offering. It is intended for development and testing only; because it uses non-production endpoints, some edge cases may not behave exactly as they do in production.
+
+{% include alert.html type="info" content="<b>Two different things are called &quot;staging&quot; here — keep them separate.</b><br><b>(1) Your Canvas environment.</b> This can be enabled on a <b>non-production</b> Canvas instance — either a <b>dev</b> or a <b>staging</b> instance. It is never enabled on production.<br><b>(2) Canvas staging services.</b> Once enabled, that non-production instance is pointed at Canvas's staging services, and e-prescribing routes to <b>Surescripts staging</b>. Routing pharmacy to Surescripts staging is tied to switching the instance's other services to staging as well (see the next section)." %}
 
 <br>
 
@@ -16,7 +18,7 @@ This is a **beta** offering. It is intended for development and testing only; be
 
 ## What you'll learn
 
-1. How to request the staging switch for your dev instance
+1. How to request the staging switch for your dev or staging instance
 2. How to create the test prescriber (FHIR Practitioner)
 3. How to create the Surescripts canonical test patients (FHIR Patient)
 4. How to run eligibility, benefit, and medication-history requests against them
@@ -25,14 +27,14 @@ This is a **beta** offering. It is intended for development and testing only; be
 
 ## 1. Request the staging switch
 
-Staging setup is performed by Canvas. To get started, [submit a request to Canvas Support](https://portal.usepylon.com/canvas-medical/forms/standard) asking to switch your **dev** instance to staging pharmacy services.
+Staging setup is performed by Canvas. To get started, [submit a request to Canvas Support](https://portal.usepylon.com/canvas-medical/forms/standard) asking to switch your **dev or staging (non-production)** instance to Canvas staging services. This routes the instance's e-prescribing to **Surescripts staging**.
 
-{% include alert.html type="warning" content="<b>The switch is all-or-nothing — it is not scoped to pharmacy alone.</b> Pointing a dev instance at staging repoints <b>all</b> of its backend services to staging: messaging, ontologies, pharmacy, science, web-to-pdf, and the FHIR (Fumage) host. Practically, that means drug/allergy and other lookups resolve against <b>staging ontologies</b>, and your FHIR base URL becomes the <b>staging Fumage host</b>. Only request this for a dev instance you are comfortable running entirely against staging." %}
+{% include alert.html type="warning" content="<b>The switch is all-or-nothing — it is not scoped to pharmacy alone.</b> Pointing a non-production instance at Canvas staging repoints <b>all</b> of its backend services to staging: messaging, ontologies, pharmacy, science, web-to-pdf, and the FHIR (Fumage) host. Practically, that means drug/allergy and other lookups resolve against <b>staging ontologies</b>, and your FHIR base URL becomes the <b>staging Fumage host</b>. Only request this for a dev or staging instance you are comfortable running entirely against Canvas staging services." %}
 
 As part of the switch, Canvas Support will:
 
-- Repoint your dev instance's service endpoints to staging.
-- Register your test prescriber's Surescripts SPI for staging and map it to your instance so prescriptions route correctly. (The SPI is not part of the FHIR payloads below — Canvas handles Surescripts enrollment.)
+- Repoint your instance's service endpoints to Canvas staging.
+- Register your test prescriber's Surescripts SPI for staging and map the prescriber to your instance so prescriptions route correctly. (You add the SPI value to the staff profile yourself — see step 2.)
 - Confirm the **staging FHIR base URL** to use for the API calls in this guide.
 
 The examples below use `https://fumage-staging.canvasmedical.com`. Use the exact base URL Canvas Support gives you for your instance.
@@ -56,6 +58,18 @@ curl --request POST \
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username",
             "valueString": "wbest"
+        },
+        {
+            "url": "http://schemas.canvasmedical.com/fhir/extensions/roles",
+            "extension": [
+                {
+                    "url": "code",
+                    "valueCoding": {
+                        "system": "http://schemas.canvasmedical.com/fhir/roles",
+                        "code": "DO"
+                    }
+                }
+            ]
         }
     ],
     "identifier": [
@@ -124,8 +138,9 @@ curl --request POST \
 
 Notes:
 
-- The `practitioner-user-username` extension (`wbest` above) becomes the prescriber's login username. Sign and send prescriptions **as this prescriber** so the outgoing message carries the SPI that Canvas mapped for your instance.
-- To let this practitioner prescribe, assign them a prescriber role. Add a `roles` extension using your instance's provider role code (for example `MD`, `DO`, or `NP`). See the `extension` attribute on the [Practitioner API](/api/practitioner/) for the exact shape.
+- **Add the SPI manually.** The Surescripts SPI is not a FHIR field, so it cannot be set in the payload above. After you create the practitioner, open the staff profile in Canvas and add the SPI **`5630156655001`** by hand. Canvas maps this SPI to your instance during setup, so prescriptions signed by this prescriber transmit correctly against Surescripts staging.
+- **The `DO` role must exist on your instance.** The payload assigns the `DO` role via the `roles` extension. Staff role codes are configurable per instance, so if `DO` is not defined on yours the create will fail — change it to a prescriber role that does exist on your instance (for example `MD`, `NP`, or `PA`). See the [staff roles article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) and the `extension` attribute on the [Practitioner API](/api/practitioner/).
+- The `practitioner-user-username` extension (`wbest` above) becomes the prescriber's login username. Sign and send prescriptions **as this prescriber**.
 
 * * *
 
@@ -275,16 +290,18 @@ Each effect takes the `patient_id` of one of the test patients and the `staff_id
 
 * * *
 
-## Sending a NewRx (preferred pharmacy)
+## Test sending a prescription (NewRx)
 
-To test sending a prescription (NewRx), the patient needs a **preferred pharmacy that exists in the Surescripts staging directory**. Set it via the `preferred-pharmacy` extension on the [Patient](/api/patient/#create) resource, or from the patient's chart in the UI.
+To test transmitting a prescription, use **Shollenberger Pharmacy** — NCPDP **1655458** (2002 S. McDowell Blvd Ext, Petaluma, CA 94954). It is a Surescripts staging pharmacy, and NewRx messages sent to it transmit successfully.
 
-{% include alert.html type="danger" content="<b>Do not use Shollenberger Pharmacy as the preferred pharmacy for these test patients.</b> Request a current canonical Surescripts staging test pharmacy from Canvas Support (in the same ticket) and use the NCPDP ID they provide." %}
+Select Shollenberger directly on the **Prescribe** command (in the pharmacy field) when you send the prescription. It **does not need to be set as the patient's preferred pharmacy** — choosing it at prescribe time is enough.
+
+Sign and send as the test prescriber you created above so the outgoing message carries the SPI mapped for your instance.
 
 * * *
 
 ## Good to know
 
-- This is a **beta** capability for **dev** instances only. Do not request it for a production instance.
+- This is a **beta** capability for **non-production (dev or staging)** Canvas instances only. Never request it for a production instance.
 - Surescripts staging processes transactions during business hours (roughly 8 AM – 6 PM ET, Mon–Fri); requests outside that window may not receive a response.
-- Because the whole instance runs against staging, ontologies (drug/allergy lookups) and other services also resolve against staging while the switch is in place.
+- Because the whole instance runs against Canvas staging services, ontologies (drug/allergy lookups) and other services also resolve against staging while the switch is in place.
