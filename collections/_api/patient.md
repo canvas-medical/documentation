@@ -340,7 +340,7 @@ sections:
                 required_in: create, update
                 description: >-
                   Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name. <br><br>
-                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
               - name: prefix
                 type: array[string]
                 description: Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
