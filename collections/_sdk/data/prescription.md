@@ -96,6 +96,7 @@ committed_prescriptions = Prescription.objects.committed()
 | previous_medication           | [Medication](/sdk/data-medication/)                  |
 | indications                   | [Assessment](/sdk/data-assessment/)[]                |
 | related_refill                | [Prescription](#prescription)                        |
+| refill_request                | [RefillRequest](/sdk/data-refill-request/)           |
 | status                        | [PrescriptionStatus](#prescriptionstatus)            |
 | response_type                 | [PrescriptionResponse](#prescriptionresponse)        |
 | is_refill                     | Boolean                                              |
