@@ -103,6 +103,7 @@ medications = Medication.objects.find(AdhdMedications)
 | erx_quantity                   | String                                                   |
 | codings                        | [MedicationCoding](#medicationcoding)[]                  |
 | medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
+| change_medications             | [ChangeMedication](/sdk/data-change-medication)[]        |
 | stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
 | prescriptions                  | [Prescription](/sdk/data-prescription)[]                 |
 | previous_medications           | [Prescription](/sdk/data-prescription)[]                 |
