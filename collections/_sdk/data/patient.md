@@ -147,6 +147,7 @@ if photo:
 | payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
 | protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]           |
 | stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
+| change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[] |
 | banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
 | immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
 | immunization_statements  | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]   |

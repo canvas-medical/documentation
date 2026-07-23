@@ -992,6 +992,9 @@ data_module:
   - title: "CareTeam"
     url: /sdk/data-care-team/
     description: Teams assigned for patient care.
+  - title: "Change Medication"
+    url: /sdk/data-change-medication/
+    description: A record of a change to a medication's sig or dose instructions on a patient's medication list.
   - title: "ChargeDescriptionMaster"
     url: /sdk/data-charge-description-master/
     description: Billing charges in Canvas that can be added to the note footer.
