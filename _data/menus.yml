@@ -1133,6 +1133,9 @@ data_module:
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "RefillRequest"
+    url: /sdk/data-refill-request/
+    description: An inbound electronic prescription refill or renewal request received for a patient.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.

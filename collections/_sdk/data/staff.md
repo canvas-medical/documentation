@@ -159,6 +159,7 @@ url = staff.signature_url
 | assignee_note_tasks        | [NoteTask](/sdk/data-task/#notetask)[]                          |
 | appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
 | prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
 | note_set                   | [Note](/sdk/data-note/#note)[]                                  |
 
 ### StaffContactPoint

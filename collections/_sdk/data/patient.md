@@ -129,6 +129,7 @@ if photo:
 | preferred_pharmacy       | JSON                                                                      |
 | preferred_pharmacies     | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
+| refill_requests          | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                |
 | settings                 | [PatientSetting](#patientsetting)                                         |
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
