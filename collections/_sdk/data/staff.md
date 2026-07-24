@@ -152,6 +152,7 @@ url = staff.signature_url
 | imaging_orders             | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]               |
 | immunizations_given        | [Immunization](/sdk/data-immunization/#immunization)[]          |
 | supervising_prescriptions  | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
 | default_patients           | [Patient](/sdk/data-patient/#patient)[]                         |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
 | transmissions_delivered    | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |

@@ -159,6 +159,7 @@ if photo:
 | appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
 | notes                    | [Note](/sdk/data-note/#note)[]                                             |
 | prescriptions            | [Prescription](/sdk/data-prescription/#prescription)[]                     |
+| refill_requests          | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                 |
 | referral_reviews         | [ReferralReview](/sdk/data-referral/#referralreview)[]                     |
 | referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
 | invoices                 | Invoice[]                                    |
