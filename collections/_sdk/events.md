@@ -1555,6 +1555,50 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
+    <tr><td colspan="2">Occurs when an uncategorized clinical document review is delegated to another staff member or team, or routed back to its original owner. This event fires only for uncategorized clinical documents that have an associated Data Integration task, so it does not fire for documents created directly in the chart.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"delegated_at": datetime str
+"delegated_by":
+  "type": str
+  "id": staff_id
+  "name": str
+"delegated_to":
+  "type": str
+  "id": reviewer_id
+  "name": str
+"on_behalf_of":
+  "type": str
+  "id": staff_id
+  "name": str
+"signature_consent": bool
+"routed_back": bool
+"comment": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Conditions
 
 <table>
