@@ -1028,6 +1028,9 @@ data_module:
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
+  - title: "DocumentReviewDelegation"
+    url: /sdk/data-document-review-delegation/
+    description: Append-only log of a document's review delegations between staff and teams.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.

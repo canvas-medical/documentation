@@ -70,6 +70,8 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | original_date      | Date                                                                        |
 | comment            | String                                                                      |
 | priority           | Boolean                                                                     |
+| delegations        | QuerySet[[DocumentReviewDelegation](/sdk/data-document-review-delegation/#documentreviewdelegation)] |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/#documentreviewdelegation)           |
 
 ### UncategorizedClinicalDocumentReview
 
