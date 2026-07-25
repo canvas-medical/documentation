@@ -647,6 +647,20 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Platform Security Overview"
+    url: /guides/platform-security-overview/
+    description: Tenancy model, trust boundaries, platform controls, and shared responsibility
+
+  - title: "Plugin Security Model"
+    url: /guides/plugin-security-model/
+    description: How plugin code is isolated at runtime and governed on its way to production
+    uses:
+      - sdk
+
+  - title: "Audit Logging and Telemetry"
+    url: /guides/audit-logging-and-telemetry/
+    description: What Canvas audits, how long it is retained, and how to export it
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
