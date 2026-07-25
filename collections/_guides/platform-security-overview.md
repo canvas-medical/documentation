@@ -91,6 +91,7 @@ Canvas operates the platform and its controls. The following remain with the cus
 ## Related
 
 - [Plugin Security Model](/guides/plugin-security-model/)
+- [Roles and Permissions](/guides/roles-and-permissions/)
 - [Audit Logging and Telemetry](/guides/audit-logging-and-telemetry/)
 - [Customer Authentication](/api/customer-authentication/)
 - [Authentication Best Practices](/api/authentication-best-practices/)

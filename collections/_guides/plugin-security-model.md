@@ -107,6 +107,7 @@ record of both what changed and what the plugin did.
 ## Related
 
 - [Platform Security Overview](/guides/platform-security-overview/)
+- [Roles and Permissions](/guides/roles-and-permissions/)
 - [Audit Logging and Telemetry](/guides/audit-logging-and-telemetry/)
 - [Your First Plugin](/guides/your-first-plugin/)
 - [Plugin Logs](/sdk/plugin-logs/)

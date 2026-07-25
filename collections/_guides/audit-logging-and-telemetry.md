@@ -95,6 +95,7 @@ application logs — see [Plugin Logs](/sdk/plugin-logs/).
 ## Related
 
 - [Platform Security Overview](/guides/platform-security-overview/)
+- [Roles and Permissions](/guides/roles-and-permissions/)
 - [Plugin Security Model](/guides/plugin-security-model/)
 - [Provenance API](/api/provenance/)
 - [EHI Export](/documentation/ehi-export/)

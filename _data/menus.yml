@@ -661,6 +661,10 @@ guides_list:
     url: /guides/audit-logging-and-telemetry/
     description: What Canvas audits, how long it is retained, and how to export it
 
+  - title: "Roles and Permissions"
+    url: /guides/roles-and-permissions/
+    description: How authorization is evaluated, the default roles, and how to extend them
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
