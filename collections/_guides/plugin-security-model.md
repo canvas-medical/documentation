@@ -50,16 +50,6 @@ them.
 Treat plugin secrets like any other production credential — scope them narrowly, and
 rotate them on the same cadence as the rest of your estate.
 
-## Data access declarations
-
-A plugin's manifest declares the data it expects to read and write. These declarations
-document the plugin's intended scope, which makes them useful during code review: a
-reviewer can compare what a plugin says it touches against what its handlers actually do,
-and treat a mismatch as a finding.
-
-The controls that constrain a plugin at runtime are the isolation boundaries above and
-the permissions of the context it executes in.
-
 ## API access
 
 Where a plugin or external application reaches Canvas through the FHIR API, access is
@@ -69,18 +59,24 @@ See [Customer Authentication](/api/customer-authentication/) and
 
 ## Deployment governance
 
-How plugin code reaches production is configurable per instance, and this is the primary
-control your organization holds over plugin risk.
+### Who can install
 
-### Customer-gated release
+Installing or updating a plugin is an authenticated operation: it requires an OAuth token
+carrying the plugin scope for your instance. Controlling who holds that credential is the
+primary control over what reaches your production environment, and it is a control your
+organization owns.
 
-Canvas can configure your instance so that plugins are promoted to production **only**
-through a source repository and pipeline you control — your GitHub or GitLab
-organization, your reviewers, your CI checks. Under this configuration, direct
-installation is disabled, and no plugin code reaches your production environment without
-passing your own review and approval gate.
+### Installing from your own pipeline
 
-{% include alert.html type="info" content="If your organization requires that all code entering production pass a documented human review, ask your Canvas representative to enable customer-gated release for your instance during onboarding." %}
+Most organizations keep plugin source in their own repository and install from their own
+continuous-integration pipeline rather than from individual workstations. Under that
+arrangement the installing credential lives in CI, and your existing review process —
+pull-request approval, required checks, protected branches — is what gates production.
+
+Canvas recommends this pattern where your change-management policy requires documented
+human review before code runs in production.
+
+{% include alert.html type="info" content="Plugins built through Canvas Studio follow their own staged workflow, with explicit approval steps before a project is published." %}
 
 ### Environment separation
 
@@ -97,10 +93,8 @@ record of both what changed and what the plugin did.
 
 ## Recommended practices
 
-- Enable customer-gated release, and disable direct installation, if your change-management
-  policy requires documented approval before code runs in production.
-- Review a plugin's manifest data-access declarations against its handlers as part of code
-  review.
+- Hold the installing credential in CI rather than on workstations, so your pull-request
+  review is what gates production.
 - Scope plugin secrets to the minimum required, and rotate them on your normal cadence.
 - Exercise plugins in a lower environment before promoting to production.
 

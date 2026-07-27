@@ -86,7 +86,7 @@ Canvas operates the platform and its controls. The following remain with the cus
 | Credentials | Custody of API keys, OAuth client secrets, and plugin secrets |
 | Exported data | Protecting data once it leaves Canvas through an API, export, or replica |
 
-{% include alert.html type="info" content="Canvas can configure your instance so that plugins reach production only through a release pipeline you control. See Deployment governance in the Plugin Security Model guide." %}
+{% include alert.html type="info" content="Installing a plugin requires a credential your organization controls, so your own review process can gate what reaches production. See Deployment governance in the Plugin Security Model guide." %}
 
 ## Related
 

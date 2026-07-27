@@ -82,9 +82,7 @@ continuous feed today.
 
 Native push-based streaming to a customer-controlled destination, delivering events as
 JSON over HTTP, is in active development. If you are planning a SIEM integration, contact
-your Canvas representative — we can share the event schema and transport details, and
-help you design an interim feed from the replica database or the export APIs so your
-ingestion pipeline does not need to be rebuilt later.
+your Canvas representative.
 
 ## Plugin activity
 
