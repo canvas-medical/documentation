@@ -43,12 +43,12 @@ Every destination is validated **on the server** before the browser navigates �
 
 The allowlist governs only *where a plugin may send a user* — it does **not** change what that user is allowed to see, and cannot be used to bypass their permissions. A redirect performs an ordinary browser navigation, so the destination still enforces the user's own access: redirecting a user to a page or application they lack permission for behaves exactly as if they navigated there themselves (they're denied by that destination), and never elevates their access.
 
-The allowlist is configured **per instance by an administrator** via three plugin secrets. Your plugin declares the keys in its manifest `variables`; the admin sets each value on the Plugin admin page. Each value is a **comma-separated** list:
+The allowlist is configured **per instance by an administrator** via three plugin secrets. Your plugin declares the keys in its manifest `variables`; the admin sets each value on the Plugin admin page. Each value is a list with **one entry per line** — entries are newline-delimited, not comma-separated, because URLs and paths can legitimately contain commas (e.g. `?q=1,2,3`):
 
-| Secret key                       | Value example                       | Permits                                                                                          |
+| Secret key                       | Value (one entry per line)          | Permits                                                                                          |
 |----------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------|
-| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients, /panel, /patient`       | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{key}?noteId=...`). |
-| `REDIRECT_ALLOWLIST_EXTERNAL`    | `https://app.example.com`           | those origins/prefixes, matched at an origin/path boundary — so it does **not** match `https://app.example.com.evil.com`. |
+| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients`<br>`/panel`<br>`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{key}?noteId=...`). |
+| `REDIRECT_ALLOWLIST_EXTERNAL`    | `https://app.example.com`           | those origins/prefixes (**include the scheme**), matched at an origin/path boundary — so it does **not** match `https://app.example.com.evil.com`. |
 | `REDIRECT_ALLOWLIST_APPLICATION` | `my_plugin.applications.app:MyApp`  | redirecting to those applications by id (matched exactly; the app must exist and be enabled).     |
 
 Declare the keys in your manifest so the admin can fill them:
