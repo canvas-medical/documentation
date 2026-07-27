@@ -46,11 +46,18 @@ encrypted at rest with AES-256 server-side encryption.
 
 ### Identity and authentication
 
-Canvas supports SSO via SAML, with multi-factor authentication enforced by your identity
-provider. Failed-login lockout is applied to interactive sessions. Where an instance uses
-Canvas-managed credentials rather than SSO, password policy — including minimum length,
-complexity, and screening against known-breached and commonly-used passwords — is
-enforced centrally.
+Canvas supports SSO via SAML. Where an instance uses SSO — the recommended
+configuration — password policy, multi-factor authentication, session lifetime, and
+account lifecycle are governed by your identity provider, and Canvas neither stores nor
+validates those credentials. Deprovisioning a user at your identity provider removes
+their access to Canvas.
+
+Where an instance uses Canvas-managed credentials instead, passwords are validated
+against minimum length, similarity to the user's own name and username, entirely-numeric
+values, and a list of commonly-used passwords.
+
+Failed-login lockout applies to interactive sessions on either path, independent of the
+identity provider.
 
 ### Authorization
 
