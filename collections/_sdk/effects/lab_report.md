@@ -7,6 +7,8 @@ hidden: false
 
 The `LabReport` effect creates and manages a [lab report](/sdk/data-labs/#labreport) directly from a plugin, independent of any lab order, results, or PDF. It's built for the asynchronous OCR pattern: create the report now with a plugin-supplied handle, then attach the extracted results later with [`attach_results()`](#attachresults--effect) once they're available.
 
+`create()` produces an uncommitted draft report; the first `attach_results()` call commits it, so creating a report does not itself file or finalize it. Once committed, the report enters Canvas's normal inbound lab-review workflow. It is created with review required and a signature needed, so a clinician still reviews and signs it after commit.
+
 A report is identified by one of two handles:
 
 - `reference_id` — a stable, plugin-supplied handle your plugin controls (maximum 40 characters). Use it to identify the report at any point in its lifecycle — before the Canvas `report_id` exists, and afterward if you prefer it over `report_id`.
@@ -124,6 +126,7 @@ Create a new lab report. The report stands on its own, decoupled from any lab or
 - `report_id` must **not** be set (creation assigns it).
 - `patient_id` is **required**.
 - `reference_id` is **required**. It is the stable handle your plugin uses to attach results to this report later.
+- `reference_id` must be **unique**. The platform rejects a `create()` whose `reference_id` already matches an existing report.
 
 #### Example
 
@@ -150,6 +153,7 @@ Update a report's metadata, such as renaming it through `report_name`.
 
 - A handle is **required**: supply either `report_id` or `reference_id`.
 - At least one of `report_name` or `date_performed` must be set.
+- The platform rejects `update()` once the report is locked (under provider review, entered in error, or junked).
 
 `update()` does not verify the report exists, so you can chain `create()` then `update()` in the same batch of returned effects.
 
@@ -175,6 +179,7 @@ Mark a report as entered in error. Use this when a report was created incorrectl
 #### Validation
 
 - A handle is **required**: supply either `report_id` or `reference_id`.
+- The platform rejects `enter_in_error()` once the report is locked (under provider review, entered in error, or junked).
 
 #### Example
 
@@ -190,6 +195,8 @@ Attach lab tests and their values to an existing report: `attach_results(lab_tes
 
 Attachment is **additive**: each call appends the supplied tests and values without removing any existing ones.
 
+The platform rejects `update()`, `enter_in_error()`, and `attach_results()` once the report is locked — that is, once it is under provider review, entered in error, or junked. Being committed alone is not a lock: a committed report that is not yet under provider review can still be updated and have more results attached.
+
 - **Effect Type:** `ATTACH_LAB_REPORT_RESULTS`
 - **Payload:** `{ "data": { <handle>, "lab_tests": [ ... ] } }`
 
@@ -198,6 +205,7 @@ Attachment is **additive**: each call appends the supplied tests and values with
 - Exactly one of `report_id` or `reference_id` is **required** to identify the report (setting both is rejected as ambiguous).
 - At least one `LabTest` is **required**.
 - Each `LabTest` requires at least one `LabValue`.
+- The platform rejects the call once the report is locked (under provider review, entered in error, or junked).
 
 #### Example
 
