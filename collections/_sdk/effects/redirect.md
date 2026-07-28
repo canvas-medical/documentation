@@ -62,37 +62,50 @@ A RedirectEffect consists of the following properties:
 | Attribute | Type         | Description                                                                                       |
 |-----------|--------------|---------------------------------------------------------------------------------------------------|
 | `url`     | `str \| None` | The destination to navigate to — an internal Canvas path or external URL. Must be non-empty when provided; mutually exclusive with `application_id`. |
-| `application_id` | `str \| None` | The identifier of a [Canvas application](/sdk/handlers-applications/) to open (the `<module path>:<ClassName>` identifier, for example `my_plugin.apps:MyApp`); mutually exclusive with `url`. The application must exist, or `apply()` raises a validation error. |
+| `application_id` | `str \| None` | The identifier of a [Canvas application](/sdk/handlers-applications/) to open (the `<module path>:<ClassName>` identifier, for example `my_plugin.apps:MyApp`); mutually exclusive with `url`. The application must exist, or `apply()` raises a validation error. Server-side, the `application_id` must also be listed in the plugin's `REDIRECT_ALLOWLIST_APPLICATION` variable and resolve to an application whose plugin is enabled. Unlike the `apply()` existence error, this check fails silently: the redirect simply doesn't happen, with a warning written to the plugin's `canvas logs`. |
 | `target`  | `TargetType` | Where to open the target. Defaults to `SAME_TAB`.                                                 |
 
 {% include alert.html type="warning" content="Exactly one of <code>url</code> or <code>application_id</code> must be provided. Providing neither or both raises a validation error at <code>apply()</code> time." %}
 
 <br/>
 
-## Allowing target URLs
+## Allowing redirect targets
 
-For security, every target is validated against your plugin's `url_permissions` allowlist on the server before the browser navigates, and any target that isn't permitted is blocked.
+For security, every redirect target is validated on the server before the browser navigates, and any target that isn't permitted is blocked. This allowlist is separate from the `url_permissions` field, which allow-lists iframe and script domains (see [Layout Effects: Additional Configuration](/sdk/layout-effect/#additional-configuration)) — the two are unrelated. The allowlist comes from three admin-managed plugin **variables**. They are declared under the `variables` field in your plugin's `CANVAS_MANIFEST.json` using the same mechanism documented on the [Managing Variables](/sdk/secrets/) page, with values set at install time or through the Admin UI:
 
-Internal Canvas paths — relative, same-origin paths that begin with `/`, such as `/panel` or `/patient/{key}` — are always allowed and don't need an allowlist entry. Protocol-relative (`//host`) and backslash-prefixed (`/\host`) targets are rejected, because a browser can resolve them to a different origin.
+- `REDIRECT_ALLOWLIST_INTERNAL` — permitted internal Canvas paths
+- `REDIRECT_ALLOWLIST_EXTERNAL` — permitted external URL prefixes
+- `REDIRECT_ALLOWLIST_APPLICATION` — permitted application identifiers
 
-External absolute URLs must match one of the entries in the `url_permissions` section of your plugin's `CANVAS_MANIFEST.json`. A match is only counted at an origin or path boundary, so an entry of `https://app.example.com` permits `https://app.example.com/orders` but not `https://app.example.com.evil.com`.
+Each variable's value is a newline-delimited list — one entry per line. It is not comma-separated and not a JSON array.
+
+An internal Canvas path — one that begins with `/`, such as `/panel` or `/patient/{key}` — must match an entry in `REDIRECT_ALLOWLIST_INTERNAL` at a path boundary (an entry of `/panel` permits `/panel/123` but not `/panels`). Nothing is implicitly permitted: an empty or unset allowlist denies everything. Protocol-relative (`//host`) and backslash-prefixed (`/\host`) targets are rejected, because a browser can resolve them to a different origin.
+
+External absolute URLs must match an entry in `REDIRECT_ALLOWLIST_EXTERNAL`. Matching is at an origin or path boundary and is case-insensitive, so an entry of `https://app.example.com` permits `https://app.example.com/orders` but not `https://app.example.com.evil.com`. A differing port, such as `https://app.example.com:8443/...`, is not permitted either.
+
+An `application_id` must exactly match an entry in `REDIRECT_ALLOWLIST_APPLICATION` — the full `<module path>:<ClassName>` identifier, compared case-sensitively — and the application's plugin must be enabled. Otherwise the redirect is blocked.
+
+Declare the three variables in your `CANVAS_MANIFEST.json` (they are non-sensitive, so no `sensitive` flag is needed):
 
 ```json
-{
-  "sdk_version": "0.1.4",
-  "plugin_version": "0.0.1",
-  "name": "my_plugin",
-  "description": "...",
-  "url_permissions": [
-    {
-      "url": "https://example.com",
-      "permissions": ["ALLOW_SAME_ORIGIN"]
-    }
-  ]
-}
+"variables": [
+  {"name": "REDIRECT_ALLOWLIST_INTERNAL"},
+  {"name": "REDIRECT_ALLOWLIST_EXTERNAL"},
+  {"name": "REDIRECT_ALLOWLIST_APPLICATION"}
+]
 ```
 
-A redirect only requires that the target URL be allowlisted. The `permissions` values (such as `ALLOW_SAME_ORIGIN` or `SCRIPTS`) apply to embedded content like `LaunchModalEffect` iframes, not to redirects.
+Set a value with one entry per line. For example, to allow two internal paths, use bash ANSI-C quoting so the newline between entries is preserved on a single command line:
+
+```console
+$ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+```
+
+The same one-entry-per-line format and quoting technique applies to all three variables — `REDIRECT_ALLOWLIST_EXTERNAL` and `REDIRECT_ALLOWLIST_APPLICATION` are set the same way. Run `canvas config list <plugin_name>` (see the [Managing Variables](/sdk/secrets/) page) to confirm a value is set.
+
+You can also enter the value one entry per line through the Admin UI.
+
+{% include alert.html type="info" content="When a target is blocked it is silently not navigated — the block is never broadcast to the browser. A warning is written to the plugin's <code>canvas logs</code> naming which allowlist variable to populate." %}
 
 <br/>
 <br/>
