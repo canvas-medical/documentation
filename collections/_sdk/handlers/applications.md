@@ -312,12 +312,15 @@ preserved when the plugin is reinstalled or updated.
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on the icon of a `global`
-or `patient_specific` application: in the app drawer, or on the panel when the
-application sets `show_in_panel`. A badge is useful for surfacing how many items
-are waiting for attention, such as unread messages or open tasks. Applications in
-other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the
-Provider Companion scopes) do not display badges.
+You can display a notification badge — a small count — on a `global`,
+`patient_specific`, or `provider_menu_item` application. For `global` and
+`patient_specific` applications, the badge appears on the icon in the app drawer,
+or on the panel when the application sets `show_in_panel`. For a
+`provider_menu_item` application, the badge appears on its menu item in the
+provider menu. A badge is useful for surfacing how many items are waiting for
+attention, such as unread messages or open tasks. Applications in other scopes
+(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
+display badges.
 
 ### Initial count on load
 
