@@ -1552,6 +1552,50 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
+    <tr><td colspan="2">Occurs when an uncategorized clinical document review is delegated to another staff member or team from the document review surface, or routed back to its owner. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>signature_consent</code> indicates whether the recipient may apply the owner's signature; <code>routed_back</code> is true when the document was returned to its owner; <code>comment</code> carries the delegator's instructions.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": document_id
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
+      <td><pre>"document":
+  "id": document_id
+  "channel": str
+  "status": str
+  "title": str
+  "type": str
+  "content_url": str
+  "content_type": str
+  "created_at": datetime str
+"delegated_at": datetime str
+"delegated_by":
+  "type": str
+  "id": staff_id
+  "name": str
+"delegated_to":
+  "type": str
+  "id": staff_or_team_id
+  "name": str
+"on_behalf_of":
+  "type": str
+  "id": staff_id
+  "name": str
+"signature_consent": bool
+"routed_back": bool
+"comment": str
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Conditions
 
 <table>
