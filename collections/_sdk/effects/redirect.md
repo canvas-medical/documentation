@@ -7,9 +7,9 @@ hidden: false
 
 ## Overview
 
-The `RedirectEffect` navigates the Canvas frontend to a URL. Return it from a plugin handler to send the user to another location — either an internal Canvas path or an external site — in the same browser tab or a new one.
+The `RedirectEffect` navigates the Canvas frontend to a destination. Return it from a plugin handler to send the user to another location in the same browser tab or a new one. The destination is either a `url` — an internal Canvas path or an external URL — or an `application_id` — the identifier of a Canvas application to open. Provide exactly one of the two.
 
-Your plugin builds the full target string in Python, so it can include patient or note identifiers. The target can be an internal Canvas path (for example, `/panel` or `/patient/{key}?...`) or an external URL (for example, `https://example.com`).
+Your plugin builds the full `url` string in Python, so it can include patient or note identifiers. A `url` can be an internal Canvas path (for example, `/panel` or `/patient/{key}?...`) or an external URL (for example, `https://example.com`), and must be non-empty when provided.
 
 A redirect only navigates the browser of the user who triggered the handler. It is scoped to that acting user and never affects anyone else's session. Redirects are also surface-independent: any handler that returns a `RedirectEffect` — a note sign or lock, an action button, an application, and so on — triggers the navigation.
 
@@ -34,6 +34,14 @@ RedirectEffect(
 ).apply()
 ```
 
+Instead of a URL, you can open a Canvas application by its identifier with `application_id`:
+
+```python
+from canvas_sdk.effects.redirect import RedirectEffect
+
+RedirectEffect(application_id="my_plugin.apps:MyApp").apply()
+```
+
 ## Structure
 
 ### **TargetType**
@@ -53,8 +61,11 @@ A RedirectEffect consists of the following properties:
 
 | Attribute | Type         | Description                                                                                       |
 |-----------|--------------|---------------------------------------------------------------------------------------------------|
-| `url`     | `str`        | The target to navigate to. Required and must be non-empty. An internal Canvas path or external URL. |
+| `url`     | `str \| None` | The destination to navigate to — an internal Canvas path or external URL. Must be non-empty when provided; mutually exclusive with `application_id`. |
+| `application_id` | `str \| None` | The identifier of a [Canvas application](/sdk/handlers-applications/) to open (the `<module path>:<ClassName>` identifier, for example `my_plugin.apps:MyApp`); mutually exclusive with `url`. The application must exist, or `apply()` raises a validation error. |
 | `target`  | `TargetType` | Where to open the target. Defaults to `SAME_TAB`.                                                 |
+
+{% include alert.html type="warning" content="Exactly one of <code>url</code> or <code>application_id</code> must be provided. Providing neither or both raises a validation error at <code>apply()</code> time." %}
 
 <br/>
 

@@ -173,7 +173,7 @@ The following effects are available to be applied in Canvas.
 | RELOAD_ACTION_BUTTONS                       | Can be used to refresh a note's or patient's action buttons so they re-evaluate against the latest data. Check out [Reload Action Buttons](/sdk/effect-reload-action-buttons/). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
-| REDIRECT                                    | Navigate the Canvas frontend to an internal path or external URL, in the same tab or a new one. Check out [Redirect](/sdk/redirect-effect/). |
+| REDIRECT                                    | Navigate the Canvas frontend to an internal path, an external URL, or a Canvas application, in the same tab or a new one. Check out [Redirect](/sdk/redirect-effect/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
