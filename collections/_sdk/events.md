@@ -5192,79 +5192,351 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 #### Cancel Prescription Command
 
 <table>
-  <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Description</th>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_ORIGINATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_INSERTED_INTO_NOTE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_UPDATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_UPDATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_COMMIT</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_COMMIT</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_DELETE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_DELETE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
-    
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_VALIDATION</td>
-      <td></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__PRE_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "prescription": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20553,83 +20825,414 @@ shape only; dynamic per-field entries appear alongside.
 #### Snooze Protocol Command
 
 <table>
-  <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Description</th>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE</th></tr>
   </thead>
   <tbody>
-   <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_ORIGINATE</td>
-    <td></td>
-  </tr>
     <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_INSERTED_INTO_NOTE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_UPDATE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_UPDATE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_COMMIT</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_COMMIT</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_DELETE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_DELETE</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_ENTER_IN_ERROR</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_ENTER_IN_ERROR</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__AVAILABLE_ACTIONS</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_VALIDATION</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL_COMMAND__POST_EXECUTE_ACTION</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL__PROTOCOL__PRE_SEARCH</td>
-    <td></td>
-  </tr>
-  <tr>
-    <td>SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH</td>
-    <td></td>
-  </tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "protocol_key": str
+  "snooze_until_date": str
+  "snooze_reason": str
+  "snooze_comment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL__PROTOCOL__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
   </tbody>
 </table>
 
@@ -22324,90 +22927,455 @@ shape only; dynamic per-field entries appear alongside.
 #### Update Diagnosis Command
 
 <table>
-  <colgroup>
-    <col width="40%"/>
-    <col width="60%"/>
-  </colgroup>
   <thead>
-    <th>Event</th>
-    <th>Description</th>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE</th></tr>
   </thead>
   <tbody>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE</td>
-      <td></td>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_ORIGINATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_INSERTED_INTO_NOTE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_UPDATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_UPDATE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_COMMIT</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_COMMIT</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_DELETE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_DELETE</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_ENTER_IN_ERROR</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_ENTER_IN_ERROR</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__AVAILABLE_ACTIONS</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_VALIDATION</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS_COMMAND__POST_EXECUTE_ACTION</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS__CONDITION__PRE_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "conditionId": str
+  "newConditionCode": str
+  "background": str
+  "narrative": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS__CONDITION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS__NEW_CONDITION__PRE_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS__NEW_CONDITION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
     </tr>
     <tr>
-      <td>UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH</td>
-      <td></td>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
     </tr>
   </tbody>
 </table>
