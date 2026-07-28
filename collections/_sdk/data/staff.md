@@ -331,6 +331,10 @@ to upsert it from a plugin.
 
 ## Computed Properties
 
+- `full_name`: The staff member's first and last name (for example, `Larry Weed`).
+- `credentialed_name`: The staff member's full name suffixed with their topmost credential abbreviation (for example, `Larry Weed MD`).
+- `top_clinical_role`: The staff member's highest-ranking clinical [StaffRole](#staffrole), selected by privilege level when they hold more than one, or `None` if they have no clinical role.
+- `top_role_abbreviation`: The public credential abbreviation of the `top_clinical_role` (for example, `MD`), or `None` if there is no clinical role.
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
 - `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 
