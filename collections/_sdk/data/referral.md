@@ -86,6 +86,15 @@ referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 tasks = referral.get_task_objects().all()
 ```
 
+The `task_list` computed property returns the same related tasks as a `list[Task]`:
+
+```python
+from canvas_sdk.v1.data.referral import Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = referral.task_list
+```
+
 ## Attributes
 
 ### Referral
