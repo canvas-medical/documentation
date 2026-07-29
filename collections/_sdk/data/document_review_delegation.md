@@ -102,16 +102,27 @@ current = document.active_delegation   # the active DocumentReviewDelegation, or
 history = document.delegations         # every delegation hop recorded for the document
 ```
 
-To go the other way — from a delegation to the document it points at — resolve `object_id` against the model named by `content_type`:
+To go the other way — from a delegation to the document it points at — read `content_type` to learn which model `object_id` refers to, then resolve it. A [ContentType](/sdk/data-content-type/) is identified by its stable `app_label` and `model` (the lowercased model name), so branch on those rather than on the per-environment `dbid`. This keeps working if more document types become delegatable later:
 
 ```python
 from canvas_sdk.v1.data import DocumentReviewDelegation, UncategorizedClinicalDocument
 
 delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
 
-# object_id is the delegated document's dbid; content_type is currently always
-# UncategorizedClinicalDocument
-document = UncategorizedClinicalDocument.objects.get(dbid=delegation.object_id)
+content_type = delegation.content_type
+# Today content_type is always api / uncategorizedclinicaldocument; object_id is its dbid.
+if content_type.app_label == "api" and content_type.model == "uncategorizedclinicaldocument":
+    document = UncategorizedClinicalDocument.objects.get(dbid=delegation.object_id)
+```
+
+You can also use `content_type` to find every delegation for a given document type. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the `dbid`, which differs per environment:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReviewDelegation
+
+document_ct = ContentType.objects.filter(app_label="api", model="uncategorizedclinicaldocument").first()
+
+delegations = DocumentReviewDelegation.objects.filter(content_type=document_ct)
 ```
 
 Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation.
