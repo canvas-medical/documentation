@@ -86,6 +86,15 @@ imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead1
 tasks = imaging_order.get_task_objects().all()
 ```
 
+The `task_list` computed property returns the same related tasks as a `list[Task]`:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = imaging_order.task_list
+```
+
 ## Attributes
 
 ### ImagingOrder
