@@ -62,6 +62,10 @@ with_consent = DocumentReviewDelegation.objects.filter(is_active=True, signature
 Use the `is_route_back` property to tell whether an active delegation returned the document to its owner (as opposed to delegating it away):
 
 ```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument
+
+document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
 delegation = document.active_delegation
 if delegation and delegation.is_route_back:
     ...  # the document is back with its owner
