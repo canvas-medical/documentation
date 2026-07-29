@@ -1552,6 +1552,10 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+#### Document Review Delegation
+
+The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's review is delegated to another staff member or team, or routed back to its owner. It is a review-workflow event, separate from the Data Integration document-lifecycle events above.
+
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
