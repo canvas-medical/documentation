@@ -87,4 +87,31 @@ if delegation and delegation.is_route_back:
 | comment            | String (instructions for the recipient)                         |
 | is_active          | Boolean (the current delegation for the document)               |
 
-`content_type` + `object_id` form a generic link to the delegated document (for example, an [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)). Exactly one of `delegated_to_staff` / `delegated_to_team` is set.
+## The delegated document
+
+`content_type` and `object_id` form a generic link to the document whose review was delegated: `content_type` identifies the linked model, and `object_id` is that record's `dbid`. Review delegation is currently supported only for [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) records, so `content_type` always resolves to that model and `object_id` is the document's `dbid`. The generic relation leaves room for additional document types in the future.
+
+The most direct way to work with a document's delegations is from the document itself, through its `delegations` and `active_delegation` accessors:
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument
+
+document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+current = document.active_delegation   # the active DocumentReviewDelegation, or None
+history = document.delegations         # every delegation hop recorded for the document
+```
+
+To go the other way — from a delegation to the document it points at — resolve `object_id` against the model named by `content_type`:
+
+```python
+from canvas_sdk.v1.data import DocumentReviewDelegation, UncategorizedClinicalDocument
+
+delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
+
+# object_id is the delegated document's dbid; content_type is currently always
+# UncategorizedClinicalDocument
+document = UncategorizedClinicalDocument.objects.get(dbid=delegation.object_id)
+```
+
+Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation.
