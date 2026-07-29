@@ -1569,7 +1569,7 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": document_id
 "type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
-      <td><pre>"document":
+      <td><pre>"document": <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a>
   "id": document_id
   "channel": str
   "status": str
@@ -1579,22 +1579,22 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
   "content_type": str
   "created_at": datetime str
 "delegated_at": datetime str
-"delegated_by":
-  "type": str
+"delegated_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
   "id": staff_id
   "name": str
-"delegated_to":
-  "type": str
+"delegated_to": <a href="/sdk/data-staff/#staff">Staff</a> or <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("STAFF" or "TEAM")
   "id": staff_or_team_id
   "name": str
-"on_behalf_of":
-  "type": str
+"on_behalf_of": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
   "id": staff_id
   "name": str
 "signature_consent": bool
 "routed_back": bool
 "comment": str
-"patient":
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
   "id": pt_id</pre></td>
     </tr>
   </tbody>
