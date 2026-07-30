@@ -18669,6 +18669,7 @@ In order to identify which extension maps to specific fields in Canvas, the url 
 **A few of the extensions are required:******
   - clinical-date
   - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
+  - requires-signature
 Click to view child attributes
 url 
 string required
