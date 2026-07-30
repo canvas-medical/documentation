@@ -26143,6 +26143,46 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>Adding a pharmacy for a patient in their profile.</td>
     </tr>
     <tr>
+      <td>FAX__RECIPIENT__PRE_SEARCH</td>
+      <td>Searching for a fax recipient, before the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to supply the results; returning nothing runs the normal search. See <a href="/sdk/data-serviceprovider/#search-results">Service Provider search results</a>.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "fax"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>FAX__RECIPIENT__POST_SEARCH</td>
+      <td>Searching for a fax recipient, after the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to replace or annotate the results.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "fax"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_PROFILE__EXTERNAL_CARE_TEAM__PRE_SEARCH</td>
+      <td>Searching for a provider to add to a patient's external care team, before the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to supply the results; returning nothing runs the normal search.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "care_team"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH</td>
+      <td>Searching for a provider to add to a patient's external care team, after the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to replace or annotate the results.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "care_team"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
       <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
       <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
