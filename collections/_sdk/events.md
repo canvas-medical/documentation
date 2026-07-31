@@ -26131,6 +26131,10 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>The panel section is loading.</td>
     </tr>
     <tr>
+      <td>GET_PROVIDER_MENU_CONFIGURATION</td>
+      <td>The provider (hamburger) menu is loading. See <a href='/sdk/layout-effect/#provider-menu-configuration'>Provider Menu Configuration</a>.</td>
+    </tr>
+    <tr>
       <td>PLUGIN_CREATED</td>
       <td>A plugin is uploaded for the first time. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
