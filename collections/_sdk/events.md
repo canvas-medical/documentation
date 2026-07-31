@@ -24056,7 +24056,7 @@ The `identifier` is the unique id of the payment processor handler the event is 
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_TIMELINE__GET_CONFIGURATION</th></tr>
-    <tr><td colspan="2">Occurs when a patient's timeline is loaded. Allows plugins to configure which note types are visible on the timeline. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
+    <tr><td colspan="2">Occurs when a patient's chart is loaded. Allows plugins to configure which note types are visible on the timeline, and which the New Note button may offer. See the <a href='/sdk/effect-patient-timeline/'>Patient Timeline effect</a> for usage details.</td></tr>
   </thead>
   <tbody>
     <tr>
