@@ -2,7 +2,7 @@
 title: "Lab Report Effect"
 slug: "effect-lab-report"
 excerpt: "Create lab reports decoupled from their results, attach results later, rename, and enter-in-error."
-hidden: true
+hidden: false
 ---
 
 The `LabReport` effect lets plugins manage a lab report's full lifecycle, independently of any
@@ -46,7 +46,7 @@ collide with report ids from other inbound-lab sources.
 
 | Name             | Type                 | Description                                                                                                     |
 | ---------------- | -------------------- |-----------------------------------------------------------------------------------------------------------------|
-| `reference_id`    | `str` or `None`      | The plugin-assigned handle. **Required** when creating; usable as the handle for other operations.              |
+| `reference_id`    | `str` or `None`      | The plugin-assigned handle (maximum 40 characters). **Required** when creating; usable as the handle for other operations.              |
 | `report_id`      | `UUID` or `None`     | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. |
 | `patient_id`     | `str` or `None`      | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.                                           |
 | `report_name`    | `str` or `None`      | Human-readable report name (maps to the report's document name).                                                |
