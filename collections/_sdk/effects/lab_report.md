@@ -155,8 +155,8 @@ the lab's **order/compendium** code and name — *not* LOINC. LOINC is supplied 
 | -------------------- | ---------------------------- |----------------------------------------------------------------------------------------------------|
 | `ontology_test_code` | `str`                        | The lab's order/compendium code for the test. Defaults to empty string.                            |
 | `ontology_test_name` | `str`                        | Human-readable test name. Defaults to empty string.                                                |
-| `codings`            | `list[CodingData]` or `None` | The test's LOINC coding(s); only LOINC-system codings are stored.                                  |
-| `values`             | `list[LabValue]`             | The result values for this test. **At least one is required.**                                     |
+| `codings`            | list[[`CodingData`](#codingdata)] or `None` | The test's LOINC coding(s); only LOINC-system codings are stored.                                  |
+| `values`             | list[[`LabValue`](#labvalue)]             | The result values for this test. **At least one is required.**                                     |
 
 ### `LabValue`
 
@@ -167,10 +167,10 @@ Each `LabValue` is one measured result on its test.
 | `value`              | `str`                        | The result value. Required.                                        |
 | `units`              | `str`                        | Unit of measure (e.g. `"g/dL"`). Defaults to empty string.         |
 | `reference_range`    | `str`                        | Reference range as free text. Defaults to empty string.            |
-| `abnormal_flag`      | `AbnormalFlag` or `None`     | Flags the value against its reference range — see [`AbnormalFlag`](#abnormalflag) for all values. Any non-empty flag marks the result abnormal in the lab report. Defaults to `None`. |
-| `observation_status` | `ObservationStatus`          | Status enum: `final` (default), `preliminary`, `amended`, `corrected`, `cancelled`, `registered`, `unknown`, `entered-in-error`. |
+| `abnormal_flag`      | [`AbnormalFlag`](#abnormalflag) or `None`     | Flags the value against its reference range. Any non-empty flag marks the result abnormal in the lab report. Defaults to `None`. |
+| `observation_status` | [`ObservationStatus`](#observationstatus)          | Status of the observation. Defaults to `ObservationStatus.FINAL`.  |
 | `comment`            | `str`                        | Free-text comment. Defaults to empty string.                       |
-| `codings`            | `list[CodingData]` or `None` | The value's LOINC coding(s); only LOINC-system codings are stored. |
+| `codings`            | list[[`CodingData`](#codingdata)] or `None` | The value's LOINC coding(s); only LOINC-system codings are stored. |
 
 ### `CodingData`
 
@@ -205,6 +205,21 @@ A `StrEnum` of abnormal-result flags (HL7 v2 table 0078) for a `LabValue`. Setti
 | `INTERMEDIATE`        | `I`   |
 | `NEGATIVE`            | `NEG` |
 | `POSITIVE`            | `POS` |
+
+### `ObservationStatus`
+
+A `StrEnum` of statuses for a `LabValue`'s observation. Defaults to `FINAL`.
+
+| Member             | Value              |
+| ------------------ | ------------------ |
+| `FINAL`            | `final`            |
+| `PRELIMINARY`      | `preliminary`      |
+| `AMENDED`          | `amended`          |
+| `CORRECTED`        | `corrected`        |
+| `CANCELLED`        | `cancelled`        |
+| `REGISTERED`       | `registered`       |
+| `ENTERED_IN_ERROR` | `entered-in-error` |
+| `UNKNOWN`          | `unknown`          |
 
 #### Validation
 
