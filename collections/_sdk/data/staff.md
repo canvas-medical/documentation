@@ -126,6 +126,9 @@ url = staff.signature_url
 | tax_id_type                | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)             |
 | spi_number                 | String                                                          |
 | personal_meeting_room_link | URL                                                             |
+| language                   | Language                                                        |
+| language_secondary         | Language                                                        |
+| schedule_column_ordering   | Integer                                                         |
 | state                      | JSON                                                            |
 | user                       | [CanvasUser](/sdk/data-canvasuser)                              |
 | signature                  | String                                                          |
@@ -141,6 +144,23 @@ url = staff.signature_url
 | telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
 | external_identifiers       | [StaffExternalIdentifier](#staffexternalidentifier)[]           |
 | metadata                   | [StaffMetadata](#staffmetadata)[]                               |
+| addresses                  | [StaffAddress](#staffaddress)[]                                 |
+| photos                     | [StaffPhoto](#staffphoto)[]                                     |
+| roles                      | [StaffRole](#staffrole)[]                                       |
+| licenses                   | [StaffLicense](#stafflicense)[]                                 |
+| letters                    | [Letter](/sdk/data-letter/#letter)[]                            |
+| imaging_orders             | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]               |
+| immunizations_given        | [Immunization](/sdk/data-immunization/#immunization)[]          |
+| supervising_prescriptions  | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
+| default_patients           | [Patient](/sdk/data-patient/#patient)[]                         |
+| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
+| transmissions_delivered    | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |
+| integration_task_reviews   | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
+| assignee_note_tasks        | [NoteTask](/sdk/data-task/#notetask)[]                          |
+| appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
+| prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| note_set                   | [Note](/sdk/data-note/#note)[]                                  |
 
 ### StaffContactPoint
 

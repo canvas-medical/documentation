@@ -359,6 +359,19 @@ for report in lab_reports:
                 print(f"  {coding.name}: {value.value} {value.units} (Flag: {value.abnormal_flag})")
 ```
 
+### Committed records
+
+The `committed` method returns `LabReport`, `LabReview`, `LabOrder`, and `LabOrderReason` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.lab import LabReport, LabReview, LabOrder, LabOrderReason
+
+committed_reports = LabReport.objects.committed()
+committed_reviews = LabReview.objects.committed()
+committed_orders = LabOrder.objects.committed()
+committed_order_reasons = LabOrderReason.objects.committed()
+```
+
 ## Attributes
 
 ### LabReport
@@ -386,11 +399,13 @@ for report in lab_reports:
 | originator           | [CanvasUser](/sdk/data-canvasuser)    |
 | committer            | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
+| ordered_tests        | [LabTest](#labtest)[]                 |
+| result_tests         | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
+| laborder_set         | [LabOrder](#laborder)[]               |
 
 ### LabReportRemark
 
@@ -425,7 +440,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                      | DateTime                              |
 | modified                     | DateTime                              |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted                      | Boolean                               |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)    |
 | internal_comment             | String                                |
@@ -435,7 +449,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
 | reports                      | [LabReport](#labreport)[]             |
-| tests                        | [LabTest](#labtest)[]                 |
 
 ### LabValue
 
@@ -478,7 +491,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                   | DateTime                                          |
 | modified                  | DateTime                                          |
 | originator                | [CanvasUser](/sdk/data-canvasuser)                |
-| deleted                   | Boolean                                           |
 | committer                 | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
@@ -503,6 +515,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
+| laborder_set              | [LabOrder](#laborder)[]                           |
 
 ### LabOrderReason
 
@@ -512,7 +525,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created           | DateTime                                              |
 | modified          | DateTime                                              |
 | originator        | [CanvasUser](/sdk/data-canvasuser)                    |
-| deleted           | Boolean                                               |
 | committer         | [CanvasUser](/sdk/data-canvasuser)                    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                    |
 | order             | [LabOrder](#laborder)                                 |
@@ -526,10 +538,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | dbid               | Integer                               |
 | created            | DateTime                              |
 | modified           | DateTime                              |
-| originator         | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted            | Boolean                               |
-| committer          | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
 | reason             | [LabOrderReason](#laborderreason)     |
 | condition          | [Condition](/sdk/data-condition)      |
 
@@ -541,8 +549,6 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 |-----------------------------|-------------------------------------------|
 | id                          | UUID                                      |
 | dbid                        | Integer                                   |
-| created                     | DateTime                                  |
-| modified                    | DateTime                                  |
 | ontology_test_name          | String                                    |
 | ontology_test_code          | String                                    |
 | status                      | [LabTestOrderStatus](#labtestorderstatus) |

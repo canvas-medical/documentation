@@ -75,3 +75,4 @@ staff_letters = Letter.objects.filter(staff_id="a1b2c3d4e5f6")
 | printed    | DateTime                        | When the letter was printed (null if not printed) |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
+| letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |

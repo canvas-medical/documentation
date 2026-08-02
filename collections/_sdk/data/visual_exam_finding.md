@@ -75,6 +75,16 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 findings = VisualExamFinding.objects.filter(patient=patient)
 ```
 
+### Committed findings
+
+The `committed` method returns visual exam findings that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.visual_exam_finding import VisualExamFinding
+
+committed_findings = VisualExamFinding.objects.committed()
+```
+
 ## Attributes
 
 ### VisualExamFinding
@@ -90,5 +100,8 @@ findings = VisualExamFinding.objects.filter(patient=patient)
 | image      | String (S3 key)                       |
 | title      | String                                |
 | narrative  | String                                |
+| originator | [CanvasUser](/sdk/data-canvasuser)    |
+| committer  | [CanvasUser](/sdk/data-canvasuser)    |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | image_url  | String (property) — presigned S3 URL  |
 

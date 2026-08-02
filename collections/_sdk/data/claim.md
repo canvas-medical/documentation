@@ -92,6 +92,11 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | provider                   | [ClaimProvider](#claimprovider)             |
 | incident_to                | Boolean                                     |
 | supervising_provider       | [ClaimSupervisingProvider](#claimsupervisingprovider) |
+| latest_invoice             | Invoice                                     |
+| patient                    | [ClaimPatient](#claimpatient)               |
+| coverages                  | [ClaimCoverage](#claimcoverage)[]           |
+| submissions                | [ClaimSubmission](#claimsubmission)[]       |
+| postings                   | [BasePosting](/sdk/data-posting/#baseposting)[] |
 
 **Computed Properties**:
 
@@ -245,7 +250,7 @@ Represents a free-text comment made on a Claim.
 | claim            | [Claim](#claim)                    |
 | created          | DateTime                           |
 | modified         | DateTime                           |
-| deleted          | Boolean                            |
+| originator       | [CanvasUser](/sdk/data-canvasuser) |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
 | committer        | [CanvasUser](/sdk/data-canvasuser) |
 | comment          | String                             |
@@ -256,6 +261,7 @@ Represents banner alerts associated with a claim. Banner alerts are displayed in
 
 | Field Name  | Type                                                           |
 | ----------- | -------------------------------------------------------------- |
+| id          | UUID                                                           |
 | dbid        | Integer                                                        |
 | claim       | [Claim](#claim)                                                |
 | plugin_name | String                                                         |
@@ -428,13 +434,15 @@ Represents a payment plan between a patient and provider.
 
 | Field Name           | Type                                            |
 | -------------------- | ----------------------------------------------- |
+| dbid                 | Integer                                         |
 | creator              | [CanvasUser](/sdk/data-canvasuser/)             |
 | patient              | [Patient](/sdk/data-patient/)                   |
 | total_amount         | Decimal                                         |
 | status               | [InstallmentPlanStatus](#installmentplanstatus) |
 | expected_payoff_date | Date                                            |
-| created_at           | DateTime                                        |
-| updated_at           | DateTime                                        |
+| created              | DateTime                                        |
+| modified             | DateTime                                        |
+| claims               | [Claim](#claim)[]                               |
 
 ## Enumeration types
 

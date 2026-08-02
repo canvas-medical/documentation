@@ -170,6 +170,7 @@ The following effects are available to be applied in Canvas.
 | PATIENT_TIMELINE__CONFIGURATION             | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/). |
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
+| RELOAD_ACTION_BUTTONS                       | Can be used to refresh a note's or patient's action buttons so they re-evaluate against the latest data. Check out [Reload Action Buttons](/sdk/effect-reload-action-buttons/). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
@@ -253,6 +254,7 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
 
 
 ### Appointments

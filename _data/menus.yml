@@ -647,6 +647,24 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Platform Security Overview"
+    url: /guides/platform-security-overview/
+    description: Tenancy model, trust boundaries, platform controls, and shared responsibility
+
+  - title: "Plugin Security Model"
+    url: /guides/plugin-security-model/
+    description: How plugin code is isolated at runtime and governed on its way to production
+    uses:
+      - sdk
+
+  - title: "Audit Logging and Telemetry"
+    url: /guides/audit-logging-and-telemetry/
+    description: What Canvas audits, how long it is retained, and how to export it
+
+  - title: "Roles and Permissions"
+    url: /guides/roles-and-permissions/
+    description: How authorization is evaluated, the default roles, and how to extend them
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
@@ -886,6 +904,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Footer Configuration"
+    url: /sdk/effect-note-footer-configuration/
+    description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
@@ -940,6 +961,9 @@ effects_module:
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
+  - title: "Reload Action Buttons"
+    url: /sdk/effect-reload-action-buttons/
+    description: Re-evaluate a note's or patient's action buttons in real time.
   - title: "Send Contact Verification"
     url: /sdk/effect-send-contact-verification/
     description: Send an email or SMS verification to a patient contact point.
@@ -1130,6 +1154,9 @@ data_module:
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "RefillRequest"
+    url: /sdk/data-refill-request/
+    description: An incoming request to refill a patient's medication and its responding prescriptions.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.

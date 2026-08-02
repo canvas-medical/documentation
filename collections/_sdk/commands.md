@@ -139,6 +139,12 @@ Returns an Effect that sends a signed command.
 
 **Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
 
+**Parameters:**
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `practice_location_override` | `str \| UUID` | No | `None` | [Prescribe](#prescribe) only. The `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation) whose address is used as the prescriber address on the outgoing prescription, overriding the prescriber's primary location. See [Prescribe](#prescribe) for behavior and limitations. |
+
 **Example**:
 
 ```python
@@ -148,6 +154,17 @@ def compute():
     existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
 
     return [existing_prescribe.send()]
+```
+
+To send the prescription using a specific practice location's address (see [Prescribe](#prescribe)):
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
 ```
 
 #### enter_in_error
@@ -1408,6 +1425,21 @@ command.set_test_value("pH", "6.8")
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+
+**Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
+```
+
+- `practice_location_override` is the `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation). When set, that location's business name, phone, fax, and street address replace the prescriber's default on the outgoing prescription.
+- If the id does not correspond to an existing practice location, the send raises an error rather than falling back to the default address.
+- The override applies only to `send()`-initiated (plugin-driven) prescriptions. It does not affect prescriptions a clinician sends from the charting UI.
 
 
 **Command-specific parameters**:

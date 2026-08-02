@@ -32253,7 +32253,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -32683,7 +32683,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -33162,7 +33162,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -33682,7 +33682,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
