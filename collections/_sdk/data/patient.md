@@ -108,6 +108,7 @@ if photo:
 | billing_line_items       | [BillingLineItem](/sdk/data-billing-line-item/)                           |
 | business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 | care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
+| change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]       |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
 | coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
