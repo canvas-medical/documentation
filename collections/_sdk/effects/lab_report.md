@@ -166,7 +166,7 @@ Each `LabValue` is one measured result on its test.
 | `value`              | `str`                        | The result value. Required.                                        |
 | `units`              | `str`                        | Unit of measure (e.g. `"g/dL"`). Defaults to empty string.         |
 | `reference_range`    | `str`                        | Reference range as free text. Defaults to empty string.            |
-| `abnormal_flag`      | `AbnormalFlag` or `None`     | Flags the value against its reference range, e.g. `AbnormalFlag.HIGH` (`"H"`) or `AbnormalFlag.LOW` (`"L"`). Defaults to `None`. |
+| `abnormal_flag`      | `AbnormalFlag` or `None`     | Flags the value against its reference range — see [`AbnormalFlag`](#abnormalflag) for all values. Any non-empty flag marks the result abnormal in the lab report. Defaults to `None`. |
 | `observation_status` | `ObservationStatus`          | Status enum: `final` (default), `preliminary`, `amended`, `corrected`, `cancelled`, `registered`, `unknown`, `entered-in-error`. |
 | `comment`            | `str`                        | Free-text comment. Defaults to empty string.                       |
 | `codings`            | `list[CodingData]` or `None` | The value's LOINC coding(s); only LOINC-system codings are stored. |
@@ -184,6 +184,26 @@ the stored coding name.
 | `system`        | `str`  | Coding system URI. Use `"http://loinc.org"`.           |
 | `version`       | `str`  | Optional coding-system version. Defaults to empty.     |
 | `user_selected` | `bool` | Whether a user selected this coding. Defaults to `False`. |
+
+### `AbnormalFlag`
+
+A `StrEnum` of abnormal-result flags (HL7 v2 table 0078) for a `LabValue`. Setting any of these marks the result abnormal on the lab report.
+
+| Member                | Value |
+| --------------------- | ----- |
+| `HIGH`                | `H`   |
+| `LOW`                 | `L`   |
+| `CRITICAL_HIGH`       | `HH`  |
+| `CRITICAL_LOW`        | `LL`  |
+| `BELOW_ABSOLUTE_LOW`  | `<`   |
+| `ABOVE_ABSOLUTE_HIGH` | `>`   |
+| `ABNORMAL`            | `A`   |
+| `CRITICAL_ABNORMAL`   | `AA`  |
+| `SUSCEPTIBLE`         | `S`   |
+| `RESISTANT`           | `R`   |
+| `INTERMEDIATE`        | `I`   |
+| `NEGATIVE`            | `NEG` |
+| `POSITIVE`            | `POS` |
 
 #### Validation
 
