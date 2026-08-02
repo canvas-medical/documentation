@@ -18,8 +18,10 @@ With these effects a plugin can:
 - **Enter-in-error** a report so a user can self-correct a mistake.
 
 A created report is linked to the patient you supply. It starts **empty** — until you attach results it
-holds no tests or values, so it's a placeholder on the chart. Attaching results fills the report in and
-creates the observations behind its values, at which point it reads like any other lab report. It is
+holds no tests or values, and it stays an **uncommitted draft**. A results-less draft does **not** appear
+in the patient's lab reports in the chart (that view only shows committed reports); it exists but isn't
+surfaced there yet. The first `attach_results()` commits the report — that's when it fills in, creates
+the observations behind its values, and appears in the chart, reading like any other lab report. It is
 **not** a Data Integration document, so it never appears in the Data Integration queue, and Canvas
 creates the report's diagnostic report and renders a document from its data automatically.
 
