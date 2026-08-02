@@ -87,7 +87,7 @@ effect = report.create()
 
 ### update()
 
-Update report metadata, such as renaming it via `report_name`. Only the fields you set are sent.
+Update report metadata, such as renaming it via `report_name`. Only the fields you set are sent. Only `report_name` and `date_performed` can be changed — `update()` **cannot move the report to a different patient**; the patient is fixed when the report is created. If a report was attached to the wrong patient, enter it in error and recreate it on the correct patient.
 
 #### Validation
 
@@ -135,6 +135,8 @@ handle comes from the `LabReport` instance (`report_id` or `reference_id`); the 
 `LabTest`s, each grouping the `LabValue`s measured for it — so the values for one test are bundled
 under that test in the chart. Attaching is **additive**: it appends tests and values without removing
 any already on the report, and Canvas creates an observation for each value automatically.
+
+Attaching results saves the report, which re-runs the FHIR cascade — so the linked DiagnosticReport and the rendered DocumentReference (the report's document) are regenerated to reflect the newly attached values. The first `attach_results()` call also commits the report (a never-populated report stays an uncommitted draft). A committed report enters the lab-review workflow **review-required** and **requiring a signature**, but with **no reviewer assigned** — a clinician still has to pick it up, review, and sign it. Once a provider has reviewed it, the report is locked to further SDK edits.
 
 ### Arguments
 
