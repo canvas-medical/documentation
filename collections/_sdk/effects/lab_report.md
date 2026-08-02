@@ -110,7 +110,7 @@ effect = renamed.update()
 
 ### enter_in_error()
 
-Flag a report as entered-in-error — use it when a report was filed incorrectly. It junks the report (removing it from active views) and records who entered it in error. A `post_save` signal cascade then also marks the report's observations and the linked FHIR DiagnosticReport and DocumentReference records as entered-in-error. Once a report is entered-in-error (or junked) it can no longer be modified — `update()` and `attach_results()` on it raise a validation error.
+Flag a report as entered-in-error — use it when a report was filed incorrectly. It junks the report (removing it from active views) and records who entered it in error. The report's observations and its linked DiagnosticReport and DocumentReference records are marked entered-in-error as well. Once a report is entered-in-error (or junked) it can no longer be modified — `update()` and `attach_results()` on it raise a validation error.
 
 #### Validation
 
@@ -136,7 +136,7 @@ handle comes from the `LabReport` instance (`report_id` or `reference_id`); the 
 under that test in the chart. Attaching is **additive**: it appends tests and values without removing
 any already on the report, and Canvas creates an observation for each value automatically.
 
-Attaching results saves the report, which re-runs the FHIR cascade — so the linked DiagnosticReport and the rendered DocumentReference (the report's document) are regenerated to reflect the newly attached values. The first `attach_results()` call also commits the report (a never-populated report stays an uncommitted draft). A committed report enters the lab-review workflow **review-required** and **requiring a signature**, but with **no reviewer assigned** — a clinician still has to pick it up, review, and sign it. Once a provider has reviewed it, the report is locked to further SDK edits.
+Attaching results saves the report and regenerates its linked DiagnosticReport and rendered DocumentReference (the report's document) to reflect the newly attached values. The first `attach_results()` call also commits the report (a never-populated report stays an uncommitted draft). A committed report enters the lab-review workflow **review-required** and **requiring a signature**, but with **no reviewer assigned** — a clinician still has to pick it up, review, and sign it. Once a provider has reviewed it, the report is locked to further SDK edits.
 
 ### Arguments
 
