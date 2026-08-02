@@ -110,8 +110,7 @@ effect = renamed.update()
 
 ### enter_in_error()
 
-Flag a report as entered-in-error — use it when a report was filed incorrectly. This removes the
-report from active views and also marks the report's observations entered-in-error.
+Flag a report as entered-in-error — use it when a report was filed incorrectly. It junks the report (removing it from active views) and records who entered it in error. A `post_save` signal cascade then also marks the report's observations and the linked FHIR DiagnosticReport and DocumentReference records as entered-in-error. Once a report is entered-in-error (or junked) it can no longer be modified — `update()` and `attach_results()` on it raise a validation error.
 
 #### Validation
 
