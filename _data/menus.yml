@@ -958,6 +958,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Redirect"
+    url: /sdk/effect-redirect/
+    description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
   - title: "Reload Action Buttons"
     url: /sdk/effect-reload-action-buttons/
     description: Re-evaluate a note's or patient's action buttons in real time.

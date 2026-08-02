@@ -174,6 +174,7 @@ The following effects are available to be applied in Canvas.
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
+| REDIRECT                                    | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
