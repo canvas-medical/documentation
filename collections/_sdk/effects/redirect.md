@@ -166,7 +166,8 @@ fetch('/plugin-io/api/my_plugin/redirect', {
 
 **Requirements & gotchas**
 
-- The request must be **same-origin and credentialed** (`credentials: 'same-origin'`) so the server can identify the acting user. Plugin-served iframes — rendered from `LaunchModalEffect` content or a plugin-served URL — are same-origin. An **unauthenticated** request has no acting user, so the redirect is silently dropped.
+- The endpoint must authenticate the request **as a specific Canvas user** — that user is the actor the redirect targets. Use [`StaffSessionAuthMixin`](/sdk/handlers-simple-api/) (as above) or `PatientSessionAuthMixin`, which resolve the acting user from the Canvas session, or another scheme that identifies a specific user (for example an OAuth token tied to a user). A **shared-secret** scheme — `BasicAuthMixin` or `APIKeyAuthMixin` — authenticates the *request* but establishes no acting user, so a redirect returned from it has no browser to target and is silently dropped.
+- For the session mixins, the request must be **same-origin and credentialed** (`credentials: 'same-origin'`) so the session is sent and the server can identify the acting user. Plugin-served iframes — rendered from `LaunchModalEffect` content or a plugin-served URL — are same-origin. An **unauthenticated** request has no acting user either, so the redirect is silently dropped.
 - The target still has to be **allowlisted** (see [Security & Allowlist](#security--allowlist)); the API path enforces the identical gate.
 - `target` (new tab) applies only to `url` destinations; an `application_id` always opens in-app.
 
