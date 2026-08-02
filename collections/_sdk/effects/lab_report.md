@@ -142,7 +142,7 @@ Attaching results saves the report and regenerates its linked DiagnosticReport a
 
 | Name        | Type            | Description                                                                                            |
 | ----------- | --------------- |--------------------------------------------------------------------------------------------------------|
-| `lab_tests` | `list[LabTest]` | The tests to attach. At least one is required. The report handle comes from the `LabReport` instance.  |
+| `lab_tests` | list[[`LabTest`](#labtest)] | The tests to attach. At least one is required. The report handle comes from the `LabReport` instance.  |
 
 ### `LabTest`
 
