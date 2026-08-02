@@ -7,7 +7,7 @@ hidden: false
 
 The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
 
-The effect is general-purpose: it can be returned from **any** handler that produces effects, including a note state-change (sign/lock) handler, an action-button handler, or an application handler. Wherever the handler runs, returning a `RedirectEffect` navigates the acting user's browser (and only that user's).
+A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
 
 Provide **exactly one** destination:
 
