@@ -95,6 +95,19 @@ imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead1
 tasks = imaging_order.task_list
 ```
 
+## Accessing the report file
+
+The `document_url` property on `ImagingReport` returns the URL to the report's file (its `s3_report_url`), or `None` when the report has no file.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReport
+
+report = ImagingReport.objects.exclude(s3_report_url="").first()
+
+# URL to the imaging report file
+url = report.document_url
+```
+
 ## Attributes
 
 ### ImagingOrder
@@ -160,6 +173,8 @@ tasks = imaging_order.task_list
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+| s3_report_url      | String                                                                |
+| document_url       | String (property) — URL to the report file                            |
 | codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
 
 ### ImagingReportCoding
