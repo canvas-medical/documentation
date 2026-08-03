@@ -112,7 +112,7 @@ curl --request POST \
                 }
             ],
             "code": { "text": "License" },
-            "period": { "end": "2035-06-16" },
+            "period": { "start": "2020-06-16", "end": "2035-06-16" },
             "issuer": {
                 "display": "Medical Board of California",
                 "extension": [
