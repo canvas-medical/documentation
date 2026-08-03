@@ -1058,6 +1058,9 @@ data_module:
   - title: "DocumentReviewDelegation"
     url: /sdk/data-document-review-delegation/
     description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
+  - title: "EducationalMaterial"
+    url: /sdk/data-educational-material/
+    description: Patient educational material shared from a note via the Educational Material command.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
