@@ -11,7 +11,7 @@ The `EducationalMaterial` model represents patient educational material recorded
 
 ## Basic Usage
 
-`EducationalMaterial` records do not have a UUID `id`; retrieve them by their integer `dbid`, or through a patient.
+`EducationalMaterial` records can be retrieved by their UUID `id`, their integer `dbid`, or through a patient.
 
 ```python
 from canvas_sdk.v1.data import EducationalMaterial
@@ -19,8 +19,8 @@ from canvas_sdk.v1.data import EducationalMaterial
 # Get all educational material records
 materials = EducationalMaterial.objects.all()
 
-# Get a specific record by its integer dbid
-material = EducationalMaterial.objects.get(dbid=42)
+# Get a specific record by its UUID id
+material = EducationalMaterial.objects.get(id="c9a7b1e2d4f34e6a8b5c0d1e2f3a4b5c")
 ```
 
 If you have a `Patient` object, its educational material records can be accessed with the `educational_materials` reverse relation:
@@ -58,6 +58,7 @@ committed = EducationalMaterial.objects.committed()
 
 | Field Name        | Type                                  |
 |-------------------|---------------------------------------|
+| id                | UUID                                  |
 | dbid              | Integer                               |
 | created           | DateTime                              |
 | modified          | DateTime                              |
