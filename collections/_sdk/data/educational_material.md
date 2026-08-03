@@ -23,13 +23,13 @@ materials = EducationalMaterial.objects.all()
 material = EducationalMaterial.objects.get(id="c9a7b1e2d4f34e6a8b5c0d1e2f3a4b5c")
 ```
 
-If you have a `Patient` object, its educational material records can be accessed with the `educational_materials` reverse relation:
+If you have a `Patient` object, its educational material records can be accessed with the `education_material` reverse relation:
 
 ```python
 from canvas_sdk.v1.data import Patient
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
-materials = patient.educational_materials.all()
+materials = patient.education_material.all()
 ```
 
 ## Filtering

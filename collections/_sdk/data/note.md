@@ -79,6 +79,17 @@ for command in note.commands.all():
 
 For more information about command types and their data structure, see the [Command](/sdk/data-command/) documentation.
 
+### Retrieve educational materials for a note
+
+Educational material shared through the Educational Material command is recorded on the note. If you have a note object, those records can be found using the `education_material` reverse relation:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+educational_materials = note.education_material.all()
+```
+
 ### Understanding the note body structure
 
 The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
@@ -332,6 +343,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | referral_set        | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note                                                                                                                                            |
 | laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
 | appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
+| education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
 
 ### NoteType
 
