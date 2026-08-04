@@ -356,6 +356,17 @@ Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 | [DELETE_STAFF_EXTERNAL_IDENTIFIER](/sdk/effect-staff-external-identifier/) | Delete an external identifier from a staff member. |
 
 
+### Service Providers
+
+Check out the [ServiceProvider](/sdk/effect-service-provider/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_SERVICE_PROVIDER | Create a provider in a customer-managed provider directory. |
+| UPDATE_SERVICE_PROVIDER | Update an existing provider in a customer-managed provider directory. |
+| DEACTIVATE_SERVICE_PROVIDER | Soft-deactivate a provider in a customer-managed provider directory. |
+
+
 ### Messages
 
 Check out the [Message Effects](/sdk/effect-messages/) documentation.

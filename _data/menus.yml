@@ -970,6 +970,9 @@ effects_module:
   - title: "Send Contact Verification"
     url: /sdk/effect-send-contact-verification/
     description: Send an email or SMS verification to a patient contact point.
+  - title: "ServiceProvider"
+    url: /sdk/effect-service-provider/
+    description: Create, update, and soft-deactivate providers in a customer-managed provider directory.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.

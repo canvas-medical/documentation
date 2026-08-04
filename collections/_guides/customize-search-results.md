@@ -190,7 +190,7 @@ For complete details about medication search result data contracts and other sea
 
 ## Accessing User Context
 
-All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for command fields like prescriber, medication, diagnosis, pharmacy, and many others. It also includes the non-command fax recipient and external care team directory searches described in the [External Contact Searches](/sdk/events/#external-contact-searches) section of the Events documentation. All of these searches can be customized the same way.
 
 You can access the user's staff key from the context:
 

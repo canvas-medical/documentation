@@ -26172,6 +26172,96 @@ Context object:
   </tbody>
 </table>
 
+### External Contact Searches
+
+These events let a plugin customize the results of the two contact directory searches that are not tied to a command: the fax recipient picker and the patient profile external care team picker. On a `PRE_SEARCH` event the `results` list is empty; returning a non-empty list of results short-circuits the built-in directory lookup. On a `POST_SEARCH` event `results` contains the directory's matches, which the plugin can reorder, annotate, or filter; returning an empty list clears the dropdown. In both cases the plugin responds with an `AUTOCOMPLETE_SEARCH_RESULTS` effect whose payload is a JSON list (a non-list payload is ignored).
+
+Result entries use the contact shape produced by the ServiceProvider data model's [`as_search_contact`](/sdk/data-serviceprovider/) method, and each entry may carry an optional `annotations` list. See the [Customize search results](/guides/customize-search-results/) guide for the pattern to follow. Note that `user.staff` may be null if the acting user has no associated staff record.
+
+<table>
+  <thead>
+    <tr><th colspan="2">FAX__RECIPIENT__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a user begins searching for a fax recipient, before the contact directory is queried.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"search_term": str
+"source": "fax"
+"results": list[dict]  # empty on PRE_SEARCH
+"user":
+  "staff": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">FAX__RECIPIENT__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs after the fax recipient directory search returns, allowing a plugin to reorder, annotate, or filter the results.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"search_term": str
+"source": "fax"
+"results": list[dict]
+"user":
+  "staff": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PROFILE__EXTERNAL_CARE_TEAM__PRE_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs when a user begins searching the external care team directory in the patient profile, before the directory is queried.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"search_term": str
+"source": "care_team"
+"results": list[dict]  # empty on PRE_SEARCH
+"user":
+  "staff": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH</th></tr>
+    <tr><td colspan="2">Occurs after the external care team directory search returns, allowing a plugin to reorder, annotate, or filter the results.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>"search_term": str
+"source": "care_team"
+"results": list[dict]
+"user":
+  "staff": staff_key</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Search Result Data Structures
 
 Many event payloads include search results. This section documents the common structures within them.
