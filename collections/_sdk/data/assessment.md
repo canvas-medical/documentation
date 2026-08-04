@@ -44,29 +44,40 @@ from canvas_sdk.v1.data.assessment import Assessment, AssessmentStatus
 assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de1d790", status=AssessmentStatus.STATUS_IMPROVING)
 ```
 
+### Committed assessments
+
+The `committed` method returns assessments that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.assessment import Assessment
+
+committed_assessments = Assessment.objects.committed()
+```
+
 ## Attributes
 
 ### Assessment
 
-| Field Name        | Type                                                    |
-| ----------------- | ------------------------------------------------------- | --- |
-| id                | UUID                                                    |
-| dbid              | Integer                                                 |
-| created           | DateTime                                                |
-| modified          | DateTime                                                |
-| originator        | [CanvasUser](/sdk/data-canvasuser)                      |     |
-| deleted           | Boolean                                                 |
-| entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                      |
-| committer         | [CanvasUser](/sdk/data-canvasuser)                      |
-| patient           | [Patient](/sdk/data-patient/#patient)                   |
-| note              | [Note](/sdk/data-note/#note)                            |
-| condition         | [Condition](/sdk/data-condition/#condition)             |
-| interview         | [Interview](/sdk/data-questionnaire/#interview)         |
-| status            | [AssessmentStatus](#assessment-status)                  |
-| narrative         | String                                                  |
-| background        | String                                                  |
-| care_team         | String                                                  |
-| treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |
+| Field Name          | Type                                                    |
+| ------------------- | ------------------------------------------------------- | --- |
+| id                  | UUID                                                    |
+| dbid                | Integer                                                 |
+| created             | DateTime                                                |
+| modified            | DateTime                                                |
+| originator          | [CanvasUser](/sdk/data-canvasuser)                      |     |
+| entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                      |
+| committer           | [CanvasUser](/sdk/data-canvasuser)                      |
+| patient             | [Patient](/sdk/data-patient/#patient)                   |
+| note                | [Note](/sdk/data-note/#note)                            |
+| condition           | [Condition](/sdk/data-condition/#condition)             |
+| interview           | [Interview](/sdk/data-questionnaire/#interview)         |
+| status              | [AssessmentStatus](#assessment-status)                  |
+| narrative           | String                                                  |
+| background          | String                                                  |
+| care_team           | String                                                  |
+| treatments_stated   | [MedicationStatement](/sdk/data-medication-statement)[] |
+| billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[]        |
+| referrals           | [Referral](/sdk/data-referral)[]                        |
 
 ## Enumeration types
 

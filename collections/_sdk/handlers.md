@@ -28,8 +28,14 @@ following accessors:
     values are set by the Canvas instance administrator after installing your
 plugin via the Canvas UI on your plugin's configuration page
 - `self.environment`
-  - Information about the Canvas instance your plugin is being executed on,
-    like the subdomain, which we refer to as the customer identifier.
+  - Information about the Canvas instance your plugin is being executed on.
+  - Available keys:
+    - `CUSTOMER_IDENTIFIER` — the instance's subdomain (e.g. `acme` for
+      `acme.canvasmedical.com`).
+    - `INSTALLATION_TIME_ZONE` — the instance's configured time zone as an
+      IANA name (e.g. `America/Los_Angeles`). Useful for rendering times to
+      the customer's clinicians, scheduling work in their local day, or
+      formatting dates in user-facing output.
   - Example: `self.environment['CUSTOMER_IDENTIFIER']`
 
 <div class="handler-cards">
@@ -71,6 +77,46 @@ plugin via the Canvas UI on your plugin's configuration page
             </div>
             <img class="hover-primary" src="/assets/images/sdk/handlers/BaseHandler-cropped.png" alt="Abridged source code of a base handler implementation."/>
             <img class="hover-secondary" src="/assets/images/sdk/handlers/base-handler-can-lend-a-hand.png" alt="Stylized text that reads 'When X occurs, under Y conditions, I want Z to happen'."/>
+        </div>
+    </a>
+    <a href="/sdk/handlers-payment-processors/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Payment Processor</h2>
+                <span>Integrate a third-party payment provider to charge cards and manage saved payment methods.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/PaymentProcessor-cropped.png" alt="Abridged source code of a payment processor implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/payment-processor-in-action.png" alt="Illustration of a credit card payment being approved."/>
+        </div>
+    </a>
+    <a href="/sdk/handlers-embedded-applications/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Embedded Application</h2>
+                <span>Render a tab inside a note, or replace the built-in scheduling modal.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/EmbeddedApplication-cropped.png" alt="Abridged source code of a NoteApplication and SchedulingApplication implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/embedded-application-in-action.png" alt="An embedded application rendered inside the Canvas UI."/>
+        </div>
+    </a>
+    <a href="/sdk/patient-chart-summary-custom-section-handler/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Patient Chart Summary Custom Section</h2>
+                <span>Serve content into a custom section of the patient chart summary.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/PatientChartSummaryCustomSection-cropped.png" alt="Abridged source code of a patient chart summary custom section handler implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/patient-chart-summary-custom-section-handler-in-action.png" alt="A custom section rendered in the patient chart summary."/>
+        </div>
+    </a>
+    <a href="/sdk/handlers-simple-api/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>SimpleAPI</h2>
+                <span>Define HTTP and WebSocket API endpoints in your plugin.</span>
+            </div>
+            <img class="hover-primary" src="/assets/images/sdk/handlers/SimpleAPI-cropped.png" alt="Abridged source code of a SimpleAPI route implementation."/>
+            <img class="hover-secondary" src="/assets/images/sdk/handlers/simple-api-response.png" alt="A curl request to a SimpleAPI route and its JSON response."/>
         </div>
     </a>
 </div>

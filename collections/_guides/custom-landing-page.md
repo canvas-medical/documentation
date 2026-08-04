@@ -9,12 +9,12 @@ and explains how to integrate the ready-made widgets provided by Canvas.
 
 {% include alert.html type="info" content="This guide assumes pre-existing
 knowledge of the Canvas SDK. If you're starting from scratch, you may want to
-read and implement <a href='/guides/your-first-plugin/'>Your First Plugin</a> before
+read and implement <a href='/guides/your-first-plugin-with-claude-code/'>Your First Plugin (with Claude Code)</a> before
 working through this exercise." %}
 
 ## What Are Widgets in the Patient Portal?
 
-[Widgets](/sdk/layout-effect/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
+[Widgets](/sdk/patient-portal/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
 They can display key details like upcoming appointments. Widgets can be fully customized with unique content or leverage ready-made components—such as Appointments and Messaging provided by Canvas to ensure consistency and ease of use. 
 These widgets are organized on the landing page using a grid layout, which supports various sizes to optimize the visual presentation and responsiveness across different devices.
 
@@ -34,22 +34,22 @@ The Canvas CLI gives you a great head start when creating a plugin. Simply run
 Then, follow the prompts to name and configure your new plugin project.
 
 
-### Step 2: Update you protocol
+### Step 2: Update your handler
 
-Modify your protocol to handle the widget configuration event. For example:
+Modify your handler to handle the widget configuration event. For example:
 
 ```python
 from canvas_sdk.effects.widgets import PortalWidget
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
 
     def compute(self):
         widget = PortalWidget(
-          content="Hello World", 
-          size=PortalWidget.Size.COMPACT, 
+          content="Hello World",
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [widget.apply()]
@@ -259,12 +259,12 @@ widget = PortalWidget(content=render_to_string("templates/medication_widget.html
 ```python
 from canvas_sdk.effects.widgets import PortalWidget
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data import Patient
 
 
-class Protocol(BaseProtocol):
+class Handler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
 
     def compute(self):
@@ -277,8 +277,8 @@ class Protocol(BaseProtocol):
         }
 
         medication_widget = PortalWidget(
-          content=render_to_string("templates/medication_widget.html", medication_info), 
-          size=PortalWidget.Size.COMPACT, 
+          content=render_to_string("templates/medication_widget.html", medication_info),
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [medication_widget.apply()]
@@ -389,16 +389,16 @@ class Protocol(BaseProtocol):
 This is one of the ready-made widgets provided by Canvas that you can add to your patient portal. 
 It will show upcoming appointments.
 
-### Step 1: Add a new protocol to your plugin
+### Step 1: Add a new handler to your plugin
 
-Create a new protocol in your plugin with the following content:
+Create a new handler in your plugin with the following content:
 
 ```python
 from canvas_sdk.effects.widgets import PortalWidget
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
-class UpcomingAppointmentWidget(BaseProtocol):
+class UpcomingAppointmentWidget(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__WIDGET_CONFIGURATION)
 
     def compute(self):

@@ -64,6 +64,10 @@ Values in the `PatientChartSummaryConfiguration.Section` enum are:
 | FAMILY_HISTORY      | family_history      |
 | CODING_GAPS         | coding_gaps         |
 
+### Custom Sections
+
+In addition to the built-in sections above, you can add fully custom sections to the chart summary. Custom sections render plugin-provided content in an iframe and are identified by a unique key. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/) for details on how to implement one.
+
 ### Action Buttons
 
 Each section of the patient chart can also be customized with action buttons. Please refer to the [Action Buttons](/sdk/handlers-action-buttons/) documentation for more information.
@@ -78,11 +82,11 @@ import json
 from canvas_sdk.effects import Effect, EffectType
 from canvas_sdk.effects.patient_profile_configuration import PatientProfileConfiguration
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     """This protocol is used to configure which sections appear in the Patient Profile section.
 
     The SHOW_PATIENT_PROFILE_SECTIONS payload expects a list of sections where each section is a dict like { "type": str, "start_expanded": bool }
@@ -212,6 +216,60 @@ Values in the `PanelPatientSection` enum are:
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
 
+## Patient Note Header Dropdown Configuration
+
+The `PatientNoteHeaderDropdownConfiguration` effect allows you to define which items appear in the dropdown menu on a patient's note header (the triple dots at the top right of each note).
+
+The order in the dropdown is preserved and grouped into specific sections, rather than being based on the plugin item order.
+
+![Before and after](/assets/images/sdk/note-header-configuration.png)(width:60%)
+
+```python
+from canvas_sdk.effects.patient_note_header_dropdown_configuration import PatientNoteHeaderDropdownConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.effects import Effect
+
+
+class NoteHeaderDropdownHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_NOTE_HEADER_DROPDOWN__SECTION_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [PatientNoteHeaderDropdownConfiguration(items=[
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_NOTE,
+            PatientNoteHeaderDropdownConfiguration.Items.PRINT_SUPERBILL,
+            PatientNoteHeaderDropdownConfiguration.Items.LINK_TO_PHONE,
+        ]).apply()]
+```
+
+### Attributes
+
+| Attribute | Type         | Description                            |
+| --------- | ------------ | -------------------------------------- |
+| `items`   | `list[Items]` | List of dropdown items to display.    |
+
+Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
+
+| Constant                  | Description                                                                |
+| ------------------------- |----------------------------------------------------------------------------|
+| LINK_TO_PHONE             | Show QR code to link mobile device to note                                 |
+| SOAP                      | Sort note sections in SOAP order (Subjective, Objective, Assessment, Plan) |
+| APSO                      | Sort note sections in APSO order (Assessment, Plan, Subjective, Objective) |
+| CHANGE_LOCATION           | Change the note's practice location                                        |
+| CHANGE_PROVIDER           | Change the note's provider                                                 |
+| CHANGE_DATE_OF_SERVICE    | Change the note's date of service                                          |
+| PRINT_SUPERBILL           | Print the superbill for billing                                            |
+| PRINT_ROOMING_SHEET       | Print the rooming sheet for care team                                      |
+| PRINT_AFTER_VISIT_SUMMARY | Print the patient after visit summary                                      |
+| COPY_LINK                 | Copy the note's permalink to clipboard                                     |
+| PRINT_NOTE                | Print the note for care team                                               |
+| FAX_NOTE                  | Fax the note to an external recipient                                      |
+| FAX_EVENT_HISTORY         | View fax event history for the note                                        |
+| MOVE_COMMANDS             | Move commands from this note to another note                               |
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
@@ -241,6 +299,8 @@ The `LaunchModalEffect` class has the following properties:
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `PAGE`: Opens the content as a full page.
+  - `NOTE`: Opens the content within a note tab (used with Note Applications).
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Closing Modals from Applications
@@ -276,38 +336,34 @@ This twist on the _Holywood Principle_ ensures that your application remains sec
 <br/>
 <br/>
 
-## Portal Landing Page Widgets
+## Resizing Modals
 
-The `PortalWidget` class allows you to add widgets of various sizes to the patient portal landing page. You can fully customize your widgets or leverage ready-made widgets provided by Canvas, such as Appointments and Messaging.
+Modal overlays can now be dynamically resized by embedded applications using the MessageChannel API. Applications launching with a `DEFAULT_MODAL` target can send a `RESIZE` message to adjust the modal's width and/or height:
 
-### Example Usage
+```html
+<script>
+    let messagePort = null;
 
-```python
-from canvas_sdk.effects.widgets import PortalWidget
+    // Listen for the port transfer from the Canvas Application
+    window.addEventListener('message', (event) => {
+      // Check if this is the INIT_CHANNEL message with a port
+      if (event.data?.type === 'INIT_CHANNEL' && event.ports?.[0]) {
 
-class PortalWidgetHandler:
-    def compute(self):
-        portal_widget = PortalWidget(
-            url="https://example.com/info",
-            size=PortalWidget.Size.COMPACT,
-            priority=25
-        )
-        return [portal_widget.apply()]
+        // Store the port for later use
+        messagePort = event.ports[0];
+        messagePort.start();
+        // Example: Resize modal to specific dimensions
+        messagePort.postMessage({
+          type: 'RESIZE',
+          width: 800,  // pixels
+          height: 600  // pixels
+        });
+      }
+    });
+</script>
 ```
 
-The `PortalWidget` class has the following properties:
-
-- **url**: A string containing the URL to load within the widget. If either `content` or `component` is specified, an error will be raised.
-- **content**: A string containing the content to be displayed directly within the widget. If either `url` or `component` is provided, an error will be raised.
-- **component**: Choose one of ready-made widgets made by Canvas. If either `url` or `content` is provided, an error will be raised. The available ready-made widgets include:
-  - `APPOINTMENTS`: Displays upcoming appointments.
-  - `MESSAGING`: Enables quick messaging.
-- **Size**: Determines the widget's layout on the frontend grid:
-  - `EXPANDED`: Fills an entire row (12 columns).
-  - `MEDIUM`: Occupies 8 columns.
-  - `COMPACT`: Occupies 4 columns.
-  - **Note: All sizes have a fixed height of 300px.**
-- **priority**: This value is used to order the widgets within the patient portal. A lower number indicates a higher priority.
+This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
 
 ## Custom HTML and Django Templates
 
@@ -415,6 +471,8 @@ To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, 
 - **Allowing custom scripts**: If you need to load scripts from an external source, the URL for the script must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` and `'SCRIPTS'` must be in the permissions list.
 - **Requesting microphone access**: If the site in your modal or widget needs microphone access, `'MICROPHONE'` must be in the URL's permissions list.
 - **Requesting camera access**: If the site in your modal or widget needs camera access, `'CAMERA'` must be in the URL's permissions list.
+- **Requesting clipboard read access**: If the site in your modal or widget needs to read from the user's clipboard, `'CLIPBOARD_READ'` must be in the URL's permissions list.
+- **Requesting clipboard write access**: If the site in your modal or widget needs to write to the user's clipboard, `'CLIPBOARD_WRITE'` must be in the URL's permissions list.
 - **Allowing browser access to cookies from the iframe's origin**: If you want the loaded URL to access cookies for its domain, `'ALLOW_SAME_ORIGIN'` must be in the URL's permissions list. If the URL you're loading requires authentication, this will prevent your user from having to log in each time the modal is launched.
 
 The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
@@ -428,7 +486,7 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
   "url_permissions": [
     {
       "url": "https://example.com/info",
-      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA"]
+      "permissions": ["ALLOW_SAME_ORIGIN", "MICROPHONE", "CAMERA", "CLIPBOARD_READ", "CLIPBOARD_WRITE"]
     },
     {
       "url": "https://d3js.org/d3.v4.js",

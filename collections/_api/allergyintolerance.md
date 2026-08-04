@@ -8,7 +8,7 @@ sections:
         article: "an"
         description: >-
           Risk of harmful or undesirable, physiological response which is unique to an individual and associated with exposure to a substance.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-allergyintolerance.html)
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-allergyintolerance.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-allergyintolerance.html)
           <br><br>
           To learn more about documenting allergies in Canvas see [here](https://canvas-medical.help.usepylon.com/articles/9964004914-document-allergies).
         attributes:
@@ -100,14 +100,14 @@ sections:
                       type: string
                       enum_options: 
                         - value: Confirmed
-                        - value: Entered-in-error
+                        - value: Entered in Error
                 - name: text
                   description: Plain text representation of the concept.
                   exclude_in: create, update
                   type: string
                   enum_options: 
                     - value: Confirmed
-                    - value: Entered-in-error
+                    - value: Entered in Error
           - name: type
             required_in: create, update
             description: Identification of the underlying physiological mechanism for the reaction risk.
@@ -136,7 +136,6 @@ sections:
                       description: The code of the allergen.
                       type: string
                     - name: display
-                      required_in: create, update
                       description: The display name of the coding.
                       exclude_in: create, update
                       type: string
@@ -293,7 +292,7 @@ curl --request POST \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -381,7 +380,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -479,7 +478,7 @@ print(response.text)
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -622,7 +621,7 @@ curl --request PUT \
      "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -643,7 +642,7 @@ curl --request PUT \
                 "display": "Entered in Error"
             }
         ],
-        "text": "Confirmed"
+        "text": "Entered in Error"
     },
     "type": "allergy",
     "code": {
@@ -710,7 +709,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "clinicalStatus": {
@@ -731,7 +730,7 @@ payload = {
                 "display": "Entered in Error"
             }
         ],
-        "text": "Confirmed"
+        "text": "Entered in Error"
     },
     "type": "allergy",
     "code": {
@@ -828,7 +827,7 @@ print(response.text)
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "clinicalStatus": {

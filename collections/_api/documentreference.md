@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A reference to a document of any kind for any purpose. Provides metadata about the document so that the document can be discovered and managed. The scope of a document is any seralized object with a mime-type, so includes formal patient centric documents (CDA), clinical notes, scanned paper, and non-patient specific documents like policy text.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-documentreference.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-documentreference.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-documentreference.html)<br><br>
           A Document Reference can represent many different PDFs generated in Canvas:
           
 
@@ -48,12 +48,12 @@ sections:
             type: array[json]
             required_in: create
             description_for_all_endpoints: Specific FHIR extensions on this resource are supported to be able to map some Canvas specific attributes for a comment, clinical date, review mode, reviewer, priority, and if it requires a signature. 
-            create_and_update_description: "In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br><b>A few of the extensions are required:<b> 
+            create_description: "In order to identify which extension maps to specific fields in Canvas, the url field is used as an exact string match.<br><br><b>A few of the extensions are required:<b> 
 
               - clinical-date  
 
-              - A reviewer is required, it can either be a practitioner or a group
-
+              - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
+           
               - requires-signature
               "
             attributes:
@@ -100,10 +100,10 @@ sections:
                     type: string
                     description: Type the reference refers to (e.g. "Practitioner" or "Group").
               - name: valueBoolean
-                type: string
+                type: boolean
                 required_in: create
                 description_for_all_endpoints: Value of extensions for Priority and Requires Signature.
-                create_description: The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized. If the priority is omitted from the request, it will default to False. <br><br> Requires Signature is also a field on the underlying Canva document that determines where the related document requires Practitioner's signature. The requires-signature extension is required on create.
+                create_description: The `valueBoolean` attribute is needed for the Priority extension where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-priority` and for the Requires Signature where the `url` is `http://schemas.canvasmedical.com/fhir/document-reference-requires-signature`. <br><br> Priority is a field on the underlying Canvas document that is related to this DocumentReference resource and determines if the document should be prioritized. If the priority is omitted from the request, it will default to False. <br><br> Requires Signature is also a field on the underlying Canvas document that determines whether the related document requires Practitioner's signature.
           - name: status
             required_in: create
             read_and_search_description: >-
@@ -118,7 +118,7 @@ sections:
               - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
 
               - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
-            create_description: The "status" field is required by FHIR to indicate the current state of the document; however, the value is ignored by Canvas on creation.
+            create_description: Status must be set to `current` on creation; the value has no further effect.
             enum_options: 
               - value: current
               - value: superseded
@@ -186,6 +186,7 @@ sections:
             type: array[json]
             required_in: create
             description: The categorization of the document.
+            read_and_search_description: 'The categorization of the document. For non-administrative documents, the response also includes an additional `category` entry with system `http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category` and code `clinical-note` (for US Core compliance).'
             attributes:
               - name: coding
                 description: Code defined by a terminology system.
@@ -194,8 +195,10 @@ sections:
                 attributes: 
                   - name: system
                     description: The system url of the coding.
-                    enum_options: 
+                    enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/document-reference-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category
+                        exclude_in: create
                     type: string
                     required_in: create
                   - name: code
@@ -219,7 +222,6 @@ sections:
                       - value: referralreport
                         exclude_in: create
                       - value: uncategorizedclinicaldocument
-            type: array[json]
           - name: subject
             description: Who/what is the subject of the document.
             type: json
@@ -293,9 +295,8 @@ sections:
                     description: Mime type of the content, with charset etc.
                     type: string
                     required_in: create
-                    exclude_in: create
                   - name: url
-                    description: URI where the data can be found. Please note that urls may have an AWSAccessKeyId and an Expires attribute. By default documents stored in AWS S3 will expire 10 minutes after the response payload is returned.
+                    description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                     exclude_in: create
                     type: string
                   - name: data
@@ -303,10 +304,6 @@ sections:
                     required_in: create
                     description: Base64 encoded document file as a string.
                     exclude_in: read, search
-                  - name: extension
-                    description: Extension for backward-compatible URLs 
-                    type: json
-                    exclude_in: create
               - name: format
                 type: json
                 description: Format/content rules for the document
@@ -441,13 +438,6 @@ curl --request POST \
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
-            }
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
             "valueBoolean": true
         },
@@ -529,13 +519,6 @@ payload = {
             "valueReference": {
                 "reference": "Practitioner/5843991a8c934118ab4f424c839b340f",
                 "type": "Practitioner",
-            }
-        },
-        {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
             }
         },
         {
@@ -628,13 +611,6 @@ payload = {
             }
         },
         {
-            "url": "http://schemas.canvasmedical.com/fhir/document-reference-reviewer-group",
-            "valueReference": {
-                "reference": "Group/a6ae9198-19ba-4c27-b8e2-a8d5d3395b78",
-                "type": "Group"
-            }
-        },
-        {
             "url": "http://schemas.canvasmedical.com/fhir/document-reference-priority",
             "valueBoolean": true
         },
@@ -659,6 +635,14 @@ payload = {
                 {
                     "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                     "code": "uncategorizedclinicaldocument"
+                }
+            ]
+        },
+        {
+            "coding": [
+                {
+                    "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                    "code": "clinical-note"
                 }
             ]
         }
@@ -761,15 +745,15 @@ payload = {
     "link": [
         {
             "relation": "self",
-            "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
         },
         {
             "relation": "first",
-            "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
         },
         {
             "relation": "last",
-            "url": "/DocumentReference?patient=Patient/c0df2c04a0e64b46ba7fe3f836068e49&_count=50&_offset=0"
+            "url": "/DocumentReference?subject=Patient%2Fcfd91cd3bd9046db81199aa8ee4afd7f&status=current&type=http%3A%2F%2Floinc.org%7C11502-2&_count=10&_offset=0"
         }
     ],
     "entry": [
@@ -884,6 +868,14 @@ payload = {
                                 "code": "labreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -976,6 +968,14 @@ payload = {
                                 "code": "imagingreport"
                             }
                         ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
+                            }
+                        ]
                     }
                 ],
                 "subject": {
@@ -1002,7 +1002,7 @@ payload = {
                     }
                 ]
             }
-        }
+        },
         {
             "resource": {
                 "resourceType": "DocumentReference",
@@ -1132,6 +1132,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "referralreport"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1291,6 +1299,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "uncategorizedclinicaldocument"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }
@@ -1576,6 +1592,14 @@ payload = {
                             {
                                 "system": "http://schemas.canvasmedical.com/fhir/document-reference-category",
                                 "code": "educationalmaterial"
+                            }
+                        ]
+                    },
+                    {
+                        "coding": [
+                            {
+                                "system": "http://hl7.org/fhir/us/core/CodeSystem/us-core-documentreference-category",
+                                "code": "clinical-note"
                             }
                         ]
                     }

@@ -14,18 +14,18 @@ request to a different service, or simply return a response back to the requeste
 ## Quickstart
 
 Follow the instructions in
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) to create a plugins
+[Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
 Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
-value at `components -> protocols -> 0 -> class` to be `my_api.protocols.my_protocol:MyAPI`.
+value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 
 We're going to need a secret value for authentication. The instructions for declaring secrets are
-outlined on the [Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+outlined on the [Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 Declare a secret in `CANVAS_MANIFEST.json` named `my-api-key`.
 
-Open `my_api/protocols/my_protocol.py` and replace the contents of the file with this code:
+Open `my_api/handlers/my_handler.py` and replace the contents of the file with this code:
 
 ```python
 from hmac import compare_digest
@@ -52,7 +52,7 @@ class MyAPI(SimpleAPIRoute):
 ```
 
 The next step is to deploy your plugin; the instructions for doing so are on the
-[Your First Plugin](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
+[Your First Plugin (Manual)](https://docs.canvasmedical.com/guides/your-first-plugin/) page.
 
 You can see in the code above that the `authenticate` method is going to authenticate using API key
 authentication. We've already declared the secret, so now we need to generate a value and set it on
@@ -457,6 +457,25 @@ class MyAPI(SimpleAPIRoute):
 Any effects present in the list returned by an endpoint will be processed by your Canvas instance,
 and the response object, if provided, will be sent back to the original requester.
 
+### Asynchronous requests
+
+By default, **SimpleAPI** requests are processed synchronously—the caller waits for the plugin to
+finish executing before receiving a response. If you prefer an immediate acknowledgement instead,
+include the `Prefer: respond-async` header in your request:
+
+```bash
+curl --location 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/<route>' \
+     --header 'Authorization: <api-key>' \
+     --header 'Prefer: respond-async'
+```
+
+When this header is present, Canvas will return a **202 Accepted** response right away and continue
+executing the plugin in the background. Any effects returned by the handler will still be processed
+by your Canvas instance; however, no response body from the handler will be delivered to the caller.
+
+Note that authentication failures and plugin-not-found errors are always returned synchronously,
+regardless of this header.
+
 ### Authentication
 
 Defining an `authenticate` method on your handler is required. By default, **SimpleAPI** handlers
@@ -746,3 +765,27 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
             JSONResponse({"message": "Hello world!"})
         ]
 ```
+
+## Acting as a Canvas user
+
+By default, a SimpleAPI request isn't tied to a specific person, so any effects it
+returns — such as creating, locking, or signing a note — are recorded as Canvas Bot
+rather than a clinician.
+
+To have a request run **as a specific Canvas staff member** — for example, so a note
+is signed under the treating provider's name — call the endpoint with an access token
+obtained through the
+[Authorization Code flow](/api/customer-authentication#authorization-code). That flow
+issues a token that represents the staff member who signed in and approved it. Send it
+as a Bearer token in the `Authorization` header, and Canvas identifies the user from
+the token and treats the request as coming from them, so any effects the handler
+returns are attributed to that staff member.
+
+```bash
+curl --request POST \
+  --url 'https://example.canvasmedical.com/plugin-io/api/my_plugin/note/<note-id>/sign' \
+  --header 'Authorization: Bearer <access-token>'
+```
+
+In this example the note is signed and recorded in Canvas as signed by the staff
+member who authorized the access token, not by Canvas Bot.

@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           The Care Team includes all the people and organizations who plan to participate in the coordination and delivery of care for a patient.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-careteam.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careteam.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-careteam.html)<br><br>
           All patients in Canvas have a CareTeam by default. The identifier for the CareTeam resource for a patient is the same as the patient identifier.
           <br><br>
           See our [article](https://help.canvasmedical.com/articles/5628604712-manage-care-teams) for information about setting up Care Teams and Care Team Roles in Canvas.
@@ -75,7 +75,7 @@ sections:
                       description: Value of extension. If the value is set to `True`, it indicates the specific participant as the lead for this care team. Only one active participant can be the lead of a care team. Only practitioners can be designated as the lead.
                 - name: role
                   type: array[json]
-                  description: Type of involvement
+                  description: Type of involvement. Required for Practitioner participants; not present (and ignored) for Organization participants.
                   required_in: update
                   attributes:
                     - name: coding
@@ -124,6 +124,9 @@ sections:
                 - value: suspended
                 - value: inactive
                 - value: entered-in-error
+          - name: _revinclude
+            type: string
+            description: Standard FHIR `_revinclude` parameter.
         endpoints: [read, update, search]
         read:
           description: Read a CareTeam resource.

@@ -42,6 +42,28 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
 ['accepted', 'accepted_via_patient_portal', 'rejected']
 ```
 
+Each `PatientConsentCoding` has a `document` field containing the URL to the consent template document:
+
+```python
+>>> from canvas_sdk.v1.data import PatientConsentCoding
+>>> coding = PatientConsentCoding.objects.first()
+>>> print(coding.document)
+'consent_templates/hipaa_consent.pdf'
+```
+
+## Accessing Document Files
+
+The `document_url` property returns a presigned S3 URL for securely accessing the consent form.
+
+```python
+from canvas_sdk.v1.data import PatientConsentCoding
+
+consent_coding = PatientConsentCoding.objects.first()
+
+# Returns a presigned S3 URL (valid for 1 hour)
+url = consent_coding.document_url
+```
+
 ## Attributes
 
 ### PatientConsent
@@ -73,6 +95,10 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
 | is_proof_required      | Boolean                                                       |
 | show_in_patient_portal | Boolean                                                       |
 | summary                | String                                                        |
+| document               | String                                                        |
+| document_url           | String (property) — presigned S3 URL                          |
+| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |
+
 
 ### PatientConsentRejectionCoding
 
@@ -84,6 +110,7 @@ And you can also access all of the PatientConsents for a given PatientConsentCod
 | code          | String  |
 | display       | String  |
 | user_selected | Boolean |
+| patient_consents | QuerySet[[PatientConsent](#patientconsent)] |
 
 ## Enumeration types
 

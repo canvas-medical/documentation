@@ -24,14 +24,14 @@ instance of it.
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.banner_alert import AddBannerAlert
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
@@ -56,14 +56,14 @@ To apply the effect to all active patients when a plugin is created or updated, 
 
 ```python
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.effects.banner_alert import AddBannerAlert
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PATIENT_UPDATED),
         EventType.Name(EventType.PLUGIN_CREATED),

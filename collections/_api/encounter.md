@@ -7,7 +7,8 @@ sections:
         name: Encounter
         article: "a"
         description: >-
-          An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>[https://hl7.org/fhir/R4/encounter.html](https://hl7.org/fhir/R4/encounter.html)<br><br>
+          An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient.<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-encounter.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-encounter.html)<br><br>
 
           <b>Encounter creation in Canvas</b><br><br>
           An encounter is associated with some of our notes in Canvas. For our default base notes, an encounter will be created with these note types: <br><br>
@@ -18,9 +19,7 @@ sections:
           - Home Visit <br>
           - In-patient Visit <br><br>
 
-          With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.<br><br>
-
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-encounter.html)
+          With our [Configurable Note Types Feature](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types) all custom note types will be associated with an encounter by default.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -108,7 +107,7 @@ sections:
                 description: Type the reference refers to (e.g. "Patient").
           - name: participant
             type: array[json]
-            description: List of participants involved in the encounter.
+            description: List of participants involved in the encounter. Participants may include Practitioner references and RelatedPerson references for patient contacts associated with the encounter.
             attributes:
                 - name: type
                   type: array[json]
@@ -132,7 +131,7 @@ sections:
                           description: The display name of the coding.
                           type: string
                           enum_options:
-                            - value: Participant
+                            - value: Participation
                 - name: period
                   type: json
                   description: Period of time during the encounter that the participant participated
@@ -145,14 +144,14 @@ sections:
                       description: End time with inclusive boundary, if not ongoing.
                 - name: individual
                   type: json
-                  description: Persons involved in the encounter other than the patient.
+                  description: Persons involved in the encounter other than the patient. May reference a Practitioner or a RelatedPerson.
                   attributes: 
                     - name: reference
                       type: string
-                      description: The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
+                      description: The reference string of the participant in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"RelatedPerson/3fcea5ee-8961-43b4-9d47-3e8a2a625e95"`.
                     - name: type
                       type: string
-                      description: Type the reference refers to (e.g. "Practitioner").
+                      description: Type the reference refers to (e.g. "Practitioner" or "RelatedPerson").
                     - name: display
                       type: string
                       description: Text alternative for the resource (e.g Credendialed name of the Practitioner).
@@ -216,26 +215,30 @@ sections:
           - name: hospitalization
             type: json
             description: Details about the admission to a healthcare service.
-            attributes: 
-                - name: coding
-                  description: Code defined by a terminology system.
-                  type: array[json]
-                  attributes: 
-                    - name: system
-                      description: The system url of the coding.
-                      type: string
-                      enum_options: 
-                        - value: http://terminology.hl7.org/CodeSystem/discharge-disposition
-                    - name: code
-                      description: The code.
-                      type: string
-                      enum_options: 
-                        - value: oth
-                    - name: display
-                      description: The display name of the coding.
-                      type: string
-                      enum_options:
-                        - value: Other
+            attributes:
+                - name: dischargeDisposition
+                  type: json
+                  description: Category or kind of location after discharge.
+                  attributes:
+                      - name: coding
+                        description: Code defined by a terminology system.
+                        type: array[json]
+                        attributes:
+                          - name: system
+                            description: The system url of the coding.
+                            type: string
+                            enum_options:
+                              - value: http://terminology.hl7.org/CodeSystem/discharge-disposition
+                          - name: code
+                            description: The code.
+                            type: string
+                            enum_options:
+                              - value: oth
+                          - name: display
+                            description: The display name of the coding.
+                            type: string
+                            enum_options:
+                              - value: Other
           - name: location
             type: array[json]
             description: List of locations where the patient has been during the encounter.
@@ -293,7 +296,7 @@ sections:
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "identifier": [
@@ -480,7 +483,7 @@ sections:
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "identifier": [

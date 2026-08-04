@@ -113,10 +113,10 @@ sections:
                     type: datetime
                     description: End time with inclusive boundary, if not ongoing. If ommitted this will default to `2100-12-31`.
           - name: status
-            type: enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed | entered-in-error ]
+            type: enum [ arrived | booked | cancelled | checked-in | fulfilled | noshow | pending | proposed ]
             required_in: create,update
             description_for_all_endpoints: >-
-              The status of the appointment. <br><br>
+              The status of the appointment. The status `entered-in-error` may also be returned on read but is not accepted on create or update. <br><br>
 
               This table shows the mappings of statuses/states an appointment is in within Canvas to the FHIR status attribute. <br>
 
@@ -129,7 +129,7 @@ sections:
                 | arrived          | arrived       |
                 | checked-in       | roomed        |
                 | fulfilled        | exited        |
-                | noshow           | no-showed     |
+                | noshow           | noshowed      |
                 | cancelled        | cancelled     |
                 | entered-in-error | deleted       |
 
@@ -168,7 +168,12 @@ sections:
                   - name: system
                     description: >-
                       The system of the appointment
+                    create_and_update_description: >-
+                      The system of the appointment. On create and update, only `http://snomed.info/sct` and `INTERNAL` are accepted; other systems will be rejected.
                     type: string
+                    enum_options:
+                      - value: http://snomed.info/sct
+                      - value: INTERNAL
                   - name: code
                     description: >-
                       The code of the appointment. <br><br>
@@ -357,7 +362,7 @@ sections:
           example_request: appointment-read-request
           example_response: appointment-read-response
         update:
-          description: Update an **Appointment** This is almost identical to the [Appointment Create](/api/appointment/#create). The update will only affect fields that are passed in to the body, if any fields are omitted they will be ignored and kept as they are currently set in the Canvas database. <br><br>A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.<br><br>Canvas prevents updating the patient an appointment is already associated to. Best practices is to cancel the existing appointment and create a new appointment with the correct patient.
+          description: This is almost identical to the [Appointment Create](/api/appointment/#create). You must include **all required fields** in the request body, even if only some fields are changing; omitting required fields will result in a validation error. Optional fields that are omitted will be ignored and left as they are currently set in the Canvas database.<br><br>A FHIR Appointment update interaction behaves differently than a rescheduling workflow in the Canvas UI. FHIR updates will directly modify the Appointment referred to by the `id` rather than creating a new appointment.<br><br>Canvas prevents updating the patient an appointment is already associated to. Best practice is to cancel the existing appointment and create a new appointment with the correct patient.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: appointment-update-request
           example_response: appointment-update-response
@@ -407,7 +412,7 @@ sections:
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "identifier": [
@@ -610,7 +615,7 @@ sections:
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "identifier": [

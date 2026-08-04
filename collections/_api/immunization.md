@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           Describes the event of a patient being administered a vaccine or a record of an immunization as reported by a patient, a clinician or another party.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-immunization.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-immunization.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-immunization.html)<br><br>
 
           In Canvas, Immunization records are recorded using either the [Immunization Statement Commmand](https://canvas-medical.help.usepylon.com/articles/1379672479-command-immunization-statement) or the [Immunize Command](https://canvas-medical.help.usepylon.com/articles/4155771468-command-immunize).
         attributes:
@@ -59,7 +59,7 @@ sections:
                     description: The system url of the coding.
                     type: string
                     enum_options:
-                      - value: http://terminology.hl7.org/CodeSystem/v3-ActReaso
+                      - value: http://terminology.hl7.org/CodeSystem/v3-ActReason
                   - name: code
                     description: The code.
                     type: string
@@ -83,7 +83,6 @@ sections:
                     enum_options:
                       - value: http://hl7.org/fhir/sid/cvx
                       - value: http://www.ama-assn.org/go/cpt
-                      - value: unstructured
                   - name: code
                     description: The code.
                     type: string
@@ -119,7 +118,7 @@ sections:
                 type: string
                 description: Type the reference refers to (e.g. "Encounter").
           - name: occurrenceDateTime
-            type: date
+            type: datetime
             description: The date or datetime the immunization was administered or reported to have been administered.
             required_in: create, update
           - name: primarySource
@@ -156,7 +155,7 @@ sections:
           example_request: immunization-read-request
           example_response: immunization-read-response
         update:
-          responses: [201, 400, 401, 403, 405, 422]
+          responses: [200, 400, 401, 403, 405, 422]
           example_request: immunization-update-request
           example_response: immunization-update-response
           description: Update an Immunization resource.<br><br>The only type of Immunization update interaction that is supported by Canvas is to mark an existing Immunization Statement as **entered-in-error** using the `status` attribute. No changes to other fields will be processed; however, required fields still need to be supplied.
@@ -382,7 +381,7 @@ payload = {
 
     {% tab immunization-update-request curl %}
 ```shell
-curl --request POST \
+curl --request PUT \
      --url 'https://fumage-example.canvasmedical.com/Immunization/d9aefede-da05-4bef-bbf9-63bcf83c806a' \
      --header 'Authorization: Bearer <token>' \
      --header 'accept: application/json' \
@@ -487,7 +486,7 @@ payload = {
 </div>
 
 <div id="immunization-update-response">
-{% include create-response.html %}
+{% include update-response.html resource_type="Immunization" %}
 </div>
 
 <div id="immunization-search-request">

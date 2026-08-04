@@ -292,30 +292,52 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 
 ### Note
 
-| Field Name          | Type                                  | Notes                                                                |
-| ------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| id                  | UUID                                  |                                                                      |
-| dbid                | Integer                               |                                                                      |
-| created             | DateTime                              |                                                                      |
-| modified            | DateTime                              |                                                                      |
-| patient             | [Patient](/sdk/data-patient/#patient) |                                                                      |
-| note_type_version   | [NoteType](#notetype)                 |                                                                      |
-| title               | String                                |                                                                      |
-| body                | JSON                                  | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
-| originator          | [CanvasUser](/sdk/data-canvasuser)    |                                                                      |
-| provider            | [Staff](/sdk/data-staff/#staff)       |                                                                      |
-| checksum            | String                                |                                                                      |
-| billing_note        | String                                |                                                                      |
-| related_data        | JSON                                  | Can contain one key, `roomNumber`, if the Note is an inpatient stay. |
-| datetime_of_service | DateTime                              |                                                                      |
-| place_of_service    | String                                |                                                                      |
-| encounter           | [Encounter](/sdk/data-encounter)      |                                                                      |
-| commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                               |
+| Field Name          | Type                                   | Notes                                                                                                                                                                                                |
+|---------------------|----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id                  | UUID                                   |                                                                                                                                                                                                      |
+| dbid                | Integer                                |                                                                                                                                                                                                      |
+| created             | DateTime                               |                                                                                                                                                                                                      |
+| modified            | DateTime                               |                                                                                                                                                                                                      |
+| patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
+| note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
+| title               | String                                 |                                                                                                                                                                                                      |
+| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
+| provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
+| supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
+| last_modified_by_staff | [Staff](/sdk/data-staff/#staff)      | The staff member who last modified the note                                                                                                                                                          |
+| checksum            | String                                 |                                                                                                                                                                                                      |
+| billing_note        | String                                 |                                                                                                                                                                                                      |
+| related_data        | JSON                                   | Can contain one key, `roomNumber`, if the Note is an inpatient stay.                                                                                                                                 |
+| datetime_of_service | DateTime                               |                                                                                                                                                                                                      |
+| place_of_service    | String                                 |                                                                                                                                                                                                      |
+| encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
+| location            | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note                                                                                                                             |
+| commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
+| note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
+| metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
+| lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
+| imaging_reviews            | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | All imaging reviews associated with this note                                                                                                                                              |
+| referral_reviews            | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note                                                                                                                                              |
+| chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
+| visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
+| state_history       | QuerySet[[NoteStateChangeEvent](#notestatechangeevent)] | The note's state-change audit history                                                                                                                                       |
+| current_state       | [CurrentNoteStateEvent](#currentnotestateevent) | The note's current state event                                                                                                                                                      |
+| assessments         | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note                                                                                                                                  |
+| goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |
+| instructions        | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note                                                                                                                              |
+| immunizations       | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note                                                                                                                           |
+| claims              | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)                                                                                                                       |
+| letter              | [Letter](/sdk/data-letter/#letter) | The letter associated with this note, if any                                                                                                                                                        |
+| referral_set        | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note                                                                                                                                            |
+| laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
+| appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
 
 ### NoteType
 
 | Field Name                                  | Type                                               |
 | ------------------------------------------- | -------------------------------------------------- |
+| id                                          | UUID                                               |
 | dbid                                        | Integer                                            |
 | created                                     | DateTime                                           |
 | modified                                    | DateTime                                           |
@@ -342,6 +364,35 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | deprecated_at                               | DateTime                                           |
 | is_patient_required                         | Boolean                                            |
 | allow_custom_title                          | Boolean                                            |
+| is_scheduleable_via_patient_portal          | Boolean                                            |
+| online_duration                             | Integer                                            |
+| is_sig_required                             | Boolean                                            |
+| notes                                       | QuerySet[[Note](#note)]                            |
+| appointments                                | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] |
+
+### NoteMetadata
+
+| Field Name | Type              |
+|------------|-------------------|
+| id         | UUID              |
+| dbid       | Integer           |
+| created    | DateTime          |
+| modified   | DateTime          |
+| note       | [Note](#note)     |
+| key        | String            |
+| value      | String            |
+
+```python
+from canvas_sdk.v1.data.note import Note
+from logger import log
+
+note_id = "89992c23-c298-4118-864a-26cb3e1ae822"
+note = Note.objects.get(id=note_id)
+note_metadata = note.metadata.all()
+
+for metadata in note_metadata:
+   log.info(f"Note metadata: {metadata.key}, {metadata.value}")
+```
 
 ### NoteStateChangeEvent
 
@@ -382,6 +433,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | RCL   | Recalled               |                            |
 | UND   | Undeleted              |                            |
 | DSC   | Discharged             |                            |
+| SGN   | Signed                 | Used when the note type's `is_sig_required` is True |
 | SCH   | Scheduling             | Used in appointment notes  |
 | BKD   | Booked                 | Used in appointment notes  |
 | CVD   | Converted              | Used in appointment notes  |

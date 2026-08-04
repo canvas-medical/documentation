@@ -94,6 +94,9 @@ appointment = Appointment.objects.filter(
 | description                  | String                                                            |
 | external_identifiers         | [AppointmentExternalIdentifier](#appointmentexternalidentifier)[] |
 | metadata                     | [AppointmentMetadata](#appointmentmetadata)[]                     |
+| children                     | [Appointment](#appointment)[]                                     |
+| appointment_rescheduled_to   | [Appointment](#appointment)[]                                     |
+| labels                       | [TaskLabel](/sdk/data-task/#tasklabel)[]                          |
 
 
 ### AppointmentExternalIdentifier
@@ -118,6 +121,8 @@ appointment = Appointment.objects.filter(
 |-------------|-----------------------------|
 | id          | UUID                        |
 | dbid        | Integer                     |
+| created     | DateTime                    |
+| modified    | DateTime                    |
 | appointment | [Appointment](#appointment) |
 | key         | String                      |
 | value       | String                      |

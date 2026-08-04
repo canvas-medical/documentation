@@ -46,19 +46,58 @@ and you'll get back a JSON which will contain an `access_token` that'll be valid
 
 ## Authorization Code
 
-The Authorization Code flow has a lot more steps to ensure a user of the Canvas EHR explicitly approves the token request. It's also typically used by web/mobile applications, due to the need for requiring explicit permission from a user logged into the Canvas EHR.
+The Authorization Code flow ensures a user of the Canvas EHR explicitly approves the token request. It's typically used by web/mobile applications that act on behalf of a specific user (staff or patient).
 
-The basic steps are:
-* The application opens a browser to the Canvas EHR instance.
-* The logged-in user sees the authorization prompt and approves the request.
-* The user is redirected back to the `redirect_url` with an authorization code in the query string.
-* The application exchanges the authorization code for an access token.
+The access token obtained through this flow carries the identity of the user who authorized it. This means:
+- **FHIR API calls** are scoped to that user's permissions.
+- **SimpleAPI plugin endpoints** receive the user as the [event actor](/sdk/events/#event-actor), allowing plugins to identify which user is making the request and enforce access controls.
 
-Note that if you use this Flow, you will need to add redirect URIs when creating an application. That's the URI that will receive the authorization code.
+### Basic Steps
 
-1. On your browser, open `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={LIST_OF_SCOPES}&redirect_uri={REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION}`. This will prompt the logged-in user to authorize the Application. Upon authorization, the flow will redirect to the {REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION} with a code on the query string. You'll need that code next.
+1. The application opens a browser to the Canvas authorization endpoint.
+2. The logged-in user sees the authorization prompt and approves the request.
+3. The user is redirected back to the `redirect_uri` with an authorization code in the query string.
+4. The application exchanges the authorization code for an access token and refresh token.
 
-2. Now you need to exchange the code received in the previous step for an access token. For that, run the following:
+### Step 1: Redirect the User to Authorize
+
+Open the following URL in the user's browser:
+
+```text
+{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={REDIRECT_URI}&launch={LAUNCH_CONTEXT}
+```
+
+**Important notes:**
+
+- **`launch` parameter (required for staff users):** Staff users must include a `launch` parameter containing a base64-encoded JSON object with context. Without this parameter, the authorization will be denied with `error=access_denied`.
+
+  ```bash
+  # Encode a launch context with a patient key
+  echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
+  # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
+
+  # Or with an empty patient (if no specific patient context is needed)
+  echo -n '{"patient":""}' | base64
+  # Result: eyJwYXRpZW50IjoiIn0=
+  ```
+
+- **URL-encode special characters in scopes:** Scopes like `user/*.read` contain `/` which must be encoded as `%2F` in the URL. For example: `scope=user%2F*.read%20user%2F*.write`
+
+- **Authorization codes expire quickly:** The code returned in the redirect is valid for approximately 60 seconds. Exchange it for tokens immediately.
+
+**Example authorize URL:**
+
+```text
+{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope=user%2F*.read%20user%2F*.write&redirect_uri=https://your-app.com/callback&launch=eyJwYXRpZW50IjoiIn0=
+```
+
+After the user clicks **Authorize**, they are redirected to your `redirect_uri` with a `code` parameter:
+
+```text
+https://your-app.com/callback?code=AUTHORIZATION_CODE
+```
+
+### Step 2: Exchange the Code for Tokens
 
 ```shell
 curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
@@ -66,25 +105,45 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 --data-urlencode 'grant_type=authorization_code' \
 --data-urlencode 'client_id={CLIENT_ID}' \
 --data-urlencode 'client_secret={CLIENT_SECRET}' \
---data-urlencode 'redirect_uri={REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION}' \
+--data-urlencode 'redirect_uri={REDIRECT_URI}' \
 --data-urlencode 'code={CODE_FROM_PREVIOUS_STEP}'
 ```
 
-And you'll get back an access token JSON that looks like the following:
+**Response:**
 
 ```json
 {
-  "access_token": "AN ACCESS TOKEN",
+  "access_token": "AN_ACCESS_TOKEN",
   "expires_in": 36000,
   "token_type": "Bearer",
-  "scope": "List of accepted scopes here",
-  "refresh_token": "A REFRESH TOKEN"
+  "scope": "user/*.read user/*.write",
+  "refresh_token": "A_REFRESH_TOKEN",
+  "patient": ""
 }
 ```
 
-Notice the refresh token there, which doesn't exist for the Client Credentials flow.
+- **`access_token`**: Valid for 10 hours (36000 seconds). Use this as a `Bearer` token in API requests.
+- **`refresh_token`**: Non-expiring but **single-use**. Each time you refresh, you receive a new refresh token — store it to maintain long-term access.
 
-Since the `code` granted when the user authorizes the application is very short-lived, the refresh token allows for seamless revalidation of a token. This refresh token never expires but can only be used once. In order to request a new token, you need to issue the following request:
+### Step 3: Use the Token
+
+Use the access token as a Bearer token in the `Authorization` header:
+
+```shell
+# FHIR API example
+curl --request GET '{FUMAGE_BASE_URL}/Patient' \
+--header 'Authorization: Bearer {ACCESS_TOKEN}'
+
+# SimpleAPI plugin endpoint example
+curl --request GET '{YOUR_CANVAS_EHR_INSTANCE}/plugin-io/api/{plugin_name}/{endpoint}' \
+--header 'Authorization: Bearer {ACCESS_TOKEN}'
+```
+
+When a SimpleAPI plugin receives a request with a Bearer token, Canvas validates the token, identifies the user, and sets them as the [event actor](/sdk/events/#event-actor). The plugin can then use `self.event.actor` to determine which user is making the request.
+
+### Step 4: Refresh the Token
+
+Access tokens expire after 10 hours. Use the refresh token to get a new access token without requiring the user to re-authorize:
 
 ```shell
 curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
@@ -92,20 +151,129 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 --data-urlencode 'grant_type=refresh_token' \
 --data-urlencode 'client_id={CLIENT_ID}' \
 --data-urlencode 'client_secret={CLIENT_SECRET}' \
---data-urlencode 'redirect_uri={REDIRECT_URI_AS_DEFINED_ON_THE_APPLICATION}' \
---data-urlencode 'refresh_token={REFRESH_TOKEN}'
+--data-urlencode 'refresh_token={REFRESH_TOKEN}' \
+--data-urlencode 'scope={SCOPES}'
 ```
-and you'll get a brand new access token.
+
+**Note:** The `scope` parameter must match the scopes from the original authorization (or be a subset). If omitted, Canvas will attempt to use the application's default allowed scopes, but this may fail with `invalid_scope` if the defaults don't match the original grant.
+
+This returns a new `access_token` and a **new** `refresh_token`. The previous refresh token is consumed and cannot be reused. Store the new refresh token for the next refresh cycle.
+
+### Recommended Pattern for External Applications
+
+For applications that need to make API calls on behalf of specific Canvas users (e.g., a provider portal calling plugin endpoints):
+
+1. **One-time setup per user:** Each user authorizes the app via the browser flow. Store the refresh token per user in your backend.
+2. **Ongoing access:** Before making API calls, check if the access token is still valid. If expired, use the stored refresh token to get a new one.
+3. **Token storage:** Access tokens last 10 hours. Refresh tokens are non-expiring but single-use — always store the latest one returned from a refresh.
+
+## Patient Scoped Tokens
+
+Canvas supports patient scoped tokens. These are access tokens requested on behalf of a specific patient and have read/write access to that patient's records only.
+
+To acquire a patient scoped token, you will need to include some parameters in the body of your token request:
+- A `client_id` and `client_secret` that your application will use to [authenticate with Canvas](#client-credentials).
+- The Canvas resource id for the `patient` the token will be scoped to
+- A `scope` parameter with space separated patient level scopes requested for the token.
+  - Additional requested scopes should follow the pattern `patient/<ResourceName>.<read/write/*>`
+    - `patient/Appointment.*`
+    - `patient/Appointment.read patient/Appointment.write`
+    - `patient/Patient.read`
+    - `patient/Practitioner.read`
+  - Canvas provides support for the wildcard character, but highly recommends only requesting the minimal scopes and access needed and using it as a convenience when both read and write are truly required for the application.
+
+See [Resources by context](#resources-by-context) for the full list of resources a `patient/` scope can read and write.
+
+### Example curl request
+
+```bash
+curl --location --request POST \
+      'https://<your_subdomain_here>.canvasmedical.com/auth/token/' \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data-urlencode 'grant_type=client_credentials' \
+      --data-urlencode 'client_id=<client_id_from_Canvas>' \
+      --data-urlencode 'client_secret=<client_secret_from_Canvas>' \
+      --data-urlencode 'patient=abc123' \
+      --data-urlencode 'scope=patient/Patient.read patient/Appointment.* patient/Practitioner.read'
+```
+
+### Expected Response Body
+
+```json
+{
+  "access_token": "<the_access_token_to_use_in_your_request>", 
+  "expires_in": 36000, 
+  "token_type": "Bearer", 
+  "scope": "patient/Patient.read patient/Appointment.* patient/Practitioner.read", 
+  "smart_style_url": "https://canvas-storages.s3.us-west-2.amazonaws.com/fhir-static-resources/smart-style.json", 
+  "patient": "abc123", 
+  "need_patient_banner": true
+}
+```
+
+Using this access token in subsequent requests ensures that records referencing other patients cannot be retrieved through accidental or malicious misuse of the token. Canvas will also deny requests for any resource types which were not included in `scope` of the token request and requests for resource types which do not support patient-scoped tokens.
+
+**Note:** A patient scoped token must include which patient scopes are being requested. Token requests that include the patient parameter but are missing scope or request invalid scopes will be rejected.
 
 ## Scopes
 
-Scopes are useful to prevent access to unwanted parts of the API. If you're using the Client Credentials Flow, Scopes are optional, and if omitted, you'll have full access to the FHIR API. Be mindful of that.
+Scopes control which parts of the API the token can access.
 
-If you're using the Authorization Code Flow, you need to pass scopes as part of your first request to get an authorization code. These scopes follow the [Clinical Scope Syntax](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#clinical-scope-syntax) set by HL7.
+- **Client Credentials Flow:** Scopes are optional. If omitted, the token is issued with the OAuth application's configured allowed scopes.
+- **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
 
-Since Canvas currently works on a User level (e.g., the logged-in user isn't a Patient), the most relevant scopes can be found [here](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html#user-level-scopes).
+Canvas implements [SMART on FHIR scopes](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html).
 
-In short, they have the form: `user/(resourceType|*).(c|r|u|s)`, where `resourceType` can be one of the supported resources (e.g., `Patient`, `Practitioner`, etc.) or a wildcard `*`. The requested permissions come after the period, and can be `c`, `r`, `u`, or `s` for `create`, `read`, `update`, and `search` respectively.
+### Scope syntax
+
+Most scopes have the form `<context>/<resource>.<permission>`:
+
+- **`<context>`** — `user/` (staff member; mirrors EHR permissions), `patient/` (limited to the launch-context patient), or `system/` (machine-to-machine, used with Client Credentials).
+- **`<resource>`** — a FHIR resource (e.g., `Patient`) or `*` for any supported resource.
+- **`<permission>`** — `read`, `write`, or `*` (v1 / legacy), or `c` (create), `r` (read), `u` (update), `s` (search) (v2 / granular). v2 letters can be combined, e.g., `Patient.crus`.
+
+Separate multiple scopes with spaces, e.g., `user/Patient.read user/Observation.read`. URL-encode `/` as `%2F` and spaces as `%20`.
+
+Common examples:
+
+| Scope | Description |
+|---|---|
+| `user/*.read` | Read access to all resources |
+| `user/*.write` | Write access to all resources |
+| `user/*.*` | Full access to all resources |
+| `user/Patient.read` | Read Patient resources only |
+| `system/*.read` | System-level read access to all resources (used for bulk-data export, e.g., `Group/{id}/$export`) |
+
+### Launch and OpenID scopes
+
+| Scope | Description |
+|---|---|
+| `launch` | Allows external app launches |
+| `launch/patient` | Allows patient context |
+| `openid` | OpenID Connect scope |
+| `fhirUser` | Returns the authenticated user's FHIR identity |
+| `offline_access` | Requests a refresh token |
+
+### Resources by context
+
+Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
+
+**`user/`** — most clinical resources support `read`, `write`, `*`, and v2 `c r u s`. Read-only: `Coverage`, `MedicationDispense`, `Questionnaire`, `RelatedPerson`, `ServiceRequest`, `Specimen`. `Note` supports `read` and `write` only (no `*`). Resources: `*`, `AllergyIntolerance`, `CarePlan`, `CareTeam`, `Condition`, `Coverage`, `DetectedIssue`, `Device`, `DiagnosticReport`, `DocumentReference`, `Encounter`, `Goal`, `Immunization`, `Location`, `Medication`, `MedicationDispense`, `MedicationRequest`, `Note`, `Observation`, `Organization`, `Patient`, `Practitioner`, `PractitionerRole`, `Procedure`, `Provenance`, `Questionnaire`, `QuestionnaireResponse`, `RelatedPerson`, `ServiceRequest`, `Specimen`.
+
+**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints.
+
+**`patient/`** — restricted to the launch-context patient. Writable: `Appointment`, `Communication`, `Consent`, `Coverage`, `Media`, `MedicationStatement`, `Patient`, `PaymentNotice`, `QuestionnaireResponse`. All others read-only. Additional read-only resources beyond the user/system list: `Appointment`, `Communication`, `Consent`, `Media`, `MedicationStatement`, `PaymentNotice`, `Schedule`, `Slot`.
+
+### Operation scopes
+
+Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
+
+| Scope suffix | Operation |
+|---|---|
+| `Claim.add-activity-log-item` | Add an activity log entry to a Claim |
+| `DiagnosticReport.create-lab-report` | Create a lab report |
+| `Practitioner.send-reset-password-email` | Send a password-reset email to a practitioner |
 
 ## Additional reading
 - [Authentication Best Practices](/api/authentication-best-practices)
+- [Event Actor](/sdk/events/#event-actor) — how plugins identify the authenticated user

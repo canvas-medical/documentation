@@ -13,10 +13,21 @@ Creating a questionnaire via the SDK requires current requires defining a YAML t
 
 ## Creating a Questionnaire Result
 
-The `CreateQuestionnaireResult` effect causes a new entry to appear in the Social Determinants section of the left side
-of the chart.
+The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section (see [here](/sdk/questionnaires) for how to control setting `display_result_in_social_history_section` for questionnaires).
 
-This effect enables custom scoring of questionnaires in Canvas.
+
+### Attributes
+
+| Attribute    | Required | Type             | Description                                                                                                  |
+|--------------|----------|------------------|--------------------------------------------------------------------------------------------------------------|
+| interview_id | Yes      | string           | The id of the interview to associate the result with.           |
+| score        | Yes      | float            | The numerical score of the questionnaire result.                                                             |
+| abnormal     | No       | bool             | Whether the result is considered abnormal. Defaults to `False`.                                              |
+| narrative    | No       | string           | A text description of the result and any recommended follow-up actions. Defaults to an empty string.         |
+| code_system  | Yes*     | string           | The code system used to identify the questionnaire (e.g., `"INTERNAL"`).                                     |
+| code         | Yes*     | string           | The code identifying the questionnaire within the code system (e.g., `"mchat_scoring"`).                             |
+
+*Note: Questionnaire Results create an associated Observation record. The `code` and `code_system` fields are required in order to distinguish the Observation results. 
 
 ### Example
 
@@ -26,11 +37,11 @@ This effect enables custom scoring of questionnaires in Canvas.
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.questionnaire_result import CreateQuestionnaireResult
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data.command import Command
 
 
-class MChatQuestionnaireResult(BaseProtocol):
+class MChatQuestionnaireResult(BaseHandler):
     """
     Return a CreateQuestionnaireResult effect in response to a committed Questionnaire Command that
     contains questions coded for the M-CHAT questionnaire.
@@ -39,7 +50,7 @@ class MChatQuestionnaireResult(BaseProtocol):
     RESPONDS_TO = [EventType.Name(EventType.QUESTIONNAIRE_COMMAND__POST_COMMIT)]
 
     MCHAT_CODE_SYSTEM = "INTERNAL"
-    MCHAT_CODE = "mchat"
+    MCHAT_CODE = "mchat_scoring"
 
     def compute(self) -> list[Effect]:
         # Get the interview object, which will be the anchor object on the Questionnaire command.

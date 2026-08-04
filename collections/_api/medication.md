@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
          This resource is primarily used for the identification and definition of a medication for the purposes of prescribing, dispensing, and administering a medication as well as for making statements about medication use.<br><br>
-         [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-medication.html)<br><br>
+         [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medication.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-medication.html)<br><br>
          Best practice is to utilize this endpoint to find codings to feed the [Medication Statement Create/Update](/api/medicationstatement/#create). These medications come directly from our integration with FDB.
         attributes:
           - name: resourceType
@@ -45,6 +45,9 @@ sections:
                   - name: display
                     description: The display name of the coding.
                     type: string
+              - name: text
+                description: Plain text representation of the medication.
+                type: string
         endpoints: [read, search]
         search_requirements_description: A Medication Search requires either a code or _text search parameter to perform. 
         search_parameters:

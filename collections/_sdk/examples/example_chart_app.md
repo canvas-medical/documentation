@@ -44,7 +44,7 @@ example_chart_app/
     "description": "Used to test various canvas plugins functionality",
     "url_permissions": [],
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "example_chart_app.applications.my_application:MyApi",
                 "description": "Provides api for the application",
@@ -69,7 +69,7 @@ example_chart_app/
         "effects": [],
         "views": []
     },
-    "secrets": [],
+    "variables": [],
     "tags": {},
     "references": [],
     "license": "",

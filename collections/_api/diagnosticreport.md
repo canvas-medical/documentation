@@ -9,7 +9,8 @@ sections:
         description: >-
           The findings and interpretation of diagnostic tests performed on patients, groups of patients, devices, and locations, and/or specimens derived from these. The report includes clinical context such as requesting and provider information, and some mix of atomic results, images, textual and coded interpretations, and formatted representation of diagnostic reports.
           <br><br>
-          [https://hl7.org/fhir/R4/diagnosticreport.html](https://hl7.org/fhir/R4/diagnosticreport.html)<br><br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-lab.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-lab.html)<br>
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-note.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-diagnosticreport-note.html)<br><br>
           This endpoint implements the US Core DiagnosticReport Profile for Report. The following USCDI data elements are retrievable from this endpoint:<br><br>Clinical Notes:<br>- Imaging Narrative<br>- Laboratory Report Narrative<br>- Pathology Report Narrative<br>- Procedure Note<br><br>Laboratory:<br>- Tests<br>- Values/Results
         attributes:
           - name: resourceType
@@ -18,21 +19,6 @@ sections:
           - name: id
             description: The identifier of the Diagnostic Report.
             type: string
-          - name: text
-            description: Text summary of the Diagnostic Report, for human interpretation.
-            type: json
-            attributes:
-              - name: status
-                description: All reports returned from this endpoint will show a status of `generated`.
-              - name: div
-                description: Limited xhtml content that contains the human readable text of the Diagnostic Report.
-          - name: identifier
-            description: Business identifier for report.
-            type: array[json]
-            attributes:
-                - name: id 
-                  description: The identifier of the Diagnostic Report.
-                  type: string
           - name: status
             type: enum [ final | entered-in-error ]
             description: >-
@@ -112,9 +98,6 @@ sections:
               - name: reference
                 type: string
                 description: The reference string of the Encounter in the format of `"Encounter/912542cf-3bfb-4609-99f6-26ce94feb70d"`.
-              - name: id
-                type: string
-                description: Unique identifier of the Encounter.
           - name: effectiveDateTime
             type: datetime | date
             description: Clinically relevant date/time for report.
@@ -148,10 +131,7 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  description: Uri where the data can be found.
-                - name: extension
-                  type: json
-                  description: Extension for backward-compatible URLs 
+                  description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
         search_parameters:
           - name: _id
             type: string
@@ -218,7 +198,8 @@ sections:
                 "code": "73562",
                 "display": "XRAY, knee; 3 views"
             }
-        ]
+        ],
+        "text": "XRAY, knee; 3 views"
     },
     "subject":
     {

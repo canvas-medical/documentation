@@ -8,8 +8,8 @@ sections:
         article: "a"
         description: >-
           A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action. Includes companies, institutions, corporations, departments, community groups, healthcare practice groups, payer/insurer, etc.<br><br>
-          [http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html](http://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-organization.html)
-          <br><br>Organizations come from three different Canvas data types: Organizations, Vendors, and Insurers. You can manage these resources in Canvas Settings. FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-organization.html)
+          <br><br>Organizations come from four different Canvas data types: Organizations, Vendors, Insurers, and Service Providers. Organizations, Vendors, and Insurers can be managed in Canvas Settings. Service Providers are created automatically when an external provider is referenced, such as when a referral or imaging order is placed, when an external member is added to a patient's Care Team, or when an inbound fax is received. They appear as Organization participants on patient [Care Teams](/api/careteam). FHIR Organizations created by Insurers in Canvas are useful in the [FHIR Coverage](/api/coverage) payor attribute.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -37,7 +37,7 @@ sections:
                             - value: http://terminology.hl7.org/CodeSystem/v2-0203
                           type: string
                         - name: code
-                          description: The code of the clinical status.
+                          description: The code identifying the identifier type.
                           type: string
                           enum_options: 
                             - value: TAX
@@ -52,9 +52,47 @@ sections:
                   enum_options: 
                     - value: urn:oid:2.16.840.1.113883.4.4 (for Tax ID)
                     - value: http://hl7.org/fhir/sid/us-npi (for NPI)
+                    - value: http://nucc.org/provider-taxonomy (for Provider Taxonomy)
                 - name: value
                   type: string
                   description: The value that is unique.
+          - name: type
+            description: >-
+              The kind of organization. <br><br>Maps Canvas data types to the <code>http://terminology.hl7.org/CodeSystem/organization-type</code> value set:<br>
+              <code>prov</code> — ServiceProviders and Organizations<br>
+              <code>pay</code> — Transactors/Insurers<br>
+              <code>other</code> — the Canvas Vendor
+            type: array[json]
+            attributes:
+              - name: coding
+                type: array[json]
+                description: Code defined by a terminology system.
+                attributes:
+                  - name: system
+                    description: The system url of the coding.
+                    type: string
+                    enum_options:
+                      - value: http://terminology.hl7.org/CodeSystem/organization-type
+                  - name: code
+                    description: The code for the organization type.
+                    type: string
+                    enum_options:
+                      - value: prov
+                        description: Healthcare Provider
+                      - value: pay
+                        description: Payer
+                      - value: other
+                        description: Other
+                  - name: display
+                    description: The display name of the coding.
+                    type: string
+              - name: text
+                type: string
+                description: Plain text representation of the type.
+                enum_options:
+                  - value: Healthcare Provider
+                  - value: Payer
+                  - value: Other
           - name: active
             description: Whether the organization's record is still in active use. 
             type: boolean
@@ -109,6 +147,16 @@ sections:
           - name: name
             description: A portion of the organization's name
             type: string
+          - name: type
+            description: A code for the type of organization.
+            type: token
+            search_options:
+              - value: prov
+                description: Healthcare Provider
+              - value: pay
+                description: Payer
+              - value: other
+                description: Other
         endpoints: [read, search]
         read:
           description: Read an Organization resource.
@@ -156,6 +204,18 @@ sections:
             },
             "system": "urn:oid:2.16.840.1.113883.4.4",
             "value": "123456789"
+        }
+    ],
+    "type": [
+        {
+            "coding": [
+                {
+                    "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                    "code": "prov",
+                    "display": "Healthcare Provider"
+                }
+            ],
+            "text": "Healthcare Provider"
         }
     ],
     "active": true,
@@ -293,6 +353,18 @@ sections:
             "resource": {
                 "resourceType": "Organization",
                 "id": "00000000-0000-0000-0002-000000000000",
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                "code": "other",
+                                "display": "Other"
+                            }
+                        ],
+                        "text": "Other"
+                    }
+                ],
                 "active": true,
                 "name": "Canvas Medical",
                 "telecom": [
@@ -347,6 +419,18 @@ sections:
                         },
                         "system": "urn:oid:2.16.840.1.113883.4.4",
                         "value": "123456789"
+                    }
+                ],
+                "type": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/organization-type",
+                                "code": "prov",
+                                "display": "Healthcare Provider"
+                            }
+                        ],
+                        "text": "Healthcare Provider"
                     }
                 ],
                 "active": true,

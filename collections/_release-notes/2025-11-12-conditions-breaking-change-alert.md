@@ -1,5 +1,5 @@
 ---
-title: Upcoming Breaking Change - Condtion Category
+title: Upcoming Breaking Change - Condition Category
 date: 2025-11-12 14:00:00
 layout: productupdates
 tags: breaking-change

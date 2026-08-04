@@ -9,13 +9,15 @@ sections:
         description: >-
           Measurements and simple assertions made about a patient, device or other subject.<br><br>
           Canvas supports the following US Core Profiles for Observations:<br>
-            - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU3.1.1/StructureDefinition-us-core-observation-lab.html)
-            - [US Core Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
-            - [US Core Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
-            - [US Core Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
-            - [US Core Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
+            - [US Core Observation Clinical Result Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-clinical-result.html)
+            - [US Core Laboratory Result Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-lab.html)
+            - [US Core Observation Occupation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-occupation.html)
+            - [US Core Observation Pregnancy Intent Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancyintent.html)
+            - [US Core Observation Pregnancy Status Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-pregnancystatus.html)
+            - [US Core Observation Screening Assessment Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-screening-assessment.html)
+            - [US Core Observation Sexual Orientation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-observation-sexual-orientation.html)
             - [US Core Simple Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
-            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-simple-observation.html)
+            - [US Core Smoking Status Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-smokingstatus.html)
             - [US Core Vital Signs Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-vital-signs.html)
             - [US Core Pediatric Head Occipital-frontal Circumference Percentile Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-head-occipital-frontal-circumference-percentile.html)
             - [US Core Pediatric BMI for Age Observation Profile](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-pediatric-bmi-for-age.html)
@@ -35,16 +37,14 @@ sections:
             - Laboratory Values/Results
             - Smoking Status
 
-          <br><br>
-
-            Here are some Canvas specific workflows where observations will be created:
+          Here are some Canvas specific workflows where observations will be created:
 
             1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)<br>
             2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`). <br>
             3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it. <br>
             4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
-            4. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
-            5. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
+            5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
+            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
               
         attributes:
           - name: resourceType
@@ -55,10 +55,9 @@ sections:
             exclude_in: create
             description: The Canvas identifier of the observation
           - name: status
-            required_in: create
             type: enum [ final | unknown | entered-in-error ]
             description: The status of the result value. 
-            create_description: The status of the result value. In Canvas only `final` committed vitals can be created.
+            create_description: The status of the result value. Observations created via the FHIR API can only be `final`.
             required_in: create
           - name: category
             type: array[json]
@@ -74,6 +73,7 @@ sections:
                     type: string
                     enum_options:
                       - value: http://terminology.hl7.org/CodeSystem/observation-category
+                      - value: http://hl7.org/fhir/us/core/CodeSystem/us-core-category
                   - name: code
                     description: The code of the observation.
                     type: string
@@ -87,13 +87,16 @@ sections:
                       - value: exam
                       - value: therapy
                       - value: activity
+                      - value: sdoh
+                      - value: functional-status
+                      - value: cognitive-status
+                      - value: disability-status
                   - name: display
                     description: The display name of the coding.
                     type: string
                     enum_options: 
                       - value: Vital Signs
                       - value: Social History
-                      - value: Vital Signs
                       - value: Imaging
                       - value: Laboratory
                       - value: Procedure
@@ -101,6 +104,10 @@ sections:
                       - value: Exam
                       - value: Therapy
                       - value: Activity
+                      - value: SDOH
+                      - value: Functional Status
+                      - value: Cognitive Status
+                      - value: Disability Status
           - name: code
             type: json
             exclude_in: read, search
@@ -145,7 +152,7 @@ sections:
                     required_in: create
           - name: code
             type: json
-            exclude_in: create, update
+            exclude_in: create
             description: Describes what was observed.
             attributes: 
               - name: extension
@@ -156,8 +163,8 @@ sections:
                       description: Reference that defines the content of this object.
                       enum_options:
                         - value: http://hl7.org/fhir/StructureDefinition/data-absent-reason
-                    - name: valueString
-                      type: string
+                    - name: valueCode
+                      type: code
                       description: The reason the Observation.coding attribute is missing. 
                       enum_options:
                         - value: unsupported
@@ -208,7 +215,7 @@ sections:
               If omitted from create, Canvas will save a default value of the current datetime.
           - name: effectivePeriod
             type: json
-            exclude_in: create, update
+            exclude_in: create
             description: Clinically relevant time/time-period for observation.
             read_and_search_description: >-
               Clinically relevant time/time-period for observation.<br><br>
@@ -221,6 +228,16 @@ sections:
               - name: end
                 type: datetime
                 description: End time with inclusive boundary, if not ongoing
+          - name: performer
+            type: array[json]
+            description: Who is responsible for the observation
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the performer in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"` or `"Patient/a39cafb9d1b445be95a2e2548e12a787"`. Performer can be a Practitioner or a Patient.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Practitioner" or "Patient").
           - name: issued
             type: datetime
             exclude_in: create
@@ -241,6 +258,8 @@ sections:
                   -  pulse rate<br>
                   -  oxygen saturation<br>
                   -  respiration rate
+
+              A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
             attributes:
               - name: value
                 type: number
@@ -267,7 +286,6 @@ sections:
                   - value: "[degF]"
                   - value: "mm[Hg]"
                   - value: "%"
-                  - value: "[in_i]"
                   - value: "/min"
                   - value: "kg/m2"
                   - value: "L/min"
@@ -364,6 +382,19 @@ sections:
               - name: type
                 type: string
                 description: Type the reference refers to (e.g. "Observation", "QuestionnaireResponse").
+          - name: specimen
+            type: json
+            exclude_in: create
+            description: >-
+              Reference to the Specimen resource that was used for this observation.<br><br>
+              This field is populated for laboratory observations that have an associated specimen from a lab order. The specimen reference includes the specimen's externally exposable ID.
+            attributes:
+              - name: reference
+                type: string
+                description: The reference string of the specimen in the format of `"Specimen/0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d"`.
+              - name: type
+                type: string
+                description: Type the reference refers to (e.g. "Specimen").
           - name: component
             type: array[json]
             description: Component results. <br><br> Currently only used for blood pressure observations to display the systolic and diastolic components.
@@ -407,7 +438,7 @@ sections:
                           - value: Diastolic blood pressure
               - name: valueCodeableConcept
                 type: json
-                exclude_in: create, update
+                exclude_in: create
                 description: >-
                   Actual component result.<br><br>
                   Used when a component is represented by a value that is a reference to one or more terminologies or ontologies.
@@ -457,6 +488,10 @@ sections:
                     description: Coded form of the unit
                     enum_options:
                       - value: "mm[Hg]"
+              - name: valueString
+                type: string
+                exclude_in: create
+                description: Actual component result, when the value is non-numeric and not coded.
               - name: dataAbsentReason
                 type: json
                 exclude_in: create
@@ -503,8 +538,8 @@ sections:
 
               Use this search parameter to find all observations of a specific vital panel or questionnaire response observations from the same interview.
             search_options: 
-              - value: QuestionnaireResponse/_id
-              - value: Observation/_id
+              - value: QuestionnaireResponse/{id}
+              - value: Observation/{id}
           - name: patient
             type: string
             description: The patient reference associated to the observation in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -683,6 +718,13 @@ print(response.text)
         "type": "Patient"
     },
     "effectiveDateTime": "2022-06-28T20:18:54.141759+00:00",
+    "performer":
+    [
+        {
+            "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+            "type": "Practitioner"
+        }
+    ],
     "issued": "2022-06-28T20:43:10.465819+00:00",
     "dataAbsentReason": {
         "coding": [
@@ -791,7 +833,7 @@ print(response.text)
       "severity": "error",
       "code": "not-found",
       "details": {
-        "text": "Unknown coverage resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
+        "text": "Unknown Observation resource 'a47c7b0ebbb442cdbc4adf259d148ea1'"
       }
     }
   ]
@@ -858,6 +900,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.633932+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.651181+00:00",
                 "dataAbsentReason": {
                     "coding": [
@@ -922,6 +971,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.754424+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.756630+00:00",
                 "valueQuantity": {
                     "value": 69.0,
@@ -972,6 +1028,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.744026+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.745602+00:00",
                 "valueQuantity": {
                     "value": 98.0,
@@ -1056,6 +1119,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.739851+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.741587+00:00",
                 "valueString": "Regular",
                 "derivedFrom": [
@@ -1096,6 +1166,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-09T18:35:35.714893+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:35:35.716508+00:00",
                 "valueString": "120/80 mmHg",
                 "derivedFrom": [
@@ -1172,6 +1249,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.029091+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1220,6 +1304,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.024815+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1268,6 +1359,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.020391+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1316,6 +1414,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:38.012952+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1363,6 +1468,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.198162+00:00",
                 "dataAbsentReason": {
                     "coding": [
@@ -1417,6 +1529,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.256507+00:00",
                 "valueString": "test"
             }
@@ -1451,7 +1570,18 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-03T07:00:00+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T20:11:12.243418+00:00",
+                "specimen": {
+                    "reference": "Specimen/0a5d9e1f-1c64-4d04-a2bb-2a58e34f9f6d",
+                    "type": "Specimen"
+                },
                 "valueQuantity": {
                     "value": 1.0,
                     "unit": "ratio",
@@ -1488,6 +1618,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-09T18:41:37.996595+00:00",
                 "valueQuantity": {
                     "value": 4.0,
@@ -1531,6 +1668,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.819506+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1579,6 +1723,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:34.594656+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.805651+00:00",
                 "valueCodeableConcept": {
                     "coding": [
@@ -1627,6 +1778,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.781371+00:00",
                 "valueQuantity": {
                     "value": 90.0,
@@ -1672,6 +1830,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.766580+00:00",
                 "valueQuantity": {
                     "value": 37.0,
@@ -1717,6 +1882,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.751224+00:00",
                 "valueQuantity": {
                     "value": 20.0,
@@ -1762,6 +1934,13 @@ print(response.text)
                     "type": "Patient"
                 },
                 "effectiveDateTime": "2024-04-08T18:58:45.616779+00:00",
+                "performer":
+                [
+                    {
+                        "reference": "Practitioner/883f7147517e444fb746cdac3860b0dc",
+                        "type": "Practitioner"
+                    }
+                ],
                 "issued": "2024-04-08T18:58:45.629738+00:00",
                 "dataAbsentReason": {
                     "coding": [

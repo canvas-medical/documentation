@@ -62,6 +62,8 @@ staff.top_role_abbreviation
 # MD
 ```
 
+When a staff member holds more than one role, `top_clinical_role` looks only at roles in a clinical domain — those whose `domain` is `CLINICAL` or `HYBRID` — and returns the one with the highest `domain_privilege_level`. Administrative roles are never selected, even if they carry a higher privilege level. If the staff member has no clinical or hybrid roles, both `top_clinical_role` and `top_role_abbreviation` are `None`. Because `credentialed_name` appends `top_role_abbreviation`, it reflects the same highest-privilege clinical role.
+
 To get `Staff` licenses. 
 
 ```python
@@ -71,6 +73,19 @@ staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 staff.licenses.all()
 # <QuerySet [<StaffLicense: CA License for Larry Weed>]>
 
+```
+
+## Accessing the staff signature
+
+The `signature_url` property returns a presigned S3 URL for securely accessing the staff member's signature file, when one is on file. If no signature has been uploaded, the property returns `None`.
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+# Returns a presigned S3 URL (valid for 1 hour) or None
+url = staff.signature_url
 ```
 
 ## Attributes
@@ -113,16 +128,41 @@ staff.licenses.all()
 | tax_id_type                | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)             |
 | spi_number                 | String                                                          |
 | personal_meeting_room_link | URL                                                             |
+| language                   | Language                                                        |
+| language_secondary         | Language                                                        |
+| schedule_column_ordering   | Integer                                                         |
 | state                      | JSON                                                            |
 | user                       | [CanvasUser](/sdk/data-canvasuser)                              |
+| signature                  | String                                                          |
 | supervising_team           | [Staff](#staff)[]                                               |
+| default_supervising_provider | [Staff](#staff)                                               |
 | notes                      | Note[]                                                          |
+| supervised_notes           | Note[]                                                          |
 | creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
 | assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
 | comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
 | care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
 | teams                      | [Team](/sdk/data-team/#team)[]                                  |
 | telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
+| external_identifiers       | [StaffExternalIdentifier](#staffexternalidentifier)[]           |
+| metadata                   | [StaffMetadata](#staffmetadata)[]                               |
+| addresses                  | [StaffAddress](#staffaddress)[]                                 |
+| photos                     | [StaffPhoto](#staffphoto)[]                                     |
+| roles                      | [StaffRole](#staffrole)[]                                       |
+| licenses                   | [StaffLicense](#stafflicense)[]                                 |
+| letters                    | [Letter](/sdk/data-letter/#letter)[]                            |
+| imaging_orders             | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]               |
+| immunizations_given        | [Immunization](/sdk/data-immunization/#immunization)[]          |
+| supervising_prescriptions  | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
+| default_patients           | [Patient](/sdk/data-patient/#patient)[]                         |
+| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
+| transmissions_delivered    | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |
+| integration_task_reviews   | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
+| assignee_note_tasks        | [NoteTask](/sdk/data-task/#notetask)[]                          |
+| appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
+| prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| note_set                   | [Note](/sdk/data-note/#note)[]                                  |
 
 ### StaffContactPoint
 
@@ -201,6 +241,61 @@ staff.licenses.all()
 | permissions            | JSON                       |
 | role_type              | [RoleType](#role-type)     |
 
+### StaffExternalIdentifier
+
+| Field Name      | Type            |
+| --------------- | --------------- |
+| id              | UUID            |
+| dbid            | Integer         |
+| created         | DateTime        |
+| modified        | DateTime        |
+| staff           | [Staff](#staff) |
+| use             | String          |
+| identifier_type | String          |
+| system          | String          |
+| value           | String          |
+| issued_date     | Date            |
+| expiration_date | Date            |
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+from logger import log
+
+staff_id = "4150cd20de8a470aa570a852859ac87e"
+staff = Staff.objects.get(id=staff_id)
+
+for identifier in staff.external_identifiers.all():
+    log.info(f"Staff external identifier: {identifier.system}, {identifier.value}")
+    # https://www.example.com - employee-001
+```
+
+### StaffMetadata
+
+| Field Name | Type            |
+| ---------- | --------------- |
+| id         | UUID            |
+| dbid       | Integer         |
+| created    | DateTime        |
+| modified   | DateTime        |
+| staff      | [Staff](#staff) |
+| key        | String          |
+| value      | String          |
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+from logger import log
+
+staff_id = "4150cd20de8a470aa570a852859ac87e"
+staff = Staff.objects.get(id=staff_id)
+
+for metadata in staff.metadata.all():
+    log.info(f"{metadata.key}={metadata.value}")
+```
+
+`StaffMetadata` is a free-form key/value store on a staff member, mirroring
+`PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
+one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
+to upsert it from a plugin.
 
 ## Enumeration types
 
@@ -236,7 +331,12 @@ staff.licenses.all()
 
 ## Computed Properties
 
+- `full_name`: The staff member's first and last name (for example, `Larry Weed`).
+- `credentialed_name`: The staff member's full name suffixed with their topmost credential abbreviation (for example, `Larry Weed MD`).
+- `top_clinical_role`: The staff member's highest-ranking clinical [StaffRole](#staffrole), selected by privilege level when they hold more than one, or `None` if they have no clinical role.
+- `top_role_abbreviation`: The public credential abbreviation of the `top_clinical_role` (for example, `MD`), or `None` if there is no clinical role.
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
+- `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 
 
 <br/>

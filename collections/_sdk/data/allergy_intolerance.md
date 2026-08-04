@@ -71,6 +71,8 @@ allergies = AllergyIntolerance.objects.filter(status="active")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -90,7 +92,6 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | dbid                           | Integer                                                 |
 | created                        | DateTime                                                |
 | modified                       | DateTime                                                |
-| deleted                        | Boolean                                                 |
 | committer                      | [CanvasUser](/sdk/data-canvasuser)                      |
 | entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient                        | [Patient](/sdk/data-patient/#patient)                   |

@@ -89,6 +89,8 @@ observations = Observation.objects.filter(effective_datetime__gte="2024-11-20")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -111,10 +113,9 @@ observations = Observation.objects.find(Weight)
 | originator         | [CanvasUser](/sdk/data-canvasuser)                  |
 | committer          | [CanvasUser](/sdk/data-canvasuser)                  |
 | entered_in_error   | [CanvasUser](/sdk/data-canvasuser)                  |
-| deleted            | Boolean                                             |
 | patient            | [Patient](/sdk/data-patient/#patient)               |
 | is_member_of       | [Observation]( #observation)                        |
-| category           | String                                              |
+| category           | String (comma-separated list of categories |
 | units              | String                                              |
 | value              | String                                              |
 | note_id            | Integer                                             |

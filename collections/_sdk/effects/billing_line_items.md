@@ -25,12 +25,12 @@ instance of it, and return the `.apply()` method from compute.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Command, Assessment
 from canvas_sdk.effects.billing_line_item import AddBillingLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PERFORM_COMMAND__POST_ORIGINATE)
     ]
@@ -61,6 +61,8 @@ class Protocol(BaseProtocol):
 
 ```
 
+You don't set the line item's description in your plugin. When the line item is created, Canvas matches the `cpt` to a [ChargeDescriptionMaster](/sdk/data-charge-description-master/) charge and populates the description from that charge's `short_name`, truncated to 255 characters. If no charge matches the `cpt`, the description is left empty.
+
 ## Updating a Billing Line Item
 
 To update a billing line item to a note, import the `UpdateBillingLineItem` class, create an
@@ -79,12 +81,12 @@ instance of it, and return the `.apply()` method from compute.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Assessment, Command, BillingLineItem
 from canvas_sdk.effects.billing_line_item import UpdateBillingLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PERFORM_COMMAND__POST_COMMIT)
     ]
@@ -129,12 +131,12 @@ instance of it, and return the `.apply()` method from compute.
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
-from canvas_sdk.protocols import BaseProtocol
+from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Command, BillingLineItem
 from canvas_sdk.effects.billing_line_item import RemoveBillingLineItem
 
 
-class Protocol(BaseProtocol):
+class MyHandler(BaseHandler):
     RESPONDS_TO = [
         EventType.Name(EventType.PERFORM_COMMAND__POST_ENTER_IN_ERROR)
     ]

@@ -237,7 +237,7 @@ null
     "name": "charting_api_examples",
     "description": "A series of custom API routes that showcase SDK charting functionality",
     "components": {
-        "protocols": [
+        "handlers": [
             {
                 "class": "charting_api_examples.routes.notes:NoteAPI",
                 "description": "Endpoints that showcase interactions with notes."
@@ -256,7 +256,9 @@ null
         "effects": [],
         "views": []
     },
-    "secrets": ["simpleapi-api-key"],
+    "variables": [
+        {"name": "simpleapi-api-key", "sensitive": true}
+    ],
     "tags": {},
     "references": [],
     "license": "",

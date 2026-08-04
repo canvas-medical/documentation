@@ -10,6 +10,7 @@ url: "https://docs.canvasmedical.com" # the base hostname & protocol for your si
 theme_color: '#eee9d9'
 logo: assets/images/canvas-docs-meta.png
 timezone: America/Los_Angeles
+future: true
 
 ### Cookie consent
 #cookie_consent: true
@@ -32,6 +33,9 @@ collections:
   sdk:
     output: true
     permalink: /:collection/:title/
+  fdb-changelogs:
+    output: true
+    permalink: /:collection/:title/
   learn:
     output: true
     permalink: /:collection/:title/
@@ -41,6 +45,7 @@ defaults:
       path          : "collections/_api/**/*"
     values:
       layout        : "api"
+      excerpt_separator: ""
   - scope:
       path          : "collections/_documentation/**/*"
     values:
@@ -57,6 +62,10 @@ defaults:
       path          : "collections/_sdk/**/*"
     values:
       layout        : "sdk"
+  - scope:
+      path          : "collections/_fdb-changelogs/**/*"
+    values:
+      layout        : "fdb-changelog"
   - scope:
       path          : "collections/_learn/**/*"
     values:
@@ -89,6 +98,8 @@ plugins:
 
 ### Exclude from processing
 exclude:
+  - .devbox
+  - .venv
   - Gemfile
   - Gemfile.lock
   - README.md
@@ -97,8 +108,16 @@ exclude:
   - _src
   - amplify.yml
   - config
+  - context_extractor.py
+  - customHttp.yml
+  - generate-context.py
+  - generate-llms.py
   - icon.png
+  - mypy.ini
   - node_modules
+  - pyproject.toml
+  - test-code-blocks.py
+  - uv.lock
   - optimization-fix
   - optimization-fix-this-file-is-ignored.js
   - package.json
