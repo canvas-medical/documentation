@@ -2387,6 +2387,7 @@ update_goal = UpdateGoalCommand(
 | `pulse_rhythm`                     | _[PulseRhythm](#pulserhythm)_    | `false`  | Rhythm of the pulse.                             |
 | `respiration_rate`                 | _integer_ | `false`  | Respiration rate in breaths per minute.          |
 | `oxygen_saturation`                | _integer_ | `false`  | Oxygen saturation in percentage.                 |
+| `supplemental_oxygen`              | _[SupplementalOxygen](#supplementaloxygen)_    | `false`  | Type of supplemental oxygen the patient is receiving. |
 | `note`                             | _string_  | `false`  | Additional notes (max length: 150 characters).   |
 
 **Enums and Types**:
@@ -2420,6 +2421,15 @@ update_goal = UpdateGoalCommand(
 | `IRREGULARLY_IRREGULAR` | `1`   | Completely irregular rhythm. |
 | `REGULARLY_IRREGULAR`   | `2`   | Regularly irregular rhythm.  |
 
+
+<a id="supplementaloxygen"></a>
+
+| SupplementalOxygen     | Value           | Description                               |
+|------------------------|-----------------|-------------------------------------------|
+| `CONTINUOUS_HIGH_FLOW` | `"LA28684-1"`   | Continuous high-flow supplemental oxygen. |
+| `CONTINUOUS_LOW_FLOW`  | `"LA28685-8"`   | Continuous low-flow supplemental oxygen.  |
+| `INTERMITTENT`         | `"LA28686-6"`   | Intermittent supplemental oxygen.         |
+
 **Example**:
 
 ```python
@@ -2436,6 +2446,7 @@ VitalsCommand(
     pulse=72,
     pulse_rhythm=VitalsCommand.PulseRhythm.REGULAR,
     oxygen_saturation=98,
+    supplemental_oxygen=VitalsCommand.SupplementalOxygen.INTERMITTENT,
     note="Vitals are within normal range."
 )
 ```
