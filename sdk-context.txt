@@ -728,8 +728,82 @@ The dropdown of options presented to the user now reflects our modifications!
 ##  Understanding Search Result Data Structures 
 The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
+##  Offering your own providers alongside the directory 
+The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external care team — search the shared contact directory by default. Providers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you maintain your own directory you have to offer them yourself.
+The pattern is the same on all four surfaces: query your own [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and return the combined list.
+**Use the POST_SEARCH event, not PRE_SEARCH.** Only the post-search context carries what the directory returned, in `context["results"]`. On a pre-search that list is empty, so there is nothing to merge with — and on a command pre-search any `AUTOCOMPLETE_SEARCH_RESULTS` effect you return is authoritative, which means an empty reply blanks the dropdown instead of leaving it alone.
+Which helper you call depends on the surface:
+Surface | Event | Helper  
+---|---|---  
+Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()`  
+Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()`  
+Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()`  
+External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()`  
+    ```python
+    import json
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import ServiceProvider
+    # Cap the query so a loose search term cannot pull your whole table into the sandbox.
+    MAX_LOCAL_PROVIDERS = 200
+    # The sandbox has no Q objects, so each field is queried separately and unioned in Python.
+    SEARCHABLE_FIELDS = ("first_name", "last_name", "practice_name", "specialty")
+    def matching_providers(search_term):
+        matches = {}
+        for field in SEARCHABLE_FIELDS:
+            providers = ServiceProvider.objects.filter(
+                is_active=True, **{f"{field}__icontains": search_term}
+            )[:MAX_LOCAL_PROVIDERS]
+            for provider in providers:
+                matches.setdefault(provider.dbid, provider)
+        return list(matches.values())[:MAX_LOCAL_PROVIDERS]
+    class ContactDirectorySearch(BaseHandler):
+        """Offer our own providers above the directory's on the fax and care team searches."""
+        RESPONDS_TO = [
+            EventType.Name(EventType.FAX__RECIPIENT__POST_SEARCH),
+            EventType.Name(EventType.PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH),
+        ]
+        def compute(self):
+            search_term = str(self.event.context.get("search_term") or "").strip()
+            if not search_term:
+                # An empty term must not push the entire local directory into the dropdown.
+                return self.no_opinion()
+            matches = matching_providers(search_term)
+            if not matches:
+                return self.no_opinion()
+            ours = [
+                provider.as_search_contact(["Our directory"])
+                for provider in matches
+            ]
+            # Keep the directory's results underneath, minus anyone we already offered.
+            superseded = {provider.full_name.lower() for provider in matches}
+            theirs = [
+                result
+                for result in (self.event.context.get("results") or [])
+                if f"{result.get('firstName') or ''} {result.get('lastName') or ''}".strip().lower()
+                not in superseded
+            ]
+            return [
+                Effect(
+                    type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
+                    payload=json.dumps(ours + theirs),
+                )
+            ]
+        def no_opinion(self):
+            """A null payload means "keep whatever the search already found"."""
+            return [
+                Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))
+            ]
+    ```
+For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for `as_search_result()`. The merge is the same, except the directory's results carry their display name in `text` rather than in `firstName` / `lastName`.
+A few things worth carrying over into your own version:
+  - **Filter to`is_active=True`.** Deactivating a provider is how a customer retires it, so offering a deactivated one invites picking it again.
+  - **Return a null payload when you have nothing to add** , rather than an empty list. On the contact surfaces an empty list clears the results.
+  - **Prefer your own record when it duplicates a directory contact.** Selecting your record threads its `service_provider_id` through to the commit, so the existing row is reused instead of a near-duplicate being written. Match conservatively — listing a provider twice is a smaller failure than hiding one.
+  - **Annotate what you add** so the user can tell your entries from the directory's.
 ##  Accessing User Context 
-All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for command fields like prescriber, medication, diagnosis, pharmacy, and many others. It also includes the non-command fax recipient and external care team directory searches listed under [Other Events](/sdk/events/#other-events). All of these searches can be customized the same way.
 You can access the user's staff key from the context:
     ```python
     def compute(self):
@@ -7064,6 +7138,7 @@ Name | Type | Required to commit | Description
 `pulse_rhythm` | _PulseRhythm_ | `false` | Rhythm of the pulse.  
 `respiration_rate` | _integer_ | `false` | Respiration rate in breaths per minute.  
 `oxygen_saturation` | _integer_ | `false` | Oxygen saturation in percentage.  
+`supplemental_oxygen` | _SupplementalOxygen_ | `false` | Type of supplemental oxygen the patient is receiving.  
 `note` | _string_ | `false` | Additional notes (max length: 150 characters).  
 **Enums and Types** :
 BodyTemperatureSite | Value | Description  
@@ -7084,6 +7159,11 @@ PulseRhythm | Value | Description
 `REGULAR` | `0` | Regular rhythm.  
 `IRREGULARLY_IRREGULAR` | `1` | Completely irregular rhythm.  
 `REGULARLY_IRREGULAR` | `2` | Regularly irregular rhythm.  
+SupplementalOxygen | Value | Description  
+---|---|---  
+`CONTINUOUS_HIGH_FLOW` | `"LA28684-1"` | Continuous high-flow supplemental oxygen.  
+`CONTINUOUS_LOW_FLOW` | `"LA28685-8"` | Continuous low-flow supplemental oxygen.  
+`INTERMITTENT` | `"LA28686-6"` | Intermittent supplemental oxygen.  
 **Example** :
     ```python
     from canvas_sdk.commands import VitalsCommand
@@ -7098,6 +7178,7 @@ PulseRhythm | Value | Description
         pulse=72,
         pulse_rhythm=VitalsCommand.PulseRhythm.REGULAR,
         oxygen_saturation=98,
+        supplemental_oxygen=VitalsCommand.SupplementalOxygen.INTERMITTENT,
         note="Vitals are within normal range."
     )
     ```
@@ -17041,9 +17122,15 @@ user_selected | Boolean
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-serviceprovider/
 ##  Introduction 
-This module defines the data models used to manage Service Provider in the Canvas SDK.
+A `ServiceProvider` is an external provider or organization — someone outside your practice that a patient's care touches. The same record backs every surface in Canvas where an outside provider gets picked:
+  - The contact selected as the recipient of a [Refer](/sdk/commands/#refer) command.
+  - The imaging center selected on an [Imaging Order](/sdk/commands/#imagingorder) command.
+  - An external care team member added to a patient's profile.
+  - The recipient of an outbound fax, and the matched sender of an inbound one — Data Integration looks up the sending fax number in the contact directory and links the resulting provider to the incoming document, which is what the `integration_tasks` relation below exposes.
+Service providers come from two places. Most are drawn from the shared external contact directory, which is what those surfaces search by default and which you can query yourself with [`GET /contacts/`](/sdk/utils/#searching-for-contacts-and-service-providers). You can also build your own directory: providers created through the [ServiceProvider effect](/sdk/effect-service-provider/) belong to your instance and are flagged with `is_customer_managed`.
+Your own providers are not searched automatically. To offer them in one of the surfaces above, handle that surface's search event and return them yourself — see the helpers under Search results below, and [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory) for a worked handler covering all four surfaces.
 ##  Basic usage 
-To retrieve an `ServiceProvider` by identifier, use the `get` method on the model manager:
+To retrieve a `ServiceProvider` by identifier, use the `get` method on the model manager:
     ```python
     from canvas_sdk.v1.data.service_provider import ServiceProvider
     service_provider = ServiceProvider.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
@@ -17066,21 +17153,78 @@ To show a `ServiceProvider` full name or full name with specialty use the proper
     ```
 ##  Service Provider 
 ###  Fields 
-Name | Type  
+Name | Type | Description  
+---|---|---  
+id | UUID | Unique identifier  
+dbid | Integer | Internal database identifier  
+first_name | String | Provider name, or the organization name  
+last_name | String | Empty for organizations  
+business_fax | String |   
+business_phone | String |   
+business_address | String |   
+specialty | String | Free text  
+practice_name | String |   
+notes | String |   
+is_active | Boolean | `False` once deactivated; the provider is kept, not deleted  
+npi | String | 10 digits  
+direct_address | String | Direct address  
+is_customer_managed | Boolean | `True` for providers created through the SDK — see below  
+science_contact_id | Integer | The shared directory contact this provider came from, or `None` if it came from none. Not a reliable provenance signal on its own — providers that predate this tracking have no value — so use `is_customer_managed` to identify a customer's own providers.  
+imaging_orders | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)] | Imaging orders sent to this provider  
+referrals | QuerySet[[Referral](/sdk/data-referral/#referral)] | Referrals sent to this provider  
+integration_tasks | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)] | Integration tasks associated with this provider  
+##  Customer-managed providers 
+`is_customer_managed` is `True` for providers created with the [Service Provider effects](/sdk/effect-service-provider/), and `False` for everything else.
+    ```python
+    from canvas_sdk.v1.data.service_provider import ServiceProvider
+    ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
+    ```
+This is also how you find an existing customer-managed provider — to get its `id` — before updating or deactivating it with the [Service Provider effects](/sdk/effect-service-provider/).
+##  Search results 
+Two helpers shape a provider for the provider-search surfaces, so you do not have to build the payloads yourself. Both take an optional list of annotations, shown next to the result.
+Method | Use it for  
 ---|---  
-id | UUID  
-dbid | Integer  
-first_name | String  
-last_name | String  
-business_fax | String  
-business_phone | String  
-business_address | String  
-specialty | String  
-practice_name | String  
-notes | String  
-imaging_orders | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)]  
-referrals | QuerySet[[Referral](/sdk/data-referral/#referral)]  
-integration_tasks | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)]
+`as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order  
+`as_search_contact(annotations=None)` | The fax recipient and external care team dropdowns  
+Both identify the provider, so selecting one attaches to that exact record.
+The two helpers return different shapes, and the key casing below matches the serialized payload exactly:
+  - `as_search_result(annotations=None)` returns `text`, `value`, `description`, and `annotations` at the top level, plus an `extra.contact` object containing `service_provider_id`, `science_contact_id`, `firstName`, `lastName`, `businessFax`, `businessPhone`, `businessAddress`, `specialty`, `practiceName`, and `notes`.
+  - `as_search_contact(annotations=None)` returns a flat object: `id`, `serviceProviderId`, `firstName`, `lastName`, `practiceName`, `specialty`, `businessAddress`, `businessPhone`, `businessFax`, and `annotations`.
+    ```python
+    import json
+    from canvas_sdk.effects import Effect, EffectType
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data.service_provider import ServiceProvider
+    class OwnDirectoryFirst(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.FAX__RECIPIENT__PRE_SEARCH), EventType.Name(EventType.PATIENT_PROFILE__EXTERNAL_CARE_TEAM__PRE_SEARCH)]
+        def compute(self):
+            term = self.event.context.get("search_term", "").strip()
+            if not term:
+                return []
+            providers = ServiceProvider.objects.filter(
+                is_customer_managed=True, first_name__icontains=term
+            )
+            if not providers:
+                return []
+            return [
+                Effect(
+                    type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
+                    payload=json.dumps(
+                        [
+                            provider.as_search_contact(
+                                [] if provider.is_active else ["Inactive"]
+                            )
+                            for provider in providers
+                        ]
+                    ),
+                )
+            ]
+    ```
+Both surfaces reply with the same `AUTOCOMPLETE_SEARCH_RESULTS` effect. Only the event you subscribe to and the helper you call differ.
+What you return means different things on each surface:
+  - **Contact dropdowns, pre-search** — results replace the search; returning nothing runs the normal search instead.
+  - **Command searches, post-search** — an empty list clears the results, so return no effect at all when you have nothing to add.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-serviceprovider/
 
 
@@ -18536,6 +18680,17 @@ The batch originate effect processes multiple commands in a single operation:
   1. **Command Preparation** : Each command in the list required all necessary fields for `originate`
   2. **Note Update** : The note is updated once with all command UUIDs, rather than updating for each command individually
 This approach minimizes database round-trips and improves overall performance.
+##  Commit behavior 
+`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. Unlike a single command's `originate(commit=True)`, the batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
+Batch originating commands in a committed state is **not supported** , by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation. Committing is a separate, per-command action with no equivalent batch saving, so there would be no performance benefit over originating each command individually in a committed state.
+If you need commands committed on origination, originate them individually with `commit=True` instead:
+    ```python
+    # Commit at origination time, one command per effect
+    return [
+        plan1.originate(commit=True),
+        diagnose.originate(commit=True),
+    ]
+    ```
 ##  Basic Usage 
     ```python
     from canvas_sdk.commands import (
@@ -23434,6 +23589,88 @@ When an effect is prepared, the model validates inputs and returns structured er
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-send-contact-verification/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-service-provider/
+The Service Provider effects let a plugin build and maintain its own directory of external providers. Providers created this way are readable through the [ServiceProvider](/sdk/data-serviceprovider/) data model — where they are flagged with `is_customer_managed` — and can be offered in the provider-search surfaces by [handling those searches yourself](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+##  Create Service Provider 
+Creates a service provider, or updates a matching one.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`first_name` | `str` | Provider name, or the organization name | Yes  
+`specialty` | `str` | Free text | Yes  
+`business_address` | `str` | Business address | Yes  
+`last_name` | `str` or `None` | Omit for organizations | No  
+`practice_name` | `str` or `None` | Practice or organization name | No  
+`business_phone` | `str` or `None` | Business phone number | No  
+`business_fax` | `str` or `None` | Business fax number | No  
+`npi` | `str` or `None` | Exactly 10 digits | No  
+`direct_address` | `str` or `None` | Up to 512 characters | No  
+`notes` | `str` or `None` | Free-text notes | No  
+`is_active` | `bool` | Defaults to `True` | No  
+The required fields reject empty strings.
+###  Calling create more than once 
+Creating never produces a duplicate. These four fields together identify a provider:
+  - `first_name`
+  - `last_name`
+  - `specialty`
+  - `business_address`
+If a provider already exists with the same values for all four, the create updates that provider rather than adding a second one. Only a provider that differs on at least one of them is created as a new record.
+When an existing provider is matched:
+  - only the fields you sent are written; the rest keep their current values
+  - a deactivated provider stays deactivated unless you send `is_active=True`
+Because of this, the same create is safe to run repeatedly — on a schedule, on every plugin install, or as a re-import of a directory you already loaded. An omitted or empty `last_name` is treated as the empty string when matching, so repeated creates for an organization resolve to the same record.
+###  Example Usage 
+    ```python
+    from canvas_sdk.effects.service_provider import ServiceProvider
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    class ProviderLoader(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.PLUGIN_CREATED)]
+        def compute(self):
+            return [
+                ServiceProvider(
+                    first_name="Jane",
+                    last_name="Doe",
+                    specialty="Cardiology",
+                    business_address="123 Main St",
+                    business_fax="5555550100",
+                    npi="1234567890",
+                    direct_address="jane.doe@direct.example.org",
+                ).create(),
+                # An organization has no last name.
+                ServiceProvider(
+                    first_name="Acme Imaging Center",
+                    specialty="Radiology",
+                    business_address="1 Hospital Way",
+                ).create(),
+            ]
+    ```
+##  Update Service Provider 
+Updates the provider with the given `id`. Only the fields you set are sent, so an update never clears a field you did not mention. `first_name` and `specialty` cannot be set to `None`.
+    ```python
+    ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", notes="Prefers fax").update()
+    ```
+###  Reactivating a provider 
+Set `is_active=True` explicitly. Nothing else reactivates a provider.
+    ```python
+    ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", is_active=True).update()
+    ```
+##  Deactivate Service Provider 
+Deactivates a provider without deleting it, so anything referencing it keeps working.
+    ```python
+    ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11").deactivate()
+    ```
+##  Reading providers back 
+Use the [ServiceProvider data module](/sdk/data-serviceprovider/), and `is_customer_managed` to read only the providers your plugin created:
+    ```python
+    from canvas_sdk.v1.data.service_provider import ServiceProvider
+    ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
+    ```
+To surface them in the Refer, Imaging Order, fax recipient, or external care team searches, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+To offer them in a provider search, see [`as_search_result` and `as_search_contact`](/sdk/data-serviceprovider/#search-results).
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-service-provider/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-staff-external-identifier/
 Manage external identifiers on a staff member from a plugin. `StaffExternalIdentifier` is a single effect class with three methods — `.create()`, `.update()`, and `.delete()` — and which fields are required depends on the operation.
 ##  Methods 
@@ -24185,7 +24422,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -24376,6 +24613,13 @@ Effect | Description
 ---|---  
 CREATE_COMPOUND_MEDICATION | Create a compound medication.  
 UPDATE_COMPOUND_MEDICATION | Update a compound medication.  
+###  Service Providers 
+Check out the [Service Provider Effects](/sdk/effect-service-provider/) documentation.
+Effect | Description  
+---|---  
+CREATE_SERVICE_PROVIDER | Create a service provider, or update a matching one.  
+UPDATE_SERVICE_PROVIDER | Update a service provider.  
+DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider without deleting it.  
 ###  External Events 
 Check out the [External Event Effects](/sdk/effect-external-event/) documentation.
 Effect | Description  
@@ -28312,6 +28556,850 @@ Target object | Context object
       "staff": staff_key
     }
     "results": list[dict]  
+####  Assess Coding Gap Command 
+ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ASSESS_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "details": str
+      "diagnose": list
+      "background": str
+      "approximate_date_of_onset": str
+      "todays_assessment": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+####  Create Coding Gap Command 
+CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+CREATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "diagnose": list
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+####  Defer Coding Gap Command 
+DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+DEFER_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+####  Validate Coding Gap Command 
+VALIDATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+VALIDATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "detected_issue": str
+      "status": str
+      "date": str
+      "details": str
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
 ####  Custom Command 
 CUSTOM_COMMAND_COMMAND__PRE_ORIGINATE  
 ---  
@@ -39538,6 +40626,34 @@ PANEL_SECTIONS_CONFIGURATION | The panel section is loading.
 PLUGIN_CREATED | A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PLUGIN_UPDATED | A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS | Adding a pharmacy for a patient in their profile.  
+FAX__RECIPIENT__PRE_SEARCH | Searching for a fax recipient, before the search runs. Reply with `AUTOCOMPLETE_SEARCH_RESULTS` to supply the results; returning nothing runs the normal search. See [Service Provider search results](/sdk/data-serviceprovider/#search-results).   
+Context object: 
+    "search_term": str
+    "source": "fax"
+    "results": list[dict]
+    "user":
+        "staff": str  
+FAX__RECIPIENT__POST_SEARCH | Searching for a fax recipient, after the search runs. Reply with `AUTOCOMPLETE_SEARCH_RESULTS` to replace or annotate the results.   
+Context object: 
+    "search_term": str
+    "source": "fax"
+    "results": list[dict]
+    "user":
+        "staff": str  
+PATIENT_PROFILE__EXTERNAL_CARE_TEAM__PRE_SEARCH | Searching for a provider to add to a patient's external care team, before the search runs. Reply with `AUTOCOMPLETE_SEARCH_RESULTS` to supply the results; returning nothing runs the normal search.   
+Context object: 
+    "search_term": str
+    "source": "care_team"
+    "results": list[dict]
+    "user":
+        "staff": str  
+PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH | Searching for a provider to add to a patient's external care team, after the search runs. Reply with `AUTOCOMPLETE_SEARCH_RESULTS` to replace or annotate the results.   
+Context object: 
+    "search_term": str
+    "source": "care_team"
+    "results": list[dict]
+    "user":
+        "staff": str  
 PATIENT_PORTAL__WIDGET_CONFIGURATION | Patient Portal landing page is loading. See [Tailoring Portal Landing Page](/guides/custom-landing-page/) for examples of how to use this event.  
 PATIENT_METADATA__GET_ADDITIONAL_FIELDS | Patient Profile is loading. See [How to add patient profile additional fields](/guides/profile-additional-fields/) for examples of how to use this event.   
 Context object: 
@@ -39555,850 +40671,6 @@ Context object:
     "purpose": "form" | "print"  
 ###  Search Result Data Structures 
 Many event payloads include search results. This section documents the common structures within them.
-####  Create Coding Gap Command 
-CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__PRE_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__PRE_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_VALIDATION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__PRE_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-CREATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "diagnose": list
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-####  Validate Coding Gap Command 
-VALIDATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__PRE_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__PRE_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_VALIDATION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__PRE_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-VALIDATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "date": str
-      "details": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-####  Assess Coding Gap Command 
-ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__PRE_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__PRE_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_VALIDATION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__PRE_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-ASSESS_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-      "status": str
-      "details": str
-      "diagnose": list
-      "background": str
-      "approximate_date_of_onset": str
-      "todays_assessment": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-####  Defer Coding Gap Command 
-DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_ORIGINATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__PRE_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_UPDATE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__PRE_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_COMMIT  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_VALIDATION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__PRE_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_DELETE  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
-DEFER_CODING_GAP_COMMAND__POST_EXECUTE_ACTION  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "fields":
-      "detected_issue": str
-    "note":
-      "uuid": note_id
-    "patient":
-      "id": pt_id  
 ####  MedicationSearchResult 
 Medication search events (such as `MEDICATION_STATEMENT__MEDICATION__POST_SEARCH`, `PRESCRIBE__PRESCRIBE__POST_SEARCH`, etc.) return results that follow this structure:
     ```json
