@@ -29,6 +29,22 @@ The batch originate effect processes multiple commands in a single operation:
 
 This approach minimizes database round-trips and improves overall performance.
 
+## Commit behavior
+
+`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. Unlike a single command's `originate(commit=True)`, the batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
+
+Batch originating commands in a committed state is **not supported**, by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation. Committing is a separate, per-command action with no equivalent batch saving, so there would be no performance benefit over originating each command individually in a committed state.
+
+If you need commands committed on origination, originate them individually with `commit=True` instead:
+
+```python
+# Commit at origination time, one command per effect
+return [
+    plan1.originate(commit=True),
+    diagnose.originate(commit=True),
+]
+```
+
 ## Basic Usage
 
 ```python
