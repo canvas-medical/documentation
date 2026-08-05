@@ -73,6 +73,16 @@ medication_reviews = ChartSectionReview.objects.filter(
 )
 ```
 
+### Committed reviews
+
+The `committed` method returns chart section reviews that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.chart_section_review import ChartSectionReview
+
+committed_reviews = ChartSectionReview.objects.committed()
+```
+
 ## Working with entries
 
 `entries` is a list of integer `dbid` values identifying the records that were reviewed in the section. Which model those `dbid`s belong to depends on the review's `section`:
@@ -134,12 +144,14 @@ elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
 | dbid       | Integer                                                   |
 | created    | DateTime                                                  |
 | modified   | DateTime                                                  |
-| deleted    | Boolean                                                   |
 | patient    | [Patient](/sdk/data-patient/#patient)                     |
 | note       | [Note](/sdk/data-note/#note)                              |
 | section    | [ChartSectionReviewSection](#chartsectionreviewsection)   |
 | entries    | Integer[] (`dbid`s of the reviewed records — see [Working with entries](#working-with-entries)) |
 | content    | String (newline-separated bullet items)                   |
+| originator | [CanvasUser](/sdk/data-canvasuser)                        |
+| committer  | [CanvasUser](/sdk/data-canvasuser)                        |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser)                  |
 
 ## Enumeration types
 

@@ -71,6 +71,8 @@ conditions = Condition.objects.filter(onset_date__gte="2024-10-15")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -88,7 +90,6 @@ conditions = Condition.objects.find(Diabetes)
 |-----------------------------|----------------------------------------------------------------------------|
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
-| deleted                     | Boolean                                                                    |
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
 | committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |
@@ -99,6 +100,7 @@ conditions = Condition.objects.find(Diabetes)
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
+| assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
 
 ### ConditionCoding
 

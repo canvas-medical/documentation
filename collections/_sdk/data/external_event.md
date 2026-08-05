@@ -158,6 +158,7 @@ visits = ExternalVisit.objects.filter(facility_name="General Hospital")
 | visit_identifier   | String                                |
 | information_source | String                                |
 | facility_name      | String                                |
+| visit_events       | QuerySet[[ExternalEvent](#externalevent)] |
 
 ## Common Event Types
 

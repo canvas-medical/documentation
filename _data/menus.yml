@@ -25,6 +25,8 @@ api_canvas_fhir:
     url: /api/quickstart/
   - title: "Customer Authentication"
     url: /api/customer-authentication/
+  - title: "Third-Party Developer Access"
+    url: /api/developer-access/
   - title: Authentication Best Practices
     url: /api/authentication-best-practices/
   - title: "Conditional Requests"
@@ -494,9 +496,9 @@ education_series:
   - title: "Sandboxing and Allowed Imports"
     url: /learn/sandboxing-and-allowed-imports/
     description: Learn about sandboxing and allowed imports in the Canvas SDK
-  - title: "Secrets"
+  - title: "Variables"
     url: /learn/secrets/
-    description: Learn about secrets in the Canvas SDK
+    description: Learn about plugin variables and secrets in the Canvas SDK
   - title: "Caching"
     url: /learn/caching/
     description: Learn about caching in the Canvas SDK
@@ -520,6 +522,13 @@ guides_list:
     description: Customize the behavior of Canvas using plugins
     uses:
       - sdk
+
+  - title: "Choosing Your Patient Experience"
+    url: /guides/choosing-your-patient-experience/
+    description: Decide whether to use, extend, or replace the built-in patient portal
+    uses:
+      - sdk
+      - fhir_api
 
   - title: "Building a Custom Portal Landing Page"
     url: /guides/custom-landing-page/
@@ -555,12 +564,6 @@ guides_list:
   - title: "Creating, Implementing, and Extending a Scribe Parser"
     url: /guides/scribe-ai-parser/
     description: Creating, Implementing, and Extending a Scribe Parser
-    uses:
-      - sdk
-
-  - title: "Implementing Patient Portal Forms"
-    url: /guides/patient-portal-forms/
-    description: Surface Forms Within the Patient Portal
     uses:
       - sdk
 
@@ -638,6 +641,30 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Populating Command Fields"
+    url: /guides/populating-command-fields/
+    description: Look up the codes, ids, and enum values behind autocomplete and dropdown command fields
+    uses:
+      - sdk
+
+  - title: "Platform Security Overview"
+    url: /guides/platform-security-overview/
+    description: Tenancy model, trust boundaries, platform controls, and shared responsibility
+
+  - title: "Plugin Security Model"
+    url: /guides/plugin-security-model/
+    description: How plugin code is isolated at runtime and governed on its way to production
+    uses:
+      - sdk
+
+  - title: "Audit Logging and Telemetry"
+    url: /guides/audit-logging-and-telemetry/
+    description: What Canvas audits, how long it is retained, and how to export it
+
+  - title: "Roles and Permissions"
+    url: /guides/roles-and-permissions/
+    description: How authorization is evaluated, the default roles, and how to extend them
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
@@ -688,7 +715,7 @@ sdk_overview:
     url: /sdk/questionnaires/
   - title: "Sandboxing and Allowed Imports"
     url: /sdk/sandboxing-and-allowed-imports/
-  - title: "Secrets"
+  - title: "Variables"
     url: /sdk/secrets/
   - title: "SimpleAPI"
     url: /sdk/handlers-simple-api/
@@ -750,6 +777,8 @@ charting:
     url: /sdk/example-patient_summary_chart_groups/
   - title: "Patient Creation Platform Sync"
     url: /sdk/example-patient_creation_platform_sync/
+  - title: "PayTheory Payment Processor"
+    url: /sdk/example-paytheory_payment_processor/
   - title: "Send All Prescriptions"
     url: /sdk/example-send_all_prescriptions/
   - title: "Upsert Patient Metadata"
@@ -782,8 +811,13 @@ sdk_handlers:
     url: /sdk/handlers-basehandler/
   - title: "CronTask"
     url: /sdk/handlers-crontask/
+  - title: "Embedded Applications"
+    url: /sdk/handlers-embedded-applications/
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
+  - title: "Payment Processors"
+    url: /sdk/handlers-payment-processors/
+    identifier: payment_processors_handlers
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -858,12 +892,12 @@ effects_module:
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
-  - title: "Form Result"
-    url: /sdk/form-result-effect/
-    description: Effect for dynamically displaying forms in the Patient Portal.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
+  - title: "Lab Report"
+    url: /sdk/effect-lab-report/
+    description: Create, update, enter-in-error, and attach results to a lab report.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
@@ -873,6 +907,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Footer Configuration"
+    url: /sdk/effect-note-footer-configuration/
+    description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
@@ -915,18 +952,33 @@ effects_module:
   - title: "Patient Timeline"
     url: /sdk/effect-patient-timeline/
     description: Configure a patient's timeline by excluding specific note types.
+  - title: "Payment Processor"
+    url: /sdk/payment-processor-effect/
+    description: Effects returned by custom payment processors.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Redirect"
+    url: /sdk/effect-redirect/
+    description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
+  - title: "Reload Action Buttons"
+    url: /sdk/effect-reload-action-buttons/
+    description: Re-evaluate a note's or patient's action buttons in real time.
+  - title: "Send Contact Verification"
+    url: /sdk/effect-send-contact-verification/
+    description: Send an email or SMS verification to a patient contact point.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.
   - title: "Staff Metadata"
     url: /sdk/effect-staff-metadata/
     description: Interact with staff metadata.
+  - title: "Surescripts"
+    url: /sdk/effect-surescripts/
+    description: Query insurance eligibility, medication history, and benefits through Surescripts.
   - title: "Task Metadata"
     url: /sdk/effect-task-metadata/
     description: Interact with Task metadata.
@@ -964,6 +1016,9 @@ data_module:
   - title: "CareTeam"
     url: /sdk/data-care-team/
     description: Teams assigned for patient care.
+  - title: "Change Medication"
+    url: /sdk/data-change-medication/
+    description: A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription.
   - title: "ChargeDescriptionMaster"
     url: /sdk/data-charge-description-master/
     description: Billing charges in Canvas that can be added to the note footer.
@@ -1000,6 +1055,9 @@ data_module:
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
+  - title: "DocumentReviewDelegation"
+    url: /sdk/data-document-review-delegation/
+    description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
@@ -1108,6 +1166,9 @@ data_module:
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "RefillRequest"
+    url: /sdk/data-refill-request/
+    description: An incoming request to refill a patient's medication and its responding prescriptions.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
@@ -1191,5 +1252,3 @@ releasenotes_betas:
     url: /product-updates/cancelrx/
   - title: "Commands Module"
     url: /product-updates/commands-module/
-  - title: "Patient Portal"
-    url: /product-updates/patient-portal/

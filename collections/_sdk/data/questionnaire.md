@@ -89,6 +89,8 @@ interviews = Interview.objects.filter(progress_status="F")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -96,6 +98,28 @@ from canvas_sdk.v1.data.questionnaire import Questionnaire
 from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
 
 questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
+```
+
+`Interview` also supports `find`, which returns the interviews whose questionnaire has a code in the value set:
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
+
+interviews = Interview.objects.find(TobaccoUseScreening)
+```
+
+For interviews, `find` matches against the related `Questionnaire` through the `questionnaires` relation. Questionnaires store their code system by name (for example, `"LOINC"`) rather than by URL, and `find` handles this for you. It also composes with `for_patient`:
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
+
+interviews = (
+    Interview.objects
+    .for_patient("1eed3ea2a8d546a1b681a2a45de1d790")
+    .find(TobaccoUseScreening)
+)
 ```
 
 ## Attributes
@@ -190,7 +214,6 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 |----------------------|----------------------------------------------------------------|
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
-| deleted              | Boolean                                                        |
 | committer            | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |
@@ -205,6 +228,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
 
 ### InterviewQuestionResponse
 

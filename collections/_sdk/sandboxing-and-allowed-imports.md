@@ -347,6 +347,22 @@ The following Python builtin functions are available within the sandbox:
 
 Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
 
+## Forbidden Constructs
+
+Beyond the import allow-list above, a few Python constructs compile under RestrictedPython but are rejected when your code runs in the sandbox. `canvas validate` catches these statically before you install, so you don't have to wait for a runtime failure on the instance.
+
+| Construct | Why it's rejected | Use instead |
+| --- | --- | --- |
+| `setattr(obj, "x", value)` | Dynamic attribute assignment is blocked | Direct assignment: `obj.x = value` |
+| `delattr(obj, "x")` | Dynamic attribute deletion is blocked | `del obj.x` |
+| `bytearray(...)` | Not available in the sandbox | `bytes` for binary data |
+| `type(name, bases, dict)` | Dynamic class creation (3-argument `type`) is not available | Declare the class normally with `class …:` |
+| `d[k] += v` | Augmented assignment on a dict item, list item, or slice is rejected | Explicit reassignment: `d[k] = d[k] + v` |
+
+One-argument `type(x)` (checking an object's type) is allowed — only the three-argument form used for dynamic class creation is rejected.
+
+{% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
+
 ### `extract_exc_frames()`
 
 A sandbox-provided function that extracts frame information from the current exception's traceback. Must be called from within an `except` block. Returns an empty list if no exception is active.

@@ -50,6 +50,32 @@ reviews = ImagingReview.objects.filter(is_released_to_patient=False)
 reports = ImagingReport.objects.filter(requires_signature=True)
 ```
 
+### By ValueSet
+
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
+`ImagingReport` supports `ValueSet` filtering through the `find` method on its model manager:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReport
+from canvas_sdk.value_set.v2022.diagnostic_study import Mammography
+
+reports = ImagingReport.objects.find(Mammography)
+```
+
+`find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
+
+### Committed records
+
+The `committed` method returns `ImagingOrder` and `ImagingReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder, ImagingReview
+
+committed_orders = ImagingOrder.objects.committed()
+committed_reviews = ImagingReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Imaging Order's related tasks, use the `get_task_objects` method on the ImagingOrder object.
 
@@ -58,6 +84,15 @@ from canvas_sdk.v1.data.imaging import ImagingOrder
 
 imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 tasks = imaging_order.get_task_objects().all()
+```
+
+The `task_list` computed property returns the same related tasks as a `list[Task]`:
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = imaging_order.task_list
 ```
 
 ## Attributes
@@ -71,7 +106,6 @@ tasks = imaging_order.get_task_objects().all()
 | created             | DateTime                                                       |
 | modified            | DateTime                                                       |
 | originator          | [CanvasUser](/sdk/data-canvasuser)                             |
-| deleted             | Boolean                                                        |
 | committer           | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
@@ -86,6 +120,7 @@ tasks = imaging_order.get_task_objects().all()
 | priority            | String                                                         |
 | delegated           | Boolean                                                        |
 | task_ids            | String                                                         |
+| results             | [ImagingReport](#imagingreport)[]                              |
 
 ### ImagingReview
 
@@ -96,8 +131,8 @@ tasks = imaging_order.get_task_objects().all()
 | created                      | DateTime                                                                                          |
 | modified                     | DateTime                                                                                          |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)                                                                |
-| deleted                      | Boolean                                                                                           |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)                                                                |
+| entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                                                |
 | patient_communication_method | [ReviewPatientCommunicationMethod](/sdk/data-enumeration-types/#reviewpatientcommunicationmethod) |
 | internal_comment             | String                                                                                            |
 | message_to_patient           | String                                                                                            |

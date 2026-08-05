@@ -46,6 +46,24 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 
 ```
 
+## Delegations
+
+A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument
+
+document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# The full delegation history, oldest first.
+history = document.delegations
+
+# The current active delegation, or None when the document is with its owner.
+current = document.active_delegation
+```
+
+See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
+
 ## Attributes
 
 ### UncategorizedClinicalDocument
@@ -80,7 +98,6 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | created                      | DateTime                               |
 | modified                     | DateTime                               |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)     |
-| deleted                      | Boolean                                |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)     |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)     |
 | internal_comment             | String                                 |
@@ -88,3 +105,4 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 | status                       | String                                 |
 | patient                      | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method | String                                 |
+| reports                      | QuerySet[[UncategorizedClinicalDocument](#uncategorizedclinicaldocument)] |

@@ -44,6 +44,7 @@ Base model for aggregating multiple line item-level transactions (payments, adju
 | entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)           |
 | created             | DateTime                                |
 | modified            | DateTime                                |
+| correction\_postings | QuerySet[[BasePosting](#baseposting)]  |
 
 **Computed Properties**:
 
@@ -98,6 +99,8 @@ Represents patient-side payments or adjustments, including links to copays or pa
 | modified            | DateTime                                |
 | discount            | [Discount](#discount)                   |
 | payer               | [Patient](/sdk/data-patient/)           |
+| postings            | QuerySet[[PatientPosting](#patientposting)] |
+| copays              | QuerySet[[PatientPosting](#patientposting)] |
 
 **Computed Properties**:
 
@@ -118,6 +121,7 @@ Represents shared data for both electronic and manual remittance advice.
 | modified            | DateTime                                      |
 | transactor          | [Transactor](/sdk/data-coverage/#transactor/) |
 | era\_id             | String                                        |
+| postings            | QuerySet[[CoveragePosting](#coverageposting)] |
 
 **Computed Properties**:
 
@@ -139,6 +143,7 @@ Captures metadata about the method and details of a collected payment.
 | description      | String                            |
 | created          | DateTime                          |
 | modified         | DateTime                          |
+| postings         | QuerySet[[BasePosting](#baseposting)] |
 
 ### NewLineItemPayment
 
@@ -203,6 +208,7 @@ Represents a discount applied to a claim or patient posting, linked by adjustmen
 | discount         | Decimal   |
 | created          | DateTime  |
 | modified         | DateTime  |
+| patient_postings | QuerySet[[BulkPatientPosting](#bulkpatientposting)] |
 
 
 ## Enumeration types

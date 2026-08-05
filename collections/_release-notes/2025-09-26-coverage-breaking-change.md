@@ -1,4 +1,5 @@
 ---
+slug: coverage-breaking-change-2025-09-26
 title: Upcoming Breaking Change - Coverage Subscriber ID
 date: 2025-09-26 08:00:00
 layout: productupdates

@@ -47,6 +47,7 @@ You can also access `PayorSpecificCharge`s from the `ChargeDescriptionMaster` mo
 | end_date       | Date                            |
 | code_system    | [CDMCodeSystem](#cdmcodesystem) |
 | ndc_code       | String                          |
+| transactor_charges | QuerySet[[PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)] |
 
 ## Enumeration types
 

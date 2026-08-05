@@ -108,6 +108,7 @@ if photo:
 | billing_line_items       | [BillingLineItem](/sdk/data-billing-line-item/)                           |
 | business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 | care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
+| change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]       |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
 | coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
@@ -116,7 +117,7 @@ if photo:
 | external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
 | identification_cards     | [PatientIdentificationCard](#patientidentificationcard)[]                 |
 | imaging_orders           | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                         |
-| imaging_reports          | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                       |
+| imaging_results          | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                       |
 | imaging_reviews          | [ImagingReview](/sdk/data-imaging/#imagingreview)[]                       |
 | interviews               | [Interview](/sdk/data-questionnaire/#interview)[]                         |
 | lab_orders               | [LabOrder](/sdk/data-labs/#laborder)[]                                    |
@@ -127,6 +128,7 @@ if photo:
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
 | photos                   | [PatientPhoto](#patientphoto)[]                                           |
 | preferred_pharmacy       | JSON                                                                      |
+| preferred_pharmacies     | JSON                                                                      |
 | protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
 | settings                 | [PatientSetting](#patientsetting)                                         |
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
@@ -136,6 +138,32 @@ if photo:
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
+| patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
+| patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
+| medication_statements    | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement)[] |
+| diagnostic_reports       | DiagnosticReport[]        |
+| medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[] |
+| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
+| payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
+| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]           |
+| stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
+| banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
+| immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
+| immunization_statements  | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]   |
+| integration_tasks        | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]           |
+| installment_plans        | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]                      |
+| uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |
+| patient_consent          | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]              |
+| goals                    | [Goal](/sdk/data-goal/#goal)[]                                             |
+| instructions             | [Instruction](/sdk/data-instruction/#instruction)[]                        |
+| appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
+| notes                    | [Note](/sdk/data-note/#note)[]                                             |
+| prescriptions            | [Prescription](/sdk/data-prescription/#prescription)[]                     |
+| refill_requests          | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                 |
+| referral_reviews         | [ReferralReview](/sdk/data-referral/#referralreview)[]                     |
+| referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
+| invoices                 | Invoice[]                                    |
 
 ### PatientAddress
 
@@ -156,7 +184,7 @@ if photo:
 | start       | Date                                                    |
 | end         | Date                                                    |
 | country     | String                                                  |
-| state       | String                                                  |
+| state       | [AddressState](/sdk/data-enumeration-types/#addressstate) |
 | patient     | [Patient](#patient)                                     |
 
 ```python

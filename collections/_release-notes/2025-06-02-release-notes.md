@@ -1,4 +1,5 @@
 ---
+slug: release-notes-2025-06-02
 title: 06.02.2025
 layout: productupdates  
 tags: bugfix plugins

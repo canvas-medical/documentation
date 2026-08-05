@@ -226,7 +226,7 @@ sections:
                         type: string
                         required_in: create, update
                         description: >-
-                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://www.hl7.org/fhir/us/core/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
+                          Race or ethnicity code from the [CDC Race and Ethnicity CodeSystem](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html). Example race codes — `2131-1` (Other Race), `2106-3` (White). Example ethnicity codes — `2186-5` (Not Hispanic or Latino), `2135-2` (Hispanic or Latino).
                       - name: display
                         type: string
                   - name: valueCodeableConcept
@@ -340,7 +340,7 @@ sections:
                 required_in: create, update
                 description: >-
                   Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name. <br><br>
-                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
               - name: prefix
                 type: array[string]
                 description: Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
