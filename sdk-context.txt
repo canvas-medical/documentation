@@ -2474,6 +2474,10 @@ Set multiple variables in one call:
     ```console
     $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
     ```
+Set a variable whose value is a list with one entry per line — for example a redirect allowlist (see the [Redirect effect](/sdk/effect-redirect/)). The value is newline-delimited (not comma-separated), so use your shell's newline quoting to preserve the line breaks. In bash/zsh, ANSI-C quoting (`$'…'`) turns `\n` into a real newline:
+    ```console
+    $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+    ```
 **Arguments** :
   - `PLUGIN`: Plugin name to set variables for
   - `VARIABLES...`: Variables to set, e.g. Key=value
@@ -18133,7 +18137,7 @@ If both `page` and `application_identifier` are provided, `application_identifie
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-application-notification-badge/
-Notification badges let your plugin surface a count on an [application](/sdk/handlers-applications/) icon — the small number that indicates, for example, how many unread items are waiting. Badges are shown only for applications scoped [`global`](/sdk/handlers-applications/#application-scopes) or [`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their icon in the app drawer, or, when the application sets `show_in_panel`, on the panel alongside the other panel buttons. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
+Notification badges let your plugin surface a count on an [application](/sdk/handlers-applications/) icon — the small number that indicates, for example, how many unread items are waiting. Badges are shown for applications scoped [`global`](/sdk/handlers-applications/#application-scopes) or [`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their icon in the app drawer, or, when the application sets `show_in_panel`, on the panel alongside the other panel buttons — and for [`provider_menu_item`](/sdk/handlers-applications/#application-scopes) applications, next to their label in the provider menu. Applications in other scopes (`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 There are two ways a badge is set:
   - **On load** — override `compute_notification_badge()` on your `Application` handler to provide the initial count shown when Canvas loads applications. See [Notification Badges](/sdk/handlers-applications/#notification-badges) on the Applications handler page.
   - **Live updates** — emit an `ApplicationNotificationBadge` effect from any event handler to update the count in real time, without the user reloading the page. This is what the rest of this page covers.
@@ -21088,6 +21092,201 @@ Construction is validated by Pydantic and will raise a `ValidationError` for:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-http-request/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-lab-report/
+The `LabReport` effect lets plugins manage a lab report's full lifecycle, independently of any lab order. It is designed for workflows where a report exists before its structured results do — for example, a scanned report that arrives by fax or upload and is OCR'd asynchronously, so the lab tests and values aren't ready until hours or days after the report is created.
+With these effects a plugin can:
+  - **Create** a report up front, with no order, no PDF, and no results.
+  - **Attach results** (lab tests and values) to that report later, as they become available.
+  - **Update** report metadata, such as its name.
+  - **Enter-in-error** a report so a user can self-correct a mistake.
+A created report is linked to the patient you supply. It starts **empty** — until you attach results it holds no tests or values, and it stays an **uncommitted draft**. A results-less draft does **not** appear in the patient's lab reports in the chart (that view only shows committed reports); it exists but isn't surfaced there yet. The first `attach_results()` commits the report — that's when it fills in, creates the observations behind its values, and appears in the chart, reading like any other lab report. It is **not** a Data Integration document, so it never appears in the Data Integration queue, and Canvas creates the report's diagnostic report and renders a document from its data automatically.
+##  Identifying a report 
+Every effect references a report by one of two handles:
+Handle | What it is | When to use it  
+---|---|---  
+`reference_id` | A stable identifier your plugin assigns when it creates a report. | The report your plugin created. Required on `create()`.  
+`report_id` | The [LabReport](/sdk/data-labs/)'s `id`. | Any report — including ones your plugin didn't create.  
+Effects are fire-and-forget, so `create()` does not return the new report's `report_id`. Use the `reference_id` you assigned as your handle for the later `attach`/`update`/`enter_in_error` calls. If you need the `report_id` (for example to act on a report your plugin did not create), read it from the `LAB_REPORT_CREATED` event or query the [LabReport](/sdk/data-labs/) data model by `reference_id` (the handle you assigned is stored there; the data model's own `external_id` is reserved for electronic/Health-Gorilla feed ids).
+Namespace your `reference_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't collide with report ids from other inbound-lab sources.
+##  Attributes 
+Name | Type | Description  
+---|---|---  
+`reference_id` | `str` or `None` | The plugin-assigned handle (maximum 40 characters). **Required** when creating; usable as the handle for other operations.  
+`report_id` | `UUID` or `None` | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise.  
+`patient_id` | `str` or `None` | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.  
+`report_name` | `str` or `None` | Human-readable report name (maps to the report's document name).  
+`date_performed` | `datetime` or `None` | The report's effective/displayed date. If omitted on `create`, it defaults to the creation time — correct it later via `update`.  
+##  Methods 
+###  create() 
+Create a lab report decoupled from its results — no order, no PDF, and no values required.
+####  Validation 
+  - `reference_id` is **required** (it is your handle for attaching results later).
+  - `patient_id` is **required**.
+  - `report_id` must **not** be set (creation assigns the id).
+  - The `reference_id` must not already be in use by an existing report.
+####  Example 
+    ```python
+    import datetime
+    from canvas_sdk.effects.lab_report import LabReport
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.first()
+    report = LabReport(
+        reference_id="my-plugin:batch-2026-06-17:img-44",
+        patient_id=patient.id,
+        report_name="CBC (scanned 2026-06-17)",
+        date_performed=datetime.datetime.now(),
+    )
+    effect = report.create()
+    ```
+###  update() 
+Update report metadata, such as renaming it via `report_name`. Only the fields you set are sent. Only `report_name` and `date_performed` can be changed — `update()` **cannot move the report to a different patient** ; the patient is fixed when the report is created. If a report was attached to the wrong patient, enter it in error and recreate it on the correct patient.
+####  Validation 
+  - Exactly one handle (`reference_id` or `report_id`) is **required**.
+  - At least one mutable field (`report_name` or `date_performed`) must be provided.
+  - The report must not already be entered-in-error or reviewed by a provider.
+####  Example 
+    ```python
+    from canvas_sdk.effects.lab_report import LabReport
+    renamed = LabReport(
+        reference_id="my-plugin:batch-2026-06-17:img-44",
+        report_name="Complete Blood Count",
+    )
+    effect = renamed.update()
+    ```
+###  enter_in_error() 
+Flag a report as entered-in-error — use it when a report was filed incorrectly. It junks the report (removing it from active views) and records who entered it in error. The report's observations and its linked DiagnosticReport and DocumentReference records are marked entered-in-error as well. Once a report is entered-in-error (or junked) it can no longer be modified — `update()` and `attach_results()` on it raise a validation error.
+####  Validation 
+  - A handle (`reference_id` or `report_id`) is **required**.
+  - Any other field is ignored (not rejected).
+  - The report must not already be entered-in-error or reviewed by a provider.
+####  Example 
+    ```python
+    from canvas_sdk.effects.lab_report import LabReport
+    voided = LabReport(reference_id="my-plugin:batch-2026-06-17:img-44")
+    effect = voided.enter_in_error()
+    ```
+##  Attaching results 
+Once results are available, attach them with the `attach_results` method on `LabReport`. The report handle comes from the `LabReport` instance (`report_id` or `reference_id`); the method takes a list of `LabTest`s, each grouping the `LabValue`s measured for it — so the values for one test are bundled under that test in the chart. Attaching is **additive** : it appends tests and values without removing any already on the report, and Canvas creates an observation for each value automatically.
+Attaching results saves the report and regenerates its linked DiagnosticReport and rendered DocumentReference (the report's document) to reflect the newly attached values. The first `attach_results()` call also commits the report (a never-populated report stays an uncommitted draft). A committed report enters the lab-review workflow **review-required** and **requiring a signature** , but with **no reviewer assigned** — a clinician still has to pick it up, review, and sign it. Once a provider has reviewed it, the report is locked to further SDK edits.
+###  Arguments 
+Name | Type | Description  
+---|---|---  
+`lab_tests` | list[`LabTest`] | The tests to attach. At least one is required. The report handle comes from the `LabReport` instance.  
+###  `LabTest`
+A `LabTest` is a test that was performed — an ordered panel or a single analyte — and it groups its result values (a result test can carry many values). `ontology_test_code`/`ontology_test_name` are the lab's **order/compendium** code and name — _not_ LOINC. LOINC is supplied separately via `codings` (see `CodingData` below).
+Name | Type | Description  
+---|---|---  
+`ontology_test_code` | `str` | The lab's order/compendium code for the test. Defaults to empty string.  
+`ontology_test_name` | `str` | Human-readable test name. Defaults to empty string.  
+`codings` | list[`CodingData`] or `None` | The test's LOINC coding(s); only LOINC-system codings are stored.  
+`values` | list[`LabValue`] | The result values for this test. **At least one is required.**  
+###  `LabValue`
+Each `LabValue` is one measured result on its test.
+Name | Type | Description  
+---|---|---  
+`value` | `str` | The result value. Required.  
+`units` | `str` | Unit of measure (e.g. `"g/dL"`). Defaults to empty string.  
+`reference_range` | `str` | Reference range as free text. Defaults to empty string.  
+`abnormal_flag` | `AbnormalFlag` or `None` | Flags the value against its reference range. Any non-empty flag marks the result abnormal in the lab report. Defaults to `None`.  
+`observation_status` | `ObservationStatus` | Status of the observation. Defaults to `ObservationStatus.FINAL`.  
+`comment` | `str` | Free-text comment. Defaults to empty string.  
+`codings` | list[`CodingData`] or `None` | The value's LOINC coding(s); only LOINC-system codings are stored.  
+###  `CodingData`
+A coding attached to a test or a value, reused from the [`Observation`](/sdk/effect-observation/) effect. Only codings whose `system` is `http://loinc.org` are persisted, and the `display` becomes the stored coding name.
+Name | Type | Description  
+---|---|---  
+`code` | `str` | The LOINC code (e.g. `"718-7"`). Required.  
+`display` | `str` | Human-readable display; stored as the coding's name.  
+`system` | `str` | Coding system URI. Use `"http://loinc.org"`.  
+`version` | `str` | Optional coding-system version. Defaults to empty.  
+`user_selected` | `bool` | Whether a user selected this coding. Defaults to `False`.  
+###  `AbnormalFlag`
+A `StrEnum` of abnormal-result flags (HL7 v2 table 0078) for a `LabValue`. Setting any of these marks the result abnormal on the lab report.
+Member | Value  
+---|---  
+`HIGH` | `H`  
+`LOW` | `L`  
+`CRITICAL_HIGH` | `HH`  
+`CRITICAL_LOW` | `LL`  
+`BELOW_ABSOLUTE_LOW` | `<`  
+`ABOVE_ABSOLUTE_HIGH` | `>`  
+`ABNORMAL` | `A`  
+`CRITICAL_ABNORMAL` | `AA`  
+`SUSCEPTIBLE` | `S`  
+`RESISTANT` | `R`  
+`INTERMEDIATE` | `I`  
+`NEGATIVE` | `NEG`  
+`POSITIVE` | `POS`  
+###  `ObservationStatus`
+A `StrEnum` of statuses for a `LabValue`'s observation. Defaults to `FINAL`.
+Member | Value  
+---|---  
+`FINAL` | `final`  
+`PRELIMINARY` | `preliminary`  
+`AMENDED` | `amended`  
+`CORRECTED` | `corrected`  
+`CANCELLED` | `cancelled`  
+`REGISTERED` | `registered`  
+`ENTERED_IN_ERROR` | `entered-in-error`  
+`UNKNOWN` | `unknown`  
+####  Validation 
+  - Exactly one of `reference_id` or `report_id` is **required**.
+  - At least one `LabTest` is **required** , and each `LabTest` requires at least one `LabValue`.
+  - The report must exist and must not be entered-in-error or reviewed by a provider.
+####  Example 
+A SimpleAPI route an OCR service calls once it has abstracted the values:
+    ```python
+    from canvas_sdk.effects.lab_report import LabReport, LabTest, LabValue
+    from canvas_sdk.effects.observation import CodingData
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+    LOINC = "http://loinc.org"
+    class LabResultsAPI(APIKeyAuthMixin, SimpleAPIRoute):
+        PATH = "/lab-results"
+        def post(self) -> list[Response]:
+            body = self.request.json()
+            return [
+                LabReport(reference_id=body["reference_id"]).attach_results(
+                    [
+                        LabTest(
+                            ontology_test_code=test.get("order_code", ""),
+                            ontology_test_name=test.get("name", ""),
+                            codings=(
+                                [CodingData(code=test["loinc"], display=test.get("name", ""), system=LOINC)]
+                                if test.get("loinc")
+                                else None
+                            ),
+                            values=[
+                                LabValue(
+                                    value=value["value"],
+                                    units=value.get("units", ""),
+                                    reference_range=value.get("reference_range", ""),
+                                    codings=(
+                                        [CodingData(code=value["loinc"], display=value.get("name", ""), system=LOINC)]
+                                        if value.get("loinc")
+                                        else None
+                                    ),
+                                )
+                                for value in test["values"]
+                            ],
+                        )
+                        for test in body["tests"]
+                    ]
+                ),
+                JSONResponse({"reference_id": body["reference_id"]}, status_code=202),
+            ]
+    ```
+##  Example Workflow 
+The four effects compose into the asynchronous OCR workflow:
+  1. A scanned report arrives. The plugin calls `LabReport(reference_id=..., patient_id=..., ...).create()`, keying off an `reference_id` it controls.
+  2. Days later, the OCR service finishes. The plugin calls `LabReport(reference_id=...).attach_results([LabTest(..., values=[LabValue(...)])])` to attach the abstracted tests and values — the report's observations populate from there.
+  3. To fix the report name, the plugin calls `LabReport(reference_id=..., report_name=...).update()`.
+  4. If the report was filed in error, the plugin calls `LabReport(reference_id=...).enter_in_error()`.
+##  Related 
+  - [`Observation`](/sdk/effect-observation/) — create or update individual clinical observations.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-lab-report/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff) within the Canvas platform. It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
 ##  Attributes 
@@ -23010,6 +23209,136 @@ code | Yes* | string | The code identifying the questionnaire within the code sy
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-questionnaires/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-redirect/
+The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
+A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
+Provide **exactly one** destination:
+  - `url` — a full URL string the plugin composes in Python (it may include patient/note ids). Either an external URL (`https://...`) or an internal Canvas path (`/panel`, `/patient/{key}?noteId=...`).
+  - `application_id` — the identifier of a Canvas application to open.
+By default the navigation replaces the current tab. Set `target` to `RedirectEffect.TargetType.NEW_TAB` to open a `url` destination in a new tab instead.
+> **Internal navigation must be a root-relative path that starts with`/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{key}?noteId=...`). A leading-slash path is the _only_ form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+##  Attributes 
+Name | Type | Required | Description  
+---|---|---|---  
+`url` | `str` | Yes* | A full external URL (`https://...`) or an internal Canvas path that **must start with`/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty.  
+`application_id` | `str` | Yes* | The identifier of a Canvas application to open. Must exist and be enabled.  
+`target` | `TargetType` | No | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`.  
+***** Provide **exactly one** of `url` or `application_id` — they are mutually exclusive.
+##  `TargetType`
+A `StrEnum` of the supported navigation targets. You can also pass the string value.
+Member | Value | Behavior  
+---|---|---  
+`RedirectEffect.TargetType.SAME_TAB` | `"same_tab"` | Replaces the current EHR view (full-page navigation). The default.  
+`RedirectEffect.TargetType.NEW_TAB` | `"new_tab"` | Opens the destination in a new browser tab.  
+##  Security & Allowlist 
+Every destination is validated **on the server** before the browser navigates — the frontend is never trusted to decide whether a target is allowed. This blocks open-redirect abuse and accidental leakage of PHI through query parameters. **Targets are denied by default.**
+The allowlist governs only _where a plugin may send a user_ — it does **not** change what that user is allowed to see, and cannot be used to bypass their permissions. A redirect performs an ordinary browser navigation, so the destination still enforces the user's own access: redirecting a user to a page or application they lack permission for behaves exactly as if they navigated there themselves (they're denied by that destination), and never elevates their access.
+The allowlist is configured **per instance by an administrator** via three plugin secrets. Your plugin declares the keys in its manifest `variables`; the admin sets each value on the Plugin admin page, or from the CLI with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set). (This redirect allowlist is separate from the manifest's `url_permissions` field, which allow-lists iframe and script domains for layout effects — the two are unrelated.) Each value is a list with **one entry per line** — entries are newline-delimited, not comma-separated, because URLs and paths can legitimately contain commas (e.g. `?q=1,2,3`):
+Secret key | Value (one entry per line) | Permits  
+---|---|---  
+`REDIRECT_ALLOWLIST_INTERNAL` | `/patients`  
+`/panel`  
+`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{key}?noteId=...`).  
+`REDIRECT_ALLOWLIST_EXTERNAL` | `https://app.example.com` | those origins/prefixes (**include the scheme**), matched **case-insensitively** at an origin/path boundary — so it does **not** match `https://app.example.com.evil.com`, and a differing port (e.g. `https://app.example.com:8443/...`) is not a match.  
+`REDIRECT_ALLOWLIST_APPLICATION` | `my_plugin.applications.app:MyApp` | redirecting to those applications by id (matched exactly; the app must exist and be enabled).  
+Declare the keys in your manifest so the admin can fill them:
+    ```json
+    {
+      "variables": [
+        { "name": "REDIRECT_ALLOWLIST_INTERNAL" },
+        { "name": "REDIRECT_ALLOWLIST_EXTERNAL" },
+        { "name": "REDIRECT_ALLOWLIST_APPLICATION" }
+      ]
+    }
+    ```
+Both steps are required, and both default to "blocked": if you don't **declare** a key in the manifest, the admin has no field to fill; if the admin doesn't **set** a value, that key's allowlist is empty. An empty or absent secret allows nothing — so each redirect category (internal / external / application) only works once its key is declared _and_ an admin has given it a value. A freshly installed plugin can therefore redirect nowhere until an admin opts it in.
+Set a value from the CLI with your shell's newline quoting so each entry stays on its own line (see [`canvas config set`](/sdk/canvas_cli/#canvas-config-set)):
+    ```console
+    $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+    ```
+Non-allowlisted destinations are dropped, and the platform logs only the plugin name and the blocked host (never the full URL/path). Protocol-relative (`//host`) and backslash (`/\host`) targets are always rejected.
+##  Example Usage 
+###  Redirect to a work queue after a note is signed 
+Requires `/panel` in the plugin's `REDIRECT_ALLOWLIST_INTERNAL` secret.
+    ```python
+    from canvas_sdk.effects.redirect import RedirectEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data.note import CurrentNoteStateEvent, NoteStates
+    class RedirectAfterSign(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self):
+            state = CurrentNoteStateEvent.objects.values_list("state", flat=True).get(
+                id=self.event.target.id
+            )
+            if state != NoteStates.LOCKED:
+                return []
+            # Send the provider back to their work queue to grab the next patient.
+            return [RedirectEffect(url="/panel").apply()]
+    ```
+###  Open an external URL in a new tab from an action button 
+Requires `https://app.example.com` in the plugin's `REDIRECT_ALLOWLIST_EXTERNAL` secret.
+    ```python
+    return [
+        RedirectEffect(
+            url="https://app.example.com/orders/next",
+            target=RedirectEffect.TargetType.NEW_TAB,
+        ).apply()
+    ]
+    ```
+###  Redirect to an application by id 
+Requires the identifier in the plugin's `REDIRECT_ALLOWLIST_APPLICATION` secret.
+    ```python
+    return [RedirectEffect(application_id="my_plugin.applications.app:MyApp").apply()]
+    ```
+###  Redirect from an application iframe 
+An application iframe can't return an effect directly. The clean pattern is to expose a [SimpleAPI](/sdk/handlers-simple-api/) endpoint on your plugin that returns a `RedirectEffect`, and have the iframe `fetch()` it. Because a SimpleAPI request is authenticated as the acting user, the returned effect is validated and delivered through the **exact same** interpreter → allowlist → per-user path as an action-button or note-sign redirect — there is no iframe-specific code path to reason about.
+> **Why an API call and not`postMessage`?** An iframe could `postMessage` its parent window to request a redirect (the way the close-modal workflow does), but we recommend against it here. A redirect already has to make a server round-trip for allowlist validation, so routing the request through the parent window and a dedicated mutation would add a second mechanism that buys nothing. Having the iframe call your own API that returns the effect is cleaner:
+> 
+>   - **One mechanism, one mental model.** The iframe reuses the same effect pipeline as every other redirect — no separate frontend bridge, no dedicated mutation, and target validation lives in exactly one place (the interpreter).
+>   - **Secure by construction.** The plugin whose allowlist is checked is _intrinsic_ : it's the plugin that owns the API endpoint. Nothing frontend-supplied has to be trusted or proven un-spoofable — a `postMessage` bridge would first have to attribute the message to an owning application before it could even pick which allowlist to apply.
+>   - **Composable.** Your endpoint can do real work first — persist state, branch on the patient/note, decide _where_ to send the user — and then return the redirect alongside a normal JSON response.
+> 
+**The endpoint** returns the `RedirectEffect` (optionally with a response body for the `fetch`):
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.redirect import RedirectEffect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    class MyAppAPI(StaffSessionAuthMixin, SimpleAPI):
+        @api.post("/redirect")
+        def redirect(self) -> list[Response | Effect]:
+            # ...optionally do work first (persist data, decide the destination)...
+            return [
+                RedirectEffect(url="/panel").apply(),  # or application_id="my_plugin.applications.app:MyApp"
+                JSONResponse({"ok": True}),
+            ]
+    ```
+**The iframe** calls it with a credentialed, same-origin request:
+    ```js
+    // inside the plugin application iframe
+    fetch('/plugin-io/api/my_plugin/redirect', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destination: 'panel' })
+    });
+    ```
+**How the redirect arrives.** The navigation does **not** come back in the `fetch()` response body. The effect is broadcast to the acting user and applied by the frontend's redirect subscription, exactly as for any other `RedirectEffect` — so the `fetch` response is just your endpoint's acknowledgement, and the browser navigates a moment later when the effect is delivered.
+**Requirements & gotchas**
+  - The endpoint must authenticate the request **as a specific Canvas user** — that user is the actor the redirect targets. Use [`StaffSessionAuthMixin`](/sdk/handlers-simple-api/) (as above) or `PatientSessionAuthMixin`, which resolve the acting user from the Canvas session, or another scheme that identifies a specific user (for example an OAuth token tied to a user). A **shared-secret** scheme — `BasicAuthMixin` or `APIKeyAuthMixin` — authenticates the _request_ but establishes no acting user, so a redirect returned from it has no browser to target and is silently dropped.
+  - For the session mixins, the request must be **same-origin and credentialed** (`credentials: 'same-origin'`) so the session is sent and the server can identify the acting user. Plugin-served iframes — rendered from `LaunchModalEffect` content or a plugin-served URL — are same-origin. An **unauthenticated** request has no acting user either, so the redirect is silently dropped.
+  - The target still has to be **allowlisted** (see Security & Allowlist); the API path enforces the identical gate.
+  - `target` (new tab) applies only to `url` destinations; an `application_id` always opens in-app.
+##  Validation 
+Construction is validated by Pydantic and will raise a `ValidationError` for:
+  - Providing neither `url` nor `application_id`, or providing both.
+  - An empty `url`.
+  - A `target` that is not a member of `TargetType`.
+  - An `application_id` that does not resolve to an existing application.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-redirect/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-reload-action-buttons/
 The reload action button effects let a plugin tell Canvas to recompute and re-render its [action buttons](/sdk/handlers-action-buttons/) without the user reloading the page. This is useful after your plugin changes state that a button's `visible()` method, title, or color depends on, so the displayed buttons reflect the new state.
 There are two effects, one for each scope:
@@ -23856,7 +24185,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates/) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -23881,6 +24210,7 @@ RELOAD_ACTION_BUTTONS | Can be used to refresh a note's or patient's action butt
 SHOW_APPLICATION | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/) and [LaunchModalEffects](/sdk/layout-effect/#modals).  
 SET_APPLICATION_NOTIFICATION_BADGE | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/).  
 REDIRECT_CONTEXT | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context).  
+REDIRECT | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/).  
 PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).  
 ###  Search Results 
 Effect | Description  
@@ -24027,6 +24357,14 @@ Effect | Description
 CREATE_OBSERVATION | Create an observation.  
 UPDATE_OBSERVATION | Update an observation.  
 ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error.  
+###  Lab Reports 
+Check out the [Lab Report Effects](/sdk/effect-lab-report/) documentation.
+Effect | Description  
+---|---  
+CREATE_LAB_REPORT | Create a lab report decoupled from its results (no order, PDF, or values required).  
+UPDATE_LAB_REPORT | Update lab report metadata, such as its name or effective date.  
+ENTER_IN_ERROR_LAB_REPORT | Mark a lab report as entered in error.  
+ATTACH_LAB_REPORT_RESULTS | Attach lab tests and values to an existing report (additive).  
 ###  Questionnaire 
 Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation.
 Effect | Description  
@@ -24833,6 +25171,56 @@ Target object | Context object
 | 
     "patient":
         "id": pt_id  
+####  Calendars 
+CALENDAR_CREATED  
+---  
+Occurs when a calendar is created.  
+Target object | Context object  
+    "id": calendar_id
+    "type": [Calendar](/sdk/data-calendar/#calendar)
+| 
+    empty  
+CALENDAR_UPDATED  
+---  
+Occurs when a calendar is updated.  
+Target object | Context object  
+    "id": calendar_id
+    "type": [Calendar](/sdk/data-calendar/#calendar)
+| 
+    empty  
+CALENDAR_DELETED  
+---  
+Occurs when a calendar is deleted.  
+Target object | Context object  
+    "id": calendar_id
+    "type": [Calendar](/sdk/data-calendar/#calendar)
+| 
+    empty  
+####  Calendar Events 
+CALENDAR_EVENT_CREATED  
+---  
+Occurs when a calendar event is created.  
+Target object | Context object  
+    "id": event_id
+    "type": [Event](/sdk/data-calendar/#event)
+| 
+    empty  
+CALENDAR_EVENT_UPDATED  
+---  
+Occurs when a calendar event is updated.  
+Target object | Context object  
+    "id": event_id
+    "type": [Event](/sdk/data-calendar/#event)
+| 
+    empty  
+CALENDAR_EVENT_DELETED  
+---  
+Occurs when a calendar event is deleted.  
+Target object | Context object  
+    "id": event_id
+    "type": [Event](/sdk/data-calendar/#event)
+| 
+    empty  
 ####  Patient Payments 
 PATIENT_PAYMENT_PROCESSED  
 ---  
@@ -44446,7 +44834,7 @@ This is an instance-level setting configured per application in your instance se
 > **Warning:** **Enable Open on load for at most one application per scope.** There is no priority or ordering logic for this setting, and no constraint preventing multiple applications in the same scope from being flagged. If more than one application in the same scope (for example, two `patient_specific` apps) has Open on load enabled, all of them will attempt to open, resulting in unpredictable behavior. Make sure only one application per scope is set to open on load. 
 > **Note:** This is distinct from a Note Application's [`open_by_default()`](/sdk/handlers-embedded-applications/#opening-by-default), which controls which **tab** is active when a note is viewed. **Open on load** controls whether a `global` or `patient_specific` application opens automatically on app/chart load.
 ##  Notification Badges 
-You can display a notification badge — a small count — on the icon of a `global` or `patient_specific` application: in the app drawer, or on the panel when the application sets `show_in_panel`. A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
+You can display a notification badge — a small count — on a `global`, `patient_specific`, or `provider_menu_item` application: on the icon in the app drawer or panel (`global` / `patient_specific`, the latter when the application sets `show_in_panel`), or next to the label in the provider menu (`provider_menu_item`). A badge is useful for surfacing how many items are waiting for attention, such as unread messages or open tasks. Applications in other scopes (`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not display badges.
 ###  Initial count on load 
 Override `compute_notification_badge()` on your `Application` handler to provide the count shown when Canvas loads applications. Return an integer to show a badge, or `None` (the default) to show no badge. A count of `0` shows no badge.
     ```python
