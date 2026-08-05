@@ -311,17 +311,17 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>POC Lab Test</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Approve Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Deny Refill</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
@@ -331,12 +331,12 @@ Commands migrated to the new framework will function similarly if not identicall
     </tr>
     <tr>
       <td>Reference</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
     <tr>
       <td>Visual Exam Finding</td>
-      <td><span class="tag-beta-testing"> Released - Beta </span> </td>
+      <td><span class="tag-complete"> Released - GA </span> </td>
       <td></td>
     </tr>
   </tbody>

@@ -1246,6 +1246,118 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Calendars
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Calendar Events
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Patient Payments
 
 <table>
@@ -6837,6 +6949,1414 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "staff": staff_key
 }
 "results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Assess Coding Gap Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "details": str
+  "diagnose": list
+  "background": str
+  "approximate_date_of_onset": str
+  "todays_assessment": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Create Coding Gap Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "diagnose": list
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Defer Coding Gap Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Validate Coding Gap Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "detected_issue": str
+  "status": str
+  "date": str
+  "details": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26143,6 +27663,46 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>Adding a pharmacy for a patient in their profile.</td>
     </tr>
     <tr>
+      <td>FAX__RECIPIENT__PRE_SEARCH</td>
+      <td>Searching for a fax recipient, before the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to supply the results; returning nothing runs the normal search. See <a href="/sdk/data-serviceprovider/#search-results">Service Provider search results</a>.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "fax"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>FAX__RECIPIENT__POST_SEARCH</td>
+      <td>Searching for a fax recipient, after the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to replace or annotate the results.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "fax"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_PROFILE__EXTERNAL_CARE_TEAM__PRE_SEARCH</td>
+      <td>Searching for a provider to add to a patient's external care team, before the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to supply the results; returning nothing runs the normal search.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "care_team"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
+      <td>PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH</td>
+      <td>Searching for a provider to add to a patient's external care team, after the search runs. Reply with <code>AUTOCOMPLETE_SEARCH_RESULTS</code> to replace or annotate the results.
+      <br />Context object:
+      <pre>"search_term": str
+"source": "care_team"
+"results": list[dict]
+"user":
+    "staff": str</pre></td>
+    </tr>
+    <tr>
       <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
       <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
@@ -26175,1414 +27735,6 @@ Context object:
 ### Search Result Data Structures
 
 Many event payloads include search results. This section documents the common structures within them.
-
-#### Create Coding Gap Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">CREATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "diagnose": list
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Validate Coding Gap Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">VALIDATE_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "date": str
-  "details": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Assess Coding Gap Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">ASSESS_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-  "status": str
-  "details": str
-  "diagnose": list
-  "background": str
-  "approximate_date_of_onset": str
-  "todays_assessment": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-#### Defer Coding Gap Command
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_ORIGINATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_UPDATE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_COMMIT</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_VALIDATION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_DELETE</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_ENTER_IN_ERROR</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__PRE_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">DEFER_CODING_GAP_COMMAND__POST_EXECUTE_ACTION</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"fields":
-  "detected_issue": str
-"note":
-  "uuid": note_id
-"patient":
-  "id": pt_id</pre></td>
-    </tr>
-  </tbody>
-</table>
 
 #### MedicationSearchResult
 
