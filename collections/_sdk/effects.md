@@ -169,6 +169,7 @@ The following effects are available to be applied in Canvas.
 | PATIENT_CHART__GROUP_ITEMS                  | Can be used to group items within a specific patient chart section. Check out [Patient Chart Group](/sdk/patient-chart-group-effect/). |
 | PATIENT_TIMELINE__CONFIGURATION             | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/). |
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
+| SHOW_PROVIDER_MENU_ITEMS                    | Can be used to control which native items appear in the provider (hamburger) menu. Check out [Provider Menu Configuration](/sdk/effect-provider-menu-configuration/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | RELOAD_ACTION_BUTTONS                       | Can be used to refresh a note's or patient's action buttons so they re-evaluate against the latest data. Check out [Reload Action Buttons](/sdk/effect-reload-action-buttons/). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |

@@ -26273,6 +26273,10 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>Homepage is loading. See <a href="{% link _guides/set-default-homepage.md %}" target="_blank">Set default homepage</a> for examples of how to use this event.</td>
     </tr>
     <tr>
+      <td>GET_PROVIDER_MENU_CONFIGURATION</td>
+      <td>The provider (hamburger) menu is loading. See <a href="{% link _sdk/effects/provider_menu_configuration.md %}" target="_blank">Provider Menu Configuration</a> for how to use this event.</td>
+    </tr>
+    <tr>
       <td>COMMAND__FORM__GET_ADDITIONAL_FIELDS</td>
       <td>Command is originated. See <a href="{% link _sdk/effects/command_metadata_create_form.md %}" target="_blank">Command metadata Create Form</a> for how to use this event.
       <br />Target:

@@ -958,6 +958,9 @@ effects_module:
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
+  - title: "Provider Menu Configuration"
+    url: /sdk/effect-provider-menu-configuration/
+    description: Control which native items appear in the provider (hamburger) menu via an allow-list.
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
