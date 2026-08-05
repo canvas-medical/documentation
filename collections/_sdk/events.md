@@ -1246,6 +1246,118 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+#### Calendars
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": calendar_id
+"type": <a href='/sdk/data-calendar/#calendar'>Calendar</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Calendar Events
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CALENDAR_EVENT_DELETED</th></tr>
+    <tr><td colspan="2">Occurs when a calendar event is deleted.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": event_id
+"type": <a href='/sdk/data-calendar/#event'>Event</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Patient Payments
 
 <table>
