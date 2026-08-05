@@ -37,7 +37,7 @@ Batch originating commands in a committed state is **not supported**, by design.
 
 If you need commands committed on origination, originate them individually with `commit=True` instead:
 
-```python
+```python?partial=true
 # Commit at origination time, one command per effect
 return [
     plan1.originate(commit=True),
