@@ -6,8 +6,10 @@ hidden: false
 ---
 
 The Service Provider effects let a plugin build and maintain its own directory of external
-providers. Providers created this way are readable through the SDK and can be offered in the
-provider-search surfaces.
+providers. Providers created this way are readable through the
+[ServiceProvider](/sdk/data-serviceprovider/) data model — where they are flagged with
+`is_customer_managed` — and can be offered in the provider-search surfaces by
+[handling those searches yourself](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 
 ## Create Service Provider
 
@@ -33,13 +35,25 @@ The required fields reject empty strings.
 
 ### Calling create more than once
 
-A create matches an existing provider on first name, last name, specialty and business address. On
-a match it updates that provider instead of adding another, and:
+Creating never produces a duplicate. These four fields together identify a provider:
 
-- only the fields you sent are written; the rest keep their values
+- `first_name`
+- `last_name`
+- `specialty`
+- `business_address`
+
+If a provider already exists with the same values for all four, the create updates that provider
+rather than adding a second one. Only a provider that differs on at least one of them is created as
+a new record.
+
+When an existing provider is matched:
+
+- only the fields you sent are written; the rest keep their current values
 - a deactivated provider stays deactivated unless you send `is_active=True`
 
-So it is safe to run the same create on a schedule.
+Because of this, the same create is safe to run repeatedly — on a schedule, on every plugin install,
+or as a re-import of a directory you already loaded. An omitted or empty `last_name` is treated as
+the empty string when matching, so repeated creates for an organization resolve to the same record.
 
 ### Example Usage
 
@@ -97,14 +111,6 @@ Deactivates a provider without deleting it, so anything referencing it keeps wor
 ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11").deactivate()
 ```
 
-## Effects
-
-| Effect                      | Description                    |
-|-----------------------------|--------------------------------|
-| CREATE_SERVICE_PROVIDER     | Create a service provider.     |
-| UPDATE_SERVICE_PROVIDER     | Update a service provider.     |
-| DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider. |
-
 ## Reading providers back
 
 Use the [ServiceProvider data module](/sdk/data-serviceprovider/), and `is_customer_managed` to read
@@ -115,6 +121,9 @@ from canvas_sdk.v1.data.service_provider import ServiceProvider
 
 ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
 ```
+
+To surface them in the Refer, Imaging Order, fax recipient, or external care team searches, see
+[Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 
 To offer them in a provider search, see
 [`as_search_result` and `as_search_contact`](/sdk/data-serviceprovider/#search-results).

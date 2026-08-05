@@ -188,9 +188,123 @@ The search results in this example follow the MedicationSearchResult structure. 
 
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
 
+## Offering your own providers alongside the directory
+
+The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external
+care team — search the shared contact directory by default. Providers you create with the
+[ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you
+maintain your own directory you have to offer them yourself.
+
+The pattern is the same on all four surfaces: query your own
+[ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and
+return the combined list.
+
+**Use the POST_SEARCH event, not PRE_SEARCH.** Only the post-search context carries what the
+directory returned, in `context["results"]`. On a pre-search that list is empty, so there is nothing
+to merge with — and on a command pre-search any `AUTOCOMPLETE_SEARCH_RESULTS` effect you return is
+authoritative, which means an empty reply blanks the dropdown instead of leaving it alone.
+
+Which helper you call depends on the surface:
+
+| Surface | Event | Helper |
+| --- | --- | --- |
+| Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()` |
+| Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()` |
+| Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()` |
+| External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()` |
+
+```python
+import json
+
+from canvas_sdk.effects import Effect, EffectType
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import ServiceProvider
+
+# Cap the query so a loose search term cannot pull your whole table into the sandbox.
+MAX_LOCAL_PROVIDERS = 200
+
+# The sandbox has no Q objects, so each field is queried separately and unioned in Python.
+SEARCHABLE_FIELDS = ("first_name", "last_name", "practice_name", "specialty")
+
+
+def matching_providers(search_term):
+    matches = {}
+    for field in SEARCHABLE_FIELDS:
+        providers = ServiceProvider.objects.filter(
+            is_active=True, **{f"{field}__icontains": search_term}
+        )[:MAX_LOCAL_PROVIDERS]
+        for provider in providers:
+            matches.setdefault(provider.dbid, provider)
+
+    return list(matches.values())[:MAX_LOCAL_PROVIDERS]
+
+
+class ContactDirectorySearch(BaseHandler):
+    """Offer our own providers above the directory's on the fax and care team searches."""
+
+    RESPONDS_TO = [
+        EventType.Name(EventType.FAX__RECIPIENT__POST_SEARCH),
+        EventType.Name(EventType.PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH),
+    ]
+
+    def compute(self):
+        search_term = str(self.event.context.get("search_term") or "").strip()
+        if not search_term:
+            # An empty term must not push the entire local directory into the dropdown.
+            return self.no_opinion()
+
+        matches = matching_providers(search_term)
+        if not matches:
+            return self.no_opinion()
+
+        ours = [
+            provider.as_search_contact(["Our directory"])
+            for provider in matches
+        ]
+
+        # Keep the directory's results underneath, minus anyone we already offered.
+        superseded = {provider.full_name.lower() for provider in matches}
+        theirs = [
+            result
+            for result in (self.event.context.get("results") or [])
+            if f"{result.get('firstName') or ''} {result.get('lastName') or ''}".strip().lower()
+            not in superseded
+        ]
+
+        return [
+            Effect(
+                type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS,
+                payload=json.dumps(ours + theirs),
+            )
+        ]
+
+    def no_opinion(self):
+        """A null payload means "keep whatever the search already found"."""
+        return [
+            Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))
+        ]
+```
+
+For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for
+`as_search_result()`. The merge is the same, except the directory's results carry their display name
+in `text` rather than in `firstName` / `lastName`.
+
+A few things worth carrying over into your own version:
+
+- **Filter to `is_active=True`.** Deactivating a provider is how a customer retires it, so offering a
+  deactivated one invites picking it again.
+- **Return a null payload when you have nothing to add**, rather than an empty list. On the contact
+  surfaces an empty list clears the results.
+- **Prefer your own record when it duplicates a directory contact.** Selecting your record threads
+  its `service_provider_id` through to the commit, so the existing row is reused instead of a
+  near-duplicate being written. Match conservatively — listing a provider twice is a smaller failure
+  than hiding one.
+- **Annotate what you add** so the user can tell your entries from the directory's.
+
 ## Accessing User Context
 
-All command-related PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for fields like prescriber, medication, diagnosis, pharmacy, and many others across various commands.
+PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for command fields like prescriber, medication, diagnosis, pharmacy, and many others. It also includes the non-command fax recipient and external care team directory searches listed under [Other Events](/sdk/events/#other-events). All of these searches can be customized the same way.
 
 You can access the user's staff key from the context:
 
