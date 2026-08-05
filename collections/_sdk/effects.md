@@ -410,6 +410,17 @@ Check out the [Compound Medication Effects](/sdk/effect-compound-medication/) do
 | UPDATE_COMPOUND_MEDICATION | Update a compound medication. |
 
 
+### Service Providers
+
+Check out the [Service Provider Effects](/sdk/effect-service-provider/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_SERVICE_PROVIDER | Create a service provider, or update a matching one. |
+| UPDATE_SERVICE_PROVIDER | Update a service provider. |
+| DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider without deleting it. |
+
+
 ### External Events
 
 Check out the [External Event Effects](/sdk/effect-external-event/) documentation.
