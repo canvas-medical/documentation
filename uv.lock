@@ -2,10 +2,6 @@ version = 1
 revision = 3
 requires-python = ">=3.11, <3.15"
 
-[options]
-exclude-newer = "2026-03-30T18:18:00.653588Z"
-exclude-newer-span = "P7D"
-
 [manifest]
 overrides = [
     { name = "canvas", git = "https://github.com/canvas-medical/canvas-plugins.git?rev=main" },
