@@ -35,6 +35,8 @@ This approach minimizes database round-trips and improves overall performance.
 
 Batch originating commands in a committed state is **not supported**, by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation. Committing is a separate, per-command action with no equivalent batch saving, so there would be no performance benefit over originating each command individually in a committed state.
 
+Batch origination is the right tool when a plugin needs to originate many commands in the uncommitted (draft) state at once — that is exactly the case it is built for.
+
 If you need commands committed on origination, originate them individually with `commit=True` instead:
 
 ```python?partial=true
