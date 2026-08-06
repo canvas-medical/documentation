@@ -5,9 +5,11 @@ excerpt: "Patient educational material shared from a note via the Educational Ma
 hidden: false
 ---
 
-# EducationalMaterial
+## Introduction
 
-The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in.
+The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in. It is a read-only data model.
+
+Records are returned regardless of command state, so staged commands are included; use `committed()` to limit results to committed commands.
 
 ## Basic Usage
 
@@ -20,7 +22,7 @@ from canvas_sdk.v1.data import EducationalMaterial
 materials = EducationalMaterial.objects.all()
 
 # Get a specific record by its UUID id
-material = EducationalMaterial.objects.get(id="c9a7b1e2d4f34e6a8b5c0d1e2f3a4b5c")
+material = EducationalMaterial.objects.get(id="c9a7b1e2-d4f3-4e6a-8b5c-0d1e2f3a4b5c")
 ```
 
 If you have a `Patient` object, its educational material records can be accessed with the `education_material` reverse relation:
@@ -52,23 +54,79 @@ from canvas_sdk.v1.data import EducationalMaterial
 committed = EducationalMaterial.objects.committed()
 ```
 
+## Accessing the article PDF
+
+`EducationalMaterial` holds the article's metadata — its title, abstract, and languages — not the article file itself. When the command is committed, Canvas renders the article to a PDF and attaches it to a [DocumentReference](/sdk/data-document-reference/) with the LOINC type `34895-3` (Education note).
+
+To read a patient's education note PDFs, filter `DocumentReference` by that type and use its `document_url`:
+
+```python
+from canvas_sdk.v1.data import DocumentReference
+
+education_notes = DocumentReference.objects.for_patient(
+    "1eed3ea2a8d546a1b681a2a45de1d790"
+).filter(type__code="34895-3")
+
+for note in education_notes:
+    url = note.document_url
+```
+
+{% include alert.html type="info" content="<strong>Coming soon:</strong> the SDK does not yet expose the link from an <code>EducationalMaterial</code> record to the <code>DocumentReference</code> generated for it, so for now you can list a patient's education note PDFs but not resolve the PDF for one specific record. A future release will let you look the document up directly from the record it belongs to. In the meantime, <code>related_object_document_title</code> carries the material's title, which may help narrow the results." %}
+
 ## Attributes
 
 ### EducationalMaterial
 
-| Field Name        | Type                                  |
-|-------------------|---------------------------------------|
-| id                | UUID                                  |
-| dbid              | Integer                               |
-| created           | DateTime                              |
-| modified          | DateTime                              |
-| originator        | [CanvasUser](/sdk/data-canvasuser)    |
-| committer         | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error  | [CanvasUser](/sdk/data-canvasuser)    |
-| patient           | [Patient](/sdk/data-patient/#patient) |
-| note              | [Note](/sdk/data-note/#note)          |
-| article_id        | String                                |
-| selected_language | String                                |
-| title             | String                                |
-| languages         | String[]                              |
-| abstract          | String                                |
+| Field Name        | Type                                                        |
+|-------------------|-------------------------------------------------------------|
+| id                | UUID                                                        |
+| dbid              | Integer                                                     |
+| created           | DateTime                                                    |
+| modified          | DateTime                                                    |
+| originator        | [CanvasUser](/sdk/data-canvasuser)                          |
+| committer         | [CanvasUser](/sdk/data-canvasuser)                          |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                          |
+| patient           | [Patient](/sdk/data-patient/#patient)                       |
+| note              | [Note](/sdk/data-note/#note)                                |
+| article_id        | String                                                      |
+| selected_language | [EducationalMaterialLanguage](#educationalmateriallanguage) |
+| title             | String                                                      |
+| languages         | String[]                                                    |
+| abstract          | String                                                      |
+
+`selected_language` defaults to `en-us`.
+
+`languages` holds the locale codes the article is available in, drawn from the same set of codes as [EducationalMaterialLanguage](#educationalmateriallanguage). It is stored as a plain array of strings rather than an enum, so compare against the code values (`"es-us"`) rather than expecting enum members.
+
+## Enumeration types
+
+### EducationalMaterialLanguage
+
+| Value | Label       |
+|-------|-------------|
+| en-us | English     |
+| es-us | Spanish     |
+| en-ca | English CA  |
+| fr-ca | French CA   |
+| fr-fr | French FR   |
+| da-dk | Danish DK   |
+| ar-eg | Arabic Egypt|
+| ar-us | Arabic      |
+| bn-us | Bengali     |
+| bs-ba | Bosnian     |
+| bs-us | Bosnian     |
+| fa-ir | Farsi Iran  |
+| fa-us | Farsi       |
+| hr-hr | Croatian    |
+| ht-us | Haitian     |
+| ko-us | Korean      |
+| ru-ru | Russian     |
+| ru-us | Russian     |
+| sr-us | Serbian     |
+| so-so | Somalia     |
+| so-us | Somalia     |
+| tl-us | Tagalog     |
+| vi-vn | Vietnamese  |
+| vi-us | Vietnamese  |
+| zh-cn | Chinese     |
+| zh-us | Chinese     |

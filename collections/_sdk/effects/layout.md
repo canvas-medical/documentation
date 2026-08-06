@@ -302,7 +302,21 @@ Three things the effect does not do:
 - **It does not grant access.** Permissions still apply on top, so an item you list will still render disabled for a user who lacks the permission for it.
 - **It does not affect plugin-provided menu items.** Applications with the `provider_menu_item` scope are independent of the allow-list.
 
-The user's name and the **Sign out** button are always rendered and cannot be hidden.
+The user's avatar and name, and the **Sign out** button, are always rendered and cannot be hidden.
+
+Because this is an allow-list rather than a block-list, it does not pick up native items added in future Canvas releases. If a new item ships and you want it visible, add it to your list — otherwise it stays hidden on your instance.
+
+#### When the allow-list is not applied
+
+Canvas falls back to rendering every native item, rather than a partial or empty menu, in each of these cases:
+
+- No installed plugin responds to the event.
+- The plugin raises while resolving the configuration.
+- The allow-list reaches Canvas containing an item it does not recognize — the whole list is discarded, not just the unrecognized entry.
+
+Passing something that is not an `Items` member raises a validation error when you construct `ProviderMenuConfiguration`, so most mistakes surface in your plugin before they ever reach Canvas.
+
+If more than one installed plugin responds with a `ProviderMenuConfiguration`, the last effect Canvas receives wins — its allow-list replaces the earlier ones rather than merging with them.
 
 ### Attributes
 
@@ -343,6 +357,8 @@ class ScheduleFreeHomepage(BaseHandler):
     def compute(self) -> list[Effect]:
         return [DefaultHomepageEffect(page=DefaultHomepageEffect.Pages.PATIENTS).apply()]
 ```
+
+Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place. Removing the scheduling experience end to end means coordinating three independent controls: this effect for the menu item, [`PanelConfiguration`](#panel-configuration) for the Appointments filter, and [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) for the landing page.
 
 Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
 
