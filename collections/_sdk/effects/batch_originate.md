@@ -47,6 +47,25 @@ return [
 ]
 ```
 
+For **multiple** commands that all need to be committed in the same plugin, batch originate the drafts first — so the note is updated once — and then commit each command. Assign each command a `command_uuid` up front so it can be committed after it is originated:
+
+```python?partial=true
+from uuid import uuid4
+
+# Set command_uuid so each draft can be committed after batch origination
+plan1.command_uuid = str(uuid4())
+diagnose.command_uuid = str(uuid4())
+
+# One note update for all drafts, followed by a commit per command
+return [
+    BatchOriginateCommandEffect(commands=[plan1, diagnose]).apply(),
+    plan1.commit(),
+    diagnose.commit(),
+]
+```
+
+For three commands this performs three originates, **one** note update, and three commits — whereas calling `originate(commit=True)` on each command updates the note once per command.
+
 ## Basic Usage
 
 ```python
