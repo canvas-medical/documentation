@@ -1136,6 +1136,9 @@ data_module:
   - title: "Patient"
     url: /sdk/data-patient/
     description: Data used to categorize individuals for identification, records matching, and other purposes.
+  - title: "PatientAdministrativeDocument"
+    url: /sdk/data-patient-administrative-document/
+    description: Administrative documents associated with a patient, such as intake confirmations and insurance cards.
   - title: "PatientConsent"
     url: /sdk/data-patient-consent/
     description: Documented patient consents that ensure legal compliance and protect patient rights.
