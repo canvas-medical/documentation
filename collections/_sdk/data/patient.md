@@ -61,6 +61,17 @@ if photo:
     print(photo.title)
 ```
 
+## Accessing educational materials
+
+If you have a `Patient` object, the educational materials recorded on their notes can be accessed with the `education_material` reverse relation:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+educational_materials = patient.education_material.all()
+```
+
 ## Attributes
 
 ### Patient
@@ -164,6 +175,7 @@ if photo:
 | referral_reviews         | [ReferralReview](/sdk/data-referral/#referralreview)[]                     |
 | referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
 | invoices                 | Invoice[]                                    |
+| education_material       | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
 
 ### PatientAddress
 

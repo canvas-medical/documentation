@@ -95,6 +95,19 @@ imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead1
 tasks = imaging_order.task_list
 ```
 
+## Accessing the report file
+
+The `document_url` property on `ImagingReport` returns a presigned S3 URL for securely accessing the report's file. The URL is valid for one hour and is regenerated on each access, so don't persist or cache it. If the report has no associated file, `document_url` returns `None`.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingReport
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# Presigned S3 URL to the report file, or None if the report has no file
+url = imaging_report.document_url
+```
+
 ## Attributes
 
 ### ImagingOrder
@@ -160,6 +173,7 @@ tasks = imaging_order.task_list
 | result_date        | Date                                                                  |
 | original_date      | Date                                                                  |
 | review             | [ImagingReview](#imagingreview)                                       |
+| document_url       | String (property) — presigned S3 URL, or `None` if the report has no file |
 | codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
 
 ### ImagingReportCoding

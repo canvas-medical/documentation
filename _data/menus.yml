@@ -1061,6 +1061,9 @@ data_module:
   - title: "DocumentReviewDelegation"
     url: /sdk/data-document-review-delegation/
     description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
+  - title: "EducationalMaterial"
+    url: /sdk/data-educational-material/
+    description: Patient educational material shared from a note via the Educational Material command.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
@@ -1127,6 +1130,9 @@ data_module:
   - title: "Organization"
     url: /sdk/data-organization/
     description: The clinical organization present in the Canvas EMR.
+  - title: "OrganizationalEntity"
+    url: /sdk/data-organizational-entity/
+    description: External entities, such as service providers, referenced by a patient's external care team members.
   - title: "Patient"
     url: /sdk/data-patient/
     description: Data used to categorize individuals for identification, records matching, and other purposes.
