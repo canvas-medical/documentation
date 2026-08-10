@@ -11035,6 +11035,16 @@ The `CareTeamMembership` model connects patients, staff members and their associ
     >>> print([(ctm.role.display, ctm.staff,) for ctm in patient_1_care_team])
     [('Primary care physician', <Staff: Steven Magee>), ('Nurse practitioner', <Staff: Annalies Hines>), ('Physician assistant', <Staff: Erik McDonald>)]
     ```
+###  External care team members 
+A care team can also include external members — providers who are not [Staff](/sdk/data-staff#staff) on the Canvas instance. An external membership has no `staff`. Instead, its `organizational_entity` links to an [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity) that describes the external provider. When that entity is a [ServiceProvider](/sdk/data-serviceprovider/#service-provider), the membership's `service_provider` property resolves directly to it, so you can read the provider's contact details — such as `business_fax` — without leaving the plugin.
+    ```python
+    >>> from canvas_sdk.v1.data.patient import Patient
+    >>> patient_1 = Patient.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    >>> external_member = patient_1.care_team_memberships.filter(staff__isnull=True).first()
+    >>> external_member.service_provider.business_fax
+    '18005551234'
+    ```
+The `service_provider` property returns `None` for internal (staff-backed) memberships, and for external members whose organizational entity is not a `Service Provider`.
 ##  Filtering 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter care team data:
 **Find a patient's care team lead**
@@ -11078,11 +11088,17 @@ modified | DateTime
 patient | [Patient](/sdk/data-patient/#patient)  
 staff | [Staff](/sdk/data-staff#staff)  
 role | CareTeamRole  
+organizational_entity | [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity)  
 status | CareTeamMembershipStatus  
 lead | Boolean  
 role_code | String  
 role_system | String  
 role_display | String  
+For external (non-staff) members, `staff` is empty and `organizational_entity` links to the external provider.
+####  Properties 
+Name | Type | Description  
+---|---|---  
+service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) | `None` | The external provider for this membership, resolved through its `organizational_entity`; `None` for internal members.  
 ##  Enumeration types 
 ###  CareTeamMembershipStatus 
 Value | Label  
@@ -12159,6 +12175,7 @@ SDK data model | app_label | model
 [Note](/sdk/data-note/) | `api` | `note`  
 [Observation](/sdk/data-observation/) | `api` | `observation`  
 [Organization](/sdk/data-organization/) | `api` | `organization`  
+[OrganizationalEntity](/sdk/data-organizational-entity/) | `api` | `organizationalentity`  
 [Patient](/sdk/data-patient/) | `api` | `patient`  
 [PatientConsent](/sdk/data-patient-consent/) | `api` | `patientconsent`  
 [PatientGroup](/sdk/data-patient-group/) | `api` | `patientgroup`  
@@ -12815,6 +12832,102 @@ Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-document-review-delegation/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-educational-material/
+##  Introduction 
+The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in. It is a read-only data model.
+Records are returned regardless of command state, so staged commands are included; use `committed()` to limit results to committed commands.
+##  Basic Usage 
+`EducationalMaterial` records can be retrieved by their UUID `id`, their integer `dbid`, or through a patient.
+    ```python
+    from canvas_sdk.v1.data import EducationalMaterial
+    # Get all educational material records
+    materials = EducationalMaterial.objects.all()
+    # Get a specific record by its UUID id
+    material = EducationalMaterial.objects.get(id="c9a7b1e2-d4f3-4e6a-8b5c-0d1e2f3a4b5c")
+    ```
+If you have a `Patient` object, its educational material records can be accessed with the `education_material` reverse relation:
+    ```python
+    from canvas_sdk.v1.data import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    materials = patient.education_material.all()
+    ```
+##  Filtering 
+###  By attribute 
+    ```python
+    from canvas_sdk.v1.data import EducationalMaterial
+    materials = EducationalMaterial.objects.filter(selected_language="en-us")
+    ```
+###  Committed records 
+The `committed` method returns records that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import EducationalMaterial
+    committed = EducationalMaterial.objects.committed()
+    ```
+##  Accessing the article PDF 
+`EducationalMaterial` holds the article's metadata — its title, abstract, and languages — not the article file itself. When the command is committed, Canvas renders the article to a PDF and attaches it to a [DocumentReference](/sdk/data-document-reference/) with the LOINC type `34895-3` (Education note).
+To read a patient's education note PDFs, filter `DocumentReference` by that type and use its `document_url`:
+    ```python
+    from canvas_sdk.v1.data import DocumentReference
+    education_notes = DocumentReference.objects.for_patient(
+        "1eed3ea2a8d546a1b681a2a45de1d790"
+    ).filter(type__code="34895-3")
+    for note in education_notes:
+        url = note.document_url
+    ```
+> **Info:** **Coming soon:** the SDK does not yet expose the link from an `EducationalMaterial` record to the `DocumentReference` generated for it, so for now you can list a patient's education note PDFs but not resolve the PDF for one specific record. A future release will let you look the document up directly from the record it belongs to. In the meantime, `related_object_document_title` carries the material's title, which may help narrow the results. 
+##  Attributes 
+###  EducationalMaterial 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note/#note)  
+article_id | String  
+selected_language | EducationalMaterialLanguage  
+title | String  
+languages | String[]  
+abstract | String  
+`selected_language` defaults to `en-us`.
+`languages` holds the locale codes the article is available in, drawn from the same set of codes as EducationalMaterialLanguage. It is stored as a plain array of strings rather than an enum, so compare against the code values (`"es-us"`) rather than expecting enum members.
+##  Enumeration types 
+###  EducationalMaterialLanguage 
+Value | Label  
+---|---  
+en-us | English  
+es-us | Spanish  
+en-ca | English CA  
+fr-ca | French CA  
+fr-fr | French FR  
+da-dk | Danish DK  
+ar-eg | Arabic Egypt  
+ar-us | Arabic  
+bn-us | Bengali  
+bs-ba | Bosnian  
+bs-us | Bosnian  
+fa-ir | Farsi Iran  
+fa-us | Farsi  
+hr-hr | Croatian  
+ht-us | Haitian  
+ko-us | Korean  
+ru-ru | Russian  
+ru-us | Russian  
+sr-us | Serbian  
+so-so | Somalia  
+so-us | Somalia  
+tl-us | Tagalog  
+vi-vn | Vietnamese  
+vi-us | Vietnamese  
+zh-cn | Chinese  
+zh-us | Chinese
+----- END PAGE https://docs.canvasmedical.com/sdk/data-educational-material/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-encounter/
 ##  Introduction 
 The `Encounter` model represents a patient encounter connected to a Note in Canvas.
@@ -13408,6 +13521,14 @@ The `task_list` computed property returns the same related tasks as a `list[Task
     imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
     tasks = imaging_order.task_list
     ```
+##  Accessing the report file 
+The `document_url` property on `ImagingReport` returns a presigned S3 URL for securely accessing the report's file. The URL is valid for one hour and is regenerated on each access, so don't persist or cache it. If the report has no associated file, `document_url` returns `None`.
+    ```python
+    from canvas_sdk.v1.data.imaging import ImagingReport
+    imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # Presigned S3 URL to the report file, or None if the report has no file
+    url = imaging_report.document_url
+    ```
 ##  Attributes 
 ###  ImagingOrder 
 Field Name | Type  
@@ -13467,6 +13588,7 @@ name | String
 result_date | Date  
 original_date | Date  
 review | ImagingReview  
+document_url | String (property) — presigned S3 URL, or `None` if the report has no file  
 codings | ImagingReportCoding[]  
 ###  ImagingReportCoding 
 Field Name | Type  
@@ -15043,6 +15165,13 @@ To access the content of a command, use the `data` attribute which contains a JS
         print(json.dumps(command_data, indent=2))
     ```
 For more information about command types and their data structure, see the [Command](/sdk/data-command/) documentation.
+###  Retrieve educational materials for a note 
+Educational material shared through the Educational Material command is recorded on the note. If you have a note object, those records can be found using the `education_material` reverse relation:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    educational_materials = note.education_material.all()
+    ```
 ###  Understanding the note body structure 
 The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
     ```python
@@ -15226,6 +15355,7 @@ letter | [Letter](/sdk/data-letter/#letter) | The letter associated with this no
 referral_set | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note  
 laborder_set | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note  
 appointment_set | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note  
+education_material | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note  
 ###  NoteType 
 Field Name | Type  
 ---|---  
@@ -15590,6 +15720,47 @@ state | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-organization/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-organizational-entity/
+##  Introduction 
+The `OrganizationalEntity` model represents an external entity that Canvas references through a generic relation — for example, the [ServiceProvider](/sdk/data-serviceprovider/#service-provider) backing a patient's external care team member. Its `type` indicates which kind of entity it points at, and the `content_type` and `object_id` fields identify the specific record.
+The most common use is reaching the external members of a patient's care team. A [CareTeamMembership](/sdk/data-care-team/#careteammembership) with no `staff` is an external member, and its `organizational_entity` links to the `OrganizationalEntity` describing the external provider.
+##  Basic usage 
+When an `OrganizationalEntity` has a `type` of `Service Provider`, its `service_provider` property resolves to the linked [ServiceProvider](/sdk/data-serviceprovider/#service-provider), giving you access to the provider's contact details — such as `business_fax` — without leaving the plugin:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+    external_member = patient.care_team_memberships.filter(staff__isnull=True).first()
+    entity = external_member.organizational_entity
+    if entity and entity.service_provider:
+        print(entity.service_provider.business_fax)
+    ```
+For entities of any other `type`, the `service_provider` property returns `None`.
+##  Attributes 
+###  OrganizationalEntity 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+content_type | [ContentType](/sdk/data-content-type/#contenttype)  
+object_id | Integer  
+name | String  
+active | Boolean  
+type | OrganizationalEntityType  
+##  Properties 
+Name | Type | Description  
+---|---|---  
+service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) | `None` | The linked `ServiceProvider` when `type` is `Service Provider`; otherwise `None`.  
+##  Enumeration types 
+###  OrganizationalEntityType 
+Value | Label  
+---|---  
+Transactor | Transactor  
+Business Entity | Business Entity  
+Vendor | Vendor  
+Service Provider | Service Provider
+----- END PAGE https://docs.canvasmedical.com/sdk/data-organizational-entity/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-patient-consent/
 ##  Introduction 
 The `PatientConsent` model represents documented patient consents in Canvas that ensure legal compliance and protect patient rights. Each `PatientConsent` is linked to a `Patient`, has a category (which is a `PatientConsentCoding`), and optionally a rejection reason (which is a `PatientConsentRejectionCoding`).
@@ -15795,6 +15966,13 @@ If you need the underlying `PatientPhoto` record (for example, to read the origi
     if photo:
         print(photo.title)
     ```
+##  Accessing educational materials 
+If you have a `Patient` object, the educational materials recorded on their notes can be accessed with the `education_material` reverse relation:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    educational_materials = patient.education_material.all()
+    ```
 ##  Attributes 
 ###  Patient 
 Field Name | Type  
@@ -15896,6 +16074,7 @@ refill_requests | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]
 referral_reviews | [ReferralReview](/sdk/data-referral/#referralreview)[]  
 referral_reports | [ReferralReport](/sdk/data-referral/#referralreport)[]  
 invoices | Invoice[]  
+education_material | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  
 ###  PatientAddress 
 Field Name | Type  
 ---|---  
@@ -18244,7 +18423,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligilibitysummary/) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -18681,16 +18860,22 @@ The batch originate effect processes multiple commands in a single operation:
   2. **Note Update** : The note is updated once with all command UUIDs, rather than updating for each command individually
 This approach minimizes database round-trips and improves overall performance.
 ##  Commit behavior 
-`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. Unlike a single command's `originate(commit=True)`, the batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
-Batch originating commands in a committed state is **not supported** , by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation. Committing is a separate, per-command action with no equivalent batch saving, so there would be no performance benefit over originating each command individually in a committed state.
-If you need commands committed on origination, originate them individually with `commit=True` instead:
+`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. The batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
+Batch originating commands in a committed state is **not supported** , by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation, and committing is a separate, per-command action with no equivalent batch saving.
+Whenever a plugin needs to originate more than one command — whether you want them left as drafts or committed — batch origination is the right tool. To end up with committed commands, batch originate the drafts first so the note is updated once, then commit each command individually. Assign each command a `command_uuid` up front so it can be committed after it is originated:
     ```python
-    # Commit at origination time, one command per effect
+    from uuid import uuid4
+    # Set command_uuid so each draft can be committed after batch origination
+    plan1.command_uuid = str(uuid4())
+    diagnose.command_uuid = str(uuid4())
+    # One note update for all drafts, followed by a commit per command
     return [
-        plan1.originate(commit=True),
-        diagnose.originate(commit=True),
+        BatchOriginateCommandEffect(commands=[plan1, diagnose]).apply(),
+        plan1.commit(),
+        diagnose.commit(),
     ]
     ```
+For three commands this performs three originates, **one** note update, and three commits. Collapsing the draft insertions into a single note update is where the performance benefit comes from.
 ##  Basic Usage 
     ```python
     from canvas_sdk.commands import (
@@ -24439,6 +24624,7 @@ PATIENT_CHART_SUMMARY__CUSTOM_SECTION | Can be used to serve content for a custo
 SHOW_PATIENT_PROFILE_SECTIONS | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile).  
 SHOW_PANEL_SECTIONS | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration).  
 SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).  
+SHOW_PROVIDER_MENU_ITEMS | Can be used to hide items in the provider (hamburger) menu. Check out [Layout Effects](/sdk/layout-effect/#provider-menu-configuration).  
 PATIENT_CHART__GROUP_ITEMS | Can be used to group items within a specific patient chart section. Check out [Patient Chart Group](/sdk/patient-chart-group-effect/).  
 PATIENT_TIMELINE__CONFIGURATION | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/).  
 HOMEPAGE_CONFIGURATION | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/).  
@@ -40623,6 +40809,7 @@ CRON | This event fires regularly and can be used for scheduled tasks. See [Cron
 PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION | A patient chart's summary section is loading.  
 PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION | Canvas is requesting the content for a custom patient chart summary section. See [Patient Chart Summary Custom Section Handler](/sdk/patient-chart-summary-custom-section-handler/).  
 PANEL_SECTIONS_CONFIGURATION | The panel section is loading.  
+GET_PROVIDER_MENU_CONFIGURATION | The provider (hamburger) menu is loading. See [Provider Menu Configuration](/sdk/layout-effect/#provider-menu-configuration).  
 PLUGIN_CREATED | A plugin is uploaded for the first time. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PLUGIN_UPDATED | A plugin is enabled or when the plugin code has changed. See [ProtocolCards](/sdk/effect-protocol-cards/) and [BannerAlerts](/sdk/effect-banner-alerts/) for examples of how to use this event.  
 PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS | Adding a pharmacy for a patient in their profile.  
@@ -46438,6 +46625,69 @@ PRINT_NOTE | Print the note for care team
 FAX_NOTE | Fax the note to an external recipient  
 FAX_EVENT_HISTORY | View fax event history for the note  
 MOVE_COMMANDS | Move commands from this note to another note  
+##  Provider Menu Configuration 
+The `ProviderMenuConfiguration` effect allows you to define which items appear in the provider menu (the hamburger menu at the top left of Canvas).
+The effect replaces the default set of items, so every item that should stay visible has to be listed. Anything you omit is not rendered. If no installed plugin emits the effect, the menu renders unchanged.
+Passing an empty list is allowed and hides every native item — useful if your plugin replaces the menu entirely with its own items.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.provider_menu_configuration import ProviderMenuConfiguration
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class ProviderMenuHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.GET_PROVIDER_MENU_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [ProviderMenuConfiguration(items=[
+                ProviderMenuConfiguration.Items.PATIENTS,
+                ProviderMenuConfiguration.Items.CAMPAIGNS,
+                ProviderMenuConfiguration.Items.SETTINGS,
+            ]).apply()]
+    ```
+Three things the effect does not do:
+  - **It does not reorder the menu.** Items render in Canvas's native order and grouping, regardless of the order you list them in.
+  - **It does not grant access.** Permissions still apply on top, so an item you list will still render disabled for a user who lacks the permission for it.
+  - **It does not affect plugin-provided menu items.** Applications with the `provider_menu_item` scope are independent of the allow-list.
+The user's avatar and name, and the **Sign out** button, are always rendered and cannot be hidden.
+Because this is an allow-list rather than a block-list, it does not pick up native items added in future Canvas releases. If a new item ships and you want it visible, add it to your list — otherwise it stays hidden on your instance.
+####  When the allow-list is not applied 
+Canvas falls back to rendering every native item, rather than a partial or empty menu, in each of these cases:
+  - No installed plugin responds to the event.
+  - The plugin raises while resolving the configuration.
+  - The allow-list reaches Canvas containing an item it does not recognize — the whole list is discarded, not just the unrecognized entry.
+Passing something that is not an `Items` member raises a validation error when you construct `ProviderMenuConfiguration`, so most mistakes surface in your plugin before they ever reach Canvas.
+If more than one installed plugin responds with a `ProviderMenuConfiguration`, the last effect Canvas receives wins — its allow-list replaces the earlier ones rather than merging with them.
+###  Attributes 
+Attribute | Type | Description  
+---|---|---  
+`items` | `list[Items]` | List of menu items to display.  
+Values in the `ProviderMenuConfiguration.Items` enum are:
+Constant | Description  
+---|---  
+SCHEDULE | Go to the schedule page  
+PATIENTS | Go to the patient directory  
+REVENUE | Go to the revenue page  
+POPULATIONS | Go to the populations page  
+CAMPAIGNS | Go to the campaigns page  
+DATA_INTEGRATION | Go to the data integration queue  
+QUESTIONNAIRE_BUILDER | Go to the questionnaire builder  
+SETTINGS | Open the Canvas admin site in a new tab  
+MULTI_FACTOR_AUTHENTICATION | Open multi-factor authentication setup in a new tab  
+CHANGELOG | Open the Canvas release notes in a new tab  
+HELP_CENTER | Open the Canvas help center in a new tab  
+###  Hiding the Schedule item 
+Hiding `SCHEDULE` does not change where providers land after logging in — that still defaults to the schedule page. Pair the effect with a [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) so providers do not arrive on a page they can no longer navigate back to.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.default_homepage import DefaultHomepageEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class ScheduleFreeHomepage(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.GET_HOMEPAGE_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [DefaultHomepageEffect(page=DefaultHomepageEffect.Pages.PATIENTS).apply()]
+    ```
+Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place. Removing the scheduling experience end to end means coordinating three independent controls: this effect for the menu item, `PanelConfiguration` for the Appointments filter, and [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) for the landing page.
+Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
 ##  Modals 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
 ###  Example Usage 
