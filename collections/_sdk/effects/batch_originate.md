@@ -31,23 +31,11 @@ This approach minimizes database round-trips and improves overall performance.
 
 ## Commit behavior
 
-`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. Unlike a single command's `originate(commit=True)`, the batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
+`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. The batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
 
-Batch originating commands in a committed state is **not supported**, by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation. Committing is a separate, per-command action with no equivalent batch saving, so there would be no performance benefit over originating each command individually in a committed state.
+Batch originating commands in a committed state is **not supported**, by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation, and committing is a separate, per-command action with no equivalent batch saving.
 
-Batch origination is the right tool when a plugin needs to originate many commands in the uncommitted (draft) state at once — that is exactly the case it is built for.
-
-If you need commands committed on origination, originate them individually with `commit=True` instead:
-
-```python?partial=true
-# Commit at origination time, one command per effect
-return [
-    plan1.originate(commit=True),
-    diagnose.originate(commit=True),
-]
-```
-
-For **multiple** commands that all need to be committed in the same plugin, batch originate the drafts first — so the note is updated once — and then commit each command. Assign each command a `command_uuid` up front so it can be committed after it is originated:
+Whenever a plugin needs to originate more than one command — whether you want them left as drafts or committed — batch origination is the right tool. To end up with committed commands, batch originate the drafts first so the note is updated once, then commit each command individually. Assign each command a `command_uuid` up front so it can be committed after it is originated:
 
 ```python?partial=true
 from uuid import uuid4
@@ -64,7 +52,7 @@ return [
 ]
 ```
 
-For three commands this performs three originates, **one** note update, and three commits — whereas calling `originate(commit=True)` on each command updates the note once per command.
+For three commands this performs three originates, **one** note update, and three commits. Collapsing the draft insertions into a single note update is where the performance benefit comes from.
 
 ## Basic Usage
 
