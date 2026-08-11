@@ -87,7 +87,28 @@ collection: release-notes
       <id>{{ post.id | absolute_url | xml_escape }}</id>
       {% assign excerpt_only = post.feed.excerpt_only | default: site.feed.excerpt_only %}
       {% unless excerpt_only %}
-        <content type="html" xml:base="{{ post.url | absolute_url | xml_escape }}"><![CDATA[{{ post.content | strip }}]]></content>
+        {% comment %}
+          Changed from upstream: render list items as nested divs carrying their
+          own bullet character, rather than as <ul>/<li>.
+
+          Clients that strip HTML (the Slack RSS app) drop list markup entirely
+          and would show the items as unmarked paragraphs. Simply prefixing <li>
+          with a bullet fixes Slack but doubles the marker in readers that do
+          render lists. Divs carry no marker of their own, so one bullet shows
+          everywhere, and they nest legally at any depth where <p> would not.
+
+          Depth comes from Kramdown's indentation: top-level items are preceded
+          by two spaces, nested ones by six. Do the six-space replace first —
+          "      <li>" contains "  <li>". If that indentation ever changes, a
+          sub-item just falls back to the top-level bullet rather than breaking.
+        {% endcomment %}
+        {% assign post_content = post.content
+             | replace: "      <li>", "      <div>◦ "
+             | replace: "  <li>", "  <div>• "
+             | replace: "</li>", "</div>"
+             | replace: "<ul>", "<div>"
+             | replace: "</ul>", "</div>" %}
+        <content type="html" xml:base="{{ post.url | absolute_url | xml_escape }}"><![CDATA[{{ post_content | strip }}]]></content>
       {% endunless %}
 
       {% assign post_author = post.author | default: post.authors[0] | default: site.author %}
