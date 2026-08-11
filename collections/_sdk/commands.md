@@ -592,7 +592,7 @@ close_goal = CloseGoalCommand(
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
 
