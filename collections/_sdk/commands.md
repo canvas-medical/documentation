@@ -511,7 +511,7 @@ allergy = AllergyCommand(
 | `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment.                                  |
+| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
