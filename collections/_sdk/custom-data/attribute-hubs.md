@@ -25,6 +25,41 @@ data model prototyping, or plugin-specific configuration.
 requiring aggregation or reporting. See [Design Considerations](/sdk/custom-data-design-considerations/) for
 detailed guidance.
 
+## Prerequisites
+
+AttributeHub tables live inside your plugin's custom data namespace, so a plugin must declare a `custom_data`
+block in its `CANVAS_MANIFEST.json` before it can read or write hubs:
+
+```json
+"custom_data": {
+    "namespace": "my_org__my_plugin",
+    "access": "read_write"
+}
+```
+
+Use `read_write` to create hubs or set attributes. `read` is enough to query hubs in a namespace that another
+plugin already owns.
+
+A plugin that creates its own namespace needs no access key. Canvas generates
+`namespace_read_access_key` and `namespace_read_write_access_key` when the first `read_write` plugin
+initializes the namespace, and stores both on that plugin so you can retrieve them from the Admin UI.
+
+A plugin joining a namespace another plugin owns declares the matching key as a variable, so that an operator
+can set the value at install time:
+
+```json
+"variables": [
+    {"name": "namespace_read_write_access_key", "sensitive": true}
+]
+```
+
+Defining a [CustomModel](/sdk/custom-data-custom-models/) is optional. AttributeHubs need only the
+`custom_data` block, with no `models` directory. See the [Quick Start](/sdk/custom-data-quick-start/) for
+full namespace setup and [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/) for how namespaces are
+created and shared between plugins.
+
+{% include alert.html type="info" content="A plugin with no <code>custom_data</code> block has no namespace, and every AttributeHub query it makes fails with <code>psycopg.errors.UndefinedTable: relation &quot;attribute_hub&quot; does not exist</code>." %}
+
 ## Creating an AttributeHub
 
 Create a hub for a specific purpose using the `type` and `id` fields, which together form a unique key.
