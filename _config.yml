@@ -58,6 +58,13 @@ defaults:
       path          : "collections/_release-notes/**/*"
     values:
       layout        : "releasenotes"
+      # Feed readers (e.g. the Slack RSS app) prefer <summary> over <content>, and
+      # jekyll-feed builds <summary> from the excerpt — which the default separator
+      # ("\n\n") cuts at the intro line, so only "Today's release includes the
+      # following updates:" is previewed. An empty separator stops Jekyll generating
+      # an excerpt at all, so jekyll-feed omits <summary> and readers fall back to
+      # <content>, which carries the full note as HTML (real <ul>/<li> and links).
+      excerpt_separator: ""
   - scope:
       path          : "collections/_sdk/**/*"
     values:
