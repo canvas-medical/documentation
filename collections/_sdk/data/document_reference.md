@@ -60,6 +60,39 @@ doc_ref = DocumentReference.objects.exclude(document="").first()
 url = doc_ref.document_url
 ```
 
+## Resolving the Related Object
+
+The `related_object` property resolves the document reference to the SDK data-model instance it is attached to, using its generic-relation `content_type` and `object_id` fields. (This `content_type` field is the generic-relation link to a [ContentType](/sdk/data-content-type/) — not `document_content_type`, which holds the file's MIME type.) If no instance can be resolved, it returns `None`.
+
+```python
+from canvas_sdk.v1.data import DocumentReference
+
+doc_ref = DocumentReference.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# The concrete SDK model instance the document is attached to, or None
+record = doc_ref.related_object
+```
+
+It looks up the `(app_label, model)` pair from the document's [ContentType](/sdk/data-content-type/) in an internal mapping and returns the mapped SDK data-model instance whose `dbid` matches `object_id`.
+
+`related_object` returns `None` when:
+
+- `content_type` or `object_id` is not set.
+- The document's content type is not one of the supported target models (listed below).
+- The content type is supported but no matching record exists (no instance whose `dbid` equals `object_id`).
+
+The supported target models are:
+
+- [LabReport](/sdk/data-labs/)
+- [ImagingReport](/sdk/data-imaging/)
+- [Letter](/sdk/data-letter/)
+- [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent)
+- [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)
+- [ReferralReport](/sdk/data-referral/)
+- [EducationalMaterial](/sdk/data-educational-material/)
+- PatientAdministrativeDocument
+- Invoice
+
 ## Attributes
 
 ### DocumentReference
@@ -84,7 +117,10 @@ url = doc_ref.document_url
 | team                             | [Team](/sdk/data-team/#team)                                |
 | related_object_document_title    | String                                                      |
 | related_object_document_comment  | String                                                      |
+| content_type                     | [ContentType](/sdk/data-content-type/)                      |
+| object_id                        | Integer                                                     |
 | document_url                     | String (property) — presigned S3 URL or absolute URL        |
+| related_object                   | Model (property) — resolved SDK instance or None            |
 
 ### DocumentReferenceCoding
 
