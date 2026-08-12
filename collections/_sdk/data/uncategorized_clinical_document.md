@@ -64,6 +64,31 @@ current = document.active_delegation
 
 See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
 
+## Document codings
+
+The `code` field comes from the document's type, which is drawn from a fixed list rather than set freely — either the type selected in Data Integration, or, when a document is created through the FHIR [DocumentReference](/api/documentreference/) endpoint, the LOINC code supplied in `type.coding`, which must match one of the codes below. Every coding uses the LOINC system (`http://loinc.org`). The document types stored as uncategorized clinical documents are:
+
+| Document type                  | Code    | Display                                       |
+|--------------------------------|---------|-----------------------------------------------|
+| Care Management Documents      | 91983-7 | Care management note                          |
+| Clinical Patient Intake Form   | 64285-0 | Medical history screening form                |
+| Emergency Department Report    | 96335-5 | Emergency department Summary note             |
+| External Medical Records       | 11503-0 | Medical records                               |
+| Home Care Report               | 75503-3 | Patient’s home Note                           |
+| Hospital Discharge Summary     | 34105-7 | Hospital Discharge summary                    |
+| Hospital History and Physical  | 47039-3 | Hospital Admission history and physical note  |
+| Nursing Home                   | 34113-1 | Nursing facility Note                         |
+| Operative Report               | 11504-8 | Surgical operation note                       |
+| Physical Exam Documents        | 51848-0 | Evaluation note                               |
+| Prescription Refill Request    | 57833-6 | Prescription for medication                   |
+| Rehabilitation Report          | 34823-5 | Physical medicine and rehab Note              |
+| Uncategorized Clinical Document | 34109-9 | Note                                         |
+| In Office Testing Documents    | —       | none                                          |
+
+{% include alert.html type="warning" content="In Office Testing Documents have no coding assigned, so their <code>code</code> is <code>None</code>. Filtering on <code>code</code> silently excludes them, and because the FHIR endpoint identifies a document's type by its LOINC code, they can only be created through Data Integration." %}
+
+Administrative document types are stored as [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) instead. Lab reports, imaging reports and specialist consult reports have their own models, so their codings never appear here.
+
 ## Attributes
 
 ### UncategorizedClinicalDocument
@@ -79,6 +104,7 @@ See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the de
 | assigned_by        | [CanvasUser](/sdk/data-canvasuser)                                          |
 | review             | [UncategorizedClinicalDocumentReview](#uncategorizedclinicaldocumentreview) |
 | team               | [Team](/sdk/data-team/#team)                                                |
+| code               | [DocumentCoding](/sdk/data-patient-administrative-document/#documentcoding) |
 | name               | String                                                                      |
 | review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode)       |
 | junked             | Boolean                                                                     |
