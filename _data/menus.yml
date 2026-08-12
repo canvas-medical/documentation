@@ -1094,6 +1094,9 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
+  - title: "Invoice"
+    url: /sdk/data-invoice/
+    description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.

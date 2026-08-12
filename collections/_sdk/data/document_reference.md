@@ -152,7 +152,7 @@ source = doc_ref.related_object
 | `api` / `referralreport`                  | [ReferralReport](/sdk/data-referral/#referralreport)                                                    |
 | `api` / `educationalmaterial`             | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)                              |
 | `api` / `patientadministrativedocument`   | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument) |
-| `quality_and_revenue` / `invoicefull`     | Invoice                                                                                                 |
+| `quality_and_revenue` / `invoicefull`     | [Invoice](/sdk/data-invoice/#invoice)                                                                   |
 
 To go the other way — find every document reference for a given source type — resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` (never hardcode the per-environment `dbid`) and filter on it:
 
