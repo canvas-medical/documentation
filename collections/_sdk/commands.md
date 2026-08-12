@@ -1425,6 +1425,7 @@ command.set_test_value("pH", "6.8")
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+- For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
 
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
