@@ -224,7 +224,7 @@ collection: release-notes
       {% if post_summary and post_summary != empty %}
         <summary type="html"><![CDATA[{{ post_summary }}
 
-Full note: {{ post.url | absolute_url }}]]></summary>
+See full notes: {{ post.url | absolute_url }}]]></summary>
       {% endif %}
 
       {% assign post_image = post.image.path | default: post.image %}
