@@ -70,6 +70,40 @@ hidden: false
 
 Content pattern: heading, intro paragraph, Basic Usage section with code, Filtering section, Attributes table. Code examples use Django-style ORM queries (`Model.objects.filter(...)`).
 
+### Release notes (`collections/_release-notes/<date>-<version>.md`)
+
+Frontmatter:
+```yaml
+---
+title: 08.13.2026
+layout: productupdates
+tags: sdk ui
+date: 2026-08-13
+feed_summary: |          # optional — see below
+  ...
+---
+```
+
+Body: the intro line, then one `<span class="tag-sdk">sdk</span>` section per tag with its bullets. Keep a blank line before the first tag span, or markdown renders it inline with the intro.
+
+**Check the feed digest before shipping.** `release-notes.xml` builds a plain-text `<summary>` from the note, because the Slack RSS app prefers `<summary>` over `<content>` and renders only ~600 bytes of it. Notes longer than ~440 characters of prose — most of them — get cut there, and the cut lands wherever it lands.
+
+So for any release whose notes run past that, write a `feed_summary:` override that summarises the whole release inside the budget:
+
+```yaml
+feed_summary: |
+  sdk
+
+  • DocumentReference now exposes the record a document was generated from.
+  • The Assess command rejects a condition belonging to another patient.
+
+  ui
+
+  • A tab left open through an update now offers to reload.
+```
+
+Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~490 characters; over that, the built feed carries an XML comment saying so. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
+
 ### API docs (`collections/_api/*.md`)
 
 Frontmatter uses a structured `sections` → `blocks` → `apidoc` format with `attributes`, `search_parameters`, `endpoints`, and example references. These are complex — read an existing file before editing.
