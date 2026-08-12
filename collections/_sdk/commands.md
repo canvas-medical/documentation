@@ -535,6 +535,10 @@ assess = AssessCommand(
 )
 ```
 
+**Validation**:
+
+`condition_id` has to belong to the patient whose chart the command is being written to. `originate` and `edit` both check it: the patient comes from `note_uuid` when you originate the command, and from the existing command's note when you edit one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated.
+
 ---
 
 ### ChangeMedication
