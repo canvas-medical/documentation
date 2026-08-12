@@ -176,17 +176,55 @@ collection: release-notes
         Plain text has no tags to cut open and fits far more words. The bullet
         characters injected above survive strip_html (they are text, not
         markup) and so do Kramdown's newlines and indentation, so the digest
-        keeps one line per item and its nesting. 520 characters leaves headroom
-        for the multi-byte bullets, dashes and quotes to stay under the app's
-        byte budget.
+        keeps one line per item and its nesting. 440 characters plus the trailer
+        below leaves headroom for the multi-byte bullets, dashes and quotes to
+        stay under the app's byte budget.
 
         Readers that render <content> are unaffected — they still get the whole
-        note, with its links. The digest is a teaser; the entry title links to
-        the full note.
+        note, with its links.
+
+        Every digest is a teaser, so both paths end with the note's URL. The
+        entry title links there already, but a cut digest gives no sign that the
+        rest exists and an override, which stops wherever its author chose, gives
+        even less. The URL is bare rather than an anchor: Slack linkifies it, and
+        it is the one thing at risk of being cut, so it should degrade to a short
+        URL rather than to a dangling tag. It is written at column 0 below
+        because the newlines and indentation inside the CDATA are the output.
+
+        A note can override the digest with `feed_summary:` in its frontmatter,
+        which is worth doing for a long release where the automatic 440-character
+        cut lands somewhere unhelpful — hand-written, the whole release can be
+        summarised inside the budget. Use a YAML block scalar so the newlines
+        survive, and write plain text: markup is what gets cut open.
+
+            feed_summary: |
+              sdk
+
+              • Questionnaires can now be scored.
+              • Two data models were added: CareTeam and Coverage.
+
+              bugfix
+
+              • The Goals filter classifies by most recent update.
+
+        An override is emitted verbatim — no truncation — because trimming a
+        hand-written digest to 440 characters would defeat the point. Keep it
+        under ~490 characters, which leaves room for the trailer, or Slack does
+        the cutting instead; over that, an XML comment says so in the built feed
+        so it shows up in review. `description:` is honoured too,
+        for jekyll-feed compatibility, but prefer `feed_summary:` — jekyll-seo-tag
+        reads `description` and would put the bullets in the page's meta tag.
       {% endcomment %}
-      {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 520, "…" %}
+      {% if post.feed_summary %}
+        {% assign post_summary = post.feed_summary | strip %}
+        {% if post_summary.size > 490 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~600 bytes the Slack RSS app renders -->{% endif %}
+      {% else %}
+        {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 440, "…" %}
+      {% endif %}
       {% if post_summary and post_summary != empty %}
-        <summary type="html"><![CDATA[{{ post_summary }}]]></summary>
+        <summary type="html"><![CDATA[{{ post_summary }}
+
+Full note: {{ post.url | absolute_url }}]]></summary>
       {% endif %}
 
       {% assign post_image = post.image.path | default: post.image %}
