@@ -142,17 +142,17 @@ source = doc_ref.related_object
 
 `related_object` returns `None` when the document has no related object (`content_type` or `object_id` is unset) or when the linked content type has no SDK data model equivalent. The content types it resolves today:
 
-| `app_label` / `model`                    | SDK data model                |
-|-------------------------------------------|-------------------------------|
-| `api` / `labreport`                       | LabReport                     |
-| `api` / `imagingreport`                   | ImagingReport                 |
-| `api` / `letter`                          | Letter                        |
-| `api` / `notestatechangeevent`            | NoteStateChangeEvent          |
-| `api` / `uncategorizedclinicaldocument`   | UncategorizedClinicalDocument |
-| `api` / `referralreport`                  | ReferralReport                |
-| `api` / `educationalmaterial`             | EducationalMaterial           |
-| `api` / `patientadministrativedocument`   | PatientAdministrativeDocument |
-| `quality_and_revenue` / `invoicefull`     | Invoice                       |
+| `app_label` / `model`                     | SDK data model                                                                                          |
+|-------------------------------------------|---------------------------------------------------------------------------------------------------------|
+| `api` / `labreport`                       | [LabReport](/sdk/data-labs/#labreport)                                                                  |
+| `api` / `imagingreport`                   | [ImagingReport](/sdk/data-imaging/#imagingreport)                                                       |
+| `api` / `letter`                          | [Letter](/sdk/data-letter/#letter)                                                                      |
+| `api` / `notestatechangeevent`            | [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent)                                            |
+| `api` / `uncategorizedclinicaldocument`   | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument) |
+| `api` / `referralreport`                  | [ReferralReport](/sdk/data-referral/#referralreport)                                                    |
+| `api` / `educationalmaterial`             | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)                              |
+| `api` / `patientadministrativedocument`   | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument) |
+| `quality_and_revenue` / `invoicefull`     | Invoice                                                                                                 |
 
 To go the other way — find every document reference for a given source type — resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` (never hardcode the per-environment `dbid`) and filter on it:
 
