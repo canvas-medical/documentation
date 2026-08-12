@@ -85,29 +85,51 @@ collection: release-notes
       <published>{{ post.date | date_to_xmlschema }}</published>
       <updated>{{ post.last_modified_at | default: post.date | date_to_xmlschema }}</updated>
       <id>{{ post.id | absolute_url | xml_escape }}</id>
+      {% comment %}
+        Changed from upstream: render list items as nested divs carrying their
+        own bullet character, rather than as <ul>/<li>.
+
+        Clients that strip HTML (the Slack RSS app) drop list markup entirely
+        and would show the items as unmarked paragraphs. Simply prefixing <li>
+        with a bullet fixes Slack but doubles the marker in readers that do
+        render lists. Divs carry no marker of their own, so one bullet shows
+        everywhere, and they nest legally at any depth where <p> would not.
+
+        Depth comes from Kramdown's indentation: top-level items are preceded
+        by two spaces, nested ones by six. Do the six-space replace first —
+        "      <li>" contains "  <li>". If that indentation ever changes, a
+        sub-item just falls back to the top-level bullet rather than breaking.
+
+        Also drop the "Today's release includes the following updates:" intro.
+        Every note opens with it, and in a feed the entry title already carries
+        the release date, so it is a line of boilerplate spending a budget the
+        Slack RSS app measures in a few hundred bytes (see <summary> below). It
+        stays on the page itself, where it reads as the note's opening line.
+
+        Kramdown smartifies the apostrophe, so match "’" rather than "'". Some
+        notes put the tag span in the same paragraph as the intro, so replace
+        the sentence rather than the whole <p>, then drop any paragraph that
+        leaves empty. "update:" covers the handful of single-item notes.
+
+        Rouge's class attribute on inline code is 44 bytes of nothing to a feed
+        reader. Dropping it costs no rendering and, should a client render
+        <content> under a byte budget, buys back that much prose per code span.
+
+        Assigned before <summary>, which is built from the same string.
+      {% endcomment %}
+      {% assign post_content = post.content
+           | replace: "      <li>", "      <div>◦ "
+           | replace: "  <li>", "  <div>• "
+           | replace: "</li>", "</div>"
+           | replace: "<ul>", "<div>"
+           | replace: "</ul>", "</div>"
+           | replace: "Today’s release includes the following updates:", ""
+           | replace: "Today’s release includes the following update:", ""
+           | replace: "<p></p>", ""
+           | replace: '<code class="language-plaintext highlighter-rouge">', "<code>" %}
+
       {% assign excerpt_only = post.feed.excerpt_only | default: site.feed.excerpt_only %}
       {% unless excerpt_only %}
-        {% comment %}
-          Changed from upstream: render list items as nested divs carrying their
-          own bullet character, rather than as <ul>/<li>.
-
-          Clients that strip HTML (the Slack RSS app) drop list markup entirely
-          and would show the items as unmarked paragraphs. Simply prefixing <li>
-          with a bullet fixes Slack but doubles the marker in readers that do
-          render lists. Divs carry no marker of their own, so one bullet shows
-          everywhere, and they nest legally at any depth where <p> would not.
-
-          Depth comes from Kramdown's indentation: top-level items are preceded
-          by two spaces, nested ones by six. Do the six-space replace first —
-          "      <li>" contains "  <li>". If that indentation ever changes, a
-          sub-item just falls back to the top-level bullet rather than breaking.
-        {% endcomment %}
-        {% assign post_content = post.content
-             | replace: "      <li>", "      <div>◦ "
-             | replace: "  <li>", "  <div>• "
-             | replace: "</li>", "</div>"
-             | replace: "<ul>", "<div>"
-             | replace: "</ul>", "</div>" %}
         <content type="html" xml:base="{{ post.url | absolute_url | xml_escape }}"><![CDATA[{{ post_content | strip }}]]></content>
       {% endunless %}
 
@@ -139,9 +161,32 @@ collection: release-notes
         <category term="{{ tag | xml_escape }}" />
       {% endfor %}
 
-      {% assign post_summary = post.description | default: post.excerpt %}
+      {% comment %}
+        Changed from upstream: build <summary> from the note itself rather than
+        from post.excerpt, which _config.yml switches off.
+
+        The Slack RSS app prefers <summary> over <content> and renders at most
+        ~600 bytes of whatever it is handed, keeping whole whitespace-delimited
+        tokens up to that budget. Handed HTML, the cut lands inside a tag and
+        arrives as a literal "<a..." — 1.338.0 posted that way. Markup also
+        spends the budget: that note delivered 293 of its 395 characters
+        because 62% of the 600 bytes went to tags, Rouge class attributes and
+        hrefs.
+
+        Plain text has no tags to cut open and fits far more words. The bullet
+        characters injected above survive strip_html (they are text, not
+        markup) and so do Kramdown's newlines and indentation, so the digest
+        keeps one line per item and its nesting. 520 characters leaves headroom
+        for the multi-byte bullets, dashes and quotes to stay under the app's
+        byte budget.
+
+        Readers that render <content> are unaffected — they still get the whole
+        note, with its links. The digest is a teaser; the entry title links to
+        the full note.
+      {% endcomment %}
+      {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 520, "…" %}
       {% if post_summary and post_summary != empty %}
-        <summary type="html"><![CDATA[{{ post_summary | strip_html | normalize_whitespace }}]]></summary>
+        <summary type="html"><![CDATA[{{ post_summary }}]]></summary>
       {% endif %}
 
       {% assign post_image = post.image.path | default: post.image %}
