@@ -89,6 +89,32 @@ The `code` field comes from the document's type, which is drawn from a fixed lis
 
 Administrative document types are stored as [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) instead. Lab reports, imaging reports and specialist consult reports have their own models, so their codings never appear here.
 
+## The document reference
+
+`UncategorizedClinicalDocument` carries the document's type, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the record, which is also how the document appears in the FHIR API.
+
+To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, UncategorizedClinicalDocument
+
+record = UncategorizedClinicalDocument.objects.get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="uncategorizedclinicaldocument"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=record.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A document marked entered-in-error keeps its document reference, with the status carried across, so check <code>status</code> if that matters to you." %}
+
 ## Attributes
 
 ### UncategorizedClinicalDocument

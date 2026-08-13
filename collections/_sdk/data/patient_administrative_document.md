@@ -52,6 +52,30 @@ document = PatientAdministrativeDocument.objects.exclude(document="").first()
 url = document.document_url
 ```
 
+## The document reference
+
+Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the document's coding, category and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, PatientAdministrativeDocument
+
+record = PatientAdministrativeDocument.objects.get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="patientadministrativedocument"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=record.dbid
+).first()
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>." %}
+
 ## Document codings
 
 The `code` field comes from the document's type, which is drawn from a fixed list rather than set freely — either the type selected in Data Integration, or, when a document is created through the FHIR [DocumentReference](/api/documentreference/) endpoint, the LOINC code supplied in `type.coding`, which must match one of the codes below. Every coding uses the LOINC system (`http://loinc.org`). The document types stored as patient administrative documents are:

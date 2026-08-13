@@ -372,6 +372,28 @@ committed_orders = LabOrder.objects.committed()
 committed_order_reasons = LabOrderReason.objects.committed()
 ```
 
+## The document reference
+
+`LabReport` carries the report's values and review state, not a file. When the report is reviewed, Canvas renders it to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report.
+
+To find it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, LabReport
+
+report = LabReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="labreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=report.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that has not been reviewed yet has no document reference, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### LabReport
