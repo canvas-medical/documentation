@@ -92,7 +92,7 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | provider                   | [ClaimProvider](#claimprovider)             |
 | incident_to                | Boolean                                     |
 | supervising_provider       | [ClaimSupervisingProvider](#claimsupervisingprovider) |
-| latest_invoice             | Invoice                                     |
+| latest_invoice             | [Invoice](/sdk/data-invoice/#invoice)       |
 | patient                    | [ClaimPatient](#claimpatient)               |
 | coverages                  | [ClaimCoverage](#claimcoverage)[]           |
 | submissions                | [ClaimSubmission](#claimsubmission)[]       |

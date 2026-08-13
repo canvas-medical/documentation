@@ -511,7 +511,7 @@ allergy = AllergyCommand(
 | `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment.                                  |
+| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
@@ -534,6 +534,10 @@ assess = AssessCommand(
     narrative='experiencing more pain lately'
 )
 ```
+
+**Validation**:
+
+`condition_id` has to belong to the patient whose chart the command is being written to. `originate` and `edit` both check it: the patient comes from `note_uuid` when you originate the command, and from the existing command's note when you edit one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated.
 
 ---
 
@@ -592,7 +596,7 @@ close_goal = CloseGoalCommand(
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
 

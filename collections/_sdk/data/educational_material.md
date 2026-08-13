@@ -71,7 +71,25 @@ for note in education_notes:
     url = note.document_url
 ```
 
-{% include alert.html type="info" content="<strong>Coming soon:</strong> the SDK does not yet expose the link from an <code>EducationalMaterial</code> record to the <code>DocumentReference</code> generated for it, so for now you can list a patient's education note PDFs but not resolve the PDF for one specific record. A future release will let you look the document up directly from the record it belongs to. In the meantime, <code>related_object_document_title</code> carries the material's title, which may help narrow the results." %}
+To resolve the PDF for one specific record, filter on the document's [related object](/sdk/data-document-reference/#the-related-object) instead. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the material's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, EducationalMaterial
+
+material = EducationalMaterial.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="educationalmaterial"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=material.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>, so filter on <code>material.dbid</code>." %}
 
 ## Attributes
 

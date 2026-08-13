@@ -194,6 +194,35 @@ if CurrentNoteStateEvent.objects.filter(note=note, state=NoteStates.LOCKED).exis
     pass
 ```
 
+### Retrieve the PDF of a locked note
+
+Locking a note captures it as a PDF showing the note at the moment of the lock. The file is stored on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent) that recorded the lock, so you get there through the note's state history rather than from the note itself.
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the lock event's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, DocumentReferenceStatus
+from canvas_sdk.v1.data.note import Note, NoteStates
+
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+lock_events = note.state_history.filter(state=NoteStates.LOCKED)
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="notestatechangeevent"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type,
+    object_id__in=[event.dbid for event in lock_events],
+    status=DocumentReferenceStatus.CURRENT,
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="A note can be locked more than once. Each lock captures its own PDF, and Canvas supersedes the earlier ones — so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version. Only encounter, inpatient, and review note types are captured this way; other note types have no PDF." %}
+
 ### Find all open notes
 
 You can find all open notes by retrieving the note records with a current

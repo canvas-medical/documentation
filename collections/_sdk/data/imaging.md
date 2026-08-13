@@ -108,6 +108,26 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## The document reference
+
+A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, ImagingReport
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+content_type = ContentType.objects.filter(app_label="api", model="imagingreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=imaging_report.dbid
+).first()
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report with no file has no document reference, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### ImagingOrder
