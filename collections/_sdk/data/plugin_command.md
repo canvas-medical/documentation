@@ -38,7 +38,7 @@ plugin_commands = PluginCommand.objects.filter(section="assessment")
 
 ### By command key
 
-To find a registered command by the `schema_key` declared in the manifest, filter on `command_key`:
+To find a registered command by the key declared in the manifest, filter on `command_key` — or on `schema_key`, which holds the same value:
 
 ```python
 from canvas_sdk.v1.data.plugin_command import PluginCommand
@@ -67,8 +67,8 @@ if plugin_command:
 - **id**: The unique UUID identifier for the plugin command.
 - **dbid**: The internal database primary key.
 - **name**: The registered name of the command (e.g., `RiskAssessment`).
-- **command_key**: The command key declared in the plugin's manifest (e.g., `riskAssessment`). This identifies the logical command; multiple rows can share a `command_key`, one per content version.
-- **schema_key**: The content-versioned identifier for this row, derived from the `command_key` and a hash of the command's `label` and `section`. Changing a command's label or section produces a new `schema_key` and a new row. This identifier is internal to the `PluginCommand` table; chart command lines store the bare `command_key` instead (see [`Command.schema_key`](/sdk/data-command/#command)), so a command always renders with its current label, and plugin authors query chart commands by the manifest key with `Command.objects.filter(schema_key="riskAssessment")`.
+- **command_key**: The command key declared in the plugin's manifest (e.g., `riskAssessment`). There is exactly one row per `command_key`: reinstalling or upgrading the plugin updates that row in place, so a command always carries its current `label` and `section`.
+- **schema_key**: Always equal to `command_key`. It exists as its own field because chart command lines use the same name — see [`Command.schema_key`](/sdk/data-command/#command), which plugin authors query with `Command.objects.filter(schema_key="riskAssessment")`. Two installed plugins cannot declare the same key; the second install fails with a validation error.
 - **label**: The user-friendly display label for the command (e.g., `Risk Assessment`).
 - **section**: The chart section where the command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`.
 - **plugin_name**: The name of the plugin that registered the command.
