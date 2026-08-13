@@ -86,7 +86,7 @@ feed_summary: |          # optional — see below
 
 Body: the intro line, then one `<span class="tag-sdk">sdk</span>` section per tag with its bullets. Keep a blank line before the first tag span, or markdown renders it inline with the intro.
 
-**Check the feed digest before shipping.** `release-notes.xml` builds a plain-text `<summary>` from the note, because the Slack RSS app prefers `<summary>` over `<content>` and renders only ~600 bytes of it. Notes longer than ~440 characters of prose — most of them — get cut there, and the cut lands wherever it lands.
+**Check the feed digest before shipping.** `release-notes.xml` builds a plain-text `<summary>` from the note, because the Slack RSS app prefers `<summary>` over `<content>` and renders only about the first **490 bytes** of it — measured, not documented, so treat it as a ceiling that may move. Notes longer than ~340 characters of prose — most of them — get cut there, and the cut lands wherever it lands.
 
 So for any release whose notes run past that, write a `feed_summary:` override that summarises the whole release inside the budget:
 
@@ -102,7 +102,7 @@ feed_summary: |
   • A tab left open through an update now offers to reload.
 ```
 
-Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~510 characters — the rest of the ~600 bytes goes on the `See full notes:` trailer the feed appends. Over that, the built feed carries an XML comment saying so. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
+Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~400 characters — the rest of the ~490 bytes goes on the `See full notes:` trailer the feed appends. Over that, the built feed carries an XML comment saying so. Don't hand-wrap the lines: Slack soft-wraps, so your line breaks only spend budget. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
 
 ### API docs (`collections/_api/*.md`)
 

@@ -165,20 +165,26 @@ collection: release-notes
         Changed from upstream: build <summary> from the note itself rather than
         from post.excerpt, which _config.yml switches off.
 
-        The Slack RSS app prefers <summary> over <content> and renders at most
-        ~600 bytes of whatever it is handed, keeping whole whitespace-delimited
-        tokens up to that budget. Handed HTML, the cut lands inside a tag and
-        arrives as a literal "<a..." — 1.338.0 posted that way. Markup also
-        spends the budget: that note delivered 293 of its 395 characters
-        because 62% of the 600 bytes went to tags, Rouge class attributes and
-        hrefs.
+        The Slack RSS app prefers <summary> over <content> and renders roughly
+        the first 490 bytes of whatever it is handed, keeping whole
+        whitespace-delimited tokens up to that budget. Handed HTML, the cut
+        lands inside a tag and arrives as a literal "<a..." — 1.338.0 posted
+        that way. Markup also spends the budget: that note delivered 293 of its
+        395 characters because most of the budget went to tags, Rouge class
+        attributes and hrefs.
+
+        The 490 figure is measured, not documented: 1.338.0's <content> was cut
+        at 492 bytes, and 1.339.0's first <summary> — 546 bytes — was cut at
+        493, dropping the trailer's URL. Treat it as a ceiling that may move,
+        which is the other reason the digest is plain text: a cut in prose costs
+        a few words, a cut in markup costs a visible broken tag.
 
         Plain text has no tags to cut open and fits far more words. The bullet
         characters injected above survive strip_html (they are text, not
         markup) and so do Kramdown's newlines and indentation, so the digest
-        keeps one line per item and its nesting. 440 characters plus the trailer
-        below leaves headroom for the multi-byte bullets, dashes and quotes to
-        stay under the app's byte budget.
+        keeps one line per item and its nesting. 340 characters plus the trailer below
+        leaves headroom for the multi-byte bullets, dashes and quotes to stay
+        under the app's byte budget.
 
         Readers that render <content> are unaffected — they still get the whole
         note, with its links.
@@ -192,7 +198,7 @@ collection: release-notes
         because the newlines and indentation inside the CDATA are the output.
 
         A note can override the digest with `feed_summary:` in its frontmatter,
-        which is worth doing for a long release where the automatic 440-character
+        which is worth doing for a long release where the automatic 340-character
         cut lands somewhere unhelpful — hand-written, the whole release can be
         summarised inside the budget. Use a YAML block scalar so the newlines
         survive, and write plain text: markup is what gets cut open.
@@ -208,8 +214,8 @@ collection: release-notes
               • The Goals filter classifies by most recent update.
 
         An override is emitted verbatim — no truncation — because trimming a
-        hand-written digest to 440 characters would defeat the point. Keep it
-        under ~510 characters, which leaves room for the trailer, or Slack does
+        hand-written digest to 340 characters would defeat the point. Keep it
+        under ~400 characters, which leaves room for the trailer, or Slack does
         the cutting instead; over that, an XML comment says so in the built feed
         so it shows up in review. `description:` is honoured too,
         for jekyll-feed compatibility, but prefer `feed_summary:` — jekyll-seo-tag
@@ -217,9 +223,9 @@ collection: release-notes
       {% endcomment %}
       {% if post.feed_summary %}
         {% assign post_summary = post.feed_summary | strip %}
-        {% if post_summary.size > 510 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~600 bytes the Slack RSS app renders -->{% endif %}
+        {% if post_summary.size > 400 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~490 bytes the Slack RSS app renders -->{% endif %}
       {% else %}
-        {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 440, "…" %}
+        {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 340, "…" %}
       {% endif %}
       {% if post_summary and post_summary != empty %}
         <summary type="html"><![CDATA[{{ post_summary }}
