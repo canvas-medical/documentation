@@ -209,7 +209,7 @@ collection: release-notes
 
         An override is emitted verbatim — no truncation — because trimming a
         hand-written digest to 440 characters would defeat the point. Keep it
-        under ~490 characters, which leaves room for the trailer, or Slack does
+        under ~510 characters, which leaves room for the trailer, or Slack does
         the cutting instead; over that, an XML comment says so in the built feed
         so it shows up in review. `description:` is honoured too,
         for jekyll-feed compatibility, but prefer `feed_summary:` — jekyll-seo-tag
@@ -217,7 +217,7 @@ collection: release-notes
       {% endcomment %}
       {% if post.feed_summary %}
         {% assign post_summary = post.feed_summary | strip %}
-        {% if post_summary.size > 490 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~600 bytes the Slack RSS app renders -->{% endif %}
+        {% if post_summary.size > 510 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~600 bytes the Slack RSS app renders -->{% endif %}
       {% else %}
         {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 440, "…" %}
       {% endif %}

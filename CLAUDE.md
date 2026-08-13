@@ -102,7 +102,7 @@ feed_summary: |
   • A tab left open through an update now offers to reload.
 ```
 
-Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~490 characters; over that, the built feed carries an XML comment saying so. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
+Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~510 characters — the rest of the ~600 bytes goes on the `See full notes:` trailer the feed appends. Over that, the built feed carries an XML comment saying so. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
 
 ### API docs (`collections/_api/*.md`)
 
