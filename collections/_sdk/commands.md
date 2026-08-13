@@ -137,7 +137,7 @@ def compute():
 
 Returns an Effect that sends a signed command.
 
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder), [Prescribe](#prescribe), [Refill](#refill) and [AdjustPrescription](#adjustprescription) command objects. Other command types do not support this operation. The three prescribing commands share one set of [electronic prescribing validations](#prescribe).
 
 **Parameters:**
 
@@ -334,7 +334,7 @@ Commands have two types of actions:
 | `audit_history` | Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time. |
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
-{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+{% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
 ### Customizing Action Availability
 
@@ -416,7 +416,7 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command. Adjust Prescription supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -1433,6 +1433,8 @@ command.set_test_value("pH", "6.8")
 - The command must be committed/signed before it can be sent electronically.
 - For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
 
+These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
+
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
 ```python
@@ -2009,7 +2011,7 @@ referral_review = ReferralReviewCommand(
 
 **Command-specific parameters**:
 
-Check the [Prescribe](#prescribe) command for the parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 **Example**:
 
