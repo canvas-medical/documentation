@@ -390,9 +390,9 @@ Beyond the import allow-list above, a few Python constructs compile under Restri
 | `obj.attr += v` | Augmented assignment to an attribute is rejected, including on classes you defined yourself | Explicit reassignment: `obj.attr = obj.attr + v` |
 | `d[k] += v` | Augmented assignment to a dict item, list item, or slice is rejected | Explicit reassignment: `d[k] = d[k] + v` |
 
-Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`, and the rest of the `-=` / `*=` / `//=` / `%=` / `**=` / `&=` / `|=` / `^=` / `<<=` / `>>=` family all work. It is only the attribute and item forms above that are rejected, and both fail when the plugin is compiled, so you find out at install time rather than mid-request. Note that `canvas validate` currently reports only the item form, not the attribute form.
+Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`, and the rest of the `-=` / `*=` / `//=` / `%=` / `**=` / `&=` / `|=` / `^=` / `<<=` / `>>=` family all work. It is only the attribute and item forms above that are rejected, and both fail when the plugin is compiled, so you find out at install time rather than mid-request.
 
-{% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. <code>canvas validate</code> only reports the three-argument form, so a one-argument call passes validation and then fails at runtime. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
+{% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
 
 {% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
 
