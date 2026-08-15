@@ -364,7 +364,7 @@ These are the ones plugin authors reach for most often:
 
 One group is easy to miss: the `OSError` subclasses, including `TimeoutError`, `ConnectionError`, `FileNotFoundError`, and `PermissionError`. Writing `except TimeoutError:` around an HTTP call raises `NameError`. Catch `OSError` instead — it is available, and it matches every one of them:
 
-```python?partial=true
+```python
 from canvas_sdk.utils import Http
 
 client = Http()
@@ -457,7 +457,7 @@ Reading a plain attribute off an imported module is also limited to that module'
 
 Subscripting with a string key that starts with an underscore is blocked on every object, including dictionaries you created yourself:
 
-```python?partial=true
+```python
 config = {"timeout": 30, "_internal": True}
 
 config["timeout"]    # fine
@@ -476,7 +476,7 @@ For objects, whether a write is allowed depends on where the object's class was 
   - the attribute currently holds a callable, so the assignment would replace a method
   - the target is a dictionary and the key is a string starting with an underscore
 
-```python?partial=true
+```python
 class MyThing:
     """Defined in your plugin, so its instances are writable."""
 
@@ -500,7 +500,7 @@ These four names cannot be used for a function, variable, class, or argument any
 
 `print` is among them, so use the SDK logger for output:
 
-```python?partial=true
+```python
 from logger import log
 
 log.info("plugin started")
@@ -518,7 +518,7 @@ The safe traceback wrappers under [reading attributes](#reading-attributes) are 
 
 The `format` and `format_map` methods of `str` are not available. Use an f-string or the `%` operator instead:
 
-```python?partial=true
+```python
 name = "Canvas"
 
 greeting = f"Hello {name}"       # fine
