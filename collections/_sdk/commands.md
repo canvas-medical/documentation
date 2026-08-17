@@ -623,7 +623,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
