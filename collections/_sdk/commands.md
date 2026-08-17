@@ -452,7 +452,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
