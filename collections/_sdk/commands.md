@@ -2042,7 +2042,7 @@ RefillCommand(
 | Name         | Type     | Required to commit | Description                                      |
 |--------------|----------|----------|--------------------------------------------------|
 | `allergy_id` | _string_ | `true`   | The id of the [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) to remove. Must be an allergy already recorded on that patient's chart.        |
-| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal. |
+| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
 
 **Example**:
 
