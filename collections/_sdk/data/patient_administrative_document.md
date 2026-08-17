@@ -7,7 +7,7 @@ hidden: false
 
 # PatientAdministrativeDocument
 
-The `PatientAdministrativeDocument` model represents patient-facing administrative documents: prior authorizations, advance directives and beneficiary notices, signed consent forms and agreements, insurance and prescription cards, driver's licenses, intake forms, releases of information, powers of attorney, and workers' compensation attachments. Each carries a document file and an optional `DocumentCoding`.
+The `PatientAdministrativeDocument` model represents patient-facing administrative documents: prior authorizations, advance directives and beneficiary notices, signed consent forms and agreements, insurance and prescription cards, driver's licenses, intake forms, releases of information, powers of attorney, and workers' compensation attachments. Each carries a document file and an optional `DocumentCoding`. A signed consent form links back through `patient_consents` to the patient consent(s) it satisfies.
 
 ## Basic Usage
 
@@ -131,6 +131,7 @@ Clinical document types are stored as [UncategorizedClinicalDocument](/sdk/data-
 | priority                | Boolean                                                               |
 | document                | String                                                                |
 | document_url            | String (property) — presigned S3 URL or None                          |
+| patient_consents        | QuerySet[[PatientConsent](/sdk/data-patient-consent/)]                |
 
 ### DocumentCoding
 
