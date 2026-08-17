@@ -41,6 +41,7 @@ codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/
 | system     | String            | The coding system (e.g., `http://snomed.info/sct`).                               |
 | version    | String            | The version of the coding system.                                                 |
 | duration   | Array of Duration | An array of durations (as Python `timedelta` objects) associated with the coding. |
+| user_selected | Boolean        | The active/inactive flag for this reason-for-visit coding: `True` = active, `False` = inactive. |
 
 <br/>
 <br/>

@@ -58,6 +58,12 @@ defaults:
       path          : "collections/_release-notes/**/*"
     values:
       layout        : "releasenotes"
+      # Feed readers (e.g. the Slack RSS app) prefer <summary> over <content>, and
+      # the default separator ("\n\n") would cut the excerpt at the first
+      # paragraph, previewing a single line of the note. An empty separator stops
+      # Jekyll generating an excerpt at all; release-notes.xml builds <summary>
+      # itself from the whole note instead. See the comment there.
+      excerpt_separator: ""
   - scope:
       path          : "collections/_sdk/**/*"
     values:

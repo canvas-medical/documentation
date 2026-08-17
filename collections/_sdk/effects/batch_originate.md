@@ -29,6 +29,31 @@ The batch originate effect processes multiple commands in a single operation:
 
 This approach minimizes database round-trips and improves overall performance.
 
+## Commit behavior
+
+`BatchOriginateCommandEffect` originates commands in the **uncommitted (draft)** state only. The batch effect has no `commit` option — every command in the batch is inserted into the note body as a draft.
+
+Batch originating commands in a committed state is **not supported**, by design. The performance benefit of batching comes from collapsing the note update for many draft insertions into a single operation, and committing is a separate, per-command action with no equivalent batch saving.
+
+Whenever a plugin needs to originate more than one command — whether you want them left as drafts or committed — batch origination is the right tool. To end up with committed commands, batch originate the drafts first so the note is updated once, then commit each command individually. Assign each command a `command_uuid` up front so it can be committed after it is originated:
+
+```python?partial=true
+from uuid import uuid4
+
+# Set command_uuid so each draft can be committed after batch origination
+plan1.command_uuid = str(uuid4())
+diagnose.command_uuid = str(uuid4())
+
+# One note update for all drafts, followed by a commit per command
+return [
+    BatchOriginateCommandEffect(commands=[plan1, diagnose]).apply(),
+    plan1.commit(),
+    diagnose.commit(),
+]
+```
+
+For three commands this performs three originates, **one** note update, and three commits. Collapsing the draft insertions into a single note update is where the performance benefit comes from.
+
 ## Basic Usage
 
 ```python

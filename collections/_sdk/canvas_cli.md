@@ -453,6 +453,12 @@ Set multiple variables in one call:
 $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
 ```
 
+Set a variable whose value is a list with one entry per line — for example a redirect allowlist (see the [Redirect effect](/sdk/effect-redirect/)). The value is newline-delimited (not comma-separated), so use your shell's newline quoting to preserve the line breaks. In bash/zsh, ANSI-C quoting (`$'…'`) turns `\n` into a real newline:
+
+```console
+$ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+```
+
 **Arguments**:
 
  - `PLUGIN`:  Plugin name to set variables for

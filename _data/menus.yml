@@ -647,6 +647,24 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Platform Security Overview"
+    url: /guides/platform-security-overview/
+    description: Tenancy model, trust boundaries, platform controls, and shared responsibility
+
+  - title: "Plugin Security Model"
+    url: /guides/plugin-security-model/
+    description: How plugin code is isolated at runtime and governed on its way to production
+    uses:
+      - sdk
+
+  - title: "Audit Logging and Telemetry"
+    url: /guides/audit-logging-and-telemetry/
+    description: What Canvas audits, how long it is retained, and how to export it
+
+  - title: "Roles and Permissions"
+    url: /guides/roles-and-permissions/
+    description: How authorization is evaluated, the default roles, and how to extend them
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
@@ -877,6 +895,9 @@ effects_module:
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
+  - title: "Lab Report"
+    url: /sdk/effect-lab-report/
+    description: Create, update, enter-in-error, and attach results to a lab report.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
@@ -886,6 +907,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Footer Configuration"
+    url: /sdk/effect-note-footer-configuration/
+    description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
   - title: "Note Metadata"
     url: /sdk/effect-note-metadata/
     description: Attach custom key-value metadata to note records.
@@ -937,9 +961,18 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Redirect"
+    url: /sdk/effect-redirect/
+    description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
+  - title: "Reload Action Buttons"
+    url: /sdk/effect-reload-action-buttons/
+    description: Re-evaluate a note's or patient's action buttons in real time.
   - title: "Send Contact Verification"
     url: /sdk/effect-send-contact-verification/
     description: Send an email or SMS verification to a patient contact point.
+  - title: "ServiceProvider"
+    url: /sdk/effect-service-provider/
+    description: Create, update, and soft-deactivate providers in a customer-managed provider directory.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.
@@ -986,6 +1019,9 @@ data_module:
   - title: "CareTeam"
     url: /sdk/data-care-team/
     description: Teams assigned for patient care.
+  - title: "Change Medication"
+    url: /sdk/data-change-medication/
+    description: A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription.
   - title: "ChargeDescriptionMaster"
     url: /sdk/data-charge-description-master/
     description: Billing charges in Canvas that can be added to the note footer.
@@ -1022,6 +1058,12 @@ data_module:
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
+  - title: "DocumentReviewDelegation"
+    url: /sdk/data-document-review-delegation/
+    description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
+  - title: "EducationalMaterial"
+    url: /sdk/data-educational-material/
+    description: Patient educational material shared from a note via the Educational Material command.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
@@ -1052,6 +1094,9 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
+  - title: "Invoice"
+    url: /sdk/data-invoice/
+    description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
@@ -1088,9 +1133,15 @@ data_module:
   - title: "Organization"
     url: /sdk/data-organization/
     description: The clinical organization present in the Canvas EMR.
+  - title: "OrganizationalEntity"
+    url: /sdk/data-organizational-entity/
+    description: External entities, such as service providers, referenced by a patient's external care team members.
   - title: "Patient"
     url: /sdk/data-patient/
     description: Data used to categorize individuals for identification, records matching, and other purposes.
+  - title: "PatientAdministrativeDocument"
+    url: /sdk/data-patient-administrative-document/
+    description: Patient-facing administrative documents, such as signed consent forms and statements.
   - title: "PatientConsent"
     url: /sdk/data-patient-consent/
     description: Documented patient consents that ensure legal compliance and protect patient rights.
@@ -1127,6 +1178,9 @@ data_module:
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "RefillRequest"
+    url: /sdk/data-refill-request/
+    description: An incoming request to refill a patient's medication and its responding prescriptions.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.

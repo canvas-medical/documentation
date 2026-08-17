@@ -137,7 +137,13 @@ def compute():
 
 Returns an Effect that sends a signed command.
 
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder), [Prescribe](#prescribe), [Refill](#refill) and [AdjustPrescription](#adjustprescription) command objects. Other command types do not support this operation. The three prescribing commands share one set of [electronic prescribing validations](#prescribe).
+
+**Parameters:**
+
+| Name | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `practice_location_override` | `str \| UUID` | No | `None` | [Prescribe](#prescribe) only. The `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation) whose address is used as the prescriber address on the outgoing prescription, overriding the prescriber's primary location. See [Prescribe](#prescribe) for behavior and limitations. |
 
 **Example**:
 
@@ -148,6 +154,17 @@ def compute():
     existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
 
     return [existing_prescribe.send()]
+```
+
+To send the prescription using a specific practice location's address (see [Prescribe](#prescribe)):
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
 ```
 
 #### enter_in_error
@@ -317,7 +334,7 @@ Commands have two types of actions:
 | `audit_history` | Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time. |
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
-{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+{% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
 ### Customizing Action Availability
 
@@ -399,7 +416,7 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command. Adjust Prescription supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -494,7 +511,7 @@ allergy = AllergyCommand(
 | `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment.                                  |
+| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
@@ -517,6 +534,12 @@ assess = AssessCommand(
     narrative='experiencing more pain lately'
 )
 ```
+
+**Validation**:
+
+`condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
+
+The check needs that note or command to exist, so it is skipped when you create the note and originate the command in the same batch of effects. Nothing is rejected in that case, since there is not yet a chart to compare the condition against.
 
 ---
 
@@ -575,7 +598,7 @@ close_goal = CloseGoalCommand(
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
 
@@ -1408,6 +1431,24 @@ command.set_test_value("pH", "6.8")
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+- For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
+
+These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
+
+**Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    existing_prescribe = PrescribeCommand(command_uuid='e32b85d9-ccb7-4e4f-a0e5-8783ed2d9528')
+
+    return [existing_prescribe.send(practice_location_override='a1b2c3d4-e5f6-7890-abcd-ef1234567890')]
+```
+
+- `practice_location_override` is the `id` of a [PracticeLocation](/sdk/data-practicelocation/#practicelocation). When set, that location's business name, phone, fax, and street address replace the prescriber's default on the outgoing prescription.
+- If the id does not correspond to an existing practice location, the send raises an error rather than falling back to the default address.
+- The override applies only to `send()`-initiated (plugin-driven) prescriptions. It does not affect prescriptions a clinician sends from the charting UI.
 
 
 **Command-specific parameters**:
@@ -1970,7 +2011,7 @@ referral_review = ReferralReviewCommand(
 
 **Command-specific parameters**:
 
-Check the [Prescribe](#prescribe) command for the parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 **Example**:
 
@@ -2355,6 +2396,7 @@ update_goal = UpdateGoalCommand(
 | `pulse_rhythm`                     | _[PulseRhythm](#pulserhythm)_    | `false`  | Rhythm of the pulse.                             |
 | `respiration_rate`                 | _integer_ | `false`  | Respiration rate in breaths per minute.          |
 | `oxygen_saturation`                | _integer_ | `false`  | Oxygen saturation in percentage.                 |
+| `supplemental_oxygen`              | _[SupplementalOxygen](#supplementaloxygen)_    | `false`  | Type of supplemental oxygen the patient is receiving. |
 | `note`                             | _string_  | `false`  | Additional notes (max length: 150 characters).   |
 
 **Enums and Types**:
@@ -2388,6 +2430,15 @@ update_goal = UpdateGoalCommand(
 | `IRREGULARLY_IRREGULAR` | `1`   | Completely irregular rhythm. |
 | `REGULARLY_IRREGULAR`   | `2`   | Regularly irregular rhythm.  |
 
+
+<a id="supplementaloxygen"></a>
+
+| SupplementalOxygen     | Value           | Description                               |
+|------------------------|-----------------|-------------------------------------------|
+| `CONTINUOUS_HIGH_FLOW` | `"LA28684-1"`   | Continuous high-flow supplemental oxygen. |
+| `CONTINUOUS_LOW_FLOW`  | `"LA28685-8"`   | Continuous low-flow supplemental oxygen.  |
+| `INTERMITTENT`         | `"LA28686-6"`   | Intermittent supplemental oxygen.         |
+
 **Example**:
 
 ```python
@@ -2404,6 +2455,7 @@ VitalsCommand(
     pulse=72,
     pulse_rhythm=VitalsCommand.PulseRhythm.REGULAR,
     oxygen_saturation=98,
+    supplemental_oxygen=VitalsCommand.SupplementalOxygen.INTERMITTENT,
     note="Vitals are within normal range."
 )
 ```

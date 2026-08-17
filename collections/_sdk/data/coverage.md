@@ -97,6 +97,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | patient                            | [Patient](/sdk/data-patient/#patient)                 |
 | guarantor                          | [Patient](/sdk/data-patient/#patient)                 |
 | subscriber                         | [Patient](/sdk/data-patient/#patient)                 |
+| subscriber_identifier              | String                                                |
 | patient_relationship_to_subscriber | [CoverageRelationshipCode](#coveragerelationshipcode) |
 | issuer                             | [Transactor](#transactor)                             |
 | id_number                          | String                                                |
@@ -117,6 +118,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
 
 ### Transactor
 
@@ -150,6 +152,8 @@ The `filter` method can be used to filter by desired attributes. The following e
 | addresses                    | [TransactorAddress](#transactoraddress)[]           |
 | coverages                    | [Coverage](#coverage)[]                             |
 | phones                       | [TransactorPhone](#transactorphone)[]               |
+| specific_charges             | [PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)[] |
+| remits                       | [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice)[] |
 
 ### TransactorAddress
 

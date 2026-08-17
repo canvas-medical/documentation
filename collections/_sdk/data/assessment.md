@@ -65,7 +65,6 @@ committed_assessments = Assessment.objects.committed()
 | created             | DateTime                                                |
 | modified            | DateTime                                                |
 | originator          | [CanvasUser](/sdk/data-canvasuser)                      |     |
-| deleted             | Boolean                                                 |
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                      |
 | committer           | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient             | [Patient](/sdk/data-patient/#patient)                   |
@@ -78,6 +77,7 @@ committed_assessments = Assessment.objects.committed()
 | care_team           | String                                                  |
 | treatments_stated   | [MedicationStatement](/sdk/data-medication-statement)[] |
 | billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[]        |
+| referrals           | [Referral](/sdk/data-referral)[]                        |
 
 ## Enumeration types
 

@@ -90,6 +90,7 @@ Use these stable values to resolve a content type with `ContentType.objects.filt
 | [Note](/sdk/data-note/) | `api` | `note` |
 | [Observation](/sdk/data-observation/) | `api` | `observation` |
 | [Organization](/sdk/data-organization/) | `api` | `organization` |
+| [OrganizationalEntity](/sdk/data-organizational-entity/) | `api` | `organizationalentity` |
 | [Patient](/sdk/data-patient/) | `api` | `patient` |
 | [PatientConsent](/sdk/data-patient-consent/) | `api` | `patientconsent` |
 | [PatientGroup](/sdk/data-patient-group/) | `api` | `patientgroup` |

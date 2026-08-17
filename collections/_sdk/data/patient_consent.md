@@ -97,6 +97,7 @@ url = consent_coding.document_url
 | summary                | String                                                        |
 | document               | String                                                        |
 | document_url           | String (property) — presigned S3 URL                          |
+| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |
 
 
 ### PatientConsentRejectionCoding
@@ -109,6 +110,7 @@ url = consent_coding.document_url
 | code          | String  |
 | display       | String  |
 | user_selected | Boolean |
+| patient_consents | QuerySet[[PatientConsent](#patientconsent)] |
 
 ## Enumeration types
 

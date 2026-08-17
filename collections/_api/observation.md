@@ -185,6 +185,7 @@ sections:
                     type: string
                     enum_options: 
                       - value: Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command
+                      - value: "88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs."
                       - value: Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems
                       - value: Any code from a Questionnaire Scoring Result
                       - value: "Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference)"
@@ -304,7 +305,7 @@ sections:
           - name: valueCodeableConcept
             type: json
             exclude_in: create
-            description: Actual result.<br><br>Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+            description: Actual result.<br><br>Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.<br><br>Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
             attributes:
               - name: coding
                 description: Code defined by a terminology system. Codings are used when the Observation comes from a QuestionnaireResponse.
@@ -583,6 +584,8 @@ sections:
               | pulse rhythm                   | 8884-9     |              |                           |
 
             *If an oxygen saturation vital sign is created, an oxygen saturation (arterial) vital sign code is also automatically generated.<br><br>
+
+            A vital sign code that is not listed in the table above is rejected with a 405 and the message `Sign is not supported by Canvas`. In particular, **supplemental oxygen (88658-0) cannot be created through this endpoint** — it can only be captured through the Vitals command in Canvas. Supplemental oxygen observations are still returned by read and search, where the value appears as a `valueCodeableConcept`.<br><br>
         
             **Additional examples**
 

@@ -18669,6 +18669,7 @@ In order to identify which extension maps to specific fields in Canvas, the url 
 **A few of the extensions are required:******
   - clinical-date
   - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
+  - requires-signature
 Click to view child attributes
 url 
 string required
@@ -28842,6 +28843,7 @@ waist circumference | 56086-2 | cm | in
 note | 80339-5 |  |   
 pulse rhythm | 8884-9 |  |   
 *If an oxygen saturation vital sign is created, an oxygen saturation (arterial) vital sign code is also automatically generated.  
+A vital sign code that is not listed in the table above is rejected with a 405 and the message `Sign is not supported by Canvas`. In particular, **supplemental oxygen (88658-0) cannot be created through this endpoint** — it can only be captured through the Vitals command in Canvas. Supplemental oxygen observations are still returned by read and search, where the value appears as a `valueCodeableConcept`.  
 **Additional examples**
   - [Creating a vital panel](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20panel.bru)
   - [Creating a vital sign with components (should only be used for blood pressure)](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-%20components.bru)
@@ -29119,6 +29121,7 @@ string
 The code of the observation.
 **Value Options Supported:**
   - Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command 
+  - 88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs. 
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
@@ -29202,7 +29205,8 @@ Used for observations containing text values like vitals that are strings (e.g B
 valueCodeableConcept 
 json 
 Actual result.  
-Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.  
+Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
 Click to view child attributes
 coding 
 array[json] 
@@ -29527,6 +29531,7 @@ string
 The code of the observation.
 **Value Options Supported:**
   - Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command 
+  - 88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs. 
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
@@ -29610,7 +29615,8 @@ Used for observations containing text values like vitals that are strings (e.g B
 valueCodeableConcept 
 json 
 Actual result.  
-Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.  
+Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
 Click to view child attributes
 coding 
 array[json] 
@@ -32253,7 +32259,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -32683,7 +32689,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -33162,7 +33168,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -33682,7 +33688,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -45284,7 +45290,8 @@ The reference string of the practitioner in the format of `"Practitioner/4150cd2
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
-If the label doesn't exist in Canvas already, it will be created.
+If the label doesn't exist in Canvas already, it will be created.   
+When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
 Click to view child attributes
 type 
 json required
@@ -45570,7 +45577,8 @@ The reference string of the practitioner in the format of `"Practitioner/4150cd2
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
-If the label doesn't exist in Canvas already, it will be created.
+If the label doesn't exist in Canvas already, it will be created.   
+When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
 Click to view child attributes
 type 
 json required

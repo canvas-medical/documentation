@@ -166,13 +166,16 @@ The following effects are available to be applied in Canvas.
 | SHOW_PATIENT_PROFILE_SECTIONS               | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile). |
 | SHOW_PANEL_SECTIONS                         | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration). |
 | SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS  | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).                                    |
+| SHOW_PROVIDER_MENU_ITEMS                    | Can be used to hide items in the provider (hamburger) menu. Check out [Layout Effects](/sdk/layout-effect/#provider-menu-configuration). |
 | PATIENT_CHART__GROUP_ITEMS                  | Can be used to group items within a specific patient chart section. Check out [Patient Chart Group](/sdk/patient-chart-group-effect/). |
 | PATIENT_TIMELINE__CONFIGURATION             | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/). |
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
+| RELOAD_ACTION_BUTTONS                       | Can be used to refresh a note's or patient's action buttons so they re-evaluate against the latest data. Check out [Reload Action Buttons](/sdk/effect-reload-action-buttons/). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
+| REDIRECT                                    | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
@@ -252,6 +255,7 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
 
 
 ### Appointments
@@ -376,6 +380,18 @@ Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 | ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error. |
 
 
+### Lab Reports
+
+Check out the [Lab Report Effects](/sdk/effect-lab-report/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_LAB_REPORT | Create a lab report decoupled from its results (no order, PDF, or values required). |
+| UPDATE_LAB_REPORT | Update lab report metadata, such as its name or effective date. |
+| ENTER_IN_ERROR_LAB_REPORT | Mark a lab report as entered in error. |
+| ATTACH_LAB_REPORT_RESULTS | Attach lab tests and values to an existing report (additive). |
+
+
 ### Questionnaire
 
 Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation.
@@ -393,6 +409,17 @@ Check out the [Compound Medication Effects](/sdk/effect-compound-medication/) do
 |---|---|
 | CREATE_COMPOUND_MEDICATION | Create a compound medication. |
 | UPDATE_COMPOUND_MEDICATION | Update a compound medication. |
+
+
+### Service Providers
+
+Check out the [Service Provider Effects](/sdk/effect-service-provider/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_SERVICE_PROVIDER | Create a service provider, or update a matching one. |
+| UPDATE_SERVICE_PROVIDER | Update a service provider. |
+| DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider without deleting it. |
 
 
 ### External Events
