@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Goal` model represents a patient Goal in Canvas, which is always associated with a Note and a Patient.
+The `Goal` model represents a patient Goal in Canvas, which is always associated with a Note and a Patient. The `UpdateGoal` model is the read-only record behind the [UpdateGoal](/sdk/commands/#updategoal) and [CloseGoal](/sdk/commands/#closegoal) commands, capturing a goal update or closure recorded against a `Goal`.
 
 ## Basic usage
 
@@ -30,6 +30,15 @@ goals = patient.goals.all()
 
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 goals = note.goals.all()
+```
+
+A goal's update and closure history is available with the `updates` attribute on a `Goal` object:
+
+```python
+from canvas_sdk.v1.data.goal import Goal
+
+goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+updates = goal.updates.all()
 ```
 
 ## Filtering
@@ -80,6 +89,26 @@ committed_goals = Goal.objects.committed()
 | start_date         | Date                                            |
 | progress           | String                                          |
 | goal_statement     | String                                          |
+
+### UpdateGoal
+
+| Field Name         | Type                                            |
+| ------------------ | ----------------------------------------------- |
+| id                 | UUID                                            |
+| dbid               | Integer                                         |
+| created            | DateTime                                        |
+| modified           | DateTime                                        |
+| originator         | [CanvasUser](/sdk/data-canvasuser)              |
+| committer          | [CanvasUser](/sdk/data-canvasuser)              |
+| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
+| patient            | [Patient](/sdk/data-patient/#patient)           |
+| note               | [Note](/sdk/data-note)                          |
+| goal               | [Goal](#goal)                                   |
+| lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |
+| achievement_status | [GoalAchievementStatus](#goalachievementstatus) |
+| priority           | [GoalPriority](#goalpriority)                   |
+| due_date           | Date                                            |
+| progress           | String                                          |
 
 ## Enumeration types
 
