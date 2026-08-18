@@ -566,6 +566,51 @@ change_medication = ChangeMedicationCommand(
 
 ---
 
+### ChartSectionReview
+
+Records that a section of the patient's chart was reviewed during a visit. Originating the command snapshots the patient's active records in that section onto the note, along with the rendered text of those records as they read at the time of review — the same thing that happens when a user clicks **Review** on a chart section in the Canvas UI. Use it to attest to a review your plugin has already performed, such as reconciling medications from an external source.
+
+The command is always committed on origination, so there is no staged state to fill in and no need to pass `commit=True`.
+
+Read the resulting snapshot back with the [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview) data model.
+
+{% include alert.html type="info" content="This command supports <code>originate()</code> only since it is a read only command." %}
+
+**Command-specific parameters**:
+
+| Name      | Type                                        | Required to commit | Description                                                                                                                          |
+|:----------|:--------------------------------------------|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| `section` | _[ChartSectionReviewCommand.Sections](#chartsectionreviewcommandsections) enum_ | `true` | The chart section being reviewed. Required when instantiating the command. Must be one of [`ChartSectionReviewCommand.Sections`](#chartsectionreviewcommandsections). |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ChartSectionReviewCommand
+
+def compute():
+    medication_review = ChartSectionReviewCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        section=ChartSectionReviewCommand.Sections.MEDICATIONS,
+    )
+
+    return [medication_review.originate()]
+```
+
+#### ChartSectionReviewCommand.Sections
+
+| Member             | Value              | Chart section    |
+|:-------------------|:-------------------|:-----------------|
+| `CONDITIONS`       | `conditions`       | Conditions       |
+| `SURGICAL_HISTORY` | `surgical_history` | Surgical History |
+| `MEDICATIONS`      | `medications`      | Medications      |
+| `FAMILY_HISTORY`   | `family_histories` | Family Histories |
+| `ALLERGIES`        | `allergies`        | Allergies        |
+| `IMMUNIZATIONS`    | `immunizations`    | Immunizations    |
+
+{% include alert.html type="warning" content="The member name for family history differs between the command and the data model: the command uses <code>ChartSectionReviewCommand.Sections.FAMILY_HISTORY</code>, while the data model uses <code>ChartSectionReviewSection.FAMILY_HISTORIES</code>. Both carry the same value, <code>family_histories</code>." %}
+
+---
+
 ### CloseGoal
 
 **Command-specific parameters**:
@@ -1968,6 +2013,43 @@ refer_command = ReferCommand(
       business_fax="1234569874"
  ),
 )
+```
+
+---
+
+### Reference
+
+Embeds a diagnostic view in the note. A diagnostic view is a saved combination of lab tests and questionnaire codes configured on your instance; referencing one renders that patient's results for those codes as a timeseries inside the note, so a reviewer sees the trend without leaving the chart.
+
+The command renders as a read-only table. There are no fields for a user to fill in, so the diagnostic view has to be chosen by whatever inserts the command — a user can only commit or delete it, and enter it in error once committed.
+
+Unlike [ChartSectionReview](#chartsectionreview), it is not committed on origination: it stays staged until you pass `commit=True` to `originate()` or send a separate `commit()`.
+
+{% include alert.html type="warning" content="The rendered name and table are derived from the diagnostic view when the command is originated, and are not recalculated afterwards. Pointing an existing command at a different diagnostic view with <code>edit()</code> leaves the previous view's name and table on display. To change the view, delete the command and originate a new one." %}
+
+**Command-specific parameters**:
+
+| Name                  | Type                | Required to commit | Description                                                                                                                                   |
+|:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferenceCommand
+from canvas_sdk.v1.data import DiagnosticView
+
+def compute():
+    a1c_view = DiagnosticView.objects.filter(name="Hemoglobin A1c").first()
+    if not a1c_view:
+        return []
+
+    reference = ReferenceCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        diagnostic_view_id=a1c_view.id,
+    )
+
+    return [reference.originate(commit=True)]
 ```
 
 ---

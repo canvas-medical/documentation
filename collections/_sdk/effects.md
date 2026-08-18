@@ -587,6 +587,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Questionnaire | `*_QUESTIONNAIRE_COMMAND` | |
 | Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only |
 | Refer | `*_REFER_COMMAND` | No COMMIT |
+| Reference | `*_REFERENCE_COMMAND` | EDIT does not refresh the rendered table |
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Remove Allergy | `*_REMOVE_ALLERGY_COMMAND` | |
