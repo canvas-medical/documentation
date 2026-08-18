@@ -98,6 +98,7 @@ latest = goal.updates.committed().order_by("dbid").last()
 | start_date         | Date                                            |
 | progress           | String                                          |
 | goal_statement     | String                                          |
+| updates            | QuerySet[[UpdateGoal](#updategoal)]             |
 
 ### UpdateGoal
 
