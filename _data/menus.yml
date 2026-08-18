@@ -1208,6 +1208,9 @@ data_module:
   - title: "Uncategorized Clinical Documents"
     url: /sdk/data-uncategorized-clinical-document/
     description: Data associated with uncategorized clinical documents and their reviews.
+  - title: "UpdateGoal"
+    url: /sdk/data-update-goal/
+    description: A record of a goal update or closure recorded against a Goal via the UpdateGoal or CloseGoal command.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.

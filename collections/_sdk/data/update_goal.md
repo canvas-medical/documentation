@@ -1,38 +1,25 @@
 ---
-title: "Goal"
-slug: "data-goal"
-excerpt: "Canvas SDK Goal"
+title: "UpdateGoal"
+slug: "data-update-goal"
+excerpt: "Canvas SDK UpdateGoal"
 hidden: false
 ---
 
 ## Introduction
 
-The `Goal` model represents a patient Goal in Canvas, which is always associated with a Note and a Patient. See [UpdateGoal](/sdk/data-update-goal/) for the read-only record of a goal's updates and closures.
+The `UpdateGoal` model is the read-only record behind the [UpdateGoal](/sdk/commands/#updategoal) and [CloseGoal](/sdk/commands/#closegoal) commands, capturing a goal update or closure recorded against a [Goal](/sdk/data-goal/#goal). Like the other models in the data module, it cannot be written to directly; a goal update or closure is recorded by committing an `UpdateGoal` or `CloseGoal` command.
 
 ## Basic usage
 
-To get a goal by identifier, use the `get` method on the `Goal` model manager:
+To get an update goal by identifier, use the `get` method on the `UpdateGoal` model manager:
 
 ```python
-from canvas_sdk.v1.data.goal import Goal
+from canvas_sdk.v1.data import UpdateGoal
 
-goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+update_goal = UpdateGoal.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 ```
 
-If you have a patient object, or note object, the goals for a patient or note can be accessed with the `goals` attribute on a `Patient` or `Note` object:
-
-```python
-from canvas_sdk.v1.data.patient import Patient
-from canvas_sdk.v1.data.note import Note
-
-patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
-goals = patient.goals.all()
-
-note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
-goals = note.goals.all()
-```
-
-A goal's update and closure history is available with the `updates` attribute on a `Goal` object:
+The primary way to retrieve a goal's update and closure history is the `updates` reverse accessor on a `Goal` object:
 
 ```python
 from canvas_sdk.v1.data.goal import Goal
@@ -41,37 +28,44 @@ goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 updates = goal.updates.all()
 ```
 
-See [UpdateGoal](/sdk/data-update-goal/) for the fields available on each returned record.
+You can also access the parent goal from an update with the `goal` attribute:
+
+```python
+from canvas_sdk.v1.data import UpdateGoal
+
+update_goal = UpdateGoal.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+goal = update_goal.goal
+```
 
 ## Filtering
 
-Goals can be filtered by any attribute that exists on the model.
+`UpdateGoal` records can be filtered by any attribute that exists on the model.
 
-Filtering for goals is done with the `filter` method on the `Goal` model manager.
+Filtering is done with the `filter` method on the `UpdateGoal` model manager.
 
 ### By attribute
 
 Specify an attribute with `filter` to filter by that attribute:
 
 ```python
-from canvas_sdk.v1.data.goal import Goal, GoalAchievementStatus
+from canvas_sdk.v1.data.goal import UpdateGoal, GoalAchievementStatus
 
-goals = Goal.objects.filter(achievement_status=GoalAchievementStatus.IN_PROGRESS)
+updates = UpdateGoal.objects.filter(achievement_status=GoalAchievementStatus.ACHIEVED)
 ```
 
-### Committed goals
+### Committed records
 
-The `committed` method returns goals that have been committed and not entered in error:
+The `committed` method returns update goals that have been committed and not entered in error:
 
 ```python
-from canvas_sdk.v1.data.goal import Goal
+from canvas_sdk.v1.data import UpdateGoal
 
-committed_goals = Goal.objects.committed()
+committed_update_goals = UpdateGoal.objects.committed()
 ```
 
 ## Attributes
 
-### Goal
+### UpdateGoal
 
 | Field Name         | Type                                            |
 | ------------------ | ----------------------------------------------- |
@@ -84,13 +78,14 @@ committed_goals = Goal.objects.committed()
 | entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
 | patient            | [Patient](/sdk/data-patient/#patient)           |
 | note               | [Note](/sdk/data-note)                          |
+| goal               | [Goal](/sdk/data-goal/#goal)                    |
 | lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |
 | achievement_status | [GoalAchievementStatus](#goalachievementstatus) |
 | priority           | [GoalPriority](#goalpriority)                   |
 | due_date           | Date                                            |
-| start_date         | Date                                            |
 | progress           | String                                          |
-| goal_statement     | String                                          |
+
+Note: `patient` keys are UUIDs without dashes (for example, `1eed3ea2a8d546a1b681a2a45de1d790`), unlike the dashed `Goal` and `UpdateGoal` record IDs shown in the examples above.
 
 ## Enumeration types
 
