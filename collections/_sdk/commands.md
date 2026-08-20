@@ -1210,7 +1210,7 @@ MedicalHistoryCommand(
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
