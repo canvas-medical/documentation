@@ -58,6 +58,24 @@ from canvas_sdk.v1.data.goal import Goal
 committed_goals = Goal.objects.committed()
 ```
 
+## Goal updates and closures
+
+Each change to a goal — via the `update_goal` or `close_goal` command — is recorded as an `UpdateGoal`. Update actions revise the goal while leaving it active; close actions also move it to a closed `lifecycle_status` (e.g. `completed`, `cancelled`, `rejected`). A goal's updates are reachable through its `updates` accessor:
+
+```python
+from canvas_sdk.v1.data.goal import Goal
+
+goal = Goal.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+# Every update or close recorded against this goal.
+updates = goal.updates.all()
+
+# The most recent committed update — the goal's current state — or None.
+latest = goal.updates.committed().order_by("dbid").last()
+```
+
+`UpdateGoal` carries the same status, priority, and progress fields as `Goal` (without `goal_statement` / `start_date`), plus a `goal` foreign key back to the goal it updates. Like `Goal`, its manager supports `committed()` to filter to committed, non-entered-in-error records.
+
 ## Attributes
 
 ### Goal
@@ -80,6 +98,29 @@ committed_goals = Goal.objects.committed()
 | start_date         | Date                                            |
 | progress           | String                                          |
 | goal_statement     | String                                          |
+| updates            | QuerySet[[UpdateGoal](#updategoal)]             |
+
+### UpdateGoal
+
+An update or close action recorded against a [Goal](#goal), reachable from a goal via `goal.updates`. Written by the `update_goal` and `close_goal` commands.
+
+| Field Name         | Type                                            |
+| ------------------ | ----------------------------------------------- |
+| id                 | UUID                                            |
+| dbid               | Integer                                         |
+| created            | DateTime                                        |
+| modified           | DateTime                                        |
+| originator         | [CanvasUser](/sdk/data-canvasuser)              |
+| committer          | [CanvasUser](/sdk/data-canvasuser)              |
+| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
+| patient            | [Patient](/sdk/data-patient/#patient)           |
+| note               | [Note](/sdk/data-note)                          |
+| goal               | [Goal](#goal)                                   |
+| lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |
+| achievement_status | [GoalAchievementStatus](#goalachievementstatus) |
+| priority           | [GoalPriority](#goalpriority)                   |
+| due_date           | Date                                            |
+| progress           | String                                          |
 
 ## Enumeration types
 

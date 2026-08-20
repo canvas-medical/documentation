@@ -169,6 +169,7 @@ educational_materials = patient.education_material.all()
 | uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |
 | patient_consent          | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]              |
 | goals                    | [Goal](/sdk/data-goal/#goal)[]                                             |
+| update_goals             | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                 |
 | instructions             | [Instruction](/sdk/data-instruction/#instruction)[]                        |
 | appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
 | notes                    | [Note](/sdk/data-note/#note)[]                                             |
