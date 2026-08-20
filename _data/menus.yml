@@ -1067,6 +1067,9 @@ data_module:
   - title: "EducationalMaterial"
     url: /sdk/data-educational-material/
     description: Patient educational material shared from a note via the Educational Material command.
+  - title: "EligibilityResponse"
+    url: /sdk/data-eligibility-response/
+    description: A coverage eligibility (270/271) request and response, with the derived check status.
   - title: "EligibilitySummary"
     url: /sdk/data-coverage/#eligilibitysummary/
     description: Summary of copay and coinsurance for a Coverage.
