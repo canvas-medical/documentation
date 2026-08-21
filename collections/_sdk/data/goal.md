@@ -9,6 +9,8 @@ hidden: false
 
 The `Goal` model represents a patient Goal in Canvas, which is always associated with a Note and a Patient.
 
+This page also documents [UpdateGoal](#updategoal), the record of a goal's updates and closures, created by committing an [UpdateGoal command](/sdk/commands/#updategoal) or [CloseGoal command](/sdk/commands/#closegoal).
+
 ## Basic usage
 
 To get a goal by identifier, use the `get` method on the `Goal` model manager:
@@ -30,6 +32,17 @@ goals = patient.goals.all()
 
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 goals = note.goals.all()
+```
+
+`UpdateGoal` records can be queried the same way, and each one links back to the goal it updates with the `goal` attribute:
+
+```python
+from canvas_sdk.v1.data.goal import UpdateGoal
+
+update = UpdateGoal.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+goal = update.goal
+
+committed_updates = UpdateGoal.objects.committed()
 ```
 
 ## Filtering
@@ -60,7 +73,7 @@ committed_goals = Goal.objects.committed()
 
 ## Goal updates and closures
 
-Each change to a goal — via the `update_goal` or `close_goal` command — is recorded as an `UpdateGoal`. Update actions revise the goal while leaving it active; close actions also move it to a closed `lifecycle_status` (e.g. `completed`, `cancelled`, `rejected`). A goal's updates are reachable through its `updates` accessor:
+Each change to a goal — via the [UpdateGoal](/sdk/commands/#updategoal) or [CloseGoal](/sdk/commands/#closegoal) command — is recorded as an `UpdateGoal`. Update actions revise the goal while leaving it active; close actions also move it to a closed `lifecycle_status` (e.g. `completed`, `cancelled`, `rejected`). A goal's updates are reachable through its `updates` accessor:
 
 ```python
 from canvas_sdk.v1.data.goal import Goal
@@ -102,7 +115,7 @@ latest = goal.updates.committed().order_by("dbid").last()
 
 ### UpdateGoal
 
-An update or close action recorded against a [Goal](#goal), reachable from a goal via `goal.updates`. Written by the `update_goal` and `close_goal` commands.
+An update or close action recorded against a [Goal](#goal), reachable from a goal via `goal.updates`. Written by the [UpdateGoal](/sdk/commands/#updategoal) and [CloseGoal](/sdk/commands/#closegoal) commands.
 
 | Field Name         | Type                                            |
 | ------------------ | ----------------------------------------------- |

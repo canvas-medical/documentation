@@ -53,7 +53,7 @@ Each `PatientConsentCoding` has a `document` field containing the URL to the con
 
 ## Accessing Document Files
 
-The `document_url` property returns a presigned S3 URL for securely accessing the consent form.
+The `document_url` property returns a presigned S3 URL for securely accessing the blank consent template — the form you send to a patient to collect their consent. The copy the patient signs and returns is a separate record; see [Signed consent documents](#signed-consent-documents).
 
 ```python
 from canvas_sdk.v1.data import PatientConsentCoding
