@@ -60,6 +60,19 @@ if coverage.snapshot:
         print(image.image_url)  # Presigned S3 URL for the insurance card image
 ```
 
+## Eligibility status
+
+`Coverage.eligibility_status` is a read-only property that returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+
+```python?partial=true
+from canvas_sdk.v1.data.coverage import Coverage
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
+    print("Coverage is active")
+```
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -118,6 +131,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (read-only property) |
 | claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
 
 ### Transactor
