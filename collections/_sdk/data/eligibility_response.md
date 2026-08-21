@@ -87,7 +87,7 @@ A coverage with no eligibility responses (an empty `coverage.eligibility_respons
 | eligid              | String                                                                       |
 | x12_response        | String                                                                       |
 | parsed_x12_response | JSON                                                                         |
-| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (read-only property) |
+| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) |
 
 ## Enumeration types
 
