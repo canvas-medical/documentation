@@ -43,8 +43,6 @@ hpi = HistoryOfPresentIllness.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f
 text = hpi.narrative
 ```
 
-`narrative` returns `legacy_narrative` when it is populated — HPIs created before the Commands SDK stored their text there — and otherwise renders the structured `narrative_json` document to a plain string. The two underlying fields remain available if you need the raw values.
-
 ## Filtering
 
 Histories of present illness can be filtered by any attribute that exists on the model.
