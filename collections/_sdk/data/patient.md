@@ -159,7 +159,7 @@ educational_materials = patient.education_material.all()
 | medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[] |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
 | payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
-| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]           |
+| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/)[]           |
 | stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
 | banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
 | immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
