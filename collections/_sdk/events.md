@@ -1891,6 +1891,8 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
 
 #### Eligibility responses
 
+A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDATED` event fires on every eligibility response save. When the response resolves to a definite status, a matching `COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE`, `COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE`, or `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` event fires alongside it. For example, when a failed eligibility check is first recorded, both `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` and `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` fire. Each event's context carries the derived `status` string and the associated `coverage`; `_FAILED` events also include the payer `errors`.
+
 <table>
   <thead>
     <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_CREATED</th></tr>
@@ -1904,8 +1906,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": eligibility_response_id
 "type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1923,8 +1928,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": eligibility_response_id
 "type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1942,8 +1950,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": eligibility_response_id
 "type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1961,8 +1972,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": eligibility_response_id
 "type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1980,8 +1994,12 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     <tr>
       <td><pre>"id": eligibility_response_id
 "type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
-      <td><pre>"patient":
-   "id": pt_id</pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str
+"errors": list[str]</pre></td>
     </tr>
   </tbody>
 </table>
