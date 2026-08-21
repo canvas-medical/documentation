@@ -74,7 +74,7 @@ committed_histories = HistoryOfPresentIllness.objects.committed()
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
-| narrative        | String (read-only property)           |
+| narrative        | String                                |
 
 <br/>
 <br/>
