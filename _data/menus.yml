@@ -1055,6 +1055,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "DiagnosticView"
+    url: /sdk/data-diagnostic-view/
+    description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
