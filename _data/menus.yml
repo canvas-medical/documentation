@@ -1214,6 +1214,9 @@ data_module:
   - title: "VisualExamFinding"
     url: /sdk/data-visual-exam-finding/
     description: Visual exam findings captured on a note — a titled image with a narrative description.
+  - title: "Vitals"
+    url: /sdk/data-vitals/
+    description: Vital-sign readings recorded on a patient's note and their individual measurements.
 
 custom_data_module:
   - title: "Quick Start"

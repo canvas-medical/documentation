@@ -373,6 +373,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
 | appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
 | education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
+| vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vitals/#vitalsignreading)] | All vital sign readings recorded on this note |
 
 ### NoteType
 
