@@ -75,6 +75,8 @@ if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
 
 Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
 
+A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
