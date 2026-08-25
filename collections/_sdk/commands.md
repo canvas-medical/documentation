@@ -137,7 +137,7 @@ def compute():
 
 Returns an Effect that sends a signed command.
 
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder), [Prescribe](#prescribe), [Refill](#refill) and [AdjustPrescription](#adjustprescription) command objects. Other command types do not support this operation. The three prescribing commands share one set of [electronic prescribing validations](#prescribe).
 
 **Parameters:**
 
@@ -334,7 +334,7 @@ Commands have two types of actions:
 | `audit_history` | Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time. |
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
-{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+{% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
 ### Customizing Action Availability
 
@@ -416,7 +416,7 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command. Adjust Prescription supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -452,7 +452,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
@@ -537,7 +537,9 @@ assess = AssessCommand(
 
 **Validation**:
 
-`condition_id` has to belong to the patient whose chart the command is being written to. `originate` and `edit` both check it: the patient comes from `note_uuid` when you originate the command, and from the existing command's note when you edit one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated.
+`condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
+
+The check needs that note or command to exist, so it is skipped when you create the note and originate the command in the same batch of effects. Nothing is rejected in that case, since there is not yet a chart to compare the condition against.
 
 ---
 
@@ -547,7 +549,7 @@ assess = AssessCommand(
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -561,6 +563,57 @@ change_medication = ChangeMedicationCommand(
     sig='two pills taken orally'
 )
 ```
+
+**Validation**:
+
+`medication_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. The medication must also be active. A medication on another patient's chart, an id that matches no medication, or an inactive medication fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates the command in the same batch of handler effects. In that case the command's patient cannot be resolved yet, so `medication_id` passes this validation; the check then runs once the command is applied.
+
+A malformed `medication_id` fails at command construction, before any patient lookup, while a well-formed UUID passed as a string is accepted.
+
+---
+
+### ChartSectionReview
+
+Records that a section of the patient's chart was reviewed during a visit. Originating the command snapshots the patient's active records in that section onto the note, along with the rendered text of those records as they read at the time of review — the same thing that happens when a user clicks **Review** on a chart section in the Canvas UI. Use it to attest to a review your plugin has already performed, such as reconciling medications from an external source.
+
+The command is always committed on origination, so there is no staged state to fill in and no need to pass `commit=True`.
+
+Read the resulting snapshot back with the [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview) data model.
+
+{% include alert.html type="info" content="This command supports <code>originate()</code> only since it is a read only command." %}
+
+**Command-specific parameters**:
+
+| Name      | Type                                        | Required to commit | Description                                                                                                                          |
+|:----------|:--------------------------------------------|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| `section` | _[ChartSectionReviewCommand.Sections](#chartsectionreviewcommandsections) enum_ | `true` | The chart section being reviewed. Required when instantiating the command. Must be one of [`ChartSectionReviewCommand.Sections`](#chartsectionreviewcommandsections). |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ChartSectionReviewCommand
+
+def compute():
+    medication_review = ChartSectionReviewCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        section=ChartSectionReviewCommand.Sections.MEDICATIONS,
+    )
+
+    return [medication_review.originate()]
+```
+
+#### ChartSectionReviewCommand.Sections
+
+| Member             | Value              | Chart section    |
+|:-------------------|:-------------------|:-----------------|
+| `CONDITIONS`       | `conditions`       | Conditions       |
+| `SURGICAL_HISTORY` | `surgical_history` | Surgical History |
+| `MEDICATIONS`      | `medications`      | Medications      |
+| `FAMILY_HISTORY`   | `family_histories` | Family Histories |
+| `ALLERGIES`        | `allergies`        | Allergies        |
+| `IMMUNIZATIONS`    | `immunizations`    | Immunizations    |
+
+{% include alert.html type="warning" content="The member name for family history differs between the command and the data model: the command uses <code>ChartSectionReviewCommand.Sections.FAMILY_HISTORY</code>, while the data model uses <code>ChartSectionReviewSection.FAMILY_HISTORIES</code>. Both carry the same value, <code>family_histories</code>." %}
 
 ---
 
@@ -623,7 +676,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
@@ -809,9 +862,9 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                          |
 | `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order (max length: 1024 characters). |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
-| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
@@ -1163,7 +1216,7 @@ MedicalHistoryCommand(
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
@@ -1429,6 +1482,9 @@ command.set_test_value("pH", "6.8")
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+- For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
+
+These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
 
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
@@ -1967,6 +2023,43 @@ refer_command = ReferCommand(
 
 ---
 
+### Reference
+
+Embeds a diagnostic view in the note. A diagnostic view is a saved combination of lab tests and questionnaire codes configured on your instance; referencing one renders that patient's results for those codes as a timeseries inside the note, so a reviewer sees the trend without leaving the chart.
+
+The command renders as a read-only table. There are no fields for a user to fill in, so the diagnostic view has to be chosen by whatever inserts the command — a user can only commit or delete it, and enter it in error once committed.
+
+Unlike [ChartSectionReview](#chartsectionreview), it is not committed on origination: it stays staged until you pass `commit=True` to `originate()` or send a separate `commit()`.
+
+{% include alert.html type="warning" content="The rendered name and table are derived from the diagnostic view when the command is originated, and are not recalculated afterwards. Pointing an existing command at a different diagnostic view with <code>edit()</code> leaves the previous view's name and table on display. To change the view, delete the command and originate a new one." %}
+
+**Command-specific parameters**:
+
+| Name                  | Type                | Required to commit | Description                                                                                                                                   |
+|:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferenceCommand
+from canvas_sdk.v1.data import DiagnosticView
+
+def compute():
+    a1c_view = DiagnosticView.objects.filter(name="Hemoglobin A1c").first()
+    if not a1c_view:
+        return []
+
+    reference = ReferenceCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        diagnostic_view_id=a1c_view.id,
+    )
+
+    return [reference.originate(commit=True)]
+```
+
+---
+
 ### ReferralReview
 
 **Command-specific parameters**:
@@ -2006,7 +2099,7 @@ referral_review = ReferralReviewCommand(
 
 **Command-specific parameters**:
 
-Check the [Prescribe](#prescribe) command for the parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 **Example**:
 

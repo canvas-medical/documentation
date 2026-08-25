@@ -33,6 +33,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `cultural_ethnicity_codes` | `list[str]` or `None`                     | [CDC ethnicity codes](#setting-race-and-ethnicity) describing the patient's cultural ethnicity (e.g., `"2186-5"`) | No       |
 | `previous_names`         | `list[str]` or `None`                       | List of patient's previous names            | No       |
 | `contact_points`         | list[[PatientContactPoint](#patientcontactpoint)] or `None`       | Patient's contact information               | No       |
+| `contacts`               | list[[PatientContact](#patientcontact)] or `None`                 | The patient's contacts — emergency contacts, next-of-kin, and other related persons. See [Managing patient contacts](#managing-patient-contacts) | No       |
 | `external_identifiers`   | list[[PatientExternalIdentifier](#patientexternalidentifier)] or `None` | Patient's external identifiers              | No       |
 | `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
 | `addresses`              | list[[PatientAddress](#patientaddress)] or `None`            | Patient's addresses                         | No       |
@@ -52,6 +53,39 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 | `use`         | `ContactPointUse`    | Purpose of the contact point (e.g., home, work)                   | Yes      |
 | `rank`        | `int`                | Priority order of contact methods                                 | Yes      |
 | `has_consent` | `bool` or `None`     | Whether consent has been given to use this contact method         | No       |
+
+## PatientContact
+
+The `PatientContact` dataclass represents one of the patient's contacts — an emergency contact, next-of-kin, or other related person.
+
+A contact identifies its person in one of two ways, and you must supply one of them: either **inline**, by giving a `name` (with optional phone, email and comments), or by **reference**, by pointing `related_patient` at another Canvas patient. The reference form is what links two patients to each other, and Canvas displays such a contact from the referenced patient's own record rather than from the contact row.
+
+### Attributes
+
+| Attribute            | Type                                                              | Description                                                       | Required |
+| -------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | -------- |
+| `name`               | `str` or `None`                                                   | The contact's name, when the contact holds the person's details inline | One of `name` or `related_patient` |
+| `related_patient`    | `str`, `uuid.UUID` or `None`                                      | The patient key of an existing Canvas patient this contact refers to, used instead of `name` | One of `name` or `related_patient` |
+| `contact_identifier` | `str`, `uuid.UUID` or `None`                                      | Identifies an existing contact. Omit it to add a contact; supply it to modify or remove one. See [Managing patient contacts](#managing-patient-contacts) | No       |
+| `phone_number`       | `str` or `None`                                                   | The contact's phone number. Exactly 10 digits                      | No       |
+| `email`              | `str` or `None`                                                   | The contact's email address                                        | No       |
+| `comments`           | `str` or `None`                                                   | Free-text notes about the contact                                  | No       |
+| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's relationship categories                              | No       |
+| `inactive`           | `bool` or `None`                                                  | Set with `contact_identifier` to remove the contact                | No       |
+
+## PatientContactCategory
+
+The `PatientContactCategory` dataclass expresses a contact's relationship to the patient — emergency contact, next-of-kin, and so on — as a coding.
+
+All three fields are required, and the coding must already exist in the instance. Look one up with the [ContactCategory](/sdk/data-patient/#contactcategory) data model rather than composing a coding by hand; a coding the instance does not have raises a validation error instead of being created.
+
+### Attributes
+
+| Attribute     | Type  | Description                                                       | Required |
+| ------------- | ----- | ----------------------------------------------------------------- | -------- |
+| `code`        | `str` | The category code (e.g., `"EMC"` for an emergency contact)         | Yes      |
+| `code_system` | `str` | The coding system the code belongs to (e.g., `"INTERNAL"`)         | Yes      |
+| `name`        | `str` | The category's display name (e.g., `"Emergency contact"`)          | Yes      |
 
 ## PatientExternalIdentifier
 
@@ -107,11 +141,14 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 - Validates that referenced practice locations exist in the system
 - Verifies that referenced healthcare providers exist in the system
 - Structures contact information through the `PatientContactPoint` dataclass
+- Structures the patient's contacts through the `PatientContact` dataclass, added or modified per entry according to `contact_identifier` — see [Managing patient contacts](#managing-patient-contacts)
 - Structures external identifier through the `PatientExternalIdentifier` dataclass
 - Structures address information through the `PatientAddress` dataclass
 - Structures metadata through the `PatientMetadata` dataclass
 
 ## Example Usage
+### Creating a patient
+
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientContactPoint, PatientExternalIdentifier, PatientMetadata
@@ -162,43 +199,8 @@ class MyHandler(BaseHandler):
         return [patient.create()]
 ```
 
-## Supplying a patient id on creation
+### Updating a patient
 
-By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
-
-A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
-
-Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
-
-```python
-from canvas_sdk.effects.patient import Patient, generate_patient_id
-from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
-
-
-class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
-    PATH = "/patients"
-
-    def post(self) -> list[Response]:
-        body = self.request.json()
-        new_patient_id = generate_patient_id()
-
-        patient = Patient(
-            patient_id=new_patient_id,
-            first_name=body["first_name"],
-            last_name=body["last_name"],
-        )
-
-        # `new_patient_id` can be reused for follow-up patient-scoped effects in
-        # the same execution, and is returned so the caller has it immediately
-        # without a follow-up lookup.
-        return [
-            patient.create(),
-            JSONResponse({"patient_id": new_patient_id}, status_code=201),
-        ]
-```
-
-# Patient Update Example
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
@@ -235,7 +237,8 @@ class MyHandler(BaseHandler):
         return [updated_patient.update()]
 ```
 
-# Marking a Patient as Inactive or Deceased
+### Marking a Patient as Inactive or Deceased
+
 
 ```python
 from canvas_sdk.effects.patient import Patient
@@ -268,7 +271,161 @@ class DeceasedPatientHandler(BaseHandler):
         return [deceased_patient.update()]
 ```
 
-# Setting Race and Ethnicity
+## Supplying a patient id on creation
+
+By default, Canvas generates the patient id (`patient_id`) when you create a patient. You can supply your own instead by passing a 32-character hex string (a UUID4 with its hyphens removed) in the `patient_id` parameter of `Patient`. This lets your plugin generate the id up front and reuse it for follow-up, patient-scoped effects — such as notes or commands — in the same plugin execution, without reading the id back first. It works the same way Notes and Commands accept a pre-generated id.
+
+A supplied id must be a well-formed patient id: a 32-character lowercase hex string, which is a UUID4 with its hyphens removed. Use `generate_patient_id()` to produce one rather than building the format by hand. An id in any other format — for example, a hyphenated or uppercase UUID — raises a validation error on `create()`, as does an id that already belongs to an existing patient. Since `generate_patient_id()` returns a fresh, well-formed id, it satisfies both requirements. If you omit `patient_id`, the server generates the id as before, so existing plugins are unaffected.
+
+Because you generate the id up front, you can also return it to the caller from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint — so a client creating the patient gets the id back in the response instead of having to look it up afterward. This example authenticates with the [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/), which expects a `simpleapi-api-key` secret declared in your manifest:
+
+```python
+from canvas_sdk.effects.patient import Patient, generate_patient_id
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+
+
+class CreatePatientAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/patients"
+
+    def post(self) -> list[Response]:
+        body = self.request.json()
+        new_patient_id = generate_patient_id()
+
+        patient = Patient(
+            patient_id=new_patient_id,
+            first_name=body["first_name"],
+            last_name=body["last_name"],
+        )
+
+        # `new_patient_id` can be reused for follow-up patient-scoped effects in
+        # the same execution, and is returned so the caller has it immediately
+        # without a follow-up lookup.
+        return [
+            patient.create(),
+            JSONResponse({"patient_id": new_patient_id}, status_code=201),
+        ]
+```
+
+## Managing patient contacts
+
+The `contacts` field writes the patient's contacts — emergency contacts, next-of-kin, and other related persons. What happens to each entry is decided by **`contact_identifier`**, not by whether you called `create()` or `update()`:
+
+| `contact_identifier` | `inactive` | Result                                                        |
+| -------------------- | ---------- | ------------------------------------------------------------- |
+| omitted              | omitted    | The contact is **added**                                      |
+| supplied             | omitted    | The contact it names is **modified**                          |
+| supplied             | `True`     | The contact it names is **removed**                            |
+| omitted              | `True`     | Validation error — there is no contact to remove               |
+
+So `Patient(...).update()` adds a contact to a patient that already exists, which is the usual case for a plugin populating contacts after intake. Re-sending an identical contact matches the existing one rather than adding a second, so a handler that re-emits the same contact on every event will not accumulate duplicates. On an update, a `contact_identifier` that names no contact on that patient is treated as a mistake and raises rather than being added.
+
+Contacts you leave out of the list are **left alone**. Unlike `addresses`, this field is not replace-based: omitting a contact never deletes it, and removal is always explicit through `inactive`.
+
+An update writes only the fields you send, so changing a phone number does not blank the email or the comments. `name` (or `related_patient`) is the exception — every contact that is not a removal needs one, so resend the existing value when you are changing something else. Pass an empty string to clear a stored value deliberately.
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact, PatientContactCategory
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import ContactCategory
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        # Look the coding up rather than composing one — an unknown coding raises.
+        emergency = ContactCategory.objects.get(code="EMC")
+        category = PatientContactCategory(
+            code=emergency.code,
+            code_system=emergency.system,
+            name=emergency.name,
+        )
+
+        # No contact_identifier, so this adds a contact.
+        patient = Patient(
+            patient_id="existing-patient-key",
+            contacts=[
+                PatientContact(
+                    name="Jane Doe",
+                    phone_number="5551234567",
+                    email="jane@example.com",
+                    comments="Primary emergency contact",
+                    categories=[category],
+                )
+            ],
+        )
+
+        return [patient.update()]
+```
+
+### Linking one patient to another
+
+Setting `related_patient` to another patient's key makes that patient the contact. Because your plugin can [supply the patient id on creation](#supplying-a-patient-id-on-creation), it knows the key before the patient exists — so it can create a patient and reference it from a later effect in the same execution:
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact, generate_patient_id
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        spouse_key = generate_patient_id()
+
+        spouse = Patient(
+            patient_id=spouse_key,
+            first_name="Alex",
+            last_name="Doe",
+        )
+
+        # References a patient the previous effect creates. Effects are applied in
+        # order, so the key resolves by the time this one is written.
+        patient = Patient(
+            patient_id="existing-patient-key",
+            contacts=[
+                PatientContact(
+                    related_patient=spouse_key,
+                    comments="Spouse — also a patient in Canvas",
+                )
+            ],
+        )
+
+        return [spouse.create(), patient.update()]
+```
+
+A `related_patient` contact carries no name of its own; Canvas shows the referenced patient's details instead.
+
+### Removing a contact
+
+A removal needs the `contact_identifier` of the contact to remove and nothing else — no name or related patient, since neither is meaningful on a delete. Read the identifier from the [PatientContactPerson](/sdk/data-patient/#patientcontactperson) data model:
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import PatientContactPerson
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        patient_key = "existing-patient-key"
+        contact = PatientContactPerson.objects.filter(
+            patient__id=patient_key, name="Jane Doe"
+        ).first()
+
+        if contact is None:
+            return []
+
+        patient = Patient(
+            patient_id=patient_key,
+            contacts=[
+                PatientContact(contact_identifier=str(contact.id), inactive=True)
+            ],
+        )
+
+        return [patient.update()]
+```
+
+A single `contacts` list may mix all of these — additions, modifications and removals travel together in one effect.
+
+## Setting Race and Ethnicity
 
 `biological_race_codes` and `cultural_ethnicity_codes` each accept a list of code strings drawn from the [CDC Race and Ethnicity CodeSystem (CDCREC)](https://hl7.org/fhir/us/core/STU3.1.1/CodeSystem-cdcrec.html) — the same code set used by the [FHIR Patient API](/api/patient/). You can set both fields when creating or updating a patient, and you can supply more than one code per field.
 
@@ -325,6 +482,12 @@ The effect performs validation before execution to ensure data integrity:
    - On creation, a supplied `patient_id` must not already belong to an existing patient; a duplicate id raises a validation error
 4. **Update-Specific Validation**:
    - Validates that the patient exists before attempting updates
+5. **Contact Validation** (see [Managing patient contacts](#managing-patient-contacts)):
+   - Every contact that is not a removal must carry either `name` or `related_patient`
+   - A removal (`inactive=True`) must carry `contact_identifier`
+   - `contact_identifier` and `related_patient` must be UUIDs; on an update, `contact_identifier` must name a contact that belongs to this patient, and `related_patient` must name an existing patient
+   - `phone_number` must be exactly 10 digits, and `email` must be a valid email address
+   - `PatientContactCategory` requires `code`, `code_system` and `name`, and the coding must already exist in the instance — an unknown coding raises rather than being created
 
 <br/>
 <br/>

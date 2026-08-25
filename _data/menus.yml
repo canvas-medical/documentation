@@ -878,7 +878,7 @@ effects_module:
     url: /sdk/effect-create-patient-preferred-pharmacies/
     description: Create preferred pharmacies for a patient.
   - title: "Custom HTML and Django Templates"
-    url: /sdk/layout-effect/#custom-html-and-django-templates/
+    url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
   - title: "Data Integration"
     url: /sdk/effect-data-integration/
@@ -1055,6 +1055,9 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "DiagnosticView"
+    url: /sdk/data-diagnostic-view/
+    description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
@@ -1065,7 +1068,7 @@ data_module:
     url: /sdk/data-educational-material/
     description: Patient educational material shared from a note via the Educational Material command.
   - title: "EligibilitySummary"
-    url: /sdk/data-coverage/#eligilibitysummary/
+    url: /sdk/data-coverage/#eligibilitysummary
     description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/
