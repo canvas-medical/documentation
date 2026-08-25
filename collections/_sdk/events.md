@@ -1889,6 +1889,121 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
   </tbody>
 </table>
 
+#### Eligibility responses
+
+A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDATED` event fires on every eligibility response save. When the response resolves to a definite status, a matching `COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE`, `COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE`, or `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` event fires alongside it. For example, when a failed eligibility check is first recorded, both `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` and `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` fire. Each event's context carries the derived `status` string and the associated `coverage`; `_FAILED` events also include the payer `errors`.
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response is created for a coverage.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response resolves to an active status.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response resolves to an inactive status.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_FAILED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response check fails to complete (the payer response errored).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str
+"errors": list[str]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Detected Issues
 
 <table>
