@@ -1079,6 +1079,9 @@ data_module:
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
+  - title: "FamilyHistory"
+    url: /sdk/data-family-history/
+    description: A patient's family medical history — conditions recorded for a relative.
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
