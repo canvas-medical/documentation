@@ -345,7 +345,37 @@ The following Python builtin functions are available within the sandbox:
 - `super`
 - `vars`
 
-Plus all the standard safe builtins from RestrictedPython including basic types (`bool`, `int`, `float`, `str`, `tuple`, etc.) and safe operations.
+On top of those, the sandbox inherits RestrictedPython's safe builtins. That covers the basic types (`bool`, `bytes`, `complex`, `float`, `frozenset`, `int`, `set`, `slice`, `str`, `tuple`), the common functions (`abs`, `callable`, `chr`, `divmod`, `hash`, `hex`, `id`, `isinstance`, `issubclass`, `len`, `oct`, `ord`, `pow`, `range`, `repr`, `round`, `sorted`, `zip`), and most of the standard exception classes.
+
+### Builtins that are not available
+
+What you see above is the whole set. The sandbox works from an allow-list rather than a list of banned names, so any builtin not mentioned there raises `NameError` when your plugin runs — including builtins that future Python releases introduce.
+
+These are the ones plugin authors reach for most often:
+
+| Not available | Use instead |
+| --- | --- |
+| `eval`, `exec`, `compile` | Write the logic directly. The sandbox cannot run code it never reviewed. |
+| `open`, `input` | Neither the filesystem nor a console is reachable from a plugin. |
+| `print` | `log` from `logger`. `print` is also a [reserved name](#reserved-names). |
+| `type` | `isinstance(x, SomeClass)` to test a type, `x.__class__.__name__` to read its name. |
+| `dir`, `globals`, `locals` | Nothing. Namespace introspection is a sandbox-escape route. |
+| `bytearray` | `bytes` for binary data. |
+
+One group is easy to miss: the `OSError` subclasses, including `TimeoutError`, `ConnectionError`, `FileNotFoundError`, and `PermissionError`. Writing `except TimeoutError:` around an HTTP call raises `NameError`. Catch `OSError` instead — it is available, and it matches every one of them:
+
+```python
+from canvas_sdk.utils import Http
+
+client = Http()
+
+try:
+    response = client.get("https://example.com/api")
+except OSError:
+    # OSError is the shared base class, so this catches TimeoutError,
+    # ConnectionError, and the rest of the family.
+    pass
+```
 
 ## Forbidden Constructs
 
@@ -357,9 +387,12 @@ Beyond the import allow-list above, a few Python constructs compile under Restri
 | `delattr(obj, "x")` | Dynamic attribute deletion is blocked | `del obj.x` |
 | `bytearray(...)` | Not available in the sandbox | `bytes` for binary data |
 | `type(name, bases, dict)` | Dynamic class creation (3-argument `type`) is not available | Declare the class normally with `class …:` |
-| `d[k] += v` | Augmented assignment on a dict item, list item, or slice is rejected | Explicit reassignment: `d[k] = d[k] + v` |
+| `obj.attr += v` | Augmented assignment to an attribute is rejected, including on classes you defined yourself | Explicit reassignment: `obj.attr = obj.attr + v` |
+| `d[k] += v` | Augmented assignment to a dict item, list item, or slice is rejected | Explicit reassignment: `d[k] = d[k] + v` |
 
-One-argument `type(x)` (checking an object's type) is allowed — only the three-argument form used for dynamic class creation is rejected.
+Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`, and the rest of the `-=` / `*=` / `//=` / `%=` / `**=` / `&=` / `|=` / `^=` / `<<=` / `>>=` family all work. It is only the attribute and item forms above that are rejected, and both fail when the plugin is compiled, so you find out at install time rather than mid-request.
+
+{% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
 
 {% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
 
@@ -384,6 +417,120 @@ except Exception:
     for frame in frames:
         log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
 ```
+
+## Runtime Restrictions
+
+The sandbox enforces the rules in this section every time an attribute is read or written, so they surface as an `AttributeError` while your plugin is running. That is what separates them from the [forbidden constructs](#forbidden-constructs), which are rejected when your code is compiled and reported by `canvas validate` before you install. Nothing described here is caught until the code executes.
+
+Throughout this section, **your plugin's code** means modules inside your own plugin package. **External code** means everything else — the Canvas SDK, the standard library, and third-party modules.
+
+### Reading attributes
+
+Attribute names that begin with an underscore are restricted, and the rule depends on where the object came from:
+
+| Object defined in | `_single_underscore` | `__dunder__` |
+| --- | --- | --- |
+| Your plugin's code | Readable | Only names on the allow-list below |
+| External code | Blocked | Only names on the allow-list below |
+
+The dunder allow-list is the same in both cases:
+
+- `__annotations__`
+- `__args__`
+- `__class__`
+- `__dict__`
+- `__eq__`
+- `__init__`
+- `__members__`
+- `__name__`
+- `__origin__`
+- `__traceback__`
+
+Two of those return a restricted stand-in rather than the real object:
+
+- **`__class__`** on an object defined outside your plugin returns a read-only proxy that exposes only `__name__`. This is what prevents `__class__.__mro__` and `__class__.__subclasses__()` from being used to reach code outside the sandbox.
+- **`__traceback__`** returns a safe traceback exposing only `tb_frame`, `tb_lineno`, and `tb_next`. Its frame exposes only `f_code`, and that code object exposes only `co_filename` and `co_name`. Local and global variables are never reachable. [`extract_exc_frames()`](#extract_exc_frames) is the more convenient way to read a traceback.
+
+Reading a plain attribute off an imported module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+
+### Reading items
+
+Subscripting with a string key that starts with an underscore is blocked on every object, including dictionaries you created yourself:
+
+```python
+config = {"timeout": 30, "_internal": True}
+
+config["timeout"]    # fine
+config["_internal"]  # AttributeError
+```
+
+### Writing attributes
+
+You can set attributes on modules that belong to your plugin. Setting an attribute on any other module is blocked.
+
+For objects, whether a write is allowed depends on where the object's class was defined:
+
+- **Class defined in your plugin's code** — writable, including attributes that are not methods.
+- **Class defined in external code** — the write is blocked if any of the following is true:
+  - the name you are assigning through was brought in by an `import`
+  - the attribute currently holds a callable, so the assignment would replace a method
+  - the target is a dictionary and the key is a string starting with an underscore
+
+```python
+class MyThing:
+    """Defined in your plugin, so its instances are writable."""
+
+    def __init__(self) -> None:
+        self.count = 0
+
+
+thing = MyThing()
+thing.count = 1       # fine
+thing.label = "new"   # fine
+```
+
+### Reserved names
+
+These four names cannot be used for a function, variable, class, or argument anywhere in your plugin:
+
+- `print`
+- `printed`
+- `builtins`
+- `breakpoint`
+
+`print` is among them, so use the SDK logger for output:
+
+```python
+from logger import log
+
+log.info("plugin started")
+```
+
+### Introspection attributes
+
+The attributes the `inspect` module relies on are unavailable, because they expose frames, globals, and raw bytecode:
+
+`co_code`, `cr_await`, `cr_code`, `cr_frame`, `cr_origin`, `f_back`, `f_builtins`, `f_code`, `f_generator`, `f_globals`, `f_locals`, `f_trace`, `gi_code`, `gi_frame`, `gi_yieldfrom`, `tb_frame`, `tb_next`
+
+The safe traceback wrappers under [reading attributes](#reading-attributes) are the one exception: they re-expose `tb_frame`, `tb_next`, and `f_code` through an explicit allow-list, stripped down to the fields listed there.
+
+### String formatting
+
+The `format` and `format_map` methods of `str` are not available. Use an f-string or the `%` operator instead:
+
+```python
+name = "Canvas"
+
+greeting = f"Hello {name}"       # fine
+greeting = "Hello %s" % name     # fine
+greeting = "Hello {}".format(name)  # NotImplementedError
+```
+
+### `__exports__`
+
+Some SDK objects declare an `__exports__` attribute listing exactly which attribute names may be read from them. Where it is present it takes precedence over the other rules in this section: names in the list are readable, and anything else raises an `AttributeError`.
+
+{% include alert.html type="info" content="These rules are enforced by <code>plugin_runner/sandbox.py</code> in the <a href='https://github.com/canvas-medical/canvas-plugins'>Canvas Plugins repository</a>, which is the authoritative reference if you hit a restriction that isn't described here." %}
 
 ## Requesting Additional Imports
 

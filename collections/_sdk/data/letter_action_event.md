@@ -66,7 +66,7 @@ letter_action_events = LetterActionEvent.objects.filter(send_fax_id="a1b2c3d4e5f
 | delivered_by_fax | Boolean                          | The isSuccess status of the delivered by fax    |
 | fax_result_msg   | str                              | The fax result message                          |
 | letter           | [Letter](/sdk/data-letter/)      | The letter this action event is associated with |
-| originator       | [User](/sdk/canvasuser)          | The user who created the letter (nullable)      |
+| originator       | [User](/sdk/data-canvasuser/)          | The user who created the letter (nullable)      |
 
 
 ## Enumeration types
