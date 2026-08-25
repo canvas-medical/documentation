@@ -178,6 +178,9 @@ educational_materials = patient.education_material.all()
 | referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
 | invoices                 | Invoice[]                                    |
 | education_material       | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
+| procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
+| family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
+| histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
 
 ### PatientAddress
 

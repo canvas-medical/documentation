@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `FamilyHistory` model represents a patient's family medical history — the condition(s) recorded for one of the patient's relatives, captured by the `family_history` command. The relative is identified by a SNOMED code and term, and the condition(s) are stored as `FamilyHistoryCoding` records reachable through the `codings` accessor.
+The `FamilyHistory` model represents a patient's family medical history — the condition(s) recorded for one of the patient's relatives, captured by the `family_history` command. The relative is identified by a SNOMED code and term, and the condition(s) are stored as `FamilyHistoryCoding` records reachable through the `coding` accessor.
 
 ## Basic usage
 
@@ -39,7 +39,7 @@ family_histories = FamilyHistory.objects.for_patient(patient_id)
 
 ## Codings
 
-The relative's condition codings can be accessed with the `codings` attribute on a `FamilyHistory` object:
+The relative's condition codings can be accessed with the `coding` attribute on a `FamilyHistory` object:
 
 ```python
 from canvas_sdk.v1.data.family_history import FamilyHistory
@@ -47,7 +47,7 @@ from logger import log
 
 family_history = FamilyHistory.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 
-for coding in family_history.codings.all():
+for coding in family_history.coding.all():
     log.info(f"system:  {coding.system}")
     log.info(f"code:    {coding.code}")
     log.info(f"display: {coding.display}")
@@ -67,16 +67,19 @@ from canvas_sdk.v1.data.family_history import FamilyHistory
 family_histories = FamilyHistory.objects.filter(relation_snomed_term="Mother")
 ```
 
-### By ValueSet
+### By coding
 
-See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own. The `find` method filters by the relative's condition codings:
+Filter across the relation to match the relative's condition codings:
 
 ```python
 from canvas_sdk.v1.data.family_history import FamilyHistory
-from canvas_sdk.value_set.v2022.condition import Diabetes
 
-family_histories = FamilyHistory.objects.find(Diabetes)
+family_histories = FamilyHistory.objects.filter(
+    coding__code__in=["44054006", "46635009"],
+).distinct()
 ```
+
+{% include alert.html type="warning" content="<code>FamilyHistory.objects.find()</code> is inherited from the shared queryset but does not work on this model: it builds its filter against a <code>codings</code> relation, while <code>FamilyHistoryCoding</code> links back as <code>coding</code>, so the call raises a <code>FieldError</code>. Filter on <code>coding</code> directly, as above, until value set lookup is supported here." %}
 
 ## Attributes
 
@@ -96,7 +99,7 @@ family_histories = FamilyHistory.objects.find(Diabetes)
 | relation_snomed_code | Integer                                       |
 | relation_snomed_term | String                                        |
 | narrative            | String                                        |
-| codings              | [FamilyHistoryCoding](#familyhistorycoding)[] |
+| coding               | [FamilyHistoryCoding](#familyhistorycoding)[] |
 
 ### FamilyHistoryCoding
 

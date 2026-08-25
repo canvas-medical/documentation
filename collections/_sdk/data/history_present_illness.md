@@ -34,7 +34,7 @@ histories = note.histories_of_present_illness.all()
 
 ## Reading the narrative
 
-The HPI text is exposed through the read-only `narrative` property, so plugin authors only need to read one field:
+The HPI text is stored as a structured document in `narrative_json`. The read-only `narrative` property renders it as plain text, so that is the field to read:
 
 ```python?partial=true
 from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
@@ -45,7 +45,7 @@ text = hpi.narrative
 
 ## Filtering
 
-Histories of present illness can be filtered by any attribute that exists on the model.
+Histories of present illness can be filtered by any column on the model. Note that `narrative` is a Python property rather than a column, so it cannot be used in `filter()` — filter on `narrative_json` instead.
 
 ### Committed histories of present illness
 
@@ -72,7 +72,8 @@ committed_histories = HistoryOfPresentIllness.objects.committed()
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
-| narrative        | String                                |
+| narrative_json   | JSON                                  |
+| narrative        | String (read-only property)           |
 
 <br/>
 <br/>

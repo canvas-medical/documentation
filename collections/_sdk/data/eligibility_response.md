@@ -87,7 +87,16 @@ A coverage with no eligibility responses (an empty `coverage.eligibility_respons
 | eligid              | String                                                                       |
 | x12_response        | String                                                                       |
 | parsed_x12_response | JSON                                                                         |
-| status              | [EligibilityResponseStatus](#eligibilityresponsestatus)                      |
+| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (read-only property) |
+| eligibility_or_benefit_information | List (read-only property)                                     |
+
+`status` and `eligibility_or_benefit_information` are computed from `errors` and `parsed_x12_response` rather than stored, so neither can be used in `filter()`. To select responses by outcome, filter on the columns they derive from — a failed check is one with a non-empty `errors`:
+
+```python
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
+
+failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
+```
 
 ## Enumeration types
 
