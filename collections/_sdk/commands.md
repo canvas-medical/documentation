@@ -2418,8 +2418,8 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 |----------------------|----------|----------|-------------------------------------------------------------------|
 | `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
-| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis. |
-| `narrative`          | _string_ | `false`  | A narrative or explanation about the update.                      |
+| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
+| `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
 
 ---
 
