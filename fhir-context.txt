@@ -16464,7 +16464,7 @@ Canvas Medical is certified to ONC's [§170.315(g)(10)](/product-updates/rwt/) _
 ##  Two kinds of access 
 The API supports two distinct access models. The authorization gate is different for each, and it is important to know which one your application needs.
 ###  Patient-directed access 
-An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#smart-on-fhir-scopes) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
+An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#authorization-code) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
 ###  Population and bulk access 
 A practice or organization using Canvas as its EHR authorizes access to data across its patient population, typically through the client-credentials flow (`system/` context) and bulk export. This access is authorized by the practice or organization that holds the data.
 ##  One Canvas instance per customer 

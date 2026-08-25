@@ -878,7 +878,7 @@ effects_module:
     url: /sdk/effect-create-patient-preferred-pharmacies/
     description: Create preferred pharmacies for a patient.
   - title: "Custom HTML and Django Templates"
-    url: /sdk/layout-effect/#custom-html-and-django-templates/
+    url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
   - title: "Data Integration"
     url: /sdk/effect-data-integration/
@@ -1071,7 +1071,7 @@ data_module:
     url: /sdk/data-eligibility-response/
     description: A coverage eligibility (270/271) request and response, with the derived check status.
   - title: "EligibilitySummary"
-    url: /sdk/data-coverage/#eligilibitysummary/
+    url: /sdk/data-coverage/#eligibilitysummary
     description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/

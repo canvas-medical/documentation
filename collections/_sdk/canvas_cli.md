@@ -238,7 +238,7 @@ This command runs full pre-flight validation combining:
 
 #### Static lint
 
-Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
+Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
 
 ```console
 $ canvas validate my_plugin
@@ -255,8 +255,9 @@ These issues will fail on the instance (sandbox / Custom Data):
 | `setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value` |
 | `delattr-blocked` | `delattr(obj, "x")` — use `del obj.x` |
 | `bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data |
-| `type-3arg-blocked` | `type(name, bases, dict)` dynamic class creation — declare the class with `class …:` |
+| `type-blocked` | Any call to `type()`. It is absent from the sandbox builtins, so even the one-argument `type(x)` raises `NameError` — use `isinstance(x, SomeClass)` or `x.__class__.__name__`, and declare classes with `class …:` rather than `type(name, bases, dict)` |
 | `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v` |
+| `augmented-attribute` | Augmented assignment on an attribute, e.g. `obj.attr += v` — rewrite as `obj.attr = obj.attr + v` |
 
 `@dataclass(frozen=True)` and `@dataclass(slots=True)` load and run fine in the sandbox and are intentionally not flagged.
 

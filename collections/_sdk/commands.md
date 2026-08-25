@@ -454,7 +454,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
@@ -551,7 +551,7 @@ The check needs that note or command to exist, so it is skipped when you create 
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -565,6 +565,12 @@ change_medication = ChangeMedicationCommand(
     sig='two pills taken orally'
 )
 ```
+
+**Validation**:
+
+`medication_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. The medication must also be active. A medication on another patient's chart, an id that matches no medication, or an inactive medication fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates the command in the same batch of handler effects. In that case the command's patient cannot be resolved yet, so `medication_id` passes this validation; the check then runs once the command is applied.
+
+A malformed `medication_id` fails at command construction, before any patient lookup, while a well-formed UUID passed as a string is accepted.
 
 ---
 
@@ -672,7 +678,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
@@ -858,9 +864,9 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                          |
 | `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order (max length: 1024 characters). |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
-| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
@@ -1212,7 +1218,7 @@ MedicalHistoryCommand(
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
