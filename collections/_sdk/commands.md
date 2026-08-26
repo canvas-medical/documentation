@@ -1056,7 +1056,7 @@ from it; set `manufacturer` and `expiration_date` yourself if you want them reco
 
 **Example**:
 
-```python
+```python?partial=true
 from datetime import date
 
 from canvas_sdk.commands.commands.immunize import ImmunizeCommand

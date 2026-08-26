@@ -18,7 +18,7 @@ A vaccine carries the CPT and CVX codes that identify it. The CVX code is on the
 the CPT codes come from its charges, and those charges are what produce the billing line
 item when an [Immunize](/sdk/commands/#immunize) command is committed.
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import Vaccine
 
 vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
@@ -29,7 +29,7 @@ print(vaccine.cvx_code, [charge.cpt_code for charge in vaccine.charges.all()])
 Each physical lot of a vaccine tracks how many doses remain, and committing an Immunize
 command decrements that count:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import VaccineLot
 
 lot = VaccineLot.objects.filter(lot_number="LOT-135-001").first()
@@ -40,7 +40,7 @@ print(lot.vaccine.short_name, lot.on_hand_inventory, lot.expiration_date)
 `mvx_code` holds a CDC MVX manufacturer code. The codes are declared as the field's
 choices, so Django's display helper resolves the manufacturer name:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import VaccineLot
 
 lot = VaccineLot.objects.filter(lot_number="LOT-135-001").first()
@@ -57,7 +57,7 @@ lots. That value lives in `Vaccine.inventory` as free text and is independent of
 A vaccine is selectable on a note when it is active **and** carries an active CPT charge.
 Filtering the same way keeps a plugin in step with what a provider would see:
 
-```python
+```python?partial=true
 from datetime import date
 
 from django.db.models import Q
@@ -76,7 +76,7 @@ print([vaccine.short_name for vaccine in selectable])
 
 Lots are administrable while they have doses on hand:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import VaccineLot
 
 in_stock = VaccineLot.objects.filter(vaccine__cvx_code="135", on_hand_inventory__gt=0)
@@ -132,7 +132,7 @@ payer-specific entry alongside a general one. Use `payer` to tell them apart.
 | used_inventory          | Integer                                     |
 
 `on_hand_inventory` is derived from `starting_inventory + quantity_adjustment -
-used_inventory`;
+used_inventory`.
 
 ## Enumeration types
 
