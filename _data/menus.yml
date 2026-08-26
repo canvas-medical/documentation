@@ -1220,6 +1220,9 @@ data_module:
   - title: "Uncategorized Clinical Documents"
     url: /sdk/data-uncategorized-clinical-document/
     description: Data associated with uncategorized clinical documents and their reviews.
+  - title: "Vaccine"
+    url: /sdk/data-vaccine/
+    description: A vaccine in the instance's catalog and the lots of it held in inventory.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
