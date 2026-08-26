@@ -21,6 +21,8 @@ All commands share the following init kwarg parameters:
 
 All parameters can be set upon initialization, and also updated on the class instance.
 
+Field values are read leniently, so a value does not have to arrive already in the field's own type: a number can be given as `"3"`, a date as `"2026-08-04"`, and an enum as its value (`"mild"`) rather than the member. This matters most when the values come from somewhere that only has strings, such as a JSON request body.
+
 ### Methods
 
 All commands have the following methods:
@@ -452,7 +454,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
@@ -549,7 +551,7 @@ The check needs that note or command to exist, so it is skipped when you create 
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -563,6 +565,12 @@ change_medication = ChangeMedicationCommand(
     sig='two pills taken orally'
 )
 ```
+
+**Validation**:
+
+`medication_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. The medication must also be active. A medication on another patient's chart, an id that matches no medication, or an inactive medication fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates the command in the same batch of handler effects. In that case the command's patient cannot be resolved yet, so `medication_id` passes this validation; the check then runs once the command is applied.
+
+A malformed `medication_id` fails at command construction, before any patient lookup, while a well-formed UUID passed as a string is accepted.
 
 ---
 
@@ -670,7 +678,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
@@ -856,9 +864,9 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                          |
 | `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order (max length: 1024 characters). |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
-| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
@@ -1210,7 +1218,7 @@ MedicalHistoryCommand(
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
@@ -1504,16 +1512,16 @@ def compute():
 | `compound_medication_id`    | _string_                      | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.             |
 | `compound_medication_data`  | [`CompoundMedicationData`](#prescribe-compoundmedicationdata)      | `false`* | Data for creating a new compound medication inline.                 |
 | `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
-| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication. Up to 1000 characters — see [Limits](#prescribe-limits). |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
-| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense. Must be greater than zero — see [Limits](#prescribe-limits). |
 | `type_to_dispense`          | _[ClinicalQuantity](#clinicalquantity)_            | `true`** | Information about the form or unit of the medication to dispense. Get the available quantities from the [medication search](/sdk/utils/#searching-for-medications)'s `clinical_quantities`.   |
-| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription. From 0 to 99 — see [Limits](#prescribe-limits). |
 | `substitutions`             | _[Substitutions](#prescribe-substitutions) enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. [Look it up via the pharmacy search](/sdk/utils/#searching-for-pharmacies). |
 | `prescriber_id`             | _string_                      | `true`   | The [Staff](/sdk/data-staff/#staff) id of the prescriber.                                          |
 | `supervising_provider_id`   | _string_                      | `false`   | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.               |
-| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
+| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist. Up to 210 characters — see [Limits](#prescribe-limits). |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
@@ -1653,6 +1661,35 @@ prescription = PrescribeCommand(
   * Any dashes in the NDC are automatically removed
   * Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
 * Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
+
+<a id="prescribe-limits"></a>
+
+**Limits**
+
+A prescription has to fit what can be transmitted to the pharmacy, so four fields are bounded. These apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, which share the fields.
+
+| Field                  | Limit           |
+|------------------------|-----------------|
+| `sig`                  | 1000 characters |
+| `note_to_pharmacist`   | 210 characters  |
+| `refills`              | 0 to 99         |
+| `quantity_to_dispense` | greater than 0  |
+
+All four are checked when the command is turned into an effect, not when the field is set. Building a command up field by field therefore never fails part-way through, and `originate()` or `edit()` reports every value that is out of bounds at once:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    prescribe = PrescribeCommand(note_uuid='c4d1e4b8-6a5f-4b3a-9e2d-7f8a9b0c1d2e')
+
+    # Neither assignment raises.
+    prescribe.refills = 100
+    prescribe.quantity_to_dispense = 0
+
+    # This raises a validation error naming both values.
+    return [prescribe.originate()]
+```
 
 ---
 
@@ -2387,8 +2424,8 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 |----------------------|----------|----------|-------------------------------------------------------------------|
 | `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
-| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis. |
-| `narrative`          | _string_ | `false`  | A narrative or explanation about the update.                      |
+| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
+| `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
 
 ---
 

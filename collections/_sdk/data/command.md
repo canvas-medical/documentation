@@ -101,7 +101,7 @@ The following table shows the different command `schema_key` values with links t
 | closeGoal           | [CloseGoal](/sdk/commands/#closegoal)                            |
 | diagnose            | [Diagnose](/sdk/commands/#diagnose)                              |
 | familyHistory       | [FamilyHistory](/sdk/commands/#familyhistory)                    |
-| followUp            | [FollowUp](/sdk/commands/#followUp)                              |
+| followUp            | [FollowUp](/sdk/commands/#followup)                              |
 | goal                | [Goal](/sdk/commands/#goal)                                      |
 | hpi                 | [HistoryOfPresentIllness](/sdk/commands/#historyofpresentillness) |
 | imagingOrder        | [ImagingOrder](/sdk/commands/#imagingorder)                      |
@@ -118,7 +118,7 @@ The following table shows the different command `schema_key` values with links t
 | refer               | [Refer](/sdk/commands/#refer)                                    |
 | refill              | [Refill](/sdk/commands/#refill)                                  |
 | removeAllergy       | [RemoveAllergy](/sdk/commands/#removeallergy)                    |
-| resolveCondition    | [ResolveCondition](/sdk/commands/#resolvecondition)              |
+| resolveCondition    | [ResolveCondition](/sdk/commands/#resolve-condition)              |
 | stopMedication      | [StopMedication](/sdk/commands/#stopmedication)                  |
 | surgicalHistory     | [SurgicalHistory](/sdk/commands/#surgicalhistory)                |
 | task                | [Task](/sdk/commands/#task)                                      |

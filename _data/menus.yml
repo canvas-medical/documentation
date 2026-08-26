@@ -878,7 +878,7 @@ effects_module:
     url: /sdk/effect-create-patient-preferred-pharmacies/
     description: Create preferred pharmacies for a patient.
   - title: "Custom HTML and Django Templates"
-    url: /sdk/layout-effect/#custom-html-and-django-templates/
+    url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
   - title: "Data Integration"
     url: /sdk/effect-data-integration/
@@ -1067,8 +1067,11 @@ data_module:
   - title: "EducationalMaterial"
     url: /sdk/data-educational-material/
     description: Patient educational material shared from a note via the Educational Material command.
+  - title: "EligibilityResponse"
+    url: /sdk/data-eligibility-response/
+    description: A coverage eligibility (270/271) request and response, with the derived check status.
   - title: "EligibilitySummary"
-    url: /sdk/data-coverage/#eligilibitysummary/
+    url: /sdk/data-coverage/#eligibilitysummary
     description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/
@@ -1079,9 +1082,15 @@ data_module:
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
+  - title: "FamilyHistory"
+    url: /sdk/data-family-history/
+    description: A patient's family medical history — conditions recorded for a relative.
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "HistoryOfPresentIllness"
+    url: /sdk/data-history-present-illness/
+    description: The History of Present Illness (HPI) narrative recorded on a note.
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
@@ -1166,6 +1175,9 @@ data_module:
   - title: "Prescription"
     url: /sdk/data-prescription/
     description: The practice locations present in the Canvas EMR.
+  - title: "Procedure"
+    url: /sdk/data-procedure/
+    description: A procedure performed on or ordered for a patient, with its CPT codings.
   - title: "ProtocolCurrent"
     url: /sdk/data-protocol-current/
     description: The current state of clinical protocols applied to patients within Canvas.

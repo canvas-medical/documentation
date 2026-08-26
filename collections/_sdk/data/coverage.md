@@ -60,6 +60,23 @@ if coverage.snapshot:
         print(image.image_url)  # Presigned S3 URL for the insurance card image
 ```
 
+## Eligibility status
+
+`Coverage.eligibility_status` is a read-only property that returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+
+```python?partial=true
+from canvas_sdk.v1.data.coverage import Coverage
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
+    print("Coverage is active")
+```
+
+Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
+
+A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -118,7 +135,10 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (read-only property) |
 | claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
+| requests                           | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]   |
+| eligibility_responses              | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[] |
 
 ### Transactor
 

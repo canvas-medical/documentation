@@ -37,11 +37,13 @@
             overflow-y: auto;
         }
         &__content {
+            // No unconditional min-width here: min-width beats max-width, so a
+            // `min-width: 70%` floor let the column grow past 800px on wide
+            // screens and doubled the line length the 800px cap is there to set.
             max-width: 800px;
-            min-width: 70%;
             @media (max-width: $breakpoint-md) {
                 padding: 20px;
-            }    
+            }
             @media (max-width: $breakpoint-sm) {
                 min-width: 70%;
             }
