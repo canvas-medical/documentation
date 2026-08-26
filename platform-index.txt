@@ -1,0 +1,1533 @@
+## Feature Spotlight
+- [Fax Migration & Event History](https://help.canvasmedical.com/articles/4882014801-fax-migration-event-history)
+    - Features
+        - Status
+        - Timestamps
+    - Fax Event History Logs
+        - Faxing Notes
+        - Commands
+        - Data Integration
+        - Letters
+- [Saved Payment Methods](https://help.canvasmedical.com/articles/4603195425-feature_spotlight_saved_payment_methods)
+    - Introduction
+    - How it Works
+    - Accessibility
+    - Key Benefits
+    - References
+    - Metadata / Keywords
+- [Assign Reviewed Documents to a Team](https://help.canvasmedical.com/articles/5935595438-assign-reviewed-documents-to-a-team)
+        - Assigning Results to a Team
+- [Feature Spotlight: Appointment Labels](https://help.canvasmedical.com/articles/9726289513-fs-appointment-labels)
+    - Why Appointment Labels Matter
+    - Comprehensive Integration Across Your Workflow
+    - Smart Limitations for Focused Organization
+    - Built on Proven Technology
+    - Get Started Today
+
+## Getting Started
+
+### Introduction to Canvas
+- [Accessing Canvas](https://help.canvasmedical.com/articles/6790260277-accessing-canvas)
+    - Password Reset Process
+    - User Lockout
+        - Removing User Access Attempts
+        - Admin Password Reset for Users
+    - FAQ & Troubleshooting
+        - Resetting Canvas Password
+- [Navigating the Schedule View](https://help.canvasmedical.com/articles/1131763313-navigate-canvas-home-screen)
+    - Task Bar
+    - Triple Line Menu
+    - Logo
+    - Patient Search
+    - New Patient Button
+    - Calendar Button
+    - Print Button
+    - Schedule Filters
+        - Calendar
+        - Locations
+        - Filter and Sorting
+    - Provider's Weekly Schedule View
+- [Canvas Academy Video Links](https://help.canvasmedical.com/articles/9227770329-canvas-academy-video-links)
+    - Canvas Basics
+    - General Clinical Workflow
+    - Content Creation
+    - Administrative
+    - Billing
+    - Document Management
+    - Manager / Product Owner
+
+### Onboarding & Setup
+- [Managing Patient Appointments](https://help.canvasmedical.com/articles/4617508394-managing-appointments)
+    - Scheduling Appointments
+    - Additional Functionality for Telehealth Visits
+    - Manual Override for Scheduling Outside of Availability
+    - Scheduling Other Events
+        - Scheduling an Event
+    - Adding Additional Visits
+        - Scheduling Sequential Appointments
+        - Scheduling Additional Visits
+    - Appointment Cards
+        - Changing Appointment Status
+        - Updating an Appointment
+        - Appointment Labels
+        - Direct Links
+    - Managing Appointments in Patient Chart
+        - Accessing the Appointment Note
+        - Appointment Note Header
+        - Check-In Appointment
+        - Rescheduling Appointment
+        - Cancel Appointment
+        - Restore Cancelled Appointment
+        - Recall Cancelled and Rescheduled Appointment in the Schedule View
+    - No-Show Appointment
+    - Revert an Appointment
+    - Scheduling a Follow Up Appointment
+    - Appointment Status Once Checked In
+    - Disable Double Booking
+    - Show Future Appointments in the Patient Timeline
+- [Recommended Minimum Specifications](https://help.canvasmedical.com/articles/1686191927-recommended-minimum-specification)
+    - Hardware Minimums
+    - Browser
+    - Connectivity
+    - Optional Configuration
+    - Security / Dejunking
+- [Canvas Remote on iOS](https://help.canvasmedical.com/articles/5778885172-canvas-remote-on-ios)
+    - Additional Information
+- [Canvas Chat and Bot](https://help.canvasmedical.com/articles/2541599205-canvas-chat-and-bot)
+    - Using Canvas Chat
+        - Chat Functionality
+    - Creating Announcements Using Canvas Bot
+    - Creating Tasks Using Canvas Bot
+    - Disabling Canvas Chat
+- [Managing the Canvas Patient Portal](https://help.canvasmedical.com/articles/7348270931-managing-the-patient-portal)
+    - Before you begin
+    - Patient Portal URL
+    - Inviting a patient to the portal
+    - Patient self-registration
+    - Logging in
+    - Branding the login page
+    - Portal features
+        - Messaging
+        - Forms
+        - Consents
+        - Documents
+        - Appointments
+        - Patient Self-Scheduling
+        - My Health
+        - Landing page
+    - Troubleshooting
+        - The patient cannot access the portal
+        - The patient sees invalid credentials
+        - The patient’s invite or password reset link expired
+        - The patient sees a 403 error
+        - Forms, appointments, or documents are not appearing
+    - Best practices
+    - When to contact Canvas support
+
+#### New Provider Onboarding
+- [Preparing Provider Profiles for Enrollment](https://help.canvasmedical.com/articles/1422399386-preparing-provider-profiles-for-enrollment)
+        - What you'll learn
+    - Staff Profile Required Fields
+        - Required for all providers
+    - Required Documents for Surescripts
+    - Licensing Requirements
+    - How to Add Staff Licenses
+    - Next Steps
+    - Frequently Asked Questions
+        - Understanding prerequisites
+        - Licensing and formatting
+        - Identity proofing
+    - Related Articles
+- [PersonaTrust Identity Proofing](https://help.canvasmedical.com/articles/3191674897-personatrust-identity-proofing)
+    - Why You Need Identity Proofing
+    - How the Process Works
+        - Step 1: Book a Time Slot
+        - Step 2: Receive and Complete the Application
+        - Step 3: Verification Phone Call
+        - Step 4: Receive Your Certificate
+    - Summary of the Process
+    - After Identity Proofing
+    - Frequently Asked Questions
+- [Using the Provider Enrollment Dashboard](https://help.canvasmedical.com/articles/3654117054-using-the-provider-enrollment-dashboard)
+        - What you'll learn
+    - Enrollment Types
+    - Validation Requirements
+    - Using the Dashboard
+        - Review Provider Information
+    - Fix Validation Errors
+    - Submit Your Request
+    - Next Steps
+    - Frequently Asked Questions
+        - Understanding the dashboard
+        - Enrollment checkboxes
+        - Validation issues
+        - Submitting requests
+    - Related Articles
+- [ePrescribing (eRx) Enrollment](https://help.canvasmedical.com/articles/6085016786-eprescribing-erx-enrollment)
+        - What you'll learn
+    - What ePrescribing Enables
+    - After You Submit Enrollment
+    - Tracking SPI Status
+    - Change of Vendor Considerations
+    - Next Steps
+    - Frequently Asked Questions
+        - Timeline and process
+        - Change of Vendor
+        - Patient data
+        - Multi-location
+    - Related Articles
+- [Electronic Prescribing of Controlled Substances (EPCS) Enrollment](https://help.canvasmedical.com/articles/8630998726-electronic-prescribing-of-controlled-substances-epcs-enrollment)
+        - What you'll learn
+    - What EPCS Enables
+    - DrFirst Enrollment Process
+        - Step 1: Open your DrFirst invite
+        - Step 2: Download VIP Access app
+        - Step 3: Evidence collection
+        - Step 4: Identity document
+        - Step 5: Token registration
+        - Step 6: Verification code
+        - Step 7: Create passphrase
+        - Step 8: Grant activation
+    - After Enrollment is Complete
+    - Frequently Asked Questions
+        - Timeline and process
+        - Identity proofing
+        - 24-hour window
+        - Technical issues
+        - Getting help
+    - Related Articles
+- [Activating EPCS Grants with DrFirst](https://help.canvasmedical.com/articles/6405678539-activating-epcs-grants-with-drfirst)
+        - What you'll learn
+    - Prerequisites
+    - Accessing the EPCS Dashboard
+    - Activating Provider Grants
+    - After Activation
+    - Provider Status Reference
+    - Frequently Asked Questions
+        - Grant activation process
+        - Administrator access
+        - Provider status
+    - Related Articles
+- [Lab Ordering Enrollment](https://help.canvasmedical.com/articles/1295159245-lab-ordering-enrollment)
+        - What you'll learn
+    - What Lab Ordering Enables
+    - After You Submit Enrollment
+    - Next Steps
+    - Frequently Asked Questions
+        - Enrollment process
+        - Lab ordering
+        - Troubleshooting
+    - Related Articles
+- [Setting Up VIP Access on a New Phone](https://help.canvasmedical.com/articles/4577696191-setting-up-vip-access-on-a-new-phone)
+        - What you'll learn
+    - Migrating Your Credential
+    - Adding a New Token
+        - Access the token management screen
+        - Add a VIP Access soft token
+    - After You Switch Devices
+    - Next Steps
+    - Frequently Asked Questions
+    - Related Articles
+- [Resetting Your DrFirst Passphrase](https://help.canvasmedical.com/articles/5514693639-resetting-your-epcs-passphrase)
+        - What you'll learn
+    - Passphrase Requirements
+    - Resetting a Forgotten Passphrase
+    - Changing Your Existing Passphrase
+    - Next Steps
+    - Frequently Asked Questions
+    - Related Articles
+- [Troubleshooting DrFirst Error | Authentication failed. Access is denied](https://help.canvasmedical.com/articles/5551249431-troubleshooting-epcs-authentication-errors)
+        - What you'll learn
+    - Common Causes
+    - How to Troubleshoot
+        - Test your passphrase
+        - Test your token
+    - Error During Grant Activation
+    - Next Steps
+    - Frequently Asked Questions
+    - Related Articles
+
+### Support & FAQs
+- [Canvas Support Resources](https://help.canvasmedical.com/articles/5542576212-canvas-support-resources)
+    - Submitting a Support Ticket
+    - Canvas In-App Chat
+    - What Qualifies as a Critical Incident?
+    - How to Report a Critical Incident?
+    - Handling Non-Critical Incidents After Hours
+    - Sign into the Support Portal
+    - Designate Admin Users
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Why doesn't the password reset email have a link in it?](https://help.canvasmedical.com/articles/4708513957-why-doesn-t-the-password-reset-email-have-a-link-in-it)
+    - Why the link may be missing
+    - Recommended reset method for staff users
+    - Quick workaround
+    - What admins should check
+    - Template message for new staff users
+    - Frequently asked questions
+    - Related articles
+
+## Configuration & System Settings
+
+### Organization Settings
+- [Update Your Logo, Background Image, or Staff Photo](https://help.canvasmedical.com/articles/4139939121-upload-logo-background-image-staff-photo)
+    - Background gradient
+    - Staff photo guidelines
+    - The image does not appear after saving
+    - I do not have a public image URL
+
+### Clinical Configurations
+- [Prescribing Restrictions](https://help.canvasmedical.com/articles/3427480901-prescribing-restrictions)
+        - Enabling Prescriber Restrictions
+        - Configure Prescriber Roles
+        - Entering a Pending a Medication Order (Non-Prescribing Staff)
+- [Surescripts Medication History](https://help.canvasmedical.com/articles/8047008267-surescripts-medication-history)
+    - Requesting and Viewing Medication History
+        - Making a Medication History Request
+        - Common Errors Making Medication History Requests
+    - Viewing Medication History Data
+    - Enabling Medication History
+    - Generating a Database Report for Medication History
+        - Structure of the Data
+- [Admin | Drug/Allergy Warning Controls](https://help.canvasmedical.com/articles/8580349867-drug-allergy-warning-controls)
+    - Tips & Tricks
+    - Step By Step
+        - Video: Drug/Allergy Warning Controls
+- [Health Gorilla Integration for Lab Ordering](https://help.canvasmedical.com/articles/6041713155-how-to-order-labs-and-integrate-with-lab-vendors-in-canvas)
+    - Lab Vendor Integration
+
+### Administrative Configurations
+- [Restrict Free Text in Note](https://help.canvasmedical.com/articles/4756622202-restrict-free-text)
+    - Managing Restrict Free Text
+- [Vaccine Inventory Management](https://help.canvasmedical.com/articles/6442909989-vaccines-vaccine-lots)
+    - Benefits of Vaccine Inventory Management
+    - Vaccines
+    - Vaccine Lot
+        - Adding Vaccine Lots from Vaccines Settings
+        - Adding Vaccine Lots via Vaccine Lots Settings
+    - Administer Vaccines
+- [Managing Provider Availability](https://help.canvasmedical.com/articles/6105998178-managing-provider-availability)
+    - Overview of Calendar Integration
+    - Calendar Types and Naming Conventions
+        - Organization Admin Calendar
+        - Provider Clinic Calendar
+        - Provider Admin Calendar
+        - Same-Day Hold Calendar
+        - Next-Day Hold Calendar
+    - Accessing Google Calendar
+    - Creating New Provider Calendars
+    - Setting Provider Availability
+    - Updating Calendar Events
+    - Sharing Calendar Access with Providers
+    - Limiting Availability by Note Type
+    - Manual Calendar Synchronization
+        - Provider Blocks Missing from the Schedule View
+        - Timezone Error on the Schedule View
+    - Related Resources
+- [Creating Custom Labels for Tasks, Claims and Appointments](https://help.canvasmedical.com/articles/7708474806-task-claim-labels)
+    - Understanding Label Types
+    - Label Assignment Methods
+    - Label Visibility and Display
+    - Creating New Labels
+    - Revenue Queue Configuration
+    - Editing and Deactivating Labels
+        - Editing Labels
+        - Deactivating Labels
+    - Related Resources
+- [Staff Roles](https://help.canvasmedical.com/articles/6649603926-staff-roles)
+- [Teams](https://help.canvasmedical.com/articles/5123845479-teams)
+    - Adding Teams
+        - Responsibilities and Actions
+    - Editing Teams
+    - Deleting Teams
+    - FAQs
+    - Keywords & Metadata
+- [Creating Questionnaires](https://help.canvasmedical.com/articles/7017593857-creating-questionnaires)
+    - Questionnaire Commands
+        - Using the Structured Assessment Command
+        - Using the Review of Systems Command
+    - Building a Questionnaire
+    - Questionnaire Types
+    - Codes
+        - Question + Response Code Criteria
+    - Questionnaire Field Descriptions
+        - Questionnaire Settings🔵
+        - Question Settings🔴
+        - Response Settings🟢
+    - Questionnaire Scoring
+        - Supported Custom Scoring
+    - Uploading Questionnaires
+    - Inactivating a Questionnaire
+        - Questionnaires Setting
+        - Questionnaire Builder
+    - Resources
+- [User Permissions](https://help.canvasmedical.com/articles/4709841955-user-permissions)
+    - Overview
+    - Model permissions
+    - Object permissions
+    - Setting permissions
+        - Default permissions based on role
+        - Updating Staff Permissions
+        - Manually adding and removing auth groups
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Patient Groups](https://help.canvasmedical.com/articles/8319995182-patient-groups)
+    - Adding patient groups
+    - Updating patient groups
+        - Adding patients (manually)
+        - Removing patients (manually)
+    - Using logic to manage patient group membership
+- [Fee Schedule](https://help.canvasmedical.com/articles/6307219926-fee-schedule)
+    - Understanding Fee Schedule Components
+    - Adding New Procedure Codes
+    - Managing Existing Procedure Codes
+    - Working with Payor-Specific Charges
+        - Importing Fee Schedules
+        - Setting Up Payor-Specific Charges
+- [Facilities](https://help.canvasmedical.com/articles/3643566930-facilities)
+    - Adding Facilities
+    - Updating and Deleting Facilities
+- [Contact Categories](https://help.canvasmedical.com/articles/8258338559-contact-categories)
+    - Introduction
+    - User's Guide
+        - Using Contact Categories
+    - Configuration & Set Up
+        - Adding Contact Categories
+        - Updating & Deleting Contact Categories
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Managing Consents](https://help.canvasmedical.com/articles/8144965836-manging-patient-consents)
+    - Managing Patient Consent Codings
+        - Creating a Patient Consent Coding
+        - Updating a Patient Consent Coding
+        - Inactivating a Patient Consent
+    - Managing Patient Consent Rejection Codings
+        - Creating a Patient Consent Rejection Coding
+        - Updating a Rejection Coding
+        - Inactivating a Reason for Rejection
+    - Adding Consents to a Patient Profile
+- [Care Team Roles](https://help.canvasmedical.com/articles/8709525024-care-team-roles)
+    - Adding Care Team Roles
+    - Updating Care Team Roles
+- [Event and Note Types](https://help.canvasmedical.com/articles/6785045644-appointment-event-note-types)
+    - Note Types
+    - Event Types
+    - Creating Event and Note Types
+        - Creating a New Note Type
+        - Creating a New Event Type
+    - Managing Event and Note Types
+        - Editing Event and Note Types
+        - Deactivating Event and Note Types
+    - Related Resources
+- [Creating Referral Contacts](https://help.canvasmedical.com/articles/9919617000-managing-referral-contacts)
+    - Logging In
+    - Getting Started
+    - Adding a New Contact
+    - Contact Naming Guidelines
+    - Modifying an Existing Contact
+- [Configuring Single Sign-On (SSO)](https://help.canvasmedical.com/articles/6984866654-sso-single-sign-on)
+    - Okta SSO Configuration
+        - Create Okta SSO Users
+        - Create Okta Link for Canvas
+        - Canvas Configuration for Okta SSO
+        - Log In to Canvas Using Okta SSO
+    - Microsoft Azure SSO Configuration
+        - Create MS Azure Active Directory App
+        - Create MS Azure Users
+        - Canvas Configuration for Microsoft Azure SAML App
+        - Log In to Canvas using MS Azure SSO
+    - Google Workspace SSO Configuration
+        - Create Google SSO Users
+        - Canvas Configuration for Google Workspace SAML App
+        - Log In to Canvas using Google Workspace SSO
+    - JumpCloud SSO Configuration
+        - Create JumpCloud App
+        - Add JumpCloud SSO Users
+        - Canvas Configuration for JumpCloud SAML App
+        - Log In to Canvas using Google Workspace SSO
+- [Disable Patient Communications](https://help.canvasmedical.com/articles/4711229187-admin-disable-patient-communications)
+    - Tips & Tricks
+    - Step By Step
+        - Video: Disable Patient Communication
+- [Creating a Custom Lab Report Template](https://help.canvasmedical.com/articles/5081934202-custom-lab-report-templates)
+    - Create Custom Lab Report Template
+    - Inactivating a Lab Report Template
+    - Related Resources
+- [Admin | Network Settings](https://help.canvasmedical.com/articles/6258026160-network-settings)
+    - FAQ
+    - Step By Step
+        - Enable timeout settings
+        - Example of Network Connection Lost Message
+- [Appointment Reminders](https://help.canvasmedical.com/articles/2892642076-appointment-reminders)
+    - Understanding Verified Contacts
+    - Understanding Appointment Reminders
+    - Resending Telehealth Instructions
+    - Configuring Appointment Reminders
+    - Customizing Appointment Reminders
+    - Customizing the 45 Minute Telehealth Instruction Message
+        - Dynamic Keywords for Personalizing Telehealth Reminder Messages
+    - Testing Appointment Reminders
+        - Testing Standard Appointment Reminders
+        - Testing 45 Minute Telehealth Instruction Message
+    - Related Resources
+- [Admin | Facility Group Scheduling](https://help.canvasmedical.com/articles/2395218732-facility-group-scheduling)
+    - FAQs
+    - Tips & Tricks
+    - Step by Step
+        - Creating Facility blocks
+- [Admin | Fax Cover Sheet](https://help.canvasmedical.com/articles/5885566398-fax-cover-sheet)
+    - Introduction
+    - Tips & Tricks
+    - Step By Step
+        - Adding a Fax Cover sheet
+        - Preview the Fax with Cover sheet
+        - Standard Privacy Statement on all Cover Sheets
+- [Admin | Note Signature Restrictions](https://help.canvasmedical.com/articles/2642239613-note-signature-restrictions)
+    - How to Use Clinical Signature Restrictions:
+    - FAQ
+    - Step By Step
+        - Enable Restrictions
+        - Signing a Note
+        - Amending a Note (Rendering Provider Only)
+        - Print view of documented changes
+- [Admin | Campaigns Module](https://help.canvasmedical.com/articles/3097826946-campaigns-populations-patients)
+    - Starting a Campaign
+    - Managing Campaigns
+    - Viewing Closed Campaigns
+    - Accessing the Populations Module
+    - Using Populations for Protocol Management
+    - Accessing the Patients Module
+    - Viewing and Filtering Patients
+    - Navigating to Patient Charts
+- [Admin | Population Module](https://help.canvasmedical.com/articles/3316466244-population-module)
+    - Step by Step
+        - Enabling the Populations Module
+        - Locate the Populations Module
+        - Navigate Populations
+        - Start a Campaign
+        - Navigate Campaigns
+        - Manage Campaign
+        - Video: Populations Module
+- [Admin | Patients Module](https://help.canvasmedical.com/articles/2428914045-patients-module)
+    - Introduction
+    - Step By Step
+        - Navigating Patients Module
+- [Admin | Click To Dial](https://help.canvasmedical.com/articles/3042359596-click-to-dial)
+        - Click to Dial Settings
+        - Click to Dial in the Schedule View
+        - Click to Dial in the Patient Chart/Registration Page/Claim's View
+- [Continuity of Care (CCD) and Referral Note Documents](https://help.canvasmedical.com/articles/3692514885-ccda)
+    - Introduction
+    - User's Guide
+        - Importing C-CDA Files
+        - Understanding C-CDA Import Processing
+        - Generating C-CDA Exports
+        - C-CDA Section Management
+        - Patient App Access
+    - Configuration & Set Up
+        - Required Feature Switches
+        - Permission Setup
+        - API Access
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Admin | Carry Forward Questionnaire](https://help.canvasmedical.com/articles/9729293586-carry-forward-questionnaire-responses-physical-exam-review-of-systems-structured-assessment)
+        - Turn on this feature for a questionnaire
+        - Use this feature in charting (example)
+    - Questionnaire Requirements
+    - Common errors
+    - FAQ
+- [Business Lines for Customized Communication](https://help.canvasmedical.com/articles/1392971282-business-lines-customized-patient-communication)
+    - Use Cases
+    - Enabling Business Lines
+    - Creating Business Lines
+    - Associating Patients to Business Lines
+    - Display of Opt-out response from patients
+    - FAQs
+- [Admin | Groups](https://help.canvasmedical.com/articles/6841183001-groups)
+    - Create a New Group
+    - Edit a Group
+    - Remove a Group
+- [Structured Reason for Visit](https://help.canvasmedical.com/articles/3690739682-structured-reason-for-visit)
+    - Updating a Structured Reason for Visit
+    - Deactivating a Structured Reason for Visit
+- [Managing Staff Profiles](https://help.canvasmedical.com/articles/4283873790-add-a-new-staff-member)
+    - Role-Specific Setup Requirements
+    - Creating a New Staff Profile
+        - Completing Staff Details
+    - Uploading Staff Signatures
+    - Configuring a Telehealth Exam Room
+    - Adding a Provider's Supervising Physician
+    - Staff Photo Guidelines
+    - Assigning Staff Roles
+    - Adding Staff Contact Points
+    - Adding a Staff Addresses
+    - Adding Staff Licenses
+        - Required Licenses
+        - Adding a License
+    - Staff Settings
+    - Managing Team-Staff Relationships
+    - Mass Importing Staff with the Staff Loader
+        - Preparing the Staff Loader Sheet
+    - Uploading the Staff Loader
+    - Updating Existing Staff Profiles
+    - Inactivating Staff
+        - Additional Steps when Inactivating a Provider
+        - Inactivating Staff from External Canvas Integrations
+        - Reactivating Staff
+    - Related Resources
+- [Multi-factor Authentication (MFA)](https://help.canvasmedical.com/articles/3598397632-multi-factor-authentication-mfa)
+    - Logging in with MFA
+    - Remove Authentication Method
+    - Setting Up Authentication Methods
+    - Enabling MFA for the Organization
+    - Resetting Authentication Methods
+- [Diagnostic Theater](https://help.canvasmedical.com/articles/5041695251-diagnostic-theater)
+    - Viewing the Diagnostic Theater
+    - Adding the Diagnostic View to a Chart Note
+    - Creating a Diagnostic Theater View
+    - Editing a Diagnostic Theater View
+    - Related Resources
+
+## Charting & Documentation
+
+### Chart Overview
+- [Administrative Menu | Print Medication and Allergies](https://help.canvasmedical.com/articles/1484925805-print-medication-and-allergies)
+    - Introduction
+    - Step by Step
+        - Video: Print Medications and Allergies
+- [Chart Note | Change the Date of Service](https://help.canvasmedical.com/articles/1052131314-change-the-date-of-service)
+    - Step by Step
+        - Future Appointments:
+        - Video: Change Note Date of Service
+- [Chart Note | Change Provider](https://help.canvasmedical.com/articles/6535221480-chart-note-change-provider)
+    - Step by Step
+    - Setting a supervising provider
+    - Future Appointments
+- [Chart Note | After Visit Summary (AVS)](https://help.canvasmedical.com/articles/5936518995-chart-note-after-visit-summary-avs)
+        - Print AVS:
+        - AVS Contents:
+        - Video: After Visit Summary
+- [Chart Note | Billing Footer](https://help.canvasmedical.com/articles/8743381058-chart-note-billing-footer)
+    - FAQ
+    - Tips & Tricks
+    - Step By Step
+        - Commands that automatically populate ICD-10 and/or CPT codes
+        - Add CPT/E&M codes to the billing footer
+        - Link ICD-10 codes to CPT codes
+        - Document a Modifier for a CPT/E&M code
+        - Remove an ICD-10 codes/CPT codes or Modifier
+        - Move the claim to the coding queue
+        - Video: Billing Footer
+- [Administrative Menu | Integrated Care Plan](https://help.canvasmedical.com/articles/8547508751-administrative-menu-integrated-care-plan)
+    - FAQ
+    - Step By Step
+        - Requirements
+        - Information in an Integrated Care Plan
+        - Print an Integrated Care Plan
+        - Video: Integrated Care Plan
+- [Panel | Note Search](https://help.canvasmedical.com/articles/2532316084-note-search)
+    - FAQ
+    - Step By Step
+- [Chart Note | Print](https://help.canvasmedical.com/articles/2884413456-printing-a-chart-note)
+        - Print a Note
+        - Print a Note (RESTRICT_NOTE_SIGNING_TO_PROVIDERenabled)
+        - Video: Print Chart Note
+- [Patient Chart | Select Note Type](https://help.canvasmedical.com/articles/5892012588-selecting-a-note-or-visit-type)
+    - Tips & Tricks
+    - Step by Step
+    - Place of Service Code
+        - Video: Select Note Type
+- [Creating and Managing Letters](https://help.canvasmedical.com/articles/8181146406-letters)
+    - Letters
+    - Attachments to Letters
+        - Missing Letter Template Placeholders
+    - Create and Update Letter Templates
+        - Customize the Header and Content fields with HTML
+        - Organization Images
+        - Placeholders Available
+        - Provider Signature File Format Requirements
+- [Note States](https://help.canvasmedical.com/articles/2557057718-note-states)
+    - Tips & Tricks
+        - Note Header Statuses
+        - Default Lock Functionality vs Note Restrictions
+        - Appointment Note
+        - Checked-In notes
+        - Unlocking/Amending Notes
+        - Deleting Notes
+- [Coverages](https://help.canvasmedical.com/articles/5877696655-patient-coverages)
+    - Adding New Coverage
+        - Accessing the Coverage Modal
+    - Attaching Insurance Card Images
+        - Upload Insurance Card Images
+        - Using the Canvas Remote App (iOS Method)
+        - Removing Insurance Card Images
+    - Entering Coverage Details
+    - Adding a Subscriber
+        - Patient is the subscriber
+        - Someone else is the subscriber
+    - Adding Coverage Comments
+    - Modifying Coverage
+        - Updating Coverage
+        - Expiring Coverage
+        - Reactivating Expired Coverage
+        - Removing Coverage
+    - Changing Insurance Coverage on Claims
+        - Changing Current Insurance
+        - Other Coverages
+        - Coverage Eligibility
+        - Patient Eligibility Defaults
+        - Common Eligibility Errors
+    - Managing Insurers
+        - Adding a New Insurer
+        - Modifying or Inactivating an Insurer
+        - Configuring Alternate Payers for Submissions and ERA Retrieval
+        - Image Upload Settings
+    - Related Resources
+- [Patient Profile ](https://help.canvasmedical.com/articles/8802451810-patient-demographics)
+    - Managing Demographics
+    - Managing Patient Status
+    - Adding a Consent
+        - Updating Consents
+    - Managing Care Team Members
+    - Care Team Lead
+        - Power of Attorney Workflow
+- [Custom Profile Fields & Patient Metadata](https://help.canvasmedical.com/articles/4551334461-patient-metadata)
+    - Viewing Additional Profile Fields
+    - Populating or Editing Custom Profile Fields
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Patient Summary | Print Vitals](https://help.canvasmedical.com/articles/3407978845-print-vitals)
+    - Step by Step
+        - Video: Print Flowsheet for Vitals
+- [Patient Summary](https://help.canvasmedical.com/articles/6563365441-patient-summary)
+    - Introduction
+    - FAQ
+    - Step by Step
+        - Video: Patient Summary
+- [Patient Summary | Social Determinants](https://help.canvasmedical.com/articles/1377016230-social-determinants)
+    - Introduction
+    - FAQ
+    - Step by Step
+        - Video: Social Determinants
+- [Patient Summary | Medications](https://help.canvasmedical.com/articles/1245715343-medications-in-the-patient-summary)
+    - Step-by-step
+    - Adjust prescription commands
+- [Filtering Notes in Patient Timeline](https://help.canvasmedical.com/articles/4791996458-filter-notes-in-patient-timeline)
+    - Filtering the Patient Timeline
+        - Available Filter Options
+    - Sticky filter
+    - Related Resources
+- [Managing Patient Care Teams](https://help.canvasmedical.com/articles/5628604712-manage-care-teams)
+    - Introduction
+    - User's Guide
+        - Understanding Care Team Types
+        - Adding Internal Care Team Members
+        - Adding External Care Team Members
+        - Care Team Display and Organization
+        - Editing Team Members
+        - Removing Team Members
+        - Team Member Status and Visibility
+        - Care Team Lead Designation
+    - Configuration & Set Up
+        - Internal Care Team Setup
+        - External Care Team Setup
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Questionnaire Scoring Dashboard](https://help.canvasmedical.com/articles/4878300907-questionnaire-scoring-dashboard)
+    - Overview
+    - Before you begin
+    - How it works
+    - Use the Scoring Trends dashboard
+    - Insert a trend into a note
+    - Configuration
+    - Examples
+    - Troubleshooting
+    - Related information
+- [Command Audit History](https://help.canvasmedical.com/articles/7448245522-command-audit-history)
+    - User's Guide
+        - What the Audit History captures
+        - Opening the Audit History
+        - Reading the Audit History
+        - Uncommitted commands — view versions and revert
+        - Committed commands — read-only log
+        - How to leverage it
+    - Notes & limitations
+    - FAQs
+
+### Patient Summary & Action Center
+- [Care Protocols](https://help.canvasmedical.com/articles/4408606761-care-protocols)
+    - Access Protocol Settings
+    - Show or Hide a Protocol in the Chart
+    - Show or Hide a Protocol in the Population Module
+    - Enable or Disable Snoozing for a Protocol
+    - Activate or Inactivate a Protocol
+    - Snooze a Protocol
+        - Snoozing a Protocol with the Command
+        - Snoozing a Protocol from the Card
+        - Diabetes: Hemoglobin HbA1c Poor Control (>9%) - CMS122v6
+        - Diabetes: Foot Exam - CMS123v6
+        - Diabetes: Medical Attention for Nephropathy - CMS134v6
+        - Diabetes: Mellitus with Secondary Complication Suspect - HCC003v1
+        - Diabetes: Eye Exam - CMS131v1
+        - Breast Cancer Screening - HCC002v2
+        - Colorectal Cancer Screening - CMS130v6
+        - CKD Suspect - HCC002v2
+        - Dysrhythmia Suspects - HCC004v1
+        - Problem List Hygiene - HCC001v1
+        - Annual Wellness Visit - HCC005v1
+        - Tobacco Use: Screening and Cessation Intervention - CMS138v6
+
+### Clinical Documentation & Commands
+- [Introduction to Commands](https://help.canvasmedical.com/articles/4129367510-commands-introduction)
+    - Command Types
+    - Command Library
+    - Command Function
+        - Creating a Command
+        - Committing a Command
+        - Removing a Command
+    - Command Placement
+        - Placing a Command in an Encounter Note
+        - Placing a Command into a Chart Review Note
+    - Moving Commands to New Note
+    - Keyboard Navigation
+    - Triple Dot Menu
+    - Managing Command Type Settings
+- [Command | Clipboard](https://help.canvasmedical.com/articles/7347827514-command-clipboard)
+    - Using the Clipboard Command
+    - Clipboard and AI Scribe
+        - Troubleshooting
+    - Details
+- [Private Notes](https://help.canvasmedical.com/articles/6308348097-command-private-note)
+    - Privacy Features
+    - Using the Private Notes Command
+    - Managing Private Notes in Admin
+        - Reviewing Private Note Command Details
+        - Printing Private Notes
+        - Deleting Practice Note Command
+    - Related Resources
+- [Command | Stop Medication](https://help.canvasmedical.com/articles/4992370720-command-stop-medication)
+    - Introduction
+    - Video
+    - Stop from Chart Note
+    - Stop from Patient Summary
+    - Using the Stop Medication Command
+- [Managing Medications](https://help.canvasmedical.com/articles/5128727084-managing-medication-commands)
+    - Medication Statement | Documenting Active Medications
+    - Prescribe | Prescribing a Medication
+    - Drug and Allergy Interaction Checks
+    - EPCS + DrFirst | Prescribing a Controlled Substance
+        - DrFirst Signing Screen
+        - DMEs Using a Letter
+        - DMEs Using the Prescribe Command
+    - Manual Medication Refill
+    - Electronic Medication Refill
+    - Adding a Compound Medication
+    - Prescribing a Compound Medication
+    - Refilling a Compound Medication
+    - Updating a Compound Medication
+        - ERx | Non-controlled Substances
+        - EPCS | Controlled Substances
+- [Task Management](https://help.canvasmedical.com/articles/8460447495-task-management)
+    - Creating Tasks in Patient Charts
+    - Creating Tasks from Task List
+    - Creating Tasks via Canvas Chat
+    - Managing Tasks in Patient Charts
+    - Using the Task List
+        - Task List Columns
+        - Task Sorting Capabilities
+        - Task Filtering
+    - Task Assignment and Collaboration
+    - Linking Resources and Adding Context to Tasks
+        - Linking Resources to a Task
+        - Task Commenting and Communication
+    - Basic Task Setup
+    - Label Management
+    - Automated Task Management
+    - Related Resources
+- [Automations](https://help.canvasmedical.com/articles/7126006931-automations)
+    - Creating a Personal Automation
+        - Recommended Workflow to Keep Automations Organized
+    - Using an Automation
+    - Adding to an Automation
+    - Sharing an Automation
+    - Modifying an Automation
+    - Deleting an Automation
+        - Reference Videos
+- [Command | Physical Exam](https://help.canvasmedical.com/articles/1745103290-command-physical-exam)
+    - Step by Step
+        - Changing the Physical Exam Type
+        - Video: Documenting a Physical Exam
+- [Command | Plan](https://help.canvasmedical.com/articles/7699598664-command-plan)
+    - FAQ:
+    - Step by Step:
+        - Video: Command | Plan
+- [Command | Visual Exam Finding](https://help.canvasmedical.com/articles/4119751144-command-visual-exam-finding)
+    - FAQ
+    - Step by Step
+        - Video: Visual Exam Finding
+- [Command | Perform](https://help.canvasmedical.com/articles/5988007695-command-perform)
+    - Using the Perform Command
+        - Adding Procedures to the Perform Command
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Command | History of Present Illness](https://help.canvasmedical.com/articles/9270587920-command-history-of-present-illness)
+    - Key Objectives
+    - FAQ:
+    - Tips & Tricks
+    - Step by Step
+        - Video: Command | History of Present Illness
+- [Command | Review of Systems](https://help.canvasmedical.com/articles/9046024531-command-review-of-systems)
+    - FAQ:
+    - Step by Step
+- [Appointments | Unstructured Reason for Visit](https://help.canvasmedical.com/articles/2200607932-appointments-unstructured-reason-for-visit)
+    - Step by Step:
+        - Reason for Visit in Appointment Scheduling
+        - Reason for Visit in the Follow Up Command
+        - Video: Unstructured Reason for Visit
+- [Command | Surgical History](https://help.canvasmedical.com/articles/5682206573-command-surgical-history)
+    - FAQ:
+    - Step by Step
+        - Video: Past Surgical History
+- [Command | Family History](https://help.canvasmedical.com/articles/4598819098-command-family-history)
+    - FAQ:
+    - Step by Step
+        - Video: Documenting Family History
+- [Command | Vitals](https://help.canvasmedical.com/articles/9426091672-command-vitals)
+    - FAQ:
+    - Step by Step:
+        - Video: Vital Signs
+- [Command | Instruct](https://help.canvasmedical.com/articles/4244748724-command-instruct)
+    - FAQ:
+    - Tips and Tricks
+    - Step by Step
+    - Printing the Command
+        - Video: Instruct Command
+- [Command | Goal](https://help.canvasmedical.com/articles/6744190871-goals-command)
+    - Step By Step
+        - Create a Goal
+        - Update a Goal
+        - Close a Goal
+        - View Progress of Goal
+        - Filter Goals
+        - Video: Goals Command
+- [Command | Immunization Statement](https://help.canvasmedical.com/articles/1379672479-command-immunization-statement)
+    - FAQ:
+    - Tips & Tricks:
+    - Step by Step:
+        - Video: Immunization Statement Command
+- [Command | Immunize](https://help.canvasmedical.com/articles/4155771468-command-immunize)
+    - FAQ:
+    - Step by Step:
+        - Video: Immunize Command
+- [Command | Questionnaire](https://help.canvasmedical.com/articles/5651999344-command-questionnaire)
+    - FAQ:
+    - Step by Step
+        - Video: Questionnaire Command
+- [Point of Care (POC) Lab Test Command](https://help.canvasmedical.com/articles/7060961677-point-of-care-poc-tests)
+    - Getting Started
+    - Using the POC Lab Test Command
+    - Related Resources
+- [Command | Allergy](https://help.canvasmedical.com/articles/9964004914-document-allergies)
+        - Add an Allergy
+        - Remove an Allergy
+        - Filter Allergies
+    - FAQ:
+        - Video: Allergy Command
+- [Command | Refer](https://help.canvasmedical.com/articles/8339414277-command-referrals)
+    - Create a refer command
+        - Commit the Referral command
+        - Steps for the Care Coordinating Team to complete the delegated command
+        - Sending the Referral
+    - FAQ:
+        - Video: Refer Command
+- [Uncategorized Document Review](https://help.canvasmedical.com/articles/2240101532-command-uncategorized-document-review)
+    - Reviewing Uncategorized Reports
+        - From Schedule View
+        - From the Patient Chart
+    - Reviewing Internal Comments for the Uncategorized Document Review
+    - Assigning Processed Uncategorized Clinical Document to a New User or Team
+        - Assigning Uncategorized Clinical Document to a Team
+        - Assigning Uncategorized Clinical Document to an Individual User
+    - Delegating an Uncategorized Document Review
+        - To delegate a review
+        - To route a delegated document back to its owner
+        - To view a document's delegation history
+- [Command | Educational Material](https://help.canvasmedical.com/articles/4966226408-educational-material-command)
+    - Step by Step
+        - Enable Educational Material Feature
+        - Use the Educational Material command
+        - Print the Educational Material command
+        - Video: Education Material Command
+- [Ordering Labs](https://help.canvasmedical.com/articles/3065191197-placing-a-lab-order)
+    - Using the Lab Order Command
+    - Creating Lab Orders
+    - Lab Order Menu
+    - Understanding Order Splitting
+    - Managing Lab Order Errors
+        - Common Lab Order Errors
+    - Creating New Lab Tests
+    - Related Resources
+- [Image Command | Ordering Imaging](https://help.canvasmedical.com/articles/2615916315-image-command)
+    - Using the Image Command
+    - Sending the Imaging Order
+        - Image Command
+- [Troubleshooting Prescription Errors in Canvas Medical](https://help.canvasmedical.com/articles/4252387326-troubleshooting-prescription-errors)
+    - Before you begin
+    - Frequently Asked Questions
+        - Why did my prescription fail to send?
+        - Does the patient need a full address to send a prescription?
+        - What does Error Code 100 mean when sending a controlled substance?
+        - What does a 500 error mean?
+        - What does a 900 error mean?
+        - What if the prescription is stuck in Pending?
+        - Why did I get an authentication failed or access denied message?
+        - What does “Name does not match prescriber information” mean?
+        - What does “Staff for specified staff_key is missing an address” mean?
+        - Can special characters cause prescription errors?
+        - Why won’t a controlled-substance prescription open the DrFirst signing window?
+        - Why did my refill error from the patient summary?
+        - What does Error status mean on a prescription?
+        - What if the pharmacy information is wrong?
+        - Why did the prescription fail after I entered all the required fields?
+        - When should I contact support?
+    - Related Articles
+
+### Messaging & Communication
+- [Patient Message Inbox](https://help.canvasmedical.com/articles/6255444430-patient-message-inbox)
+    - Accessing Patient Messages
+    - Reading Patient Messages
+        - Filtering Messages
+        - Understanding Message Types and Icons
+        - Reading Patient Messages
+        - Sending Messages to Patients
+    - Configuration & Set Up
+        - Care Team Assignment
+        - Patient App Link Expiration
+    - FAQ & Troubleshooting
+    - Related Resources
+
+### Condition Management
+- [Diagnosing a New Condition](https://help.canvasmedical.com/articles/9221634314-new-diagnoses)
+    - User's Guide
+        - Adding a New Diagnosis
+        - Preventing Duplicate Diagnoses
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Assessing and Updating Conditions](https://help.canvasmedical.com/articles/7989321964-assessing-and-updating-conditions)
+    - Introduction
+    - User's Guide
+        - Adding an Assessment
+        - Using Carry Forward
+        - Viewing Condition History
+        - Understanding Timeline Behavior After Diagnosis Changes
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Managing Historical Conditions](https://help.canvasmedical.com/articles/3935780129-managing-historical-conditions)
+    - Introduction
+    - User's Guide
+        - Documenting Past Medical History
+        - Resolving Active Conditions
+        - Changing a Diagnosis
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Understanding Coding Gaps](https://help.canvasmedical.com/articles/5456716623-understanding-coding-gaps)
+    - Introduction
+    - User's Guide
+        - What Are Coding Gaps?
+        - Creating a Coding Gap
+        - Validating Coding Gaps
+        - Reviewing Validated Coding Gaps
+        - Deferring Coding Gaps
+        - Assessing Coding Gaps
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+
+## Workflows & Operations
+
+### Orders & Prescriptions
+- [Processing Image Reports and Reviewing Imaging Results](https://help.canvasmedical.com/articles/7566748234-process-image-results)
+    - Manage Imaging Reports
+        - Direct Upload
+        - Faxed Documents
+    - Linking Imaging Report to Patient
+    - Reviewing Imaging Results
+        - Review from Patient Chart
+        - Reviewing from Imaging Review Command
+        - Reviewing from User Panel
+    - Editing Imaging Report
+        - Editing from Patient Chart
+        - Editing from User Panel
+    - Removing Imaging Report
+    - Linking Imaging Order to Results
+    - Removing Imaging Order from Results
+    - Reviewing Internal Comments for the Imaging Review
+    - Assigning Processed Imaging Results to
+        - Assigning Imaging Results to a Team
+        - Assigning Imaging Results to an Individual User
+- [Processing Lab Reports and Reviewing Lab Results](https://help.canvasmedical.com/articles/1652834476-processing-lab-reports)
+    - Linking of Lab Results from Health Gorilla to Patient
+        - Automatic Linking
+        - Manual Linking
+    - Processing Lab Reports from Data Integration
+    - Reviewing Lab Results
+        - Reviewing Results from the User Panel
+        - Reviewing Results from the Panel
+        - Reviewing Results from Lab Review Command
+    - Editing a Lab Report
+    - Removing a Lab Report
+    - Linking Lab Results to Orders
+        - Automatic Linking with Health Gorilla
+        - Manual Linking
+    - Reviewing Internal Comments for the Lab Review
+    - Assigning Processed Lab Results to a New User or Team
+        - Assigning Lab Results to a Team
+        - Assigning Lab Results to an Individual User
+- [Patient Summary | Medication Review](https://help.canvasmedical.com/articles/6953253025-patient-summary-medication-review)
+    - FAQ
+    - Tips & Tricks
+    - Step by Step:
+        - Video: Review Medications
+- [Electronic Refill Requests: Approve, Deny, and Ignore](https://help.canvasmedical.com/articles/9793839746-electronic-refill-requests-approve-deny-ignore)
+        - What you'll learn
+    - Available Actions
+    - Approve a Refill Request
+        - Step 1: Open the request
+        - Step 2: Approve and submit
+    - Deny a Refill Request
+        - Step 1: Open the request
+        - Step 2: Deny and submit
+    - Ignore a Refill Request
+        - When to use Ignore
+        - What happens when you ignore a request
+    - Duplicate Refill Requests
+    - Choosing the Right Action
+    - Frequently Asked Questions
+        - Requests remaining in the queue
+        - Ignore option
+        - Duplicate requests
+
+## Revenue & Billing
+
+### Payment Processing
+- [Collect Patient Payments](https://help.canvasmedical.com/articles/4431910086-collect-patient-payments)
+    - Patient and Guarantor Balances
+        - Key Points
+    - Collecting a Payment in the Patient Profile
+    - Discounts
+    - Collecting a Copay
+    - Creating a Posting from the Claims View
+    - Patient Portal Payments
+        - Making a Payment in the Patient Portal
+    - Saving a Stored Payment Method
+        - Adding a Payment Method in the Patient Profile
+        - Patient Management of Stored Payment Methods
+    - Stripe Configuration
+    - Business Lines Setup
+    - Creating Discounts
+    - User Permissions
+    - Guarantor
+
+### Revenue Cycle Management
+- [Claim Management](https://help.canvasmedical.com/articles/9992348572-claim-management)
+    - Structure of the Claim
+        - Claim Header
+        - Claim Ledger
+        - Charges & Diagnosis
+    - Modifying a Claim
+        - Adding a CPT Code to a Claim
+        - Documents
+        - Coverages
+        - Data Table
+        - Activity Log
+        - Snooze a Claim
+    - Claim Data
+        - Patient Information
+        - Staff Information
+    - Modify a Claim
+        - Edit Claim Details
+        - Edit Patient Details
+        - Edit Provider Details
+        - Edit Coverage Details
+    - Claim Checks
+    - Claim Processing
+        - Submitting a Claim
+        - Claim Review Records (CRR Claims)
+        - Automated ERA Processing
+        - Handling Payer ID Mismatches During ERA Processing
+        - Resubmitting a Claim
+        - Create a Posting
+        - Correct a Posting
+        - Post a Remittance
+    - Invoicing & Statements
+        - Creating a Statement
+    - Configuring Organization and Practice Locations for Billing
+    - Creating a Posting Rule
+        - Adding a Posting Rule
+        - Updating a Posting Rule
+    - Configuring Automated Invoicing
+        - Enable Automated Invoicing
+        - Configure Initial Delay After Service Date
+        - Set Frequency of Sending
+    - FAQ
+- [Revenue Queues ](https://help.canvasmedical.com/articles/3240845520-queues)
+    - Overview of Revenue Queues
+    - Queue Columns & Functionality
+    - Manually Moving Claims to a New Revenue Queue
+        - Manually Moving a Single Claim
+        - Manually Moving Multiple Claims
+    - Managing Revenue Queues
+        - Modifying Queues
+        - Creating Custom Queues
+- [Revenue | Discounts](https://help.canvasmedical.com/articles/8912630951-discounts)
+    - Introduction
+        - Creating a discount
+        - Apply a discount to a patient payment
+        - View a Discount
+    - Tips & Tricks
+- [Revenue | Print Batch Statement](https://help.canvasmedical.com/articles/4083957452-print-batch-statement)
+    - Introduction
+    - Step by Step
+        - Print Batch Statements
+- [Revenue | Refund Copay](https://help.canvasmedical.com/articles/3492962528-refund-copay)
+    - Step by Step
+        - Video: Refund Copay
+
+## Document & Data Management
+- [Administrative Menu | Printing Basic Patient Information](https://help.canvasmedical.com/articles/4646118598-printing-basic-patient-information)
+    - Introduction
+    - Step by Step
+        - Video: Print Basic Information
+- [Administrative Menu | Print Patient Chart](https://help.canvasmedical.com/articles/1679996479-print-patient-chart)
+    - FAQ:
+    - Step by Step
+        - Patient Chart PDF Task via the Task List
+        - Video: Printing Patient Chart
+- [Updating a Document](https://help.canvasmedical.com/articles/5063046583-change-document-type)
+    - Editing a Document
+    - Change Document Type
+    - Related Resources
+- [Managing Duplicate Charts](https://help.canvasmedical.com/articles/7335165871-manage-duplicate-charts)
+        - Moving Clinical Data
+        - Inactivating a Duplicate Chart
+        - Best Practices to Prevent Duplicate Charts
+
+### Data Integration
+- [Reviewing Consult Reports](https://help.canvasmedical.com/articles/8177085140-consult-report-review)
+    - Reviewing Consult Reports
+        - From Schedule View
+        - From the Patient Chart
+    - Reviewing Internal Comments for the Consult Report Review
+    - Assigning a Processed Consult Report to a New User or Team
+        - Assigning a Consult Report to a Team
+        - Assigning a Consult Report to an Individual User
+- [PDF Annotations](https://help.canvasmedical.com/articles/2451966298-pdf-annotations-user-guide)
+    - Introduction
+    - User's Guide
+        - Where to Access PDF Annotations
+        - Getting Started with PDF Annotations
+        - Annotation Tools and Features
+        - Clinical Review Workflows
+        - Document Management Features
+    - Configuration & Set Up
+        - Enabling PDF Annotations
+        - User Permissions
+        - Signature Configuration
+        - Cost Management Settings
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Data Integration and Document Management](https://help.canvasmedical.com/articles/7371085164-data-integration)
+    - Data Integration Overview
+        - Navigate to Data Integration
+        - Data Integration Header and Filters
+    - Filtering Documents in Data Integration
+        - Filtering Documents by Channel
+        - Filtering Documents by Status
+        - Searching by a Patient's Name
+    - Uploading Documents to Data Integration
+    - Linking a Document to a Patient
+    - Additional Data Integration Functions
+        - Undo a Document Linked to a Patient
+        - Faxing a Document
+        - Fax Event History
+        - Parse Document Sections
+    - Document Locations in the Patient Chart After Processing
+        - Administrative Documents
+        - Clinical Documents
+    - Managing Processed Documents
+        - Changing a Document Type
+        - Removing a Documents Linked to a Patient
+    - Reviewing Processed Documents for Patients
+        - Reviewing Documents From a Patient Chart
+        - Reviewing Documents from the User Panel
+    - Document Cards in the User and Patient Panels
+        - Viewing Document History
+        - Assigning a User to a Document
+        - Assigning a Team to a Document
+    - Document Types
+        - Administrative Document Types
+        - Clinical Document Types
+    - Related Resources
+
+### Reporting & Analytics
+- [Google Scheduled Reports](https://help.canvasmedical.com/articles/7316720617-scheduled-reports)
+    - Adding Google Delivered Planned Reports
+    - Standard Reports Available
+    - Managing Existing Reports
+        - Searching and Filtering Google Delivered Planned Reports
+        - Updating Google Delivered Planned Reports
+        - Validating your SQL Query
+        - Manually Running Google Delivered Planned Reports
+- [Key Performance Indicators](https://help.canvasmedical.com/articles/4388376289-key-performance-indicators)
+    - Step by Step
+    - Revenue
+    - Denials
+    - Aged AR (>90 Days)
+        - Video: Key Performance Indicators
+- [Report Jobs](https://help.canvasmedical.com/articles/7194605474-report-jobs)
+    - Available Reports
+        - Financial Reports
+        - Operational Reports
+    - Understanding Report Structure
+    - Generating Reports
+    - Viewing Report Parameters
+    - Permission Requirements
+    - Email Notifications
+    - Related Resources
+- [Read-Only Replica Database](https://help.canvasmedical.com/articles/9004564024-replica-database)
+    - Introduction
+    - User's Guide
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+    - Keywords & Metadata
+- [Managing Canvas Staff Activity Report Recipients](https://help.canvasmedical.com/articles/7808408736-managing-canvas-staff-activity-report-recipients)
+    - Introduction
+    - User's Guide
+        - Getting Started
+        - Adding New Recipients
+        - Requesting Access or Changes
+    - FAQ & Troubleshooting
+
+## Integration Partners
+
+## Hyperscribe
+- [How to start a Hyperscribe recording](https://help.canvasmedical.com/articles/7948266459-how-to-start-a-hyperscribe-recording)
+- [How to speak to Hyperscribe](https://help.canvasmedical.com/articles/3321271561-how-to-speak-to-hyperscribe)
+- [How to customize Hyperscribe prompts](https://help.canvasmedical.com/articles/1953888785-how-to-customize-hyperscribe-prompts)
+- [Can I use Hyperscribe with a template?](https://help.canvasmedical.com/articles/5318098623-can-i-use-hyperscribe-with-a-template)
+- [Which commands does Hyperscribe support?](https://help.canvasmedical.com/articles/8245178168-which-commands-does-hyperscribe-support)
+- [Why isn't the Hyperscribe button appearing in my note header?](https://help.canvasmedical.com/articles/4789801796-why-isn-t-the-hyperscribe-button-appearing-in-my-note)
+- [Can I edit my note during my Hyperscribe session?](https://help.canvasmedical.com/articles/7797462779-can-i-edit-my-note-during-my-hyperscribe-session)
+
+## Studio
+- [Getting Started with Studio: Build Your First Plugin](https://help.canvasmedical.com/articles/4320944147-getting-started-with-studio)
+    - Introduction
+    - User's Guide
+        - Getting Started
+        - Step 1 — Start a new project
+        - Step 2 — Describe what you want (Discovery)
+        - Step 3 — Let it build and fill in settings (Build)
+        - Step 4 — Try it out (Test & Iterate)
+        - Step 5 — Final review and publish
+        - Common Workflows
+        - Troubleshooting Issues
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+    - Keywords
+- [Studio Reference Guide](https://help.canvasmedical.com/articles/2111959321-studio-reference-guide)
+    - Introduction
+    - User's Guide
+        - Getting around
+        - The five stages in detail
+        - Working with the assistant
+        - Deploying & understanding results
+        - Collaboration
+    - Publishing explained (it depends on your setup)
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+    - Keywords & Metadata
+- [Studio Admin Guide](https://help.canvasmedical.com/articles/2234141107-studio-admin-guide)
+    - Introduction
+    - User's Guide
+        - Getting Started
+        - Managing who can use Studio
+        - Choosing a release strategy
+        - Setting up Direct release
+        - Setting up Gated release
+        - Granting per-user deploy permissions
+        - Setting practice baseline context
+        - Providing instance instructions
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+    - Keywords
+- [Studio Admin Guide:  Gated release - from Promote to live in production](https://help.canvasmedical.com/articles/7597495196-studio-admin-guide-setting-up-gated-release)
+        - Gated release: from Promote to live in production
+
+## Reference Plugins
+- [Group Therapy Session Plugin](https://help.canvasmedical.com/articles/3873660040-group-therapy-session-plugin)
+    - Overview
+    - Before you begin
+    - Configure the group therapy template
+    - Document a group therapy session
+    - Complete shared session details
+    - Complete patient-specific details
+    - Document the session
+    - Billing
+    - Troubleshooting
+    - Install the Plugin
+- [Canvas Patient Safety Scale](https://help.canvasmedical.com/articles/7194215286-canvas-patient-safety-scale)
+    - Introduction
+    - Scale
+        - P1 Patient Safety
+        - P2 Patient Safety
+- [Config | Privacy Link](https://help.canvasmedical.com/articles/5488834057-)
+    - Introduction
+    - Key Objectives
+    - Video
+    - Step By Step
+        - Set Custom Privacy Link
+        - Reset Privacy Link to Default
+        - Test Custom Privacy Link
+- [Revenue | Adding CPT Code, Modifiers and CPT Units](https://help.canvasmedical.com/articles/3710141189-revenue-adding-cpt-code-modifiers-and-cpt-units)
+    - Introduction
+    - Key Objectives
+    - FAQ
+    - Tips & Tricks
+    - Step By Step
+        - Add CPT Code
+        - Add A Modifier
+        - Update Units
+    - Resources
+- [Labs | Ordering in Health Gorilla](https://help.canvasmedical.com/articles/9512475619-labs-ordering-in-health-gorilla)
+    - Introduction
+    - Key Objectives
+    - Step by Step
+        - Printing the Requisition Form
+        - Ordering in Health Gorilla
+- [Appointments | Recall Appointment Lists](https://help.canvasmedical.com/articles/3484488036-appointments-recall-appointment-lists)
+    - Introduction
+    - Objectives
+    - Video
+    - Step by Step
+- [Training | Management and Product Owners ](https://help.canvasmedical.com/articles/9313970678-training-management-and-product-owners)
+    - Manager / Product Owner
+    - Content Creation
+- [Training | Basics](https://help.canvasmedical.com/articles/5357437743-training-basics)
+- [Training | Clinical](https://help.canvasmedical.com/articles/7271273093-training-clinical)
+    - Provider Workflow
+    - General Clinical Workflow
+    - Content Creation
+- [Panel | Outstanding Referrals](https://help.canvasmedical.com/articles/2840851415-outstanding-referrals)
+    - Step by Step
+        - Outstanding Referrals
+- [Data Migration Guide](https://help.canvasmedical.com/articles/8162561919-data-migration)
+    - Overview of Data Migration Options
+        - File-Based Migration
+        - API-Based Migration
+    - Customer Expectations for Data Migration
+    - Prerequisites for Migration
+    - Resources
+- [Managing Service Area Zip Codes for Practice Locations](https://help.canvasmedical.com/articles/8191726034-managing-service-area-zip-codes-for-practice-locations)
+    - Introduction
+    - User's Guide
+    - Configuration & Set Up
+    - FAQ & Troubleshooting
+    - Related Resources
+- [Managing Authorizations for Claims](https://help.canvasmedical.com/articles/3705672680-managing-authorizations-for-claims)
+    - Getting Started
+    - Creating a New Authorization
+    - Removing an Authorization from a Claim
+        - From Patient Claim
+        - From the Authorizations Tab
+    - Linking Authorizations to Claims
+        - From the Patient Claim
+        - From the Authorizations Tab
+    - Updating an Authorization
+    - Prerequisites
+    - Related Resources
+- [Helpful Resources](https://help.canvasmedical.com/articles/2177065727-helpful-resources)
+    - Frequent Articles:
+    - Stay Up To Date:
+    - For Developers:
+- [How do I enable Hyperscribe in Canvas?](https://help.canvasmedical.com/articles/7456009359-how-do-i-enable-hyperscribe-in-canvas)
+- [Understanding Note States in Canvas](https://help.canvasmedical.com/articles/2348566112-understanding-note-states-in-canvas)
+    - What Are Note States?
+        - The Three Note States
+        - How Notes Move Through States
+    - Locking vs. Signing: What's the Difference?
+    - Modifying Note Content After Finalizing
+    - Where Note History Lives
+    - Who Can Sign or Lock Notes?
+        - What Will Happen to Older Notes?
+- [How to Sign Notes in Canvas](https://help.canvasmedical.com/articles/6989049547-how-to-sign-notes-in-canvas)
+        - Before You Begin
+        - How to Sign a Note
+        - How to Amend a Signed Note
+        - How to View Your Signature History
+    - Common Signing Scenarios
+    - Tips for Signing Notes
+    - Troubleshooting
+    - Frequently Asked Questions
+- [Configuring Note Signing Requirements](https://help.canvasmedical.com/articles/5071031576-configuring-note-signing-requirements)
+    - Before you begin
+    - How to configure a note type to require signatures
+    - How to configure who can sign notes
+    - Which note types should require signatures?
+    - How signing configuration affects your notes
+    - Understanding signature vs. lock history in PDFs
+    - Testing your configuration
+    - Common configuration scenarios
+    - Troubleshooting configuration issues
+    - Best practices for configuration
+    - Frequently Asked Questions
+        - Can I require signatures for some locations but not others?
+        - What happens to my existing notes when I turn on signature requirements?
+        - Can I change the requirement after notes are already created?
+        - How do I find out which restriction setting is enabled?
+        - Can I customize what shows up in the signature section of my PDFs?
+        - Do message and letter note types need signatures?
+        - How does this help with compliance and regulatory requirements?
+- [Bamboo Health Integration](https://help.canvasmedical.com/articles/9810137130-bamboo-health-integration)
+    - Provider Enrollment
+    - Bamboo Plugin
+        - Key Features
+        - Requirements
+    - FAQs
+        - Why is my PDMP request failing?
+        - How long does the credentialing process with Bamboo take?
+        - Why are some states’ PDMP not available?
+        - Why was my Bamboo Registration denied?
+- [Processing Claims with Candid](https://help.canvasmedical.com/articles/8260430747-processing-claims-in-canvas-for-candid)
+    - Before Candid is Enabled
+    - What's Included in This Integration
+    - Moving Claims to the Submission Queue
+        - Moving an individual claim
+        - Batch moving claims
+    - What Happens After a Claim Reaches the Submission Queue
+        - Claims with 13+ diagnosis codes
+        - Making changes to a filed claim
+    - Adjudication Sync
+    - Patient Payments
+    - Candid Activity Panel
+    - Candid Claims Dashboard
+    - Queue Routing Reference
+    - Troubleshooting
+    - Frequently Asked Questions
+    - Related Articles
+- [How do I create a DME Prescription for a Patient?](https://help.canvasmedical.com/articles/3235979839-how-to-create-a-printed-cpap-prescription-for-patients)
+        - Creating a Template for Future Orders
+- [Can non-prescribing staff send prescriptions on the behalf of prescribers?](https://help.canvasmedical.com/articles/8095252588-setting-up-rn-prescribing-permissions-and-erx-enrollment)
+- [How do I resolve "Patient coverages must be sequential" lab order errors?](https://help.canvasmedical.com/articles/3069343680-how-do-i-resolve-patient-coverages-must-be-sequential-lab-order-errors)
+    - Frequently Asked Questions
+    - Related Articles
+- [Why can't I mark a task as "Done" or "Closed" even though it appears in my task list?](https://help.canvasmedical.com/articles/2771006803-why-can-t-i-mark-a-task-as-done-or-closed-even-though-it-appears-in-my-task-list)
+    - Frequently Asked Questions
+    - Related Articles
