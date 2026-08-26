@@ -143,12 +143,22 @@ def preprocess_tabs(soup: BeautifulSoup, container: Tag) -> None:
         tab_menu.decompose()
 
 
-def extract_content(html_path: Path) -> str | None:
-    """Extract and convert the article content from a built HTML page."""
-    html = html_path.read_text(encoding="utf-8")
+def extract_content(html_path: Path, container_class: str = "article__container__inner") -> str | None:
+    """Extract and convert the article content from a built HTML file."""
+    return extract_content_from_html(html_path.read_text(encoding="utf-8"), container_class)
+
+
+def extract_content_from_html(
+    html: str, container_class: str = "article__container__inner"
+) -> str | None:
+    """Extract and convert article content from a raw HTML string.
+
+    container_class selects the content wrapper: the docs-site Jekyll build uses
+    "article__container__inner"; the Help Center (Pylon) uses "kb-article-body".
+    """
     soup = BeautifulSoup(html, "html.parser")
 
-    container = soup.find("div", class_="article__container__inner")
+    container = soup.find("div", class_=container_class)
     if not container:
         return None
 
@@ -184,3 +194,27 @@ def extract_content(html_path: Path) -> str | None:
     dense = "\n".join(line for line in md.splitlines() if line.strip())
 
     return dense
+
+
+def extract_outline(
+    html: str,
+    container_class: str = "article__container__inner",
+    levels: tuple[str, ...] = ("h2", "h3"),
+) -> list[tuple[int, str]]:
+    """Return the (level, text) subsection outline of an article body.
+
+    Collects the given heading levels in document order. The article's top-level
+    <h1> is never collected (it duplicates the page title). Used to build the
+    grep-able discovery index alongside the full-body corpus.
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    container = soup.find("div", class_=container_class)
+    if not container:
+        return []
+
+    outline: list[tuple[int, str]] = []
+    for heading in container.find_all(list(levels)):
+        text = heading.get_text(strip=True)
+        if text:
+            outline.append((int(heading.name[1]), text))
+    return outline

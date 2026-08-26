@@ -1,6 +1,10 @@
 name: Generate Coding Agent Context
 on:
   workflow_dispatch:
+  schedule:
+    # Weekly (Mon 06:00 UTC). The Help Center is external to this repo, so its
+    # platform context is refreshed on a timer rather than by a path-based push.
+    - cron: "0 6 * * 1"
   push:
     branches: [main]
     paths:
@@ -33,8 +37,10 @@ jobs:
           python-version: "3.12"
       - name: Generate context file
         run: uv run ./generate-context.py
+      - name: Generate platform context files
+        run: uv run ./generate-platform-context.py
       - name: Commit updated context files
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: regenerate context files"
-          file_pattern: "sdk-context.txt fhir-context.txt"
+          file_pattern: "sdk-context.txt fhir-context.txt platform-context.txt platform-index.txt"

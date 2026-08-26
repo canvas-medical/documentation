@@ -153,7 +153,7 @@ uv run ./test-code-blocks.py
 ## CI/CD
 
 - **test-code-blocks.yml** — validates Python code examples on PRs
-- **generate-context.yml** — builds AI context files (`sdk-context.txt`, `fhir-context.txt`) on push to main
+- **generate-context.yml** — builds AI context files on push to main (`sdk-context.txt`, `fhir-context.txt` via `generate-context.py`) and on a weekly cron (`platform-context.txt`, `platform-index.txt` via `generate-platform-context.py`)
 - **update-algolia.yml** — updates search index
 - **merge-release-branch.yml** — auto-merges release branches
 
@@ -166,7 +166,9 @@ The site serves machine-readable copies of its docs for LLMs and coding agents (
 
 `generate-llms.py` produces all three into `_site/` after `jekyll build` (wired into `yarn build`, so Amplify emits them on every deploy; they are not committed). The HTML→markdown extraction is shared with `generate-context.py` via `context_extractor.py`.
 
-The older `sdk-context.txt` / `fhir-context.txt` (used by the Canvas Plugin Assistant) are still generated and committed by `generate-context.py`.
+The `sdk-context.txt` / `fhir-context.txt` files (used by the Canvas Plugin Assistant) are generated and committed by `generate-context.py`.
+
+`generate-platform-context.py` builds a parallel pair for Canvas's native platform features by scraping the Help Center (`https://help.canvasmedical.com`): `platform-context.txt` (full article bodies in the shared `----- BEGIN PAGE <url>` delimiter format) and `platform-index.txt` (the Help Center's category headings, a bullet per article, and each article's `<h2>/<h3>` subsection outline for grep-based discovery). It reuses `context_extractor.py`'s HTML→markdown extractor with the Pylon `kb-article-body` container. Both files stay in sync: every index URL resolves to a corpus `BEGIN PAGE` block. The Help Center has no local build and no clean-markdown source, so the generator fetches article HTML over the network and runs on the weekly cron rather than a content push.
 
 ## Build
 
