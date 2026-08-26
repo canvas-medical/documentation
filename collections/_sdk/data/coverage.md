@@ -169,6 +169,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
 | coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |
+| vaccines                     | [Vaccine](/sdk/data-vaccine/#vaccine)[]             |
 | addresses                    | [TransactorAddress](#transactoraddress)[]           |
 | coverages                    | [Coverage](#coverage)[]                             |
 | phones                       | [TransactorPhone](#transactorphone)[]               |
