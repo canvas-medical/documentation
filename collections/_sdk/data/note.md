@@ -377,6 +377,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
 | family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
 | histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
+| vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
 
 ### NoteType
 
