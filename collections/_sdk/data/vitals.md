@@ -1,98 +1,76 @@
 ---
-title: "Vitals"
-slug: "data-vitals"
-excerpt: "Canvas SDK Vitals"
+title: "VitalSignReading"
+slug: "data-vital-sign-reading"
+excerpt: "Canvas SDK VitalSignReading"
 hidden: false
 ---
 
 ## Introduction
 
-A `VitalSignReading` is the anchor for a set of vital-sign measurements recorded on a note for a patient — the record produced by a [Vitals command](/sdk/commands/#vitals). A `VitalSign` is a single measurement, such as blood pressure or body temperature, that belongs to a reading.
-
-Both models are read-only, like the rest of the [data module](/sdk/data/): to record or change vital signs, use an effect or the FHIR API rather than writing through these models. `VitalSignReading` and `VitalSign` represent the readings recorded on a note through the Vitals command, whereas [Observation](/sdk/data-observation/) is the broader model for measurements and assertions, including vital signs.
+The `VitalSignReading` model is the anchor for the `vitals` command — a set of vital-sign readings recorded on a Note for a Patient. The individual measurements (blood pressure, heart rate, temperature, weight, etc.) are stored as related `VitalSign` records, reachable via the `signs` attribute.
 
 ## Basic usage
 
-To get a reading by identifier, use the `get` method on the `VitalSignReading` model manager:
+To get a vital sign reading by identifier, use the `get` method on the `VitalSignReading` model manager:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.vitals import VitalSignReading
 
-reading = VitalSignReading.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 ```
 
-Patient keys on this page are UUIDs without dashes, while the other IDs used here — the reading id and the note id — use the standard dashed UUID format.
-
-If you have a patient object, the readings for a patient can be accessed with the `vital_sign_readings` attribute on a `Patient` object:
+If you have a patient or note object, the readings can be accessed with the `vital_sign_readings` attribute:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
+from canvas_sdk.v1.data.note import Note
 
 patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 readings = patient.vital_sign_readings.all()
-```
 
-If you have a `Note` object, the vital sign readings recorded on it can be accessed with the `vital_sign_readings` reverse relation:
-
-```python
-from canvas_sdk.v1.data.note import Note
-
-note = Note.objects.get(id="c3f1a2b4-6d7e-4f80-9a1b-2c3d4e5f6a7b")
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 readings = note.vital_sign_readings.all()
 ```
 
-If you have a patient key, you can get the readings for the patient with the `for_patient` method on the `VitalSignReading` model manager:
+If you have a patient ID, you can get the readings for the patient with the `for_patient` method:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.vitals import VitalSignReading
 
-patient_key = "1eed3ea2a8d546a1b681a2a45de1d790"
-readings = VitalSignReading.objects.for_patient(patient_key)
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+readings = VitalSignReading.objects.for_patient(patient_id)
 ```
 
-To limit the results to readings that have been committed, chain `committed`. The `committed` method returns readings that have been committed and not entered in error:
+## Reading the individual measurements
 
-```python
-from canvas_sdk.v1.data.vitals import VitalSignReading
+Each `VitalSignReading` has one or more `VitalSign` measurements, accessed with the `signs` attribute. Each `VitalSign` carries the measurement's LOINC code, name, value, and units:
 
-readings = VitalSignReading.objects.for_patient("1eed3ea2a8d546a1b681a2a45de1d790").committed()
-```
-
-## Signs
-
-The individual measurements for a reading can be accessed with the `signs` attribute on a `VitalSignReading` object:
-
-```python
+```python?partial=true
 from canvas_sdk.v1.data.vitals import VitalSignReading
 from logger import log
 
-reading = VitalSignReading.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 
 for sign in reading.signs.all():
-    log.info(f"sign:  {sign.sign}")
-    log.info(f"value: {sign.value}")
-    log.info(f"units: {sign.units}")
+    log.info(f"{sign.sign}: {sign.value} {sign.units} (LOINC {sign.loinc_num})")
 ```
 
-A `VitalSign` may be linked to a parent measurement through `parent`, and its child measurements are available through the `children` reverse relation. Given a `sign` and the `log`, you can traverse its children:
-
-```python?partial=true
-for child in sign.children.all():
-    log.info(f"{child.sign}: {child.value}")
-```
+`signs` includes the parts of a composite measurement as well as the measurement itself, so
+a blood pressure appears three times in the loop above. See
+[Composite measurements](#composite-measurements) to walk only the top-level readings.
 
 ## Filtering
 
-`VitalSign` objects can be filtered by any attribute that exists on the model.
+Vital sign readings can be filtered by any attribute that exists on the model.
 
-### By attribute
+### Committed readings
 
-A `VitalSign` is reached through its reading, so it has no `for_patient` method of its own. To get the individual measurements for a patient, filter on the reading's patient with the `reading__patient` lookup:
+The `committed` method returns readings that have been committed and not entered in error:
 
-```python
-from canvas_sdk.v1.data.vitals import VitalSign
+```python?partial=true
+from canvas_sdk.v1.data.vitals import VitalSignReading
 
-signs = VitalSign.objects.filter(reading__patient__id="1eed3ea2a8d546a1b681a2a45de1d790")
+committed_readings = VitalSignReading.objects.committed()
 ```
 
 ## Attributes
@@ -100,7 +78,7 @@ signs = VitalSign.objects.filter(reading__patient__id="1eed3ea2a8d546a1b681a2a45
 ### VitalSignReading
 
 | Field Name       | Type                                  |
-|------------------|---------------------------------------|
+| ---------------- | ------------------------------------- |
 | id               | UUID                                  |
 | dbid             | Integer                               |
 | created          | DateTime                              |
@@ -109,63 +87,114 @@ signs = VitalSign.objects.filter(reading__patient__id="1eed3ea2a8d546a1b681a2a45
 | committer        | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
-| note             | [Note](/sdk/data-note/#note)          |
+| note             | [Note](/sdk/data-note)                |
 | date_recorded    | DateTime                              |
 | signs            | [VitalSign](#vitalsign)[]             |
 
 ### VitalSign
 
-| Field Name       | Type                                        |
-|------------------|---------------------------------------------|
-| id               | UUID                                        |
-| dbid             | Integer                                     |
-| created          | DateTime                                    |
-| modified         | DateTime                                    |
-| reading          | [VitalSignReading](#vitalsignreading)       |
-| date_recorded    | DateTime                                    |
-| loinc_num        | String                                      |
-| sign             | [Sign](#sign)                               |
-| sign_description | String                                      |
-| value            | String                                      |
-| units            | String                                      |
-| source           | String                                      |
-| parent           | [VitalSign](#vitalsign)                     |
-| children         | [VitalSign](#vitalsign)[]                   |
+| Field Name       | Type                                  |
+| ---------------- | ------------------------------------- |
+| id               | UUID                                  |
+| dbid             | Integer                               |
+| created          | DateTime                              |
+| modified         | DateTime                              |
+| reading          | [VitalSignReading](#vitalsignreading) |
+| date_recorded    | DateTime                              |
+| loinc_num        | String                                |
+| sign             | String — one of the [sign values](#sign-values) |
+| sign_description | String                                |
+| value            | String                                |
+| units            | String                                |
+| source           | String                                |
+| parent           | [VitalSign](#vitalsign) — the composite measurement this one is a part of, if any |
+| children         | [VitalSign](#vitalsign)[] — the parts of this measurement, if it is a composite |
 
-## Enumeration types
+## Composite measurements
 
-### Sign
+Some measurements are recorded as a whole *and* as their parts. The whole is stored as one
+`VitalSign` and each part as another, linked to it by `parent`; the reverse accessor is
+`children`. A measurement that stands on its own has `parent` set to `None` and no
+`children`.
 
-These are the string values that `VitalSign.sign` can hold. Filter on the value itself, not on a choices class:
+The [Vitals](/sdk/commands/#vitals) command produces two of these:
 
-| Value                            | Label                                            |
-|----------------------------------|--------------------------------------------------|
-| head_circumference_tape_measure  | Head Circumference by Tape Measure               |
-| head_circumference               | Head Circumference                               |
-| last_menstrual_period            | Last Menstrual Period                            |
-| pain_severity                    | Pain Severity                                    |
-| waist_circumference              | Waist Circumference                              |
-| blood_pressure                   | Blood Pressure                                   |
-| systole                          | Systole                                          |
-| diastole                         | Diastole                                         |
-| weight                           | Weight                                           |
-| height                           | Height                                           |
-| length                           | Length                                           |
-| body_temperature                 | Body Temperature                                 |
-| pulse                            | Pulse                                            |
-| pulse_rhythm                     | Pulse Rhythm                                     |
-| oxygen_saturation_arterial       | Oxygen Saturation Arterial                       |
-| oxygen_saturation                | Oxygen Saturation                                |
-| inhale_oxygen_concentration      | Inhaled Oxygen Concentration                     |
-| inhaled_oxygen_concentration     | Inhaled Oxygen Contentration                     |
-| inhaled_oxygen_flow_rate         | Inhaled Oxygen Flow Rate                         |
-| respiration_rate                 | Respiration Rate                                 |
-| bmi                              | Body Mass Index                                  |
-| bmi_percentile                   | BMI for Age Percentile                           |
-| note                             | Note                                             |
-| head_circumference_percentile    | Head Occipital-frontal circumference Percentile  |
-| weight_for_length_percentile     | Weight-for-Length Percentile                     |
-| supplemental_oxygen              | Supplemental Oxygen                              |
+- `blood_pressure` — the combined reading, parent of the `systole` and `diastole` signs
+  taken from it.
+- `oxygen_saturation` — parent of `inhaled_oxygen_concentration` and
+  `inhaled_oxygen_flow_rate`.
+
+Because the parts sit alongside the whole in `reading.signs`, iterating a reading naively
+counts a blood pressure three times. Filter on `parent` to walk only the top-level
+measurements:
+
+```python?partial=true
+from canvas_sdk.v1.data.vitals import VitalSignReading
+from logger import log
+
+reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+
+for sign in reading.signs.filter(parent__isnull=True):
+    parts = ", ".join(f"{part.sign}={part.value}" for part in sign.children.all())
+    log.info(f"{sign.sign}: {sign.value} {sign.units}" + (f" ({parts})" if parts else ""))
+```
+
+## Sign values
+
+`VitalSign.sign` holds one of a fixed set of values — the ones below are those a Canvas
+workflow records. Canvas declares them as a `VitalSignChoices` enumeration internally, but
+that enumeration is **not** exported to plugins, so compare against the string value
+directly:
+
+```python?partial=true
+from canvas_sdk.v1.data.vitals import VitalSignReading
+
+reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+weights = [sign for sign in reading.signs.all() if sign.sign == "weight"]
+```
+
+`sign_description` carries a human-readable label for the same measurement, so prefer it
+for display and reserve `sign` for matching.
+
+### Where each value comes from
+
+Not every value is produced by every workflow, so which ones you see depends on how the
+vitals were recorded:
+
+- **The [Vitals](/sdk/commands/#vitals) command** writes `height`, `weight`,
+  `waist_circumference`, `body_temperature`, `blood_pressure`, `systole`, `diastole`,
+  `pulse`, `pulse_rhythm`, `respiration_rate`, `oxygen_saturation`,
+  `inhaled_oxygen_concentration`, `inhaled_oxygen_flow_rate`, `supplemental_oxygen` and
+  `note`. Blood pressure is stored three times over — once as the combined
+  `blood_pressure` reading and once each as `systole` and `diastole`.
+- **A committed pediatric physical exam questionnaire** records `length` and
+  `head_circumference_tape_measure`, taken from the answers carrying those LOINC codes.
+
+Derived measurements are **not** `VitalSign` records. When a height, weight or length is
+recorded, Canvas calculates BMI from the height and weight and stores the results — the
+BMI-for-age, head-circumference and weight-for-height percentiles — as
+[Observation](/sdk/data-observation/) records attached to the reading, because each is
+computed from more than one measurement. Read them there rather than looking for a `sign`.
+
+| Value                            | Label                                          |
+| -------------------------------- | ---------------------------------------------- |
+| blood_pressure                   | Blood Pressure                                 |
+| systole                          | Systole                                        |
+| diastole                         | Diastole                                       |
+| pulse                            | Pulse                                          |
+| pulse_rhythm                     | Pulse Rhythm                                   |
+| respiration_rate                 | Respiration Rate                               |
+| body_temperature                 | Body Temperature                               |
+| oxygen_saturation                | Oxygen Saturation                              |
+| supplemental_oxygen              | Supplemental Oxygen                            |
+| inhaled_oxygen_concentration     | Inhaled Oxygen Concentration                   |
+| inhaled_oxygen_flow_rate         | Inhaled Oxygen Flow Rate                       |
+| weight                           | Weight                                         |
+| height                           | Height                                         |
+| length                           | Length                                         |
+| head_circumference_tape_measure  | Head Circumference by Tape Measure             |
+| waist_circumference              | Waist Circumference                            |
+| note                             | Note                                           |
 
 <br/>
 <br/>

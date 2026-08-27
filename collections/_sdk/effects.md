@@ -575,6 +575,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND |
 | Imaging Review | `*_IMAGING_REVIEW_COMMAND` | |
 | Immunization Statement | `*_IMMUNIZATION_STATEMENT_COMMAND` | |
+| Immunize | `*_IMMUNIZE_COMMAND` | |
 | Instruct | `*_INSTRUCT_COMMAND` | |
 | Lab Order | `*_LAB_ORDER_COMMAND` | Also supports SEND |
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |

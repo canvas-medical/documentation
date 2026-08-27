@@ -1027,6 +1027,77 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 
 ---
 
+### Immunize
+
+Records a vaccine **administered** during the visit, including the lot it came from.
+
+**Command-specific parameters**:
+
+| Name              | Type      | Required to commit | Description                                                                                                |
+|-------------------|-----------|--------------------|------------------------------------------------------------------------------------------------------------|
+| `vaccine_id`      | _UUID_    | `true`             | The `id` of a [Vaccine](/sdk/data-vaccine/#vaccine) in this instance's catalog. Must be active.            |
+| `lot_id`          | _UUID_    | `false`*           | The `id` of a [VaccineLot](/sdk/data-vaccine/#vaccinelot) with doses on hand.                              |
+| `lot_number`      | _string_  | `false`*           | A lot number this instance does not stock, recorded as free text (max 20 characters).                      |
+| `manufacturer`    | _string_  | `false`            | The vaccine's manufacturer (max 100 characters).                                                           |
+| `expiration_date` | _date_    | `false`            | The lot's expiration date.                                                                                 |
+| `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
+| `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
+| `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
+
+*`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
+be omitted.
+
+**Choosing a vaccine and lot**:
+
+Both are instance-specific data, so look them up rather than hard-coding identifiers. A
+vaccine is only selectable on a note if it is active and carries an active CPT charge. See
+[Vaccine](/sdk/data-vaccine/) for the query.
+
+**Manufacturer and expiration**:
+
+When you supply a `lot_id` and leave `manufacturer` or `expiration_date` unset, the
+command fills them in from the lot. Anything you set explicitly is used as-is - including an explicit `None`, which is
+treated as a deliberate choice to leave the field empty rather than as an omission.
+
+A `lot_number` is free text with no inventory record behind it, so nothing is derived
+from it; set `manufacturer` and `expiration_date` yourself if you want them recorded.
+
+**Example**:
+
+```python?partial=true
+from datetime import date
+
+from canvas_sdk.commands.commands.immunize import ImmunizeCommand
+from canvas_sdk.v1.data import Vaccine, VaccineLot
+
+vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
+lot = VaccineLot.objects.filter(vaccine__id=vaccine.id, on_hand_inventory__gt=0).first()
+
+# manufacturer and expiration_date are taken from the lot
+immunize = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_id=lot.id,
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+
+# A lot the instance does not stock: supply the details yourself
+immunize_unstocked = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_number="ABC-12345",
+    manufacturer="Acme Vaccines",
+    expiration_date=date(2028, 1, 31),
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+```
+
+---
+
 ### Instruct
 
 **Command-specific parameters**:
@@ -1084,7 +1155,7 @@ Built-in validations ensure that:
 | `ordering_provider_key` | _string_       | `false`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the tests.                                                                                                                     |
 | `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
-| `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
+| `comment`               | _string_       | `false`  | Additional comments related to the lab order (max length: 128 characters).                                                                                        |
 
 **Command-specific actions**:
 

@@ -137,7 +137,6 @@ educational_materials = patient.education_material.all()
 | medications              | [Medication](/sdk/data-medication/#medication)[]                          |
 | metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
 | observations             | [Observation](/sdk/data-observation/#observation)[]                       |
-| vital_sign_readings      | [VitalSignReading](/sdk/data-vitals/#vitalsignreading)[]                  |
 | photos                   | [PatientPhoto](#patientphoto)[]                                           |
 | preferred_pharmacy       | JSON                                                                      |
 | preferred_pharmacies     | JSON                                                                      |
@@ -152,6 +151,7 @@ educational_materials = patient.education_material.all()
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
 | assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
 | patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
 | patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
