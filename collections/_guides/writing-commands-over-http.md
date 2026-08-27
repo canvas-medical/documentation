@@ -25,8 +25,6 @@ validates it against the command, and emits the effects.
   not tell you
 - How to serve every command from a single endpoint
 
-{% include alert.html type="info" content="If you want this working without writing it yourself, the commands kit plugin implements the whole surface — every command, one endpoint, plus the front-end pieces to drive it. See [the commands kit](PLACEHOLDER_COMMANDS_KIT_LINK)." %}
-
 ## Your first command endpoint
 
 `CommandAPI` is a `SimpleAPI`, so it brings the request handling. It brings **no authentication** —
@@ -337,4 +335,3 @@ on, all validated against the right command.
   from when there is no autocomplete to pick it for you
 - [Commands API](/sdk/handlers-simple-api-commands/) — the reference for `CommandAPI`
 - [SimpleAPI](/sdk/handlers-simple-api/) — routing, authentication schemes, and responses
-- [The commands kit](PLACEHOLDER_COMMANDS_KIT_LINK) — this whole surface, already built
