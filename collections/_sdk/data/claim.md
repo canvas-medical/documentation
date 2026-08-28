@@ -211,7 +211,7 @@ Links a claim to a specific insurance coverage.
 | payer_state                        | String                                                                   |
 | payer_zip                          | String                                                                   |
 | payer_plan_type                    | [ClaimTypeCode](#claimtypecode)                                          |
-| coverage_type                      | [CoverageType](/data-coverage/#coveragetype)                             |
+| coverage_type                      | [CoverageType](/sdk/data-coverage/#coveragetype)                             |
 | subscriber_employer                | String                                                                   |
 | subscriber_group                   | String                                                                   |
 | subscriber_number                  | String                                                                   |

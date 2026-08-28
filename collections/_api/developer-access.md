@@ -11,7 +11,7 @@ The API supports two distinct access models. The authorization gate is different
 
 ### Patient-directed access
 
-An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#smart-on-fhir-scopes) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
+An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#authorization-code) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
 
 ### Population and bulk access
 

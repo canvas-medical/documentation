@@ -151,6 +151,7 @@ educational_materials = patient.education_material.all()
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
 | assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
 | patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
 | patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
@@ -159,7 +160,7 @@ educational_materials = patient.education_material.all()
 | medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[] |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
 | payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
-| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]           |
+| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/)[]           |
 | stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
 | banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
 | immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
@@ -169,6 +170,7 @@ educational_materials = patient.education_material.all()
 | uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |
 | patient_consent          | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]              |
 | goals                    | [Goal](/sdk/data-goal/#goal)[]                                             |
+| updategoals              | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                 |
 | instructions             | [Instruction](/sdk/data-instruction/#instruction)[]                        |
 | appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
 | notes                    | [Note](/sdk/data-note/#note)[]                                             |
@@ -178,6 +180,9 @@ educational_materials = patient.education_material.all()
 | referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
 | invoices                 | Invoice[]                                    |
 | education_material       | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
+| procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
+| family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
+| histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
 
 ### PatientAddress
 
