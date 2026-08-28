@@ -43,8 +43,6 @@ plan = Plan.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 text = plan.narrative
 ```
 
-`narrative` returns the plan's text whether it was created before the Commands SDK (stored as plain text) or after (stored as structured content), so callers only read one field.
-
 ## Filtering
 
 Plans can be filtered by any attribute that exists on the model.
