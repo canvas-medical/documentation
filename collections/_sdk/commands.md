@@ -1911,7 +1911,28 @@ The `QuestionnaireCommand` is used to present a questionnaire to a patient and c
 
 **Automatic Questionnaire ID Loading**: When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
 
-In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+In addition to the basic parameters, this command records responses in either of two ways.
+
+The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes, and the command works out the rest — it looks up the question, dispatches on its type, and resolves an option id to the option itself. A response the question does not allow raises a `ValueError`.
+
+**`Answer` fields**:
+
+| Name          | Type                                      | Required | Description                                                                                     |
+|:--------------|:------------------------------------------|:---------|:------------------------------------------------------------------------------------------------|
+| `question_id` | _integer_                                  | `true`   | The [Question](/sdk/data-questionnaire/#question) `dbid`.                                        |
+| `response`    | _string_, _integer_, or _list of Selection_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, or a list of `Selection` objects for a checkbox question. |
+
+A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a `Selection` rather than to the answer as a whole.
+
+**`Selection` fields**:
+
+| Name        | Type      | Required | Description                                                                                    |
+|:------------|:----------|:---------|:-------------------------------------------------------------------------------------------------|
+| `option_id` | _integer_ | `true`   | The [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` to tick.                    |
+| `comment`   | _string_  | `false`  | What this selection is qualified with.                                                           |
+| `selected`  | _boolean_ | `false`  | Defaults to `true`. Set it to `false` to untick the option — one a payload says nothing about keeps the state it already had. |
+
+Alternatively, you can retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
 
 - **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
 - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
@@ -1924,6 +1945,7 @@ In addition to the basic parameters, this command supports a dynamic response in
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of Answer_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 **Example** — instantiating an empty questionnaire:
 
@@ -1938,7 +1960,50 @@ questionnaire = QuestionnaireCommand(
 
 #### Usage Example
 
-Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
+Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
+
+```python?partial=true
+import uuid
+from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note, Questionnaire
+
+class MyHandler(BaseHandler):
+
+    def compute(self) -> list[Effect]:
+      questionnaire = Questionnaire.objects.filter(name="Exercise").first()
+      note = Note.objects.last()
+
+      command = QuestionnaireCommand(
+          note_uuid=str(note.id),
+          questionnaire_id=str(questionnaire.id),
+          command_uuid=str(uuid.uuid4()),
+          answers=[
+              # A text question.
+              Answer(question_id=12, response="Thanks for all the fish"),
+              # An integer question.
+              Answer(question_id=13, response=42),
+              # A radio question, answered with the id of one of its options.
+              Answer(question_id=14, response=101),
+              # A checkbox question, answered with one Selection per option ticked.
+              Answer(
+                  question_id=15,
+                  response=[
+                      Selection(option_id=201),
+                      Selection(option_id=202, comment="Don't panic"),
+                  ],
+              ),
+          ],
+      )
+
+      # Because we're directly setting a command_uuid, we can return both originate and edit.
+      return [command.originate(), command.edit()]
+```
+
+An option id that the question does not offer, or a question id that is not in the questionnaire, raises a `ValueError` rather than recording something the questionnaire does not define.
+
+Below is the same thing written the other way, retrieving the questions and adding responses to them based on their type:
 
 ```python
 import uuid
@@ -1993,7 +2058,7 @@ class MyHandler(BaseHandler):
 
 
 - **Recording Responses:**
-  Each question object provides an `add_response()` method that enforces the correct response format:
+  Either set `answers` and let the command resolve each response against its question, or record them one at a time. Each question object provides an `add_response()` method that enforces the correct response format:
   - For **TextQuestion**, you must pass a `text` parameter.
   - For **IntegerQuestion**, you must pass an `integer` parameter.
   - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
