@@ -1196,6 +1196,9 @@ data_module:
   - title: "RefillRequest"
     url: /sdk/data-refill-request/
     description: An incoming request to refill a patient's medication and its responding prescriptions.
+  - title: "ResolveConditionEvent"
+    url: /sdk/data-resolve-condition-event/
+    description: A record of a condition being resolved via the resolve_condition command.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
