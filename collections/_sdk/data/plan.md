@@ -34,7 +34,7 @@ plans = note.plans.all()
 
 ## Reading the narrative
 
-The plan text is exposed through the read-only `narrative` property:
+The plan text is exposed through the `narrative` property:
 
 ```python?partial=true
 from canvas_sdk.v1.data.plan import Plan
