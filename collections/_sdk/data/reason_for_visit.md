@@ -32,7 +32,7 @@ note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 reasons = note.reasons_for_visit.all()
 ```
 
-The reason-for-visit text is exposed through the read-only `narrative` property:
+The reason-for-visit text is exposed through the `narrative` property:
 
 ```python?partial=true
 from canvas_sdk.v1.data import ReasonForVisit
