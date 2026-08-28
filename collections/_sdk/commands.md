@@ -2521,7 +2521,7 @@ UpdateDiagnosisCommand(
 
 | Name                 | Type                     | Required to commit | Description                                               |
 |:---------------------|:-------------------------|:---------|:----------------------------------------------------------|
-| `goal_id`            | _string_                 | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
+| `goal_id`            | _string_                 | `true`   | The `id` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
