@@ -1196,6 +1196,9 @@ data_module:
   - title: "RefillRequest"
     url: /sdk/data-refill-request/
     description: An incoming request to refill a patient's medication and its responding prescriptions.
+  - title: "RemoveAllergyEvent"
+    url: /sdk/data-remove-allergy-event/
+    description: A record of an allergy being removed via the remove_allergy command.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
