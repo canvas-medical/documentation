@@ -1891,7 +1891,7 @@ questionnaire = QuestionnaireCommand(
 
 Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
 
-```python
+```python?partial=true
 import uuid
 from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
 from canvas_sdk.effects import Effect
