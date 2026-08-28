@@ -37,13 +37,13 @@ removal = RemoveAllergyEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf
 allergy = removal.allergy
 ```
 
-Or for a given allergy, you can access all of its removal events with the `removeallergyevent_set` attribute:
+Or for a given allergy, you can access all of its removal events with the `remove_allergy_events` attribute:
 
 ```python
 from canvas_sdk.v1.data import AllergyIntolerance
 
 allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
-removals = allergy.removeallergyevent_set.all()
+removals = allergy.remove_allergy_events.all()
 ```
 
 ## Committed records
