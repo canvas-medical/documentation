@@ -64,8 +64,21 @@ committed_follow_ups = FollowUp.objects.committed()
 | reason_for_visit_coding                   | String                                |
 | note_to_patient                           | String                                |
 | internal_comment                          | String                                |
-| requested_appointment_type                | String                                |
+| requested_appointment_type                | [EncounterMedium](#encountermedium)   |
 | requested_note_type                       | [NoteType](/sdk/data-note)            |
+
+## Enumeration types
+
+### EncounterMedium
+
+| Name    | Value   |
+| ------- | ------- |
+| VOICE   | voice   |
+| VIDEO   | video   |
+| OFFICE  | office  |
+| HOME    | home    |
+| OFFSITE | offsite |
+| LAB     | lab     |
 
 <br/>
 <br/>
