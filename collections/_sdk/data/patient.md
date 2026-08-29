@@ -151,6 +151,7 @@ educational_materials = patient.education_material.all()
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                               |
 | vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
 | assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
 | patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
