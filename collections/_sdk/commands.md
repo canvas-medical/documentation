@@ -1766,13 +1766,14 @@ def compute():
 
 ### PhysicalExam
 
-**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Command-specific parameters**:
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 <a id="toggle-questions"></a>
 #### Toggle Questions Feature
@@ -1922,6 +1923,8 @@ Both arrive at the same result, and they can be combined. `answers` is applied w
 
 The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes; the command looks up the question, dispatches on its type, and resolves an option id to the option itself. A question id that is not in the questionnaire, an option id the question does not offer, or a response the question's type does not allow raises a `ValueError` when the effect is built.
 
+<a id="questionnaire-answer"></a>
+
 **`Answer` fields**:
 
 | Name          | Type                                      | Required | Description                                                                                     |
@@ -1956,7 +1959,7 @@ Retrieve the list of questions via the `questions` property and record responses
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
-| `answers`          | _list of Answer_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 **Example** — instantiating an empty questionnaire:
 
@@ -2363,6 +2366,7 @@ ResolveConditionCommand(
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 
 #### Toggle Questions Feature
@@ -2412,7 +2416,7 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 # All previously set toggle states are automatically loaded
 ```
 
-**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 ---
 
@@ -2447,8 +2451,9 @@ stop_medication = StopMedicationCommand(
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
-**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Example**:
 
