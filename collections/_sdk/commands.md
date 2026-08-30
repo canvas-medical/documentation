@@ -1927,9 +1927,11 @@ The `answers` parameter takes a list of `Answer` objects, one per question. Each
 | Name          | Type                                      | Required | Description                                                                                     |
 |:--------------|:------------------------------------------|:---------|:------------------------------------------------------------------------------------------------|
 | `question_id` | _integer_                                  | `true`   | The [Question](/sdk/data-questionnaire/#question) `dbid`.                                        |
-| `response`    | _string_, _integer_, or _list of Selection_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, or a list of `Selection` objects for a checkbox question. |
+| `response`    | _string_, _integer_, or _list of [Selection](#questionnaire-selection)_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, or a list of [`Selection`](#questionnaire-selection) objects for a checkbox question. |
 
-A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a `Selection` rather than to the answer as a whole.
+A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a [`Selection`](#questionnaire-selection) rather than to the answer as a whole.
+
+<a id="questionnaire-selection"></a>
 
 **`Selection` fields**:
 
