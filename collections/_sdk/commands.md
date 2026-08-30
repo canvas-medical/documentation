@@ -1911,9 +1911,16 @@ The `QuestionnaireCommand` is used to present a questionnaire to a patient and c
 
 **Automatic Questionnaire ID Loading**: When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
 
-In addition to the basic parameters, this command records responses in either of two ways.
+In addition to the basic parameters, this command records responses in either of two ways:
 
-The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes, and the command works out the rest — it looks up the question, dispatches on its type, and resolves an option id to the option itself. A response the question does not allow raises a `ValueError`.
+- **The `answers` parameter** — you pass the responses in, one per question, and the command works out how to apply each one. Nothing in your code branches on a question's type. Use this when you already have the question and option ids.
+- **The `questions` property with `add_response()`** — you read the questionnaire's questions off the command and record a response on each question object. The keyword you pass differs by question type, so your code branches on it. Use this when you need to inspect the questions or their options at runtime to decide what to answer.
+
+Both arrive at the same result, and they can be combined. `answers` is applied when the command's effect is built: it replaces whatever was recorded on the questions it names, and leaves a response recorded with `add_response()` on any other question alone. `answers` is not itself carried in the effect.
+
+**Recording responses with `answers`**
+
+The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes; the command looks up the question, dispatches on its type, and resolves an option id to the option itself. A question id that is not in the questionnaire, an option id the question does not offer, or a response the question's type does not allow raises a `ValueError` when the effect is built.
 
 **`Answer` fields**:
 
@@ -1932,7 +1939,9 @@ A checkbox question is the only kind whose responses carry comments, and each of
 | `comment`   | _string_  | `false`  | What this selection is qualified with.                                                           |
 | `selected`  | _boolean_ | `false`  | Defaults to `true`. Set it to `false` to untick the option — one a payload says nothing about keeps the state it already had. |
 
-Alternatively, you can retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+**Recording responses with `questions` and `add_response()`**
+
+Retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
 
 - **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
 - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
