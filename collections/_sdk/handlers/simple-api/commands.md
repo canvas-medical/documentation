@@ -40,10 +40,23 @@ That class is five lines, and both of its base classes are load-bearing.
 
 ### What it inherits from SimpleAPI
 
-`CommandAPI` is a [SimpleAPI](/sdk/handlers-simple-api-http/), so everything you already know about
-SimpleAPI applies unchanged: `PREFIX` prefixes every route on the class, `@api.post` and its siblings
-declare the routes, `self.request` is the incoming request, and a handler returns a list of responses
-and effects.
+`CommandAPI` is a full [SimpleAPI](/sdk/handlers-simple-api-http/). The Quickstart shows one shape —
+a single `POST` under a `PREFIX` — but that is just this example. Anything you can build with a
+SimpleAPI you can build here:
+
+- **As many routes as you like**, declared with `@api.get`, `@api.post`, `@api.put`, `@api.patch` and
+  `@api.delete`. `PREFIX` is optional and prefixes them all, and `<name>` path parameters arrive in
+  `self.request.path_params`.
+- **The whole request.** `self.request` carries the method, path, headers, query parameters, the raw
+  body, parsed JSON, text, and `multipart/form-data` parts including file uploads.
+- **Any response you want to send.** The methods below hand you one, but a handler's return type is
+  the ordinary SimpleAPI list of responses and effects — so you can return your own response instead,
+  or emit further effects alongside the command.
+- **Every authentication scheme**, covered next.
+
+One difference worth knowing: `CommandAPI` extends `SimpleAPI`, not
+[`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute). A class declares `PREFIX` and
+decorated route handlers rather than a single `PATH` with `get` and `post` methods.
 
 What `CommandAPI` adds on top is the three methods below — `originate`, `edit` and `action` — and
 nothing else. Those three names are reserved: a route handler may not reuse one, and SimpleAPI raises
