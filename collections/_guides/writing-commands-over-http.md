@@ -30,9 +30,9 @@ tells you *who* is calling, not whether that person may write to *this note*.
 
 ## Your first command endpoint
 
-`CommandAPI` is a `SimpleAPI`, so it brings the request handling. It brings **no authentication** —
-who may write commands is your plugin's decision, not the base's — so you declare a scheme, a
-prefix, and your routes:
+`CommandAPI` is a `SimpleAPI`, so it brings the request handling. What it will not do is **choose your
+authentication**: the schemes ship with the SDK, but which one guards your endpoint is your decision,
+not the base's. You declare it alongside a prefix and your routes:
 
 ```python
 from canvas_sdk.commands import HistoryOfPresentIllnessCommand

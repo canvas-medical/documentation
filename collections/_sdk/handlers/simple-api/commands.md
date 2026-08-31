@@ -70,14 +70,18 @@ at class-definition time if you try.
 
 ### Where authentication comes from
 
-`CommandAPI` brings **no authentication of its own** — who may write commands is your plugin's
-decision. Authentication comes from a mixin you list *before* it in the bases, and the SDK ships four
-to choose from: `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `APIKeyAuthMixin` and
-`BasicAuthMixin`. See [Authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins)
-for what each one needs. You can also skip the mixins and write `authenticate` yourself.
+`CommandAPI` does not **choose** your authentication — which callers may write commands is your
+plugin's decision, not the base's. The schemes themselves are provided: declare one by listing it
+*before* `CommandAPI` in the bases, from `StaffSessionAuthMixin`, `PatientSessionAuthMixin`,
+`APIKeyAuthMixin` and `BasicAuthMixin`. See
+[Authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins) for what each one needs,
+or write `authenticate` yourself.
 
-**The order of the base classes matters, and getting it wrong fails quietly.** SimpleAPI's own
-`authenticate` returns `False`, so whichever class Python reaches first decides:
+Nothing is left open in the meantime. SimpleAPI's own `authenticate` returns `False`, so an endpoint
+that declares no scheme refuses every request rather than admitting anyone.
+
+**That default is also why the order of the base classes matters, and why getting it wrong fails
+quietly** — whichever class Python reaches first decides:
 
 | Base classes | Result |
 |:-------------|:-------|
