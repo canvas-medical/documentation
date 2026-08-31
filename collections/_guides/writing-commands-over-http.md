@@ -280,8 +280,20 @@ about the *caller* belong in the first; rules about the *note* belong in the sec
 
 ## Serving every command from one endpoint
 
-Nothing ties an endpoint to a single command — the command is an argument. Put the command in the
-path and look it up, and one endpoint serves the lot:
+Nothing ties an endpoint to a single command — the command is an argument. Put the command in the path
+and look it up, and one endpoint serves the lot.
+
+Two things are worth getting right before you write it.
+
+**Key the lookup on each command's own `Meta.key`.** That is the value `CommandAPI` uses when it looks
+a command up by id, so deriving the path segment from it keeps the URL and the lookup naming the same
+schema. It also saves you transcribing keys that are not guessable from the class name — `hpi`,
+`reasonForVisit`, `structuredAssessment`, `chartSectionReview`, `exam`, `ros`.
+
+**Allow actions per command, not from one shared set.** [Not every command accepts every
+action](/sdk/effects/#commands): Prescribe and Refill are finished by sending rather than committing,
+Lab Order takes `send`, Imaging Order and Refer take `delegate` and `sign`, and Reason for Visit takes
+none of them. This matters more than it looks — see the warning below.
 
 ```python
 from http import HTTPStatus
@@ -291,7 +303,9 @@ from canvas_sdk.commands import (
     AssessCommand,
     DiagnoseCommand,
     HistoryOfPresentIllnessCommand,
+    LabOrderCommand,
     PlanCommand,
+    PrescribeCommand,
 )
 from canvas_sdk.commands.api import CommandAPI
 from canvas_sdk.commands.base import _BaseCommand
@@ -299,14 +313,39 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, api
 
-# The key is the command's Meta.key, which is what the path names.
+# Keyed on Meta.key, so the path segment always matches the schema CommandAPI looks up.
 COMMANDS: dict[str, type[_BaseCommand]] = {
-    "allergy": AllergyCommand,
-    "assess": AssessCommand,
-    "diagnose": DiagnoseCommand,
-    "hpi": HistoryOfPresentIllnessCommand,
-    "plan": PlanCommand,
+    command.Meta.key: command
+    for command in (
+        AllergyCommand,
+        AssessCommand,
+        DiagnoseCommand,
+        HistoryOfPresentIllnessCommand,
+        LabOrderCommand,
+        PlanCommand,
+        PrescribeCommand,
+    )
 }
+
+# What each command is actually finished with. Nothing infers this for you.
+STAGED_ACTIONS = {"commit", "delete", "enter_in_error"}
+ACTIONS: dict[str, set[str]] = {
+    AllergyCommand.Meta.key: STAGED_ACTIONS,
+    AssessCommand.Meta.key: STAGED_ACTIONS,
+    DiagnoseCommand.Meta.key: STAGED_ACTIONS,
+    HistoryOfPresentIllnessCommand.Meta.key: STAGED_ACTIONS,
+    PlanCommand.Meta.key: STAGED_ACTIONS,
+    LabOrderCommand.Meta.key: {"delete", "send", "enter_in_error"},
+    PrescribeCommand.Meta.key: {"delete", "review", "send", "enter_in_error"},
+}
+
+
+def unknown_command() -> Response:
+    """The one response every route shares, so a bad path reads the same way throughout."""
+    return JSONResponse(
+        {"error": "no such command", "commands": sorted(COMMANDS)},
+        status_code=HTTPStatus.NOT_FOUND,
+    )
 
 
 class ChartingAPI(StaffSessionAuthMixin, CommandAPI):
@@ -315,18 +354,57 @@ class ChartingAPI(StaffSessionAuthMixin, CommandAPI):
     @api.post("/<schema>")
     def create(self) -> list[Response | Effect]:
         command = COMMANDS.get(self.request.path_params["schema"])
+
         if command is None:
+            return [unknown_command()]
+
+        return self.originate(command)
+
+    @api.put("/<schema>/<command_id>")
+    def update(self) -> list[Response | Effect]:
+        command = COMMANDS.get(self.request.path_params["schema"])
+
+        if command is None:
+            return [unknown_command()]
+
+        return self.edit(command, self.request.path_params["command_id"])
+
+    @api.post("/<schema>/<command_id>/<action>")
+    def act(self) -> list[Response | Effect]:
+        schema = self.request.path_params["schema"]
+        command = COMMANDS.get(schema)
+
+        if command is None:
+            return [unknown_command()]
+
+        action = self.request.path_params["action"]
+        allowed = ACTIONS.get(schema, set())
+
+        if action not in allowed:
             return [
                 JSONResponse(
-                    {"error": "no such command", "commands": sorted(COMMANDS)},
-                    status_code=HTTPStatus.NOT_FOUND,
+                    {"error": f"{schema} does not accept that action", "allowed": sorted(allowed)},
+                    status_code=HTTPStatus.BAD_REQUEST,
                 )
             ]
-        return self.originate(command)
+
+        return self.action(command, self.request.path_params["command_id"], action)
 ```
 
-Adding a command is now a line in `COMMANDS`. `POST /commands/hpi`, `POST /commands/allergy`, and so
-on, all validated against the right command.
+That is the whole surface: `POST /commands/hpi` creates, `PUT /commands/hpi/<id>` revises,
+`POST /commands/hpi/<id>/commit` finishes. Adding a command is two lines — one in `COMMANDS`, one in
+`ACTIONS`.
+
+{% include alert.html type="warning" content="Gating the actions is not defensive tidiness, it is the difference between a write landing and silently not landing. Every command class inherits <code>commit()</code>, so <code>POST /commands/prescribe/&lt;id&gt;/commit</code> would build a valid effect and answer <code>200</code> — and Canvas would then refuse to apply it, because Prescribe has no COMMIT. The caller is told the write succeeded when it did not. An action absent from <code>ACTIONS</code> is refused before any effect is built." %}
+
+Two smaller things the shape buys you:
+
+- **One `404` for an unknown command, everywhere.** `unknown_command()` is a plain function rather
+  than a method, because `CommandAPI` reserves `originate`, `edit` and `action`, and SimpleAPI raises
+  at class-definition time if a subclass shadows a base method.
+- **The `<schema>` segment is also your allow-list.** A command absent from `COMMANDS` is unreachable,
+  so adding `CommandAPI` to a plugin does not expose every command in the SDK — only the ones you
+  named.
 
 ## Where to go next
 
