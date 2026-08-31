@@ -502,7 +502,9 @@ safe:
 
 ### State
 
-Some operations only apply to a command in a particular state.
+Some operations only apply to a command in a particular state. Which operations a command accepts at
+all is a separate question, answered per command by the
+[command type table](/sdk/effects/#commands).
 
 | Operation | Required state |
 |---|---|
