@@ -29,8 +29,36 @@ class HistoryOfPresentIllnessAPI(StaffSessionAuthMixin, CommandAPI):
         return self.originate(HistoryOfPresentIllnessCommand)
 ```
 
+That class is five lines, and both of its base classes are load-bearing.
+
+### What it inherits from SimpleAPI
+
+`CommandAPI` is a [SimpleAPI](/sdk/handlers-simple-api-http/), so everything you already know about
+SimpleAPI applies unchanged: `PREFIX` prefixes every route on the class, `@api.post` and its siblings
+declare the routes, `self.request` is the incoming request, and a handler returns a list of responses
+and effects.
+
+What `CommandAPI` adds on top is the three methods below — `originate`, `edit` and `action` — and
+nothing else. Those three names are reserved: a route handler may not reuse one, and SimpleAPI raises
+at class-definition time if you try.
+
+### Where authentication comes from
+
 `CommandAPI` brings **no authentication of its own** — who may write commands is your plugin's
-decision, so pick a scheme as you would for any SimpleAPI.
+decision. Authentication comes from a mixin you list *before* it in the bases, and the SDK ships four
+to choose from: `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `APIKeyAuthMixin` and
+`BasicAuthMixin`. See [Authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins)
+for what each one needs. You can also skip the mixins and write `authenticate` yourself.
+
+**The order of the base classes matters, and getting it wrong fails quietly.** SimpleAPI's own
+`authenticate` returns `False`, so whichever class Python reaches first decides:
+
+| Base classes | Result |
+|:-------------|:-------|
+| `(StaffSessionAuthMixin, CommandAPI)` | The mixin answers first. Authentication works as you expect. |
+| `(CommandAPI, StaffSessionAuthMixin)` | SimpleAPI answers first, and it refuses everything. **Every request is rejected**, with no error to tell you why. |
+
+{% include alert.html type="warning" content="An authentication mixin establishes <em>who</em> the caller is, not <em>what</em> they may write. <code>StaffSessionAuthMixin</code> only checks that the session belongs to a staff member — it does not consider roles, and it says nothing about whether that person may write to the note in the request body. For that check, see <a href='/guides/writing-commands-over-http/'>Writing Commands Over HTTP</a>." %}
 
 ## Methods
 
