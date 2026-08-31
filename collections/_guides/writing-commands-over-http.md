@@ -123,11 +123,12 @@ This is the part worth thinking about, because three questions look alike and ar
   [authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins) for what each needs.
 - **Authorization** — *may this caller do this to this note?* The mixin cannot answer that, because
   it never sees the note.
-- **Attribution** — *who will the chart say wrote it?* Neither of the above answers this either. A
-  SimpleAPI request is not tied to a person by default, so the commands it writes are recorded as
-  Canvas Bot rather than a clinician. To have them attributed to a real staff member, call the
-  endpoint with an access token from the
-  [Authorization Code flow](/api/customer-authentication#authorization-code) — see
+- **Attribution** — *who will the chart say wrote it?* This follows from how the caller authenticated,
+  which makes the scheme you pick a clinical decision and not only a security one. A session-backed
+  request is attributed to the logged-in user, and so is one carrying an access token from the
+  [Authorization Code flow](/api/customer-authentication#authorization-code). A shared secret
+  identifies nobody, so `APIKeyAuthMixin` and `BasicAuthMixin` requests are recorded as **Canvas Bot**
+  — fine for a device feed, wrong for anything a clinician should be seen to have written. See
   [Acting as a Canvas user](/sdk/handlers-simple-api-http/#acting-as-a-canvas-user).
 
 An endpoint gated only on "is staff" lets any staff member write any command to any note. That may
