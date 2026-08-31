@@ -243,13 +243,13 @@ and the body carries `values` and `metadata`:
 { "values": { "narrative": "Patient reports a dry cough for three days." } }
 ```
 
+{% include alert.html type="warning" content="<code>values</code> replaces the command's fields as a whole and is re-validated in full — it is not a patch. A field you leave out is not left alone; send the complete set of values you want the command to end up with." %}
+
 Responds `200`:
 
 ```json
 { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "edit" }
 ```
-
-{% include alert.html type="warning" content="<code>values</code> replaces the command's fields as a whole and is re-validated in full — it is not a patch. A field you leave out is not left alone; send the complete set of values you want the command to end up with." %}
 
 Three things can go wrong, and each is checked before anything is written.
 
