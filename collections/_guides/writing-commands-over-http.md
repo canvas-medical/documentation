@@ -84,78 +84,32 @@ Everything `CommandAPI` does is one of three calls, and between them they cover 
 whatever finishes it — committing it, sending it, or entering it in error. Each returns the effects and
 the response together, so a route handler stays a single `return`.
 
-| Method | Body | Success |
-|---|---|---|
-| `self.originate(model)` | `note_id` **required**; optional `command_id`, `commit`, `metadata`, `values` | `201` `{"command_uuid", "committed"}` |
-| `self.edit(model, command_id)` | optional `metadata`, `values` | `200` `{"command_uuid", "mode": "edit"}` |
-| `self.action(model, command_id, action)` | none | `200` `{"command_uuid", "mode": <action>}` |
+The body each call accepts, the status it answers with, and every error shape are documented in
+[Commands API](/sdk/handlers-simple-api-commands/#methods). What is left to you is a handful of
+decisions no reference can make:
 
-**`values`** carries the command's own fields, named exactly as the command declares them. Commands
-parse leniently, so JSON's strings are fine — a date arrives as `"2026-08-04"`, an enum as its value
-(`"mild"`), a number as `"12"` if that is what your caller sends.
+**Staged, or committed in the same request.** `originate` leaves the command staged unless you ask
+otherwise. Staged is usually right — your endpoint proposes and the provider completes, which is also
+how the chart behaves. Commit in the same request when nobody needs to check the entry, such as a
+reading from a device, and not when a clinician should see it before it counts. Bear in mind that
+[several commands cannot be committed at all](/sdk/effects/#commands) and are finished by sending or
+signing instead.
 
-**`commit`** decides whether the command is committed or left staged for a human to finish in the
-note. It defaults to `false`, which is usually what you want: your endpoint proposes, the provider
-completes.
+**Whose id the command has.** By default Canvas names it and hands the id back. Pass `command_id` and
+you name it, which earns its keep when the thing you are writing already has an identity on your side:
+you can ask whether it reached the chart by that id instead of keeping a mapping, and a retry becomes
+safe, because posting the same id twice is refused rather than writing a second command. It has to be
+a genuine UUID —
+[Choosing the command's id](/sdk/handlers-simple-api-commands/#choosing-the-commands-id) covers how to
+produce one, including when your own identifier is not a UUID.
 
-**`command_id`** on originate lets *you* choose the command's id instead of taking the one the
-response returns. That is worth doing when the thing you are writing already has an identity on your
-side — you can then tell whether it reached the chart by asking for that id, rather than storing a
-mapping. It also makes a retry safe: a second post of the same id is refused with a `409` rather
-than writing the command twice.
+**What you want to remember about the entry.** `metadata` attaches a flat map that Canvas stores and
+never interprets. Use it for what the entry meant on your side — the submission it came from, the
+version of your mapping — so that months later a chart entry can be traced back to its origin.
 
-**`metadata`** is a flat `{"key": "value"}` map attached to the command after it is created. The API
-stores whatever you send and interprets none of it.
-
-**`action`** names a method on the command class — `commit`, `delete` and `enter_in_error`, plus
-`review`, `send`, `delegate` or `sign` on the commands that have them.
-[Not every command accepts every action](/sdk/effects/#commands), so check there before wiring a
-route. Some operations also only apply to a command in a particular state:
-
-| Operation | Required state |
-|---|---|
-| `edit` | staged |
-| `delete` | staged |
-| `commit` | staged |
-| `enter_in_error` | committed |
-| `review`, `send`, `delegate`, `sign` | Set by the command, not by `CommandAPI` |
-
-A refusal says which state the command is in and which it needed, so the caller can tell "not yet"
-from "not ever":
-
-```json
-{
-  "error": "a committed command cannot be edited",
-  "state": "committed",
-  "required_state": "staged",
-  "validation_errors": []
-}
-```
-
-## When something is wrong
-
-Every rejection has the same shape, so a caller can render them uniformly:
-
-```json
-{
-  "error": "Validation failed",
-  "validation_errors": [
-    { "field": "values.narrative", "message": "Input should be a valid string" }
-  ]
-}
-```
-
-- **`400`** — the body is not a JSON object, a value is wrong for its field, or the command's own
-  rules refuse it. A key under `values` that is not a field on the command is refused too, rather
-  than dropped: silently ignoring a typo would write a blank command.
-- **`404`** — no command *of this type* has that id. The lookup is scoped by command type, so an id
-  belonging to a different command is a miss rather than a cross-type edit.
-- **`409`** — the `command_id` you chose already belongs to a command. Nothing is written, so
-  posting the same id twice cannot create a second command:
-
-  ```json
-  { "error": "a command already has that id", "command_uuid": "2588aa22-…", "validation_errors": [] }
-  ```
+**How much a caller learns from a rejection.** Every refusal has the same shape, and every field at
+fault is reported at once rather than one per round trip. Build against that and a form can mark all
+its bad fields from a single response, rather than walking its user through them one at a time.
 
 ## Checking that the caller may write to this note
 
