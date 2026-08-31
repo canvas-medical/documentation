@@ -134,10 +134,16 @@ This is the part worth thinking about, because three questions look alike and ar
 An endpoint gated only on "is staff" lets any staff member write any command to any note. That may
 be exactly right — it is roughly what the chart itself allows — but decide it rather than inherit it.
 
-### Who the caller is
+### Reading who the caller is
 
-Canvas sets the logged-in user on the request. A client cannot forge it: plugin-io strips these
-headers if they arrive from the caller and sets them only from a real session.
+Canvas does the identifying; turning it into something you can check is yours.
+
+When a request arrives with a real session behind it, Canvas sets two headers on it —
+`canvas-logged-in-user-type` and `canvas-logged-in-user-id`. Neither can be forged: plugin-io strips
+both if they arrive from the client and sets them only from a session it has verified itself.
+
+Nothing in the SDK turns them into a record, so write the one line that does. There is no built-in
+`caller()` — this is a helper on your own handler:
 
 ```python?partial=true
 from canvas_sdk.v1.data.staff import Staff
@@ -149,6 +155,24 @@ def caller(self) -> Staff | None:
         return None
     return Staff.objects.filter(id=self.request.headers.get("canvas-logged-in-user-id")).first()
 ```
+
+The header carries the staff **key**, which is what `Staff.id` holds — a 32-character UUID with no
+dashes — so it matches on `id` rather than `dbid`.
+
+Whether those headers are there at all depends on the scheme you chose, and so does who the chart
+credits for the write:
+
+| Scheme | Identifies a person | The command is attributed to |
+|:-------|:--------------------|:-----------------------------|
+| `StaffSessionAuthMixin` | yes — a staff member | that staff member |
+| `PatientSessionAuthMixin` | yes — a patient | that patient |
+| An [Authorization Code](/api/customer-authentication#authorization-code) access token | yes | the staff member who authorized it |
+| `APIKeyAuthMixin` | no — a shared key | Canvas Bot |
+| `BasicAuthMixin` | no — a shared secret | Canvas Bot |
+
+The bottom two authenticate a *system*, not a person, so there is no logged-in user to read and
+nothing for the chart to credit. If your endpoint needs a named clinician on the entry, that rules
+them out.
 
 ### Only the note's author, and only while the note is open
 
