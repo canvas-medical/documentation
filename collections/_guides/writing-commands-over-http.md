@@ -79,6 +79,11 @@ curl -X POST "https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi" 
 
 ## The three operations
 
+Everything `CommandAPI` does is one of three calls, and between them they cover the life of a command:
+`originate` puts a new one in a note, `edit` revises it while it is still staged, and `action` runs
+whatever finishes it — committing it, sending it, or entering it in error. Each returns the effects and
+the response together, so a route handler stays a single `return`.
+
 | Method | Body | Success |
 |---|---|---|
 | `self.originate(model)` | `note_id` **required**; optional `command_id`, `commit`, `metadata`, `values` | `201` `{"command_uuid", "committed"}` |
@@ -102,9 +107,10 @@ than writing the command twice.
 **`metadata`** is a flat `{"key": "value"}` map attached to the command after it is created. The API
 stores whatever you send and interprets none of it.
 
-**`action`** names a method on the command class: `delete`, `commit`, `enter_in_error`, and
-`review` / `send` on the commands whose classes support them. Some operations only apply to a
-command in a particular state:
+**`action`** names a method on the command class — `commit`, `delete` and `enter_in_error`, plus
+`review`, `send`, `delegate` or `sign` on the commands that have them.
+[Not every command accepts every action](/sdk/effects/#commands), so check there before wiring a
+route. Some operations also only apply to a command in a particular state:
 
 | Operation | Required state |
 |---|---|
@@ -112,7 +118,7 @@ command in a particular state:
 | `delete` | staged |
 | `commit` | staged |
 | `enter_in_error` | committed |
-| `review`, `send` | none — the command decides |
+| `review`, `send`, `delegate`, `sign` | Set by the command, not by `CommandAPI` |
 
 A refusal says which state the command is in and which it needed, so the caller can tell "not yet"
 from "not ever":
