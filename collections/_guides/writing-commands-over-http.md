@@ -7,16 +7,18 @@ guide_for:
 - /sdk/data/
 ---
 
-Any time something outside Canvas needs to write to a patient's chart, the endpoint for it is already
-built. A plugin has always been able to put a command in a note from an event handler; letting a
-custom charting surface, a scribe, an intake form or a back-office tool do the same meant a
-[SimpleAPI](/sdk/handlers-simple-api/) route per command — reading a JSON body, mapping keys onto
-command fields, deciding what a bad value should return, building the effect. The interesting part was
-two lines; the rest was the same every time.
+Writing to a patient's chart from outside Canvas — from a custom charting surface, a scribe, an intake
+form, a back-office tool — used to mean building the API yourself: a
+[SimpleAPI](/sdk/handlers-simple-api/) route per command, reading a JSON body, mapping keys onto
+command fields, deciding what a bad value returns, building the effect. Every team that needed it
+built the same one.
 
-`CommandAPI` is that boilerplate, already written. You declare the routes and who may reach them; it
-reads the body, validates it against the command, and emits the effects. This guide builds one
-endpoint, then the authorization check that authentication alone does not give you.
+**Canvas has now built it for you.** `CommandAPI` is that endpoint, templated: it reads the body onto
+a command, validates it against that command, and emits the effects. All you add is the part that
+should be yours — who may call it, and what they are allowed to write.
+
+That remainder is most of this guide, because it is the part no template can decide: authentication
+tells you *who* is calling, not whether that person may write to *this note*.
 
 ## What you'll learn
 
