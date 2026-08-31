@@ -176,8 +176,18 @@ them out.
 
 ### Only the note's author, and only while the note is open
 
-The common rule for a charting surface: the caller must be the note's provider, and the note must
-still accept documentation. Check it before you write, and return the refusal yourself:
+Canvas already refuses a command bound for a note that has been deleted or cancelled, or that is
+signed and no longer writable — `canvas_core` validates the note as the effect is applied, inside the
+transaction, so nothing lands.
+
+What it cannot do is tell your caller.
+
+{% include alert.html type="danger" content="Nothing in canvas-plugins reads the note's state, and command effects are applied after your response has already gone back. A closed note therefore answers <code>201</code> with a <code>command_uuid</code> and then writes no command. Checking before you write is the only way the caller ever finds out." %}
+
+The check is also where you add the rule Canvas has no opinion on: any staff member may write to any
+note. If your surface is meant for the note's own provider, that is yours to enforce.
+
+So make both decisions before you write, and return the refusal yourself:
 
 ```python
 from http import HTTPStatus
@@ -250,6 +260,10 @@ Two things worth copying from that shape. It reads the note **once**, with `.val
 check runs on every write. And it answers different refusals differently — `404` for a note that is
 not there, `403` for the wrong caller, `409` for a closed note — so the caller can tell "you may
 not" from "not any more".
+
+`OPEN_STATES` is deliberately stricter than Canvas's own rule, which refuses only deleted, cancelled
+and signed notes. Listing the states you accept, rather than the ones you reject, means a state added
+to Canvas later is refused until you have decided what it should mean for your endpoint.
 
 {% include alert.html type="warning" content="Do not read `note_id` from the body and then trust a *different* note id further down. The value you authorize against and the value you write to have to be the same one." %}
 
