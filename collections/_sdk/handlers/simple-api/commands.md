@@ -136,7 +136,7 @@ class HistoryOfPresentIllnessAPI(StaffSessionAuthMixin, CommandAPI):
         )
 ```
 
-Staging a note entry and then committing it, against that endpoint:
+Staging a note entry, committing it, and retracting it, against that endpoint:
 
 ```shell
 # Create it, staged for a human to finish.
@@ -157,10 +157,18 @@ curl -X PUT https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/258
 # Commit it.
 curl -X POST https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10/commit
 # 200 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit"}
+
+# Retract it. A committed command cannot be edited, so entering it in error is
+# how you take it back - then originate its replacement.
+curl -X POST https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10/enter_in_error
+# 200 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "enter_in_error"}
 ```
 
+The order matters: `enter_in_error` needs a **committed** command, so it only works after the commit
+above. Sent against the staged command it would have been refused — see [State](#state).
+
 To serve every command from one endpoint instead of one class per command, see
-[Serving every command from one endpoint](/guides/writing-commands-over-http/) in the guide — the
+[Serving every command from one endpoint](/guides/writing-commands-over-http/#serving-every-command-from-one-endpoint) in the guide — the
 command is an argument, so a dict of them and a path parameter is all it takes.
 
 ## Methods
