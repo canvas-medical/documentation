@@ -287,14 +287,17 @@ and responds `200` naming what it did:
 { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit" }
 ```
 
-`action` names a method on the command class. Each one builds the corresponding [command effect](/sdk/effects/#commands), which is also where you can see which commands support which actions:
+`action` names a method on the command class, and each one builds the corresponding [command effect](/sdk/effects/#commands). Three are available on every command; the rest belong to particular commands:
 
-| Action | What it does | Required state |
-|:-------|:-------------|:---------------|
-| `commit` | Signs the staged command into the note. | staged |
-| `delete` | Removes the staged command from the note. | staged |
-| `enter_in_error` | Marks a committed command as entered in error. | committed |
-| `review`, `send` | Only on the commands that support them — see [Commands](/sdk/effects/#commands). | Set by the command, not by `CommandAPI` — see [State](#state). |
+| Action | What it does | Available on | Required state |
+|:-------|:-------------|:-------------|:---------------|
+| `commit` | Signs the staged command into the note. | every command | staged |
+| `delete` | Removes the staged command from the note. | every command | staged |
+| `enter_in_error` | Marks a committed command as entered in error. | every command | committed |
+| `review` | Places the command into review status. | [Prescribe](/sdk/commands/#prescribe), [Refill](/sdk/commands/#refill), [Adjust Prescription](/sdk/commands/#adjustprescription) | set by the command — see [State](#state) |
+| `send` | Transmits the command to an external system. | [Prescribe](/sdk/commands/#prescribe), [Refill](/sdk/commands/#refill), [Adjust Prescription](/sdk/commands/#adjustprescription), [Lab Order](/sdk/commands/#laborder) | set by the command — see [State](#state) |
+| `delegate` | Delegates the order to someone else to complete. | [Imaging Order](/sdk/commands/#imagingorder), [Refer](/sdk/commands/#refer) | set by the command — see [State](#state) |
+| `sign` | Signs the order. | [Imaging Order](/sdk/commands/#imagingorder), [Refer](/sdk/commands/#refer) | set by the command — see [State](#state) |
 
 An action the command class does not have is a `400`:
 
@@ -490,7 +493,7 @@ Some operations only apply to a command in a particular state.
 | `delete` | staged |
 | `commit` | staged |
 | `enter_in_error` | committed |
-| `review`, `send` | Whatever the command requires. `CommandAPI` sets no state for these; the command enforces its own rules as it builds the effect. |
+| `review`, `send`, `delegate`, `sign` | Whatever the command requires. `CommandAPI` sets no state for these; the command enforces its own rules as it builds the effect. |
 
 A refusal is a `400`, naming the state the command is in and the one it needed:
 
