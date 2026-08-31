@@ -265,7 +265,7 @@ not" from "not any more".
 and signed notes. Listing the states you accept, rather than the ones you reject, means a state added
 to Canvas later is refused until you have decided what it should mean for your endpoint.
 
-{% include alert.html type="warning" content="Do not read `note_id` from the body and then trust a *different* note id further down. The value you authorize against and the value you write to have to be the same one." %}
+{% include alert.html type="warning" content="Authorize against the same <code>note_id</code> that <code>originate</code> will write to — the one in the request body. Take it from anywhere else, such as a path parameter or query string, and a caller can present a note they own to your check while the body names a note they do not: <code>POST /v1/plan?note_id=&lt;mine&gt;</code> with <code>{&quot;note_id&quot;: &quot;&lt;someone else's&gt;&quot;}</code> would pass and then write to the wrong chart." %}
 
 ### Narrowing who reaches the endpoint at all
 
