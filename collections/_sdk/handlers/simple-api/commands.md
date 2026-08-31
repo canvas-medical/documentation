@@ -287,17 +287,34 @@ and responds `200` naming what it did:
 { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit" }
 ```
 
-`action` names a method on the command class, and each one builds the corresponding [command effect](/sdk/effects/#commands). Three are available on every command; the rest belong to particular commands:
+`action` names a method on the command class, and each one builds the corresponding
+[command effect](/sdk/effects/#commands):
 
-| Action | What it does | Available on | Required state |
-|:-------|:-------------|:-------------|:---------------|
-| `commit` | Signs the staged command into the note. | every command | staged |
-| `delete` | Removes the staged command from the note. | every command | staged |
-| `enter_in_error` | Marks a committed command as entered in error. | every command | committed |
-| `review` | Places the command into review status. | [Prescribe](/sdk/commands/#prescribe), [Refill](/sdk/commands/#refill), [Adjust Prescription](/sdk/commands/#adjustprescription) | set by the command — see [State](#state) |
-| `send` | Transmits the command to an external system. | [Prescribe](/sdk/commands/#prescribe), [Refill](/sdk/commands/#refill), [Adjust Prescription](/sdk/commands/#adjustprescription), [Lab Order](/sdk/commands/#laborder) | set by the command — see [State](#state) |
-| `delegate` | Delegates the order to someone else to complete. | [Imaging Order](/sdk/commands/#imagingorder), [Refer](/sdk/commands/#refer) | set by the command — see [State](#state) |
-| `sign` | Signs the order. | [Imaging Order](/sdk/commands/#imagingorder), [Refer](/sdk/commands/#refer) | set by the command — see [State](#state) |
+| Action | What it does | Required state |
+|:-------|:-------------|:---------------|
+| `commit` | Signs the staged command into the note. | staged |
+| `delete` | Removes the staged command from the note. | staged |
+| `enter_in_error` | Marks a committed command as entered in error. | committed |
+| `review` | Places the command into review status. | set by the command — see [State](#state) |
+| `send` | Transmits the command to an external system. | set by the command — see [State](#state) |
+| `delegate` | Delegates the order to someone else to complete. | set by the command — see [State](#state) |
+| `sign` | Signs the order. | set by the command — see [State](#state) |
+
+**No command supports all of them, and not even `commit` is universal.** Which actions a command
+accepts is listed per command in [Commands](/sdk/effects/#commands) — check there before wiring a
+route, because an action the command does not support is a `400`. The ones worth knowing up front:
+
+- `review` and `send` belong to [Prescribe](/sdk/commands/#prescribe),
+  [Refill](/sdk/commands/#refill) and [Adjust Prescription](/sdk/commands/#adjustprescription), and
+  `send` also to [Lab Order](/sdk/commands/#laborder). Those four are **not** committed — sending is
+  how they are finished.
+- `delegate` and `sign` belong to [Imaging Order](/sdk/commands/#imagingorder) and
+  [Refer](/sdk/commands/#refer), which are not committed either.
+- [Reason for Visit](/sdk/commands/#reasonforvisit) supports `originate`, `edit` and `delete` only.
+- [Chart Section Review](/sdk/commands/#chartsectionreview) is committed as it is originated, so it
+  takes `originate` and nothing else.
+- [Custom commands](/sdk/commands-custom-command/) render read-only content, so they are neither
+  edited nor committed.
 
 An action the command class does not have is a `400`:
 
