@@ -287,14 +287,14 @@ and responds `200` naming what it did:
 { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit" }
 ```
 
-`action` names a method on the command class:
+`action` names a method on the command class. Each one builds the corresponding [command effect](/sdk/effects/#commands), which is also where you can see which commands support which actions:
 
 | Action | What it does | Required state |
 |:-------|:-------------|:---------------|
 | `commit` | Signs the staged command into the note. | staged |
 | `delete` | Removes the staged command from the note. | staged |
 | `enter_in_error` | Marks a committed command as entered in error. | committed |
-| `review`, `send` | On the commands whose classes support them. | none — the command decides |
+| `review`, `send` | Only on the commands that support them — see [Commands](/sdk/effects/#commands). | none — the command decides |
 
 An action the command class does not have is a `400`:
 
