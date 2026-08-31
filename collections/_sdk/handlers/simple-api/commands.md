@@ -45,14 +45,20 @@ a single `POST` under a `PREFIX` — but that is just this example. Anything you
 SimpleAPI you can build here:
 
 - **As many routes as you like**, declared with `@api.get`, `@api.post`, `@api.put`, `@api.patch` and
-  `@api.delete`. `PREFIX` is optional and prefixes them all, and `<name>` path parameters arrive in
-  `self.request.path_params`.
+  `@api.delete`. `PREFIX` is optional and prefixes them all.
+- **Path parameters.** A segment written `<name>` in a route path is a placeholder — `@api.put("/hpi/<command_id>")`
+  matches a request to `/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10`, and what it matched is available as
+  `self.request.path_params["command_id"]`. That is how the routes below say *which* command to edit or
+  act on: the id comes from the URL rather than the body. A value is always a string, is never empty,
+  and covers one path segment only — it cannot contain a `/`.
 - **The whole request.** `self.request` carries the method, path, headers, query parameters, the raw
   body, parsed JSON, text, and `multipart/form-data` parts including file uploads.
-- **Any response you want to send.** The methods below hand you one, but a handler's return type is
-  the ordinary SimpleAPI list of responses and effects — so you can return your own response instead,
-  or emit further effects alongside the command.
-- **Every authentication scheme**, covered next.
+- **Any response you want to send.** A handler always returns the ordinary SimpleAPI list of
+  responses and effects. `originate`, `edit` and `action` each return that list already built — which
+  is why the handlers here read `return self.originate(...)` with no brackets of their own. When you
+  want your own response, you build the list yourself, as the `act` route does below with
+  `[JSONResponse(...)]`, or splice onto theirs: `return [*self.originate(...), my_effect]`.
+- **Authentication.** You decide which method to use — see [Authentication](/sdk/handlers-simple-api-http/#authentication) for the schemes available.
 
 One difference worth knowing: `CommandAPI` extends `SimpleAPI`, not
 [`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute). A class declares `PREFIX` and
