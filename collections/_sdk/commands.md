@@ -6,6 +6,12 @@ The commands module lets you create and update commands within a specific note i
 
 Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
 
+Commands are written from an event handler by default. To let something outside Canvas write them —
+a patient-facing form, a device, an internal tool — expose them over HTTP with
+[`CommandAPI`](/sdk/handlers-simple-api-commands/), which reads a request body onto any command on
+this page, validates it, and emits the effects. The
+[Writing Commands Over HTTP](/guides/writing-commands-over-http/) guide walks through building one.
+
 {% include alert.html type="info" content="New to command fields? Fields that are autocompletes, dropdowns, or enums in the Canvas UI take a raw code, id, or enum value in the SDK — you have to look the value up first. See <a href='/guides/populating-command-fields/'>Populating Command Fields</a> for where each value comes from." %}
 
 ## Common Attributes
@@ -30,6 +36,9 @@ Field values are read leniently, so a value does not have to arrive already in t
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
 check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
 to [custom commands](/sdk/commands-custom-command/) alone.
+
+To call these over HTTP rather than from a handler, see
+[`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
 
 #### originate
 
