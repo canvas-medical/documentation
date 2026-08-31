@@ -7,19 +7,20 @@ guide_for:
 - /sdk/data/
 ---
 
-A plugin can put a command in a note from any event handler. What it could not do easily was let
-*something else* put a command in a note — a custom charting surface, a scribe, an intake form, a
-back-office tool. That meant a [SimpleAPI](/sdk/handlers-simple-api/) route per command, each one
-reading a JSON body, mapping keys onto command fields, deciding what a bad value should return, and
-building the effect. The interesting part of the work was two lines; the rest was the same every
-time.
+Any time something outside Canvas needs to write to a patient's chart, the endpoint for it is already
+built. A plugin has always been able to put a command in a note from an event handler; letting a
+custom charting surface, a scribe, an intake form or a back-office tool do the same meant a
+[SimpleAPI](/sdk/handlers-simple-api/) route per command — reading a JSON body, mapping keys onto
+command fields, deciding what a bad value should return, building the effect. The interesting part was
+two lines; the rest was the same every time.
 
-`CommandAPI` is that boilerplate. You declare the routes and who may reach them; it reads the body,
-validates it against the command, and emits the effects.
+`CommandAPI` is that boilerplate, already written. You declare the routes and who may reach them; it
+reads the body, validates it against the command, and emits the effects. This guide builds one
+endpoint, then the authorization check that authentication alone does not give you.
 
 ## What you'll learn
 
-- How to expose one command as an HTTP endpoint with [`CommandAPI`](/sdk/commands/)
+- How to expose one command as an HTTP endpoint with [`CommandAPI`](/sdk/handlers-simple-api-commands/)
 - The request and response shape every operation shares
 - How to check that the caller may actually write to *this note*, which authentication alone does
   not tell you
