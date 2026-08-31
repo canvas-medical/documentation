@@ -294,7 +294,7 @@ and responds `200` naming what it did:
 | `commit` | Signs the staged command into the note. | staged |
 | `delete` | Removes the staged command from the note. | staged |
 | `enter_in_error` | Marks a committed command as entered in error. | committed |
-| `review`, `send` | Only on the commands that support them — see [Commands](/sdk/effects/#commands). | none — the command decides |
+| `review`, `send` | Only on the commands that support them — see [Commands](/sdk/effects/#commands). | Set by the command, not by `CommandAPI` — see [State](#state). |
 
 An action the command class does not have is a `400`:
 
@@ -353,7 +353,7 @@ shape:
 | Type | Example value |
 |:-----|:--------------|
 | [`Allergen`](/sdk/commands/#allergy-allergen) | `{"concept_id": 91, "concept_type": 2}` |
-| [`Coding`](/sdk/commands/#coding) | `{"system": "http://snomed.info/sct", "code": "44054006"}` |
+| [`Coding`](/sdk/commands/#coding) | `{"system": "http://snomed.info/sct", "code": "44054006", "display": "Diabetes mellitus type 2"}` |
 | [`ClinicalQuantity`](/sdk/commands/#clinicalquantity) | `{"representative_ndc": "0093-1023", "ncpdp_quantity_qualifier_code": "C48542"}` |
 | [`ServiceProvider`](/sdk/commands/#serviceprovider) | `{"first_name": "Ada", "last_name": "Lovelace", "specialty": "Cardiology", "practice_name": "Mercy"}` |
 | [`TaskAssigner`](/sdk/commands/#taskassigner) | `{"to": "staff", "id": 5}` |
@@ -403,6 +403,13 @@ Canvas interprets it, which makes it the place to record what the entry meant on
 
 Both `originate` and `edit` accept it. Values must be strings — send `"8871"`, not `8871`.
 
+Each pair becomes an `upsert_metadata` effect applied after the effect that writes the command, so a
+key sent twice ends up holding the last value. See the
+[Command Metadata effect](/sdk/effect-command-metadata/) for how the same storage is written from a
+plugin, the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/) for
+collecting it from a user in the chart, and [CommandMetadata](/sdk/data-command/#commandmetadata) for
+reading it back.
+
 ## Responses
 
 | Status | When |
@@ -447,8 +454,27 @@ a miss rather than a cross-type edit.
 ### Choosing the command's id
 
 Passing `command_id` is worth doing when the thing you are writing already has an identity on your
-side: you can then ask whether it reached the chart by that id rather than storing a mapping. Posting
-the same id twice answers `409` rather than writing a second command, which makes a retry safe:
+side: you can then ask whether it reached the chart by that id rather than storing a mapping.
+
+**It has to be a real UUID.** It is not a free-text key of your own, so generate one rather than
+composing it:
+
+```shell
+uuidgen                        # 2588AA22-9D0E-4F1F-9B28-6F0E6A1C9A10
+python -c 'import uuid; print(uuid.uuid4())'
+node  -e 'console.log(crypto.randomUUID())'
+```
+
+Anything that will not parse as a UUID is a `400` before the command is looked at — `"order-8871"`
+gives `Input should be a valid UUID, invalid character: found 'o' at 1`, and `"8871"` gives
+`Input should be a valid UUID, invalid length`. The 32-character form without dashes is accepted, so
+either `2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10` or `2588aa229d0e4f1f9b286f0e6a1c9a10` will do.
+
+If your own identifier is not a UUID, derive one from it deterministically — `uuid.uuid5()` over a
+namespace and your key — so the same record always produces the same command id.
+
+Posting the same id twice answers `409` rather than writing a second command, which makes a retry
+safe:
 
 ```json
 { "error": "a command already has that id", "command_uuid": "2588aa22-…", "validation_errors": [] }
@@ -464,9 +490,9 @@ Some operations only apply to a command in a particular state.
 | `delete` | staged |
 | `commit` | staged |
 | `enter_in_error` | committed |
-| `review`, `send` | none — the command decides |
+| `review`, `send` | Whatever the command requires. `CommandAPI` sets no state for these; the command enforces its own rules as it builds the effect. |
 
-A refusal says which state the command is in and which it needed:
+A refusal is a `400`, naming the state the command is in and the one it needed:
 
 ```json
 {
