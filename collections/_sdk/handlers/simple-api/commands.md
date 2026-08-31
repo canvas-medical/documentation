@@ -251,8 +251,32 @@ Responds `200`:
 
 {% include alert.html type="warning" content="<code>values</code> replaces the command's fields as a whole and is re-validated in full — it is not a patch. A field you leave out is not left alone; send the complete set of values you want the command to end up with." %}
 
-A committed command cannot be edited. Enter it in error and originate its replacement — see
-[State](#state).
+Three things can go wrong, and each is checked before anything is written.
+
+**The id matches no command of this type** — a `404`:
+
+```json
+{ "error": "No hpi command with that id" }
+```
+
+**The command is not staged** — a `400` naming the state it is in and the one the operation needed. A
+committed command cannot be edited; enter it in error and originate its replacement instead:
+
+```json
+{
+  "error": "a committed command cannot be edited",
+  "state": "committed",
+  "required_state": "staged",
+  "validation_errors": []
+}
+```
+
+**A value is wrong for its field** — a `400` in the same shape
+[`originate` returns](#originate), reported against `values.<field>`. A body that is not a JSON object
+at all is a `400` too, carrying `"Request body must be a JSON object"`.
+
+See [State](#state) for which operations each state allows, and [Responses](#responses) for the full
+list of statuses.
 
 ### action
 
