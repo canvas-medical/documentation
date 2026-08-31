@@ -257,7 +257,7 @@ request](/assets/images/webhook-guide/webhook-guide-second-request.png)
 
 A single plugin handler can listen for multiple event types. The event type will
 be available in `self.event.type`, which will contain a member of the `EventType`
-enum. The [full list of events is available](/sdk/events/#event-types).
+enum. The [full list of events is available](/sdk/events/#event-types-and-context).
 Here is a short example that listens for two different events:
 
 ```python

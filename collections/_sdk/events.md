@@ -600,7 +600,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -619,7 +619,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -638,7 +638,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -657,7 +657,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -676,7 +676,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -695,7 +695,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"patient":
     "id": pt_id</pre></td>
     </tr>
@@ -774,7 +774,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
       <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -792,7 +792,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"providers": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -812,7 +812,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -830,7 +830,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"locations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -850,7 +850,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -868,7 +868,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"visit_types": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -888,7 +888,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -906,7 +906,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"durations": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -926,7 +926,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -944,7 +944,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"reason_for_visit": list[dict]
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -964,7 +964,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
        <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
     </tr>
   </tbody>
@@ -982,7 +982,7 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
     <tr>
       <td><pre>"id": appointment_id
-"type": <a href='/sdk/data-appointment/#appointment/'>Appointment</a></pre></td>
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
        <td><pre>"patient_id": int
 "selected_values": dict
 "category": <a href='/sdk/data-note/#notetypecategories'>NoteTypeCategories</a></pre></td>
@@ -1885,6 +1885,121 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
 "type": <a href='/sdk/data-coverage/#coverage'>Coverage</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Eligibility responses
+
+A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDATED` event fires on every eligibility response save. When the response resolves to a definite status, a matching `COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE`, `COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE`, or `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` event fires alongside it. For example, when a failed eligibility check is first recorded, both `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` and `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` fire. Each event's context carries the derived `status` string and the associated `coverage`; `_FAILED` events also include the payer `errors`.
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response is created for a coverage.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response resolves to an active status.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response resolves to an inactive status.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">COVERAGE_ELIGIBILITY_RESPONSE_FAILED</th></tr>
+    <tr><td colspan="2">Occurs when an eligibility response check fails to complete (the payer response errored).</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": eligibility_response_id
+"type": <a href='/sdk/data-eligibility-response/#eligibilityresponse'>EligibilityResponse</a></pre></td>
+      <td><pre>"coverage":
+  "id": coverage_id
+"patient":
+  "id": pt_id
+"status": str
+"errors": list[str]</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12235,26 +12350,6 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-<table>
-  <thead>
-    <tr><th colspan="2">IMMUNIZE_COMMAND__AVAILABLE_ACTIONS</th></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target object</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>"id": command_uuid
-"type": <a href='/sdk/data-command/'>Command</a></pre></td>
-      <td><pre>"actions":
-  "name": string
-"user":
-  "staff": staff_id
-</pre></td>
-    </tr>
-  </tbody>
-</table>
 
 <table>
   <thead>
@@ -27436,7 +27531,7 @@ The `identifier` is the unique id of the payment processor handler the event is 
     </tr>
     <tr>
       <td><pre>"id": patient_id
-"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"conditions":
     "id": condition id
     "codings":
@@ -27459,7 +27554,7 @@ The `identifier` is the unique id of the payment processor handler the event is 
     </tr>
     <tr>
       <td><pre>"id": patient_id
-"type": <a href='/sdk/patient/'>Patient</a></pre></td>
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"medications":
     "id": medication id
     "codings":
@@ -27613,7 +27708,7 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
     </tr>
     <tr>
       <td>SSO__GET_POST_LOGIN_REDIRECT</td>
-      <td>A user has just authenticated via SAML SSO and Canvas is deciding where to send them. Return a <a href="/sdk/effects/#redirect_context">REDIRECT_CONTEXT</a> effect to override the destination. See <a href="/sdk/sso/#sso__get_post_login_redirect">SSO Capabilities</a>.</td>
+      <td>A user has just authenticated via SAML SSO and Canvas is deciding where to send them. Return a <a href="/sdk/effect-redirect/">REDIRECT_CONTEXT</a> effect to override the destination. See <a href="/sdk/sso/#sso__get_post_login_redirect">SSO Capabilities</a>.</td>
     </tr>
   </tbody>
 </table>

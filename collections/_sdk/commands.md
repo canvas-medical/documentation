@@ -21,6 +21,8 @@ All commands share the following init kwarg parameters:
 
 All parameters can be set upon initialization, and also updated on the class instance.
 
+Field values are read leniently, so a value does not have to arrive already in the field's own type: a number can be given as `"3"`, a date as `"2026-08-04"`, and an enum as its value (`"mild"`) rather than the member. This matters most when the values come from somewhere that only has strings, such as a JSON request body.
+
 ### Methods
 
 All commands have the following methods:
@@ -452,7 +454,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
@@ -549,7 +551,7 @@ The check needs that note or command to exist, so it is skipped when you create 
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -563,6 +565,57 @@ change_medication = ChangeMedicationCommand(
     sig='two pills taken orally'
 )
 ```
+
+**Validation**:
+
+`medication_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. The medication must also be active. A medication on another patient's chart, an id that matches no medication, or an inactive medication fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates the command in the same batch of handler effects. In that case the command's patient cannot be resolved yet, so `medication_id` passes this validation; the check then runs once the command is applied.
+
+A malformed `medication_id` fails at command construction, before any patient lookup, while a well-formed UUID passed as a string is accepted.
+
+---
+
+### ChartSectionReview
+
+Records that a section of the patient's chart was reviewed during a visit. Originating the command snapshots the patient's active records in that section onto the note, along with the rendered text of those records as they read at the time of review — the same thing that happens when a user clicks **Review** on a chart section in the Canvas UI. Use it to attest to a review your plugin has already performed, such as reconciling medications from an external source.
+
+The command is always committed on origination, so there is no staged state to fill in and no need to pass `commit=True`.
+
+Read the resulting snapshot back with the [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview) data model.
+
+{% include alert.html type="info" content="This command supports <code>originate()</code> only since it is a read only command." %}
+
+**Command-specific parameters**:
+
+| Name      | Type                                        | Required to commit | Description                                                                                                                          |
+|:----------|:--------------------------------------------|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| `section` | _[ChartSectionReviewCommand.Sections](#chartsectionreviewcommandsections) enum_ | `true` | The chart section being reviewed. Required when instantiating the command. Must be one of [`ChartSectionReviewCommand.Sections`](#chartsectionreviewcommandsections). |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ChartSectionReviewCommand
+
+def compute():
+    medication_review = ChartSectionReviewCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        section=ChartSectionReviewCommand.Sections.MEDICATIONS,
+    )
+
+    return [medication_review.originate()]
+```
+
+#### ChartSectionReviewCommand.Sections
+
+| Member             | Value              | Chart section    |
+|:-------------------|:-------------------|:-----------------|
+| `CONDITIONS`       | `conditions`       | Conditions       |
+| `SURGICAL_HISTORY` | `surgical_history` | Surgical History |
+| `MEDICATIONS`      | `medications`      | Medications      |
+| `FAMILY_HISTORY`   | `family_histories` | Family Histories |
+| `ALLERGIES`        | `allergies`        | Allergies        |
+| `IMMUNIZATIONS`    | `immunizations`    | Immunizations    |
+
+{% include alert.html type="warning" content="The member name for family history differs between the command and the data model: the command uses <code>ChartSectionReviewCommand.Sections.FAMILY_HISTORY</code>, while the data model uses <code>ChartSectionReviewSection.FAMILY_HISTORIES</code>. Both carry the same value, <code>family_histories</code>." %}
 
 ---
 
@@ -625,7 +678,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
@@ -811,9 +864,9 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                          |
 | `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order (max length: 1024 characters). |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
-| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
@@ -974,6 +1027,77 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 
 ---
 
+### Immunize
+
+Records a vaccine **administered** during the visit, including the lot it came from.
+
+**Command-specific parameters**:
+
+| Name              | Type      | Required to commit | Description                                                                                                |
+|-------------------|-----------|--------------------|------------------------------------------------------------------------------------------------------------|
+| `vaccine_id`      | _UUID_    | `true`             | The `id` of a [Vaccine](/sdk/data-vaccine/#vaccine) in this instance's catalog. Must be active.            |
+| `lot_id`          | _UUID_    | `false`*           | The `id` of a [VaccineLot](/sdk/data-vaccine/#vaccinelot) with doses on hand.                              |
+| `lot_number`      | _string_  | `false`*           | A lot number this instance does not stock, recorded as free text (max 20 characters).                      |
+| `manufacturer`    | _string_  | `false`            | The vaccine's manufacturer (max 100 characters).                                                           |
+| `expiration_date` | _date_    | `false`            | The lot's expiration date.                                                                                 |
+| `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
+| `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
+| `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
+
+*`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
+be omitted.
+
+**Choosing a vaccine and lot**:
+
+Both are instance-specific data, so look them up rather than hard-coding identifiers. A
+vaccine is only selectable on a note if it is active and carries an active CPT charge. See
+[Vaccine](/sdk/data-vaccine/) for the query.
+
+**Manufacturer and expiration**:
+
+When you supply a `lot_id` and leave `manufacturer` or `expiration_date` unset, the
+command fills them in from the lot. Anything you set explicitly is used as-is - including an explicit `None`, which is
+treated as a deliberate choice to leave the field empty rather than as an omission.
+
+A `lot_number` is free text with no inventory record behind it, so nothing is derived
+from it; set `manufacturer` and `expiration_date` yourself if you want them recorded.
+
+**Example**:
+
+```python?partial=true
+from datetime import date
+
+from canvas_sdk.commands.commands.immunize import ImmunizeCommand
+from canvas_sdk.v1.data import Vaccine, VaccineLot
+
+vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
+lot = VaccineLot.objects.filter(vaccine__id=vaccine.id, on_hand_inventory__gt=0).first()
+
+# manufacturer and expiration_date are taken from the lot
+immunize = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_id=lot.id,
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+
+# A lot the instance does not stock: supply the details yourself
+immunize_unstocked = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_number="ABC-12345",
+    manufacturer="Acme Vaccines",
+    expiration_date=date(2028, 1, 31),
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+```
+
+---
+
 ### Instruct
 
 **Command-specific parameters**:
@@ -1031,7 +1155,7 @@ Built-in validations ensure that:
 | `ordering_provider_key` | _string_       | `false`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the tests.                                                                                                                     |
 | `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
-| `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
+| `comment`               | _string_       | `false`  | Additional comments related to the lab order (max length: 128 characters).                                                                                        |
 
 **Command-specific actions**:
 
@@ -1165,7 +1289,7 @@ MedicalHistoryCommand(
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
@@ -1459,16 +1583,16 @@ def compute():
 | `compound_medication_id`    | _string_                      | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.             |
 | `compound_medication_data`  | [`CompoundMedicationData`](#prescribe-compoundmedicationdata)      | `false`* | Data for creating a new compound medication inline.                 |
 | `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
-| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication. Up to 1000 characters — see [Limits](#prescribe-limits). |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
-| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense. Must be greater than zero — see [Limits](#prescribe-limits). |
 | `type_to_dispense`          | _[ClinicalQuantity](#clinicalquantity)_            | `true`** | Information about the form or unit of the medication to dispense. Get the available quantities from the [medication search](/sdk/utils/#searching-for-medications)'s `clinical_quantities`.   |
-| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription. From 0 to 99 — see [Limits](#prescribe-limits). |
 | `substitutions`             | _[Substitutions](#prescribe-substitutions) enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. [Look it up via the pharmacy search](/sdk/utils/#searching-for-pharmacies). |
 | `prescriber_id`             | _string_                      | `true`   | The [Staff](/sdk/data-staff/#staff) id of the prescriber.                                          |
 | `supervising_provider_id`   | _string_                      | `false`   | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.               |
-| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
+| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist. Up to 210 characters — see [Limits](#prescribe-limits). |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
@@ -1608,6 +1732,35 @@ prescription = PrescribeCommand(
   * Any dashes in the NDC are automatically removed
   * Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
 * Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
+
+<a id="prescribe-limits"></a>
+
+**Limits**
+
+A prescription has to fit what can be transmitted to the pharmacy, so four fields are bounded. These apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, which share the fields.
+
+| Field                  | Limit           |
+|------------------------|-----------------|
+| `sig`                  | 1000 characters |
+| `note_to_pharmacist`   | 210 characters  |
+| `refills`              | 0 to 99         |
+| `quantity_to_dispense` | greater than 0  |
+
+All four are checked when the command is turned into an effect, not when the field is set. Building a command up field by field therefore never fails part-way through, and `originate()` or `edit()` reports every value that is out of bounds at once:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    prescribe = PrescribeCommand(note_uuid='c4d1e4b8-6a5f-4b3a-9e2d-7f8a9b0c1d2e')
+
+    # Neither assignment raises.
+    prescribe.refills = 100
+    prescribe.quantity_to_dispense = 0
+
+    # This raises a validation error naming both values.
+    return [prescribe.originate()]
+```
 
 ---
 
@@ -1972,6 +2125,43 @@ refer_command = ReferCommand(
 
 ---
 
+### Reference
+
+Embeds a diagnostic view in the note. A diagnostic view is a saved combination of lab tests and questionnaire codes configured on your instance; referencing one renders that patient's results for those codes as a timeseries inside the note, so a reviewer sees the trend without leaving the chart.
+
+The command renders as a read-only table. There are no fields for a user to fill in, so the diagnostic view has to be chosen by whatever inserts the command — a user can only commit or delete it, and enter it in error once committed.
+
+Unlike [ChartSectionReview](#chartsectionreview), it is not committed on origination: it stays staged until you pass `commit=True` to `originate()` or send a separate `commit()`.
+
+{% include alert.html type="warning" content="The rendered name and table are derived from the diagnostic view when the command is originated, and are not recalculated afterwards. Pointing an existing command at a different diagnostic view with <code>edit()</code> leaves the previous view's name and table on display. To change the view, delete the command and originate a new one." %}
+
+**Command-specific parameters**:
+
+| Name                  | Type                | Required to commit | Description                                                                                                                                   |
+|:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferenceCommand
+from canvas_sdk.v1.data import DiagnosticView
+
+def compute():
+    a1c_view = DiagnosticView.objects.filter(name="Hemoglobin A1c").first()
+    if not a1c_view:
+        return []
+
+    reference = ReferenceCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        diagnostic_view_id=a1c_view.id,
+    )
+
+    return [reference.originate(commit=True)]
+```
+
+---
+
 ### ReferralReview
 
 **Command-specific parameters**:
@@ -2305,8 +2495,8 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 |----------------------|----------|----------|-------------------------------------------------------------------|
 | `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
-| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis. |
-| `narrative`          | _string_ | `false`  | A narrative or explanation about the update.                      |
+| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
+| `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
 
 ---
 

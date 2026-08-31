@@ -216,7 +216,7 @@ class Handler(BaseHandler):
 
 ## 5. Listen for an Event
 
-Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types) you're interested in.
+Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types-and-context) you're interested in.
 
 ## 6. Return an Effect
 
