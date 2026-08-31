@@ -2350,7 +2350,7 @@ RemoveAllergyCommand(
 
 | Name                     | Type      | Required to commit | Description                                                                |
 |--------------------------|-----------|----------|----------------------------------------------------------------------------|
-| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be a condition already recorded on that patient's chart.               |
+| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be an **active** condition on that patient's chart — committed, not entered in error, and not already resolved. |
 | `show_in_condition_list` | _boolean_ | `false`  | Determines whether the condition remains visible in patient chart summary. |
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
 
