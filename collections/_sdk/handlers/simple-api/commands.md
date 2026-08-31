@@ -4,15 +4,16 @@ slug: "handlers-simple-api-commands"
 excerpt: "Expose Canvas commands as HTTP endpoints with the Canvas SDK."
 ---
 
-`CommandAPI` is a [SimpleAPI](/sdk/handlers-simple-api-http/) that reads a request body onto a
-[command](/sdk/commands/), validates it against that command, and emits the effects. You declare the
+**Any time you want to write a [command](/sdk/commands/) to a patient's chart over HTTP, this is
+already built for you.** `CommandAPI` is a [SimpleAPI](/sdk/handlers-simple-api-http/) that reads a
+request body onto a command, validates it against that command, and emits the effects. You declare the
 routes and who may reach them; it does the rest.
 
 Reach for it whenever something outside Canvas needs to write to a chart — a patient-facing intake
 form, a device reporting readings, an internal tool your staff already work in, or a service that
 turns its own records into chart entries. Written by hand, each of those means parsing a body, mapping
 it onto a command, deciding how to report every way it can be wrong, and keeping your own record of
-which command you wrote. `CommandAPI` is that work, already done.
+which command you wrote. None of that is yours to write anymore.
 
 For a walkthrough — including how to check that the caller may write to a particular note — see
 [Writing Commands Over HTTP](/guides/writing-commands-over-http/).
