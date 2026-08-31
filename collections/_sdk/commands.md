@@ -25,7 +25,11 @@ Field values are read leniently, so a value does not have to arrive already in t
 
 ### Methods
 
-All commands have the following methods:
+**Not every command supports every method.** `originate` is the only one they all have; `edit`,
+`delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
+command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
+check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
+to [custom commands](/sdk/commands-custom-command/) alone.
 
 #### originate
 
