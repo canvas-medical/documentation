@@ -30,9 +30,9 @@ tells you *who* is calling, not whether that person may write to *this note*.
 
 ## Your first command endpoint
 
-`CommandAPI` is a `SimpleAPI`, so it brings the request handling. What it will not do is **choose your
-authentication**: the schemes ship with the SDK, but which one guards your endpoint is your decision,
-not the base's. You declare it alongside a prefix and your routes:
+`CommandAPI` is a `SimpleAPI`, so it brings the request handling. You declare a scheme, a prefix and
+your routes — here a staff session guards the endpoint, and one `POST` writes a History of Present
+Illness. Which scheme to use is [a decision of its own](#checking-that-the-caller-may-write-to-this-note):
 
 ```python
 from canvas_sdk.commands import HistoryOfPresentIllnessCommand
@@ -155,8 +155,12 @@ Every rejection has the same shape, so a caller can render them uniformly:
 
 This is the part worth thinking about, because the two questions look alike and are not:
 
-- **Authentication** — *who is calling?* `StaffSessionAuthMixin` answers "a logged-in staff member",
-  and nothing more. See [authentication schemes](/sdk/handlers-simple-api/) for the rest.
+- **Authentication** — *who is calling?* `CommandAPI` does not pick this for you, but the schemes are
+  provided: `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `APIKeyAuthMixin` and
+  `BasicAuthMixin`, each declared by listing it before `CommandAPI` in the bases. Declare none and the
+  endpoint refuses every request rather than admitting anyone. `StaffSessionAuthMixin` answers "a
+  logged-in staff member", and nothing more — see
+  [authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins) for what each needs.
 - **Authorization** — *may this caller do this to this note?* The mixin cannot answer that, because
   it never sees the note.
 
