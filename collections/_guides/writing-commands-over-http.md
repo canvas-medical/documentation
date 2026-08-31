@@ -113,7 +113,7 @@ its bad fields from a single response, rather than walking its user through them
 
 ## Checking that the caller may write to this note
 
-This is the part worth thinking about, because the two questions look alike and are not:
+This is the part worth thinking about, because three questions look alike and are not:
 
 - **Authentication** — *who is calling?* `CommandAPI` does not pick this for you, but the schemes are
   provided: `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `APIKeyAuthMixin` and
@@ -123,6 +123,12 @@ This is the part worth thinking about, because the two questions look alike and 
   [authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins) for what each needs.
 - **Authorization** — *may this caller do this to this note?* The mixin cannot answer that, because
   it never sees the note.
+- **Attribution** — *who will the chart say wrote it?* Neither of the above answers this either. A
+  SimpleAPI request is not tied to a person by default, so the commands it writes are recorded as
+  Canvas Bot rather than a clinician. To have them attributed to a real staff member, call the
+  endpoint with an access token from the
+  [Authorization Code flow](/api/customer-authentication#authorization-code) — see
+  [Acting as a Canvas user](/sdk/handlers-simple-api-http/#acting-as-a-canvas-user).
 
 An endpoint gated only on "is staff" lets any staff member write any command to any note. That may
 be exactly right — it is roughly what the chart itself allows — but decide it rather than inherit it.
