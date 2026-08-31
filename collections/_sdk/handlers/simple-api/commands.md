@@ -182,11 +182,11 @@ list as-is; nothing else is required of the handler.
 
 | Body field | Type | Required | Description |
 |---|---|---|---|
-| `note_id` | _string_ | `true` | The [Note](/sdk/data-note/#note) to write the command into. |
-| `values` | _object_ | `false` | The command's own fields, named as the command declares them. |
+| `note_id` | _string_ | `true` | The id of the [Note](/sdk/data-note/#note) to write the command into. |
+| `values` | _object_ | `false` | The command's own fields, named as the command declares them. See [Commands](/sdk/commands/) for the fields each command takes. |
 | `command_id` | _string_ | `false` | An id of your choosing for the new command, instead of the one the response returns. |
 | `commit` | _boolean_ | `false` | Commit the command as well as creating it. Defaults to `false`, leaving it staged for a human to finish. |
-| `metadata` | _object_ | `false` | A flat `{"key": "value"}` map attached to the command. Stored as sent; nothing interprets it. |
+| `metadata` | _object_ | `false` | A flat `{"key": "value"}` map attached to the command. See [Command metadata](/sdk/effect-command-metadata/). |
 
 Responds `201` with the id of the command it wrote and whether it was committed:
 
@@ -206,10 +206,33 @@ A body using every field:
 }
 ```
 
-`commit` decides who finishes the entry. Left `false`, the command is staged: it appears in the note
-for a human to review and sign. Set `true`, it is committed in the same request, which suits an entry
-nobody needs to check — a reading from a device, say — and does not suit anything a clinician should
-see before it counts.
+If anything is wrong with the request, nothing is written and you get a `400` instead. A value that
+the command refuses is reported against the field it came from:
+
+```json
+{
+  "error": "Validation failed",
+  "validation_errors": [
+    { "field": "values.narrative", "message": "String should have at most 512 characters" }
+  ]
+}
+```
+
+A problem with the envelope rather than the values reads the same way, without the `values.` prefix —
+here a body that left `note_id` out:
+
+```json
+{
+  "error": "Validation failed",
+  "validation_errors": [
+    { "field": "note_id", "message": "Field required" }
+  ]
+}
+```
+
+Every field at fault is reported at once, so a caller sees the whole list rather than fixing one
+problem per round trip. The other statuses this route can answer with are in
+[Responses](#responses).
 
 ### edit
 
