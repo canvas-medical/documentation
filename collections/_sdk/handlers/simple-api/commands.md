@@ -344,6 +344,50 @@ write a blank command over it. Every unknown key is reported at once, against `v
 `note_id`, `command_id`, `commit` and `metadata` are the envelope, not fields — they sit alongside
 `values`, not inside it, and they are kept out of what the command writes.
 
+### Structured fields
+
+Not every field is a scalar. A number of commands take a structured value — an object, or a list of
+them — and each arrives as ordinary nested JSON. You do not construct the SDK type; you send its
+shape:
+
+| Type | Example value |
+|:-----|:--------------|
+| [`Allergen`](/sdk/commands/#allergy-allergen) | `{"concept_id": 91, "concept_type": 2}` |
+| [`Coding`](/sdk/commands/#coding) | `{"system": "http://snomed.info/sct", "code": "44054006"}` |
+| [`ClinicalQuantity`](/sdk/commands/#clinicalquantity) | `{"representative_ndc": "0093-1023", "ncpdp_quantity_qualifier_code": "C48542"}` |
+| [`ServiceProvider`](/sdk/commands/#serviceprovider) | `{"first_name": "Ada", "last_name": "Lovelace", "specialty": "Cardiology", "practice_name": "Mercy"}` |
+| [`TaskAssigner`](/sdk/commands/#taskassigner) | `{"to": "staff", "id": 5}` |
+| [`TestValue`](/sdk/commands/#poclabtest-testvalue) | `[{"label": "Glucose", "value": "98"}]` |
+| [`CompoundMedicationData`](/sdk/commands/#prescribe-compoundmedicationdata) | `{"formulation": "cream", "potency_unit_code": "C28253", "controlled_substance": "0"}` |
+| [`Answer` and `Selection`](/sdk/commands/#questionnaire-answer) | `[{"question_id": 15, "response": [{"option_id": 201, "comment": "left side"}]}]` |
+
+Each type's own fields are documented with the command that uses it — follow the link for what is
+required and what each field means.
+
+{% include alert.html type="warning" content="An enum nested inside one of these is given by its <strong>value</strong>, not its name. <code>Allergen.concept_type</code> takes <code>2</code>, not <code>\"MEDICATION\"</code>; <code>TaskAssigner.to</code> takes <code>\"staff\"</code>, not <code>\"STAFF\"</code>. A name is refused with an <code>enum</code> validation error naming the values it will accept." %}
+
+Answering a questionnaire is the largest of these, and the whole
+[`answers`](/sdk/commands/#questionnaire) list goes in `values` like any other field:
+
+```json
+{
+  "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+  "values": {
+    "questionnaire_id": "c1a2b3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+    "answers": [
+      { "question_id": 12, "response": "Three times a week." },
+      { "question_id": 13, "response": 42 },
+      { "question_id": 14, "response": 101 },
+      { "question_id": 15, "response": [{ "option_id": 201 }, { "option_id": 202, "comment": "left side" }] }
+    ]
+  }
+}
+```
+
+The same route serves [Review of Systems](/sdk/commands/#review-of-systems),
+[Structured Assessment](/sdk/commands/#structuredassessment) and
+[Physical Exam](/sdk/commands/#physicalexam), which take `answers` too.
+
 ## Metadata
 
 `metadata` attaches a flat `{"key": "value"}` map to the command. It is stored as sent and nothing in
