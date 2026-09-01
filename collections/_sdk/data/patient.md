@@ -151,6 +151,7 @@ educational_materials = patient.education_material.all()
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
 | assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
 | patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
 | patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
@@ -182,6 +183,11 @@ educational_materials = patient.education_material.all()
 | procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
 | family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
 | histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
+| plans                    | [Plan](/sdk/data-plan/#plan)[]                                             |
+| follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                                |
+| reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
+| removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
+| resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
 
 ### PatientAddress
 

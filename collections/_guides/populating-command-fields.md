@@ -67,7 +67,7 @@ assess = AssessCommand(
 The description of each command field tells you which data module it points to and whether the record has to already be on **that patient's** chart. Common cases:
 
 - **Existing chart items** — the condition to assess or resolve, the medication to stop or change, the goal to close, the reports to review. Query the data module `for_patient(...)` and use the returned id.
-- **Reference tables** — a [Staff](/sdk/data-staff/#staff) key for an ordering provider, a [Questionnaire](/sdk/data-questionnaire/#questionnaire) to answer, a [LabPartner](/sdk/data-labs/) and its tests, a [TaskLabel](/sdk/data-task/#tasklabel) to apply. These aren't patient-scoped, but the value still has to match an existing record.
+- **Reference tables** — a [Staff](/sdk/data-staff/#staff) key for an ordering provider, a [Questionnaire](/sdk/data-questionnaire/#questionnaire) to answer, a [LabPartner](/sdk/data-labs/) and its tests, a [TaskLabel](/sdk/data-task/#tasklabel) to apply, a [Vaccine](/sdk/data-vaccine/#vaccine) and its [lots](/sdk/data-vaccine/#vaccinelot) for an immunization. These aren't patient-scoped, but the value still has to match an existing record.
 
 ## 3. Terminology search → utils HTTP helpers
 

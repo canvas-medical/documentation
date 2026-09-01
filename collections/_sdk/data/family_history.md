@@ -39,7 +39,7 @@ family_histories = FamilyHistory.objects.for_patient(patient_id)
 
 ## Codings
 
-The relative's condition codings can be accessed with the `coding` attribute on a `FamilyHistory` object:
+The relative's condition coding records can be accessed with the `coding` attribute on a `FamilyHistory` object. `FamilyHistory` exposes this relation as the singular `coding`, unlike the plural `codings` on Condition, Procedure, and Immunization:
 
 ```python
 from canvas_sdk.v1.data.family_history import FamilyHistory
@@ -67,9 +67,22 @@ from canvas_sdk.v1.data.family_history import FamilyHistory
 family_histories = FamilyHistory.objects.filter(relation_snomed_term="Mother")
 ```
 
+### By ValueSet
+
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
+Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering, matching against the relative's condition coding records — the `coding` accessor — not the `relation_snomed_code`/`relation_snomed_term` fields:
+
+```python
+from canvas_sdk.v1.data.family_history import FamilyHistory
+from canvas_sdk.value_set.v2022.condition import Diabetes
+
+family_histories = FamilyHistory.objects.find(Diabetes)
+```
+
 ### By coding
 
-Filter across the relation to match the relative's condition codings:
+To filter on coding records directly instead of a value set, filter across the relation to match the relative's condition coding records:
 
 ```python
 from canvas_sdk.v1.data.family_history import FamilyHistory
@@ -78,8 +91,6 @@ family_histories = FamilyHistory.objects.filter(
     coding__code__in=["44054006", "46635009"],
 ).distinct()
 ```
-
-{% include alert.html type="warning" content="<code>FamilyHistory.objects.find()</code> is inherited from the shared queryset but does not work on this model: it builds its filter against a <code>codings</code> relation, while <code>FamilyHistoryCoding</code> links back as <code>coding</code>, so the call raises a <code>FieldError</code>. Filter on <code>coding</code> directly, as above, until value set lookup is supported here." %}
 
 ## Attributes
 

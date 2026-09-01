@@ -554,6 +554,8 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | ENTER_IN_ERROR | Mark a committed command as entered in error. |
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
+| DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
@@ -572,9 +574,10 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Follow Up | `*_FOLLOW_UP_COMMAND` | |
 | Goal | `*_GOAL_COMMAND` | |
 | HPI | `*_HPI_COMMAND` | |
-| Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND |
+| Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND. Supports DELEGATE and SIGN |
 | Imaging Review | `*_IMAGING_REVIEW_COMMAND` | |
 | Immunization Statement | `*_IMMUNIZATION_STATEMENT_COMMAND` | |
+| Immunize | `*_IMMUNIZE_COMMAND` | |
 | Instruct | `*_INSTRUCT_COMMAND` | |
 | Lab Order | `*_LAB_ORDER_COMMAND` | Also supports SEND |
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
@@ -586,7 +589,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Prescribe | `*_PRESCRIBE_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Questionnaire | `*_QUESTIONNAIRE_COMMAND` | |
 | Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only |
-| Refer | `*_REFER_COMMAND` | No COMMIT |
+| Refer | `*_REFER_COMMAND` | No COMMIT. Supports DELEGATE and SIGN |
 | Reference | `*_REFERENCE_COMMAND` | EDIT does not refresh the rendered table |
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |

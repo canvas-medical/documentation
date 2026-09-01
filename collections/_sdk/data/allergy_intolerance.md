@@ -107,6 +107,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | recorded_date                  | DateTime                                                |
 | narrative                      | String                                                  |
 | codings                        | [AllergyIntoleranceCoding](#allergyintolerancecoding)[] |
+| remove_allergy_events          | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
 
 ### AllergyIntoleranceCoding
 
