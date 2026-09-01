@@ -73,6 +73,8 @@ if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
     print("Coverage is active")
 ```
 
+`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage — one whose issuer [does not support eligibility checks](#transactor). It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+
 Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
 
 A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
@@ -166,6 +168,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | description                  | String                                              |
 | active                       | Boolean                                             |
 | use_provider_for_eligibility | Boolean                                             |
+| supports_eligibility_check   | Boolean (read-only property)                        |
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
 | coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |
