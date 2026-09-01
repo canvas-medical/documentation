@@ -183,6 +183,11 @@ educational_materials = patient.education_material.all()
 | procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
 | family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
 | histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
+| plans                    | [Plan](/sdk/data-plan/#plan)[]                                             |
+| follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                                |
+| reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
+| removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
+| resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
 
 ### PatientAddress
 

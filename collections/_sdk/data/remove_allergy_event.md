@@ -28,6 +28,15 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 removals = patient.removed_allergies.all()
 ```
 
+The same records are reachable from the note they were recorded on, with the `removed_allergies` attribute on a `Note` object:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+removals = note.removed_allergies.all()
+```
+
 You can also access the removed allergy with the `allergy` attribute:
 
 ```python?partial=true

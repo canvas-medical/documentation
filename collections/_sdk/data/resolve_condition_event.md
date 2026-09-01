@@ -28,6 +28,15 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 resolutions = patient.resolved_conditions.all()
 ```
 
+The same records are reachable from the note they were recorded on, with the `resolved_conditions` attribute on a `Note` object:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+resolutions = note.resolved_conditions.all()
+```
+
 You can also access the resolved condition with the `condition` attribute:
 
 ```python?partial=true
