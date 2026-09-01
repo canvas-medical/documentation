@@ -511,6 +511,12 @@ guides:
     identifier: guides_list
 
 guides_list:
+  - title: "Writing Commands Over HTTP"
+    url: /guides/writing-commands-over-http/
+    description: Expose commands as an HTTP endpoint, and check the caller may write to the note
+    uses:
+      - sdk
+
   - title: "Your First Plugin (with Claude Code)"
     url: /guides/your-first-plugin-with-claude-code/
     description: Use an AI assistant to build and deploy your first Canvas plugin
@@ -824,6 +830,8 @@ simple_api_handlers:
     url: /sdk/handlers-simple-api-http/
   - title: "WebSocket API"
     url: /sdk/handlers-simple-api-websocket/
+  - title: "Commands API"
+    url: /sdk/handlers-simple-api-commands/
 
 effects_module:
   - title: "Appointment Labels"
