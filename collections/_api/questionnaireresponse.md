@@ -373,6 +373,15 @@ curl --request POST \
                     "valueString": "Yep"
                 }
             ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
+                }
+            ]
         }
     ]
 }'
@@ -455,6 +464,15 @@ payload = {
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -552,6 +570,15 @@ print(response.text)
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -693,6 +720,15 @@ curl --request PUT \
                     "valueString": "Yep"
                 }
             ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
+                }
+            ]
         }
     ]
 }'
@@ -775,6 +811,15 @@ payload = {
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -892,6 +937,15 @@ print(response.text)
                         "answer": [
                             {
                                 "valueString": "Yep"
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                        "text": "If you quit smoking, what day?",
+                        "answer": [
+                            {
+                                "valueDate": "2026-07-14"
                             }
                         ]
                     }
