@@ -1,40 +1,44 @@
 ---
 title: "Embedded Applications"
 slug: "handlers-embedded-applications"
-excerpt: "Handler-based applications that render inside a note or replace the scheduling modal."
+excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, or dock a persistent pane to a window edge."
 hidden: false
 ---
 
-Embedded applications render **inside a specific Canvas surface** — a tab within
-a note, or the scheduling modal — rather than as an icon in the app drawer. They
+Embedded applications render **inside a specific Canvas surface** (a tab within
+a note, the scheduling modal, or a pane pinned to a window edge) rather than as
+an icon in the app drawer. They
 are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
 register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders
 it in the appropriate surface.
 
-There are two kinds:
+There are three kinds:
 
 | Base class            | Surface                                                  |
 |-----------------------|----------------------------------------------------------|
 | `NoteApplication`     | A tab within a patient's note                            |
 | `SchedulingApplication` | Replaces the built-in scheduling modal at every entry point |
+| `DockedApplication` | A persistent pane pinned to a window edge, always visible |
 
 ## How embedded applications work
 
 Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one
-by subclassing `NoteApplication` or `SchedulingApplication` and registering it
-under `handlers` in your `CANVAS_MANIFEST.json` — everything else is inherited
-from that parent class.
+by subclassing `NoteApplication`, `SchedulingApplication`, or `DockedApplication`
+and registering it under `handlers` in your `CANVAS_MANIFEST.json` — everything
+else is inherited from that parent class.
 
 Because the parent class defines the behavior, there's very little to configure:
 
 - The **surface** comes from the class you inherit — `NoteApplication` renders as
-  a tab in a note, and `SchedulingApplication` replaces the scheduling modal. You
-  don't set a `scope` or an `icon`.
-- Canvas **renders them on demand**: when a note opens or a scheduling action is
-  triggered, Canvas asks which embedded application is installed for that surface
-  and renders the one your handler returns. They aren't persisted as drawer
-  applications, so they don't appear in the app drawer or under
-  Plugins_IO > Applications.
+  a tab in a note, `SchedulingApplication` replaces the scheduling modal, and
+  `DockedApplication` pins a persistent pane to a window edge. You don't set a
+  `scope` or an `icon`.
+- Canvas renders Note and Scheduling Applications **on demand**: when a note opens
+  or a scheduling action is triggered, Canvas asks which embedded application is
+  installed for that surface, then renders what your handler returns. A Docked
+  Application is the exception: it stays mounted at all times instead of rendering
+  on demand. None of the three are persisted as drawer applications, so they don't
+  appear in the app drawer or under Plugins_IO > Applications.
 - If no embedded application is installed for a surface, Canvas falls back to its
   built-in behavior — an unmodified note, or the built-in scheduling modal.
 
@@ -328,3 +332,78 @@ override.
 ```
 
 When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
+
+## Docked Applications
+
+A Docked Application mounts as a persistent **docked pane** pinned to a window edge. It stays in place as the user moves between pages, including between a patient chart and global pages, rather than opening fresh each time.
+
+### Implementing a Docked Application
+
+To create a Docked Application, your handler class should inherit from `DockedApplication`, set the required class attributes, and implement `on_open()` returning a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`.
+
+| Attribute    | Description                                                                    |
+|--------------|--------------------------------------------------------------------------------|
+| `NAME`       | (Required) The display title for the pane                                      |
+| `IDENTIFIER` | (Optional) A unique key for the application (recommended format: `plugin_name__app_name`) |
+| `DOCK_EDGE`  | (Required) Which window edge to pin the pane to, given as a `DockEdge` value    |
+| `DOCK_SIZE`  | (Required) The pane's size, as a CSS length string (for example, `"320px"`)    |
+
+When `IDENTIFIER` is omitted, the application's identifier defaults to one derived automatically from the class's module and name. Set it explicitly in the recommended `plugin_name__app_name` format to give the application a stable, readable identifier.
+
+`DOCK_EDGE` and `DOCK_SIZE` are both mandatory. Omitting either is a programming error that Canvas surfaces when the application runs.
+
+`DOCK_EDGE` takes one of the following `DockEdge` values:
+
+| Value    | Edge to pin to        |
+|----------|-----------------------|
+| `LEFT`   | Left edge of the window   |
+| `RIGHT`  | Right edge of the window  |
+| `TOP`    | Top edge of the window    |
+| `BOTTOM` | Bottom edge of the window |
+
+An edge Canvas does not recognize is rejected.
+
+The pane has no launcher entry to open it and no control to dismiss it. Installing the plugin makes the pane appear; removing the plugin removes it. The plugin cannot override this: a Docked Application always opens. Existing Note Applications and Scheduling Applications are unaffected and keep working unchanged.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockedApplication, DockEdge
+
+
+class InfoPanel(DockedApplication):
+    """Docked application that shows a fixed information pane on the right edge."""
+
+    NAME = "Info Panel"
+    IDENTIFIER = "my_plugin__info_panel"
+    DOCK_EDGE = DockEdge.RIGHT
+    DOCK_SIZE = "320px"
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Mount the docked pane's content."""
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content="<html>Your pane HTML here</html>",
+            title="Info Panel"
+        ).apply()
+```
+
+### Manifest Configuration
+
+Register your Docked Application under the `handlers` section of your
+`CANVAS_MANIFEST.json`. As with Note and Scheduling Applications, there is **no**
+`scope` or `icon` — inheriting from `DockedApplication` is what tells Canvas to
+mount it as a docked pane.
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.info_panel:InfoPanel",
+        "description": "Fixed information pane docked to the right edge."
+      }
+    ]
+  }
+}
+```
