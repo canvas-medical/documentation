@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `VitalSignReading` model is the anchor for the `vitals` command — a set of vital-sign readings recorded on a Note for a Patient. The individual measurements (blood pressure, heart rate, temperature, weight, etc.) are stored as related `VitalSign` records, reachable via the `signs` attribute.
+The `VitalSignReading` model is the anchor for the [Vitals](/sdk/commands/#vitals) command — a set of vital-sign readings recorded on a Note for a Patient. The individual measurements (blood pressure, heart rate, temperature, weight, etc.) are stored as related `VitalSign` records, reachable via the `signs` attribute.
 
 ## Basic usage
 

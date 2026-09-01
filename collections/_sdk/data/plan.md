@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Plan` model represents a Plan (plan of care) recorded on a Note, and is always associated with a Note and a Patient. It is the data model behind the `plan` command.
+The `Plan` model represents a Plan (plan of care) recorded on a Note, and is always associated with a Note and a Patient. It is the anchor for the [Plan](/sdk/commands/#plan) command.
 
 ## Basic usage
 

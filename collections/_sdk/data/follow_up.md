@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `FollowUp` model is the anchor for the `follow_up` command — a requested follow-up (recall) recorded on a Note for a Patient.
+The `FollowUp` model is the anchor for the [Follow Up](/sdk/commands/#followup) command — a requested follow-up (recall) recorded on a Note for a Patient.
 
 ## Basic usage
 

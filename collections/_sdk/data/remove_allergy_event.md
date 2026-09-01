@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `RemoveAllergyEvent` model represents a record of an allergy being removed from a patient's allergy list — the anchor for the `remove_allergy` command.
+The `RemoveAllergyEvent` model represents a record of an allergy being removed from a patient's allergy list — the anchor for the [Remove Allergy](/sdk/commands/#removeallergy) command.
 
 ## Basic usage
 

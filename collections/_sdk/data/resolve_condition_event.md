@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ResolveConditionEvent` model represents a record of a condition being resolved — the anchor for the `resolve_condition` command.
+The `ResolveConditionEvent` model represents a record of a condition being resolved — the anchor for the [Resolve Condition](/sdk/commands/#resolve-condition) command.
 
 ## Basic usage
 
