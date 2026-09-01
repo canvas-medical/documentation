@@ -1183,6 +1183,9 @@ data_module:
   - title: "Prescription"
     url: /sdk/data-prescription/
     description: The practice locations present in the Canvas EMR.
+  - title: "PrescriptionChangeResponse"
+    url: /sdk/data-prescription-change-response/
+    description: A response (approve/deny) to a Surescripts prescription change request.
   - title: "Procedure"
     url: /sdk/data-procedure/
     description: A procedure performed on or ordered for a patient, with its CPT codings.
