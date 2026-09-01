@@ -5414,6 +5414,7 @@ Custom commands support two versions of content:
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/commands/
 The commands module lets you create and update commands within a specific note in Canvas. Commands are the building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation, like HPIs and questionnaires, as well as orders like prescriptions, labs, and referrals. Each Command class can be instantiated in your plugin and used to build a new command instance within a specific note or update an existing instance. The commands are then displayed in real time within the end user's workflow.
 Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
+Commands are written from an event handler by default. To let something outside Canvas write them — a patient-facing form, a device, an internal tool — expose them over HTTP with [`CommandAPI`](/sdk/handlers-simple-api-commands/), which reads a request body onto any command on this page, validates it, and emits the effects. The [Writing Commands Over HTTP](/guides/writing-commands-over-http/) guide walks through building one.
 > **Info:** New to command fields? Fields that are autocompletes, dropdowns, or enums in the Canvas UI take a raw code, id, or enum value in the SDK — you have to look the value up first. See [Populating Command Fields](/guides/populating-command-fields/) for where each value comes from. 
 ##  Common Attributes 
 ###  Parameters 
@@ -5423,8 +5424,10 @@ Name | Type | Required | Description
 `note_uuid` | _string_ | `true` if creating a new command | The id of the [Note](/sdk/data-note/#note) in which to insert the command.  
 `command_uuid` | _string_ | `true` if updating an existing command | The id of the [Command](/sdk/data-command/#command). On `originate` you can pass your own value to set it the first time; when updating, it references an existing command.  
 All parameters can be set upon initialization, and also updated on the class instance.
+Field values are read leniently, so a value does not have to arrive already in the field's own type: a number can be given as `"3"`, a date as `"2026-08-04"`, and an enum as its value (`"mild"`) rather than the member. This matters most when the values come from somewhere that only has strings, such as a JSON request body.
 ###  Methods 
-All commands have the following methods:
+**Not every command supports every method.** `originate` is the only one they all have; `edit`, `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts — check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs to [custom commands](/sdk/commands-custom-command/) alone.
+To call these over HTTP rather than from a handler, see [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
 ####  originate 
 Returns an Effect that originates a new command in the note body.
 **Parameters:**
@@ -6129,6 +6132,54 @@ The `unstructured` parameter:
     )
     ```
 * * *
+###  Immunize 
+Records a vaccine **administered** during the visit, including the lot it came from.
+**Command-specific parameters** :
+Name | Type | Required to commit | Description  
+---|---|---|---  
+`vaccine_id` | _UUID_ | `true` | The `id` of a [Vaccine](/sdk/data-vaccine/#vaccine) in this instance's catalog. Must be active.  
+`lot_id` | _UUID_ | `false`* | The `id` of a [VaccineLot](/sdk/data-vaccine/#vaccinelot) with doses on hand.  
+`lot_number` | _string_ | `false`* | A lot number this instance does not stock, recorded as free text (max 20 characters).  
+`manufacturer` | _string_ | `false` | The vaccine's manufacturer (max 100 characters).  
+`expiration_date` | _date_ | `false` | The lot's expiration date.  
+`sig` | _string_ | `false` | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).  
+`consent_given` | _boolean_ | `true` | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit.  
+`given_by_id` | _string_ | `true` | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.  
+*`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may be omitted.
+**Choosing a vaccine and lot** :
+Both are instance-specific data, so look them up rather than hard-coding identifiers. A vaccine is only selectable on a note if it is active and carries an active CPT charge. See [Vaccine](/sdk/data-vaccine/) for the query.
+**Manufacturer and expiration** :
+When you supply a `lot_id` and leave `manufacturer` or `expiration_date` unset, the command fills them in from the lot. Anything you set explicitly is used as-is - including an explicit `None`, which is treated as a deliberate choice to leave the field empty rather than as an omission.
+A `lot_number` is free text with no inventory record behind it, so nothing is derived from it; set `manufacturer` and `expiration_date` yourself if you want them recorded.
+**Example** :
+    ```python
+    from datetime import date
+    from canvas_sdk.commands.commands.immunize import ImmunizeCommand
+    from canvas_sdk.v1.data import Vaccine, VaccineLot
+    vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
+    lot = VaccineLot.objects.filter(vaccine__id=vaccine.id, on_hand_inventory__gt=0).first()
+    # manufacturer and expiration_date are taken from the lot
+    immunize = ImmunizeCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        vaccine_id=vaccine.id,
+        lot_id=lot.id,
+        sig="0.5 mL IM, left deltoid",
+        consent_given=True,
+        given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+    )
+    # A lot the instance does not stock: supply the details yourself
+    immunize_unstocked = ImmunizeCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        vaccine_id=vaccine.id,
+        lot_number="ABC-12345",
+        manufacturer="Acme Vaccines",
+        expiration_date=date(2028, 1, 31),
+        sig="0.5 mL IM, left deltoid",
+        consent_given=True,
+        given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+    )
+    ```
+* * *
 ###  Instruct 
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
@@ -6169,7 +6220,7 @@ Name | Type | Required to send | Description
 `ordering_provider_key` | _string_ | `false` | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the tests.  
 `diagnosis_codes` | _list[string]_ | `false` | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).  
 `fasting_required` | _boolean_ | `false` | Indicates if fasting is required for the tests.  
-`comment` | _string_ | `false` | Additional comments related to the lab order.  
+`comment` | _string_ | `false` | Additional comments related to the lab order (max length: 128 characters).  
 **Command-specific actions** :
 Action Name | Available When | Description  
 ---|---|---  
@@ -6478,16 +6529,16 @@ Name | Type | Required to review / send | Description
 `compound_medication_id` | _string_ | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.  
 `compound_medication_data` | `CompoundMedicationData` | `false`* | Data for creating a new compound medication inline.  
 `icd10_codes` | _list[string]_ | `false` | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  
-`sig` | _string_ | `true` | Administration instructions/details of the medication.  
+`sig` | _string_ | `true` | Administration instructions/details of the medication. Up to 1000 characters — see Limits.  
 `days_supply` | _integer_ | `false` | Number of days the prescription is intended to cover.  
-`quantity_to_dispense` | _Decimal | float | integer_ | `true` | The amount of medication to dispense.  
+`quantity_to_dispense` | _Decimal | float | integer_ | `true` | The amount of medication to dispense. Must be greater than zero — see Limits.  
 `type_to_dispense` | _ClinicalQuantity_ | `true`** | Information about the form or unit of the medication to dispense. Get the available quantities from the [medication search](/sdk/utils/#searching-for-medications)'s `clinical_quantities`.  
-`refills` | _integer_ | `true` | Number of refills allowed for the prescription.  
+`refills` | _integer_ | `true` | Number of refills allowed for the prescription. From 0 to 99 — see Limits.  
 `substitutions` | _Substitutions enum_ | `true` | Specifies whether substitutions (e.g., generic drugs) are allowed.  
 `pharmacy` | _string_ | `false` | The NCPDP ID of the pharmacy where the prescription should be sent. [Look it up via the pharmacy search](/sdk/utils/#searching-for-pharmacies).  
 `prescriber_id` | _string_ | `true` | The [Staff](/sdk/data-staff/#staff) id of the prescriber.  
 `supervising_provider_id` | _string_ | `false` | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.  
-`note_to_pharmacist` | _string_ | `false` | Additional notes or instructions for the pharmacist.  
+`note_to_pharmacist` | _string_ | `false` | Additional notes or instructions for the pharmacist. Up to 210 characters — see Limits.  
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 **ClinicalQuantity is only required when `fdb_code` is provided. It is optional for compound medications.
 **Command-specific actions** :
@@ -6596,13 +6647,33 @@ Note: `type_to_dispense` should not be provided for compound medications as this
     - Any dashes in the NDC are automatically removed
     - Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
   - Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
+**Limits**
+A prescription has to fit what can be transmitted to the pharmacy, so four fields are bounded. These apply to Refill and AdjustPrescription as well, which share the fields.
+Field | Limit  
+---|---  
+`sig` | 1000 characters  
+`note_to_pharmacist` | 210 characters  
+`refills` | 0 to 99  
+`quantity_to_dispense` | greater than 0  
+All four are checked when the command is turned into an effect, not when the field is set. Building a command up field by field therefore never fails part-way through, and `originate()` or `edit()` reports every value that is out of bounds at once:
+    ```python
+    from canvas_sdk.commands import PrescribeCommand
+    def compute():
+        prescribe = PrescribeCommand(note_uuid='c4d1e4b8-6a5f-4b3a-9e2d-7f8a9b0c1d2e')
+        # Neither assignment raises.
+        prescribe.refills = 100
+        prescribe.quantity_to_dispense = 0
+        # This raises a validation error naming both values.
+        return [prescribe.originate()]
+    ```
 * * *
 ###  PhysicalExam 
-**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the Questionnaire Command Documentation.
+**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see Recording responses.
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient.  
+`answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
 ####  Toggle Questions Feature 
 The PhysicalExamCommand and the ReviewOfSystemsCommand both support toggling questions on/off, so practitioners can enable or disable specific questions based on patient relevance. The methods, property, and behavior described here are identical for both commands.
 The following methods are available. In each, `question_id` is the [Question](/sdk/data-questionnaire/#question) `dbid` (an integer, accepted as `int` or `str`):
@@ -6706,15 +6777,37 @@ A common use case is retrieving existing PhysicalExam commands from a note and m
 ####  Overview 
 The `QuestionnaireCommand` is used to present a questionnaire to a patient and commit their responses to an interview. It requires the ID of the questionnaire
 **Automatic Questionnaire ID Loading** : When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
-In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+In addition to the basic parameters, this command records responses in either of two ways:
+  - **The`answers` parameter** — you pass the responses in, one per question, and the command works out how to apply each one. Nothing in your code branches on a question's type. Use this when you already have the question and option ids.
+  - **The`questions` property with `add_response()`** — you read the questionnaire's questions off the command and record a response on each question object. The keyword you pass differs by question type, so your code branches on it. Use this when you need to inspect the questions or their options at runtime to decide what to answer.
+Both arrive at the same result, and they can be combined. `answers` is applied when the command's effect is built: it replaces whatever was recorded on the questions it names, and leaves a response recorded with `add_response()` on any other question alone. `answers` is not itself carried in the effect.
+**Recording responses with`answers`**
+The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes; the command looks up the question, dispatches on its type, and resolves an option id to the option itself. A question id that is not in the questionnaire, an option id the question does not offer, or a response the question's type does not allow raises a `ValueError` when the effect is built.
+**`Answer` fields**:
+Name | Type | Required | Description  
+---|---|---|---  
+`question_id` | _integer_ | `true` | The [Question](/sdk/data-questionnaire/#question) `dbid`.  
+`response` | _string_ , _integer_ , or _list ofSelection_ | `true` | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, an ISO 8601 `YYYY-MM-DD` string for a date question, or a list of `Selection` objects for a checkbox question.  
+A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a `Selection` rather than to the answer as a whole.
+> **Warning:** A date answer given through `answers` must be a string. `response` accepts a string, an integer or a list of `Selection`, so a `datetime.date` is refused. The question's own `add_response(date=...)` is the path that takes a `datetime.date` or a `datetime.datetime`. 
+**`Selection` fields**:
+Name | Type | Required | Description  
+---|---|---|---  
+`option_id` | _integer_ | `true` | The [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` to tick.  
+`comment` | _string_ | `false` | What this selection is qualified with.  
+`selected` | _boolean_ | `false` | Defaults to `true`. Set it to `false` to untick the option — one a payload says nothing about keeps the state it already had.  
+**Recording responses with`questions` and `add_response()`**
+Retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
   - **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
   - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
   - **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
   - **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
+  - **Date questions (TYPE_DATE):** Accept a keyword argument `date` (a `datetime.date`, a `datetime.datetime` normalized to its date, or an ISO 8601 date string `YYYY-MM-DD`). The value is stored as a normalized `YYYY-MM-DD` string; a string carrying a time component, an unparseable string, or a wrong type raises an error.
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient.  
+`answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
 **Example** — instantiating an empty questionnaire:
     ```python
     from canvas_sdk.commands import QuestionnaireCommand
@@ -6724,7 +6817,45 @@ Name | Type | Required to commit | Description
     )
     ```
 ####  Usage Example 
-Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
+Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
+    ```python
+    import uuid
+    from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Note, Questionnaire
+    class MyHandler(BaseHandler):
+        def compute(self) -> list[Effect]:
+          questionnaire = Questionnaire.objects.filter(name="Exercise").first()
+          note = Note.objects.last()
+          command = QuestionnaireCommand(
+              note_uuid=str(note.id),
+              questionnaire_id=str(questionnaire.id),
+              command_uuid=str(uuid.uuid4()),
+              answers=[
+                  # A text question.
+                  Answer(question_id=12, response="Thanks for all the fish"),
+                  # An integer question.
+                  Answer(question_id=13, response=42),
+                  # A radio question, answered with the id of one of its options.
+                  Answer(question_id=14, response=101),
+                  # A date question. Give the date as a string, not a datetime.date.
+                  Answer(question_id=15, response="2026-07-14"),
+                  # A checkbox question, answered with one Selection per option ticked.
+                  Answer(
+                      question_id=16,
+                      response=[
+                          Selection(option_id=201),
+                          Selection(option_id=202, comment="Don't panic"),
+                      ],
+                  ),
+              ],
+          )
+          # Because we're directly setting a command_uuid, we can return both originate and edit.
+          return [command.originate(), command.edit()]
+    ```
+An option id that the question does not offer, or a question id that is not in the questionnaire, raises a `ValueError` rather than recording something the questionnaire does not define.
+Below is the same thing written the other way, retrieving the questions and adding responses to them based on their type:
     ```python
     import uuid
     from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
@@ -6761,17 +6892,21 @@ Below is an example that demonstrates how to instantiate a `QuestionnaireCommand
                   last_option = question.options[-1]
                   question.add_response(option=first_option, selected=True, comment="Don't panic")
                   question.add_response(option=last_option, selected=True)
+              elif question.type == ResponseOption.TYPE_DATE:
+                  # For date questions, pass a 'date' keyword argument.
+                  question.add_response(date="2026-01-15")
           # Because we're directly setting a command_uuid, we can return both originate and edit.
           return [command.originate(), command.edit()]
     ```
 ####  Explanation 
   - **Retrieving Questions:** The `questions` property returns a list of question objects created from the questionnaire's data.
-  - **Recording Responses:** Each question object provides an `add_response()` method that enforces the correct response format: 
+  - **Recording Responses:** Either set `answers` and let the command resolve each response against its question, or record them one at a time. Each question object provides an `add_response()` method that enforces the correct response format: 
     - For **TextQuestion** , you must pass a `text` parameter.
     - For **IntegerQuestion** , you must pass an `integer` parameter.
     - For **RadioQuestion** , you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
     - For **CheckboxQuestion** , you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
     - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
+    - For **DateQuestion** , you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
   - **Creating and Editing:** When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
   - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
   - If you are looking to insert a committed questionnaire command, you'll need to return three effects: 
@@ -6947,7 +7082,7 @@ Check the Prescribe command for the parameters used in the Refill command. Refil
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `allergy_id` | _string_ | `true` | The id of the [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) to remove. Must be an allergy already recorded on that patient's chart.  
-`narrative` | _string_ | `false` | Additional context or narrative for the removal.  
+`narrative` | _string_ | `false` | Additional context or narrative for the removal (max length: 512 characters).  
 **Example** :
     ```python
     from canvas_sdk.commands import RemoveAllergyCommand
@@ -6961,7 +7096,7 @@ Name | Type | Required to commit | Description
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
-`condition_id` | _string_ | `true` | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be a condition already recorded on that patient's chart.  
+`condition_id` | _string_ | `true` | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be an **active** condition on that patient's chart — committed, not entered in error, and not already resolved.  
 `show_in_condition_list` | _boolean_ | `false` | Determines whether the condition remains visible in patient chart summary.  
 `rationale` | _string_ | `false` | Additional context.  
     ```python
@@ -6982,6 +7117,7 @@ Name | Type | Required to commit | Description
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient.  
+`answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
 ####  Toggle Questions Feature 
 The ReviewOfSystemsCommand supports the same question-toggling functionality as the PhysicalExamCommand, allowing practitioners to enable or disable specific system-review questions based on patient relevance. The available methods (`is_question_enabled`, `set_question_enabled`) and the `question_toggles` property are documented once under the PhysicalExam Toggle Questions Feature — they behave identically here.
 **Example** :
@@ -7019,7 +7155,7 @@ The ReviewOfSystemsCommand supports the same question-toggling functionality as 
     existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c5d6e7f80')
     # All previously set toggle states are automatically loaded
     ```
-**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the Questionnaire Command Documentation.
+**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see Recording responses.
 * * *
 ###  StopMedication 
 **Command-specific parameters** :
@@ -7042,7 +7178,8 @@ Name | Type | Required to commit | Description
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient.  
-**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the Questionnaire Command Documentation.
+`answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
+**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see Recording responses.
 **Example** :
     ```python
     from canvas_sdk.commands import StructuredAssessmentCommand
@@ -7131,8 +7268,8 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.  
 `new_condition_code` | _string_ | `true` | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  
-`background` | _string_ | `false` | Background information or notes related to the updated diagnosis.  
-`narrative` | _string_ | `false` | A narrative or explanation about the update.  
+`background` | _string_ | `false` | Background information or notes related to the updated diagnosis (max length: 2048 characters).  
+`narrative` | _string_ | `false` | A narrative or explanation about the update (max length: 2048 characters).  
 * * *
 **Example**
     ```python
@@ -7149,7 +7286,7 @@ Name | Type | Required to commit | Description
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
-`goal_id` | _string_ | `true` | The `dbid` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.  
+`goal_id` | _string_ | `true` | The `id` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.  
 `due_date` | _datetime_ | `false` | The date the goal is due.  
 `achievement_status` | _AchievementStatus enum_ | `false` | The current achievement status of the goal.  
 `priority` | _Priority enum_ | `false` | The priority of the goal.  
@@ -10529,6 +10666,7 @@ last_occurrence_original_input | String
 recorded_date | DateTime  
 narrative | String  
 codings | AllergyIntoleranceCoding[]  
+remove_allergy_events | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[]  
 ###  AllergyIntoleranceCoding 
 Field Name | Type  
 ---|---  
@@ -11259,6 +11397,7 @@ end_date | Date
 code_system | CDMCodeSystem  
 ndc_code | String  
 transactor_charges | QuerySet[[PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)]  
+vaccines | QuerySet[[Vaccine](/sdk/data-vaccine/#vaccine)]  
 ##  Enumeration types 
 ###  CDMCodeSystem 
 Value | Label  
@@ -11329,7 +11468,7 @@ The `committed` method returns chart section reviews that have been committed an
 `conditions` | [Condition](/sdk/data-condition/) (non-surgical)  
 `surgical_history` | [Condition](/sdk/data-condition/) (surgical)  
 `medications` | [Medication](/sdk/data-medication/)  
-`family_histories` | `FamilyHistory` (not currently exposed in the SDK data module)  
+`family_histories` | [FamilyHistory](/sdk/data-family-history/#familyhistory)  
 `allergies` | [AllergyIntolerance](/sdk/data-allergy-intolerance/)  
 `immunizations` | [Immunization](/sdk/data-immunization/) and [ImmunizationStatement](/sdk/data-immunization/)  
 If you only need to **see what was reviewed** , prefer the `content` field: it holds the pre-rendered text of the reviewed records (one line per entry, captured at review time), so it needs no entry resolution and avoids the ambiguity described below.
@@ -11341,6 +11480,7 @@ To work with the **record objects themselves** , filter the corresponding model 
         ChartSectionReviewSection,
     )
     from canvas_sdk.v1.data.condition import Condition
+    from canvas_sdk.v1.data.family_history import FamilyHistory
     from canvas_sdk.v1.data.immunization import Immunization, ImmunizationStatement
     from canvas_sdk.v1.data.medication import Medication
     review = ChartSectionReview.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
@@ -11354,6 +11494,8 @@ To work with the **record objects themselves** , filter the corresponding model 
         )
     elif review.section == ChartSectionReviewSection.MEDICATIONS:
         records = Medication.objects.filter(patient=review.patient, dbid__in=review.entries)
+    elif review.section == ChartSectionReviewSection.FAMILY_HISTORIES:
+        records = FamilyHistory.objects.filter(patient=review.patient, dbid__in=review.entries)
     elif review.section == ChartSectionReviewSection.ALLERGIES:
         records = AllergyIntolerance.objects.filter(patient=review.patient, dbid__in=review.entries)
     elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:
@@ -12151,6 +12293,7 @@ lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#la
 notes | String  
 surgical | Boolean  
 assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
+resolutions | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  
 ###  ConditionCoding 
 Field Name | Type  
 ---|---  
@@ -12321,6 +12464,17 @@ Access insurance card images through the coverage's snapshot:
         for image in coverage.snapshot.images.all():
             print(image.image_url)  # Presigned S3 URL for the insurance card image
     ```
+##  Eligibility status 
+`Coverage.eligibility_status` is a read-only property that returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+    ```python
+    from canvas_sdk.v1.data.coverage import Coverage
+    from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+    coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+    if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
+        print("Coverage is active")
+    ```
+Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
+A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
 ##  Filtering 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
 **Show a Patient's Coverages in order of Rank (Primary, Secondary, etc.)**
@@ -12371,7 +12525,10 @@ comments | Text
 stack | CoverageStack  
 snapshot | [Snapshot](/sdk/data-snapshot/#snapshot)  
 eligibility_summary | EligibilitySummary  
+eligibility_status | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (read-only property)  
 claim_coverages | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]  
+requests | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]  
+eligibility_responses | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[]  
 ###  Transactor 
 Field Name | Type  
 ---|---  
@@ -12400,6 +12557,7 @@ use_provider_for_eligibility | Boolean
 use_for_submission | Transactor  
 used_for_submission_by | Transactor[]  
 coverage_types | TransactorCoverageType[]  
+vaccines | [Vaccine](/sdk/data-vaccine/#vaccine)[]  
 addresses | TransactorAddress[]  
 coverages | Coverage[]  
 phones | TransactorPhone[]  
@@ -13093,6 +13251,89 @@ zh-us | Chinese
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-educational-material/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-eligibility-response/
+##  Introduction 
+The `EligibilityResponse` model represents a coverage eligibility (271) response returned by a payer for a patient's `Coverage`, along with the originating `EligibilityRequest` (270). An `EligibilityResponse` also derives a check `status` (Active, Inactive, or Failed) from the payer's response.
+##  Basic usage 
+To get an eligibility response by identifier, use the `get` method on the `EligibilityResponse` model manager:
+    ```python
+    from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
+    response = EligibilityResponse.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+Eligibility requests and responses are linked to a `Coverage`. From a coverage object, use the `requests` and `eligibility_responses` attributes:
+    ```python
+    from canvas_sdk.v1.data.coverage import Coverage
+    coverage = Coverage.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    requests = coverage.requests.all()
+    responses = coverage.eligibility_responses.all()
+    ```
+##  Eligibility status 
+`EligibilityResponse.status` returns an `EligibilityResponseStatus` derived from the payer's response — `FAILED` when the check errored, `INACTIVE` when the payer reports an inactive benefit section, otherwise `ACTIVE`:
+    ```python
+    from canvas_sdk.v1.data.coverage import Coverage
+    from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+    coverage = Coverage.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    response = coverage.eligibility_responses.order_by("created").last()
+    is_active = response is not None and response.status == EligibilityResponseStatus.ACTIVE
+    ```
+A coverage with no eligibility responses (an empty `coverage.eligibility_responses` queryset) has not been verified.
+##  Attributes 
+###  EligibilityRequest 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+coverage | [Coverage](/sdk/data-coverage)  
+trading_partner_id | String  
+member | JSON  
+provider | JSON  
+payload | String  
+control_number | String  
+###  EligibilityResponse 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+eligibility_request | EligibilityRequest  
+coverage | [Coverage](/sdk/data-coverage)  
+client_id | String  
+correlation_id | String  
+deductible | JSON  
+out_of_pocket | JSON  
+coverage_info | JSON  
+payer | JSON  
+provider | JSON  
+service_type_codes | List[String]  
+service_types | List[String]  
+subscriber | JSON  
+trading_partner_id | String  
+valid_request | Boolean  
+errors | List[String]  
+eligid | String  
+x12_response | String  
+parsed_x12_response | JSON  
+status | EligibilityResponseStatus (read-only property)  
+eligibility_or_benefit_information | List (read-only property)  
+`status` and `eligibility_or_benefit_information` are computed from `errors` and `parsed_x12_response` rather than stored, so neither can be used in `filter()`. To select responses by outcome, filter on the columns they derive from — a failed check is one with a non-empty `errors`:
+    ```python
+    from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
+    failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
+    ```
+##  Enumeration types 
+###  EligibilityResponseStatus 
+Name | Value  
+---|---  
+ACTIVE | Active  
+INACTIVE | Inactive  
+FAILED | Failed  
+UNKNOWN | Unknown  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-eligibility-response/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-encounter/
 ##  Introduction 
 The `Encounter` model represents a patient encounter connected to a Note in Canvas.
@@ -13468,6 +13709,151 @@ patient_facilities | QuerySet[[PatientFacilityAddress](/sdk/data-patient/#patien
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-facility/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-family-history/
+##  Introduction 
+The `FamilyHistory` model represents a patient's family medical history — the condition(s) recorded for one of the patient's relatives, captured by the `family_history` command. The relative is identified by a SNOMED code and term, and the condition(s) are stored as `FamilyHistoryCoding` records reachable through the `coding` accessor.
+##  Basic usage 
+To get a family history record by identifier, use the `get` method on the `FamilyHistory` model manager:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    family_history = FamilyHistory.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, a patient's family history can be accessed with the `family_histories` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    family_histories = patient.family_histories.all()
+    ```
+If you have a patient ID, you can get the family history for the patient with the `for_patient` method on the `FamilyHistory` model manager:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    family_histories = FamilyHistory.objects.for_patient(patient_id)
+    ```
+##  Codings 
+The relative's condition coding records can be accessed with the `coding` attribute on a `FamilyHistory` object. `FamilyHistory` exposes this relation as the singular `coding`, unlike the plural `codings` on Condition, Procedure, and Immunization:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    from logger import log
+    family_history = FamilyHistory.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    for coding in family_history.coding.all():
+        log.info(f"system:  {coding.system}")
+        log.info(f"code:    {coding.code}")
+        log.info(f"display: {coding.display}")
+    ```
+##  Filtering 
+Family history records can be filtered by any attribute that exists on the model.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    family_histories = FamilyHistory.objects.filter(relation_snomed_term="Mother")
+    ```
+###  By ValueSet 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering, matching against the relative's condition coding records — the `coding` accessor — not the `relation_snomed_code`/`relation_snomed_term` fields:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    from canvas_sdk.value_set.v2022.condition import Diabetes
+    family_histories = FamilyHistory.objects.find(Diabetes)
+    ```
+###  By coding 
+To filter on coding records directly instead of a value set, filter across the relation to match the relative's condition coding records:
+    ```python
+    from canvas_sdk.v1.data.family_history import FamilyHistory
+    family_histories = FamilyHistory.objects.filter(
+        coding__code__in=["44054006", "46635009"],
+    ).distinct()
+    ```
+##  Attributes 
+###  FamilyHistory 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+deleted | Boolean  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+relation_snomed_code | Integer  
+relation_snomed_term | String  
+narrative | String  
+coding | FamilyHistoryCoding[]  
+###  FamilyHistoryCoding 
+Field Name | Type  
+---|---  
+dbid | Integer  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+family_history | FamilyHistory  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-family-history/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-follow-up/
+##  Introduction 
+The `FollowUp` model is the anchor for the [Follow Up](/sdk/commands/#followup) command — a requested follow-up (recall) recorded on a Note for a Patient.
+##  Basic usage 
+To get a follow up by identifier, use the `get` method on the `FollowUp` model manager:
+    ```python
+    from canvas_sdk.v1.data.follow_up import FollowUp
+    follow_up = FollowUp.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient or note object, the follow ups can be accessed with the `follow_ups` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from canvas_sdk.v1.data.note import Note
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    follow_ups = patient.follow_ups.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    follow_ups = note.follow_ups.all()
+    ```
+##  Committed follow ups 
+The `committed` method returns follow ups that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.follow_up import FollowUp
+    committed_follow_ups = FollowUp.objects.committed()
+    ```
+##  Attributes 
+###  FollowUp 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+appointment_note | [Note](/sdk/data-note)  
+requested_appointment_date | Date  
+requested_appointment_date_original_input | String  
+reason_for_visit | String  
+reason_for_visit_coding | String  
+note_to_patient | String  
+internal_comment | String  
+requested_appointment_type | EncounterMedium  
+requested_note_type | [NoteType](/sdk/data-note)  
+##  Enumeration types 
+###  EncounterMedium 
+Name | Value  
+---|---  
+VOICE | voice  
+VIDEO | video  
+OFFICE | office  
+HOME | home  
+OFFSITE | offsite  
+LAB | lab  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-follow-up/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-goal/
 ##  Introduction 
 The `Goal` model represents a patient Goal in Canvas, which is always associated with a Note and a Patient.
@@ -13591,6 +13977,57 @@ HIGH | high-priority
 MEDIUM | medium-priority  
 LOW | low-priority  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-goal/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-history-present-illness/
+##  Introduction 
+The `HistoryOfPresentIllness` model represents a History of Present Illness (HPI) recorded on a Note, and is always associated with a Note and a Patient. It is the data model behind the `hpi` command.
+##  Basic usage 
+To get an HPI by identifier, use the `get` method on the `HistoryOfPresentIllness` model manager:
+    ```python
+    from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
+    hpi = HistoryOfPresentIllness.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, or note object, the histories of present illness for a patient or note can be accessed with the `histories_of_present_illness` attribute on a `Patient` or `Note` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from canvas_sdk.v1.data.note import Note
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    histories = patient.histories_of_present_illness.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    histories = note.histories_of_present_illness.all()
+    ```
+##  Reading the narrative 
+The HPI text is stored as a structured document in `narrative_json`. The read-only `narrative` property renders it as plain text, so that is the field to read:
+    ```python
+    from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
+    hpi = HistoryOfPresentIllness.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    text = hpi.narrative
+    ```
+##  Filtering 
+Histories of present illness can be filtered by any column on the model. Note that `narrative` is a Python property rather than a column, so it cannot be used in `filter()` — filter on `narrative_json` instead.
+###  Committed histories of present illness 
+The `committed` method returns records that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
+    committed_histories = HistoryOfPresentIllness.objects.committed()
+    ```
+##  Attributes 
+###  HistoryOfPresentIllness 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+narrative_json | JSON  
+narrative | String (read-only property)  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-history-present-illness/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-imaging-report-template/
@@ -13875,6 +14312,12 @@ Filtering by ValueSet works a little differently. The `find` method on the model
     from canvas_sdk.v1.data.immunization import Immunization
     from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
     immunizations = Immunization.objects.find(InfluenzaVaccine)
+    ```
+`find` also works on the `ImmunizationStatement` model manager, matching against the statement's own coding records, which it exposes through the singular `coding` accessor (unlike `Immunization.codings`):
+    ```python
+    from canvas_sdk.v1.data.immunization import ImmunizationStatement
+    from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
+    immunization_statements = ImmunizationStatement.objects.find(InfluenzaVaccine)
     ```
 ###  Committed and active records 
 The `committed` method returns immunizations that have been committed and not entered in error. The `active` method is an alias for `committed` and returns the same records:
@@ -15708,6 +16151,15 @@ referral_set | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referral
 laborder_set | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note  
 appointment_set | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note  
 education_material | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note  
+procedures | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note  
+family_histories | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note  
+plans | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note  
+follow_ups | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note  
+reasons_for_visit | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note  
+removed_allergies | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note  
+resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note  
+histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note  
+vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note  
 ###  NoteType 
 Field Name | Type  
 ---|---  
@@ -16532,6 +16984,7 @@ user | [CanvasUser](/sdk/data-canvasuser/)[]
 patient_groups | [PatientGroup](/sdk/data-patient-group/)[]  
 chart_section_reviews | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]  
 visual_exam_findings | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]  
+vital_sign_readings | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]  
 assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
 patient_visits | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]  
 patient_events | [ExternalEvent](/sdk/data-external-event/#externalevent)[]  
@@ -16560,6 +17013,14 @@ referral_reviews | [ReferralReview](/sdk/data-referral/#referralreview)[]
 referral_reports | [ReferralReport](/sdk/data-referral/#referralreport)[]  
 invoices | Invoice[]  
 education_material | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  
+procedures | [Procedure](/sdk/data-procedure/#procedure)[]  
+family_histories | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]  
+histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[]  
+plans | [Plan](/sdk/data-plan/#plan)[]  
+follow_ups | [FollowUp](/sdk/data-follow-up/#followup)[]  
+reasons_for_visit | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]  
+removed_allergies | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[]  
+resolved_conditions | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  
 ###  PatientAddress 
 Field Name | Type  
 ---|---  
@@ -16813,6 +17274,56 @@ effective_date | Date
 end_date | Date  
 part_of_capitated_set | Boolean
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-payor-specific-charge/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-plan/
+##  Introduction 
+The `Plan` model represents a Plan (plan of care) recorded on a Note, and is always associated with a Note and a Patient. It is the anchor for the [Plan](/sdk/commands/#plan) command.
+##  Basic usage 
+To get a plan by identifier, use the `get` method on the `Plan` model manager:
+    ```python
+    from canvas_sdk.v1.data.plan import Plan
+    plan = Plan.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, or note object, the plans for a patient or note can be accessed with the `plans` attribute on a `Patient` or `Note` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from canvas_sdk.v1.data.note import Note
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    plans = patient.plans.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    plans = note.plans.all()
+    ```
+##  Reading the narrative 
+The plan text is exposed through the `narrative` property:
+    ```python
+    from canvas_sdk.v1.data.plan import Plan
+    plan = Plan.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    text = plan.narrative
+    ```
+##  Filtering 
+Plans can be filtered by any attribute that exists on the model.
+###  Committed plans 
+The `committed` method returns plans that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.plan import Plan
+    committed_plans = Plan.objects.committed()
+    ```
+##  Attributes 
+###  Plan 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+narrative | String  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-plan/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-plugin-command/
@@ -17261,6 +17772,101 @@ DENIED_PRESCRIPTION_TO_FOLLOW | N | Denied, new prescription to follow
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-prescription/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-procedure/
+##  Introduction 
+The `Procedure` model represents a procedure performed on or ordered for a patient. It is the data model behind the Perform command, is always associated with a Note and a Patient, and has an optional performing provider. Its CPT (or other) codings are available via `codings`.
+##  Basic usage 
+To get a procedure by identifier, use the `get` method on the `Procedure` model manager:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure
+    procedure = Procedure.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient or note object, the procedures for a patient or note can be accessed with the `procedures` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from canvas_sdk.v1.data.note import Note
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    procedures = patient.procedures.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    procedures = note.procedures.all()
+    ```
+If you have a patient ID, you can get the procedures for the patient with the `for_patient` method on the `Procedure` model manager:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    procedures = Procedure.objects.for_patient(patient_id)
+    ```
+##  Codings 
+The codings for a procedure can be accessed with the `codings` attribute on a `Procedure` object:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure
+    from logger import log
+    procedure = Procedure.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    for coding in procedure.codings.all():
+        log.info(f"system:  {coding.system}")
+        log.info(f"code:    {coding.code}")
+        log.info(f"display: {coding.display}")
+    ```
+##  Filtering 
+Procedures can be filtered by any attribute that exists on the model.
+Filtering for procedures is done with the `filter` method on the `Procedure` model manager.
+###  By attribute 
+Specify an attribute with `filter` to filter by that attribute:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure, ProcedureStatus
+    procedures = Procedure.objects.filter(status=ProcedureStatus.COMPLETED)
+    ```
+###  Committed procedures 
+The `committed` method returns procedures that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure
+    committed_procedures = Procedure.objects.committed()
+    ```
+###  By ValueSet 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
+    ```python
+    from canvas_sdk.v1.data.procedure import Procedure
+    from canvas_sdk.value_set.v2022.procedure import Colonoscopy
+    procedures = Procedure.objects.find(Colonoscopy)
+    ```
+##  Attributes 
+###  Procedure 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+provider | [Staff](/sdk/data-staff/)  
+status | ProcedureStatus  
+notes | String  
+codings | ProcedureCoding[]  
+###  ProcedureCoding 
+Field Name | Type  
+---|---  
+dbid | Integer  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+procedure | Procedure  
+##  Enumeration types 
+###  ProcedureStatus 
+Name | Value | Label  
+---|---|---  
+IN_PROGRESS | 1 | in-progress  
+ABORTED | 2 | aborted  
+COMPLETED | 3 | completed  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-procedure/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-protocol-current/
 ##  Introduction 
 The `ProtocolCurrent` object represents the current state of clinical protocols applied to patients within Canvas. Protocols are typically structured plans or guidelines that outline specific medical interventions, treatments, or care pathways for managing various health conditions. The `ProtocolCurrent` object contains essential information about the protocol's status, associated patient, and relevant clinical details.
@@ -17484,10 +18090,22 @@ status | String
 name | String  
 code_system | String  
 code | String  
-type | String  
+type | String — one of the question types below  
 use_in_shx | Boolean  
 options | ResponseOption[]  
 questions | Question[]  
+####  Question types 
+`type` holds the code for the kind of question the option set describes. It decides how the question renders in a note and which value an answer carries.
+`type` | Question | Answer  
+---|---|---  
+`TXT` | Free text | Text, on the response's `response_option_value`.  
+`INT` | Integer | A whole number.  
+`DEC` | Decimal | A decimal number.  
+`DATE` | Date | A calendar date, picked from a date picker.  
+`SING` | Single select | One ResponseOption.  
+`MULT` | Multi select | One or more ResponseOption records.  
+`TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see [Questionnaires](/sdk/questionnaires/).
+> **Warning:** A `DATE` answer is not readable through the data module yet. It is stored on a date column that `InterviewQuestionResponse` does not expose, so `response_option_value` is empty for a date question. Read it over the FHIR API as a `valueDate` on [QuestionnaireResponse](/api/questionnaireresponse/) in the meantime. 
 ###  ResponseOption 
 Field Name | Type  
 ---|---  
@@ -17588,8 +18206,72 @@ comment | String
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-reason-for-visit/
 ##  Introduction 
+This page covers three models:
+  - `ReasonForVisit` — a Reason for Visit recorded on a note, and the anchor for the [Reason for Visit](/sdk/commands/#reasonforvisit) command.
+  - `ReasonForVisitCoding` — the codings on a recorded Reason for Visit.
+  - `ReasonForVisitSettingCoding` — the configured codings an instance offers, used to populate the coding field when a Reason for Visit is recorded.
+##  ReasonForVisit 
+A `ReasonForVisit` is always associated with a note and a patient. To get one by identifier:
+    ```python
+    from canvas_sdk.v1.data import ReasonForVisit
+    rfv = ReasonForVisit.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+From a patient or a note, use the `reasons_for_visit` attribute:
+    ```python
+    from canvas_sdk.v1.data import Note, Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    reasons = patient.reasons_for_visit.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    reasons = note.reasons_for_visit.all()
+    ```
+###  Reading the narrative 
+The text is exposed through the `narrative` property, which returns the free-text value when there is one and otherwise renders the structured `narrative_json`:
+    ```python
+    from canvas_sdk.v1.data import ReasonForVisit
+    rfv = ReasonForVisit.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    text = rfv.narrative
+    ```
+###  Committed reasons for visit 
+The `committed` method returns records that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import ReasonForVisit
+    committed = ReasonForVisit.objects.committed()
+    ```
+###  Codings 
+Each `ReasonForVisit` exposes its codings through `codings`:
+    ```python
+    from canvas_sdk.v1.data import ReasonForVisit
+    rfv = ReasonForVisit.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    codings = rfv.codings.all()
+    ```
+###  Attributes 
+####  ReasonForVisit 
+Field Name | Type | Description  
+---|---|---  
+id | UUID | The universally unique identifier for this record.  
+dbid | Integer | The database identifier for this record.  
+created | DateTime | When the record was created.  
+modified | DateTime | When the record was last modified.  
+originator | [CanvasUser](/sdk/data-canvasuser) | The user who originated the command.  
+committer | [CanvasUser](/sdk/data-canvasuser) | The user who committed the command, if it has been committed.  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser) | The user who entered the record in error, if it has been.  
+patient | [Patient](/sdk/data-patient/#patient) | The patient the reason for visit was recorded for.  
+note | [Note](/sdk/data-note) | The note it was recorded on.  
+narrative | String | The reason for visit text.  
+codings | _list_ | The `ReasonForVisitCoding` records on this reason for visit.  
+####  ReasonForVisitCoding 
+Field Name | Type | Description  
+---|---|---  
+dbid | Integer | The database identifier for this coding record.  
+code | String | The code representing the concept.  
+display | String | The human-readable display name for the concept.  
+system | String | The coding system.  
+version | String | The version of the coding system.  
+user_selected | Boolean | Whether a user chose this coding directly.  
+reason_for_visit | ReasonForVisit | The reason for visit this coding belongs to.  
+##  ReasonForVisitSettingCoding 
 The `ReasonForVisitSettingCoding` model represents the coding information used to populate the coding field within a Reason For Visit in Canvas.
-##  Basic Usage 
+###  Basic Usage 
 To retrieve a specific coding record by its identifier, use the model manager's `get` method:
     ```python
     from canvas_sdk.v1.data import ReasonForVisitSettingCoding
@@ -17600,8 +18282,8 @@ You can also filter records by attributes. For example, to get all codings from 
     from canvas_sdk.v1.data import ReasonForVisitSettingCoding
     codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/sct")
     ```
-##  Attributes 
-###  ReasonForVisitSettingCoding 
+###  Attributes 
+####  ReasonForVisitSettingCoding 
 Field Name | Type | Description  
 ---|---|---  
 id | UUID | The universally unique identifier for this coding record.  
@@ -17847,6 +18529,121 @@ code | String
 display | String  
 user_selected | Boolean  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-refill-request/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-remove-allergy-event/
+##  Introduction 
+The `RemoveAllergyEvent` model represents a record of an allergy being removed from a patient's allergy list — the anchor for the [Remove Allergy](/sdk/commands/#removeallergy) command.
+##  Basic usage 
+To get a remove allergy event by identifier, use the `get` method on the `RemoveAllergyEvent` model manager:
+    ```python
+    from canvas_sdk.v1.data import RemoveAllergyEvent
+    removal = RemoveAllergyEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+    ```
+If you have a patient object, the remove allergy events for a patient can be accessed with the `removed_allergies` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    removals = patient.removed_allergies.all()
+    ```
+The same records are reachable from the note they were recorded on, with the `removed_allergies` attribute on a `Note` object:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    removals = note.removed_allergies.all()
+    ```
+You can also access the removed allergy with the `allergy` attribute:
+    ```python
+    from canvas_sdk.v1.data import RemoveAllergyEvent
+    removal = RemoveAllergyEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+    allergy = removal.allergy
+    ```
+Or for a given allergy, you can access all of its removal events with the `remove_allergy_events` attribute:
+    ```python
+    from canvas_sdk.v1.data import AllergyIntolerance
+    allergy = AllergyIntolerance.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    removals = allergy.remove_allergy_events.all()
+    ```
+##  Committed records 
+The `committed` method returns remove allergy events that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import RemoveAllergyEvent
+    committed_removals = RemoveAllergyEvent.objects.committed()
+    ```
+##  Attributes 
+###  RemoveAllergyEvent 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+allergy | [AllergyIntolerance](/sdk/data-allergy-intolerance)  
+rationale | String  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-remove-allergy-event/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-resolve-condition-event/
+##  Introduction 
+The `ResolveConditionEvent` model represents a record of a condition being resolved — the anchor for the [Resolve Condition](/sdk/commands/#resolve-condition) command.
+##  Basic usage 
+To get a resolve condition event by identifier, use the `get` method on the `ResolveConditionEvent` model manager:
+    ```python
+    from canvas_sdk.v1.data import ResolveConditionEvent
+    resolution = ResolveConditionEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+    ```
+If you have a patient object, the resolve condition events for a patient can be accessed with the `resolved_conditions` attribute on a `Patient` object:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    resolutions = patient.resolved_conditions.all()
+    ```
+The same records are reachable from the note they were recorded on, with the `resolved_conditions` attribute on a `Note` object:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    resolutions = note.resolved_conditions.all()
+    ```
+You can also access the resolved condition with the `condition` attribute:
+    ```python
+    from canvas_sdk.v1.data import ResolveConditionEvent
+    resolution = ResolveConditionEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+    condition = resolution.condition
+    ```
+Or for a given condition, you can access all of its resolutions with the `resolutions` attribute:
+    ```python
+    from canvas_sdk.v1.data import Condition
+    condition = Condition.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    resolutions = condition.resolutions.all()
+    ```
+##  Committed records 
+The `committed` method returns resolve condition events that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import ResolveConditionEvent
+    committed_resolutions = ResolveConditionEvent.objects.committed()
+    ```
+##  Attributes 
+###  ResolveConditionEvent 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+condition | [Condition](/sdk/data-condition)  
+rationale | String  
+show_in_condition_list | Boolean  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-resolve-condition-event/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-serviceprovider/
@@ -18833,6 +19630,140 @@ reports | QuerySet[UncategorizedClinicalDocument]
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-uncategorized-clinical-document/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-vaccine/
+##  Introduction 
+The `Vaccine` model represents an entry in a Canvas instance's vaccine catalog — what a provider can choose when documenting an [Immunize](/sdk/commands/#immunize) command. `VaccineLot` represents a physical lot of one of those vaccines, along with how many doses remain on hand.
+##  Basic usage 
+A vaccine carries the CPT and CVX codes that identify it. The CVX code is on the vaccine; the CPT codes come from its charges, and those charges are what produce the billing line item when an [Immunize](/sdk/commands/#immunize) command is committed.
+    ```python
+    from canvas_sdk.v1.data import Vaccine
+    vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
+    print(vaccine.cvx_code, [charge.cpt_code for charge in vaccine.charges.all()])
+    # 135 ["90662"]
+    ```
+Each physical lot of a vaccine tracks how many doses remain, and committing an Immunize command decrements that count:
+    ```python
+    from canvas_sdk.v1.data import VaccineLot
+    lot = VaccineLot.objects.filter(lot_number="LOT-135-001").first()
+    print(lot.vaccine.short_name, lot.on_hand_inventory, lot.expiration_date)
+    # Fluzone High-Dose 25 2027-06-30
+    ```
+`mvx_code` holds a CDC MVX manufacturer code. The codes are declared as the field's choices, so Django's display helper resolves the manufacturer name:
+    ```python
+    from canvas_sdk.v1.data import VaccineLot
+    lot = VaccineLot.objects.filter(lot_number="LOT-135-001").first()
+    print(lot.mvx_code, "->", lot.get_mvx_code_display())
+    # ASZ -> AstraZeneca
+    ```
+Some instances record a single stock figure on the vaccine itself rather than tracking lots. That value lives in `Vaccine.inventory` as free text and is independent of `VaccineLot.on_hand_inventory`.
+##  Filtering 
+A vaccine is selectable on a note when it is active **and** carries an active CPT charge. Filtering the same way keeps a plugin in step with what a provider would see:
+    ```python
+    from datetime import date
+    from django.db.models import Q
+    from canvas_sdk.v1.data import Vaccine
+    today = date.today()
+    selectable = Vaccine.objects.filter(
+        Q(active=True),
+        Q(charges__effective_date__lte=today),
+        Q(charges__end_date__isnull=True) | Q(charges__end_date__gte=today),
+    ).distinct()
+    print([vaccine.short_name for vaccine in selectable])
+    # ["Fluzone High-Dose", "Trumenba", "Prevnar 13™"]
+    ```
+Lots are administrable while they have doses on hand:
+    ```python
+    from canvas_sdk.v1.data import VaccineLot
+    in_stock = VaccineLot.objects.filter(vaccine__cvx_code="135", on_hand_inventory__gt=0)
+    print([(lot.lot_number, lot.on_hand_inventory) for lot in in_stock])
+    # [("LOT-135-001", 25)]
+    ```
+##  Attributes 
+###  Vaccine 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+payer | [Transactor](/sdk/data-coverage/#transactor)  
+charges | QuerySet[[ChargeDescriptionMaster](/sdk/data-charge-description-master/#chargedescriptionmaster)]  
+cvx_code | String  
+name | String  
+short_name | String  
+inventory | String  
+ndc_code | String  
+mvx_code | VaccineManufacturer  
+route | String  
+active | Boolean  
+units | Integer  
+lots | QuerySet[VaccineLot]  
+A vaccine may appear more than once for the same `cvx_code` — instances commonly carry a payer-specific entry alongside a general one. Use `payer` to tell them apart.
+###  VaccineLot 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+vaccine | Vaccine  
+lot_number | String  
+ndc_code | String  
+mvx_code | VaccineManufacturer  
+expiration_date | Date  
+diluent_lot_number | String  
+diluent_expiration_date | Date  
+starting_inventory | Integer  
+quantity_adjustment | Integer  
+adjustment_notes | String  
+on_hand_inventory | Integer  
+used_inventory | Integer  
+`on_hand_inventory` is derived from `starting_inventory + quantity_adjustment - used_inventory`.
+##  Enumeration types 
+###  VaccineManufacturer 
+CDC MVX manufacturer codes. Prefer `get_mvx_code_display()` over mapping these yourself.
+Value | Label  
+---|---  
+ASZ | AstraZeneca  
+BBI | Bharat Biotech International Limited  
+BN | Bavarian Nordic A/S  
+BTP | Biotest Pharmaceuticals Corporation  
+CAN | CanSino Biologics, Inc  
+DVC | DynPort Vaccine Company, LLC  
+DVX | Dynavax, Inc  
+GEO | GeoVax Labs, Inc  
+GRF | Grifols  
+IDB | ID Biomedical  
+JNJ | Johnson and Johnson  
+JSN | Janssen  
+KED | Kedrion Biopharma  
+KGC | Korea Green Cross Corporation  
+MBL | Massachusetts Biologic Laboratories  
+MDO | Medicago, Inc  
+MED | MedImmune, Inc. (AstraZeneca)  
+MIP | Emergent BioSolutions  
+MOD | Moderna US, Inc  
+MSD | Merck and Co., Inc  
+MSP | MSP Vaccine Company - (partnership Merck and Sanofi Pasteur)  
+NAB | NABI  
+NVX | Novavax, Inc  
+OTH | Other manufacturer  
+PAX | Emergent Travel Health, Inc (Formerly PaxVax)  
+PFR | Pfizer, Inc  
+PMC | Sanofi Pasteur  
+PSC | Protein Sciences  
+SEQ | Seqirus  
+SKB | GlaxoSmithKline  
+SNV | Sinovac  
+SPH | Sinopharm-Biotech  
+TVA | TEVA Pharmaceuticals USA  
+UNK | Unknown manufacturer  
+VAL | Valneva  
+VBI | VBI Vaccines, Inc  
+WAL | Wyeth
+----- END PAGE https://docs.canvasmedical.com/sdk/data-vaccine/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-value-sets/
 ##  Introduction 
 The Canvas SDK includes a library of built-in Value Sets that can be used within plugins to assist with finding conditions or medications related to Electronic Clinical Quality Measures. Plugin developers can also create their own Value Sets and use them in the same manner as the Canvas built-in `ValueSet` classes.
@@ -19005,13 +19936,136 @@ image_url | String (property) — presigned S3 URL
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-visual-exam-finding/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-vital-sign-reading/
+##  Introduction 
+The `VitalSignReading` model is the anchor for the [Vitals](/sdk/commands/#vitals) command — a set of vital-sign readings recorded on a Note for a Patient. The individual measurements (blood pressure, heart rate, temperature, weight, etc.) are stored as related `VitalSign` records, reachable via the `signs` attribute.
+##  Basic usage 
+To get a vital sign reading by identifier, use the `get` method on the `VitalSignReading` model manager:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient or note object, the readings can be accessed with the `vital_sign_readings` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    from canvas_sdk.v1.data.note import Note
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    readings = patient.vital_sign_readings.all()
+    note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+    readings = note.vital_sign_readings.all()
+    ```
+If you have a patient ID, you can get the readings for the patient with the `for_patient` method:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    readings = VitalSignReading.objects.for_patient(patient_id)
+    ```
+##  Reading the individual measurements 
+Each `VitalSignReading` has one or more `VitalSign` measurements, accessed with the `signs` attribute. Each `VitalSign` carries the measurement's LOINC code, name, value, and units:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    from logger import log
+    reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    for sign in reading.signs.all():
+        log.info(f"{sign.sign}: {sign.value} {sign.units} (LOINC {sign.loinc_num})")
+    ```
+`signs` includes the parts of a composite measurement as well as the measurement itself, so a blood pressure appears three times in the loop above. See Composite measurements to walk only the top-level readings.
+##  Filtering 
+Vital sign readings can be filtered by any attribute that exists on the model.
+###  Committed readings 
+The `committed` method returns readings that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    committed_readings = VitalSignReading.objects.committed()
+    ```
+##  Attributes 
+###  VitalSignReading 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+date_recorded | DateTime  
+signs | VitalSign[]  
+###  VitalSign 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+reading | VitalSignReading  
+date_recorded | DateTime  
+loinc_num | String  
+sign | String — one of the sign values  
+sign_description | String  
+value | String  
+units | String  
+source | String  
+parent | VitalSign — the composite measurement this one is a part of, if any  
+children | VitalSign[] — the parts of this measurement, if it is a composite  
+##  Composite measurements 
+Some measurements are recorded as a whole _and_ as their parts. The whole is stored as one `VitalSign` and each part as another, linked to it by `parent`; the reverse accessor is `children`. A measurement that stands on its own has `parent` set to `None` and no `children`.
+The [Vitals](/sdk/commands/#vitals) command produces two of these:
+  - `blood_pressure` — the combined reading, parent of the `systole` and `diastole` signs taken from it.
+  - `oxygen_saturation` — parent of `inhaled_oxygen_concentration` and `inhaled_oxygen_flow_rate`.
+Because the parts sit alongside the whole in `reading.signs`, iterating a reading naively counts a blood pressure three times. Filter on `parent` to walk only the top-level measurements:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    from logger import log
+    reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    for sign in reading.signs.filter(parent__isnull=True):
+        parts = ", ".join(f"{part.sign}={part.value}" for part in sign.children.all())
+        log.info(f"{sign.sign}: {sign.value} {sign.units}" + (f" ({parts})" if parts else ""))
+    ```
+##  Sign values 
+`VitalSign.sign` holds one of a fixed set of values — the ones below are those a Canvas workflow records. Canvas declares them as a `VitalSignChoices` enumeration internally, but that enumeration is **not** exported to plugins, so compare against the string value directly:
+    ```python
+    from canvas_sdk.v1.data.vitals import VitalSignReading
+    reading = VitalSignReading.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    weights = [sign for sign in reading.signs.all() if sign.sign == "weight"]
+    ```
+`sign_description` carries a human-readable label for the same measurement, so prefer it for display and reserve `sign` for matching.
+###  Where each value comes from 
+Not every value is produced by every workflow, so which ones you see depends on how the vitals were recorded:
+  - **The[Vitals](/sdk/commands/#vitals) command** writes `height`, `weight`, `waist_circumference`, `body_temperature`, `blood_pressure`, `systole`, `diastole`, `pulse`, `pulse_rhythm`, `respiration_rate`, `oxygen_saturation`, `inhaled_oxygen_concentration`, `inhaled_oxygen_flow_rate`, `supplemental_oxygen` and `note`. Blood pressure is stored three times over — once as the combined `blood_pressure` reading and once each as `systole` and `diastole`.
+  - **A committed pediatric physical exam questionnaire** records `length` and `head_circumference_tape_measure`, taken from the answers carrying those LOINC codes.
+Derived measurements are **not** `VitalSign` records. When a height, weight or length is recorded, Canvas calculates BMI from the height and weight and stores the results — the BMI-for-age, head-circumference and weight-for-height percentiles — as [Observation](/sdk/data-observation/) records attached to the reading, because each is computed from more than one measurement. Read them there rather than looking for a `sign`.
+Value | Label  
+---|---  
+blood_pressure | Blood Pressure  
+systole | Systole  
+diastole | Diastole  
+pulse | Pulse  
+pulse_rhythm | Pulse Rhythm  
+respiration_rate | Respiration Rate  
+body_temperature | Body Temperature  
+oxygen_saturation | Oxygen Saturation  
+supplemental_oxygen | Supplemental Oxygen  
+inhaled_oxygen_concentration | Inhaled Oxygen Concentration  
+inhaled_oxygen_flow_rate | Inhaled Oxygen Flow Rate  
+weight | Weight  
+height | Height  
+length | Length  
+head_circumference_tape_measure | Head Circumference by Tape Measure  
+waist_circumference | Waist Circumference  
+note | Note  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-vital-sign-reading/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data/
 The data module provides you with data to compute on. It provides curated, secure access to both PHI (e.g. patient data) and non-PHI (e.g. staff and practice-level data), representing the current state of your target Canvas instance. The module's classes offer convenience methods and operators that make business logic and clinical logic easy to express with standard terminologies like ICD-10, SNOMED-CT, CPT, and the like.
 Data module classes are Django ORM models, which allow easy retrieval of data at runtime through Django's expressive [QuerySet API](https://docs.djangoproject.com/en/5.1/ref/models/querysets/).
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -20475,6 +21529,10 @@ Linking and un-linking diagnosis codes.
 The `upsert_metadata` method on any command class provides a flexible key-value storage system for command-specific data within the Canvas system. This method enables the creation and updating of custom metadata entries associated with command records, allowing for extensible command information storage beyond standard command fields.
 ##  Overview 
 Command metadata serves as a powerful extension mechanism for storing custom command-related information that doesn't fit within the standard command data model. Metadata is managed through the `upsert_metadata` method available on all command effect classes.
+Metadata can be written two ways, and they store to the same place:
+  - **From your plugin** , with the `upsert_metadata` method documented on this page.
+  - **From the note** , with the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/), which displays additional fields alongside a command in the chart and stores whatever a user enters as metadata against that command.
+Either way, the entries are readable as [CommandMetadata](/sdk/data-command/#commandmetadata) in the data module.
 ##  Method 
 ###  upsert_metadata(key: str, value: str) → Effect 
 Creates or updates a metadata entry for the specified command.
@@ -20586,6 +21644,7 @@ Once metadata is upserted, `COMMAND_METADATA_CREATED` and `COMMAND_METADATA_UPDA
   - There is no built-in versioning; updating a key overwrites the previous value
   - The system does not enforce any schema on metadata values — validation is the responsibility of the implementing code
   - The `key` field supports up to 256 characters
+  - To collect metadata from a user in the chart rather than writing it from a plugin, see the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-command-metadata/
 
 
@@ -25671,6 +26730,8 @@ COMMIT | Finalize and save a command.
 ENTER_IN_ERROR | Mark a committed command as entered in error.  
 SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only).  
 REVIEW | Place a command into review status (prescribe, refill, adjust prescription only).  
+DELEGATE | Delegate the order to someone else to complete (imaging order, refer only).  
+SIGN | Sign the order (imaging order, refer only).  
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 Command Type | Effect Prefix | Notes  
 ---|---|---  
@@ -25687,9 +26748,10 @@ Family History | `*_FAMILY_HISTORY_COMMAND` |
 Follow Up | `*_FOLLOW_UP_COMMAND` |   
 Goal | `*_GOAL_COMMAND` |   
 HPI | `*_HPI_COMMAND` |   
-Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND  
+Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND. Supports DELEGATE and SIGN  
 Imaging Review | `*_IMAGING_REVIEW_COMMAND` |   
 Immunization Statement | `*_IMMUNIZATION_STATEMENT_COMMAND` |   
+Immunize | `*_IMMUNIZE_COMMAND` |   
 Instruct | `*_INSTRUCT_COMMAND` |   
 Lab Order | `*_LAB_ORDER_COMMAND` | Also supports SEND  
 Lab Review | `*_LAB_REVIEW_COMMAND` |   
@@ -25701,7 +26763,7 @@ POC Lab Test | `*_POC_LAB_TEST_COMMAND` |
 Prescribe | `*_PRESCRIBE_COMMAND` | No COMMIT. Supports SEND and REVIEW  
 Questionnaire | `*_QUESTIONNAIRE_COMMAND` |   
 Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only  
-Refer | `*_REFER_COMMAND` | No COMMIT  
+Refer | `*_REFER_COMMAND` | No COMMIT. Supports DELEGATE and SIGN  
 Reference | `*_REFERENCE_COMMAND` | EDIT does not refresh the rendered table  
 Referral Review | `*_REFERRAL_REVIEW_COMMAND` |   
 Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW  
@@ -26766,6 +27828,69 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
+####  Eligibility responses 
+A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDATED` event fires on every eligibility response save. When the response resolves to a definite status, a matching `COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE`, `COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE`, or `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` event fires alongside it. For example, when a failed eligibility check is first recorded, both `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` and `COVERAGE_ELIGIBILITY_RESPONSE_FAILED` fire. Each event's context carries the derived `status` string and the associated `coverage`; `_FAILED` events also include the payer `errors`.
+COVERAGE_ELIGIBILITY_RESPONSE_CREATED  
+---  
+Occurs when an eligibility response is created for a coverage.  
+Target object | Context object  
+    "id": eligibility_response_id
+    "type": [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)
+| 
+    "coverage":
+      "id": coverage_id
+    "patient":
+      "id": pt_id
+    "status": str  
+COVERAGE_ELIGIBILITY_RESPONSE_UPDATED  
+---  
+Occurs when an eligibility response is updated.  
+Target object | Context object  
+    "id": eligibility_response_id
+    "type": [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)
+| 
+    "coverage":
+      "id": coverage_id
+    "patient":
+      "id": pt_id
+    "status": str  
+COVERAGE_ELIGIBILITY_RESPONSE_ACTIVE  
+---  
+Occurs when an eligibility response resolves to an active status.  
+Target object | Context object  
+    "id": eligibility_response_id
+    "type": [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)
+| 
+    "coverage":
+      "id": coverage_id
+    "patient":
+      "id": pt_id
+    "status": str  
+COVERAGE_ELIGIBILITY_RESPONSE_INACTIVE  
+---  
+Occurs when an eligibility response resolves to an inactive status.  
+Target object | Context object  
+    "id": eligibility_response_id
+    "type": [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)
+| 
+    "coverage":
+      "id": coverage_id
+    "patient":
+      "id": pt_id
+    "status": str  
+COVERAGE_ELIGIBILITY_RESPONSE_FAILED  
+---  
+Occurs when an eligibility response check fails to complete (the payer response errored).  
+Target object | Context object  
+    "id": eligibility_response_id
+    "type": [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)
+| 
+    "coverage":
+      "id": coverage_id
+    "patient":
+      "id": pt_id
+    "status": str
+    "errors": list[str]  
 ####  Detected Issues 
 DETECTED_ISSUE_CREATED  
 ---  
@@ -32615,16 +33740,6 @@ Target object | Context object
       "uuid": note_id
     "patient":
       "id": pt_id  
-IMMUNIZE_COMMAND__AVAILABLE_ACTIONS  
----  
-Target object | Context object  
-    "id": command_uuid
-    "type": [Command](/sdk/data-command/)
-| 
-    "actions":
-      "name": string
-    "user":
-      "staff": staff_id
 IMMUNIZATION_STATEMENT_COMMAND__POST_VALIDATION  
 ---  
 Target object | Context object  
@@ -46652,6 +47767,331 @@ For a complete, working reference, see the [PayTheory Payment Processor](/sdk/ex
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers-payment-processors/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-commands/
+**Any time you want to write a[command](/sdk/commands/) to a patient's chart over HTTP, this is already built for you.** `CommandAPI` is a [SimpleAPI](/sdk/handlers-simple-api-http/) that reads a request body onto a command, validates it against that command, and emits the effects. You declare the routes and who may reach them; it does the rest.
+Reach for it whenever something outside Canvas needs to write to a chart — a patient-facing intake form, a device reporting readings, an internal tool your staff already work in, or a service that turns its own records into chart entries. Written by hand, each of those means parsing a body, mapping it onto a command, deciding how to report every way it can be wrong, and keeping your own record of which command you wrote. None of that is yours to write anymore.
+For a walkthrough — including how to check that the caller may write to a particular note — see [Writing Commands Over HTTP](/guides/writing-commands-over-http/).
+##  Quickstart 
+    ```python
+    from canvas_sdk.commands import HistoryOfPresentIllnessCommand
+    from canvas_sdk.commands.api import CommandAPI
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import Response
+    from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, api
+    class HistoryOfPresentIllnessAPI(StaffSessionAuthMixin, CommandAPI):
+        PREFIX = "/v1"
+        @api.post("/hpi")
+        def insert(self) -> list[Response | Effect]:
+            return self.originate(HistoryOfPresentIllnessCommand)
+    ```
+That class is five lines, and both of its base classes are load-bearing.
+###  What it inherits from SimpleAPI 
+`CommandAPI` is a full [SimpleAPI](/sdk/handlers-simple-api-http/). The Quickstart shows one shape — a single `POST` under a `PREFIX` — but that is just this example. Anything you can build with a SimpleAPI you can build here:
+  - **As many routes as you like** , declared with `@api.get`, `@api.post`, `@api.put`, `@api.patch` and `@api.delete`. `PREFIX` is optional and prefixes them all.
+  - **Path parameters.** A segment written `<name>` in a route path is a placeholder — `@api.put("/hpi/<command_id>")` matches a request to `/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10`, and what it matched is available as `self.request.path_params["command_id"]`. That is how the routes below say _which_ command to edit or act on: the id comes from the URL rather than the body. A value is always a string, is never empty, and covers one path segment only — it cannot contain a `/`.
+  - **The whole request.** `self.request` carries the method, path, headers, query parameters, the raw body, parsed JSON, text, and `multipart/form-data` parts including file uploads.
+  - **Any response you want to send.** A handler always returns the ordinary SimpleAPI list of responses and effects. `originate`, `edit` and `action` each return that list already built — which is why the handlers here read `return self.originate(...)` with no brackets of their own. When you want your own response, you build the list yourself, as the `act` route does below with `[JSONResponse(...)]`, or splice onto theirs: `return [*self.originate(...), my_effect]`.
+  - **Authentication.** You decide which method to use — see [Authentication](/sdk/handlers-simple-api-http/#authentication) for the schemes available.
+One difference worth knowing: `CommandAPI` extends `SimpleAPI`, not [`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute). A class declares `PREFIX` and decorated route handlers rather than a single `PATH` with `get` and `post` methods.
+What `CommandAPI` adds on top is the three methods below — `originate`, `edit` and `action` — and nothing else. Those three names are reserved: a route handler may not reuse one, and SimpleAPI raises at class-definition time if you try.
+###  Where authentication comes from 
+`CommandAPI` does not **choose** your authentication — which callers may write commands is your plugin's decision, not the base's. The schemes themselves are provided: declare one by listing it _before_ `CommandAPI` in the bases, from `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `APIKeyAuthMixin` and `BasicAuthMixin`. See [Authentication mixins](/sdk/handlers-simple-api-http/#authentication-mixins) for what each one needs, or write `authenticate` yourself.
+Nothing is left open in the meantime. SimpleAPI's own `authenticate` returns `False`, so an endpoint that declares no scheme refuses every request rather than admitting anyone.
+**That default is also why the order of the base classes matters, and why getting it wrong fails quietly** — whichever class Python reaches first decides:
+Base classes | Result  
+---|---  
+`(StaffSessionAuthMixin, CommandAPI)` | The mixin answers first. Authentication works as you expect.  
+`(CommandAPI, StaffSessionAuthMixin)` | SimpleAPI answers first, and it refuses everything. **Every request is rejected** , with no error to tell you why.  
+> **Warning:** An authentication mixin establishes _who_ the caller is, not _what_ they may write. `StaffSessionAuthMixin` only checks that the session belongs to a staff member — it does not consider roles, and it says nothing about whether that person may write to the note in the request body. For that check, see [Writing Commands Over HTTP](/guides/writing-commands-over-http/). 
+##  A complete endpoint 
+The Quickstart creates a command. Most endpoints also need to change one afterwards, which means three routes — create, update, and apply an action such as committing it. All three live on one class, and each is a single call:
+    ```python
+    from http import HTTPStatus
+    from canvas_sdk.commands import HistoryOfPresentIllnessCommand
+    from canvas_sdk.commands.api import CommandAPI
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import StaffSessionAuthMixin, api
+    # The actions this endpoint will pass on. Checked against the request so a caller
+    # cannot name an arbitrary attribute of the command class.
+    ALLOWED_ACTIONS = {"commit", "delete", "enter_in_error"}
+    class HistoryOfPresentIllnessAPI(StaffSessionAuthMixin, CommandAPI):
+        PREFIX = "/v1"
+        @api.post("/hpi")
+        def create(self) -> list[Response | Effect]:
+            return self.originate(HistoryOfPresentIllnessCommand)
+        @api.put("/hpi/<command_id>")
+        def update(self) -> list[Response | Effect]:
+            return self.edit(HistoryOfPresentIllnessCommand, self.request.path_params["command_id"])
+        @api.post("/hpi/<command_id>/<action>")
+        def act(self) -> list[Response | Effect]:
+            action = self.request.path_params["action"]
+            if action not in ALLOWED_ACTIONS:
+                return [
+                    JSONResponse(
+                        {"error": "unsupported action", "allowed": sorted(ALLOWED_ACTIONS)},
+                        status_code=HTTPStatus.BAD_REQUEST,
+                    )
+                ]
+            return self.action(
+                HistoryOfPresentIllnessCommand,
+                self.request.path_params["command_id"],
+                action,
+            )
+    ```
+Staging a note entry, committing it, and retracting it, against that endpoint:
+    ```shell
+    # Create it, staged for a human to finish.
+    curl -X POST https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi \
+      -H 'Content-Type: application/json' \
+      -d '{
+            "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+            "values": {"narrative": "Patient reports a cough for three days."}
+          }'
+    # 201 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "committed": false}
+    # Revise it.
+    curl -X PUT https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10 \
+      -H 'Content-Type: application/json' \
+      -d '{"values": {"narrative": "Patient reports a dry cough for three days."}}'
+    # 200 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "edit"}
+    # Commit it.
+    curl -X POST https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10/commit
+    # 200 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit"}
+    # Retract it. A committed command cannot be edited, so entering it in error is
+    # how you take it back - then originate its replacement.
+    curl -X POST https://example.canvasmedical.com/plugin-io/api/my_plugin/v1/hpi/2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10/enter_in_error
+    # 200 {"command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "enter_in_error"}
+    ```
+The order matters: `enter_in_error` needs a **committed** command, so it only works after the commit above. Sent against the staged command it would have been refused — see State.
+To serve every command from one endpoint instead of one class per command, see [Serving every command from one endpoint](/guides/writing-commands-over-http/#serving-every-command-from-one-endpoint) in the guide — the command is an argument, so a dict of them and a path parameter is all it takes.
+##  Methods 
+Each returns the effects and the response for you to return from the route handler. You return the list as-is; nothing else is required of the handler.
+###  originate 
+`originate(model)` creates a command from the request body.
+Body field | Type | Required | Description  
+---|---|---|---  
+`note_id` | _string_ | `true` | The id of the [Note](/sdk/data-note/#note) to write the command into.  
+`values` | _object_ | `false` | The command's own fields, named as the command declares them. See [Commands](/sdk/commands/) for the fields each command takes.  
+`command_id` | _string_ | `false` | An id of your choosing for the new command, instead of the one the response returns.  
+`commit` | _boolean_ | `false` | Commit the command as well as creating it. Defaults to `false`, leaving it staged for a human to finish.  
+`metadata` | _object_ | `false` | A flat `{"key": "value"}` map attached to the command. See [Command metadata](/sdk/effect-command-metadata/).  
+Responds `201` with the id of the command it wrote and whether it was committed:
+    ```json
+    { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "committed": false }
+    ```
+A body using every field:
+    ```json
+    {
+      "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+      "command_id": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10",
+      "commit": true,
+      "values": { "narrative": "Patient reports a dry cough for three days." },
+      "metadata": { "source": "intake-form", "submission": "8871" }
+    }
+    ```
+If anything is wrong with the request, nothing is written and you get a `400` instead. A value that the command refuses is reported against the field it came from:
+    ```json
+    {
+      "error": "Validation failed",
+      "validation_errors": [
+        { "field": "values.narrative", "message": "String should have at most 512 characters" }
+      ]
+    }
+    ```
+A problem with the envelope rather than the values reads the same way, without the `values.` prefix — here a body that left `note_id` out:
+    ```json
+    {
+      "error": "Validation failed",
+      "validation_errors": [
+        { "field": "note_id", "message": "Field required" }
+      ]
+    }
+    ```
+Every field at fault is reported at once, so a caller sees the whole list rather than fixing one problem per round trip. The other statuses this route can answer with are in Responses.
+###  edit 
+`edit(model, command_id)` updates a **staged** command. The command is addressed by id in your route, and the body carries `values` and `metadata`:
+    ```json
+    { "values": { "narrative": "Patient reports a dry cough for three days." } }
+    ```
+> **Warning:** `values` replaces the command's fields as a whole and is re-validated in full — it is not a patch. A field you leave out is not left alone; send the complete set of values you want the command to end up with. 
+Responds `200`:
+    ```json
+    { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "edit" }
+    ```
+Three things can go wrong, and each is checked before anything is written.
+**The id matches no command of this type** — a `404`:
+    ```json
+    { "error": "No hpi command with that id" }
+    ```
+**The command is not staged** — a `400` naming the state it is in and the one the operation needed. A committed command cannot be edited; enter it in error and originate its replacement instead:
+    ```json
+    {
+      "error": "a committed command cannot be edited",
+      "state": "committed",
+      "required_state": "staged",
+      "validation_errors": []
+    }
+    ```
+**A value is wrong for its field** — a `400` in the same shape `originate` returns, reported against `values.<field>`. A body that is not a JSON object at all is a `400` too, carrying `"Request body must be a JSON object"`.
+See State for which operations each state allows, and Responses for the full list of statuses.
+###  action 
+`action(model, command_id, action)` runs one of the command's own methods. It takes no request body, and responds `200` naming what it did:
+    ```json
+    { "command_uuid": "2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10", "mode": "commit" }
+    ```
+`action` names a method on the command class, and each one builds the corresponding [command effect](/sdk/effects/#commands):
+Action | What it does | Required state  
+---|---|---  
+`commit` | Signs the staged command into the note. | staged  
+`delete` | Removes the staged command from the note. | staged  
+`enter_in_error` | Marks a committed command as entered in error. | committed  
+`review` | Places the command into review status. | set by the command — see State  
+`send` | Transmits the command to an external system. | set by the command — see State  
+`delegate` | Delegates the order to someone else to complete. | set by the command — see State  
+`sign` | Signs the order. | set by the command — see State  
+**No command supports all of them, and not even`commit` is universal.** Which actions a command accepts is listed per command in [Commands](/sdk/effects/#commands) — check there before wiring a route, because an action the command does not support is a `400`. The ones worth knowing up front:
+  - `review` and `send` belong to [Prescribe](/sdk/commands/#prescribe), [Refill](/sdk/commands/#refill) and [Adjust Prescription](/sdk/commands/#adjustprescription), and `send` also to [Lab Order](/sdk/commands/#laborder). Those four are **not** committed — sending is how they are finished.
+  - `delegate` and `sign` belong to [Imaging Order](/sdk/commands/#imagingorder) and [Refer](/sdk/commands/#refer), which are not committed either.
+  - [Reason for Visit](/sdk/commands/#reasonforvisit) supports `originate`, `edit` and `delete` only.
+  - [Chart Section Review](/sdk/commands/#chartsectionreview) is committed as it is originated, so it takes `originate` and nothing else.
+  - [Custom commands](/sdk/commands-custom-command/) render read-only content, so they are neither edited nor committed.
+An action the command class does not have is a `400`:
+    ```json
+    { "error": "HistoryOfPresentIllnessCommand does not support the 'review' action", "validation_errors": [] }
+    ```
+> **Danger:** The action usually arrives from the request, and it is passed to `getattr` on the command. Check it against a set you control first — as `ALLOWED_ACTIONS` does above — or a caller can name any attribute of the command class. 
+##  Field values 
+`values` carries the command's own fields, named exactly as the command declares them. Each command's fields are listed under [Commands](/sdk/commands/) — `values` accepts the same set, so that page is the reference for what may go in here.
+Commands parse leniently, so JSON's own types are enough. Posting to an [Allergy](/sdk/commands/#allergy) endpoint:
+    ```json
+    {
+      "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+      "values": {
+        "narrative": "Hives within an hour of eating shellfish.",
+        "severity": "mild",
+        "approximate_date": "2026-08-04"
+      }
+    }
+    ```
+  - `narrative` is a plain string, capped at 512 characters by the command.
+  - `severity` is an enum, given as its value — `"mild"`, not `AllergyCommand.Severity.MILD`.
+  - `approximate_date` is a date, given as an ISO string.
+  - A number may arrive as a number or as a string: `12` and `"12"` are both read as `12`.
+A key that is not a field on the command is **refused** , not dropped — silently ignoring a typo would write a blank command over it. Every unknown key is reported at once, against `values.<field>`:
+    ```json
+    {
+      "error": "Validation failed",
+      "validation_errors": [
+        { "field": "values.narative", "message": "Unexpected field" }
+      ]
+    }
+    ```
+`note_id`, `command_id`, `commit` and `metadata` are the envelope, not fields — they sit alongside `values`, not inside it, and they are kept out of what the command writes.
+###  Structured fields 
+Not every field is a scalar. A number of commands take a structured value — an object, or a list of them — and each arrives as ordinary nested JSON. You do not construct the SDK type; you send its shape:
+Type | Example value  
+---|---  
+[`Allergen`](/sdk/commands/#allergy-allergen) | `{"concept_id": 91, "concept_type": 2}`  
+[`Coding`](/sdk/commands/#coding) | `{"system": "http://snomed.info/sct", "code": "44054006", "display": "Diabetes mellitus type 2"}`  
+[`ClinicalQuantity`](/sdk/commands/#clinicalquantity) | `{"representative_ndc": "0093-1023", "ncpdp_quantity_qualifier_code": "C48542"}`  
+[`ServiceProvider`](/sdk/commands/#serviceprovider) | `{"first_name": "Ada", "last_name": "Lovelace", "specialty": "Cardiology", "practice_name": "Mercy"}`  
+[`TaskAssigner`](/sdk/commands/#taskassigner) | `{"to": "staff", "id": 5}`  
+[`TestValue`](/sdk/commands/#poclabtest-testvalue) | `[{"label": "Glucose", "value": "98"}]`  
+[`CompoundMedicationData`](/sdk/commands/#prescribe-compoundmedicationdata) | `{"formulation": "cream", "potency_unit_code": "C28253", "controlled_substance": "0"}`  
+[`Answer` and `Selection`](/sdk/commands/#questionnaire-answer) | `[{"question_id": 15, "response": [{"option_id": 201, "comment": "left side"}]}]`  
+Each type's own fields are documented with the command that uses it — follow the link for what is required and what each field means.
+> **Warning:** An enum nested inside one of these is given by its **value** , not its name. `Allergen.concept_type` takes `2`, not `"MEDICATION"`; `TaskAssigner.to` takes `"staff"`, not `"STAFF"`. A name is refused with an `enum` validation error naming the values it will accept. 
+Answering a questionnaire is the largest of these, and the whole [`answers`](/sdk/commands/#questionnaire) list goes in `values` like any other field:
+    ```json
+    {
+      "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+      "values": {
+        "questionnaire_id": "c1a2b3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        "answers": [
+          { "question_id": 12, "response": "Three times a week." },
+          { "question_id": 13, "response": 42 },
+          { "question_id": 14, "response": 101 },
+          { "question_id": 15, "response": [{ "option_id": 201 }, { "option_id": 202, "comment": "left side" }] }
+        ]
+      }
+    }
+    ```
+The same route serves [Review of Systems](/sdk/commands/#review-of-systems), [Structured Assessment](/sdk/commands/#structuredassessment) and [Physical Exam](/sdk/commands/#physicalexam), which take `answers` too.
+##  Metadata 
+`metadata` attaches a flat `{"key": "value"}` map to the command. It is stored as sent and nothing in Canvas interprets it, which makes it the place to record what the entry meant on your side:
+    ```json
+    {
+      "note_id": "d2194110-5c9a-4842-8733-ef09ea5ead11",
+      "values": { "narrative": "Patient reports a dry cough for three days." },
+      "metadata": { "source": "intake-form", "submission": "8871", "version": "2" }
+    }
+    ```
+Both `originate` and `edit` accept it. Values must be strings — send `"8871"`, not `8871`.
+Each pair becomes an `upsert_metadata` effect applied after the effect that writes the command, so a key sent twice ends up holding the last value. See the [Command Metadata effect](/sdk/effect-command-metadata/) for how the same storage is written from a plugin, the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/) for collecting it from a user in the chart, and [CommandMetadata](/sdk/data-command/#commandmetadata) for reading it back.
+##  Responses 
+Status | When  
+---|---  
+`201` | The command was created.  
+`200` | An edit or an action was applied.  
+`400` | The body is not a JSON object, a value is wrong for its field, or the command's state does not allow the operation.  
+`404` | No command **of this type** has that id. The lookup is scoped by command type, so an id belonging to a different command is a miss rather than a cross-type edit.  
+`409` | The `command_id` you chose already belongs to a command.  
+**Every rejection has the same shape** — an `error` summarising it and a `validation_errors` list, empty when nothing field-specific was at fault. A caller can render all of them the same way.
+A value that is wrong for its field:
+    ```json
+    {
+      "error": "Validation failed",
+      "validation_errors": [
+        { "field": "values.narrative", "message": "Input should be a valid string" }
+      ]
+    }
+    ```
+A body that is not a JSON object at all:
+    ```json
+    { "error": "Request body must be a JSON object", "validation_errors": [] }
+    ```
+An id matching no command of this endpoint's type:
+    ```json
+    { "error": "No hpi command with that id" }
+    ```
+That `404` covers three cases at once, deliberately: no command has the id, a command has it but is of a different type, or the id is not a well-formed UUID. The lookup is scoped to the command type this endpoint serves, so an id belonging to a Plan command reaching a History of Present Illness endpoint is a miss rather than a cross-type edit.
+###  Choosing the command's id 
+Passing `command_id` is worth doing when the thing you are writing already has an identity on your side: you can then ask whether it reached the chart by that id rather than storing a mapping.
+**It has to be a real UUID.** It is not a free-text key of your own, so generate one rather than composing it:
+    ```shell
+    uuidgen                        # 2588AA22-9D0E-4F1F-9B28-6F0E6A1C9A10
+    python -c 'import uuid; print(uuid.uuid4())'
+    node  -e 'console.log(crypto.randomUUID())'
+    ```
+Anything that will not parse as a UUID is a `400` before the command is looked at — `"order-8871"` gives `Input should be a valid UUID, invalid character: found 'o' at 1`, and `"8871"` gives `Input should be a valid UUID, invalid length`. The 32-character form without dashes is accepted, so either `2588aa22-9d0e-4f1f-9b28-6f0e6a1c9a10` or `2588aa229d0e4f1f9b286f0e6a1c9a10` will do.
+If your own identifier is not a UUID, derive one from it deterministically — `uuid.uuid5()` over a namespace and your key — so the same record always produces the same command id.
+Posting the same id twice answers `409` rather than writing a second command, which makes a retry safe:
+    ```json
+    { "error": "a command already has that id", "command_uuid": "2588aa22-…", "validation_errors": [] }
+    ```
+###  State 
+Some operations only apply to a command in a particular state. Which operations a command accepts at all is a separate question, answered per command by the [command type table](/sdk/effects/#commands).
+Operation | Required state  
+---|---  
+`edit` | staged  
+`delete` | staged  
+`commit` | staged  
+`enter_in_error` | committed  
+`review`, `send`, `delegate`, `sign` | Whatever the command requires. `CommandAPI` sets no state for these; the command enforces its own rules as it builds the effect.  
+A refusal is a `400`, naming the state the command is in and the one it needed:
+    ```json
+    {
+      "error": "a committed command cannot be edited",
+      "state": "committed",
+      "required_state": "staged",
+      "validation_errors": []
+    }
+    ```
+##  Naming route handlers 
+A route handler cannot be called `originate`, `edit` or `action` — those are the methods you are calling. Name handlers for the HTTP verb they serve.
+----- END PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-commands/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api-http/
 The Canvas SDK provides a way to define an HTTP API with any number of endpoints in your instance. Developers can define the routes and implement the code that will handle incoming HTTP requests.
 This feature allows developers to create endpoints that can receive webhook events from other services. An endpoint receiving a request can invoke Effects in a Canvas instance, send another request to a different service, or simply return a response back to the requester.
@@ -47182,7 +48622,7 @@ In this example, when the `/callback` endpoint receives a POST request, it broad
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api/
 The Canvas SDK allows developers to define both HTTP and WebSocket APIs to integrate custom plugin logic into a Canvas instance.
-[ HTTP API Define endpoints to handle incoming HTTP requests using custom logic and authentication. ](/sdk/handlers-simple-api-http) [ WebSocket API Establish real-time communication channels for interactive plugin behavior and updates. ](/sdk/handlers-simple-api-websocket)
+[ HTTP API Define endpoints to handle incoming HTTP requests using custom logic and authentication. ](/sdk/handlers-simple-api-http) [ WebSocket API Establish real-time communication channels for interactive plugin behavior and updates. ](/sdk/handlers-simple-api-websocket) [ Commands API Expose commands as HTTP endpoints, validated against the command itself. ](/sdk/handlers-simple-api-commands)
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers-simple-api/
 
 
@@ -48725,7 +50165,7 @@ Property | Description | Required
 `code` | The assigned code for the question. Example: `44250-9`. Codes should be unique within the same questionnaire. | Yes  
 `content` | The text displayed when the command is printed. | Yes  
 `responses_code_system` | The coding system for responses. Options: `SNOMED`, `LOINC`, `INTERNAL`, `ICD-10`, `CPT`. | Yes  
-`responses_type` | Response type: `SING` (Single Select), `MULT` (Multi Select), `TXT` (Free Text). | Yes  
+`responses_type` | Response type: `SING` (Single Select), `MULT` (Multi Select), `TXT` (Free Text), or `DATE` (Date). | Yes  
 `display_result_in_social_history_section` | Determines if the response should be shown in the Social History (SHX) section. Values: `TRUE` or `FALSE`. Default: `FALSE`. | No  
 `enabled_behavior` | Specifies if `all` or `any` of the `enabled_conditions` must be met to enable this question. Only needed when there are multiple conditions. Values: `all`, `any`. | No  
 `enabled_conditions` | List of conditions that control when this question is displayed. See below. | No  
@@ -48740,9 +50180,10 @@ Property | Description | Required
 ###  Response Settings 
 Property | Description | Required  
 ---|---|---  
-`name` | For `SING`/`MULT`, this is the text that will be displayed for each response. For `TXT`, enter "TXT". | Yes  
+`name` | For `SING`/`MULT`, this is the text that will be displayed for each response. For `TXT`, enter "TXT". For `DATE`, enter "DATE". | Yes  
 `code` | The assigned code for the response. Example: `Z759`. No response codes should be reused within the same question. | Yes  
-`value` | For `SING`/`MULT`, leave blank if no scoring is desired. If scoring is desired, insert the numerical value assigned. | No  
+`value` | For `SING`/`MULT`, leave blank if no scoring is desired. If scoring is desired, insert the numerical value assigned. For `TXT`, optionally provide a default pre-populated response. Not used for `DATE`. | No  
+Like `TXT`, a `DATE` question takes exactly one entry in `responses`: set `name: "DATE"` and omit `value`, since scoring does not apply. In a note it renders as a date picker and accepts a calendar date in `YYYY-MM-DD` format.
 ###  Example Questionnaire Definition 
     ```yaml
     name: Example Name
@@ -48750,7 +50191,7 @@ Property | Description | Required
     code_system: LOINC
     code: QUES_EXAMPLE_NAME
     can_originate_in_charting: true
-    prologue: This is an example of a structured assessment with single select, multiselect, and free text responses.
+    prologue: This is an example of a structured assessment with single select, multiselect, free text, and date responses.
     questions:
       - content: "This is question #1"
         code_system: CPT
@@ -48794,6 +50235,15 @@ Property | Description | Required
           - name: "Free text response"
             code: QUES_EXAMPLE_NAME_Q3_A1
             value: "This is a default pre-populated free text response."
+      - content: "This is question #4"
+        code_system: INTERNAL
+        code: QUES_EXAMPLE_NAME_Q4
+        responses_code_system: INTERNAL
+        responses_type: DATE
+        display_result_in_social_history_section: true
+        responses:
+          - name: "DATE"
+            code: QUES_EXAMPLE_NAME_Q4_A1
     ```
 ###  Example Questionnaire with Conditional Logic (Branching) 
     ```yaml
