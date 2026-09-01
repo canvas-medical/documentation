@@ -6,6 +6,12 @@ The commands module lets you create and update commands within a specific note i
 
 Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
 
+Commands are written from an event handler by default. To let something outside Canvas write them —
+a patient-facing form, a device, an internal tool — expose them over HTTP with
+[`CommandAPI`](/sdk/handlers-simple-api-commands/), which reads a request body onto any command on
+this page, validates it, and emits the effects. The
+[Writing Commands Over HTTP](/guides/writing-commands-over-http/) guide walks through building one.
+
 {% include alert.html type="info" content="New to command fields? Fields that are autocompletes, dropdowns, or enums in the Canvas UI take a raw code, id, or enum value in the SDK — you have to look the value up first. See <a href='/guides/populating-command-fields/'>Populating Command Fields</a> for where each value comes from." %}
 
 ## Common Attributes
@@ -25,7 +31,14 @@ Field values are read leniently, so a value does not have to arrive already in t
 
 ### Methods
 
-All commands have the following methods:
+**Not every command supports every method.** `originate` is the only one they all have; `edit`,
+`delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
+command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
+check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
+to [custom commands](/sdk/commands-custom-command/) alone.
+
+To call these over HTTP rather than from a handler, see
+[`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
 
 #### originate
 
@@ -1766,13 +1779,14 @@ def compute():
 
 ### PhysicalExam
 
-**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Command-specific parameters**:
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 <a id="toggle-questions"></a>
 #### Toggle Questions Feature
@@ -1911,12 +1925,47 @@ The `QuestionnaireCommand` is used to present a questionnaire to a patient and c
 
 **Automatic Questionnaire ID Loading**: When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
 
-In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+In addition to the basic parameters, this command records responses in either of two ways:
+
+- **The `answers` parameter** — you pass the responses in, one per question, and the command works out how to apply each one. Nothing in your code branches on a question's type. Use this when you already have the question and option ids.
+- **The `questions` property with `add_response()`** — you read the questionnaire's questions off the command and record a response on each question object. The keyword you pass differs by question type, so your code branches on it. Use this when you need to inspect the questions or their options at runtime to decide what to answer.
+
+Both arrive at the same result, and they can be combined. `answers` is applied when the command's effect is built: it replaces whatever was recorded on the questions it names, and leaves a response recorded with `add_response()` on any other question alone. `answers` is not itself carried in the effect.
+
+**Recording responses with `answers`**
+
+The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes; the command looks up the question, dispatches on its type, and resolves an option id to the option itself. A question id that is not in the questionnaire, an option id the question does not offer, or a response the question's type does not allow raises a `ValueError` when the effect is built.
+
+<a id="questionnaire-answer"></a>
+
+**`Answer` fields**:
+
+| Name          | Type                                      | Required | Description                                                                                     |
+|:--------------|:------------------------------------------|:---------|:------------------------------------------------------------------------------------------------|
+| `question_id` | _integer_                                  | `true`   | The [Question](/sdk/data-questionnaire/#question) `dbid`.                                        |
+| `response`    | _string_, _integer_, or _list of [Selection](#questionnaire-selection)_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, or a list of [`Selection`](#questionnaire-selection) objects for a checkbox question. |
+
+A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a [`Selection`](#questionnaire-selection) rather than to the answer as a whole.
+
+<a id="questionnaire-selection"></a>
+
+**`Selection` fields**:
+
+| Name        | Type      | Required | Description                                                                                    |
+|:------------|:----------|:---------|:-------------------------------------------------------------------------------------------------|
+| `option_id` | _integer_ | `true`   | The [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` to tick.                    |
+| `comment`   | _string_  | `false`  | What this selection is qualified with.                                                           |
+| `selected`  | _boolean_ | `false`  | Defaults to `true`. Set it to `false` to untick the option — one a payload says nothing about keeps the state it already had. |
+
+**Recording responses with `questions` and `add_response()`**
+
+Retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
 
 - **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
 - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
 - **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
 - **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
+- **Date questions (TYPE_DATE):** Accept a keyword argument `date` (a `datetime.date`, a `datetime.datetime` normalized to its date, or an ISO 8601 date string `YYYY-MM-DD`). The value is stored as a normalized `YYYY-MM-DD` string; a string carrying a time component, an unparseable string, or a wrong type raises an error.
 
 
 **Command-specific parameters**:
@@ -1924,6 +1973,7 @@ In addition to the basic parameters, this command supports a dynamic response in
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 **Example** — instantiating an empty questionnaire:
 
@@ -1938,7 +1988,50 @@ questionnaire = QuestionnaireCommand(
 
 #### Usage Example
 
-Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
+Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
+
+```python?partial=true
+import uuid
+from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note, Questionnaire
+
+class MyHandler(BaseHandler):
+
+    def compute(self) -> list[Effect]:
+      questionnaire = Questionnaire.objects.filter(name="Exercise").first()
+      note = Note.objects.last()
+
+      command = QuestionnaireCommand(
+          note_uuid=str(note.id),
+          questionnaire_id=str(questionnaire.id),
+          command_uuid=str(uuid.uuid4()),
+          answers=[
+              # A text question.
+              Answer(question_id=12, response="Thanks for all the fish"),
+              # An integer question.
+              Answer(question_id=13, response=42),
+              # A radio question, answered with the id of one of its options.
+              Answer(question_id=14, response=101),
+              # A checkbox question, answered with one Selection per option ticked.
+              Answer(
+                  question_id=15,
+                  response=[
+                      Selection(option_id=201),
+                      Selection(option_id=202, comment="Don't panic"),
+                  ],
+              ),
+          ],
+      )
+
+      # Because we're directly setting a command_uuid, we can return both originate and edit.
+      return [command.originate(), command.edit()]
+```
+
+An option id that the question does not offer, or a question id that is not in the questionnaire, raises a `ValueError` rather than recording something the questionnaire does not define.
+
+Below is the same thing written the other way, retrieving the questions and adding responses to them based on their type:
 
 ```python
 import uuid
@@ -1981,6 +2074,9 @@ class MyHandler(BaseHandler):
               last_option = question.options[-1]
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
+          elif question.type == ResponseOption.TYPE_DATE:
+              # For date questions, pass a 'date' keyword argument.
+              question.add_response(date="2026-01-15")
 
       # Because we're directly setting a command_uuid, we can return both originate and edit.
       return [command.originate(), command.edit()]
@@ -1993,12 +2089,13 @@ class MyHandler(BaseHandler):
 
 
 - **Recording Responses:**
-  Each question object provides an `add_response()` method that enforces the correct response format:
+  Either set `answers` and let the command resolve each response against its question, or record them one at a time. Each question object provides an `add_response()` method that enforces the correct response format:
   - For **TextQuestion**, you must pass a `text` parameter.
   - For **IntegerQuestion**, you must pass an `integer` parameter.
   - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
   - For **CheckboxQuestion**, you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
+  - For **DateQuestion**, you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
 
 
  - **Creating and Editing:**
@@ -2237,7 +2334,7 @@ RefillCommand(
 | Name         | Type     | Required to commit | Description                                      |
 |--------------|----------|----------|--------------------------------------------------|
 | `allergy_id` | _string_ | `true`   | The id of the [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) to remove. Must be an allergy already recorded on that patient's chart.        |
-| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal. |
+| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
 
 **Example**:
 
@@ -2258,7 +2355,7 @@ RemoveAllergyCommand(
 
 | Name                     | Type      | Required to commit | Description                                                                |
 |--------------------------|-----------|----------|----------------------------------------------------------------------------|
-| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be a condition already recorded on that patient's chart.               |
+| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be an **active** condition on that patient's chart — committed, not entered in error, and not already resolved. |
 | `show_in_condition_list` | _boolean_ | `false`  | Determines whether the condition remains visible in patient chart summary. |
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
 
@@ -2287,6 +2384,7 @@ ResolveConditionCommand(
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 
 #### Toggle Questions Feature
@@ -2336,7 +2434,7 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 # All previously set toggle states are automatically loaded
 ```
 
-**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 ---
 
@@ -2371,8 +2469,9 @@ stop_medication = StopMedicationCommand(
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
-**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Example**:
 
@@ -2521,7 +2620,7 @@ UpdateDiagnosisCommand(
 
 | Name                 | Type                     | Required to commit | Description                                               |
 |:---------------------|:-------------------------|:---------|:----------------------------------------------------------|
-| `goal_id`            | _string_                 | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
+| `goal_id`            | _string_                 | `true`   | The `id` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
