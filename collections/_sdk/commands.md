@@ -1943,9 +1943,11 @@ The `answers` parameter takes a list of `Answer` objects, one per question. Each
 | Name          | Type                                      | Required | Description                                                                                     |
 |:--------------|:------------------------------------------|:---------|:------------------------------------------------------------------------------------------------|
 | `question_id` | _integer_                                  | `true`   | The [Question](/sdk/data-questionnaire/#question) `dbid`.                                        |
-| `response`    | _string_, _integer_, or _list of [Selection](#questionnaire-selection)_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, or a list of [`Selection`](#questionnaire-selection) objects for a checkbox question. |
+| `response`    | _string_, _integer_, or _list of [Selection](#questionnaire-selection)_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, an ISO 8601 `YYYY-MM-DD` string for a date question, or a list of [`Selection`](#questionnaire-selection) objects for a checkbox question. |
 
 A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a [`Selection`](#questionnaire-selection) rather than to the answer as a whole.
+
+{% include alert.html type="warning" content="A date answer given through <code>answers</code> must be a string. <code>response</code> accepts a string, an integer or a list of <code>Selection</code>, so a <code>datetime.date</code> is refused. The question's own <code>add_response(date=...)</code> is the path that takes a <code>datetime.date</code> or a <code>datetime.datetime</code>." %}
 
 <a id="questionnaire-selection"></a>
 
@@ -2014,9 +2016,11 @@ class MyHandler(BaseHandler):
               Answer(question_id=13, response=42),
               # A radio question, answered with the id of one of its options.
               Answer(question_id=14, response=101),
+              # A date question. Give the date as a string, not a datetime.date.
+              Answer(question_id=15, response="2026-07-14"),
               # A checkbox question, answered with one Selection per option ticked.
               Answer(
-                  question_id=15,
+                  question_id=16,
                   response=[
                       Selection(option_id=201),
                       Selection(option_id=202, comment="Don't panic"),
