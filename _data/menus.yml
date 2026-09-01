@@ -1085,6 +1085,9 @@ data_module:
   - title: "FamilyHistory"
     url: /sdk/data-family-history/
     description: A patient's family medical history — conditions recorded for a relative.
+  - title: "FollowUp"
+    url: /sdk/data-follow-up/
+    description: A requested follow-up (recall) recorded on a note via the follow_up command.
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
