@@ -1917,6 +1917,7 @@ In addition to the basic parameters, this command supports a dynamic response in
 - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
 - **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
 - **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
+- **Date questions (TYPE_DATE):** Accept a keyword argument `date` (a `datetime.date`, a `datetime.datetime` normalized to its date, or an ISO 8601 date string `YYYY-MM-DD`). The value is stored as a normalized `YYYY-MM-DD` string; a string carrying a time component, an unparseable string, or a wrong type raises an error.
 
 
 **Command-specific parameters**:
@@ -1981,6 +1982,9 @@ class MyHandler(BaseHandler):
               last_option = question.options[-1]
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
+          elif question.type == ResponseOption.TYPE_DATE:
+              # For date questions, pass a 'date' keyword argument.
+              question.add_response(date="2026-01-15")
 
       # Because we're directly setting a command_uuid, we can return both originate and edit.
       return [command.originate(), command.edit()]
@@ -1999,6 +2003,7 @@ class MyHandler(BaseHandler):
   - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
   - For **CheckboxQuestion**, you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
+  - For **DateQuestion**, you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
 
 
  - **Creating and Editing:**
