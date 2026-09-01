@@ -237,14 +237,14 @@ sections:
             "answerOption": [
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
+                        "system": "http://loinc.org",
                         "code": "LA33-6",
                         "display": "Yes"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
+                        "system": "http://loinc.org",
                         "code": "LA32-8",
                         "display": "No"
                     }
@@ -275,57 +275,57 @@ sections:
             "answerOption": [
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "228449008-0",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A1",
                         "display": "0"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "38112003",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A2",
                         "display": "1"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "19338005",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A3",
                         "display": "2"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "79605009",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A4",
                         "display": "3"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "9362000",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A5",
                         "display": "4"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "34001005",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A6",
                         "display": "5"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "68244004",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A7",
                         "display": "6"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "65607009",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q2_A8",
                         "display": "7"
                     }
                 }
@@ -361,29 +361,29 @@ sections:
             "answerOption": [
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q3_A1",
                         "display": "10-20 min"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q3_A2",
                         "display": "20-40 min"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q3_A3",
                         "display": "40-60 min"
                     }
                 },
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q3_A4",
                         "display": "> 1 hr"
                     }
                 }
@@ -393,8 +393,8 @@ sections:
             "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
             "code": [
                 {
-                    "system": "http://snomed.info/sct",
-                    "code": "QUES_FINACIAL_STRESS_CODE_Q4"
+                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                    "code": "QUES_EXERCISE_Q4"
                 }
             ],
             "text": "What type of exercise do you do?",
@@ -403,16 +403,40 @@ sections:
                 {
                     "question": "93137723-295f-4b28-9f97-fb58825b2cda",
                     "operator": "=",
-                    "answerString": "40-60 min"
+                    "answerCoding": {
+                        "code": "QUES_EXERCISE_Q3_A3",
+                        "display": "40-60 min"
+                    }
                 }
             ],
             "repeats": false,
             "answerOption": [
                 {
                     "valueCoding": {
-                        "system": "http://snomed.info/sct",
-                        "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
-                        "display": "What type of exercise do you do?"
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q4_A1",
+                        "display": "TXT"
+                    }
+                }
+            ]
+        },
+        {
+            "linkId": "c47a9e05-2b8d-4f31-9a6e-1d5b3c8f7e20",
+            "code": [
+                {
+                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                    "code": "QUES_EXERCISE_Q5"
+                }
+            ],
+            "text": "When did you last exercise?",
+            "type": "date",
+            "repeats": false,
+            "answerOption": [
+                {
+                    "valueCoding": {
+                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                        "code": "QUES_EXERCISE_Q5_A1",
+                        "display": "DATE"
                     }
                 }
             ]
@@ -534,14 +558,14 @@ sections:
                         "answerOption": [
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
+                                    "system": "http://loinc.org",
                                     "code": "LA33-6",
                                     "display": "Yes"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
+                                    "system": "http://loinc.org",
                                     "code": "LA32-8",
                                     "display": "No"
                                 }
@@ -572,57 +596,57 @@ sections:
                         "answerOption": [
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "228449008-0",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A1",
                                     "display": "0"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "38112003",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A2",
                                     "display": "1"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "19338005",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A3",
                                     "display": "2"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "79605009",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A4",
                                     "display": "3"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "9362000",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A5",
                                     "display": "4"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "34001005",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A6",
                                     "display": "5"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "68244004",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A7",
                                     "display": "6"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "65607009",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q2_A8",
                                     "display": "7"
                                 }
                             }
@@ -658,29 +682,29 @@ sections:
                         "answerOption": [
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q3_A1",
                                     "display": "10-20 min"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q3_A2",
                                     "display": "20-40 min"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q3_A3",
                                     "display": "40-60 min"
                                 }
                             },
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q3_A4",
                                     "display": "> 1 hr"
                                 }
                             }
@@ -690,8 +714,8 @@ sections:
                         "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
                         "code": [
                             {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q4"
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q4"
                             }
                         ],
                         "text": "What type of exercise do you do?",
@@ -700,16 +724,40 @@ sections:
                             {
                                 "question": "93137723-295f-4b28-9f97-fb58825b2cda",
                                 "operator": "=",
-                                "answerString": "40-60 min"
+                                "answerCoding": {
+                                    "code": "QUES_EXERCISE_Q3_A3",
+                                    "display": "40-60 min"
+                                }
                             }
                         ],
                         "repeats": false,
                         "answerOption": [
                             {
                                 "valueCoding": {
-                                    "system": "http://snomed.info/sct",
-                                    "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
-                                    "display": "What type of exercise do you do?"
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q4_A1",
+                                    "display": "TXT"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "c47a9e05-2b8d-4f31-9a6e-1d5b3c8f7e20",
+                        "code": [
+                            {
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q5"
+                            }
+                        ],
+                        "text": "When did you last exercise?",
+                        "type": "date",
+                        "repeats": false,
+                        "answerOption": [
+                            {
+                                "valueCoding": {
+                                    "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                    "code": "QUES_EXERCISE_Q5_A1",
+                                    "display": "DATE"
                                 }
                             }
                         ]
