@@ -155,12 +155,6 @@ renders in a note and which value an answer carries.
 | `DATE` | Date | A calendar date, picked from a date picker. |
 | `SING` | Single select | One [ResponseOption](#responseoption). |
 | `MULT` | Multi select | One or more [ResponseOption](#responseoption) records. |
-| `BODA` | Full body, standing, front view | A body-diagram selection. |
-| `BODB` | Full body, standing, back view | A body-diagram selection. |
-| `BODC` | Full body, standing, side view | A body-diagram selection. |
-| `BODD` | Full body, sitting, front view | A body-diagram selection. |
-| `BODE` | Full body, sitting, back view | A body-diagram selection. |
-| `BODF` | Full body, sitting, side view | A body-diagram selection. |
 
 `TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a
 score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see
