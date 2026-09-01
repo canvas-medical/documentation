@@ -193,6 +193,9 @@ sections:
                     - name: valueDecimal
                       type: decimal
                       description: For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+                    - name: valueDate
+                      type: date
+                      description: For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
                     - name: valueCoding
                       type: json
                       description: For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
