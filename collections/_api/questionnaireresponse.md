@@ -160,8 +160,9 @@ sections:
               Canvas supports the following question formats:<br><br>
               • Free text<br>
               • Single choice<br>
-              • Multiple choice<br><br>
-              Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.<br><br>
+              • Multiple choice<br>
+              • Date<br><br>
+              Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.<br><br>
               The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):<br><br>
 
                 | FHIR system uri                                                        | Canvas system value |
@@ -267,7 +268,8 @@ sections:
             For free text questions, the answer object must include a `valueString` or you will get the error: `Question of type TXT expects a valueString answer`<br><br>
             For single or multiple choice questions, the answer objects must include a `valueCoding` or you will see one of these errors:<br>
             `Question of type SING expects a valueCoding answer`<br>
-            `Question of type MULT expects a valueCoding answer`
+            `Question of type MULT expects a valueCoding answer`<br><br>
+            For date questions, the answer object must include a `valueDate` or you will get the error: `Question of type DATE expects a valueDate answer`
           responses: [201, 400, 401, 403, 405, 422]
           example_request: questionnaireresponse-create-request
           example_response: questionnaireresponse-create-response
