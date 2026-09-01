@@ -72,6 +72,7 @@ committed_responses = PrescriptionChangeResponse.objects.committed()
 | reason_code                | String                                                         |
 | message_id                 | String                                                         |
 | prior_authorization_number | String                                                         |
+| request                    | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/) |
 
 ## Enumeration types
 
