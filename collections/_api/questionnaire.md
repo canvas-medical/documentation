@@ -92,6 +92,7 @@ sections:
                     - value: choice (for multiple or single choice questions)
                     - value: text (for free text questions)
                     - value: decimal (for decimal numeric questions)
+                    - value: date (for date questions)
                 - name: repeats
                   type: boolean
                   description: Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
