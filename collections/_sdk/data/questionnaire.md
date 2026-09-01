@@ -135,10 +135,38 @@ interviews = (
 | name        | String                              |
 | code_system | String                              |
 | code        | String                              |
-| type        | String                              |
+| type        | String — one of the [question types](#question-types) below |
 | use_in_shx  | Boolean                             |
 | options     | [ResponseOption](#responseoption)[] |
 | questions   | [Question](#question)[]             |
+
+<a id="question-types"></a>
+
+#### Question types
+
+`type` holds the code for the kind of question the option set describes. It decides how the question
+renders in a note and which value an answer carries.
+
+| `type` | Question | Answer |
+|:-------|:---------|:-------|
+| `TXT`  | Free text | Text, on the response's `response_option_value`. |
+| `INT`  | Integer | A whole number. |
+| `DEC`  | Decimal | A decimal number. |
+| `DATE` | Date | A calendar date, picked from a date picker. |
+| `SING` | Single select | One [ResponseOption](#responseoption). |
+| `MULT` | Multi select | One or more [ResponseOption](#responseoption) records. |
+| `BODA` | Full body, standing, front view | A body-diagram selection. |
+| `BODB` | Full body, standing, back view | A body-diagram selection. |
+| `BODC` | Full body, standing, side view | A body-diagram selection. |
+| `BODD` | Full body, sitting, front view | A body-diagram selection. |
+| `BODE` | Full body, sitting, back view | A body-diagram selection. |
+| `BODF` | Full body, sitting, side view | A body-diagram selection. |
+
+`TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a
+score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see
+[Questionnaires](/sdk/questionnaires/).
+
+{% include alert.html type="warning" content="A <code>DATE</code> answer is not readable through the data module yet. It is stored on a date column that <code>InterviewQuestionResponse</code> does not expose, so <code>response_option_value</code> is empty for a date question. Read it over the FHIR API as a <code>valueDate</code> on <a href='/api/questionnaireresponse/'>QuestionnaireResponse</a> in the meantime." %}
 
 ### ResponseOption
 
