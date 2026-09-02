@@ -1021,6 +1021,12 @@ data_module:
   - title: "Calendar"
     url: /sdk/data-calendar/
     description: Calendars associated with providers.
+  - title: "CancelPrescription"
+    url: /sdk/data-cancel-prescription/
+    description: A request to cancel a patient's prescription (the CancelPrescription command).
+  - title: "CancelPrescriptionResponse"
+    url: /sdk/data-cancel-prescription-response/
+    description: The response to a CancelPrescription request.
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
