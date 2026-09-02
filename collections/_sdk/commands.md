@@ -1568,6 +1568,8 @@ command.set_test_value("pH", "6.8")
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+- The prescriber must have an SPI (Surescripts Prescriber Identifier) number on file, or the send is restricted with `eRx unavailable, prescriber missing SPI number`. SPI is a send requirement only: a prescriber without one can still review and sign the prescription.
+- For a controlled substance, the prescriber must be enrolled in EPCS, or the send is restricted with `eRx unavailable, prescriber not enrolled in EPCS`.
 - For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
 
 These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
