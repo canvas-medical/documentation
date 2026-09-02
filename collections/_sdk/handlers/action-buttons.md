@@ -72,6 +72,61 @@ The `ActionButton` class defines several locations where the button can be place
 | `CHART_SUMMARY_SURGICAL_HISTORY_SECTION`    | The button will appear in the Surgical History section of the chart summary.    |
 | `CHART_SUMMARY_FAMILY_HISTORY_SECTION`      | The button will appear in the Family History section of the chart summary.      |
 | `CHART_SUMMARY_CODING_GAPS_SECTION`         | The button will appear in the Coding Gaps section of the chart summary.         |
+| `NOTE_BODY_AUTOMATION`                      | The button appears as an entry in the note body's "/" (slash) command list while a clinician documents a note. |
+
+
+## Note body automations
+
+A note body automation adds your plugin's own entry to the note body's "/" (slash) command list — the inline list clinicians use to insert commands while documenting a note. When the clinician selects your entry, your `handle()` runs and returns effects, just as a native slash command inserts commands.
+
+Build one exactly as you build any other action button. Subclass `ActionButton`, set `BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION`, and provide the [`BUTTON_TITLE` and `BUTTON_KEY`](#required-constants) constants and the optional [`PRIORITY`](#optional-constants). Implement [`handle()`](#implementing-the-handle-method) to build and return the effects your entry produces, and override [`visible()`](#optional-implement-the-visible-method) to scope which notes or patients the entry appears for.
+
+`NOTE_BODY_AUTOMATION` reuses the generic `ActionButton` handler — a note body automation is a regular `ActionButton` subclass using this location, with no separate automation class. Canvas asks each plugin for its note body automation entries through the [`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event.
+
+Canvas renders the "/" experience for the clinician. Your entry appears in the list after the native commands, marked with a plug icon that distinguishes it from Canvas's native automations, and sorted by `PRIORITY` then title. Canvas populates the list when the note loads — not on every keystroke — then filters it client-side by `BUTTON_TITLE` as the clinician types. Selecting your entry runs `handle()`.
+
+To make an entry behave like a native slash command, return a [`BatchOriginateCommandEffect`](/sdk/effect-batch-originate/) with `replace_line=True` from `handle()`. In the note body "/" flow, Canvas supplies the trigger-line position and places the originated commands on the line the clinician typed the trigger on, replacing that line and leaving no trailing trigger text or blank-line padding. You don't set `line_number` for an automation — Canvas handles the placement, so `replace_line=True` is all `handle()` needs to set.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.v1.data.note import Note
+
+
+class LipidPanelAutomation(ActionButton):
+    BUTTON_TITLE = "Order lipid panel follow-up"
+    BUTTON_KEY = "LIPID_PANEL_AUTOMATION"
+    BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION
+
+    def visible(self) -> bool:
+        # Scope the entry to the note's provider.
+        note_id = self.event.context.get("note_id")
+        user_id = (self.event.context.get("user") or {}).get("id")
+        if not note_id or not user_id:
+            return False
+
+        note = Note.objects.filter(dbid=note_id).first()
+        return note is not None and note.provider.id == user_id
+
+    def handle(self) -> list[Effect]:
+        note_id = self.event.context["note_id"]
+        note = Note.objects.filter(dbid=note_id).first()
+        if note is None:
+            return []
+
+        plan = PlanCommand()
+        plan.note_uuid = note.id
+        plan.narrative = "Order labs for lipid panel"
+
+        return [
+            BatchOriginateCommandEffect(
+                commands=[plan],
+                replace_line=True,
+            ).apply()
+        ]
+```
 
 
 ## Dynamic, state-responsive buttons
