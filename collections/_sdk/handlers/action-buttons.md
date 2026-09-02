@@ -87,6 +87,8 @@ Canvas renders the "/" experience for the clinician. Your entry appears in the l
 
 To make an entry behave like a native slash command, return a [`BatchOriginateCommandEffect`](/sdk/effect-batch-originate/) with `replace_line=True` from `handle()`. In the note body "/" flow, Canvas supplies the trigger-line position and places the originated commands on the line the clinician typed the trigger on, replacing that line and leaving no trailing trigger text or blank-line padding. You don't set `line_number` for an automation — Canvas handles the placement, so `replace_line=True` is all `handle()` needs to set.
 
+Use `BatchOriginateCommandEffect` whenever an entry originates **more than one** command. The batch updates the note body one time for the whole group, instead of one time per command. That is faster, and it also keeps the group together: separate originate effects each update the note on their own, so they can interleave with other writes and land out of order. An entry that originates a single command needs no batch — return that command's `originate()` instead.
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
