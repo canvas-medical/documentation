@@ -44,6 +44,8 @@ is_active = response is not None and response.status == EligibilityResponseStatu
 
 A coverage with no eligibility responses (an empty `coverage.eligibility_responses` queryset) has not been verified.
 
+`NOT_APPLICABLE`, like `UNKNOWN`, is a value returned by [`Coverage.eligibility_status`](/sdk/data-coverage/#eligibility-status), never by an individual `EligibilityResponse.status`. A single response only ever resolves to `FAILED`, `INACTIVE`, or `ACTIVE`.
+
 ## Attributes
 
 ### EligibilityRequest
@@ -102,12 +104,13 @@ failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
 
 ### EligibilityResponseStatus
 
-| Name     | Value    |
-| -------- | -------- |
-| ACTIVE   | Active   |
-| INACTIVE | Inactive |
-| FAILED   | Failed   |
-| UNKNOWN  | Unknown  |
+| Name           | Value         |
+| -------------- | ------------- |
+| ACTIVE         | Active        |
+| INACTIVE       | Inactive      |
+| FAILED         | Failed        |
+| UNKNOWN        | Unknown       |
+| NOT_APPLICABLE | NotApplicable |
 
 <br/>
 <br/>
