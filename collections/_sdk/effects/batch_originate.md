@@ -11,9 +11,11 @@ The `BatchOriginateCommandEffect` provides an efficient way to insert multiple c
 
 **Parameters:**
 
-| Attribute  | Type   | Required | Description                                    |
-|------------|--------|----------|------------------------------------------------|
-| `commands` | `list` | `true`   | List of command instances to batch originate   |
+| Attribute      | Type   | Required | Description                                    |
+|----------------|--------|----------|------------------------------------------------|
+| `commands`     | `list` | `true`   | List of command instances to batch originate   |
+| `line_number`  | `int`  | `false`  | Which note line the commands land on. Defaults to `-1`, which inserts them at the bottom of the note; set a specific line to target that line instead. Combine with `replace_line=True` to also take over (replace the content of) that line. |
+| `replace_line` | `bool` | `false`  | Replace the content of the target line (the one set by `line_number`) with the originated commands, instead of inserting them as new lines. Defaults to `False`. |
 
 **Returns:**
 
@@ -53,6 +55,19 @@ return [
 ```
 
 For three commands this performs three originates, **one** note update, and three commits. Collapsing the draft insertions into a single note update is where the performance benefit comes from.
+
+## Note body automations
+
+A [note body automation](/sdk/handlers-action-buttons/) is an entry a plugin adds to the note body's "/" command list. When a clinician selects the entry, the automation's `handle()` returns a `BatchOriginateCommandEffect` with `replace_line=True`. In this flow Canvas's note body "/" handling supplies the trigger-line position, so Canvas places the originated commands on the line the clinician typed the trigger on and replaces that line, rather than appending them to the note. The automation doesn't set `line_number` itself. If a plugin omits `replace_line`, it keeps its default of `False`, and the batch follows the effect's normal defaults: the originated commands insert at the bottom of the note (the `line_number=-1` default) rather than taking over the trigger line.
+
+```python?partial=true
+return [
+    BatchOriginateCommandEffect(
+        commands=[plan],
+        replace_line=True,
+    ).apply()
+]
+```
 
 ## Basic Usage
 
