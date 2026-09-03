@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 372" width="760" height="372" role="img" aria-labelledby="dps-title dps-desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif">
   <title id="dps-title">How a docked pane is sized</title>
-  <desc id="dps-desc">Two views of a Canvas window with a pane docked to the right edge. In the first, the pane is at DOCK_SIZE, which is its initial size and its ceiling; a user can drag the divider to any width from 48 pixels up to half the viewport on that axis. In the second, the plugin has collapsed its own pane to a thin rail, which it may do below the 48 pixel floor, though it cannot resize past the ceiling.</desc>
+  <desc id="dps-desc">Two views of a Canvas window with a pane docked to the right edge. In the first, the pane is at DOCK_SIZE, which is its initial size and its ceiling; a user can drag the divider to any width from 48 pixels up to half the window's width. In the second, the plugin has collapsed its own pane to a thin rail, which it may do below the 48 pixel floor, though it cannot resize past the ceiling.</desc>
 
   <defs>
     <marker id="dps-arrow" markerWidth="8" markerHeight="8" refX="3" refY="4" orient="auto-start-reverse">
@@ -29,7 +29,7 @@
   <!-- the user drags the divider -->
   <line x1="326" y1="200" x2="454" y2="200" stroke="#082b48" stroke-width="1.5" marker-start="url(#dps-arrow)" marker-end="url(#dps-arrow)"/>
   <text x="390" y="222" fill="#082b48" font-size="12" text-anchor="middle">A user drags the divider: no smaller than 48px,</text>
-  <text x="390" y="238" fill="#082b48" font-size="12" text-anchor="middle">no larger than half the viewport on this axis.</text>
+  <text x="390" y="238" fill="#082b48" font-size="12" text-anchor="middle">no wider than half the window.</text>
 
   <!-- collapsed to a rail -->
   <rect x="40" y="262" width="480" height="96" rx="6" fill="#ffffff" stroke="#082b48" stroke-width="1.5"/>

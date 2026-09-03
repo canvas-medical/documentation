@@ -564,13 +564,13 @@ attribute orders Note Application tabs. To get a predictable order, set an expli
 `PRIORITY` on each pane, and set an explicit `IDENTIFIER` rather than relying on the
 auto-derived one.
 
-Docked panes are limited to half the viewport on each axis. The left and right edges
-share the horizontal budget, and the top and bottom edges share the vertical budget,
-each capped at 50% of the viewport. When the panes on an axis would exceed that
-budget, they are scaled down proportionally rather than any pane being dropped.
+Panes cannot crowd Canvas out of its own window. The left and right panes together
+take up at most half the window's width, and the top and bottom panes together at most
+half its height. If the panes on one of those pairs would exceed their half, all of
+them are scaled down in proportion rather than any one being dropped.
 
-An edge's thickness is set by its largest pane on that axis, not by the sum of its
-panes.
+Where two panes share a single edge, that edge is only as thick as the larger of them,
+not as thick as both added together.
 
 ### Sizing, Resizing, and Collapsing
 
@@ -584,9 +584,9 @@ own resize requests. The user and the plugin resize the pane under different rul
 
 A user can resize a pane by dragging its edge or with the keyboard arrow keys, using
 the standard splitter the pane exposes. A user resize can make the pane larger or
-smaller than `DOCK_SIZE`. It is floored at 48px and capped at the axis budget
-described above, but is not otherwise bound by `DOCK_SIZE`. The size a user drags to
-becomes the pane's new ceiling, replacing `DOCK_SIZE`, and is stored in the browser
+smaller than `DOCK_SIZE`: it stops at 48px, and at the half-the-window limit described
+above, but is not otherwise bound by `DOCK_SIZE`. The size a user drags to becomes the
+pane's new ceiling, replacing `DOCK_SIZE`, and is stored in the browser
 (`localStorage`) keyed by the pane's identifier, so it survives page reload and
 navigation. Once a user has resized a pane, that persisted size takes precedence on
 future loads, so changing `DOCK_SIZE` in a later plugin version does not affect panes a
