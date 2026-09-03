@@ -256,6 +256,36 @@ note body once for the whole group rather than once per command, which is faster
 the group together: separate originate effects each update the note on their own, so they
 can interleave with other writes and land out of order.
 
+An entry does not have to write to the note at all. Because it is an ordinary action
+button, it can put any tool of yours behind the "/" menu, which is a shorter reach for a
+clinician mid-note than the app drawer. This one opens a risk calculator, and writes
+nothing:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.templates import render_to_string
+
+
+class AscvdRiskCalculator(ActionButton):
+    BUTTON_TITLE = "ASCVD risk calculator"
+    BUTTON_KEY = "ASCVD_RISK_CALCULATOR"
+    BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION
+
+    def handle(self) -> list[Effect]:
+        return [
+            LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                content=render_to_string("templates/ascvd_calculator.html"),
+                title="ASCVD risk",
+            ).apply()
+        ]
+```
+
+The clinician types `/`, picks the calculator, and it opens over the note. The trigger line
+is cleared either way, so the note is left exactly as it was.
+
 ## Examples
 
 ### Log information when a button is clicked
