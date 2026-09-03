@@ -348,26 +348,55 @@ placement as class attributes, and implements `on_open()` to mount the pane's co
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
 from canvas_sdk.handlers.application import DockedApplication, DockEdge
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data.task import Task, TaskStatus
 
 
-class InfoPanel(DockedApplication):
-    """Docked application that shows a persistent information pane on the right edge."""
+class TaskPanel(DockedApplication):
+    """Docked application that keeps the signed-in user's open tasks on screen."""
 
-    NAME = "Info Panel"
-    IDENTIFIER = "my_plugin__info_panel"
+    NAME = "My Tasks"
+    IDENTIFIER = "my_plugin__task_panel"
     DOCK_EDGE = DockEdge.RIGHT
     DOCK_SIZE = "320px"
 
     def on_open(self) -> Effect | list[Effect]:
         """Mount the docked pane's content."""
+        user_id = self.event.context.get("user", {}).get("id")
+        tasks = Task.objects.filter(assignee__id=user_id, status=TaskStatus.OPEN).order_by("due")
+
         return LaunchModalEffect(
             target=LaunchModalEffect.TargetType.DOCKED_PANE,
-            content="<html>Your pane HTML here</html>",
-            title="Info Panel"
+            content=render_to_string("templates/task_panel.html", {"tasks": tasks}),
+            title="My Tasks",
         ).apply()
 ```
 
-`on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's `content` or `url` in the pane rather than in a modal.
+The pane's markup lives in a Django template in your plugin rather than in a Python string, rendered by [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates). Here that template is `templates/task_panel.html`:
+{% raw %}
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Tasks</title>
+  </head>
+  <body>
+    <h1>My Tasks</h1>
+    <ul>
+      {% for task in tasks %}
+        <li>{{ task.title }} (due {{ task.due }})</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
+```
+
+{% endraw %}
+
+`on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's rendered `content` (or a `url`) in the pane rather than in a modal. Canvas draws no chrome around a docked pane, so `title` is never displayed: it becomes the pane's accessible name for screen readers.
+
+A docked pane is always visible, and a plugin cannot make it otherwise. There is no app drawer entry that opens it and no Canvas-provided control that closes or minimizes it, so installing the plugin is what makes the pane appear and uninstalling the plugin is what takes it away. The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
 
 #### Class attributes
 
@@ -390,62 +419,106 @@ class InfoPanel(DockedApplication):
 | `TOP`    | `top`    | Top edge of the window    |
 | `BOTTOM` | `bottom` | Bottom edge of the window |
 
-A docked pane is always visible, and a plugin cannot make it otherwise. There is no app drawer entry that opens it and no Canvas-provided control that closes or minimizes it, so installing the plugin is what makes the pane appear and uninstalling the plugin is what takes it away. The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
-
 ### Pane Context and Navigation
 
 Like other embedded applications, a Docked Application reads request context from
-`self.event.context`. The pane receives context when it first mounts and again
-each time the user moves to a new page.
+`self.event.context`. It receives that context twice over: once when the pane first
+mounts, through [`on_open()`](#on_open), and again on each navigation, through
+[`on_context_change()`](#on_context_change). Both entry points get the same three keys:
 
-| Key       | Description                                                                                             |
-|-----------|---------------------------------------------------------------------------------------------------------|
-| `url`     | The pathname of the current page                                                                        |
-| `user`    | Information about the current user                                                                       |
-| `patient` | A dict containing the patient's `id` (key), present only when the current page's URL carries a patient  |
+| Key       | Value                       | Description                                                                                                                                                                    |
+|-----------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `url`     | `str`                       | The path of the Canvas page the user is on. Always one of the [pages a pane sees](#pages-a-pane-sees).                                                                          |
+| `user`    | `{"id": str, "type": str}`  | The signed-in user, always present. `id` is the [Staff](/sdk/data-staff/#staff) key; `type` is the name of the person record behind the login, which is `Staff` in the EHR.     |
+| `patient` | `{"id": str}`               | The patient whose chart is open. Present only on a `/patient/<patient key>` path and absent entirely elsewhere, so read it as `self.event.context.get("patient", {})`.          |
 
-A Docked Application has two entry points for this context. `on_open()` fires once,
-when the pane first mounts; `on_context_change()` fires on each subsequent navigation.
+Both ids are keys rather than UUIDs, so they carry no dashes. On a patient chart the
+whole context looks like this:
 
-`on_open()` mounts the pane's content:
+```python?partial=true
+{
+    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35/summary",
+    "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+    "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
+}
+```
 
-```python
-from canvas_sdk.effects import Effect
+On the schedule, where no patient is in the path, the `patient` key is simply not there:
 
+```python?partial=true
+{
+    "url": "/schedule",
+    "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+}
+```
+
+#### `on_open()`
+
+Fires once, when the pane mounts, and returns the effect that gives the pane its content:
+
+```python?partial=true
 def on_open(self) -> Effect | list[Effect]:
     url = self.event.context.get("url")
-    user = self.event.context.get("user")
+    user_id = self.event.context.get("user", {}).get("id")
     patient_id = self.event.context.get("patient", {}).get("id")
     ...
 ```
 
-`on_context_change()` is how the pane stays context-aware as the user navigates.
-Canvas calls it on each page change with the updated context (the new `url`, and the
-`patient` derived from the new path). It defaults to a no-op, so a pane that does not
-override it keeps whatever it last rendered as the user moves between pages. Override
-it to return the plugin's own content or hosted URL, rebuilt from the new context —
-for example, a hosted URL that carries the new patient id:
+#### `on_context_change()`
 
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.launch_modal import LaunchModalEffect
+Fires on each navigation after that, with the new `url` and the `patient` derived from
+the new path. This is how a pane stays context-aware as the user moves around Canvas.
 
+It defaults to a no-op, so a pane that does not override it keeps whatever it last
+rendered. Override it to return the plugin's own content or hosted URL, rebuilt from the
+new context, such as a hosted URL that carries the new patient id:
+
+```python?partial=true
 def on_context_change(self) -> Effect | list[Effect]:
     patient_id = self.event.context.get("patient", {}).get("id", "")
     return LaunchModalEffect(
         target=LaunchModalEffect.TargetType.DOCKED_PANE,
-        url=f"https://info-panel.example.com/panel?patient={patient_id}",
+        url=f"https://task-panel.example.com/panel?patient={patient_id}",
     ).apply()
 ```
 
-The pane's document reloads only when `on_context_change()` returns a different `url`
-or `content`. Returning the same `url` or `content` as before leaves the pane's current
-document in place, preserving its scroll position and state. An override that returns no
-effect — `None` or an empty list — leaves the pane untouched too, the same outcome as
-not overriding the method. Whether to reload is your plugin's choice.
+The pane's document reloads only when `on_context_change()` returns a different `url` or
+`content`. Returning the same `url` or `content` as before leaves the pane's current
+document in place, preserving its scroll position and state, and so does returning no
+effect at all (`None` or an empty list). Whether to reload is your plugin's choice.
 
-Because the pane stays mounted, it keeps its state across navigation instead of being
-recreated like a modal or overlay that opens and closes.
+#### Pages a pane sees
+
+`url` is the path of the Canvas page around the pane, never the URL loaded inside the
+pane's own iframe. A pane navigating its own document is invisible to Canvas and produces
+no context change, and neither does a change to the page URL's hash.
+
+Docked panes mount in the EHR shell, so `url` is always one of the paths that shell
+routes. Some of these pages are gated by permission or by a feature flag, so which of
+them a given user reaches will vary:
+
+| Path                      | Page                                                                    |
+|---------------------------|-------------------------------------------------------------------------|
+| `/patient/<patient key>`  | A patient's chart. The only path that carries a `patient` in context    |
+| `/schedule`               | The schedule calendar                                                   |
+| `/patients`               | The patient list                                                        |
+| `/panel`                  | A patient panel                                                         |
+| `/populations`            | Population health                                                       |
+| `/campaigns`              | Campaigns                                                               |
+| `/revenue`                | Revenue and claims                                                      |
+| `/data-integration`       | Data integration                                                        |
+| `/questionnaire-builder`  | The questionnaire builder                                               |
+| `/application`            | A full-page plugin application                                          |
+| `/403`                    | Permission denied                                                       |
+
+Everything else on the domain sits outside that shell, including `/admin`, `/login`,
+`/app/...`, `/companion/...` and `/plugin-io/...`. Moving to one of those is a full page
+load rather than a navigation: the pane is not on screen while the user is there, and
+returning to the EHR mounts it again from scratch, so `on_open()` fires rather than
+`on_context_change()`.
+
+Because the pane stays mounted across every navigation inside the shell, it keeps its
+state there instead of being recreated like a modal or overlay that opens and closes.
 
 ### Multiple Docked Panes
 
@@ -512,8 +585,8 @@ mount it as a docked pane.
   "components": {
     "handlers": [
       {
-        "class": "my_plugin.apps.info_panel:InfoPanel",
-        "description": "Fixed information pane docked to the right edge."
+        "class": "my_plugin.apps.task_panel:TaskPanel",
+        "description": "Open task list docked to the right edge."
       }
     ]
   }
