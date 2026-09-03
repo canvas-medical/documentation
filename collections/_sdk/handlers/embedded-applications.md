@@ -118,7 +118,7 @@ Both `on_open()` and `handle()` have access to context data through `self.event.
 |-----------|---------------------------------------------------|
 | `note_id` | The database ID of the current note               |
 | `note`    | A dict containing the note's external `id` (UUID) |
-| `patient` | A dict containing the patient's `id` (key)        |
+| `patient` | A dict containing the patient's `id`             |
 | `user`    | Information about the current user                |
 
 #### `on_open()` — recommended
@@ -429,15 +429,14 @@ mounts, through [`on_open()`](#on_open), and again on each navigation, through
 | Key       | Value                       | Description                                                                                                                                                                    |
 |-----------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `url`     | `str`                       | The path of the Canvas page the user is on. Always one of the [pages a pane sees](#pages-a-pane-sees).                                                                          |
-| `user`    | `{"id": str, "type": str}`  | The signed-in user, always present. `id` is the [Staff](/sdk/data-staff/#staff) key; `type` is the name of the person record behind the login, which is `Staff` in the EHR.     |
-| `patient` | `{"id": str}`               | The patient whose chart is open. Present only on a `/patient/<patient key>` path and absent entirely elsewhere, so read it as `self.event.context.get("patient", {})`.          |
+| `user`    | `{"id": str, "type": str}`  | The signed-in user, always present. `id` is the [Staff](/sdk/data-staff/#staff) id; `type` is the name of the person record behind the login, which is `Staff` in the EHR.     |
+| `patient` | `{"id": str}`               | The patient whose chart is open. Present only on a `/patient/<patient id>` path and absent entirely elsewhere, so read it as `self.event.context.get("patient", {})`.          |
 
-Both ids are keys rather than UUIDs, so they carry no dashes. On a patient chart the
-whole context looks like this:
+On a patient chart the whole context looks like this:
 
 ```python?partial=true
 {
-    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35/summary",
+    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35",
     "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
     "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
 }
@@ -499,7 +498,7 @@ them a given user reaches will vary:
 
 | Path                      | Page                                                                    |
 |---------------------------|-------------------------------------------------------------------------|
-| `/patient/<patient key>`  | A patient's chart. The only path that carries a `patient` in context    |
+| `/patient/<patient id>`   | A patient's chart, including its sub-paths. The only path that carries a `patient` in context |
 | `/schedule`               | The schedule calendar                                                   |
 | `/patients`               | The patient list                                                        |
 | `/panel`                  | A patient panel                                                         |
@@ -516,6 +515,9 @@ Everything else on the domain sits outside that shell, including `/admin`, `/log
 load rather than a navigation: the pane is not on screen while the user is there, and
 returning to the EHR mounts it again from scratch, so `on_open()` fires rather than
 `on_context_change()`.
+
+The patient portal is outside the shell as well, so a docked pane cannot appear there. A
+Docked Application is a staff-facing surface only.
 
 Because the pane stays mounted across every navigation inside the shell, it keeps its
 state there instead of being recreated like a modal or overlay that opens and closes.
