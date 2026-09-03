@@ -557,20 +557,27 @@ Docked panes stack rather than being limited to one per edge. Each edge holds up
 two panes. When an edge already holds its two panes, an additional pane for that edge
 is not displayed — it is ignored rather than raising an install-time error.
 
-When more than one pane shares an edge, they are ordered by priority: the lower the
-priority value, the nearer the pane sits to the window edge. Panes with equal
-priority are ordered by their identifier. This mirrors the way the `PRIORITY` class
-attribute orders Note Application tabs. To get a predictable order, set an explicit
-`PRIORITY` on each pane, and set an explicit `IDENTIFIER` rather than relying on the
-auto-derived one.
+<p>
+  <object alt="A Canvas window whose right edge holds two panes, stacked top to bottom in one track and splitting its height evenly" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-panes-sharing-an-edge.svg" style="width: 100%; max-width: 760px;"></object>
+</p>
+
+Panes sharing an edge share a single track, and they split it evenly. On a left or
+right edge they stack top to bottom, each as wide as the track; on a top or bottom edge
+they sit side by side, each as tall as it. So two panes on one edge each get half the
+length of that edge, and the edge itself is only as thick as the larger of their two
+`DOCK_SIZE` values, since those sizes are alternatives rather than additions.
+
+Which pane comes first is decided by priority: the lower `PRIORITY` value goes first,
+which means the top of the stack on a left or right edge and the left-hand position on
+a top or bottom edge. Panes with equal priority are ordered by their identifier. This
+mirrors the way the `PRIORITY` class attribute orders Note Application tabs. To get a
+predictable order, set an explicit `PRIORITY` on each pane, and set an explicit
+`IDENTIFIER` rather than relying on the auto-derived one.
 
 Panes cannot crowd Canvas out of its own window. The left and right panes together
 take up at most half the window's width, and the top and bottom panes together at most
 half its height. If the panes on one of those pairs would exceed their half, all of
 them are scaled down in proportion rather than any one being dropped.
-
-Where two panes share a single edge, that edge is only as thick as the larger of them,
-not as thick as both added together.
 
 ### Sizing, Resizing, and Collapsing
 
