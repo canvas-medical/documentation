@@ -558,7 +558,7 @@ two panes. When an edge already holds its two panes, an additional pane for that
 is not displayed — it is ignored rather than raising an install-time error.
 
 <p>
-  <object alt="A Canvas window whose right edge holds two panes, stacked top to bottom in one track and splitting its height evenly" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-panes-sharing-an-edge.svg" style="width: 100%; max-width: 760px;"></object>
+  <object alt="Two Canvas windows: two panes sharing the right edge stack top to bottom, and two panes sharing the bottom edge sit side by side, each pair splitting one track evenly" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-panes-sharing-an-edge.svg" style="width: 100%; max-width: 760px;"></object>
 </p>
 
 Panes sharing an edge share a single track, and they split it evenly. On a left or
