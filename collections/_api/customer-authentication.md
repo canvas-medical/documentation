@@ -72,7 +72,7 @@ Open the following URL in the user's browser:
 - **`launch` parameter (required for staff users):** Staff users must include a `launch` parameter containing a base64-encoded JSON object with context. Without this parameter, the authorization will be denied with `error=access_denied`.
 
   ```bash
-  # Encode a launch context with a patient key
+  # Encode a launch context with a patient id
   echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
   # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
 

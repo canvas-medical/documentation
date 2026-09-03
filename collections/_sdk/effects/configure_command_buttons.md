@@ -51,7 +51,7 @@ Each entry in `locations` is a `LocationConfig` with the following attributes:
 
 | Top-level    | Required | Type                   | Description                                                              |
 |--------------|----------|------------------------|--------------------------------------------------------------------------|
-| `patient_id` | yes      | `str`                  | The patient key                                                          |
+| `patient_id` | yes      | `str`                  | The patient id                                                           |
 | `locations`  | no       | `list[LocationConfig]` | Areas to configure. Areas not listed retain their default visible state. |
 
 ## Validation

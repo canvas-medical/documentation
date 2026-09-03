@@ -146,8 +146,8 @@ Inside `visible()`, `compute()`, and `handle()` you can read the event context t
 | Accessor                        | Description                                                                                                                                    |
 |---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | `self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.       |
-| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-key>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
-| `self.event.target.id`          | The key of the patient the button is rendered for.                                                                                             |
+| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-id>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
+| `self.event.target.id`          | The id of the patient the button is rendered for.                                                                                             |
 
 ### Reloading buttons
 
@@ -417,7 +417,7 @@ class SignNoteButton(SignNoteActionButton):
         )
 ```
 
-You can gate on anything in the [runtime context](#reading-the-runtime-context). For example, to show a button only to the note's provider, compare the logged-in user against the note's provider (`note.provider.id` and the user id are both Staff keys):
+You can gate on anything in the [runtime context](#reading-the-runtime-context). For example, to show a button only to the note's provider, compare the logged-in user against the note's provider (`note.provider.id` and the user id are both Staff ids):
 
 ```python?partial=true
     def visible(self) -> bool:

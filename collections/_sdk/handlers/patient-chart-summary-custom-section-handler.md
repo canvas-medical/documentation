@@ -24,7 +24,7 @@ Subclass `PatientChartSummaryCustomSectionHandler` and:
 
 1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
 2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
-3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+3. The patient id is available via `self.target`. Use it to scope database queries to the current patient.
 4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
 
 ```python

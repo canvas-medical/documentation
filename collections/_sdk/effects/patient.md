@@ -65,7 +65,7 @@ A contact identifies its person in one of two ways, and you must supply one of t
 | Attribute            | Type                                                              | Description                                                       | Required |
 | -------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------- | -------- |
 | `name`               | `str` or `None`                                                   | The contact's name, when the contact holds the person's details inline | One of `name` or `related_patient` |
-| `related_patient`    | `str`, `uuid.UUID` or `None`                                      | The patient key of an existing Canvas patient this contact refers to, used instead of `name` | One of `name` or `related_patient` |
+| `related_patient`    | `str`, `uuid.UUID` or `None`                                      | The patient id of an existing Canvas patient this contact refers to, used instead of `name` | One of `name` or `related_patient` |
 | `contact_identifier` | `str`, `uuid.UUID` or `None`                                      | Identifies an existing contact. Omit it to add a contact; supply it to modify or remove one. See [Managing patient contacts](#managing-patient-contacts) | No       |
 | `phone_number`       | `str` or `None`                                                   | The contact's phone number. Exactly 10 digits                      | No       |
 | `email`              | `str` or `None`                                                   | The contact's email address                                        | No       |
@@ -342,7 +342,7 @@ class MyHandler(BaseHandler):
 
         # No contact_identifier, so this adds a contact.
         patient = Patient(
-            patient_id="existing-patient-key",
+            patient_id="existing-patient-id",
             contacts=[
                 PatientContact(
                     name="Jane Doe",
@@ -379,7 +379,7 @@ class MyHandler(BaseHandler):
         # References a patient the previous effect creates. Effects are applied in
         # order, so the key resolves by the time this one is written.
         patient = Patient(
-            patient_id="existing-patient-key",
+            patient_id="existing-patient-id",
             contacts=[
                 PatientContact(
                     related_patient=spouse_key,
