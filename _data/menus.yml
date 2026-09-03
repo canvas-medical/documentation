@@ -523,6 +523,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Drive Navigator from your coding agent (MCP)"
+    url: /guides/navigator-mcp/
+    description: Ask the Canvas AI assistant from Claude Code or Cursor over MCP
+    uses:
+      - sdk
+
   - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
