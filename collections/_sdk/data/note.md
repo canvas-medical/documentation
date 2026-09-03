@@ -135,8 +135,10 @@ but it does limit which query operations can name it:
 | `Note.objects.only("body")`                            | Yes       | Loads every column the property reads, so building a body costs no further queries                 |
 | `Note.objects.defer("body")`                           | Yes       | Defers all of them                                                                                 |
 | `Note.objects.values("body")`, `values_list("body")`   | No        | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return |
-| `Note.objects.order_by("body")`                        | No        |                                                                                                    |
-| `body` reached from another model's queryset           | No        | For example `Command.objects.filter(note__body=...)`. Filter on `Note` itself instead               |
+| `Note.objects.order_by("body")`                        | No        | Raises a `FieldError`                                                                              |
+| `body` named through a relation                        | No        | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead |
+
+{% include alert.html type="warning" content="Naming <code>body</code> through a relation used to work and no longer does. A queryset on another model that defers or filters <code>note__body</code> now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with <code>Note.objects.defer(\"body\")</code>." %}
 
 So read the body from a note you already have, or filter notes by it, rather than trying
 to select it as a value:
