@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 296" width="720" height="296" role="img" aria-labelledby="dps-title dps-desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif">
+  <title id="dps-title">The size range of a docked pane</title>
+  <desc id="dps-desc">A docked pane opens at DOCK_SIZE, which is also its ceiling. A user can drag it anywhere between 48 pixels and half the viewport on that axis, and the size they drag to becomes the new ceiling. A plugin can resize its own pane anywhere from a thin rail up to the current ceiling, and a request above the ceiling is clamped to it.</desc>
+
+  <!-- tick labels -->
+  <g fill="#082b48" font-size="13">
+    <text x="70" y="42" text-anchor="middle">0</text>
+    <text x="196" y="42" text-anchor="middle">48px</text>
+    <text x="436" y="42" text-anchor="middle">DOCK_SIZE</text>
+    <text x="660" y="42" text-anchor="end">50% of the viewport</text>
+  </g>
+  <g fill="#5b6672" font-size="11">
+    <text x="196" y="60" text-anchor="middle">user floor</text>
+    <text x="436" y="60" text-anchor="middle">initial size, and the ceiling</text>
+    <text x="660" y="60" text-anchor="end">on this axis, shared with the opposite edge</text>
+  </g>
+
+  <!-- axis -->
+  <line x1="70" y1="80" x2="660" y2="80" stroke="#082b48" stroke-width="1.5"/>
+  <g stroke="#082b48" stroke-width="1.5">
+    <line x1="70" y1="72" x2="70" y2="88"/>
+    <line x1="196" y1="72" x2="196" y2="88"/>
+    <line x1="436" y1="72" x2="436" y2="88"/>
+    <line x1="660" y1="72" x2="660" y2="88"/>
+  </g>
+
+  <!-- user drag range -->
+  <text x="196" y="126" fill="#082b48" font-size="13" font-weight="600">A user drags the pane</text>
+  <rect x="196" y="136" width="464" height="22" rx="4" fill="#98d2dc" stroke="#22698c" stroke-width="1.5"/>
+  <text x="428" y="151" fill="#082b48" font-size="12" text-anchor="middle">floored at 48px, capped at the axis budget</text>
+  <text x="196" y="176" fill="#5b6672" font-size="11">The size dragged to replaces DOCK_SIZE as the ceiling, and is remembered in that browser.</text>
+
+  <!-- plugin resize range -->
+  <text x="70" y="216" fill="#082b48" font-size="13" font-weight="600">A plugin resizes its own pane</text>
+  <rect x="70" y="226" width="366" height="22" rx="4" fill="#f4a155" stroke="#c07536" stroke-width="1.5"/>
+  <text x="253" y="241" fill="#082b48" font-size="12" text-anchor="middle">a thin rail up to the ceiling</text>
+  <text x="70" y="266" fill="#5b6672" font-size="11">No 48px floor, so a plugin can collapse itself to a rail. A request at or above the ceiling is clamped to it,</text>
+  <text x="70" y="282" fill="#5b6672" font-size="11">so asking for any large value restores the pane to full size.</text>
+</svg>

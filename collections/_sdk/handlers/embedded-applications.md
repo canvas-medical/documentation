@@ -396,7 +396,7 @@ The pane's markup lives in a Django template in your plugin rather than in a Pyt
 
 `on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's rendered `content` (or a `url`) in the pane rather than in a modal. Canvas draws no chrome around a docked pane, so `title` is never displayed: it becomes the pane's accessible name for screen readers.
 
-A docked pane is always visible, and a plugin cannot make it otherwise. There is no app drawer entry that opens it and no Canvas-provided control that closes or minimizes it, so installing the plugin is what makes the pane appear and uninstalling the plugin is what takes it away. The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
+There is no app drawer entry that opens a docked pane and no Canvas-provided control that closes or minimizes it. For the staff who get one, the pane is simply on screen for the whole session, and which staff those are is the plugin's decision: see [Controlling who gets a pane](#controlling-who-gets-a-pane). The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
 
 #### Class attributes
 
@@ -418,6 +418,35 @@ A docked pane is always visible, and a plugin cannot make it otherwise. There is
 | `RIGHT`  | `right`  | Right edge of the window  |
 | `TOP`    | `top`    | Top edge of the window    |
 | `BOTTOM` | `bottom` | Bottom edge of the window |
+
+#### Controlling who gets a pane
+
+A docked pane is not all-or-nothing across an instance. Override `visible()` to decide,
+per staff member, whether the pane exists for them at all:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Only dock the pane for the care coordination team."""
+    staff_id = self.event.context.get("user", {}).get("id")
+
+    return Staff.objects.filter(id=staff_id, teams__name="Care Coordination").exists()
+```
+
+Returning `False` means that user gets no pane: Canvas never calls `on_open()` for them
+and sends them no context changes. `visible()` defaults to `True`, so a Docked
+Application that does not override it docks for everyone.
+
+Two things to know about when this runs. Canvas asks for docked applications once as the
+EHR shell loads, so `visible()` is evaluated then and not again as the user navigates
+inside the shell. A change in the answer therefore takes effect on that user's next full
+page load. And the context `visible()` receives holds only `scope` and `user`, with no
+`patient` or `note`, because the question being asked is which panes this session gets
+rather than what is on screen. Gate on the staff member, or on anything you can look up
+from them, rather than on what they are currently viewing.
+
+Do not use `on_open()` for this. Returning no docked-pane effect from `on_open()` also
+leaves the pane unmounted, but panes are mounted once per session and never retried, so
+the pane stays gone for the rest of the session with no way back.
 
 ### Pane Context and Navigation
 
@@ -544,6 +573,10 @@ An edge's thickness is set by its largest pane on that axis, not by the sum of i
 panes.
 
 ### Sizing, Resizing, and Collapsing
+
+<p>
+  <object alt="The size range of a docked pane: a user drags between 48px and half the viewport, a plugin resizes between a thin rail and the current ceiling" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-pane-sizing.svg" style="width: 100%; max-width: 720px;"></object>
+</p>
 
 `DOCK_SIZE` sets the pane's initial size — its width on the `LEFT` and `RIGHT` edges,
 its height on the `TOP` and `BOTTOM` edges — and the initial ceiling for the plugin's
