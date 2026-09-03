@@ -174,9 +174,10 @@ standing in for the several [commands](/sdk/commands/) a workflow would otherwis
 the clinician insert by hand.
 
 ```python
+from canvas_sdk.commands import PlanCommand, TaskCommand
+from canvas_sdk.commands.commands.task import AssigneeType, TaskAssigner
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
-from canvas_sdk.commands import PlanCommand
 from canvas_sdk.handlers.action_button import ActionButton
 from canvas_sdk.v1.data.note import Note
 
@@ -197,18 +198,23 @@ class LipidPanelAutomation(ActionButton):
         return note is not None and note.provider.id == user_id
 
     def handle(self) -> list[Effect]:
-        note_id = self.event.context["note_id"]
-        note = Note.objects.filter(dbid=note_id).first()
+        note = Note.objects.filter(dbid=self.event.context["note_id"]).first()
         if note is None:
             return []
 
         plan = PlanCommand()
         plan.note_uuid = note.id
-        plan.narrative = "Order labs for lipid panel"
+        plan.narrative = "Recheck lipid panel in 3 months"
 
+        task = TaskCommand()
+        task.note_uuid = note.id
+        task.title = "Call patient with lipid panel results"
+        task.assign_to = TaskAssigner(to=AssigneeType.STAFF, id=note.provider.dbid)
+
+        # One batch, so both commands reach the note in a single update.
         return [
             BatchOriginateCommandEffect(
-                commands=[plan],
+                commands=[plan, task],
                 replace_line=True,
             ).apply()
         ]
