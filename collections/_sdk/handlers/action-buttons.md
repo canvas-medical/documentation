@@ -79,6 +79,8 @@ The `ActionButton` class defines several locations where the button can be place
 
 A note body automation adds your plugin's own entry to the note body's "/" (slash) command list — the inline list clinicians use to insert commands while documenting a note. When the clinician selects your entry, your `handle()` runs and returns effects, just as a native slash command inserts commands.
 
+This is how you build your own automation out of the [commands module](/sdk/commands/): one entry in the menu that originates whatever set of commands the workflow calls for, in place of the clinician inserting each one by hand.
+
 Build one exactly as you build any other action button. Subclass `ActionButton`, set `BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION`, and provide the [`BUTTON_TITLE` and `BUTTON_KEY`](#required-constants) constants and the optional [`PRIORITY`](#optional-constants). Implement [`handle()`](#implementing-the-handle-method) to build and return the effects your entry produces, and override [`visible()`](#optional-implement-the-visible-method) to scope which notes or patients the entry appears for.
 
 `NOTE_BODY_AUTOMATION` reuses the generic `ActionButton` handler — a note body automation is a regular `ActionButton` subclass using this location, with no separate automation class. Canvas asks each plugin for its note body automation entries through the [`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event.
