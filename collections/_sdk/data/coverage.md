@@ -73,7 +73,9 @@ if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
     print("Coverage is active")
 ```
 
-`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage — one whose issuer [does not support eligibility checks](#transactor). It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage, meaning one whose issuer has a `payer_id` of `PATIENT`. It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+
+That is also what [`Transactor.supports_eligibility_check`](#transactor) reports: it is `False` for the self-pay payer, whose `payer_id` is `PATIENT`, and `True` for every other issuer.
 
 Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
 

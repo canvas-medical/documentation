@@ -383,6 +383,9 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
 | histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
 | vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
+| cancel_prescriptions | QuerySet[[CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)] | All prescription cancellations recorded on this note |
+| prescription_change_requests | QuerySet[[PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)] | All pharmacy change requests recorded on this note |
+| prescription_change_responses | QuerySet[[PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)] | All responses to change requests recorded on this note |
 
 ### NoteType
 

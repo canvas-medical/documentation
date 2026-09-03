@@ -65,6 +65,7 @@ committed_cancels = CancelPrescription.objects.committed()
 | prescription     | [Prescription](/sdk/data-prescription)              |
 | message_id       | String                                              |
 | status           | [CancelPrescriptionStatus](#cancelprescriptionstatus) |
+| response         | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse) |
 
 ## Enumeration types
 

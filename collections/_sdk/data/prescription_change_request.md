@@ -63,6 +63,10 @@ The `type_code` attribute identifies the kind of change the pharmacy is requesti
 | OS   | Pharmacy is out of stock             |
 | U    | Prescriber Authorization             |
 
+`S` really does carry two meanings. Canvas maps it to both Therapeutic
+Interchange/Substitution and Script Clarification, so the two are indistinguishable from
+`type_code` alone.
+
 The `sub_type_code` attribute further qualifies the request. It is nullable and currently supports:
 
 | Code | Description                      |
@@ -84,8 +88,8 @@ The `sub_type_code` attribute further qualifies the request. It is nullable and 
 | staff                 | [Staff](/sdk/data-staff/#staff)                                        |
 | message_id            | String                                                                 |
 | original_prescription | [Prescription](/sdk/data-prescription/#prescription)                   |
-| type_code             | String                                                                 |
-| sub_type_code         | String                                                                 |
+| type_code             | [PrescriptionChangeRequestType](#prescriptionchangerequesttype)        |
+| sub_type_code         | [PrescriptionChangeRequestSubType](#prescriptionchangerequestsubtype)  |
 | content               | JSON                                                                   |
 | codings               | [PrescriptionChangeRequestCoding](#prescriptionchangerequestcoding)[]  |
 | response              | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/)[] |
@@ -105,3 +109,22 @@ The `sub_type_code` attribute further qualifies the request. It is nullable and 
 <br/>
 <br/>
 <br/>
+
+## Enumeration types
+
+### PrescriptionChangeRequestType
+
+| Name          | Value | Label                                |
+|---------------|-------|--------------------------------------|
+| GENERIC       | G     | Generic Substitution                 |
+| PRIOR         | P     | Prior Authorization Required         |
+| SUBSTITUTION  | S     | Therapeutic Interchange/Substitution |
+| DRUG          | D     | Drug Use Evaluation                  |
+| OUTOFSTOCK    | OS    | Pharmacy is out of stock             |
+| AUTHORIZATION | U     | Prescriber Authorization             |
+
+### PrescriptionChangeRequestSubType
+
+| Name    | Value | Label                            |
+|---------|-------|----------------------------------|
+| LICENSE | A     | Confirm Prescriber State License |

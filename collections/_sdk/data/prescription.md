@@ -134,6 +134,8 @@ committed_prescriptions = Prescription.objects.committed()
 | originator                    | [CanvasUser](/sdk/data-canvasuser)                   |
 | created                       | DateTime                                             |
 | modified                      | DateTime                                             |
+| cancel_prescriptions          | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[] |
+| change_requests               | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
 
 ## Enumeration types
 

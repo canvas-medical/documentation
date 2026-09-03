@@ -188,6 +188,10 @@ educational_materials = patient.education_material.all()
 | reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
 | removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
 | resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
+| cancel_prescriptions     | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  |
+| cancel_prescription_responses | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[] |
+| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
+| prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
 
 ### PatientAddress
 
