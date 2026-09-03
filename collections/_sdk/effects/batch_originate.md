@@ -87,7 +87,7 @@ from canvas_sdk.events import EventType
 class Handler(BaseHandler):
 
     def compute(self):
-        note_uuid = Note.objects.last().id
+        note_uuid = str(Note.objects.last().id)
 
         # Create multiple commands
         plan1 = PlanCommand()

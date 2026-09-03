@@ -75,9 +75,8 @@ Then register the class under `handlers` in your `CANVAS_MANIFEST.json`:
     def visible(self) -> bool:
         """Only offer the button on an encounter note."""
         note_id = self.event.context.get("note_id")
-        note = Note.objects.filter(dbid=note_id).first()
 
-        return note is not None and note.note_type_version.category == "encounter"
+        return Note.objects.filter(dbid=note_id, note_type_version__category="encounter").exists()
 ```
 
 ### Button locations
@@ -136,9 +135,9 @@ summary is not rendered inside a note.
 
 ```python?partial=true
     def visible(self) -> bool:
-        note = Note.objects.filter(dbid=self.event.context["note_id"]).first()
+        note_id = self.event.context["note_id"]
 
-        return note is not None and note.note_type_version.category == "encounter"
+        return Note.objects.filter(dbid=note_id, note_type_version__category="encounter").exists()
 ```
 
 #### When the button is clicked
@@ -188,28 +187,28 @@ class LipidPanelAutomation(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION
 
     def visible(self) -> bool:
-        # Scope the entry to the note's provider.
+        # Offer the entry only to the note's own provider.
         note_id = self.event.context.get("note_id")
         user_id = (self.event.context.get("user") or {}).get("id")
         if not note_id or not user_id:
             return False
 
-        note = Note.objects.filter(dbid=note_id).first()
-        return note is not None and note.provider.id == user_id
+        return Note.objects.filter(dbid=note_id, provider__id=user_id).exists()
 
     def handle(self) -> list[Effect]:
         note = Note.objects.filter(dbid=self.event.context["note_id"]).first()
         if note is None:
             return []
 
-        plan = PlanCommand()
-        plan.note_uuid = note.id
-        plan.narrative = "Recheck lipid panel in 3 months"
-
-        task = TaskCommand()
-        task.note_uuid = note.id
-        task.title = "Call patient with lipid panel results"
-        task.assign_to = TaskAssigner(to=AssigneeType.STAFF, id=note.provider.dbid)
+        plan = PlanCommand(
+            note_uuid=str(note.id),
+            narrative="Recheck lipid panel in 3 months",
+        )
+        task = TaskCommand(
+            note_uuid=str(note.id),
+            title="Call patient with lipid panel results",
+            assign_to=TaskAssigner(to=AssigneeType.STAFF, id=note.provider.dbid),
+        )
 
         # One batch, so both commands reach the note in a single update.
         return [
@@ -589,8 +588,7 @@ You can gate on anything in the [runtime context](#reading-the-runtime-context).
         if not note_id or not user_id:
             return False
 
-        note = Note.objects.filter(dbid=note_id).first()
-        return note is not None and note.provider.id == user_id
+        return Note.objects.filter(dbid=note_id, provider__id=user_id).exists()
 ```
 
 ### Keeping the footer in sync
