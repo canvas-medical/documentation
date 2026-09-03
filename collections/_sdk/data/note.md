@@ -92,7 +92,7 @@ educational_materials = note.education_material.all()
 
 ### Understanding the note body structure
 
-The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+The `body` of a note is a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
 
 ```python
 import json
@@ -122,6 +122,33 @@ The body array contains objects of two types:
      }
    }
    ```
+
+#### Querying on the body
+
+`body` is a read-only property computed on each access, not a stored column, because
+Canvas assembles it from more than one column. That does not change the value you read,
+but it does limit which query operations can name it:
+
+| Operation                                              | Supported | Notes                                                                                              |
+|--------------------------------------------------------|-----------|----------------------------------------------------------------------------------------------------|
+| `Note.objects.filter(body=...)`                        | Yes       | Also `exclude()` and `get()`, and lookups nested inside a `Q` object                               |
+| `Note.objects.only("body")`                            | Yes       | Loads every column the property reads, so building a body costs no further queries                 |
+| `Note.objects.defer("body")`                           | Yes       | Defers all of them                                                                                 |
+| `Note.objects.values("body")`, `values_list("body")`   | No        | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return |
+| `Note.objects.order_by("body")`                        | No        |                                                                                                    |
+| `body` reached from another model's queryset           | No        | For example `Command.objects.filter(note__body=...)`. Filter on `Note` itself instead               |
+
+So read the body from a note you already have, or filter notes by it, rather than trying
+to select it as a value:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+# Load only the columns the body needs.
+notes = Note.objects.only("body").filter(patient__id="b80b1cdc2e6a4aca90ccebc02e683f35")
+for note in notes:
+    print(note.body)
+```
 
 The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
 
@@ -341,7 +368,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| body                | JSON (read-only property)              | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See [Querying on the body](#querying-on-the-body). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
