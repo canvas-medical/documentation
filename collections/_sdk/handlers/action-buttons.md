@@ -13,45 +13,74 @@ An `ActionButton` class allows you to define custom buttons that appear in diffe
 
 There are no limitations on the number of action buttons you can create. You can define multiple buttons in a single handler class or create separate classes for each button.
 
-## Creating an Action Button
+## Creating an action button
 
-To implement a custom action button, you need to create a handler class that inherits from the `ActionButton` class. Your handler class must:
+An action button is a [handler](/sdk/handlers-basehandler/). Subclass `ActionButton`, say
+where it goes with `BUTTON_LOCATION`, and implement `handle()` to say what a click does:
 
-1. Define the constants `BUTTON_TITLE`, `BUTTON_KEY`, and `BUTTON_LOCATION`.
-2. Implement the `handle()` method to specify the action that should be triggered when the button is clicked.
-3. Optionally, implement the `visible()` method to control when the button should be shown.
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.action_button import ActionButton
 
-### Required Constants
 
-- **`BUTTON_TITLE`**  
-  A string that defines the label of the button displayed in the Canvas UI. This is the text the user sees when interacting with the button.
+class PatientSummaryButton(ActionButton):
+    BUTTON_TITLE = "Summary"
+    BUTTON_KEY = "PATIENT_SUMMARY"
+    BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_PATIENT_HEADER
 
-- **`BUTTON_KEY`**  
-  A unique identifier for your button. This key is used to route events, such as a click, to the appropriate handler method (`handle()`).
+    def handle(self) -> list[Effect]:
+        return [
+            LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                content="<html>Your content here</html>",
+            ).apply()
+        ]
+```
 
-- **`BUTTON_LOCATION`**
-  Specifies where the button will appear within the Canvas UI. The button can be placed in various locations, such as the note header or footer, or other areas within the chart summary.
+Then register the class under `handlers` in your `CANVAS_MANIFEST.json`:
 
-### Optional Constants
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.buttons.patient_summary:PatientSummaryButton",
+        "description": "Shows a summary modal from the patient header."
+      }
+    ]
+  }
+}
+```
 
-- **`PRIORITY`**
-  An integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
+### Class attributes
 
-- **`BUTTON_TEXT_COLOR`**
-  A string that specifies the text color of the button, defined as a HEX color value (e.g., `"#FF0000"`). If not specified, the text color is automatically chosen to contrast with the background.
+| Attribute                 | Required | Description                                                                                                                                              |
+|---------------------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `BUTTON_TITLE`            | Required | The label shown on the button. Emoji are supported.                                                                                                      |
+| `BUTTON_KEY`              | Required | A unique identifier for the button. Canvas routes the click back to your `handle()` by this value, so give each button its own.                           |
+| `BUTTON_LOCATION`         | Required | Where the button appears, as a [`ButtonLocation`](#button-locations) value.                                                                               |
+| `PRIORITY`                | Optional | Orders this button against others in the same location, lower first. Defaults to `0`, and buttons sharing a priority have no guaranteed order.            |
+| `BUTTON_TEXT_COLOR`       | Optional | The label colour as a HEX value, for example `"#FF0000"`. Defaults to whichever of black or white contrasts with the background.                          |
+| `BUTTON_BACKGROUND_COLOR` | Optional | The background colour as a HEX value, for example `"#4CAF50"`. Defaults to Canvas's grey button styling.                                                  |
 
-- **`BUTTON_BACKGROUND_COLOR`**
-  A string that specifies the background color of the button, defined as a HEX color value (e.g., `"#4CAF50"`). If not specified, the button uses the default gray styling.
+### Methods
 
-### Optional: Implement the `visible()` Method
+| Method      | Returns        | Required | Description                                                                                                                                                    |
+|-------------|----------------|----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `handle()`  | `list[Effect]` | Required | Runs when the button is clicked. Return the [effects](/sdk/effects/) the click should produce, or an empty list for none.                                        |
+| `visible()` | `bool`         | Optional | Runs each time the button's location loads, to decide whether the button is shown. Defaults to `True`. See [Dynamic, state-responsive buttons](#dynamic-state-responsive-buttons). |
 
-By default, the `ActionButton` class assumes the button is always visible (`return True`). If you want the button to only be visible under certain conditions, you can override the `visible()` method. This method must return a boolean value (`True` to show the button, `False` to hide it).
+```python?partial=true
+    def visible(self) -> bool:
+        """Only offer the button on an encounter note."""
+        note_id = self.event.context.get("note_id")
+        note = Note.objects.filter(dbid=note_id).first()
 
-### Implementing the `handle()` Method
+        return note is not None and note.note_type_version.category == "encounter"
+```
 
-The `handle()` method is called when the action button is clicked. Inside this method, you can define what action should occur. The `handle()` method must return a list of [`Effect`](/sdk/effects/) objects, which represent the actions to be executed when the button is clicked. If no action is required, you can return an empty list.
-
-### Button Locations
+### Button locations
 
 The `ActionButton` class defines several locations where the button can be placed. The location is defined using the `ButtonLocation` enum. Supported button locations include:
 
@@ -75,13 +104,43 @@ The `ActionButton` class defines several locations where the button can be place
 | `NOTE_BODY_AUTOMATION`                      | The button appears as an entry in the note body's "/" (slash) command list while a clinician documents a note. |
 
 
+## Dynamic, state-responsive buttons
+
+Action buttons are not rendered once and cached. Canvas re-evaluates every `ActionButton` handler each time its location loads — and again whenever the location is [reloaded](#reloading-buttons). On each evaluation Canvas fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event for that location and your handler's `visible()` method decides whether the button is included.
+
+This is what makes buttons *dynamic*: because `visible()` runs against live data every time, the same button can appear, disappear, or change its title depending on the note, the patient, or the logged-in user.
+
+### Reading the runtime context
+
+Inside `visible()`, `compute()`, and `handle()` you can read the event context to make decisions. When responding to a [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event, the following are available:
+
+| Accessor                        | Description                                                                                                                                    |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.       |
+| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-id>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
+| `self.event.target.id`          | The id of the patient the button is rendered for.                                                                                             |
+
+### Reloading buttons
+
+Because visibility is computed from live data, Canvas needs to know *when* to re-evaluate it. A button's location is reloaded automatically after its own `handle()` runs, but you will often want to reload in response to something else changing — for example, recomputing the footer after a command is committed, or after the note transitions to a new state.
+
+Return one of these [Reload Action Buttons](/sdk/effect-reload-action-buttons/) effects (imported from `canvas_sdk.effects.action_button`) from any handler's `handle()` or `compute()` to refresh a location's buttons:
+
+| Effect                                            | Re-evaluates                               |
+|---------------------------------------------------|--------------------------------------------|
+| `ReloadNoteActionButtonsEffect(id=<note id>)`     | Every button bound to that note            |
+| `ReloadPatientActionButtonsEffect(id=<patient id>)` | Every button bound to that patient       |
+
+A reload re-fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) events, so every button recomputes `visible()` from scratch — the button set is rebuilt rather than patched. Any handler can emit a reload, not just an `ActionButton`; Example 4 below uses plain event handlers to keep the footer in sync as the note changes.
+
+
 ## Note body automations
 
 A note body automation adds your plugin's own entry to the note body's "/" (slash) command list — the inline list clinicians use to insert commands while documenting a note. When the clinician selects your entry, your `handle()` runs and returns effects, just as a native slash command inserts commands.
 
 This location exists so an automation can come from a plugin rather than only from Canvas. An entry here is an ordinary action button, so `handle()` may return any effects at all: launch a modal, write a log line, or return nothing. What it is intended for is originating [commands](/sdk/commands/), with one menu entry standing in for the several commands a workflow would otherwise have the clinician insert by hand. Either way, Canvas clears the line the trigger was typed on, so an entry that originates nothing simply leaves the note as it was.
 
-Build one exactly as you build any other action button. Subclass `ActionButton`, set `BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION`, and provide the [`BUTTON_TITLE` and `BUTTON_KEY`](#required-constants) constants and the optional [`PRIORITY`](#optional-constants). Implement [`handle()`](#implementing-the-handle-method) to build and return the effects your entry produces, and override [`visible()`](#optional-implement-the-visible-method) to scope who sees the entry and where. Its [runtime context](#reading-the-runtime-context) carries the signed-in staff member alongside the note and the patient, so an entry can be limited to particular staff as well as to particular notes or patients.
+Build one exactly as you build any other action button. Subclass `ActionButton`, set `BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION`, and provide the [`BUTTON_TITLE`, `BUTTON_KEY` and `PRIORITY`](#class-attributes) attributes. Implement [`handle()`](#methods) to build and return the effects your entry produces, and override [`visible()`](#methods) to scope who sees the entry and where. Its [runtime context](#reading-the-runtime-context) carries the signed-in staff member alongside the note and the patient, so an entry can be limited to particular staff as well as to particular notes or patients.
 
 `NOTE_BODY_AUTOMATION` reuses the generic `ActionButton` handler — a note body automation is a regular `ActionButton` subclass using this location, with no separate automation class. Canvas asks each plugin for its note body automation entries through the [`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event.
 
@@ -133,37 +192,9 @@ class LipidPanelAutomation(ActionButton):
 ```
 
 
-## Dynamic, state-responsive buttons
+## Examples
 
-Action buttons are not rendered once and cached. Canvas re-evaluates every `ActionButton` handler each time its location loads — and again whenever the location is [reloaded](#reloading-buttons). On each evaluation Canvas fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event for that location and your handler's `visible()` method decides whether the button is included.
-
-This is what makes buttons *dynamic*: because `visible()` runs against live data every time, the same button can appear, disappear, or change its title depending on the note, the patient, or the logged-in user.
-
-### Reading the runtime context
-
-Inside `visible()`, `compute()`, and `handle()` you can read the event context to make decisions. When responding to a [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event, the following are available:
-
-| Accessor                        | Description                                                                                                                                    |
-|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.       |
-| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-id>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
-| `self.event.target.id`          | The id of the patient the button is rendered for.                                                                                             |
-
-### Reloading buttons
-
-Because visibility is computed from live data, Canvas needs to know *when* to re-evaluate it. A button's location is reloaded automatically after its own `handle()` runs, but you will often want to reload in response to something else changing — for example, recomputing the footer after a command is committed, or after the note transitions to a new state.
-
-Return one of these [Reload Action Buttons](/sdk/effect-reload-action-buttons/) effects (imported from `canvas_sdk.effects.action_button`) from any handler's `handle()` or `compute()` to refresh a location's buttons:
-
-- `ReloadNoteActionButtonsEffect(id=<note external id>)` — re-evaluates every button bound to that note.
-- `ReloadPatientActionButtonsEffect(id=<patient id>)` — re-evaluates every button bound to that patient.
-
-A reload re-fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) events, so every button recomputes `visible()` from scratch — the button set is rebuilt rather than patched. Any handler can emit a reload, not just an `ActionButton`; Example 4 below uses plain event handlers to keep the footer in sync as the note changes.
-
-
-## Example Implementations
-
-### Example 1: Log Information When Button is Clicked
+### Log information when a button is clicked
 
 This example demonstrates a simple action button that logs some information when clicked. The button is visible only during the month of January.
 
@@ -191,7 +222,7 @@ class MyButton(ActionButton):
         return []
 ```
 
-### Example 2: Commit All Commands in a Note
+### Commit every command in a note
 
 This example demonstrates an action button in the note footer that commits all commands within a note. The button is always visible since the `visible()` method is not overridden.
 
@@ -253,7 +284,7 @@ class CommitButtonHandler(ActionButton):
         return effects
 ```
 
-### Example 3: Show Button in Vitals Section and render HTML on click
+### Render HTML from a chart summary section
 
 In this example, we place a button in the Vitals section and define an action where the button, when clicked,  displays custom HTML content to the user. 
 For more info about `LaunchModalEffect`, check the [documentation](/sdk/layout-effect/#modals).
@@ -300,7 +331,7 @@ class VitalsButtonHandler(ActionButton):
         return True
 ```
 
-## Note State Action Buttons
+## Note state action buttons
 
 `NoteStateActionButton` is a specialized `ActionButton` subclass for note footer buttons that transition a note from one state to another — locking, signing, pushing charges, deleting, and discharging, along with the appointment transitions check in, no show, cancel, and restore. It handles visibility, ordering, and the underlying state-transition effect for you, so a plugin can replace Canvas's default footer buttons with its own.
 
@@ -364,19 +395,54 @@ class DischargeNoteButton(NoteStateActionButton):
 
 Register each button as a handler in your `CANVAS_MANIFEST.json`, exactly like any other `ActionButton`.
 
-Each button is configured automatically from its `STATE_ACTION`:
+Each button is configured automatically from its `STATE_ACTION`, so a subclass normally
+sets nothing else:
 
-- **`BUTTON_LOCATION`** is always `NOTE_FOOTER`.
-- **`BUTTON_TITLE`** defaults to an imperative label for the target state — `Lock`, `Unlock`, `Sign`, `Push charges`, `Check in`, `No show`, `Delete`, `Restore`, `Discharge`, or `Cancel`. Set it explicitly to override.
-- **`BUTTON_KEY`** defaults to `note_state_action__<state value>`, for example `note_state_action__LKD`. Set it explicitly to override.
+| Attribute         | Value                                                                                                              |
+|-------------------|--------------------------------------------------------------------------------------------------------------------|
+| `BUTTON_LOCATION` | Always `NOTE_FOOTER`. Not overridable.                                                                             |
+| `BUTTON_TITLE`    | An imperative label for the target state, from the table below. Set it explicitly to override.                     |
+| `BUTTON_KEY`      | `note_state_action__<state value>`, for example `note_state_action__LKD`. Set it explicitly to override.            |
+| `visible()`       | Implemented by the base class, which shows the button only when the transition is permitted. See [Visibility](#visibility). |
 
-When a button is clicked, Canvas applies the transition's effect and reloads the footer so it reflects the note's new state.
+These are the supported transitions:
+
+| `STATE_ACTION`             | Subclass                  | Default title  | Default key                |
+|----------------------------|---------------------------|----------------|----------------------------|
+| `NoteStates.LOCKED`        | `LockNoteActionButton`    | `Lock`         | `note_state_action__LKD`   |
+| `NoteStates.SIGNED`        | `SignNoteActionButton`    | `Sign`         | `note_state_action__SGN`   |
+| `NoteStates.UNLOCKED`      | `NoteStateActionButton`   | `Unlock`       | `note_state_action__ULK`   |
+| `NoteStates.PUSHED`        | `NoteStateActionButton`   | `Push charges` | `note_state_action__PSH`   |
+| `NoteStates.DISCHARGED`    | `NoteStateActionButton`   | `Discharge`    | `note_state_action__DSC`   |
+| `NoteStates.DELETED`       | `NoteStateActionButton`   | `Delete`       | `note_state_action__DLT`   |
+| `NoteStates.UNDELETED`     | `NoteStateActionButton`   | `Restore`      | `note_state_action__UND`   |
+| `NoteStates.CONVERTED`     | `NoteStateActionButton`   | `Check in`     | `note_state_action__CVD`   |
+| `NoteStates.NOSHOW`        | `NoteStateActionButton`   | `No show`      | `note_state_action__NSW`   |
+| `NoteStates.CANCELLED`     | `NoteStateActionButton`   | `Cancel`       | `note_state_action__CLD`   |
+| `NoteStates.REVERTED`      | `NoteStateActionButton`   | `Restore`      | `note_state_action__RVT`   |
+
+`Cancel` and `Restore` act on the note's appointment rather than on the note itself, so
+they do nothing on a note that has no appointment. `Sign` locks the note first when it
+is not already locked.
+
+When a button is clicked, Canvas applies the transition's effect and reloads the footer
+so it reflects the note's new state.
 
 ### Visibility
 
 A `NoteStateActionButton` appears only when its `STATE_ACTION` is a permitted transition from the note's current state and note type, so you don't need to override `visible()` yourself. When several are visible at once, Canvas orders them to match the order it offers the transitions for the current state.
 
-Lock and Sign are the same underlying transition surfaced differently by signature requirement: `LockNoteActionButton` is shown only for note types that **don't** require a signature, and `SignNoteActionButton` only for those that **do**. The Sign button locks the note first when it isn't already locked, so a note can be signed repeatedly — including by multiple users — and is only re-locked after an amend; it hides itself once the current user has signed since the last lock. `Discharge` is shown only for inpatient note types. The base class applies all of these gates for you.
+Three buttons carry extra gates on top of that, which the base class applies for you:
+
+| Button                 | Also shown only when                                                                                   |
+|------------------------|--------------------------------------------------------------------------------------------------------|
+| `LockNoteActionButton` | The note type does **not** require a signature                                                          |
+| `SignNoteActionButton` | The note type **does** require a signature, and the current user has not signed since the last lock     |
+| `Discharge`            | The note type is an inpatient one                                                                       |
+
+Lock and Sign are the same underlying transition, split by whether the note type requires
+a signature. Because Sign hides itself only for the user who signed, a note can be signed
+by several users in turn, and it is re-locked only after an amend.
 
 ### Replacing Canvas's default footer buttons
 
