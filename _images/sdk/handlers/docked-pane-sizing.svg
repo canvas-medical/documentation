@@ -1,39 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 296" width="720" height="296" role="img" aria-labelledby="dps-title dps-desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif">
-  <title id="dps-title">The size range of a docked pane</title>
-  <desc id="dps-desc">A docked pane opens at DOCK_SIZE, which is also its ceiling. A user can drag it anywhere between 48 pixels and half the viewport on that axis, and the size they drag to becomes the new ceiling. A plugin can resize its own pane anywhere from a thin rail up to the current ceiling, and a request above the ceiling is clamped to it.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 372" width="760" height="372" role="img" aria-labelledby="dps-title dps-desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif">
+  <title id="dps-title">How a docked pane is sized</title>
+  <desc id="dps-desc">Two views of a Canvas window with a pane docked to the right edge. In the first, the pane is at DOCK_SIZE, which is its initial size and its ceiling; a user can drag the divider to any width from 48 pixels up to half the viewport on that axis. In the second, the plugin has collapsed its own pane to a thin rail, which it may do below the 48 pixel floor, though it cannot resize past the ceiling.</desc>
 
-  <!-- tick labels -->
-  <g fill="#082b48" font-size="13">
-    <text x="70" y="42" text-anchor="middle">0</text>
-    <text x="196" y="42" text-anchor="middle">48px</text>
-    <text x="436" y="42" text-anchor="middle">DOCK_SIZE</text>
-    <text x="660" y="42" text-anchor="end">50% of the viewport</text>
+  <defs>
+    <marker id="dps-arrow" markerWidth="8" markerHeight="8" refX="3" refY="4" orient="auto-start-reverse">
+      <path d="M0,1 L6,4 L0,7 z" fill="#082b48"/>
+    </marker>
+  </defs>
+
+  <!-- pane at DOCK_SIZE -->
+  <line x1="390" y1="42" x2="519" y2="42" stroke="#082b48" stroke-width="1" marker-start="url(#dps-arrow)" marker-end="url(#dps-arrow)"/>
+  <line x1="390" y1="36" x2="390" y2="48" stroke="#082b48" stroke-width="1"/>
+  <line x1="519" y1="36" x2="519" y2="48" stroke="#082b48" stroke-width="1"/>
+
+  <rect x="40" y="52" width="480" height="124" rx="6" fill="#ffffff" stroke="#082b48" stroke-width="1.5"/>
+  <rect x="41" y="53" width="349" height="122" fill="#f5f5f5"/>
+  <rect x="390" y="53" width="129" height="122" fill="#98d2dc"/>
+  <line x1="390" y1="52" x2="390" y2="176" stroke="#22698c" stroke-width="3"/>
+  <text x="215" y="118" fill="#5b6672" font-size="13" text-anchor="middle">Canvas EHR</text>
+  <text x="455" y="118" fill="#082b48" font-size="13" text-anchor="middle">pane</text>
+
+  <g font-size="12">
+    <text x="536" y="40" fill="#082b48" font-weight="600">DOCK_SIZE</text>
+    <text x="536" y="58" fill="#5b6672" font-size="11">The pane's initial size,</text>
+    <text x="536" y="73" fill="#5b6672" font-size="11">and its ceiling.</text>
   </g>
-  <g fill="#5b6672" font-size="11">
-    <text x="196" y="60" text-anchor="middle">user floor</text>
-    <text x="436" y="60" text-anchor="middle">initial size, and the ceiling</text>
-    <text x="660" y="60" text-anchor="end">on this axis, shared with the opposite edge</text>
+
+  <!-- the user drags the divider -->
+  <line x1="326" y1="200" x2="454" y2="200" stroke="#082b48" stroke-width="1.5" marker-start="url(#dps-arrow)" marker-end="url(#dps-arrow)"/>
+  <text x="390" y="222" fill="#082b48" font-size="12" text-anchor="middle">A user drags the divider: no smaller than 48px,</text>
+  <text x="390" y="238" fill="#082b48" font-size="12" text-anchor="middle">no larger than half the viewport on this axis.</text>
+
+  <!-- collapsed to a rail -->
+  <rect x="40" y="262" width="480" height="96" rx="6" fill="#ffffff" stroke="#082b48" stroke-width="1.5"/>
+  <rect x="41" y="263" width="458" height="94" fill="#f5f5f5"/>
+  <rect x="499" y="263" width="20" height="94" fill="#f4a155"/>
+  <line x1="499" y1="262" x2="499" y2="358" stroke="#c07536" stroke-width="2"/>
+  <text x="270" y="315" fill="#5b6672" font-size="13" text-anchor="middle">Canvas EHR</text>
+
+  <g font-size="11" fill="#5b6672">
+    <text x="536" y="286" fill="#082b48" font-size="12" font-weight="600">Collapsed to a rail</text>
+    <text x="536" y="305">The plugin resizing its own</text>
+    <text x="536" y="320">pane may go below the 48px</text>
+    <text x="536" y="335">floor, but never past the</text>
+    <text x="536" y="350">ceiling above.</text>
   </g>
-
-  <!-- axis -->
-  <line x1="70" y1="80" x2="660" y2="80" stroke="#082b48" stroke-width="1.5"/>
-  <g stroke="#082b48" stroke-width="1.5">
-    <line x1="70" y1="72" x2="70" y2="88"/>
-    <line x1="196" y1="72" x2="196" y2="88"/>
-    <line x1="436" y1="72" x2="436" y2="88"/>
-    <line x1="660" y1="72" x2="660" y2="88"/>
-  </g>
-
-  <!-- user drag range -->
-  <text x="196" y="126" fill="#082b48" font-size="13" font-weight="600">A user drags the pane</text>
-  <rect x="196" y="136" width="464" height="22" rx="4" fill="#98d2dc" stroke="#22698c" stroke-width="1.5"/>
-  <text x="428" y="151" fill="#082b48" font-size="12" text-anchor="middle">floored at 48px, capped at the axis budget</text>
-  <text x="196" y="176" fill="#5b6672" font-size="11">The size dragged to replaces DOCK_SIZE as the ceiling, and is remembered in that browser.</text>
-
-  <!-- plugin resize range -->
-  <text x="70" y="216" fill="#082b48" font-size="13" font-weight="600">A plugin resizes its own pane</text>
-  <rect x="70" y="226" width="366" height="22" rx="4" fill="#f4a155" stroke="#c07536" stroke-width="1.5"/>
-  <text x="253" y="241" fill="#082b48" font-size="12" text-anchor="middle">a thin rail up to the ceiling</text>
-  <text x="70" y="266" fill="#5b6672" font-size="11">No 48px floor, so a plugin can collapse itself to a rail. A request at or above the ceiling is clamped to it,</text>
-  <text x="70" y="282" fill="#5b6672" font-size="11">so asking for any large value restores the pane to full size.</text>
 </svg>

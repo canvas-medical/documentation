@@ -352,11 +352,11 @@ from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data.task import Task, TaskStatus
 
 
-class TaskPanel(DockedApplication):
+class TaskDock(DockedApplication):
     """Docked application that keeps the signed-in user's open tasks on screen."""
 
     NAME = "My Tasks"
-    IDENTIFIER = "my_plugin__task_panel"
+    IDENTIFIER = "my_plugin__task_dock"
     DOCK_EDGE = DockEdge.RIGHT
     DOCK_SIZE = "320px"
 
@@ -367,12 +367,12 @@ class TaskPanel(DockedApplication):
 
         return LaunchModalEffect(
             target=LaunchModalEffect.TargetType.DOCKED_PANE,
-            content=render_to_string("templates/task_panel.html", {"tasks": tasks}),
+            content=render_to_string("templates/task_dock.html", {"tasks": tasks}),
             title="My Tasks",
         ).apply()
 ```
 
-The pane's markup lives in a Django template in your plugin rather than in a Python string, rendered by [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates). Here that template is `templates/task_panel.html`:
+The pane's markup lives in a Django template in your plugin rather than in a Python string, rendered by [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates). Here that template is `templates/task_dock.html`:
 {% raw %}
 
 ```html
@@ -506,7 +506,7 @@ def on_context_change(self) -> Effect | list[Effect]:
     patient_id = self.event.context.get("patient", {}).get("id", "")
     return LaunchModalEffect(
         target=LaunchModalEffect.TargetType.DOCKED_PANE,
-        url=f"https://task-panel.example.com/panel?patient={patient_id}",
+        url=f"https://task-dock.example.com/panel?patient={patient_id}",
     ).apply()
 ```
 
@@ -575,7 +575,7 @@ panes.
 ### Sizing, Resizing, and Collapsing
 
 <p>
-  <object alt="The size range of a docked pane: a user drags between 48px and half the viewport, a plugin resizes between a thin rail and the current ceiling" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-pane-sizing.svg" style="width: 100%; max-width: 720px;"></object>
+  <object alt="A pane docked to the right edge at DOCK_SIZE, and the same pane collapsed by its plugin to a thin rail" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-pane-sizing.svg" style="width: 100%; max-width: 720px;"></object>
 </p>
 
 `DOCK_SIZE` sets the pane's initial size — its width on the `LEFT` and `RIGHT` edges,
@@ -620,7 +620,7 @@ mount it as a docked pane.
   "components": {
     "handlers": [
       {
-        "class": "my_plugin.apps.task_panel:TaskPanel",
+        "class": "my_plugin.apps.task_dock:TaskDock",
         "description": "Open task list docked to the right edge."
       }
     ]
