@@ -819,11 +819,20 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
   - title: "Embedded Applications"
     url: /sdk/handlers-embedded-applications/
+    identifier: embedded_applications
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
   - title: "Payment Processors"
     url: /sdk/handlers-payment-processors/
     identifier: payment_processors_handlers
+
+embedded_applications:
+  - title: "Note Applications"
+    url: /sdk/handlers-embedded-applications/#note-applications
+  - title: "Scheduling Applications"
+    url: /sdk/handlers-embedded-applications/#scheduling-applications
+  - title: "Docked Applications"
+    url: /sdk/handlers-embedded-applications/#docked-applications
 
 simple_api_handlers:
   - title: "HTTP API"

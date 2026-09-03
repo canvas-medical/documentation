@@ -337,34 +337,12 @@ When installed, this application replaces the built-in scheduling modal. If no s
 
 A Docked Application mounts as a persistent **docked pane** pinned to a window edge. It stays in place as the user moves between pages, including between a patient chart and global pages, rather than opening fresh each time.
 
+Reach for a docked pane when a surface needs to follow the user instead of being opened and re-opened: a telephony or messaging bar that has to survive navigation mid-call, a live worklist the user works through while moving between charts, or an ambient scribe that keeps recording as the clinician moves around a note. Because the pane stays mounted, whatever state it holds survives that navigation, whether that's a scroll position, a half-filled form, or an open connection. A modal or an overlay cannot do this, since both are torn down when the page changes.
+
 ### Implementing a Docked Application
 
-To create a Docked Application, your handler class should inherit from `DockedApplication`, set the required class attributes, and implement `on_open()` returning a `LaunchModalEffect` with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`.
-
-| Attribute    | Description                                                                    |
-|--------------|--------------------------------------------------------------------------------|
-| `NAME`       | (Required) The display title for the pane                                      |
-| `IDENTIFIER` | (Optional) A unique key for the application (recommended format: `plugin_name__app_name`) |
-| `DOCK_EDGE`  | (Required) Which window edge to pin the pane to, given as a `DockEdge` value    |
-| `DOCK_SIZE`  | (Required) The pane's initial size and the initial ceiling for the plugin's own resize requests, as a CSS length string (for example, `320px`). See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing). |
-| `PRIORITY`   | (Optional) An integer controlling stacking order when multiple panes share an edge — lower values sit nearer the window edge. Defaults to `0`. See [Multiple Docked Panes](#multiple-docked-panes). |
-
-When `IDENTIFIER` is omitted, the application's identifier defaults to one derived automatically from the class's module and name. Set it explicitly in the recommended `plugin_name__app_name` format to give the application a stable, readable identifier.
-
-`DOCK_EDGE` and `DOCK_SIZE` are both mandatory. Omitting either is a programming error that Canvas surfaces when the application runs.
-
-`DOCK_EDGE` takes one of the following `DockEdge` values:
-
-| Value    | Edge to pin to        |
-|----------|-----------------------|
-| `LEFT`   | Left edge of the window   |
-| `RIGHT`  | Right edge of the window  |
-| `TOP`    | Top edge of the window    |
-| `BOTTOM` | Bottom edge of the window |
-
-An edge Canvas does not recognize is rejected.
-
-The pane has no launcher entry to open it and no host-provided or user-facing control to dismiss it. Installing the plugin makes the pane appear; removing the plugin removes it. The plugin cannot override this: a Docked Application always opens. A plugin can remove its own pane from inside its content — see [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing). Existing Note Applications and Scheduling Applications are unaffected and keep working unchanged.
+A Docked Application is a handler that inherits from `DockedApplication`, declares the pane's
+placement as class attributes, and implements `on_open()` to mount the pane's content:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -388,6 +366,31 @@ class InfoPanel(DockedApplication):
             title="Info Panel"
         ).apply()
 ```
+
+`on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's `content` or `url` in the pane rather than in a modal.
+
+#### Class attributes
+
+| Attribute    | Required | Description                                                         |
+|--------------|----------|---------------------------------------------------------------------|
+| `NAME`       | Required | The display title for the pane                                      |
+| `IDENTIFIER` | Optional | A unique key for the application. When omitted, the identifier defaults to one derived automatically from the class's module and name. Set it explicitly in the recommended `plugin_name__app_name` format to give the application a stable, readable identifier. |
+| `DOCK_EDGE`  | Required | Which window edge to pin the pane to, given as a [`DockEdge`](#dockedge) value |
+| `DOCK_SIZE`  | Required | The pane's initial size and the initial ceiling for the plugin's own resize requests, as a CSS length string (for example, `320px`). See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing). |
+| `PRIORITY`   | Optional | An integer controlling stacking order when multiple panes share an edge — lower values sit nearer the window edge. Defaults to `0`. See [Multiple Docked Panes](#multiple-docked-panes). |
+
+#### DockEdge
+
+`DockEdge` is an enum of the four window edges a pane can be pinned to.
+
+| Name     | Value    | Edge to pin to            |
+|----------|----------|---------------------------|
+| `LEFT`   | `left`   | Left edge of the window   |
+| `RIGHT`  | `right`  | Right edge of the window  |
+| `TOP`    | `top`    | Top edge of the window    |
+| `BOTTOM` | `bottom` | Bottom edge of the window |
+
+A docked pane is always visible, and a plugin cannot make it otherwise. There is no app drawer entry that opens it and no Canvas-provided control that closes or minimizes it, so installing the plugin is what makes the pane appear and uninstalling the plugin is what takes it away. The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
 
 ### Pane Context and Navigation
 
