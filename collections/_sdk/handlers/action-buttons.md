@@ -167,19 +167,11 @@ A reload re-fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) even
 
 ## Note body automations
 
-A note body automation adds your plugin's own entry to the note body's "/" (slash) command list — the inline list clinicians use to insert commands while documenting a note. When the clinician selects your entry, your `handle()` runs and returns effects, just as a native slash command inserts commands.
-
-This location exists so an automation can come from a plugin rather than only from Canvas. An entry here is an ordinary action button, so `handle()` may return any effects at all: launch a modal, write a log line, or return nothing. What it is intended for is originating [commands](/sdk/commands/), with one menu entry standing in for the several commands a workflow would otherwise have the clinician insert by hand. Either way, Canvas clears the line the trigger was typed on, so an entry that originates nothing simply leaves the note as it was.
-
-Build one exactly as you build any other action button. Subclass `ActionButton`, set `BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION`, and provide the [`BUTTON_TITLE`, `BUTTON_KEY` and `PRIORITY`](#class-attributes) attributes. Implement [`handle()`](#methods) to build and return the effects your entry produces, and override [`visible()`](#methods) to scope who sees the entry and where. Its [runtime context](#reading-the-runtime-context) carries the signed-in staff member alongside the note and the patient, so an entry can be limited to particular staff as well as to particular notes or patients.
-
-`NOTE_BODY_AUTOMATION` reuses the generic `ActionButton` handler — a note body automation is a regular `ActionButton` subclass using this location, with no separate automation class. Canvas asks each plugin for its note body automation entries through the [`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event.
-
-Canvas renders the "/" experience for the clinician. Your entry appears in the list after the native commands, marked with a plug icon that distinguishes it from Canvas's native automations, and sorted by `PRIORITY` then title. Canvas populates the list when the note loads — not on every keystroke — then filters it client-side by `BUTTON_TITLE` as the clinician types. Selecting your entry runs `handle()`.
-
-To make an entry behave like a native slash command, return a [`BatchOriginateCommandEffect`](/sdk/effect-batch-originate/) with `replace_line=True` from `handle()`. In the note body "/" flow, Canvas supplies the trigger-line position and places the originated commands on the line the clinician typed the trigger on, replacing that line and leaving no trailing trigger text or blank-line padding. You don't set `line_number` for an automation — Canvas handles the placement, so `replace_line=True` is all `handle()` needs to set.
-
-Use `BatchOriginateCommandEffect` whenever an entry originates **more than one** command. The batch updates the note body one time for the whole group, instead of one time per command. That is faster, and it also keeps the group together: separate originate effects each update the note on their own, so they can interleave with other writes and land out of order. An entry that originates a single command needs no batch — return that command's `originate()` instead.
+A note body automation puts your plugin's own entry in the note body's "/" (slash) menu,
+the inline list clinicians use to insert commands while documenting a note. The location
+exists so an automation can come from a plugin rather than only from Canvas: one entry
+standing in for the several [commands](/sdk/commands/) a workflow would otherwise have
+the clinician insert by hand.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -222,6 +214,41 @@ class LipidPanelAutomation(ActionButton):
         ]
 ```
 
+It is an ordinary action button, with no separate automation class. Set `BUTTON_LOCATION`
+to `NOTE_BODY_AUTOMATION`, give it the usual
+[`BUTTON_TITLE`, `BUTTON_KEY` and `PRIORITY`](#class-attributes), and scope it with
+[`visible()`](#methods). Canvas asks each plugin for its entries through the
+[`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event, whose
+[context](#while-deciding-visibility) carries the signed-in staff member alongside the
+note and the patient, so an entry can be limited to particular staff as well as to
+particular notes or patients.
+
+### How Canvas renders the entry
+
+| Behaviour              | Detail                                                                            |
+|------------------------|-----------------------------------------------------------------------------------|
+| Position               | After the native commands, ordered by `PRIORITY` then title                       |
+| Marker                 | A plug icon, which distinguishes it from Canvas's native automations              |
+| When the list is built | Once, as the note loads, rather than on every keystroke                           |
+| Filtering              | Client-side against `BUTTON_TITLE` as the clinician types                         |
+| The trigger line       | Cleared as soon as the entry is selected, whatever `handle()` returns             |
+
+### What `handle()` can return
+
+An entry is not limited to originating commands. `handle()` may return any effects, or
+none at all. What the location is meant for is the first row:
+
+| Returned from `handle()`                                                                        | Where the commands land                                                                                                                                        |
+|-------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| A [`BatchOriginateCommandEffect`](/sdk/effect-batch-originate/) with `replace_line=True`         | On the line the clinician typed the trigger on, replacing it, with no trailing trigger text or blank-line padding. Canvas supplies the position, so leave `line_number` unset. |
+| A `BatchOriginateCommandEffect` without `replace_line`                                           | At the bottom of the note, from the effect's own `line_number=-1` default                                                                                      |
+| A single command's `originate()`                                                                 | Wherever that effect places it. One command needs no batch                                                                                                     |
+| Anything else, or nothing                                                                        | Nothing is added to the note, and the trigger line is still cleared                                                                                            |
+
+Reach for the batch whenever an entry originates **more than one** command. It updates the
+note body once for the whole group rather than once per command, which is faster and keeps
+the group together: separate originate effects each update the note on their own, so they
+can interleave with other writes and land out of order.
 
 ## Examples
 
