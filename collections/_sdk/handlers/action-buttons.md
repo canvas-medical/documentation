@@ -112,13 +112,44 @@ This is what makes buttons *dynamic*: because `visible()` runs against live data
 
 ### Reading the runtime context
 
-Inside `visible()`, `compute()`, and `handle()` you can read the event context to make decisions. When responding to a [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event, the following are available:
+Two different events reach an `ActionButton`, and they do not carry the same context.
+`visible()` runs on the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event for the
+button's location, while `handle()` runs on `ACTION_BUTTON_CLICKED` once the button is
+clicked. Read both through `self.event`.
 
-| Accessor                        | Description                                                                                                                                    |
-|---------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| `self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.       |
-| `self.event.context["user"]`    | The logged-in user, as `{"type": "Staff", "id": "<staff-id>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data. |
-| `self.event.target.id`          | The id of the patient the button is rendered for.                                                                                             |
+#### While deciding visibility
+
+What `visible()` sees depends on where the button lives:
+
+| Accessor                          | Note and header locations                                                          | Chart summary sections |
+|-----------------------------------|------------------------------------------------------------------------------------|------------------------|
+| `self.event.target.id`            | The id of the patient the button is rendered for                                    | The id of the patient  |
+| `self.event.context["user"]`      | The logged-in user, as `{"type": "Staff", "id": "<staff id>"}`                       | The same               |
+| `self.event.context["note_id"]`   | The **database id** of the note, or `None` on a location that has no note           | Not present            |
+
+"Note and header locations" means `NOTE_HEADER`, `NOTE_FOOTER`, `NOTE_BODY`,
+`NOTE_BODY_AUTOMATION`, `NOTE_HEADER_DROPDOWN` and `CHART_PATIENT_HEADER`. Every
+`CHART_SUMMARY_*_SECTION` location gets the patient and the user only, because a chart
+summary is not rendered inside a note.
+
+`note_id` is a database id rather than a UUID, so look the note up with `dbid`:
+
+```python?partial=true
+    def visible(self) -> bool:
+        note = Note.objects.filter(dbid=self.event.context["note_id"]).first()
+
+        return note is not None and note.note_type_version.category == "encounter"
+```
+
+#### When the button is clicked
+
+| Accessor                             | Value                                                                                                                       |
+|--------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| `self.event.context["key"]`          | The `BUTTON_KEY` of the button that was clicked. Canvas uses this to route the click, so `handle()` only runs for your own.  |
+| `self.event.context["user"]`         | The logged-in user, as `{"type": "Staff", "id": "<staff id>"}`                                                              |
+| `self.event.context["note_id"]`      | The database id of the note the button was clicked from. Present only when the button lives on a note.                       |
+| `self.event.context["line_number"]`  | The note body line the clinician typed the trigger on. Present only for a `NOTE_BODY_AUTOMATION` entry.                      |
+| `self.event.target.id`               | The id of the patient the button was clicked from                                                                            |
 
 ### Reloading buttons
 
