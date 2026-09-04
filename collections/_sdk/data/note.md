@@ -125,8 +125,8 @@ The body array contains objects of two types:
 
 #### Querying on the body
 
-`body` is a read-only property computed on each access, not a stored column, because
-Canvas assembles it from more than one column. That does not change the value you read,
+`body` is computed on each access rather than stored in a column, because Canvas
+assembles it from more than one column. That does not change the value you read,
 but it does limit which query operations can name it:
 
 | Operation                                              | Supported | Notes                                                                                              |
@@ -370,7 +370,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON (read-only property)              | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See [Querying on the body](#querying-on-the-body). |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See [Querying on the body](#querying-on-the-body). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
