@@ -89,8 +89,8 @@ A coverage with no eligibility responses (an empty `coverage.eligibility_respons
 | eligid              | String                                                                       |
 | x12_response        | String                                                                       |
 | parsed_x12_response | JSON                                                                         |
-| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (read-only property) |
-| eligibility_or_benefit_information | List (read-only property)                                     |
+| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (computed)           |
+| eligibility_or_benefit_information | List (computed)                                               |
 
 `status` and `eligibility_or_benefit_information` are computed from `errors` and `parsed_x12_response` rather than stored, so neither can be used in `filter()`. To select responses by outcome, filter on the columns they derive from — a failed check is one with a non-empty `errors`:
 
