@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Invoice` model represents a statement generated for a patient or their guarantor — who it was addressed to, what it totals, how it was sent, and where it stands. It is a read-only data model.
+The `Invoice` model represents a statement generated for a patient or their guarantor — who it was addressed to, what it totals, how it was sent, and where it stands.
 
 Invoices are produced by Canvas billing workflows rather than by plugins: automated statement runs, batch runs, and one-off statements each record their origin in `workflow`.
 

@@ -62,7 +62,7 @@ if coverage.snapshot:
 
 ## Eligibility status
 
-`Coverage.eligibility_status` is a read-only property that returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+`Coverage.eligibility_status` returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
 
 ```python?partial=true
 from canvas_sdk.v1.data.coverage import Coverage
@@ -139,7 +139,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
-| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (read-only property) |
+| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (computed) |
 | claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
 | requests                           | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]   |
 | eligibility_responses              | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[] |
@@ -170,7 +170,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | description                  | String                                              |
 | active                       | Boolean                                             |
 | use_provider_for_eligibility | Boolean                                             |
-| supports_eligibility_check   | Boolean (read-only property)                        |
+| supports_eligibility_check   | Boolean (computed)                                  |
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
 | coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |

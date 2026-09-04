@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in. It is a read-only data model.
+The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in.
 
 Records are returned regardless of command state, so staged commands are included; use `committed()` to limit results to committed commands.
 

@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `PluginCommand` model provides read-only access to the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
+The `PluginCommand` model exposes the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
 
 ## Basic usage
 
