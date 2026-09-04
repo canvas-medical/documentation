@@ -9,7 +9,7 @@ hidden: false
 
 The `PrescriptionChangeRequest` model represents an incoming Surescripts (NCPDP SCRIPT) request to change a prescription — for example, a generic substitution, a prior-authorization requirement, or a script clarification. Each request carries the raw request payload in its `content` attribute, the medication codings that describe the drug in question (`PrescriptionChangeRequestCoding`), and a reference to the original prescription it relates to.
 
-`PrescriptionChangeRequest` is a read-only data model. Because a request originates from the pharmacy, its `patient`, `note`, and `staff` associations are nullable and may be unset. The provider's approve/deny decision is recorded as a [PrescriptionChangeResponse](/sdk/data-prescription-change-response/), which links back to the request and is available through the request's `response` reverse relation.
+Because a `PrescriptionChangeRequest` originates from the pharmacy, its `patient`, `note`, and `staff` associations are nullable and may be unset. The provider's approve/deny decision is recorded as a [PrescriptionChangeResponse](/sdk/data-prescription-change-response/), which links back to the request and is available through the request's `response` reverse relation.
 
 ## Basic usage
 

@@ -34,7 +34,7 @@ histories = note.histories_of_present_illness.all()
 
 ## Reading the narrative
 
-The HPI text is stored as a structured document in `narrative_json`. The read-only `narrative` property renders it as plain text, so that is the field to read:
+The HPI text is stored as a structured document in `narrative_json`. The `narrative` property renders it as plain text, so that is the field to read:
 
 ```python?partial=true
 from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
@@ -73,7 +73,7 @@ committed_histories = HistoryOfPresentIllness.objects.committed()
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
 | narrative_json   | JSON                                  |
-| narrative        | String (read-only property)           |
+| narrative        | String (computed)                     |
 
 <br/>
 <br/>
