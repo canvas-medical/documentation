@@ -511,6 +511,14 @@ guides:
     identifier: guides_list
 
 guides_list:
+  - title: "Plugin Capabilities Overview"
+    url: /guides/plugin-capabilities-overview/
+    description: A comprehensive map of what Canvas plugins can do, organized by business value
+
+  - title: "Real-World Plugin Use Cases"
+    url: /guides/plugin-use-cases/
+    description: Concrete examples of how organizations use plugins to solve business problems
+
   - title: "Writing Commands Over HTTP"
     url: /guides/writing-commands-over-http/
     description: Expose commands as an HTTP endpoint, and check the caller may write to the note
