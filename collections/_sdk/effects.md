@@ -334,6 +334,9 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| CREATE_PATIENT_IDENTIFICATION_CARD | Create an identification card record + image for a patient. |
+| UPDATE_PATIENT_IDENTIFICATION_CARD | Update an identification card record or replace its image. |
+| DELETE_PATIENT_IDENTIFICATION_CARD | Delete an identification card record. |
 
 
 ### Patient Groups
@@ -457,6 +460,20 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 | UPDATE_CLAIM_PROVIDER | Update the provider on a claim. |
 | UPSERT_CLAIM_METADATA | Add or update metadata on a claim. |
 | UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim. |
+
+
+### Coverages
+
+Check out the [Coverage Effects](/sdk/effect-coverage/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_COVERAGE | Create an insurance coverage for a patient, optionally with card images. |
+| UPDATE_COVERAGE | Update fields and / or card images on an existing coverage. |
+| EXPIRE_COVERAGE | Set the end date on an existing coverage. |
+| REMOVE_COVERAGE | Remove an existing coverage from the patient's active stack. |
+| REORDER_COVERAGE | Re-rank a patient's coverages in one effect. |
+| REMOVE_COVERAGE_PHOTO | Clear the front or back card image on a coverage. |
 
 
 ### Patient Portal
@@ -603,6 +620,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Uncategorized Document Review | `*_UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND` | |
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
+| Visual Exam Finding | `*_VISUAL_EXAM_FINDING_COMMAND` | Originate/edit accept `image_upload_key` (file attach via SimpleAPI `upload_files=True`). See [Visual Exam Finding](/sdk/commands-visual-exam-finding/). |
 | Vitals | `*_VITALS_COMMAND` | |
 
 

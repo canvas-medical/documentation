@@ -888,6 +888,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Coverage"
+    url: /sdk/effect-coverage/
+    description: Create, update, expire, remove, reorder, and remove photos from patient insurance coverages.
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
@@ -954,6 +957,9 @@ effects_module:
   - title: "Patient Facility Address"
     url: /sdk/effect-patient-facility-address/
     description: Create, update, or delete patient facility address associations.
+  - title: "Patient Identification Card"
+    url: /sdk/effect-patient-identification-card/
+    description: Create, update, or delete a patient's identification card with an attached image.
   - title: "Patient Group"
     url: /sdk/effect-patient-group/
     description: Interact with patient group data.
