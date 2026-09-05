@@ -179,6 +179,79 @@ class AdvancedRevenueApp(Application):
         ).apply()
 ```
 
+## URL Parameters in `on_open`
+
+Canvas forwards every key/value pair in the URL hash to the `on_open()` event context as a flat dictionary on `self.event.context["params"]`. This is the primary mechanism for handing data — such as an OAuth authorization `code` — back to the plugin after a third-party redirect.
+
+When the application is opened with a URL whose hash looks like:
+
+```text
+/patient/<patient_key>/#application=<app_id>&code=abc123&token=xyz
+```
+
+every key in the hash (including the `application` identifier itself) appears in `params`:
+
+```python
+# self.event.context["params"]
+{"application": "<app_id>", "code": "abc123", "token": "xyz"}
+```
+
+Example handler that picks up an OAuth code:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
+
+
+class MyOAuthApp(Application):
+    def on_open(self) -> Effect | list[Effect]:
+        params = self.event.context.get("params") or {}
+        oauth_code = params.get("code")
+        # Forward the code to your iframe so it can exchange it for a token
+        url = "/plugin-io/api/my_plugin/app/index"
+        if oauth_code:
+            url += f"?code={oauth_code}"
+        return LaunchModalEffect(
+            url=url,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+        ).apply()
+```
+
+The `application` key is metadata used by Canvas to route the event to your handler — your plugin usually only cares about its own custom keys (such as `code` from an OAuth redirect).
+
+## OAuth Callback Endpoint
+
+For applications that integrate with an external OAuth 2.0 provider, Canvas exposes a callback URL that bounces the authorization response back into the running application:
+
+```http
+GET /application/auth/<path>/<app_id>?code=<code>&state=<state>
+```
+
+| Path segment / param | Meaning                                                                                                                                                            |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `<path>`             | Scope of the redirect. Currently the only accepted value is `patient`; any other value redirects the browser to `/` and discards the OAuth response.               |
+| `<app_id>`           | The base64-encoded application identifier (matches the `#application=<app_id>` hash already used by the app drawer).                                                |
+| `code`               | The authorization code returned by the OAuth provider. Optional — if missing, Canvas still redirects, but with no `code` in the hash for the plugin to consume.    |
+| `state`              | Required for the patient-scoped redirect. Canvas uses this slot to carry the patient key so it can rebuild the chart URL; if absent, Canvas redirects to `/#application=<app_id>` (no patient context). |
+
+Behavior:
+
+- With `state` and `code` → `302 /<path>/<state>/#application=<app_id>&code=<code>`
+- With `state` only → `302 /<path>/<state>/#application=<app_id>`
+- Without `state` → `302 /#application=<app_id>`
+- With unsupported `<path>` → `302 /`
+
+The plugin then receives the hash key/values through `self.event.context["params"]` (see [URL Parameters in `on_open`](#url-parameters-in-on_open) above). The patient key is reachable through `self.event.context["patient"]["id"]` from the URL path segment Canvas reconstructed — you do **not** also receive `state` as a `params` entry.
+
+When you register your application with the third-party OAuth provider, set the **redirect URI** to:
+
+```text
+https://<your-canvas-host>/application/auth/patient/<app_id>
+```
+
+substituting the base64-encoded application identifier for `<app_id>` and supplying the current patient key as the OAuth `state` parameter so the user lands back on the same chart.
+
 In addition, your `CANVAS_MANIFEST.json` file must provide some information
 about your application. You reference your class in the "applications"
 section of the components so your application is registered in the app drawer
