@@ -593,6 +593,13 @@ guides_list:
     uses:
       - fhir_api
 
+  - title: "Testing Pharmacy Workflows in Staging"
+    url: /guides/pharmacy-staging-testing/
+    description: Point a dev instance at staging to test e-prescribing, eligibility, benefit, and medication-history workflows
+    uses:
+      - fhir_api
+      - sdk
+
   - title: "Tailoring the Chart to Your Patient"
     url: /guides/tailoring-the-chart-to-the-patient/
     description: Customize a patient's chart so the features most relevant to them are front-and-center
