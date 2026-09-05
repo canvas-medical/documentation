@@ -35,6 +35,9 @@ Creates a new note. Can be passed an optional UUID as `instance_id` from the `uu
 - Verifies that the practice location and provider are valid
 - If `supervising_provider_id` is provided, validates that the Staff record exists
 
+<!-- source: discussion #1612 -->
+{% include alert.html type="info" content="You can set a custom <code>title</code> on any non–Schedule Event note type, regardless of the note type's <code>allow_custom_title</code> value. The <code>allow_custom_title</code> field on <code>NoteType</code> only applies to Schedule Event (Event Type) note types — it controls whether a custom description can be set on those events (stored on <code>note.description</code>) and is only enforced by the <a href='#scheduleevent-effect'>ScheduleEvent effect</a>. It is not checked when the <code>Note</code> effect creates a chart note, so there is no need to gate the <code>title</code> on <code>allow_custom_title</code>." %}
+
 #### Example Usage
 
 ```python
@@ -56,6 +59,9 @@ class MyHandler(BaseHandler):
 
         return [note_effect.create()]
 ```
+
+<!-- source: discussion #742 -->
+{% include alert.html type="info" content="Commands require a note id, so creating a note and populating it with commands in a single <code>compute()</code> is not supported. The recommended pattern is two handlers: the first creates the note with the <code>Note</code> effect; the second listens for the note creation event and returns <a href='/sdk/effects/#effect-types'>command effects</a> against the new note. (If you assign the note a user-set UUID as its <code>instance_id</code>, you can reuse that id when <a href='/sdk/commands/#chaining-methods-with-a-user-set-uuid'>assigning commands</a> in the same plugin action.)" %}
 
 ### Update Note
 
@@ -188,6 +194,16 @@ class MyHandler(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+<!-- source: discussion #1484 -->
+{% include alert.html type="warning" content="<b>Billing line item updates must happen before the note is locked.</b> Locking a note is the trigger that pushes its charges to the claim, so once a note is locked you can no longer change its billing details. Do not wait for a <code>NOTE_STATE_CHANGE</code> / locked event to add or update billing line items — by then the claim has already been created. Instead, respond to an earlier event such as <code>QUESTIONNAIRE_COMMAND__POST_COMMIT</code> (fired when the questionnaire's record button is clicked) to make your billing changes. To make the changes reach the claim immediately rather than at lock time, follow the billing line item update with a <code>push_charges()</code> effect on the same note in the same plugin action." %}
+
+<!-- source: discussion #1107 -->
+To change the charge amount on a claim that already exists, use the [`UpdateClaimLineItem`](/sdk/effect-claims/#updateclaimlineitem) effect. Alternatively, add [BillingLineItems](/sdk/effect-billing-line-items/) to the patient's note and then push charges so the claim is updated appropriately. The FHIR Claim API only supports changing the queue or adding a comment, so charge amounts cannot be edited there.
+
+<!-- source: discussion #1251 -->
+<!-- source: discussion #1201 -->
+To move a claim into a specific revenue queue from a plugin — for example, to route contract-based claims that do not go through a clearinghouse into a queue your team works manually — use [`ClaimEffect.move_to_queue()`](/sdk/effect-claims/#move-to-queue).
+
 ### Lock
 
 Locks an existing note, preventing further modifications. Has the exact same effect as clicking on the `Lock` button in the Note footer.
@@ -215,6 +231,15 @@ class MyHandler(BaseHandler):
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
+#### Validating before a note is locked or signed
+
+<!-- source: discussion #786 -->
+<!-- source: discussion #644 -->
+To conditionally allow or block a note from being locked or signed — for example, requiring that a specific command or CPT code is present, that the signer is on the patient's care team, or that the signer holds a matching state license — use the [`NOTE_STATE_CHANGE_EVENT_PRE_CREATE`](/sdk/effect-event-validation-error/) validation-error effect. When the validation fails, the effect prevents the state change and surfaces an error to the user. See the [`pre-lock-validation` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/pre-lock-validation/pre_lock_validation).
+
+<!-- source: discussion #1299 -->
+{% include alert.html type="info" content="If you need to validate billing line items (for example, ensuring a CPT code is present) and the <code>NOTE_STATE_CHANGE_EVENT_PRE_CREATE</code> effect does not fit your need, you can use a post-lock workaround: respond to <code>NOTE_STATE_CHANGE_EVENT_CREATED</code>, check that the note was just locked (<code>NoteStates.LOCKED</code>), and validate that the expected <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItems</a> exist on the note. This does not prevent the lock, but it lets you flag missing data immediately — for example by raising a <a href='/sdk/effect-banner-alerts/'>banner alert</a> or creating a <a href='/sdk/effect-tasks/#adding-a-task'>task</a> for the provider or billing team." %}
+
 ### Sign
 
 Signs an existing note, marking it as reviewed and approved by the provider. Has the exact same effect as clicking on the `Sign` button in the Note footer.
@@ -227,6 +252,9 @@ Signs an existing note, marking it as reviewed and approved by the provider. Has
 
 **Note**: `instance_id` must be a valid, existing Note that is not already signed.
 
+<!-- source: discussion #1428 -->
+{% include alert.html type="warning" content="A note must be <b>locked before it can be signed</b>. Only certain note state transitions are allowed, and <code>SGN</code> is not reachable directly from <code>ULK</code> or <code>CVD</code> — calling <code>sign()</code> on an unlocked note raises <code>ValueError: Invalid state transition</code>. The Canvas UI combines both actions into the <code>Sign</code> button (which is why you'll see two note-state-change events in the audit history). A plugin must do the same and sequence a <code>lock()</code> effect before the <code>sign()</code> effect." %}
+
 #### Example Usage
 
 ```python
@@ -238,6 +266,13 @@ class MyHandler(BaseHandler):
     def compute(self):
         note_effect = Note(instance_id="existing-note-uuid")
         return [note_effect.sign()]
+```
+
+<!-- source: discussion #1428 -->
+To lock and sign a note in a single plugin action, return the `lock()` effect before the `sign()` effect:
+
+```python
+return [Note(instance_id="existing-note-uuid").lock(), Note(instance_id="existing-note-uuid").sign()]
 ```
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
@@ -643,11 +678,16 @@ Updates an existing appointment in place.
 
 **Note**: `patient_id` cannot be updated after creation.
 
+<!-- source: discussion #958 -->
+{% include alert.html type="warning" content="Appointment <a href='/sdk/data-appointment/'>data records</a> are read-only. Calling <code>.save()</code> on an <code>Appointment</code> data object raises <code>permission denied for view ...</code>. To change an appointment, read its current data, then build and return an <code>Appointment</code> update effect (imported as <code>from canvas_sdk.effects.note.appointment import Appointment</code>) instead." %}
+
 #### Example Usage
 
+<!-- source: discussion #1017 -->
 ```python
 import datetime
 
+from canvas_sdk.effects.note import AppointmentIdentifier
 from canvas_sdk.effects.note.appointment import Appointment
 from canvas_sdk.handlers.base import BaseHandler
 
@@ -658,6 +698,9 @@ class MyHandler(BaseHandler):
         appointment_effect.start_time = datetime.datetime.now() + datetime.timedelta(hours=2)
         appointment_effect.duration_minutes = 45
         appointment_effect.meeting_link = "https://new-meeting-link.com"
+        appointment_effect.external_identifiers = [
+            AppointmentIdentifier(system="my_external_system", value="appt-12345")
+        ]
 
         return appointment_effect.update()
 ```

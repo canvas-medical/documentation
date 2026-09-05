@@ -35,6 +35,24 @@ from canvas_sdk.v1.data.patient import Patient
 patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
 ```
 
+<!-- source: discussion #294 -->
+### Retrieving only committed, recorded data
+
+There is no named convenience filter yet for "only the patient's recorded data" (the behavior the Workflow Kit's `self.patient` object provided). To restrict a related model to committed, non-deleted, non-entered-in-error records, filter on those fields explicitly. For example, for a patient's observations:
+
+```python
+from canvas_sdk.v1.data.observation import Observation
+
+observations = Observation.objects.filter(
+    patient=patient,
+    deleted=False,
+    entered_in_error_id__isnull=True,
+    committer_id__isnull=False,
+)
+```
+
+Mirror this pattern on the other patient-related data models to exclude draft, deleted, and retracted records.
+
 ## Accessing the patient photo
 
 The `photo_url` property returns a presigned S3 URL for securely accessing the patient's uploaded avatar photo. If the patient has no uploaded avatar, the property returns a default avatar URL instead — so the value is always safe to render without a null check.
@@ -245,16 +263,39 @@ for addr in patient_addresses:
 | verification_token | String                                                                |
 | opted_out          | Boolean                                                               |
 
+<!-- source: discussion #504 -->
+<!-- source: discussion #614 -->
+Related fields such as `patient.telecom` return a Django `RelatedManager`, not the related rows themselves — accessing the attribute directly logs something like `v1.PatientContactPoint.None` and will not show the contact points. The related records are not fetched when you load the patient; you must query the relation explicitly with `.all()` (for every row) or `.filter(...)` (for a subset):
+
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from logger import log
 
 patient_id = "d7af3e356368446c85b40a5d6ff7288e"
 patient = Patient.objects.get(id=patient_id)
+
+# All contact points
 patient_contacts = patient.telecom.all()
+
+# Just the phone numbers
+phone_contacts = patient.telecom.filter(system="phone")
 
 for contact in patient_contacts:
    log.info(f"Patient contact: {contact.system} - {contact.value}") # phone - 5555555555
+```
+
+The same pattern applies to every related manager on the patient (`addresses`, `coverages`, `medications`, etc.).
+
+<!-- source: discussion #1322 -->
+### Detecting patient portal registration
+
+To detect whether a patient has registered for the patient portal, use the `is_portal_registered` boolean on the patient's [`CanvasUser`](/sdk/data-canvasuser) record (via the `user` relation). Patient portal verification is a separate process from contact-point verification, so check this boolean rather than `PatientContactPoint.last_verified` for portal registration:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+registered = patient.user.is_portal_registered
 ```
 
 ### PatientExternalIdentifier
@@ -342,6 +383,16 @@ patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
 for photo in patient.photos.all():
     log.info(f"Photo: {photo.title}, stored at: {photo.url}")
 ```
+
+<!-- source: discussion #1471 -->
+### Reading uploaded images and PDFs
+
+To read uploaded files (such as insurance card images or scanned PDFs) programmatically, use the file-upload data models, which expose the underlying S3 link rather than requiring direct bucket/AWS credentials:
+
+- [`DocumentReference`](/sdk/data-document-reference/) — uploaded documents
+- [`Snapshot` / `SnapshotImage`](/sdk/data-snapshot/) — snapshot images
+- [`PatientIdentificationCard`](#patientidentificationcard) — insurance card and ID card images (`image_url` property)
+- [`MessageAttachment.file_url`](/sdk/data-message/#messageattachment) — files attached to messages
 
 ### PatientIdentificationCard
 

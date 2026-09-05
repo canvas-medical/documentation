@@ -338,7 +338,9 @@ for report in unreviewed_reports:
 
 ### Filtering Lab Results by Abnormal Values
 
-A common use case is to identify abnormal lab values that may require clinical attention:
+<!-- source: discussion #750 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+A common use case is to alert a care team when an abnormal result arrives. Listen for [`LAB_REPORT_CREATED`](/sdk/events/#labs) (and the other [Lab events](/sdk/events/#labs) or [Imaging Report events](/sdk/events/#imaging-reports)) to react to new results, then inspect each [`LabValue`](#labvalue)'s `abnormal_flag` field — per Canvas, a value is flagged abnormal when `abnormal_flag` is set (non-null and non-empty). A common use case is to identify abnormal lab values that may require clinical attention:
 
 ```python
 from canvas_sdk.v1.data.lab import LabReport, LabValue
@@ -371,6 +373,12 @@ committed_reviews = LabReview.objects.committed()
 committed_orders = LabOrder.objects.committed()
 committed_order_reasons = LabOrderReason.objects.committed()
 ```
+
+<!-- source: discussion #472 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+### POC (point-of-care) Lab Test results
+
+Per Canvas, the POC Lab Test command (shown as `pocLabTest` on a note) has not yet been migrated to the `Command` model, so you cannot jump from that command to its structured lab value through the `Command` data class. Once committed, the information it captures is accessible through [`LabReport`](#labreport) and [`Observation`](/sdk/data-observation/), and the `Observation` record carries a `note_id` foreign key back to the note. To react to a new POC Lab Test, listen for the [`OBSERVATION_CREATED`](/sdk/events/#observations) event and trace it to the discrete observation it creates.
 
 ## The document reference
 
