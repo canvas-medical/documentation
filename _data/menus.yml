@@ -975,6 +975,9 @@ effects_module:
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
+  - title: "Create Questionnaire"
+    url: /sdk/effect-create-questionnaire/
+    description: Create questionnaires programmatically.
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
