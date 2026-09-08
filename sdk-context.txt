@@ -804,12 +804,12 @@ A few things worth carrying over into your own version:
   - **Annotate what you add** so the user can tell your entries from the directory's.
 ##  Accessing User Context 
 PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for command fields like prescriber, medication, diagnosis, pharmacy, and many others. It also includes the non-command fax recipient and external care team directory searches listed under [Other Events](/sdk/events/#other-events). All of these searches can be customized the same way.
-You can access the user's staff key from the context:
+You can access the user's staff id from the context:
     ```python
     def compute(self):
         user_context = self.context.get("user", {})
         staff_key = user_context.get("staff")
-        # Use the staff key to customize search results
+        # Use the staff id to customize search results
         # based on the user's role, preferences, or permissions
     ```
 This can be useful for customizing search results based on:
@@ -6510,6 +6510,8 @@ The valid labels are the `label` of each [`LabReportTemplateField`](/sdk/data-la
 **Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
   - A pharmacy must be specified on the command before it can be sent.
   - The command must be committed/signed before it can be sent electronically.
+  - The prescriber must have an SPI (Surescripts Prescriber Identifier) number on file, or the send is restricted with `eRx unavailable, prescriber missing SPI number`. SPI is a send requirement only: a prescriber without one can still review and sign the prescription.
+  - For a controlled substance, the prescriber must be enrolled in EPCS, or the send is restricted with `eRx unavailable, prescriber not enrolled in EPCS`.
   - For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
 These validations apply to Refill and AdjustPrescription as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to `send()` to use a specific practice location's address instead:
@@ -7618,7 +7620,7 @@ Patient-scope apps appear as tabs on the patient page. Your tab sits next to the
 ![](/assets/images/sdk/companion/patient-timeline.png) ![](/assets/images/sdk/companion/patient-app.png)
 ###  Event context 
     ```python
-    self.event.context["patient"]["id"]  # Patient key (UUID string)
+    self.event.context["patient"]["id"]  # Patient id (UUID string)
     ```
 ###  Use cases 
   - A **chart summary** of conditions, meds, allergies, vitals, etc. for the open patient.
@@ -7680,7 +7682,7 @@ Note-scope apps appear as tabs inside an opened note on the patient page. Use th
 ![](/assets/images/sdk/companion/note.png) ![](/assets/images/sdk/companion/note-app.png)
 ###  Event context 
     ```python
-    self.event.context["patient"]["id"]  # Patient key (UUID string)
+    self.event.context["patient"]["id"]  # Patient id (UUID string)
     self.event.context["note"]["id"]     # Note UUID
     ```
 ###  Use cases 
@@ -11177,6 +11179,98 @@ allowed_note_types | NoteType[] | Note types that are allowed for this event
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-calendar/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-cancel-prescription-response/
+##  Introduction 
+The `CancelPrescriptionResponse` model captures the response to a [CancelPrescription](/sdk/data-cancel-prescription) request. Each response is linked one-to-one to the request that produced it.
+##  Basic usage 
+To get a cancel prescription response by identifier, use the `get` method on the `CancelPrescriptionResponse` model manager:
+    ```python
+    from canvas_sdk.v1.data import CancelPrescriptionResponse
+    response = CancelPrescriptionResponse.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the cancel prescription responses for a patient can be accessed with the `cancel_prescription_responses` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    responses = patient.cancel_prescription_responses.all()
+    ```
+Or, from a cancel prescription, reach its response with the `response` attribute:
+    ```python
+    from canvas_sdk.v1.data import CancelPrescription
+    cancel = CancelPrescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    response = cancel.response
+    ```
+##  Attributes 
+###  CancelPrescriptionResponse 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | [Patient](/sdk/data-patient/#patient)  
+request | [CancelPrescription](/sdk/data-cancel-prescription)  
+message_id | String  
+note | String  
+reason_code | String  
+response | String  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-cancel-prescription-response/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-cancel-prescription/
+##  Introduction 
+The `CancelPrescription` model is the anchor for the CancelPrescription command — a request to cancel a patient's prescription, recorded on a Note.
+##  Basic usage 
+To get a cancel prescription by identifier, use the `get` method on the `CancelPrescription` model manager:
+    ```python
+    from canvas_sdk.v1.data import CancelPrescription
+    cancel = CancelPrescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the cancel prescriptions for a patient can be accessed with the `cancel_prescriptions` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    cancels = patient.cancel_prescriptions.all()
+    ```
+Or, from a prescription, reach its cancellations with the same `cancel_prescriptions` attribute:
+    ```python
+    from canvas_sdk.v1.data import Prescription
+    prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    cancels = prescription.cancel_prescriptions.all()
+    ```
+##  Committed records 
+The `committed` method returns cancel prescriptions that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import CancelPrescription
+    committed_cancels = CancelPrescription.objects.committed()
+    ```
+##  Attributes 
+###  CancelPrescription 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+prescription | [Prescription](/sdk/data-prescription)  
+message_id | String  
+status | CancelPrescriptionStatus  
+response | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)  
+##  Enumeration types 
+###  CancelPrescriptionStatus 
+Name | Value  
+---|---  
+OPEN | open  
+PENDING | pending  
+ULTIMATELY_ACCEPTED | ultimately-accepted  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-cancel-prescription/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-canvasuser/
 ##  Introduction 
 The `CanvasUser` model represents a Canvas User. This could be linked to a staff member or a patient. This model isn't meant to be referenced directly, but is sometimes used to attribute a record to user.
@@ -12318,7 +12412,7 @@ investigative | investigative
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-content-type/
 ##  Introduction 
-The `ContentType` model provides read-only access to Django content types. Use it to resolve the content type id for a given model, which is required when working with generic relations (such as [document references](/sdk/data-document-reference)) and when generating permalinks.
+The `ContentType` model exposes Django content types. Use it to resolve the content type id for a given model, which is required when working with generic relations (such as [document references](/sdk/data-document-reference)) and when generating permalinks.
 A content type is identified by two **stable** values — `app_label` and `model` — that are the same on every Canvas instance. Its `dbid` (the content type id) is a per-database auto-increment that **is not stable across environments**. Always resolve the `dbid` at runtime from the `app_label` and `model`; never hardcode a content type id, or it will point at the wrong model in another environment.
 ##  Basic usage 
 To get a content type by its database id, use the `get` method on the `ContentType` model manager:
@@ -12465,7 +12559,7 @@ Access insurance card images through the coverage's snapshot:
             print(image.image_url)  # Presigned S3 URL for the insurance card image
     ```
 ##  Eligibility status 
-`Coverage.eligibility_status` is a read-only property that returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+`Coverage.eligibility_status` returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
     ```python
     from canvas_sdk.v1.data.coverage import Coverage
     from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
@@ -12473,6 +12567,8 @@ Access insurance card images through the coverage's snapshot:
     if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
         print("Coverage is active")
     ```
+`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage, meaning one whose issuer has a `payer_id` of `PATIENT`. It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+That is also what `Transactor.supports_eligibility_check` reports: it is `False` for the self-pay payer, whose `payer_id` is `PATIENT`, and `True` for every other issuer.
 Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
 A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
 ##  Filtering 
@@ -12525,7 +12621,7 @@ comments | Text
 stack | CoverageStack  
 snapshot | [Snapshot](/sdk/data-snapshot/#snapshot)  
 eligibility_summary | EligibilitySummary  
-eligibility_status | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (read-only property)  
+eligibility_status | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (computed)  
 claim_coverages | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]  
 requests | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]  
 eligibility_responses | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[]  
@@ -12554,6 +12650,7 @@ state | String
 description | String  
 active | Boolean  
 use_provider_for_eligibility | Boolean  
+supports_eligibility_check | Boolean (computed)  
 use_for_submission | Transactor  
 used_for_submission_by | Transactor[]  
 coverage_types | TransactorCoverageType[]  
@@ -13145,7 +13242,7 @@ Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-educational-material/
 ##  Introduction 
-The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in. It is a read-only data model.
+The `EducationalMaterial` model represents patient educational material recorded on a note through the Educational Material command — the selected article, its title and abstract, and the languages it is available in.
 Records are returned regardless of command state, so staged commands are included; use `committed()` to limit results to committed commands.
 ##  Basic Usage 
 `EducationalMaterial` records can be retrieved by their UUID `id`, their integer `dbid`, or through a patient.
@@ -13277,6 +13374,7 @@ Eligibility requests and responses are linked to a `Coverage`. From a coverage o
     is_active = response is not None and response.status == EligibilityResponseStatus.ACTIVE
     ```
 A coverage with no eligibility responses (an empty `coverage.eligibility_responses` queryset) has not been verified.
+`NOT_APPLICABLE`, like `UNKNOWN`, is a value returned by [`Coverage.eligibility_status`](/sdk/data-coverage/#eligibility-status), never by an individual `EligibilityResponse.status`. A single response only ever resolves to `FAILED`, `INACTIVE`, or `ACTIVE`.
 ##  Attributes 
 ###  EligibilityRequest 
 Field Name | Type  
@@ -13316,8 +13414,8 @@ errors | List[String]
 eligid | String  
 x12_response | String  
 parsed_x12_response | JSON  
-status | EligibilityResponseStatus (read-only property)  
-eligibility_or_benefit_information | List (read-only property)  
+status | EligibilityResponseStatus (computed)  
+eligibility_or_benefit_information | List (computed)  
 `status` and `eligibility_or_benefit_information` are computed from `errors` and `parsed_x12_response` rather than stored, so neither can be used in `filter()`. To select responses by outcome, filter on the columns they derive from — a failed check is one with a non-empty `errors`:
     ```python
     from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
@@ -13331,6 +13429,7 @@ ACTIVE | Active
 INACTIVE | Inactive  
 FAILED | Failed  
 UNKNOWN | Unknown  
+NOT_APPLICABLE | NotApplicable  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-eligibility-response/
 
 
@@ -13998,7 +14097,7 @@ If you have a patient object, or note object, the histories of present illness f
     histories = note.histories_of_present_illness.all()
     ```
 ##  Reading the narrative 
-The HPI text is stored as a structured document in `narrative_json`. The read-only `narrative` property renders it as plain text, so that is the field to read:
+The HPI text is stored as a structured document in `narrative_json`. The `narrative` property renders it as plain text, so that is the field to read:
     ```python
     from canvas_sdk.v1.data.history_present_illness import HistoryOfPresentIllness
     hpi = HistoryOfPresentIllness.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
@@ -14026,7 +14125,7 @@ entered_in_error | [CanvasUser](/sdk/data-canvasuser)
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
 narrative_json | JSON  
-narrative | String (read-only property)  
+narrative | String (computed)  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-history-present-illness/
 
 
@@ -14640,7 +14739,7 @@ from_patient_portal | From Patient Portal
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-invoice/
 ##  Introduction 
-The `Invoice` model represents a statement generated for a patient or their guarantor — who it was addressed to, what it totals, how it was sent, and where it stands. It is a read-only data model.
+The `Invoice` model represents a statement generated for a patient or their guarantor — who it was addressed to, what it totals, how it was sent, and where it stands.
 Invoices are produced by Canvas billing workflows rather than by plugins: automated statement runs, batch runs, and one-off statements each record their origin in `workflow`.
 > **Info:** Invoice records have no UUID `id` — they are identified by their integer `dbid`. 
 ##  Basic Usage 
@@ -15822,6 +15921,7 @@ change_medications | [ChangeMedication](/sdk/data-change-medication)[]
 stopmedicationevent_set | [StopMedicationEvent](/sdk/data-stop-medication-event)[]  
 prescriptions | [Prescription](/sdk/data-prescription)[]  
 previous_medications | [Prescription](/sdk/data-prescription)[]  
+prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[]  
 ###  MedicationCoding 
 Field Name | Type  
 ---|---  
@@ -15948,7 +16048,7 @@ Educational material shared through the Educational Material command is recorded
     educational_materials = note.education_material.all()
     ```
 ###  Understanding the note body structure 
-The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+The `body` of a note is a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
     ```python
     import json
     from canvas_sdk.v1.data.note import Note
@@ -15972,6 +16072,25 @@ The body array contains objects of two types:
            }
          }
          ```
+####  Querying on the body 
+`body` is computed on each access rather than stored in a column, because Canvas assembles it from more than one column. That does not change the value you read, but it does limit which query operations can name it:
+Operation | Supported | Notes  
+---|---|---  
+`Note.objects.filter(body=...)` | Yes | Also `exclude()` and `get()`, and lookups nested inside a `Q` object  
+`Note.objects.only("body")` | Yes | Loads every column the property reads, so building a body costs no further queries  
+`Note.objects.defer("body")` | Yes | Defers all of them  
+`Note.objects.values("body")`, `values_list("body")` | No | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return  
+`Note.objects.order_by("body")` | No | Raises a `FieldError`  
+`body` named through a relation | No | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead  
+> **Warning:** Naming `body` through a relation stopped working in the [September 8, 2026 release](/release-notes/1-348-0/). A queryset on another model that defers or filters `note__body` now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with `Note.objects.defer("body")`. 
+So read the body from a note you already have, or filter notes by it, rather than trying to select it as a value:
+    ```python
+    from canvas_sdk.v1.data.note import Note
+    # Load only the columns the body needs.
+    notes = Note.objects.only("body").filter(patient__id="b80b1cdc2e6a4aca90ccebc02e683f35")
+    for note in notes:
+        print(note.body)
+    ```
 The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
     ```python
     from canvas_sdk.v1.data.note import Note
@@ -16118,7 +16237,7 @@ modified | DateTime |
 patient | [Patient](/sdk/data-patient/#patient) |   
 note_type_version | NoteType |   
 title | String |   
-body | JSON | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`.  
+body | JSON (computed) | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See Querying on the body.  
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
 supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
@@ -16160,6 +16279,9 @@ removed_allergies | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event
 resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note  
 histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note  
 vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note  
+cancel_prescriptions | QuerySet[[CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)] | All prescription cancellations recorded on this note  
+prescription_change_requests | QuerySet[[PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)] | All pharmacy change requests recorded on this note  
+prescription_change_responses | QuerySet[[PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)] | All responses to change requests recorded on this note  
 ###  NoteType 
 Field Name | Type  
 ---|---  
@@ -17021,6 +17143,10 @@ follow_ups | [FollowUp](/sdk/data-follow-up/#followup)[]
 reasons_for_visit | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]  
 removed_allergies | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[]  
 resolved_conditions | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  
+cancel_prescriptions | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  
+cancel_prescription_responses | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[]  
+prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[]  
+prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[]  
 ###  PatientAddress 
 Field Name | Type  
 ---|---  
@@ -17328,7 +17454,7 @@ narrative | String
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-plugin-command/
 ##  Introduction 
-The `PluginCommand` model provides read-only access to the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
+The `PluginCommand` model exposes the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
 ##  Basic usage 
 To get a plugin command by identifier, use the `get` method on the `PluginCommand` model manager:
     ```python
@@ -17647,6 +17773,161 @@ state | [ContactPointState](/sdk/data-enumeration-types/#contactpointstate)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-practicelocation/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-prescription-change-request/
+##  Introduction 
+The `PrescriptionChangeRequest` model represents an incoming Surescripts (NCPDP SCRIPT) request to change a prescription — for example, a generic substitution, a prior-authorization requirement, or a script clarification. Each request carries the raw request payload in its `content` attribute, the medication codings that describe the drug in question (`PrescriptionChangeRequestCoding`), and a reference to the original prescription it relates to.
+Because a `PrescriptionChangeRequest` originates from the pharmacy, its `patient`, `note`, and `staff` associations are nullable and may be unset. The provider's approve/deny decision is recorded as a [PrescriptionChangeResponse](/sdk/data-prescription-change-response/), which links back to the request and is available through the request's `response` reverse relation.
+##  Basic usage 
+To get a prescription change request by identifier, use the `get` method on the `PrescriptionChangeRequest` model manager:
+    ```python
+    from canvas_sdk.v1.data import PrescriptionChangeRequest
+    change_request = PrescriptionChangeRequest.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+    ```
+##  Related data 
+A change request's medication codings are available through the `codings` reverse relation, and the responses recorded against it are available through the `response` reverse relation:
+    ```python
+    from canvas_sdk.v1.data import PrescriptionChangeRequest
+    from logger import log
+    change_request = PrescriptionChangeRequest.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+    for coding in change_request.codings.all():
+        log.info(f"system:  {coding.system}")
+        log.info(f"code:    {coding.code}")
+        log.info(f"display: {coding.display}")
+    responses = change_request.response.all()
+    ```
+The `PrescriptionChangeRequestCoding` entries represent the coding of the medication in question (for example, FDB or RxNorm), with an unstructured fallback whose `display` carries the drug description text when no structured code is available.
+##  Message content 
+The `message_id` and `content` attributes carry the details of the inbound eRx message.
+`message_id` is the eRx (NCPDP SCRIPT / Surescripts) message identifier of the inbound change request.
+`content` is a JSON field holding the parsed inbound NCPDP SCRIPT change-request payload. It is a free-form, unstructured representation whose exact shape can vary between messages, typically including the pharmacy, the prescriber as reported by the sender, and the dispensed medication details (drug description, NDC, quantity, and similar). `content` defaults to an empty object (`{}`), so it is safe to call `.get()` on, but individual keys may be absent — plugins should access it defensively.
+##  Change types 
+The `type_code` attribute identifies the kind of change the pharmacy is requesting:
+Code | Description  
+---|---  
+G | Generic Substitution  
+P | Prior Authorization Required  
+S | Therapeutic Interchange/Substitution  
+D | Drug Use Evaluation  
+S | Script Clarification  
+OS | Pharmacy is out of stock  
+U | Prescriber Authorization  
+`S` really does carry two meanings. Canvas maps it to both Therapeutic Interchange/Substitution and Script Clarification, so the two are indistinguishable from `type_code` alone.
+The `sub_type_code` attribute further qualifies the request. It is nullable and currently supports:
+Code | Description  
+---|---  
+A | Confirm Prescriber State License  
+##  Attributes 
+###  PrescriptionChangeRequest 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+staff | [Staff](/sdk/data-staff/#staff)  
+message_id | String  
+original_prescription | [Prescription](/sdk/data-prescription/#prescription)  
+type_code | PrescriptionChangeRequestType  
+sub_type_code | PrescriptionChangeRequestSubType  
+content | JSON  
+codings | PrescriptionChangeRequestCoding[]  
+response | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/)[]  
+###  PrescriptionChangeRequestCoding 
+Field Name | Type  
+---|---  
+dbid | Integer  
+change_request | PrescriptionChangeRequest  
+system | String  
+version | String  
+code | String  
+display | String  
+user_selected | Boolean  
+##  Enumeration types 
+###  PrescriptionChangeRequestType 
+Name | Value | Label  
+---|---|---  
+GENERIC | G | Generic Substitution  
+PRIOR | P | Prior Authorization Required  
+SUBSTITUTION | S | Therapeutic Interchange/Substitution  
+DRUG | D | Drug Use Evaluation  
+OUTOFSTOCK | OS | Pharmacy is out of stock  
+AUTHORIZATION | U | Prescriber Authorization  
+###  PrescriptionChangeRequestSubType 
+Name | Value | Label  
+---|---|---  
+LICENSE | A | Confirm Prescriber State License
+----- END PAGE https://docs.canvasmedical.com/sdk/data-prescription-change-request/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-prescription-change-response/
+##  Introduction 
+The `PrescriptionChangeResponse` model is the anchor for the ApproveChange and DenyChange commands — a response to a Surescripts prescription change request, recorded on a Note.
+##  Basic usage 
+To get a prescription change response by identifier, use the `get` method on the `PrescriptionChangeResponse` model manager:
+    ```python
+    from canvas_sdk.v1.data import PrescriptionChangeResponse
+    response = PrescriptionChangeResponse.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    ```
+If you have a patient object, the prescription change responses for a patient can be accessed with the `prescription_change_responses` attribute:
+    ```python
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    responses = patient.prescription_change_responses.all()
+    ```
+The same attribute is available on a medication:
+    ```python
+    from canvas_sdk.v1.data import Medication
+    medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    responses = medication.prescription_change_responses.all()
+    ```
+##  Committed records 
+The `committed` method returns responses that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import PrescriptionChangeResponse
+    committed_responses = PrescriptionChangeResponse.objects.committed()
+    ```
+##  Attributes 
+###  PrescriptionChangeResponse 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note)  
+medication | [Medication](/sdk/data-medication)  
+response_type | PrescriptionChangeResponseType  
+status | PrescriptionChangeResponseStatus  
+denied_medication | String  
+refills | Integer  
+note_to_pharmacist | String  
+approved_drug_index | Integer  
+reason_code | String  
+message_id | String  
+prior_authorization_number | String  
+request | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/)  
+##  Enumeration types 
+###  PrescriptionChangeResponseType 
+Name | Value  
+---|---  
+APPROVED | A  
+DENIED | D  
+###  PrescriptionChangeResponseStatus 
+Name | Value  
+---|---  
+OPEN | open  
+PENDING | pending  
+ULTIMATELY_ACCEPTED | ultimately-accepted  
+ERROR | error  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-prescription-change-response/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-prescription/
 ##  Introduction 
 The `Prescription` model represents a prescription for a medication that has been written for a patient. Prescriptions track the full lifecycle of a medication order, including dosage details, pharmacy information, and electronic prescribing status.
@@ -17746,6 +18027,8 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 originator | [CanvasUser](/sdk/data-canvasuser)  
 created | DateTime  
 modified | DateTime  
+cancel_prescriptions | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  
+change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[]  
 ##  Enumeration types 
 ###  PrescriptionStatus 
 Enum | Value | Label  
@@ -18452,7 +18735,7 @@ value | String
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-refill-request/
 ##  Introduction 
 The `RefillRequest` model represents an incoming request to refill a patient's medication — for example, a renewal request received electronically from a pharmacy. Each request carries the raw request payload in its `content` attribute, the associated patient and staff member, the medication codings that describe the requested drug (`RefillRequestCoding`), and the prescription(s) written in response.
-`RefillRequest` is a read-only data model. An incoming request is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
+An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
 ##  Basic usage 
 To get a refill request by identifier, use the `get` method on the `RefillRequest` model manager:
     ```python
@@ -18480,7 +18763,7 @@ Specify an attribute with `filter` to filter by that attribute:
     from canvas_sdk.v1.data.refill_request import RefillRequest
     outstanding_requests = RefillRequest.objects.filter(ignored=False)
     ```
-The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the active refill worklist and is used to suppress duplicates — for example, a pharmacy re-sending a request. Requests that have already been responded to are excluded from the worklist separately, through their linked `response`. Because `RefillRequest` is read-only, a plugin can filter on `ignored` but cannot set it through this model. The example above returns the active (non-dismissed) requests.
+The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the active refill worklist and is used to suppress duplicates — for example, a pharmacy re-sending a request. Requests that have already been responded to are excluded from the worklist separately, through their linked `response`. A plugin can filter on `ignored`, but setting it is not available through the data module. The example above returns the active (non-dismissed) requests.
 ##  Related data 
 A refill request's medication codings are available through the `codings` reverse relation, and the prescriptions written in response are available through the `response` reverse relation:
     ```python
@@ -19021,6 +19304,7 @@ assignee_note_tasks | [NoteTask](/sdk/data-task/#notetask)[]
 appointment_set | [Appointment](/sdk/data-appointment/#appointment)[]  
 prescription_set | [Prescription](/sdk/data-prescription/#prescription)[]  
 note_set | [Note](/sdk/data-note/#note)[]  
+prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[]  
 ###  StaffContactPoint 
 Field Name | Type  
 ---|---  
@@ -20065,7 +20349,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -20130,7 +20414,7 @@ is targeted by that same `class` string:
     ```python
     from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
     # Set a badge of 3 for a specific staff member.
-    ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-key"])
+    ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-id"])
     ```
 ##  Targeting 
 `staff_ids` and `patient_ids` control who sees the update. An empty list means "all" on that axis:
@@ -20146,12 +20430,12 @@ Patients are never subscribers themselves — `patient_ids` scopes the badge to 
     from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
     # Show a badge to staff viewing a specific patient's chart.
     ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-        patient_ids=["patient-key"]
+        patient_ids=["patient-id"]
     ).broadcast(count=5)
     # Combine: only the on-call provider, and only on this patient's chart.
     ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-        patient_ids=["patient-key"]
-    ).broadcast(count=1, staff_ids=["staff-key"])
+        patient_ids=["patient-id"]
+    ).broadcast(count=1, staff_ids=["staff-id"])
     ```
 ##  Reacting to events 
 The most common pattern is updating a badge in response to a domain event. Here a handler recomputes a staff member's inbox count whenever a task is created and pushes the new value live:
@@ -20180,7 +20464,7 @@ The most common pattern is updating a badge in response to a domain event. Here 
 Broadcast a `count` of `0` to remove the badge from the icon:
     ```python
     from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
-    ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-key"])
+    ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-id"])
     ```
 > **Note:** To set the badge value shown when applications first load (rather than in response to an event), override `compute_notification_badge()` on your `Application` handler. See [Notification Badges](/sdk/handlers-applications/#notification-badges).
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-application-notification-badge/
@@ -20494,6 +20778,8 @@ The `BatchOriginateCommandEffect` provides an efficient way to insert multiple c
 Attribute | Type | Required | Description  
 ---|---|---|---  
 `commands` | `list` | `true` | List of command instances to batch originate  
+`line_number` | `int` | `false` | Which note line the commands land on. Defaults to `-1`, which inserts them at the bottom of the note; set a specific line to target that line instead. Combine with `replace_line=True` to also take over (replace the content of) that line.  
+`replace_line` | `bool` | `false` | Replace the content of the target line (the one set by `line_number`) with the originated commands, instead of inserting them as new lines. Defaults to `False`.  
 **Returns:**
 An `Effect` that can be applied to originate all commands in a single operation.
 ##  How It Works 
@@ -20518,6 +20804,16 @@ Whenever a plugin needs to originate more than one command — whether you want 
     ]
     ```
 For three commands this performs three originates, **one** note update, and three commits. Collapsing the draft insertions into a single note update is where the performance benefit comes from.
+##  Note body automations 
+A [note body automation](/sdk/handlers-action-buttons/) is an entry a plugin adds to the note body's "/" command list. When a clinician selects the entry, the automation's `handle()` returns a `BatchOriginateCommandEffect` with `replace_line=True`. In this flow Canvas's note body "/" handling supplies the trigger-line position, so Canvas places the originated commands on the line the clinician typed the trigger on and replaces that line, rather than appending them to the note. The automation doesn't set `line_number` itself. If a plugin omits `replace_line`, it keeps its default of `False`, and the batch follows the effect's normal defaults: the originated commands insert at the bottom of the note (the `line_number=-1` default) rather than taking over the trigger line.
+    ```python
+    return [
+        BatchOriginateCommandEffect(
+            commands=[plan],
+            replace_line=True,
+        ).apply()
+    ]
+    ```
 ##  Basic Usage 
     ```python
     from canvas_sdk.commands import (
@@ -20532,7 +20828,7 @@ For three commands this performs three originates, **one** note update, and thre
     from canvas_sdk.events import EventType
     class Handler(BaseHandler):
         def compute(self):
-            note_uuid = Note.objects.last().id
+            note_uuid = str(Note.objects.last().id)
             # Create multiple commands
             plan1 = PlanCommand()
             plan1.narrative = "Order labs for lipid panel"
@@ -21992,7 +22288,7 @@ Attribute | Required | Type | Description
 `visibility` | yes | `Visibility` | The visibility state for that area  
 Top-level | Required | Type | Description  
 ---|---|---|---  
-`patient_id` | yes | `str` | The patient key  
+`patient_id` | yes | `str` | The patient id  
 `locations` | no | `list[LocationConfig]` | Areas to configure. Areas not listed retain their default visible state.  
 ##  Validation 
 Duplicate `location` values in the `locations` list will raise a `ValidationError` when `apply()` is called.
@@ -24812,7 +25108,7 @@ A contact identifies its person in one of two ways, and you must supply one of t
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `name` | `str` or `None` | The contact's name, when the contact holds the person's details inline | One of `name` or `related_patient`  
-`related_patient` | `str`, `uuid.UUID` or `None` | The patient key of an existing Canvas patient this contact refers to, used instead of `name` | One of `name` or `related_patient`  
+`related_patient` | `str`, `uuid.UUID` or `None` | The patient id of an existing Canvas patient this contact refers to, used instead of `name` | One of `name` or `related_patient`  
 `contact_identifier` | `str`, `uuid.UUID` or `None` | Identifies an existing contact. Omit it to add a contact; supply it to modify or remove one. See Managing patient contacts | No  
 `phone_number` | `str` or `None` | The contact's phone number. Exactly 10 digits | No  
 `email` | `str` or `None` | The contact's email address | No  
@@ -25026,7 +25322,7 @@ An update writes only the fields you send, so changing a phone number does not b
             )
             # No contact_identifier, so this adds a contact.
             patient = Patient(
-                patient_id="existing-patient-key",
+                patient_id="existing-patient-id",
                 contacts=[
                     PatientContact(
                         name="Jane Doe",
@@ -25055,7 +25351,7 @@ Setting `related_patient` to another patient's key makes that patient the contac
             # References a patient the previous effect creates. Effects are applied in
             # order, so the key resolves by the time this one is written.
             patient = Patient(
-                patient_id="existing-patient-key",
+                patient_id="existing-patient-id",
                 contacts=[
                     PatientContact(
                         related_patient=spouse_key,
@@ -26715,7 +27011,7 @@ Effect | Description
 ASSIGN_DOCUMENT_REVIEWER | Assign a staff member or team as reviewer to a document in the Data Integration queue.  
 CATEGORIZE_DOCUMENT | Categorize a document in the Data Integration queue into a specific document type.  
 JUNK_DOCUMENT | Mark a document in the Data Integration queue as junk (spam).  
-LINK_DOCUMENT_TO_PATIENT | Link a document in the Data Integration queue to a patient by patient key.  
+LINK_DOCUMENT_TO_PATIENT | Link a document in the Data Integration queue to a patient by patient id.  
 REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.  
 UPDATE_DOCUMENT_FIELDS | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  
 ###  Commands 
@@ -42333,6 +42629,16 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/)  
+SHOW_NOTE_BODY_AUTOMATION_BUTTON  
+---  
+Occurs when patient notes are being loaded  
+Target | Context object  
+    patient_id
+| 
+      "note_id": str
+      "user":
+        "id": str
+        "type": [Staff](/sdk/data-staff/)  
 SHOW_NOTE_HEADER_DROPDOWN_BUTTON  
 ---  
 Occurs when patient notes are being loaded  
@@ -46682,26 +46988,58 @@ Action buttons are UI elements that trigger specific actions when clicked in the
 ##  Overview 
 An `ActionButton` class allows you to define custom buttons that appear in different sections of the Canvas UI. When a user clicks the button, the action associated with the button is executed. Action buttons can be added to various locations in the UI, and you can control their visibility and behavior through effects in a handler class.
 There are no limitations on the number of action buttons you can create. You can define multiple buttons in a single handler class or create separate classes for each button.
-##  Creating an Action Button 
-To implement a custom action button, you need to create a handler class that inherits from the `ActionButton` class. Your handler class must:
-  1. Define the constants `BUTTON_TITLE`, `BUTTON_KEY`, and `BUTTON_LOCATION`.
-  2. Implement the `handle()` method to specify the action that should be triggered when the button is clicked.
-  3. Optionally, implement the `visible()` method to control when the button should be shown.
-###  Required Constants 
-  - **`BUTTON_TITLE`**  
-A string that defines the label of the button displayed in the Canvas UI. This is the text the user sees when interacting with the button.
-  - **`BUTTON_KEY`**  
-A unique identifier for your button. This key is used to route events, such as a click, to the appropriate handler method (`handle()`).
-  - **`BUTTON_LOCATION`** Specifies where the button will appear within the Canvas UI. The button can be placed in various locations, such as the note header or footer, or other areas within the chart summary.
-###  Optional Constants 
-  - **`PRIORITY`** An integer that specifies the order in which the button should appear relative to other buttons in the same location. Lower values appear first. If not specified, no order is guaranteed.
-  - **`BUTTON_TEXT_COLOR`** A string that specifies the text color of the button, defined as a HEX color value (e.g., `"#FF0000"`). If not specified, the text color is automatically chosen to contrast with the background.
-  - **`BUTTON_BACKGROUND_COLOR`** A string that specifies the background color of the button, defined as a HEX color value (e.g., `"#4CAF50"`). If not specified, the button uses the default gray styling.
-###  Optional: Implement the `visible()` Method 
-By default, the `ActionButton` class assumes the button is always visible (`return True`). If you want the button to only be visible under certain conditions, you can override the `visible()` method. This method must return a boolean value (`True` to show the button, `False` to hide it).
-###  Implementing the `handle()` Method 
-The `handle()` method is called when the action button is clicked. Inside this method, you can define what action should occur. The `handle()` method must return a list of [`Effect`](/sdk/effects/) objects, which represent the actions to be executed when the button is clicked. If no action is required, you can return an empty list.
-###  Button Locations 
+##  Creating an action button 
+An action button is a [handler](/sdk/handlers-basehandler/). Subclass `ActionButton`, say where it goes with `BUTTON_LOCATION`, and implement `handle()` to say what a click does:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.action_button import ActionButton
+    class PatientSummaryButton(ActionButton):
+        BUTTON_TITLE = "Summary"
+        BUTTON_KEY = "PATIENT_SUMMARY"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.CHART_PATIENT_HEADER
+        def handle(self) -> list[Effect]:
+            return [
+                LaunchModalEffect(
+                    target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                    content="<html>Your content here</html>",
+                ).apply()
+            ]
+    ```
+Then register the class under `handlers` in your `CANVAS_MANIFEST.json`:
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.buttons.patient_summary:PatientSummaryButton",
+            "description": "Shows a summary modal from the patient header."
+          }
+        ]
+      }
+    }
+    ```
+###  Class attributes 
+Attribute | Required | Description  
+---|---|---  
+`BUTTON_TITLE` | Required | The label shown on the button. Emoji are supported.  
+`BUTTON_KEY` | Required | A unique identifier for the button. Canvas routes the click back to your `handle()` by this value, so give each button its own.  
+`BUTTON_LOCATION` | Required | Where the button appears, as a `ButtonLocation` value.  
+`PRIORITY` | Optional | Orders this button against others in the same location, lower first. Defaults to `0`, and buttons sharing a priority have no guaranteed order.  
+`BUTTON_TEXT_COLOR` | Optional | The label colour as a HEX value, for example `"#FF0000"`. Defaults to whichever of black or white contrasts with the background.  
+`BUTTON_BACKGROUND_COLOR` | Optional | The background colour as a HEX value, for example `"#4CAF50"`. Defaults to Canvas's grey button styling.  
+###  Methods 
+Method | Returns | Required | Description  
+---|---|---|---  
+`handle()` | `list[Effect]` | Required | Runs when the button is clicked. Return the [effects](/sdk/effects/) the click should produce, or an empty list for none.  
+`visible()` | `bool` | Optional | Runs each time the button's location loads, to decide whether the button is shown. Defaults to `True`. See Dynamic, state-responsive buttons.  
+    ```python
+        def visible(self) -> bool:
+            """Only offer the button on an encounter note."""
+            note_id = self.event.context.get("note_id")
+            return Note.objects.filter(dbid=note_id, note_type_version__category="encounter").exists()
+    ```
+###  Button locations 
 The `ActionButton` class defines several locations where the button can be placed. The location is defined using the `ButtonLocation` enum. Supported button locations include:
 **Location** | **Description**  
 ---|---  
@@ -46720,24 +47058,123 @@ The `ActionButton` class defines several locations where the button can be place
 `CHART_SUMMARY_SURGICAL_HISTORY_SECTION` | The button will appear in the Surgical History section of the chart summary.  
 `CHART_SUMMARY_FAMILY_HISTORY_SECTION` | The button will appear in the Family History section of the chart summary.  
 `CHART_SUMMARY_CODING_GAPS_SECTION` | The button will appear in the Coding Gaps section of the chart summary.  
+`NOTE_BODY_AUTOMATION` | The button appears as an entry in the note body's "/" (slash) command list while a clinician documents a note.  
 ##  Dynamic, state-responsive buttons 
 Action buttons are not rendered once and cached. Canvas re-evaluates every `ActionButton` handler each time its location loads — and again whenever the location is reloaded. On each evaluation Canvas fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event for that location and your handler's `visible()` method decides whether the button is included.
 This is what makes buttons _dynamic_ : because `visible()` runs against live data every time, the same button can appear, disappear, or change its title depending on the note, the patient, or the logged-in user.
 ###  Reading the runtime context 
-Inside `visible()`, `compute()`, and `handle()` you can read the event context to make decisions. When responding to a [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event, the following are available:
-Accessor | Description  
+Two different events reach an `ActionButton`, and they do not carry the same context. `visible()` runs on the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) event for the button's location, while `handle()` runs on `ACTION_BUTTON_CLICKED` once the button is clicked. Read both through `self.event`.
+####  While deciding visibility 
+What `visible()` sees depends on where the button lives:
+Accessor | Note and header locations | Chart summary sections  
+---|---|---  
+`self.event.target.id` | The id of the patient the button is rendered for | The id of the patient  
+`self.event.context["user"]` | The logged-in user, as `{"type": "Staff", "id": "<staff id>"}` | The same  
+`self.event.context["note_id"]` | The **database id** of the note, or `None` on a location that has no note | Not present  
+"Note and header locations" means `NOTE_HEADER`, `NOTE_FOOTER`, `NOTE_BODY`, `NOTE_BODY_AUTOMATION`, `NOTE_HEADER_DROPDOWN` and `CHART_PATIENT_HEADER`. Every `CHART_SUMMARY_*_SECTION` location gets the patient and the user only, because a chart summary is not rendered inside a note.
+`note_id` is a database id rather than a UUID, so look the note up with `dbid`:
+    ```python
+        def visible(self) -> bool:
+            note_id = self.event.context["note_id"]
+            return Note.objects.filter(dbid=note_id, note_type_version__category="encounter").exists()
+    ```
+####  When the button is clicked 
+Accessor | Value  
 ---|---  
-`self.event.context["note_id"]` | The **database id** of the note the button is rendered for (note locations only). Look the note up with `Note.objects.filter(dbid=...)`.  
-`self.event.context["user"]` | The logged-in user, as `{"type": "Staff", "id": "<staff-key>"}`. Use `self.event.context["user"]["id"]` to compare against staff in your data.  
-`self.event.target.id` | The key of the patient the button is rendered for.  
+`self.event.context["key"]` | The `BUTTON_KEY` of the button that was clicked. Canvas uses this to route the click, so `handle()` only runs for your own.  
+`self.event.context["user"]` | The logged-in user, as `{"type": "Staff", "id": "<staff id>"}`  
+`self.event.context["note_id"]` | The database id of the note the button was clicked from. Present only when the button lives on a note.  
+`self.event.context["line_number"]` | The note body line the clinician typed the trigger on. Present only for a `NOTE_BODY_AUTOMATION` entry.  
+`self.event.target.id` | The id of the patient the button was clicked from  
 ###  Reloading buttons 
 Because visibility is computed from live data, Canvas needs to know _when_ to re-evaluate it. A button's location is reloaded automatically after its own `handle()` runs, but you will often want to reload in response to something else changing — for example, recomputing the footer after a command is committed, or after the note transitions to a new state.
 Return one of these [Reload Action Buttons](/sdk/effect-reload-action-buttons/) effects (imported from `canvas_sdk.effects.action_button`) from any handler's `handle()` or `compute()` to refresh a location's buttons:
-  - `ReloadNoteActionButtonsEffect(id=<note external id>)` — re-evaluates every button bound to that note.
-  - `ReloadPatientActionButtonsEffect(id=<patient id>)` — re-evaluates every button bound to that patient.
+Effect | Re-evaluates  
+---|---  
+`ReloadNoteActionButtonsEffect(id=<note id>)` | Every button bound to that note  
+`ReloadPatientActionButtonsEffect(id=<patient id>)` | Every button bound to that patient  
 A reload re-fires the [`SHOW_*_BUTTON`](/sdk/events/#action-buttons-events) events, so every button recomputes `visible()` from scratch — the button set is rebuilt rather than patched. Any handler can emit a reload, not just an `ActionButton`; Example 4 below uses plain event handlers to keep the footer in sync as the note changes.
-##  Example Implementations 
-###  Example 1: Log Information When Button is Clicked 
+##  Note body automations 
+A note body automation puts your plugin's own entry in the note body's "/" (slash) menu, the inline list clinicians use to insert commands while documenting a note. The location exists so an automation can come from a plugin rather than only from Canvas: one entry standing in for the several [commands](/sdk/commands/) a workflow would otherwise have the clinician insert by hand.
+    ```python
+    from canvas_sdk.commands import PlanCommand, TaskCommand
+    from canvas_sdk.commands.commands.task import AssigneeType, TaskAssigner
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
+    from canvas_sdk.handlers.action_button import ActionButton
+    from canvas_sdk.v1.data.note import Note
+    class LipidPanelAutomation(ActionButton):
+        BUTTON_TITLE = "Order lipid panel follow-up"
+        BUTTON_KEY = "LIPID_PANEL_AUTOMATION"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION
+        def visible(self) -> bool:
+            # Offer the entry only to the note's own provider.
+            note_id = self.event.context.get("note_id")
+            user_id = (self.event.context.get("user") or {}).get("id")
+            if not note_id or not user_id:
+                return False
+            return Note.objects.filter(dbid=note_id, provider__id=user_id).exists()
+        def handle(self) -> list[Effect]:
+            note = Note.objects.filter(dbid=self.event.context["note_id"]).first()
+            if note is None:
+                return []
+            plan = PlanCommand(
+                note_uuid=str(note.id),
+                narrative="Recheck lipid panel in 3 months",
+            )
+            task = TaskCommand(
+                note_uuid=str(note.id),
+                title="Call patient with lipid panel results",
+                assign_to=TaskAssigner(to=AssigneeType.STAFF, id=note.provider.dbid),
+            )
+            # One batch, so both commands reach the note in a single update.
+            return [
+                BatchOriginateCommandEffect(
+                    commands=[plan, task],
+                    replace_line=True,
+                ).apply()
+            ]
+    ```
+It is an ordinary action button, with no separate automation class. Set `BUTTON_LOCATION` to `NOTE_BODY_AUTOMATION`, give it the usual `BUTTON_TITLE`, `BUTTON_KEY` and `PRIORITY`, and scope it with `visible()`. Canvas asks each plugin for its entries through the [`SHOW_NOTE_BODY_AUTOMATION_BUTTON`](/sdk/events/#action-buttons-events) event, whose context carries the signed-in staff member alongside the note and the patient, so an entry can be limited to particular staff as well as to particular notes or patients.
+###  How Canvas renders the entry 
+Behaviour | Detail  
+---|---  
+Position | After the native commands, ordered by `PRIORITY` then title  
+Marker | A plug icon, which distinguishes it from Canvas's native automations  
+When the list is built | Once, as the note loads, rather than on every keystroke  
+Filtering | Client-side against `BUTTON_TITLE` as the clinician types  
+The trigger line | Cleared as soon as the entry is selected, whatever `handle()` returns  
+###  What `handle()` can return 
+An entry is not limited to originating commands. `handle()` may return any effects, or none at all. What the location is meant for is the first row:
+Returned from `handle()` | Where the commands land  
+---|---  
+A [`BatchOriginateCommandEffect`](/sdk/effect-batch-originate/) with `replace_line=True` | On the line the clinician typed the trigger on, replacing it, with no trailing trigger text or blank-line padding. Canvas supplies the position, so leave `line_number` unset.  
+A `BatchOriginateCommandEffect` without `replace_line` | At the bottom of the note, from the effect's own `line_number=-1` default  
+A single command's `originate()` | Wherever that effect places it. One command needs no batch  
+Anything else, or nothing | Nothing is added to the note, and the trigger line is still cleared  
+Reach for the batch whenever an entry originates **more than one** command. It updates the note body once for the whole group rather than once per command, which is faster and keeps the group together: separate originate effects each update the note on their own, so they can interleave with other writes and land out of order.
+An entry does not have to write to the note at all. Because it is an ordinary action button, it can put any tool of yours behind the "/" menu, which is a shorter reach for a clinician mid-note than the app drawer. This one opens a risk calculator, and writes nothing:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.action_button import ActionButton
+    from canvas_sdk.templates import render_to_string
+    class AscvdRiskCalculator(ActionButton):
+        BUTTON_TITLE = "ASCVD risk calculator"
+        BUTTON_KEY = "ASCVD_RISK_CALCULATOR"
+        BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_BODY_AUTOMATION
+        def handle(self) -> list[Effect]:
+            return [
+                LaunchModalEffect(
+                    target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                    content=render_to_string("templates/ascvd_calculator.html"),
+                    title="ASCVD risk",
+                ).apply()
+            ]
+    ```
+The clinician types `/`, picks the calculator, and it opens over the note. The trigger line is cleared either way, so the note is left exactly as it was.
+##  Examples 
+###  Log information when a button is clicked 
 This example demonstrates a simple action button that logs some information when clicked. The button is visible only during the month of January.
     ```python
     from canvas_sdk.effects import Effect
@@ -46757,7 +47194,7 @@ This example demonstrates a simple action button that logs some information when
             log.info(self.event.target)
             return []
     ```
-###  Example 2: Commit All Commands in a Note 
+###  Commit every command in a note 
 This example demonstrates an action button in the note footer that commits all commands within a note. The button is always visible since the `visible()` method is not overridden.
     ```python
     import json
@@ -46809,7 +47246,7 @@ This example demonstrates an action button in the note footer that commits all c
                 )
             return effects
     ```
-###  Example 3: Show Button in Vitals Section and render HTML on click 
+###  Render HTML from a chart summary section 
 In this example, we place a button in the Vitals section and define an action where the button, when clicked, displays custom HTML content to the user. For more info about `LaunchModalEffect`, check the [documentation](/sdk/layout-effect/#modals).
     ```python
     from canvas_sdk.effects import Effect
@@ -46846,7 +47283,7 @@ In this example, we place a button in the Vitals section and define an action wh
             # Optionally, make the button visible only under specific conditions
             return True
     ```
-##  Note State Action Buttons 
+##  Note state action buttons 
 `NoteStateActionButton` is a specialized `ActionButton` subclass for note footer buttons that transition a note from one state to another — locking, signing, pushing charges, deleting, and discharging, along with the appointment transitions check in, no show, cancel, and restore. It handles visibility, ordering, and the underlying state-transition effect for you, so a plugin can replace Canvas's default footer buttons with its own.
 To create one, subclass `NoteStateActionButton` and set the `STATE_ACTION` class attribute to the target [`NoteStates`](/sdk/data-note/#notestates) value the button should transition the note into. Locking and signing carry extra rules, so the SDK also ships two ready-to-use subclasses — `LockNoteActionButton` and `SignNoteActionButton` — that you can register directly (or subclass) instead of setting `STATE_ACTION` yourself:
     ```python
@@ -46883,14 +47320,38 @@ To create one, subclass `NoteStateActionButton` and set the `STATE_ACTION` class
         STATE_ACTION = NoteStates.DISCHARGED
     ```
 Register each button as a handler in your `CANVAS_MANIFEST.json`, exactly like any other `ActionButton`.
-Each button is configured automatically from its `STATE_ACTION`:
-  - **`BUTTON_LOCATION`** is always `NOTE_FOOTER`.
-  - **`BUTTON_TITLE`** defaults to an imperative label for the target state — `Lock`, `Unlock`, `Sign`, `Push charges`, `Check in`, `No show`, `Delete`, `Restore`, `Discharge`, or `Cancel`. Set it explicitly to override.
-  - **`BUTTON_KEY`** defaults to `note_state_action__<state value>`, for example `note_state_action__LKD`. Set it explicitly to override.
+Each button is configured automatically from its `STATE_ACTION`, so a subclass normally sets nothing else:
+Attribute | Value  
+---|---  
+`BUTTON_LOCATION` | Always `NOTE_FOOTER`. Not overridable.  
+`BUTTON_TITLE` | An imperative label for the target state, from the table below. Set it explicitly to override.  
+`BUTTON_KEY` | `note_state_action__<state value>`, for example `note_state_action__LKD`. Set it explicitly to override.  
+`visible()` | Implemented by the base class, which shows the button only when the transition is permitted. See Visibility.  
+These are the supported transitions:
+`STATE_ACTION` | Subclass | Default title | Default key  
+---|---|---|---  
+`NoteStates.LOCKED` | `LockNoteActionButton` | `Lock` | `note_state_action__LKD`  
+`NoteStates.SIGNED` | `SignNoteActionButton` | `Sign` | `note_state_action__SGN`  
+`NoteStates.UNLOCKED` | `NoteStateActionButton` | `Unlock` | `note_state_action__ULK`  
+`NoteStates.PUSHED` | `NoteStateActionButton` | `Push charges` | `note_state_action__PSH`  
+`NoteStates.DISCHARGED` | `NoteStateActionButton` | `Discharge` | `note_state_action__DSC`  
+`NoteStates.DELETED` | `NoteStateActionButton` | `Delete` | `note_state_action__DLT`  
+`NoteStates.UNDELETED` | `NoteStateActionButton` | `Restore` | `note_state_action__UND`  
+`NoteStates.CONVERTED` | `NoteStateActionButton` | `Check in` | `note_state_action__CVD`  
+`NoteStates.NOSHOW` | `NoteStateActionButton` | `No show` | `note_state_action__NSW`  
+`NoteStates.CANCELLED` | `NoteStateActionButton` | `Cancel` | `note_state_action__CLD`  
+`NoteStates.REVERTED` | `NoteStateActionButton` | `Restore` | `note_state_action__RVT`  
+`Cancel` and `Restore` act on the note's appointment rather than on the note itself, so they do nothing on a note that has no appointment. `Sign` locks the note first when it is not already locked.
 When a button is clicked, Canvas applies the transition's effect and reloads the footer so it reflects the note's new state.
 ###  Visibility 
 A `NoteStateActionButton` appears only when its `STATE_ACTION` is a permitted transition from the note's current state and note type, so you don't need to override `visible()` yourself. When several are visible at once, Canvas orders them to match the order it offers the transitions for the current state.
-Lock and Sign are the same underlying transition surfaced differently by signature requirement: `LockNoteActionButton` is shown only for note types that **don't** require a signature, and `SignNoteActionButton` only for those that **do**. The Sign button locks the note first when it isn't already locked, so a note can be signed repeatedly — including by multiple users — and is only re-locked after an amend; it hides itself once the current user has signed since the last lock. `Discharge` is shown only for inpatient note types. The base class applies all of these gates for you.
+Three buttons carry extra gates on top of that, which the base class applies for you:
+Button | Also shown only when  
+---|---  
+`LockNoteActionButton` | The note type does **not** require a signature  
+`SignNoteActionButton` | The note type **does** require a signature, and the current user has not signed since the last lock  
+`Discharge` | The note type is an inpatient one  
+Lock and Sign are the same underlying transition, split by whether the note type requires a signature. Because Sign hides itself only for the user who signed, a note can be signed by several users in turn, and it is re-locked only after an amend.
 ###  Replacing Canvas's default footer buttons 
 Your state buttons appear _alongside_ Canvas's built-in state-transition buttons by default. To hide the native ones so yours replace them, answer the `NOTE_FOOTER__GET_CONFIGURATION` event with a [`NoteFooterConfiguration`](/sdk/effect-note-footer-configuration/) effect. Footer suppression is configured once per note (not per button):
     ```python
@@ -46919,7 +47380,7 @@ Override `visible()` to layer your own rules on top of the built-in checks — c
                 .exists()
             )
     ```
-You can gate on anything in the runtime context. For example, to show a button only to the note's provider, compare the logged-in user against the note's provider (`note.provider.id` and the user id are both Staff keys):
+You can gate on anything in the runtime context. For example, to show a button only to the note's provider, compare the logged-in user against the note's provider (`note.provider.id` and the user id are both Staff ids):
     ```python
         def visible(self) -> bool:
             if not super().visible():
@@ -46928,8 +47389,7 @@ You can gate on anything in the runtime context. For example, to show a button o
             user_id = (self.event.context.get("user") or {}).get("id")
             if not note_id or not user_id:
                 return False
-            note = Note.objects.filter(dbid=note_id).first()
-            return note is not None and note.provider.id == user_id
+            return Note.objects.filter(dbid=note_id, provider__id=user_id).exists()
     ```
 ###  Keeping the footer in sync 
 `visible()` is only re-evaluated when the footer is reloaded. A transition triggered by one of these buttons reloads the footer automatically, but changes from elsewhere don't — so pair the buttons with handlers that reload the footer when the note changes by another path. For example, reload whenever a command is committed (so the Sign button reappears the instant the last command is committed) and whenever the note's state changes:
@@ -47124,7 +47584,7 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
 See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
 ##  Embedded Applications 
-Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 ##  Panel Display 
 If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can add the `show_in_panel` attribute. If you've added more than one application to that panel, you can set their priorities using the `panel_priority` attribute.
@@ -47287,17 +47747,18 @@ Here's what this scheduled task would output in the logs:
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
-Embedded applications render **inside a specific Canvas surface** — a tab within a note, or the scheduling modal — rather than as an icon in the app drawer. They are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class, register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders it in the appropriate surface.
-There are two kinds:
+Embedded applications render **inside a specific Canvas surface** (a tab within a note, the scheduling modal, or a pane pinned to a window edge) rather than as an icon in the app drawer. They are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class, register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders it in the appropriate surface.
+There are three kinds:
 Base class | Surface  
 ---|---  
 `NoteApplication` | A tab within a patient's note  
 `SchedulingApplication` | Replaces the built-in scheduling modal at every entry point  
+`DockedApplication` | A persistent pane pinned to a window edge, always visible  
 ##  How embedded applications work 
-Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one by subclassing `NoteApplication` or `SchedulingApplication` and registering it under `handlers` in your `CANVAS_MANIFEST.json` — everything else is inherited from that parent class.
+Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one by subclassing `NoteApplication`, `SchedulingApplication`, or `DockedApplication` and registering it under `handlers` in your `CANVAS_MANIFEST.json` — everything else is inherited from that parent class.
 Because the parent class defines the behavior, there's very little to configure:
-  - The **surface** comes from the class you inherit — `NoteApplication` renders as a tab in a note, and `SchedulingApplication` replaces the scheduling modal. You don't set a `scope` or an `icon`.
-  - Canvas **renders them on demand** : when a note opens or a scheduling action is triggered, Canvas asks which embedded application is installed for that surface and renders the one your handler returns. They aren't persisted as drawer applications, so they don't appear in the app drawer or under Plugins_IO > Applications.
+  - The **surface** comes from the class you inherit — `NoteApplication` renders as a tab in a note, `SchedulingApplication` replaces the scheduling modal, and `DockedApplication` pins a persistent pane to a window edge. You don't set a `scope` or an `icon`.
+  - Canvas renders Note and Scheduling Applications **on demand** : when a note opens or a scheduling action is triggered, Canvas asks which embedded application is installed for that surface, then renders what your handler returns. A Docked Application is the exception: it stays mounted at all times instead of rendering on demand. None of the three are persisted as drawer applications, so they don't appear in the app drawer or under Plugins_IO > Applications.
   - If no embedded application is installed for a surface, Canvas falls back to its built-in behavior — an unmodified note, or the built-in scheduling modal.
 Since the surface and scope are inherited from the parent class, register these under `handlers` rather than `applications`.
 ##  Note Applications 
@@ -47351,7 +47812,7 @@ Key | Description
 ---|---  
 `note_id` | The database ID of the current note  
 `note` | A dict containing the note's external `id` (UUID)  
-`patient` | A dict containing the patient's `id` (key)  
+`patient` | A dict containing the patient's `id`  
 `user` | Information about the current user  
 ####  `on_open()` — recommended 
 When using `on_open()`, the patient is available through `self.event.context`:
@@ -47503,6 +47964,166 @@ Register your Scheduling Application under the `handlers` section of your `CANVA
     }
     ```
 When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
+##  Docked Applications 
+A Docked Application mounts as a persistent **docked pane** pinned to a window edge. It stays in place as the user moves between pages, including between a patient chart and global pages, rather than opening fresh each time.
+Reach for a docked pane when a surface needs to follow the user instead of being opened and re-opened: a telephony or messaging bar that has to survive navigation mid-call, a live worklist the user works through while moving between charts, or an ambient scribe that keeps recording as the clinician moves around a note. Because the pane stays mounted, whatever state it holds survives that navigation, whether that's a scroll position, a half-filled form, or an open connection. A modal or an overlay cannot do this, since both are torn down when the page changes.
+###  Implementing a Docked Application 
+A Docked Application is a handler that inherits from `DockedApplication`, declares the pane's placement as class attributes, and implements `on_open()` to mount the pane's content:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import DockedApplication, DockEdge
+    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.v1.data.task import Task, TaskStatus
+    class TaskDock(DockedApplication):
+        """Docked application that keeps the signed-in user's open tasks on screen."""
+        NAME = "My Tasks"
+        IDENTIFIER = "my_plugin__task_dock"
+        DOCK_EDGE = DockEdge.RIGHT
+        DOCK_SIZE = "320px"
+        def on_open(self) -> Effect | list[Effect]:
+            """Mount the docked pane's content."""
+            user_id = self.event.context.get("user", {}).get("id")
+            tasks = Task.objects.filter(assignee__id=user_id, status=TaskStatus.OPEN).order_by("due")
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DOCKED_PANE,
+                content=render_to_string("templates/task_dock.html", {"tasks": tasks}),
+                title="My Tasks",
+            ).apply()
+    ```
+The pane's markup lives in a Django template in your plugin rather than in a Python string, rendered by [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates). Here that template is `templates/task_dock.html`:
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>My Tasks</title>
+      </head>
+      <body>
+        <h1>My Tasks</h1>
+        <ul>
+          {% for task in tasks %}
+            <li>{{ task.title }} (due {{ task.due }})</li>
+          {% endfor %}
+        </ul>
+      </body>
+    </html>
+    ```
+`on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's rendered `content` (or a `url`) in the pane rather than in a modal. Canvas draws no chrome around a docked pane, so `title` is never displayed: it becomes the pane's accessible name for screen readers.
+There is no app drawer entry that opens a docked pane and no Canvas-provided control that closes or minimizes it. For the staff who get one, the pane is simply on screen for the whole session, and which staff those are is the plugin's decision: see Controlling who gets a pane. The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See Sizing, Resizing, and Collapsing.
+####  Class attributes 
+Attribute | Required | Description  
+---|---|---  
+`NAME` | Required | The display title for the pane  
+`IDENTIFIER` | Optional | A unique key for the application. When omitted, the identifier defaults to one derived automatically from the class's module and name. Set it explicitly in the recommended `plugin_name__app_name` format to give the application a stable, readable identifier.  
+`DOCK_EDGE` | Required | Which window edge to pin the pane to, given as a `DockEdge` value  
+`DOCK_SIZE` | Required | The pane's initial size and the initial ceiling for the plugin's own resize requests, as a CSS length string (for example, `320px`). See Sizing, Resizing, and Collapsing.  
+`PRIORITY` | Optional | An integer controlling stacking order when multiple panes share an edge — lower values sit nearer the window edge. Defaults to `0`. See Multiple Docked Panes.  
+####  DockEdge 
+`DockEdge` is an enum of the four window edges a pane can be pinned to.
+Name | Value | Edge to pin to  
+---|---|---  
+`LEFT` | `left` | Left edge of the window  
+`RIGHT` | `right` | Right edge of the window  
+`TOP` | `top` | Top edge of the window  
+`BOTTOM` | `bottom` | Bottom edge of the window  
+####  Controlling who gets a pane 
+A docked pane is not all-or-nothing across an instance. Override `visible()` to decide, per staff member, whether the pane exists for them at all:
+    ```python
+    def visible(self) -> bool:
+        """Only dock the pane for the care coordination team."""
+        staff_id = self.event.context.get("user", {}).get("id")
+        return Staff.objects.filter(id=staff_id, teams__name="Care Coordination").exists()
+    ```
+Returning `False` means that user gets no pane: Canvas never calls `on_open()` for them and sends them no context changes. `visible()` defaults to `True`, so a Docked Application that does not override it docks for everyone.
+Two things to know about when this runs. Canvas asks for docked applications once as the EHR shell loads, so `visible()` is evaluated then and not again as the user navigates inside the shell. A change in the answer therefore takes effect on that user's next full page load. And the context `visible()` receives holds only `scope` and `user`, with no `patient` or `note`, because the question being asked is which panes this session gets rather than what is on screen. Gate on the staff member, or on anything you can look up from them, rather than on what they are currently viewing.
+Do not use `on_open()` for this. Returning no docked-pane effect from `on_open()` also leaves the pane unmounted, but panes are mounted once per session and never retried, so the pane stays gone for the rest of the session with no way back.
+###  Pane Context and Navigation 
+Like other embedded applications, a Docked Application reads request context from `self.event.context`. It receives that context twice over: once when the pane first mounts, through `on_open()`, and again on each navigation, through `on_context_change()`. Both entry points get the same three keys:
+Key | Value | Description  
+---|---|---  
+`url` | `str` | The path of the Canvas page the user is on. Always one of the pages a pane sees.  
+`user` | `{"id": str, "type": str}` | The signed-in user, always present. `id` is the [Staff](/sdk/data-staff/#staff) id; `type` is the name of the person record behind the login, which is `Staff` in the EHR.  
+`patient` | `{"id": str}` | The patient whose chart is open. Present only on a `/patient/<patient id>` path and absent entirely elsewhere, so read it as `self.event.context.get("patient", {})`.  
+On a patient chart the whole context looks like this:
+    ```python
+    {
+        "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35",
+        "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+        "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
+    }
+    ```
+On the schedule, where no patient is in the path, the `patient` key is simply not there:
+    ```python
+    {
+        "url": "/schedule",
+        "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+    }
+    ```
+####  `on_open()`
+Fires once, when the pane mounts, and returns the effect that gives the pane its content:
+    ```python
+    def on_open(self) -> Effect | list[Effect]:
+        url = self.event.context.get("url")
+        user_id = self.event.context.get("user", {}).get("id")
+        patient_id = self.event.context.get("patient", {}).get("id")
+        ...
+    ```
+####  `on_context_change()`
+Fires on each navigation after that, with the new `url` and the `patient` derived from the new path. This is how a pane stays context-aware as the user moves around Canvas.
+It defaults to a no-op, so a pane that does not override it keeps whatever it last rendered. Override it to return the plugin's own content or hosted URL, rebuilt from the new context, such as a hosted URL that carries the new patient id:
+    ```python
+    def on_context_change(self) -> Effect | list[Effect]:
+        patient_id = self.event.context.get("patient", {}).get("id", "")
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            url=f"https://task-dock.example.com/panel?patient={patient_id}",
+        ).apply()
+    ```
+The pane's document reloads only when `on_context_change()` returns a different `url` or `content`. Returning the same `url` or `content` as before leaves the pane's current document in place, preserving its scroll position and state, and so does returning no effect at all (`None` or an empty list). Whether to reload is your plugin's choice.
+####  Pages a pane sees 
+`url` is the path of the Canvas page around the pane, never the URL loaded inside the pane's own iframe. A pane navigating its own document is invisible to Canvas and produces no context change, and neither does a change to the page URL's hash.
+Docked panes mount in the EHR shell, so `url` is always one of the paths that shell routes. Some of these pages are gated by permission or by a feature flag, so which of them a given user reaches will vary:
+Path | Page  
+---|---  
+`/patient/<patient id>` | A patient's chart, including its sub-paths. The only path that carries a `patient` in context  
+`/schedule` | The schedule calendar  
+`/patients` | The patient list  
+`/panel` | A patient panel  
+`/populations` | Population health  
+`/campaigns` | Campaigns  
+`/revenue` | Revenue and claims  
+`/data-integration` | Data integration  
+`/questionnaire-builder` | The questionnaire builder  
+`/application` | A full-page plugin application  
+`/403` | Permission denied  
+Everything else on the domain sits outside that shell, including `/admin`, `/login`, `/app/...`, `/companion/...` and `/plugin-io/...`. Moving to one of those is a full page load rather than a navigation: the pane is not on screen while the user is there, and returning to the EHR mounts it again from scratch, so `on_open()` fires rather than `on_context_change()`.
+The patient portal is outside the shell as well, so a docked pane cannot appear there. A Docked Application is a staff-facing surface only.
+Because the pane stays mounted across every navigation inside the shell, it keeps its state there instead of being recreated like a modal or overlay that opens and closes.
+###  Multiple Docked Panes 
+Docked panes stack rather than being limited to one per edge. Each edge holds up to two panes. When an edge already holds its two panes, an additional pane for that edge is not displayed — it is ignored rather than raising an install-time error.
+Panes sharing an edge share a single track, and they split it evenly. On a left or right edge they stack top to bottom, each as wide as the track; on a top or bottom edge they sit side by side, each as tall as it. So two panes on one edge each get half the length of that edge, and the edge itself is only as thick as the larger of their two `DOCK_SIZE` values, since those sizes are alternatives rather than additions.
+Which pane comes first is decided by priority: the lower `PRIORITY` value goes first, which means the top of the stack on a left or right edge and the left-hand position on a top or bottom edge. Panes with equal priority are ordered by their identifier. This mirrors the way the `PRIORITY` class attribute orders Note Application tabs. To get a predictable order, set an explicit `PRIORITY` on each pane, and set an explicit `IDENTIFIER` rather than relying on the auto-derived one.
+Panes cannot crowd Canvas out of its own window. The left and right panes together take up at most half the window's width, and the top and bottom panes together at most half its height. If the panes on one of those pairs would exceed their half, all of them are scaled down in proportion rather than any one being dropped.
+###  Sizing, Resizing, and Collapsing 
+`DOCK_SIZE` sets the pane's initial size — its width on the `LEFT` and `RIGHT` edges, its height on the `TOP` and `BOTTOM` edges — and the initial ceiling for the plugin's own resize requests. The user and the plugin resize the pane under different rules.
+A user can resize a pane by dragging its edge or with the keyboard arrow keys, using the standard splitter the pane exposes. A user resize can make the pane larger or smaller than `DOCK_SIZE`: it stops at 48px, and at the half-the-window limit described above, but is not otherwise bound by `DOCK_SIZE`. The size a user drags to becomes the pane's new ceiling, replacing `DOCK_SIZE`, and is stored in the browser (`localStorage`) keyed by the pane's identifier, so it survives page reload and navigation. Once a user has resized a pane, that persisted size takes precedence on future loads, so changing `DOCK_SIZE` in a later plugin version does not affect panes a user has already resized, until the stored size is cleared.
+There is no host-provided control to close or minimize the pane. A plugin can, however, resize or collapse its own pane from inside its iframe (for example, by collapsing it to a thin rail). A plugin's own resize can shrink the pane freely, down to a thin rail. It cannot grow the pane past the current ceiling: a request at or above the ceiling is clamped to the ceiling rather than applied as given, so a plugin restores the pane to its full (ceiling) size by requesting any value at or above it. A plugin-driven resize is not bound by the 48px floor that applies to user resizing.
+A pane is removed only when the plugin's own content requests it, by posting the same `CLOSE_MODAL` message that applications use to dismiss modals. See [Closing Modals from Applications](/sdk/layout-effect/#closing-modals-from-applications) for the full mechanism. Once removed, nothing re-mounts the pane short of a page reload.
+A docked pane cannot navigate the host application directly; navigation is issued through a redirect effect. It does not reset the session idle-logout timer.
+###  Manifest Configuration 
+Register your Docked Application under the `handlers` section of your `CANVAS_MANIFEST.json`. As with Note and Scheduling Applications, there is **no** `scope` or `icon` — inheriting from `DockedApplication` is what tells Canvas to mount it as a docked pane.
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.apps.task_dock:TaskDock",
+            "description": "Open task list docked to the right edge."
+          }
+        ]
+      }
+    }
+    ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
 
 
@@ -48925,6 +49546,7 @@ The `LaunchModalEffect` class has the following properties:
     - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
     - `PAGE`: Opens the content as a full page.
     - `NOTE`: Opens the content within a note tab (used with Note Applications).
+    - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
   - **title** : A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 ###  Closing Modals from Applications 
 When building applications with the Canvas SDK, you may encounter scenarios where you need to programmatically dismiss modals. This can be particularly useful in automated testing or when creating user flows that require closing modals based on certain conditions.
@@ -49222,7 +49844,7 @@ Both handlers must be registered in `CANVAS_MANIFEST.json`.
 Subclass `PatientChartSummaryCustomSectionHandler` and:
   1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
   2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
-  3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+  3. The patient id is available via `self.target`. Use it to scope database queries to the current patient.
   4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
     ```python
     from canvas_sdk.effects import Effect
