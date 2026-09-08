@@ -163,6 +163,7 @@ url = staff.signature_url
 | appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
 | prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
 | note_set                   | [Note](/sdk/data-note/#note)[]                                  |
+| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
 
 ### StaffContactPoint
 

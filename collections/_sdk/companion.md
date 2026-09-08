@@ -148,7 +148,7 @@ the built-in Timeline tab, and when the user taps it, your handler's
 ### Event context
 
 ```python?partial=true
-self.event.context["patient"]["id"]  # Patient key (UUID string)
+self.event.context["patient"]["id"]  # Patient id (UUID string)
 ```
 
 ### Use cases
@@ -229,7 +229,7 @@ the note are passed in the event context.
 ### Event context
 
 ```python?partial=true
-self.event.context["patient"]["id"]  # Patient key (UUID string)
+self.event.context["patient"]["id"]  # Patient id (UUID string)
 self.event.context["note"]["id"]     # Note UUID
 ```
 

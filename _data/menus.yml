@@ -511,6 +511,12 @@ guides:
     identifier: guides_list
 
 guides_list:
+  - title: "Writing Commands Over HTTP"
+    url: /guides/writing-commands-over-http/
+    description: Expose commands as an HTTP endpoint, and check the caller may write to the note
+    uses:
+      - sdk
+
   - title: "Your First Plugin (with Claude Code)"
     url: /guides/your-first-plugin-with-claude-code/
     description: Use an AI assistant to build and deploy your first Canvas plugin
@@ -813,17 +819,28 @@ sdk_handlers:
     url: /sdk/handlers-crontask/
   - title: "Embedded Applications"
     url: /sdk/handlers-embedded-applications/
+    identifier: embedded_applications
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-handler/
   - title: "Payment Processors"
     url: /sdk/handlers-payment-processors/
     identifier: payment_processors_handlers
 
+embedded_applications:
+  - title: "Note Applications"
+    url: /sdk/handlers-embedded-applications/#note-applications
+  - title: "Scheduling Applications"
+    url: /sdk/handlers-embedded-applications/#scheduling-applications
+  - title: "Docked Applications"
+    url: /sdk/handlers-embedded-applications/#docked-applications
+
 simple_api_handlers:
   - title: "HTTP API"
     url: /sdk/handlers-simple-api-http/
   - title: "WebSocket API"
     url: /sdk/handlers-simple-api-websocket/
+  - title: "Commands API"
+    url: /sdk/handlers-simple-api-commands/
 
 effects_module:
   - title: "Appointment Labels"
@@ -878,7 +895,7 @@ effects_module:
     url: /sdk/effect-create-patient-preferred-pharmacies/
     description: Create preferred pharmacies for a patient.
   - title: "Custom HTML and Django Templates"
-    url: /sdk/layout-effect/#custom-html-and-django-templates/
+    url: /sdk/layout-effect/#custom-html-and-django-templates
     description: Render custom HTML using Django templates.
   - title: "Data Integration"
     url: /sdk/effect-data-integration/
@@ -895,6 +912,9 @@ effects_module:
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
+  - title: "Lab Report"
+    url: /sdk/effect-lab-report/
+    description: Create, update, enter-in-error, and attach results to a lab report.
   - title: "Layout Effects"
     url: /sdk/layout-effect/
     description: Modify or interact with the layout in Canvas.
@@ -958,12 +978,18 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Redirect"
+    url: /sdk/effect-redirect/
+    description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
   - title: "Reload Action Buttons"
     url: /sdk/effect-reload-action-buttons/
     description: Re-evaluate a note's or patient's action buttons in real time.
   - title: "Send Contact Verification"
     url: /sdk/effect-send-contact-verification/
     description: Send an email or SMS verification to a patient contact point.
+  - title: "ServiceProvider"
+    url: /sdk/effect-service-provider/
+    description: Create, update, and soft-deactivate providers in a customer-managed provider directory.
   - title: "Staff External ID"
     url: /sdk/effect-staff-external-identifier/
     description: Create, update, or delete an external identifier for a staff member.
@@ -1004,6 +1030,12 @@ data_module:
   - title: "Calendar"
     url: /sdk/data-calendar/
     description: Calendars associated with providers.
+  - title: "CancelPrescription"
+    url: /sdk/data-cancel-prescription/
+    description: A request to cancel a patient's prescription (the CancelPrescription command).
+  - title: "CancelPrescriptionResponse"
+    url: /sdk/data-cancel-prescription-response/
+    description: The response to a CancelPrescription request.
   - title: "CanvasUser"
     url: /sdk/data-canvasuser/
     description: User accounts associated with other records.
@@ -1046,14 +1078,23 @@ data_module:
   - title: "Device"
     url: /sdk/data-device/
     description: Type of a manufactured item that is used in the provision of healthcare.
+  - title: "DiagnosticView"
+    url: /sdk/data-diagnostic-view/
+    description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
   - title: "DocumentReviewDelegation"
     url: /sdk/data-document-review-delegation/
     description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
+  - title: "EducationalMaterial"
+    url: /sdk/data-educational-material/
+    description: Patient educational material shared from a note via the Educational Material command.
+  - title: "EligibilityResponse"
+    url: /sdk/data-eligibility-response/
+    description: A coverage eligibility (270/271) request and response, with the derived check status.
   - title: "EligibilitySummary"
-    url: /sdk/data-coverage/#eligilibitysummary/
+    url: /sdk/data-coverage/#eligibilitysummary
     description: Summary of copay and coinsurance for a Coverage.
   - title: "Encounter"
     url: /sdk/data-encounter/
@@ -1064,9 +1105,18 @@ data_module:
   - title: "Facility"
     url: /sdk/data-facility/
     description: A location where healthcare services are provided.
+  - title: "FamilyHistory"
+    url: /sdk/data-family-history/
+    description: A patient's family medical history — conditions recorded for a relative.
+  - title: "FollowUp"
+    url: /sdk/data-follow-up/
+    description: A requested follow-up (recall) recorded on a note via the follow_up command.
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "HistoryOfPresentIllness"
+    url: /sdk/data-history-present-illness/
+    description: The History of Present Illness (HPI) narrative recorded on a note.
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
@@ -1082,6 +1132,9 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
+  - title: "Invoice"
+    url: /sdk/data-invoice/
+    description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
@@ -1118,9 +1171,15 @@ data_module:
   - title: "Organization"
     url: /sdk/data-organization/
     description: The clinical organization present in the Canvas EMR.
+  - title: "OrganizationalEntity"
+    url: /sdk/data-organizational-entity/
+    description: External entities, such as service providers, referenced by a patient's external care team members.
   - title: "Patient"
     url: /sdk/data-patient/
     description: Data used to categorize individuals for identification, records matching, and other purposes.
+  - title: "PatientAdministrativeDocument"
+    url: /sdk/data-patient-administrative-document/
+    description: Patient-facing administrative documents, such as signed consent forms and statements.
   - title: "PatientConsent"
     url: /sdk/data-patient-consent/
     description: Documented patient consents that ensure legal compliance and protect patient rights.
@@ -1130,6 +1189,9 @@ data_module:
   - title: "PayorSpecificCharge"
     url: /sdk/data-payor-specific-charge/
     description: A billing charge specific to a certain transactor in Canvas.
+  - title: "Plan"
+    url: /sdk/data-plan/
+    description: A Plan (plan of care) narrative recorded on a note.
   - title: "PluginCommand"
     url: /sdk/data-plugin-command/
     description: Custom commands registered by plugins via the manifest configuration.
@@ -1142,6 +1204,15 @@ data_module:
   - title: "Prescription"
     url: /sdk/data-prescription/
     description: The practice locations present in the Canvas EMR.
+  - title: "PrescriptionChangeRequest"
+    url: /sdk/data-prescription-change-request/
+    description: An incoming Surescripts request to change a prescription, with its medication codings.
+  - title: "PrescriptionChangeResponse"
+    url: /sdk/data-prescription-change-response/
+    description: A response (approve/deny) to a Surescripts prescription change request.
+  - title: "Procedure"
+    url: /sdk/data-procedure/
+    description: A procedure performed on or ordered for a patient, with its CPT codings.
   - title: "ProtocolCurrent"
     url: /sdk/data-protocol-current/
     description: The current state of clinical protocols applied to patients within Canvas.
@@ -1160,6 +1231,12 @@ data_module:
   - title: "RefillRequest"
     url: /sdk/data-refill-request/
     description: An incoming request to refill a patient's medication and its responding prescriptions.
+  - title: "RemoveAllergyEvent"
+    url: /sdk/data-remove-allergy-event/
+    description: A record of an allergy being removed via the remove_allergy command.
+  - title: "ResolveConditionEvent"
+    url: /sdk/data-resolve-condition-event/
+    description: A record of a condition being resolved via the resolve_condition command.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
@@ -1184,12 +1261,18 @@ data_module:
   - title: "Uncategorized Clinical Documents"
     url: /sdk/data-uncategorized-clinical-document/
     description: Data associated with uncategorized clinical documents and their reviews.
+  - title: "Vaccine"
+    url: /sdk/data-vaccine/
+    description: A vaccine in the instance's catalog and the lots of it held in inventory.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
   - title: "VisualExamFinding"
     url: /sdk/data-visual-exam-finding/
     description: Visual exam findings captured on a note — a titled image with a narrative description.
+  - title: "VitalSignReading"
+    url: /sdk/data-vital-sign-reading/
+    description: Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements.
 
 custom_data_module:
   - title: "Quick Start"

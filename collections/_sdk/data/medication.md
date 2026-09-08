@@ -107,6 +107,7 @@ medications = Medication.objects.find(AdhdMedications)
 | stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
 | prescriptions                  | [Prescription](/sdk/data-prescription)[]                 |
 | previous_medications           | [Prescription](/sdk/data-prescription)[]                 |
+| prescription_change_responses  | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
 
 ### MedicationCoding
 

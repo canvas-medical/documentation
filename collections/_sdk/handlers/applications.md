@@ -226,7 +226,7 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
@@ -312,12 +312,14 @@ preserved when the plugin is reinstalled or updated.
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on the icon of a `global`
-or `patient_specific` application: in the app drawer, or on the panel when the
-application sets `show_in_panel`. A badge is useful for surfacing how many items
-are waiting for attention, such as unread messages or open tasks. Applications in
-other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the
-Provider Companion scopes) do not display badges.
+You can display a notification badge — a small count — on a `global`,
+`patient_specific`, or `provider_menu_item` application: on the icon in the app
+drawer or panel (`global` / `patient_specific`, the latter when the application
+sets `show_in_panel`), or next to the label in the provider menu
+(`provider_menu_item`). A badge is useful for surfacing how many items are waiting
+for attention, such as unread messages or open tasks. Applications in other scopes
+(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
+display badges.
 
 ### Initial count on load
 

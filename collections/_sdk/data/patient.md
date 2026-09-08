@@ -61,6 +61,17 @@ if photo:
     print(photo.title)
 ```
 
+## Accessing educational materials
+
+If you have a `Patient` object, the educational materials recorded on their notes can be accessed with the `education_material` reverse relation:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+educational_materials = patient.education_material.all()
+```
+
 ## Attributes
 
 ### Patient
@@ -134,10 +145,13 @@ if photo:
 | subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | tasks                    | [Task](/sdk/data-task/#task)[]                                            |
 | telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
+| contacts                 | [PatientContactPerson](#patientcontactperson)[]                           |
+| related_contacts         | [PatientContactPerson](#patientcontactperson)[] — contacts on *other* patients that reference this one |
 | user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
 | patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
 | chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
 | visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
+| vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
 | assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
 | patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
 | patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
@@ -146,7 +160,7 @@ if photo:
 | medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[] |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
 | payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
-| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/#protocolcurrent)[]           |
+| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/)[]           |
 | stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
 | banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
 | immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
@@ -156,6 +170,7 @@ if photo:
 | uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |
 | patient_consent          | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]              |
 | goals                    | [Goal](/sdk/data-goal/#goal)[]                                             |
+| updategoals              | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                 |
 | instructions             | [Instruction](/sdk/data-instruction/#instruction)[]                        |
 | appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
 | notes                    | [Note](/sdk/data-note/#note)[]                                             |
@@ -164,6 +179,19 @@ if photo:
 | referral_reviews         | [ReferralReview](/sdk/data-referral/#referralreview)[]                     |
 | referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
 | invoices                 | Invoice[]                                    |
+| education_material       | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
+| procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
+| family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
+| histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
+| plans                    | [Plan](/sdk/data-plan/#plan)[]                                             |
+| follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                                |
+| reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
+| removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
+| resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
+| cancel_prescriptions     | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  |
+| cancel_prescription_responses | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[] |
+| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
+| prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
 
 ### PatientAddress
 
@@ -347,6 +375,74 @@ for card in patient.identification_cards.filter(active=True):
 | patientaddress | [PatientAddress](#PatientAddress) |
 | facility       | [Facility](#facility)             |
 | room_number    | String                            |
+
+### PatientContactPerson
+
+One of the patient's contacts — an emergency contact, next-of-kin, or other related person. A contact either holds the person's details directly, or references another Canvas patient through `related_patient`; when it does, that patient's own details supersede the values stored here.
+
+`id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
+
+| Field Name      | Type                                                                 |
+| --------------- | -------------------------------------------------------------------- |
+| id              | UUID                                                                 |
+| dbid            | Integer                                                              |
+| created         | DateTime                                                             |
+| modified        | DateTime                                                             |
+| patient         | [Patient](#patient)                                                  |
+| name            | String                                                               |
+| phone_number    | String                                                               |
+| email           | String                                                               |
+| comments        | String                                                               |
+| related_patient | [Patient](#patient)                                                  |
+| categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
+
+```python
+from canvas_sdk.v1.data import PatientContactPerson
+from logger import log
+
+contacts = PatientContactPerson.objects.filter(
+    patient__id="d7af3e356368446c85b40a5d6ff7288e"
+).select_related("related_patient").prefetch_related("categories__category")
+
+for contact in contacts:
+    who = contact.related_patient.first_name if contact.related_patient else contact.name
+    codings = ", ".join(link.category.code for link in contact.categories.all())
+    log.info(f"Contact: {who} ({codings})")  # Contact: Jane (EMC)
+```
+
+### PatientContactCategory
+
+Links one of the patient's contacts to one of the category codings the instance defines.
+
+| Field Name     | Type                                                |
+| -------------- | --------------------------------------------------- |
+| dbid           | Integer                                             |
+| created        | DateTime                                            |
+| modified       | DateTime                                            |
+| contact_person | [PatientContactPerson](#patientcontactperson)       |
+| category       | [ContactCategory](#contactcategory)                 |
+
+### ContactCategory
+
+A contact-category coding available in this Canvas instance — the set a contact's relationship can be drawn from.
+
+Use this to look up a coding before writing it with the [Patient effect](/sdk/effect-patient/#patientcontactcategory). Writing a coding that does not appear here is rejected rather than created, so querying this model first is how you find out what the instance actually has.
+
+| Field Name | Type    |
+| ---------- | ------- |
+| dbid       | Integer |
+| name       | String  |
+| code       | String  |
+| system     | String  |
+| protected  | Boolean |
+
+```python
+from canvas_sdk.v1.data import ContactCategory
+from logger import log
+
+for coding in ContactCategory.objects.order_by("code"):
+    log.info(f"{coding.code} / {coding.system} — {coding.name}")  # EMC / INTERNAL — Emergency contact
+```
 
 ## Enumeration types
 

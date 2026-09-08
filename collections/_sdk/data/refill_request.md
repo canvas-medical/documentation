@@ -9,7 +9,7 @@ hidden: false
 
 The `RefillRequest` model represents an incoming request to refill a patient's medication — for example, a renewal request received electronically from a pharmacy. Each request carries the raw request payload in its `content` attribute, the associated patient and staff member, the medication codings that describe the requested drug (`RefillRequestCoding`), and the prescription(s) written in response.
 
-`RefillRequest` is a read-only data model. An incoming request is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
+An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
 
 ## Basic usage
 
@@ -55,7 +55,7 @@ from canvas_sdk.v1.data.refill_request import RefillRequest
 outstanding_requests = RefillRequest.objects.filter(ignored=False)
 ```
 
-The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the active refill worklist and is used to suppress duplicates — for example, a pharmacy re-sending a request. Requests that have already been responded to are excluded from the worklist separately, through their linked `response`. Because `RefillRequest` is read-only, a plugin can filter on `ignored` but cannot set it through this model. The example above returns the active (non-dismissed) requests.
+The `ignored` attribute is a boolean dismiss flag (default `False`). Marking a request ignored removes it from the active refill worklist and is used to suppress duplicates — for example, a pharmacy re-sending a request. Requests that have already been responded to are excluded from the worklist separately, through their linked `response`. A plugin can filter on `ignored`, but setting it is not available through the data module. The example above returns the active (non-dismissed) requests.
 
 ## Related data
 

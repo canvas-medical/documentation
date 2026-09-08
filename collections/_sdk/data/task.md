@@ -167,9 +167,9 @@ committed_note_tasks = NoteTask.objects.committed()
 | dbid              | Integer                                 |
 | created           | DateTime                                |
 | modified          | DateTime                                |
-| originator        | [CanvasUser](/sdk/data-canvas-user/)    |
-| committer         | [CanvasUser](/sdk/data-canvas-user/)    |
-| entered_in_error  | [CanvasUser](/sdk/data-canvas-user/)    |
+| originator        | [CanvasUser](/sdk/data-canvasuser/)    |
+| committer         | [CanvasUser](/sdk/data-canvasuser/)    |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser/)    |
 | note              | [Note](/sdk/data-note/#note)            |
 | task              | [Task](#task)                           |
 | patient           | [Patient](/sdk/data-patient/#patient)   |

@@ -119,7 +119,7 @@ Represents shared data for both electronic and manual remittance advice.
 | total\_paid         | Decimal                                       |
 | created             | DateTime                                      |
 | modified            | DateTime                                      |
-| transactor          | [Transactor](/sdk/data-coverage/#transactor/) |
+| transactor          | [Transactor](/sdk/data-coverage/#transactor) |
 | era\_id             | String                                        |
 | postings            | QuerySet[[CoveragePosting](#coverageposting)] |
 

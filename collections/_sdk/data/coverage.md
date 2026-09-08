@@ -60,6 +60,27 @@ if coverage.snapshot:
         print(image.image_url)  # Presigned S3 URL for the insurance card image
 ```
 
+## Eligibility status
+
+`Coverage.eligibility_status` returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+
+```python?partial=true
+from canvas_sdk.v1.data.coverage import Coverage
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
+    print("Coverage is active")
+```
+
+`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage, meaning one whose issuer has a `payer_id` of `PATIENT`. It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+
+That is also what [`Transactor.supports_eligibility_check`](#transactor) reports: it is `False` for the self-pay payer, whose `payer_id` is `PATIENT`, and `True` for every other issuer.
+
+Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
+
+A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -118,7 +139,10 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (computed) |
 | claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
+| requests                           | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]   |
+| eligibility_responses              | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[] |
 
 ### Transactor
 
@@ -146,9 +170,11 @@ The `filter` method can be used to filter by desired attributes. The following e
 | description                  | String                                              |
 | active                       | Boolean                                             |
 | use_provider_for_eligibility | Boolean                                             |
+| supports_eligibility_check   | Boolean (computed)                                  |
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
 | coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |
+| vaccines                     | [Vaccine](/sdk/data-vaccine/#vaccine)[]             |
 | addresses                    | [TransactorAddress](#transactoraddress)[]           |
 | coverages                    | [Coverage](#coverage)[]                             |
 | phones                       | [TransactorPhone](#transactorphone)[]               |

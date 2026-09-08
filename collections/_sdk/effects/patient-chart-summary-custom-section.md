@@ -71,7 +71,7 @@ class MySectionHandler(PatientChartSummaryCustomSectionHandler):
 
 ### URL-based content
 
-Load the section content from a hosted endpoint. This is useful when the section is a standalone page served by a [Simple API](/sdk/simple-api/) handler.
+Load the section content from a hosted endpoint. This is useful when the section is a standalone page served by a [Simple API](/sdk/handlers-simple-api/) handler.
 
 ```python
 from canvas_sdk.effects import Effect

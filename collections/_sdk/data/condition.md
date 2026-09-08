@@ -101,6 +101,7 @@ conditions = Condition.objects.find(Diabetes)
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
 | assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
+| resolutions                 | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  |
 
 ### ConditionCoding
 

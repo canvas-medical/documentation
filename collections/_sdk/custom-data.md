@@ -133,7 +133,7 @@ intend to query.
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Caching API](/sdk/caching) - Auto-expiring transient data
-- [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
+- [Simple API](/sdk/handlers-simple-api/) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
 
 <br/>
