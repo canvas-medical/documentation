@@ -252,6 +252,8 @@ url = document.document_url if document else None
 
 {% include alert.html type="info" content="A note can be locked more than once. Each lock captures its own PDF, and Canvas supersedes the earlier ones — so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version. Only encounter, inpatient, and review note types are captured this way; other note types have no PDF." %}
 
+{% include alert.html type="info" content="The PDF reached here through <code>DocumentReference</code> (<code>document_url</code>) is one of the consumer-read copies described under <a href=\"/sdk/data-note/#notestatechangeevent\">NoteStateChangeEvent</a>. On an instance with the exclusion setting enabled, the PDF omits entered-in-error commands — see that section." %}
+
 ### Find all open notes
 
 You can find all open notes by retrieving the note records with a current
@@ -490,6 +492,8 @@ for metadata in note_metadata:
 | state               | [NoteState](/sdk/data-note/#notestates) |
 | note_state_document | String                                  |
 | note_state_html     | String                                  |
+
+{% include alert.html type="info" content="The <code>note_state_document</code> and <code>note_state_html</code> fields hold the snapshot captured when a note is locked. The FHIR <code>DocumentReference</code> PDF content is copied from <code>note_state_document</code> at that same time, so all three are the copies consumers read. By default they include commands that were entered in error, which appear struck through in <code>note_state_html</code> as <code>Entered in Error/Removed on …</code> entries. When Canvas Support enables the opt-in setting (<code>EXCLUDE_ENTERED_IN_ERROR_FROM_NOTE_DOCUMENTS</code>, off by default) on an instance, these read copies instead omit entered-in-error commands — the field names and the <code>DocumentReference</code> schema are unchanged, only each copy's content differs. The full audit copy that keeps entered-in-error commands remains available from the note-footer PDF link served by <code>/api/NoteStateChangeEventDocument/{id}.pdf</code>." %}
 
 ### CurrentNoteStateEvent
 
