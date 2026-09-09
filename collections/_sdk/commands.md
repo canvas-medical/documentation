@@ -423,6 +423,36 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 
 ---
 
+### AddCondition
+
+Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in the note's History section. Unlike [Diagnose](#diagnose), AddCondition does not open an assessment for the condition. [Past Medical History](#medicalhistory) also records a condition without assessing it, but as free text rather than a code.
+
+**Command-specific parameters**:
+
+| Name                        | Type     | Required to commit | Description                                                |
+|:----------------------------|:---------|:---------|:-----------------------------------------------------------|
+| `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `background`                | _string_ | `false`  | Background information about the condition.                |
+| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import AddConditionCommand
+from datetime import date
+
+add_condition = AddConditionCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='N183',
+    background='Diagnosed at outside nephrology practice.',
+    approximate_date_of_onset=date(2023, 4, 1),
+    comments='Stable on last three panels.'
+)
+```
+
+---
+
 ### AdjustPrescription
 
 **Command-specific parameters**:

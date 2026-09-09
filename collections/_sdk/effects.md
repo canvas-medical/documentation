@@ -561,6 +561,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 
 | Command Type | Effect Prefix | Notes |
 |---|---|---|
+| Add Condition | `*_ADD_CONDITION_COMMAND` | |
 | Adjust Prescription | `*_ADJUST_PRESCRIPTION_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Allergy | `*_ALLERGY_COMMAND` | |
 | Assess | `*_ASSESS_COMMAND` | |
