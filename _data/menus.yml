@@ -1225,6 +1225,9 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Reference"
+    url: /sdk/data-reference/
+    description: A saved reference embedded on a note, optionally backed by a diagnostic view.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
