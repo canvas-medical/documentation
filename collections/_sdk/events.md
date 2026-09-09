@@ -27343,10 +27343,13 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>patient_id</pre></td>
+      <td><pre>phone_number</pre></td>
       <td><pre>
   "phone_number": str
-  "source": str</pre></td>
+  "source": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
