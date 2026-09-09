@@ -57,6 +57,7 @@ committed_follow_ups = FollowUp.objects.committed()
 | entered_in_error                          | [CanvasUser](/sdk/data-canvasuser)    |
 | patient                                   | [Patient](/sdk/data-patient/#patient) |
 | note                                      | [Note](/sdk/data-note)                |
+| assessment                                | [Assessment](/sdk/data-assessment/#assessment) |
 | appointment_note                          | [Note](/sdk/data-note)                |
 | requested_appointment_date                | Date                                  |
 | requested_appointment_date_original_input | String                                |
