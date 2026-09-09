@@ -31,6 +31,20 @@ The `CareTeamMembership` model connects patients, staff members and their associ
 [('Primary care physician', <Staff: Steven Magee>), ('Nurse practitioner', <Staff: Annalies Hines>), ('Physician assistant', <Staff: Erik McDonald>)]
 ```
 
+### External care team members
+
+A care team can also include external members — providers who are not [Staff](/sdk/data-staff#staff) on the Canvas instance. An external membership has no `staff`. Instead, its `organizational_entity` links to an [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity) that describes the external provider. When that entity is a [ServiceProvider](/sdk/data-serviceprovider/#service-provider), the membership's `service_provider` property resolves directly to it, so you can read the provider's contact details — such as `business_fax` — without leaving the plugin.
+
+```python
+>>> from canvas_sdk.v1.data.patient import Patient
+>>> patient_1 = Patient.objects.get(id="a74592ae8a6c4d0ebe0799d3fb3713d1")
+>>> external_member = patient_1.care_team_memberships.filter(staff__isnull=True).first()
+>>> external_member.service_provider.business_fax
+'18005551234'
+```
+
+The `service_provider` property returns `None` for internal (staff-backed) memberships, and for external members whose organizational entity is not a `Service Provider`.
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter care team data:
@@ -75,20 +89,29 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### CareTeamMembership
 
-| Field Name   | Type                                                  |
-| ------------ | ----------------------------------------------------- |
-| id           | UUID                                                  |
-| dbid         | Integer                                               |
-| created      | DateTime                                              |
-| modified     | DateTime                                              |
-| patient      | [Patient](/sdk/data-patient/#patient)                 |
-| staff        | [Staff](/sdk/data-staff#staff)                        |
-| role         | [CareTeamRole](#careteamrole)                         |
-| status       | [CareTeamMembershipStatus](#careteammembershipstatus) |
-| lead         | Boolean                                               |
-| role_code    | String                                                |
-| role_system  | String                                                |
-| role_display | String                                                |
+| Field Name            | Type                                                                          |
+| --------------------- | ----------------------------------------------------------------------------- |
+| id                    | UUID                                                                          |
+| dbid                  | Integer                                                                       |
+| created               | DateTime                                                                      |
+| modified              | DateTime                                                                      |
+| patient               | [Patient](/sdk/data-patient/#patient)                                         |
+| staff                 | [Staff](/sdk/data-staff#staff)                                                |
+| role                  | [CareTeamRole](#careteamrole)                                                 |
+| organizational_entity | [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity) |
+| status                | [CareTeamMembershipStatus](#careteammembershipstatus)                         |
+| lead                  | Boolean                                                                       |
+| role_code             | String                                                                        |
+| role_system           | String                                                                        |
+| role_display          | String                                                                        |
+
+For external (non-staff) members, `staff` is empty and `organizational_entity` links to the external provider.
+
+#### Properties
+
+| Name             | Type                                                                       | Description                                                                                                              |
+| ---------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) \| `None`   | The external provider for this membership, resolved through its `organizational_entity`; `None` for internal members. |
 
 ## Enumeration types
 

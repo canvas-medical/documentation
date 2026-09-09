@@ -96,6 +96,7 @@ committed_prescriptions = Prescription.objects.committed()
 | previous_medication           | [Medication](/sdk/data-medication/)                  |
 | indications                   | [Assessment](/sdk/data-assessment/)[]                |
 | related_refill                | [Prescription](#prescription)                        |
+| refill_request                | [RefillRequest](/sdk/data-refill-request/)           |
 | status                        | [PrescriptionStatus](#prescriptionstatus)            |
 | response_type                 | [PrescriptionResponse](#prescriptionresponse)        |
 | is_refill                     | Boolean                                              |
@@ -133,6 +134,8 @@ committed_prescriptions = Prescription.objects.committed()
 | originator                    | [CanvasUser](/sdk/data-canvasuser)                   |
 | created                       | DateTime                                             |
 | modified                      | DateTime                                             |
+| cancel_prescriptions          | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[] |
+| change_requests               | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
 
 ## Enumeration types
 

@@ -62,6 +62,8 @@ staff.top_role_abbreviation
 # MD
 ```
 
+When a staff member holds more than one role, `top_clinical_role` looks only at roles in a clinical domain — those whose `domain` is `CLINICAL` or `HYBRID` — and returns the one with the highest `domain_privilege_level`. Administrative roles are never selected, even if they carry a higher privilege level. If the staff member has no clinical or hybrid roles, both `top_clinical_role` and `top_role_abbreviation` are `None`. Because `credentialed_name` appends `top_role_abbreviation`, it reflects the same highest-privilege clinical role.
+
 To get `Staff` licenses. 
 
 ```python
@@ -152,6 +154,7 @@ url = staff.signature_url
 | imaging_orders             | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]               |
 | immunizations_given        | [Immunization](/sdk/data-immunization/#immunization)[]          |
 | supervising_prescriptions  | [Prescription](/sdk/data-prescription/#prescription)[]          |
+| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
 | default_patients           | [Patient](/sdk/data-patient/#patient)[]                         |
 | medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
 | transmissions_delivered    | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |
@@ -160,6 +163,7 @@ url = staff.signature_url
 | appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
 | prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
 | note_set                   | [Note](/sdk/data-note/#note)[]                                  |
+| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
 
 ### StaffContactPoint
 
@@ -328,6 +332,10 @@ to upsert it from a plugin.
 
 ## Computed Properties
 
+- `full_name`: The staff member's first and last name (for example, `Larry Weed`).
+- `credentialed_name`: The staff member's full name suffixed with their topmost credential abbreviation (for example, `Larry Weed MD`).
+- `top_clinical_role`: The staff member's highest-ranking clinical [StaffRole](#staffrole), selected by privilege level when they hold more than one, or `None` if they have no clinical role.
+- `top_role_abbreviation`: The public credential abbreviation of the `top_clinical_role` (for example, `MD`), or `None` if there is no clinical role.
 - `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
 - `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
 

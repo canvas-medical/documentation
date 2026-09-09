@@ -186,7 +186,7 @@ Generates a PDF from a URL that returns HTML. The service fetches the HTML from 
 
 **Returns**: `PdfUrlResponse | None` — `None` if PDF generation failed.
 
-When using `from_url`, the PDF service fetches the HTML from your endpoint directly. If that endpoint requires authentication, the SimpleAPI serving the HTML should use [`BasicAuthMixin`](/sdk/handlers/simple-api/api/#basic) and pass the credentials via `PdfAuthRequest`.
+When using `from_url`, the PDF service fetches the HTML from your endpoint directly. If that endpoint requires authentication, the SimpleAPI serving the HTML should use [`BasicAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins) and pass the credentials via `PdfAuthRequest`.
 
 **Example**:
 

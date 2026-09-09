@@ -92,7 +92,7 @@ committed_reviews = ChartSectionReview.objects.committed()
 | `conditions`       | [Condition](/sdk/data-condition/) (non-surgical) |
 | `surgical_history` | [Condition](/sdk/data-condition/) (surgical) |
 | `medications`      | [Medication](/sdk/data-medication/)          |
-| `family_histories` | `FamilyHistory` (not currently exposed in the SDK data module) |
+| `family_histories` | [FamilyHistory](/sdk/data-family-history/#familyhistory) |
 | `allergies`        | [AllergyIntolerance](/sdk/data-allergy-intolerance/) |
 | `immunizations`    | [Immunization](/sdk/data-immunization/) and [ImmunizationStatement](/sdk/data-immunization/) |
 
@@ -107,6 +107,7 @@ from canvas_sdk.v1.data.chart_section_review import (
     ChartSectionReviewSection,
 )
 from canvas_sdk.v1.data.condition import Condition
+from canvas_sdk.v1.data.family_history import FamilyHistory
 from canvas_sdk.v1.data.immunization import Immunization, ImmunizationStatement
 from canvas_sdk.v1.data.medication import Medication
 
@@ -122,6 +123,8 @@ elif review.section == ChartSectionReviewSection.SURGICAL_HISTORY:
     )
 elif review.section == ChartSectionReviewSection.MEDICATIONS:
     records = Medication.objects.filter(patient=review.patient, dbid__in=review.entries)
+elif review.section == ChartSectionReviewSection.FAMILY_HISTORIES:
+    records = FamilyHistory.objects.filter(patient=review.patient, dbid__in=review.entries)
 elif review.section == ChartSectionReviewSection.ALLERGIES:
     records = AllergyIntolerance.objects.filter(patient=review.patient, dbid__in=review.entries)
 elif review.section == ChartSectionReviewSection.IMMUNIZATIONS:

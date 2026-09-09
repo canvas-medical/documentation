@@ -1,0 +1,246 @@
+---
+# Overrides jekyll-feed's generated /release-notes.xml. Its generator does
+# `next if file_exists?(path)`, so this file wins.
+#
+# Only reason this exists: upstream builds the feed title as
+#   {{ site.title | smartify | xml_escape }}
+# and site.title contains an "&". smartify emits "&amp;", xml_escape then
+# escapes it again to "&amp;amp;", so readers print a literal "&amp;".
+# Upstream also ignores the `feed.title` config and always uses site.title
+# with the collection name appended, giving a long, noisy header.
+#
+# Everything below is jekyll-feed 0.17.0's feed.xml verbatim apart from the
+# title block. Re-sync it if the gem is upgraded.
+layout: null
+sitemap: false
+collection: release-notes
+---
+<?xml version="1.0" encoding="utf-8"?>
+{% if page.xsl %}
+  <?xml-stylesheet type="text/xml" href="{{ '/feed.xslt.xml' | absolute_url }}"?>
+{% endif %}
+<feed xmlns="http://www.w3.org/2005/Atom" {% if site.lang %}xml:lang="{{ site.lang }}"{% endif %}>
+  <generator uri="https://jekyllrb.com/" version="{{ jekyll.version }}">Jekyll</generator>
+  <link href="{{ page.url | absolute_url }}" rel="self" type="application/atom+xml" />
+  <link href="{{ '/' | absolute_url }}" rel="alternate" type="text/html" {% if site.lang %}hreflang="{{ site.lang }}" {% endif %}/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>{{ page.url | absolute_url | xml_escape }}</id>
+
+  {% comment %}
+    Changed from upstream: prefer the `feed.title` config, and drop `smartify`
+    so an "&" is escaped once rather than twice.
+  {% endcomment %}
+  {% assign title = site.feed.title %}
+  {% unless title %}
+    {% assign title = site.title | default: site.name %}
+    {% if page.collection != "posts" %}
+      {% assign collection = page.collection | capitalize %}
+      {% assign title = title | append: " | " | append: collection %}
+    {% endif %}
+    {% if page.category %}
+      {% assign category = page.category | capitalize %}
+      {% assign title = title | append: " | " | append: category %}
+    {% endif %}
+  {% endunless %}
+
+  {% if title %}
+    <title type="html">{{ title | xml_escape }}</title>
+  {% endif %}
+
+  {% if site.description %}
+    <subtitle>{{ site.description | xml_escape }}</subtitle>
+  {% endif %}
+
+  {% if site.author %}
+    <author>
+        <name>{{ site.author.name | default: site.author | xml_escape }}</name>
+      {% if site.author.email %}
+        <email>{{ site.author.email | xml_escape }}</email>
+      {% endif %}
+      {% if site.author.uri %}
+        <uri>{{ site.author.uri | xml_escape }}</uri>
+      {% endif %}
+    </author>
+  {% endif %}
+
+  {% if page.tags %}
+    {% assign posts = site.tags[page.tags] %}
+  {% else %}
+    {% assign posts = site[page.collection] %}
+  {% endif %}
+  {% if page.category %}
+    {% assign posts = posts | where: "categories", page.category %}
+  {% endif %}
+  {% unless site.show_drafts %}
+    {% assign posts = posts | where_exp: "post", "post.draft != true" %}
+  {% endunless %}
+  {% assign posts = posts | sort: "date" | reverse %}
+  {% assign posts_limit = site.feed.posts_limit | default: 10 %}
+  {% for post in posts limit: posts_limit %}
+    <entry{% if post.lang %}{{" "}}xml:lang="{{ post.lang }}"{% endif %}>
+      {% assign post_title = post.title | smartify | strip_html | normalize_whitespace | xml_escape %}
+
+      <title type="html">{{ post_title }}</title>
+      <link href="{{ post.url | absolute_url }}" rel="alternate" type="text/html" title="{{ post_title }}" />
+      <published>{{ post.date | date_to_xmlschema }}</published>
+      <updated>{{ post.last_modified_at | default: post.date | date_to_xmlschema }}</updated>
+      <id>{{ post.id | absolute_url | xml_escape }}</id>
+      {% comment %}
+        Changed from upstream: render list items as nested divs carrying their
+        own bullet character, rather than as <ul>/<li>.
+
+        Clients that strip HTML (the Slack RSS app) drop list markup entirely
+        and would show the items as unmarked paragraphs. Simply prefixing <li>
+        with a bullet fixes Slack but doubles the marker in readers that do
+        render lists. Divs carry no marker of their own, so one bullet shows
+        everywhere, and they nest legally at any depth where <p> would not.
+
+        Depth comes from Kramdown's indentation: top-level items are preceded
+        by two spaces, nested ones by six. Do the six-space replace first —
+        "      <li>" contains "  <li>". If that indentation ever changes, a
+        sub-item just falls back to the top-level bullet rather than breaking.
+
+        Also drop the "Today's release includes the following updates:" intro.
+        Every note opens with it, and in a feed the entry title already carries
+        the release date, so it is a line of boilerplate spending a budget the
+        Slack RSS app measures in a few hundred bytes (see <summary> below). It
+        stays on the page itself, where it reads as the note's opening line.
+
+        Kramdown smartifies the apostrophe, so match "’" rather than "'". Some
+        notes put the tag span in the same paragraph as the intro, so replace
+        the sentence rather than the whole <p>, then drop any paragraph that
+        leaves empty. "update:" covers the handful of single-item notes.
+
+        Rouge's class attribute on inline code is 44 bytes of nothing to a feed
+        reader. Dropping it costs no rendering and, should a client render
+        <content> under a byte budget, buys back that much prose per code span.
+
+        Assigned before <summary>, which is built from the same string.
+      {% endcomment %}
+      {% assign post_content = post.content
+           | replace: "      <li>", "      <div>◦ "
+           | replace: "  <li>", "  <div>• "
+           | replace: "</li>", "</div>"
+           | replace: "<ul>", "<div>"
+           | replace: "</ul>", "</div>"
+           | replace: "Today’s release includes the following updates:", ""
+           | replace: "Today’s release includes the following update:", ""
+           | replace: "<p></p>", ""
+           | replace: '<code class="language-plaintext highlighter-rouge">', "<code>" %}
+
+      {% assign excerpt_only = post.feed.excerpt_only | default: site.feed.excerpt_only %}
+      {% unless excerpt_only %}
+        <content type="html" xml:base="{{ post.url | absolute_url | xml_escape }}"><![CDATA[{{ post_content | strip }}]]></content>
+      {% endunless %}
+
+      {% assign post_author = post.author | default: post.authors[0] | default: site.author %}
+      {% assign post_author = site.data.authors[post_author] | default: post_author %}
+      {% assign post_author_email = post_author.email | default: nil %}
+      {% assign post_author_uri = post_author.uri | default: nil %}
+      {% assign post_author_name = post_author.name | default: post_author %}
+
+      <author>
+          <name>{{ post_author_name | default: "" | xml_escape }}</name>
+        {% if post_author_email %}
+          <email>{{ post_author_email | xml_escape }}</email>
+        {% endif %}
+        {% if post_author_uri %}
+          <uri>{{ post_author_uri | xml_escape }}</uri>
+        {% endif %}
+      </author>
+
+      {% if post.category %}
+        <category term="{{ post.category | xml_escape }}" />
+      {% elsif post.categories %}
+        {% for category in post.categories %}
+          <category term="{{ category | xml_escape }}" />
+        {% endfor %}
+      {% endif %}
+
+      {% for tag in post.tags %}
+        <category term="{{ tag | xml_escape }}" />
+      {% endfor %}
+
+      {% comment %}
+        Changed from upstream: build <summary> from the note itself rather than
+        from post.excerpt, which _config.yml switches off.
+
+        The Slack RSS app prefers <summary> over <content> and renders roughly
+        the first 490 bytes of whatever it is handed, keeping whole
+        whitespace-delimited tokens up to that budget. Handed HTML, the cut
+        lands inside a tag and arrives as a literal "<a..." — 1.338.0 posted
+        that way. Markup also spends the budget: that note delivered 293 of its
+        395 characters because most of the budget went to tags, Rouge class
+        attributes and hrefs.
+
+        The 490 figure is measured, not documented: 1.338.0's <content> was cut
+        at 492 bytes, and 1.339.0's first <summary> — 546 bytes — was cut at
+        493, dropping the trailer's URL. Treat it as a ceiling that may move,
+        which is the other reason the digest is plain text: a cut in prose costs
+        a few words, a cut in markup costs a visible broken tag.
+
+        Plain text has no tags to cut open and fits far more words. The bullet
+        characters injected above survive strip_html (they are text, not
+        markup) and so do Kramdown's newlines and indentation, so the digest
+        keeps one line per item and its nesting. 340 characters plus the trailer below
+        leaves headroom for the multi-byte bullets, dashes and quotes to stay
+        under the app's byte budget.
+
+        Readers that render <content> are unaffected — they still get the whole
+        note, with its links.
+
+        Every digest is a teaser, so both paths end with the note's URL. The
+        entry title links there already, but a cut digest gives no sign that the
+        rest exists and an override, which stops wherever its author chose, gives
+        even less. The URL is bare rather than an anchor: Slack linkifies it, and
+        it is the one thing at risk of being cut, so it should degrade to a short
+        URL rather than to a dangling tag. It is written at column 0 below
+        because the newlines and indentation inside the CDATA are the output.
+
+        A note can override the digest with `feed_summary:` in its frontmatter,
+        which is worth doing for a long release where the automatic 340-character
+        cut lands somewhere unhelpful — hand-written, the whole release can be
+        summarised inside the budget. Use a YAML block scalar so the newlines
+        survive, and write plain text: markup is what gets cut open.
+
+            feed_summary: |
+              sdk
+
+              • Questionnaires can now be scored.
+              • Two data models were added: CareTeam and Coverage.
+
+              bugfix
+
+              • The Goals filter classifies by most recent update.
+
+        An override is emitted verbatim — no truncation — because trimming a
+        hand-written digest to 340 characters would defeat the point. Keep it
+        under ~400 characters, which leaves room for the trailer, or Slack does
+        the cutting instead; over that, an XML comment says so in the built feed
+        so it shows up in review. `description:` is honoured too,
+        for jekyll-feed compatibility, but prefer `feed_summary:` — jekyll-seo-tag
+        reads `description` and would put the bullets in the page's meta tag.
+      {% endcomment %}
+      {% if post.feed_summary %}
+        {% assign post_summary = post.feed_summary | strip %}
+        {% if post_summary.size > 400 %}<!-- feed_summary is {{ post_summary.size }} characters; with the trailer this exceeds the ~490 bytes the Slack RSS app renders -->{% endif %}
+      {% else %}
+        {% assign post_summary = post.description | default: post_content | strip_html | strip | truncate: 340, "…" %}
+      {% endif %}
+      {% if post_summary and post_summary != empty %}
+        <summary type="html"><![CDATA[{{ post_summary }}
+
+See full notes: {{ post.url | absolute_url }}]]></summary>
+      {% endif %}
+
+      {% assign post_image = post.image.path | default: post.image %}
+      {% if post_image %}
+        {% unless post_image contains "://" %}
+          {% assign post_image = post_image | absolute_url %}
+        {% endunless %}
+        <media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="{{ post_image | xml_escape }}" />
+        <media:content medium="image" url="{{ post_image | xml_escape }}" xmlns:media="http://search.yahoo.com/mrss/" />
+      {% endif %}
+    </entry>
+  {% endfor %}
+</feed>

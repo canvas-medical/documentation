@@ -14793,7 +14793,7 @@ Open the following URL in the user's browser:
 **Important notes:**
   - **`launch` parameter (required for staff users):** Staff users must include a `launch` parameter containing a base64-encoded JSON object with context. Without this parameter, the authorization will be denied with `error=access_denied`.
         ```bash
-        # Encode a launch context with a patient key
+        # Encode a launch context with a patient id
         echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
         # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
         # Or with an empty patient (if no specific patient context is needed)
@@ -16464,7 +16464,7 @@ Canvas Medical is certified to ONC's [§170.315(g)(10)](/product-updates/rwt/) _
 ##  Two kinds of access 
 The API supports two distinct access models. The authorization gate is different for each, and it is important to know which one your application needs.
 ###  Patient-directed access 
-An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#smart-on-fhir-scopes) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
+An individual patient authorizes your application to access **their own** health information. The patient authenticates and grants consent through the [SMART on FHIR](/api/customer-authentication/#authorization-code) authorization-code flow, and the resulting token is scoped to that patient (`patient/` context). The patient's authorization is the only approval required — access does not depend on separate sign-off from the patient's practice.
 ###  Population and bulk access 
 A practice or organization using Canvas as its EHR authorizes access to data across its patient population, typically through the client-credentials flow (`system/` context) and bulk export. This access is authorized by the practice or organization that holds the data.
 ##  One Canvas instance per customer 
@@ -18669,6 +18669,7 @@ In order to identify which extension maps to specific fields in Canvas, the url 
 **A few of the extensions are required:******
   - clinical-date
   - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
+  - requires-signature
 Click to view child attributes
 url 
 string required
@@ -21002,7 +21003,8 @@ The display name of the coding.
 reasonReference 
 array[json] 
 Reason the encounter takes place (reference).   
-In Canvas this represents any encounters that were diagnosed, assessed, or indicated during the encounter.
+In Canvas this represents the conditions that were **created** during the encounter, via the Diagnose command or another command that creates a condition.   
+This list does **not** include conditions that were only assessed during the encounter. An Assess command records an assessment against a condition that already exists in the chart, and it does not change which encounter that condition belongs to, so an encounter whose only condition activity was an Assess returns an empty `reasonReference`. To retrieve the conditions assessed during an encounter, use the [Assessment](/sdk/data-assessment) model in the Canvas SDK, which links each assessment to both the note it was documented on and the condition it assessed. For the diagnoses associated with a billed service, use `diagnosis` and `item.diagnosisSequence` on the [Claim](/api/claim) resource.
 Click to view child attributes
 reference 
 string 
@@ -21291,7 +21293,8 @@ The display name of the coding.
 reasonReference 
 array[json] 
 Reason the encounter takes place (reference).   
-In Canvas this represents any encounters that were diagnosed, assessed, or indicated during the encounter.
+In Canvas this represents the conditions that were **created** during the encounter, via the Diagnose command or another command that creates a condition.   
+This list does **not** include conditions that were only assessed during the encounter. An Assess command records an assessment against a condition that already exists in the chart, and it does not change which encounter that condition belongs to, so an encounter whose only condition activity was an Assess returns an empty `reasonReference`. To retrieve the conditions assessed during an encounter, use the [Assessment](/sdk/data-assessment) model in the Canvas SDK, which links each assessment to both the note it was documented on and the condition it assessed. For the diagnoses associated with a billed service, use `diagnosis` and `item.diagnosisSequence` on the [Claim](/api/claim) resource.
 Click to view child attributes
 reference 
 string 
@@ -28842,6 +28845,7 @@ waist circumference | 56086-2 | cm | in
 note | 80339-5 |  |   
 pulse rhythm | 8884-9 |  |   
 *If an oxygen saturation vital sign is created, an oxygen saturation (arterial) vital sign code is also automatically generated.  
+A vital sign code that is not listed in the table above is rejected with a 405 and the message `Sign is not supported by Canvas`. In particular, **supplemental oxygen (88658-0) cannot be created through this endpoint** — it can only be captured through the Vitals command in Canvas. Supplemental oxygen observations are still returned by read and search, where the value appears as a `valueCodeableConcept`.  
 **Additional examples**
   - [Creating a vital panel](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20panel.bru)
   - [Creating a vital sign with components (should only be used for blood pressure)](https://github.com/canvas-medical/canvas-fhir-example-requests/blob/main/Observation/Create%20Observation%20-%20w-%20components.bru)
@@ -29119,6 +29123,7 @@ string
 The code of the observation.
 **Value Options Supported:**
   - Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command 
+  - 88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs. 
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
@@ -29202,7 +29207,8 @@ Used for observations containing text values like vitals that are strings (e.g B
 valueCodeableConcept 
 json 
 Actual result.  
-Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.  
+Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
 Click to view child attributes
 coding 
 array[json] 
@@ -29527,6 +29533,7 @@ string
 The code of the observation.
 **Value Options Supported:**
   - Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command 
+  - 88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs. 
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
@@ -29610,7 +29617,8 @@ Used for observations containing text values like vitals that are strings (e.g B
 valueCodeableConcept 
 json 
 Actual result.  
-Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.  
+Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
 Click to view child attributes
 coding 
 array[json] 
@@ -32253,7 +32261,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -32458,7 +32466,7 @@ string
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 text 
 json 
 A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
@@ -32683,7 +32691,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -32942,7 +32950,7 @@ string required
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 Must match the ID in the path parameter.
 extension 
 array[json] required
@@ -33162,7 +33170,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] required
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -33382,7 +33390,7 @@ string
 Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. `_has:CareTeam:participant:member=Practitioner/{practitioner_id}`.
 _id 
 string 
-A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+A Canvas-issued unique identifier for the patient. This can be found in the URL of the patient's chart.
 _revinclude 
 string 
 Standard FHIR `_revinclude` parameter.
@@ -33457,7 +33465,7 @@ string
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 text 
 json 
 A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
@@ -33682,7 +33690,7 @@ Family name (often called 'Surname'). Required on the **official** entry to popu
 given 
 array[string] 
 Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name.   
-For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
 prefix 
 array[string] 
 Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -40510,13 +40518,15 @@ See our [article](https://canvas-medical.help.usepylon.com/articles/7017593857-c
 _Codings_  
 All questionnaires must have coding, and all response options within a question on a questionnaire must have codings.  
 _Question Types_  
-Canvas supports 3 different type of questions:  
+Canvas supports 4 different type of questions:  
 1\. Multi select response questions are denoted with:  
 `"type": "choice", "repeats": true`  
 2\. Single select response questions are denoted with:  
 `"type": "choice", "repeats": false`  
 3\. Free text response questions are denoted with:  
 `"type": "text", "repeats": false`  
+4\. Date response questions are denoted with:  
+`"type": "date", "repeats": false`  
 Questions can be reused in multiple questionnaires, but any given question code should only appear once within a particular questionnaire.
 ### Endpoints
 get /Questionnaire/{id} get /Questionnaire
@@ -40597,6 +40607,7 @@ The type of questionnaire item this is.
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
   - decimal (for decimal numeric questions) 
+  - date (for date questions) 
 repeats 
 boolean 
 Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -40793,6 +40804,7 @@ The type of questionnaire item this is.
   - choice (for multiple or single choice questions) 
   - text (for free text questions) 
   - decimal (for decimal numeric questions) 
+  - date (for date questions) 
 repeats 
 boolean 
 Whether the item may repeat. This value will be true for multiple choice questions and false for single select questions.
@@ -40918,14 +40930,14 @@ The request requires user authorization.
                     "answerOption": [
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
+                                "system": "http://loinc.org",
                                 "code": "LA33-6",
                                 "display": "Yes"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
+                                "system": "http://loinc.org",
                                 "code": "LA32-8",
                                 "display": "No"
                             }
@@ -40956,57 +40968,57 @@ The request requires user authorization.
                     "answerOption": [
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "228449008-0",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A1",
                                 "display": "0"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "38112003",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A2",
                                 "display": "1"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "19338005",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A3",
                                 "display": "2"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "79605009",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A4",
                                 "display": "3"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "9362000",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A5",
                                 "display": "4"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "34001005",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A6",
                                 "display": "5"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "68244004",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A7",
                                 "display": "6"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "65607009",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q2_A8",
                                 "display": "7"
                             }
                         }
@@ -41042,29 +41054,29 @@ The request requires user authorization.
                     "answerOption": [
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q3_A1",
                                 "display": "10-20 min"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q3_A2",
                                 "display": "20-40 min"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q3_A3",
                                 "display": "40-60 min"
                             }
                         },
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q3_A4",
                                 "display": "> 1 hr"
                             }
                         }
@@ -41074,8 +41086,8 @@ The request requires user authorization.
                     "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
                     "code": [
                         {
-                            "system": "http://snomed.info/sct",
-                            "code": "QUES_FINACIAL_STRESS_CODE_Q4"
+                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                            "code": "QUES_EXERCISE_Q4"
                         }
                     ],
                     "text": "What type of exercise do you do?",
@@ -41084,16 +41096,40 @@ The request requires user authorization.
                         {
                             "question": "93137723-295f-4b28-9f97-fb58825b2cda",
                             "operator": "=",
-                            "answerString": "40-60 min"
+                            "answerCoding": {
+                                "code": "QUES_EXERCISE_Q3_A3",
+                                "display": "40-60 min"
+                            }
                         }
                     ],
                     "repeats": false,
                     "answerOption": [
                         {
                             "valueCoding": {
-                                "system": "http://snomed.info/sct",
-                                "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
-                                "display": "What type of exercise do you do?"
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q4_A1",
+                                "display": "TXT"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "linkId": "c47a9e05-2b8d-4f31-9a6e-1d5b3c8f7e20",
+                    "code": [
+                        {
+                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                            "code": "QUES_EXERCISE_Q5"
+                        }
+                    ],
+                    "text": "When did you last exercise?",
+                    "type": "date",
+                    "repeats": false,
+                    "answerOption": [
+                        {
+                            "valueCoding": {
+                                "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                "code": "QUES_EXERCISE_Q5_A1",
+                                "display": "DATE"
                             }
                         }
                     ]
@@ -41213,14 +41249,14 @@ The request requires user authorization.
                                 "answerOption": [
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
+                                            "system": "http://loinc.org",
                                             "code": "LA33-6",
                                             "display": "Yes"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
+                                            "system": "http://loinc.org",
                                             "code": "LA32-8",
                                             "display": "No"
                                         }
@@ -41251,57 +41287,57 @@ The request requires user authorization.
                                 "answerOption": [
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "228449008-0",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A1",
                                             "display": "0"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "38112003",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A2",
                                             "display": "1"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "19338005",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A3",
                                             "display": "2"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "79605009",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A4",
                                             "display": "3"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "9362000",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A5",
                                             "display": "4"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "34001005",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A6",
                                             "display": "5"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "68244004",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A7",
                                             "display": "6"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "65607009",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q2_A8",
                                             "display": "7"
                                         }
                                     }
@@ -41337,29 +41373,29 @@ The request requires user authorization.
                                 "answerOption": [
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "QUES_FINACIAL_STRESS_CODE_Q3_A1",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q3_A1",
                                             "display": "10-20 min"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "QUES_FINACIAL_STRESS_CODE_Q3_A2",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q3_A2",
                                             "display": "20-40 min"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "QUES_FINACIAL_STRESS_CODE_Q3_A3",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q3_A3",
                                             "display": "40-60 min"
                                         }
                                     },
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "QUES_FINACIAL_STRESS_CODE_Q3_A4",
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q3_A4",
                                             "display": "> 1 hr"
                                         }
                                     }
@@ -41369,8 +41405,8 @@ The request requires user authorization.
                                 "linkId": "7eb053cd-cb2d-435f-8f55-f154645b55c4",
                                 "code": [
                                     {
-                                        "system": "http://snomed.info/sct",
-                                        "code": "QUES_FINACIAL_STRESS_CODE_Q4"
+                                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                        "code": "QUES_EXERCISE_Q4"
                                     }
                                 ],
                                 "text": "What type of exercise do you do?",
@@ -41379,16 +41415,40 @@ The request requires user authorization.
                                     {
                                         "question": "93137723-295f-4b28-9f97-fb58825b2cda",
                                         "operator": "=",
-                                        "answerString": "40-60 min"
+                                        "answerCoding": {
+                                            "code": "QUES_EXERCISE_Q3_A3",
+                                            "display": "40-60 min"
+                                        }
                                     }
                                 ],
                                 "repeats": false,
                                 "answerOption": [
                                     {
                                         "valueCoding": {
-                                            "system": "http://snomed.info/sct",
-                                            "code": "QUES_FINACIAL_STRESS_CODE_Q4_A1",
-                                            "display": "What type of exercise do you do?"
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q4_A1",
+                                            "display": "TXT"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "linkId": "c47a9e05-2b8d-4f31-9a6e-1d5b3c8f7e20",
+                                "code": [
+                                    {
+                                        "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                        "code": "QUES_EXERCISE_Q5"
+                                    }
+                                ],
+                                "text": "When did you last exercise?",
+                                "type": "date",
+                                "repeats": false,
+                                "answerOption": [
+                                    {
+                                        "valueCoding": {
+                                            "system": "http://schemas.example.canvasmedical.com/fhir/systems/internal",
+                                            "code": "QUES_EXERCISE_Q5_A1",
+                                            "display": "DATE"
                                         }
                                     }
                                 ]
@@ -41560,7 +41620,8 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+• Date  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -41587,6 +41648,9 @@ For question where the answer is a free-text field (i.e. Questionnaire item type
 valueDecimal 
 decimal 
 For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueDate 
+date 
+For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
 valueCoding 
 json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
@@ -41633,7 +41697,8 @@ For single or free text questions, if more than one answer is provided, you will
 For free text questions, the answer object must include a `valueString` or you will get the error: `Question of type TXT expects a valueString answer`  
 For single or multiple choice questions, the answer objects must include a `valueCoding` or you will see one of these errors:  
 `Question of type SING expects a valueCoding answer`  
-`Question of type MULT expects a valueCoding answer`
+`Question of type MULT expects a valueCoding answer`  
+For date questions, the answer object must include a `valueDate` or you will get the error: `Question of type DATE expects a valueDate answer`
 get
 /QuestionnaireResponse/{id}
 #### QuestionnaireResponse read
@@ -41757,7 +41822,8 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+• Date  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -41784,6 +41850,9 @@ For question where the answer is a free-text field (i.e. Questionnaire item type
 valueDecimal 
 decimal 
 For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueDate 
+date 
+For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
 valueCoding 
 json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
@@ -41921,7 +41990,8 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+• Date  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -41948,6 +42018,9 @@ For question where the answer is a free-text field (i.e. Questionnaire item type
 valueDecimal 
 decimal 
 For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueDate 
+date 
+For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
 valueCoding 
 json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
@@ -42158,7 +42231,8 @@ Canvas supports the following question formats:
 • Free text  
 • Single choice  
 • Multiple choice  
-Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.  
+• Date  
+Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.  
 The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):  
 FHIR system uri | Canvas system value  
 ---|---  
@@ -42185,6 +42259,9 @@ For question where the answer is a free-text field (i.e. Questionnaire item type
 valueDecimal 
 decimal 
 For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+valueDate 
+date 
+For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
 valueCoding 
 json 
 For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
@@ -42295,6 +42372,15 @@ The request requires user authorization.
                             "valueString": "Yep"
                         }
                     ]
+                },
+                {
+                    "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                    "text": "If you quit smoking, what day?",
+                    "answer": [
+                        {
+                            "valueDate": "2026-07-14"
+                        }
+                    ]
                 }
             ]
         }'
@@ -42372,6 +42458,15 @@ The request requires user authorization.
                     "answer": [
                         {
                             "valueString": "Yep"
+                        }
+                    ]
+                },
+                {
+                    "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                    "text": "If you quit smoking, what day?",
+                    "answer": [
+                        {
+                            "valueDate": "2026-07-14"
                         }
                     ]
                 }
@@ -42549,6 +42644,15 @@ The request requires user authorization.
                             "valueString": "Yep"
                         }
                     ]
+                },
+                {
+                    "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                    "text": "If you quit smoking, what day?",
+                    "answer": [
+                        {
+                            "valueDate": "2026-07-14"
+                        }
+                    ]
                 }
             ]
         }
@@ -42672,6 +42776,15 @@ The request requires user authorization.
                             "valueString": "Yep"
                         }
                     ]
+                },
+                {
+                    "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                    "text": "If you quit smoking, what day?",
+                    "answer": [
+                        {
+                            "valueDate": "2026-07-14"
+                        }
+                    ]
                 }
             ]
         }'
@@ -42749,6 +42862,15 @@ The request requires user authorization.
                     "answer": [
                         {
                             "valueString": "Yep"
+                        }
+                    ]
+                },
+                {
+                    "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                    "text": "If you quit smoking, what day?",
+                    "answer": [
+                        {
+                            "valueDate": "2026-07-14"
                         }
                     ]
                 }
@@ -42974,6 +43096,15 @@ The request requires user authorization.
                                 "answer": [
                                     {
                                         "valueString": "Yep"
+                                    }
+                                ]
+                            },
+                            {
+                                "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                                "text": "If you quit smoking, what day?",
+                                "answer": [
+                                    {
+                                        "valueDate": "2026-07-14"
                                     }
                                 ]
                             }
@@ -45284,7 +45415,8 @@ The reference string of the practitioner in the format of `"Practitioner/4150cd2
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
-If the label doesn't exist in Canvas already, it will be created.
+If the label doesn't exist in Canvas already, it will be created.   
+When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
 Click to view child attributes
 type 
 json required
@@ -45570,7 +45702,8 @@ The reference string of the practitioner in the format of `"Practitioner/4150cd2
 input 
 array[json] 
 Information used to perform the task. In Canvas this translates to added labels on a Task.
-If the label doesn't exist in Canvas already, it will be created.
+If the label doesn't exist in Canvas already, it will be created.   
+When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
 Click to view child attributes
 type 
 json required

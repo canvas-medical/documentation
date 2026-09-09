@@ -62,7 +62,7 @@ for coding in instruction.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
-Instruct commands originated through the SDK use either the SNOMED CT code system or an internal "unstructured" system for free-text instructions. See the [InstructCommand](/sdk/commands/#instructcommand) effect for the write-side details.
+Instruct commands originated through the SDK use either the SNOMED CT code system or an internal "unstructured" system for free-text instructions. See the [InstructCommand](/sdk/commands/#instruct) effect for the write-side details.
 
 ## Committed instructions
 
