@@ -1121,6 +1121,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Group"
+    url: /sdk/data-group/
+    description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.
   - title: "HistoryOfPresentIllness"
     url: /sdk/data-history-present-illness/
     description: The History of Present Illness (HPI) narrative recorded on a note.
