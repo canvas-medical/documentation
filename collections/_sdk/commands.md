@@ -438,7 +438,7 @@ Records a coded (ICD-10) condition on the patient's Conditions list with clinica
 
 **Example**:
 
-```python
+```python?partial=true
 from canvas_sdk.commands import AddConditionCommand
 from datetime import date
 
