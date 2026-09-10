@@ -144,6 +144,7 @@ Captures metadata about the method and details of a collected payment.
 | created          | DateTime                          |
 | modified         | DateTime                          |
 | postings         | QuerySet[[BasePosting](#baseposting)] |
+| receipt          | [Receipt](/sdk/data-receipt/#receipt) |
 
 ### NewLineItemPayment
 
