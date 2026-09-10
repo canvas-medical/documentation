@@ -101,6 +101,15 @@
 }
 
 
+/* Fallback for a tag with no branch in releasenotes-index.html. */
+.tag-default {
+  background-color: #e6e6e6;
+  color: #333333;
+  padding: 3px 9px; /* Adjust padding to create space around the text */
+  font-size: 0.8em;
+}
+
+
 .tag-data {
   background-color: #ded7f2;
   color: #3b2a70;
