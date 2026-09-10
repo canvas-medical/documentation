@@ -32038,6 +32038,8 @@ In this example, `entry` contains 10 Observation resources - following the relat
 Demographics and other administrative information about an individual or animal receiving care or other health-related services.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html>  
 Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
+**Related guides:**
+  - [Testing Pharmacy Workflows in a Staging Environment](/guides/pharmacy-staging-testing/)
 ### Endpoints
 post /Patient get /Patient/{id} put /Patient/{id} get /Patient
 post
@@ -37093,6 +37095,8 @@ The bearer token included in requests send to this endpoint must have one of the
 A person who is directly or indirectly involved in the provisioning of healthcare.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html>  
 To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).  
+**Related guides:**
+  - [Testing Pharmacy Workflows in a Staging Environment](/guides/pharmacy-staging-testing/)
 ### Endpoints
 post /Practitioner get /Practitioner/{id} put /Practitioner/{id} get /Practitioner
 post
