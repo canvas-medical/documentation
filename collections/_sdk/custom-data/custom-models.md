@@ -43,7 +43,7 @@ Create a custom model by extending `CustomModel`:
 
 ```python
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import BooleanField, DateField, DateTimeField, DecimalField, IntegerField, JSONField, TextField 
+from django.db.models import BooleanField, DecimalField, IntegerField, JSONField, TextField
 
 
 class HealthCoach(CustomModel):
@@ -52,14 +52,50 @@ class HealthCoach(CustomModel):
     practicing_since = IntegerField()
     version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
     is_accepting_patients = BooleanField()
-    created_date = DateField(auto_now_add=True)
-    last_modified_at = DateTimeField(auto_now_add=True)
-    extended_attributes = JSONField()    
+    extended_attributes = JSONField()
  ```
 
 This above definition will result in a PostgreSQL table named `healthcoach`. It will have a primary key
-column named `dbid` of type `serial`, an auto-incrementing integer. It will have six additional columns
-of `text`, `integer`, `numeric(3,8)`, `boolean`, `jsonb`,`date`, and `timestamp with time zone`, respectively.
+column named `dbid` of type `serial`, an auto-incrementing integer. It will have five columns for the
+declared fields, of type `text`, `integer`, `numeric(3,1)`, `boolean`, and `jsonb` respectively, plus the
+two generated metadata columns described below.
+
+---
+
+## Generated Metadata Columns
+
+Every CustomModel table carries two timestamp columns you do not declare:
+
+| Column | Type | Written |
+| --- | --- | --- |
+| `created` | `timestamp with time zone` | once, when the row is inserted |
+| `modified` | `timestamp with time zone` | on every write to the row |
+
+```python?partial=true
+coach = HealthCoach.objects.create(name="Sam Rivera", practicing_since=2015)
+
+coach.created   # when the row was inserted
+coach.modified  # same value until the next write
+```
+
+They are populated for you on `save()`, `create()`, `bulk_create()`, `update()`, and `bulk_update()`, so a
+queryset-level write keeps `modified` accurate rather than leaving it at the previous write. Passing an
+explicit value overrides the generated one:
+
+```python?partial=true
+HealthCoach.objects.filter(name="Sam Rivera").update(modified=known_timestamp)
+```
+
+Both columns are nullable, because a row written before its table carried them holds `NULL` in both: the
+value was never recorded, and there is nothing to backfill it from. Every row written once the columns
+exist is stamped.
+
+A model that declares `created` or `modified` itself, or inherits either from an abstract base, keeps its own
+field and does not get the generated one. Prefer the generated columns: a table that spells the same fact a
+second way (`created_at`, `created_date`) ends up carrying both columns, and columns cannot be dropped.
+
+Attribution, meaning which user made the write, is not generated, because there is no request context
+inside `save()`. A model that needs it declares its own actor foreign key and sets it at the call site.
 
 ---
 
@@ -120,7 +156,7 @@ Add indexes for frequently queried fields:
 ```python
 from canvas_sdk.v1.data.base import CustomModel
 from django.contrib.postgres.indexes import GinIndex
-from django.db.models import BooleanField, DateTimeField, Index, IntegerField, JSONField, TextField 
+from django.db.models import BooleanField, Index, IntegerField, JSONField, TextField
 
 
 class ProviderQualification(CustomModel):
@@ -130,7 +166,6 @@ class ProviderQualification(CustomModel):
     board_certified = BooleanField()
     practicing_since_year = IntegerField()
     extended_attributes = JSONField()
-    created_at = DateTimeField()
     
     class Meta:
         indexes = [
@@ -138,8 +173,8 @@ class ProviderQualification(CustomModel):
             Index(fields=["practicing_since_year"]),
             # Composite index for common search combinations
             Index(fields=["first_name", "last_name"]),
-            # Descending index for ordering records
-            Index(fields=["-created_at"]),
+            # Descending index for ordering records, here on a generated column
+            Index(fields=["-created"]),
             # Gin index for efficient JSON queries
             GinIndex(fields=["extended_attributes"])
         ]
@@ -385,7 +420,7 @@ Use `OneToOneField` to define this relationship.
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import CASCADE, DateTimeField, DecimalField, OneToOneField, TextField
+from django.db.models import CASCADE, DecimalField, OneToOneField, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -397,16 +432,16 @@ class Biography(CustomModel):
     biography = TextField()
     language = TextField()
     version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
-    last_modified_at = DateTimeField(auto_now_add=True)
 
     staff = OneToOneField(
         CustomStaff, to_field="dbid", on_delete=CASCADE, related_name="biography"
     )
 ```
 
-The above will create a table with a `serial` primary key, two `text` columns, a `numeric(1,3)` column, a `timestamptz` column,
-and an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model. The `CustomStaff`
-class will contain the reverse mapping via `related_name`.
+The above will create a table with a `serial` primary key, two `text` columns, a `numeric(3,1)` column,
+an `integer` column named `staff_id` that contains a foreign key into the SDK `Staff` model, and the
+`created` and `modified` metadata columns. The `CustomStaff` class will contain the reverse mapping via
+`related_name`.
 
 **Uniqueness:** A `OneToOneField` implies that the foreign key column is unique — each target record can be
 referenced by at most one row. The SDK automatically creates a `UNIQUE INDEX` on the foreign key column
@@ -488,7 +523,7 @@ spanish_providers = CustomStaff.objects.filter(
 from datetime import datetime, timedelta
 
 outdated_bios = CustomStaff.objects.filter(
-    biography__last_modified_at__lte=datetime.now() - timedelta(days=365)
+    biography__modified__lte=datetime.now() - timedelta(days=365)
 )
 ```
 
@@ -504,7 +539,7 @@ Use `ForeignKey` to define this relationship.
 ```python
 from canvas_sdk.v1.data import Staff, ModelExtension
 from canvas_sdk.v1.data.base import CustomModel
-from django.db.models import CASCADE, DateTimeField, DecimalField, ForeignKey, TextField
+from django.db.models import CASCADE, DecimalField, ForeignKey, TextField
 
 
 class CustomStaff(Staff, ModelExtension):
@@ -515,7 +550,6 @@ class Biography(CustomModel):
   biography = TextField()
   language = TextField()
   version = DecimalField(default=1.0, decimal_places=1, max_digits=3)
-  last_modified_at = DateTimeField(auto_now_add=True)
 
   # Same as one-to-one, but a Foreign key with a plural 'related_name'. Now, each staff may have multiple biographies,
   # perhaps in different languages.
