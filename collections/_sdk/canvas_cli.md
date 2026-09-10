@@ -66,11 +66,23 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `--version`
 - `--help`: Show this message and exit.
 
+## Control Room beta
+
+This section covers the Canvas CLI commands available in the Control Room beta.
+
+Control Room is the authoritative git home for a plugin. The CLI never talks to it directly: it goes through your own Canvas instance, which proxies to Control Room and signs short-lived tokens on your behalf. There is no separate Control Room login — authentication stays per-instance and automatic through the `~/.canvas/credentials.ini` OAuth flow described in [Configuration and Authenticating to Your Canvas Instance](#configuration-and-authenticating-to-your-canvas-instance). These commands assume you're comfortable with basic git operations — commits, remotes, and pushes.
+
+To use these commands, set the environment variable `CONTROL_ROOM_BETA` to `true` (case-insensitive). You must export it yourself. No distribution sets it for you. When it is not set, these commands do not appear and the CLI keeps its existing behavior.
+
+{% include alert.html type="info" content="These commands are part of the <b>Control Room beta</b>. They register only when the <code>CONTROL_ROOM_BETA</code> environment variable is set to <code>true</code>. Without it, the CLI keeps its existing behavior." %}
+
 ## Commands
 
 - `init`: Create a new plugin
 - `install`: Install a plugin into a Canvas instance
-- `uninstall`: Uninstall a plugin from a Canvas instance
+- `deploy`: Build and install a plugin on this instance through Control Room, publishing the current code first if needed (Control Room beta)
+- `cr-init`: Connect a plugin's git repo to Control Room (Control Room beta)
+- `uninstall`: Uninstall a plugin from a Canvas instance (behaves differently in the Control Room beta)
 - `enable`: Enable a plugin from a Canvas instance
 - `disable`: Disable a plugin from a Canvas instance
 - `list`: List all plugins from a Canvas instance
@@ -78,7 +90,8 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
 - `config list`: List plugin variables on a Canvas instance
-- `config set`: Set plugin variables on a Canvas instance
+- `config set`: Set plugin variables on a Canvas instance (behaves differently in the Control Room beta)
+- `config unset`: Unset plugin variables via Control Room (Control Room beta)
 
 ### `canvas init`
 
@@ -139,6 +152,87 @@ Example
 test_*.py
 ```
 
+### `canvas deploy`
+
+Build and install a plugin on this instance through Control Room, publishing the current code to Control Room's git repository first if needed.
+
+{% include alert.html type="info" content="Available only in the <a href='#control-room-beta'>Control Room beta</a>." %}
+
+**Usage**:
+
+```console
+$ canvas deploy [OPTIONS] PLUGIN_NAME
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to the plugin to deploy [required]
+
+**Options**:
+
+- `--ref TEXT`: Deploy an already-published git ref (a tag or older commit) as-is, without pushing.
+- `--no-push`: Deploy the current `main` ref as-is, without pushing `HEAD` first.
+- `--host TEXT`: Canvas instance to connect to.
+- `--yes`, `-y`: Approve all consent prompts non-interactively.
+- `--help`: Show this message and exit.
+
+**Notes**:
+
+The one-shot happy path runs without `--ref` or `--no-push`. In order, `canvas deploy`:
+
+1. Checks that the plugin is in a git repo. At an interactive terminal, it offers to run `git init` at the repo root — the parent of the plugin package directory — if none exists yet.
+2. Registers the plugin's Control Room repo.
+3. Points `origin` at Control Room and wires up the push-credential helper.
+4. Commits the working tree interactively: it shows the pending changes, asks to commit and deploy, and prompts for a commit message that defaults to `Deploy via canvas`.
+5. Pushes `HEAD` to `main`.
+6. Builds and installs, polling until the deploy reaches a terminal outcome: succeeded, failed, partial, or cancelled.
+
+On a non-success outcome (failed, partial, or cancelled), or if it cannot confirm completion within the wait window, `canvas deploy` exits with a nonzero status (code 1) — the same convention as [`canvas validate`](#canvas-validate). A successful deploy exits 0. Check `canvas logs` for the cause, then re-run `canvas deploy` once you've fixed the issue.
+
+Pushes are authenticated by a git credential helper the CLI wires up automatically.
+
+To deploy an already-published ref instead of pushing, use one of `--ref` or `--no-push`: `--ref` deploys the named tag or commit, and `--no-push` deploys the current `main` as-is. Omit both to publish and deploy the current `HEAD`.
+
+Running with a dirty or uninitialized git tree and no interactive terminal — in CI or a script — errors rather than committing unattended. Commit and initialize the repo first, or pass `--ref` or `--no-push` to deploy an already-published ref.
+
+Control Room requires the `canvas init` layout `<repo>/<package>/CANVAS_MANIFEST.json` and rejects a manifest at the repo root, so the git repo must be rooted one level above the package directory. See [Handler resolution and directory layout](#handler-resolution-and-directory-layout).
+
+A gated deploy — one that needs cross-plugin custom-data access, for example — prints its consent requests and prompts you to approve or deny each one inline. Pass `--yes` or `-y` to approve all non-interactively.
+
+### `canvas cr-init`
+
+Connect a plugin's git repo to Control Room by setting up its `origin` remote and the push-credential helper, without deploying. Running it is a one-time, idempotent setup step.
+
+Use `cr-init` when you'd rather manage commits and pushes yourself with plain git, or want to connect the repo to Control Room before you're ready to deploy. The one-shot `canvas deploy` runs this same setup for you, so the default flow needs no `cr-init` first.
+
+{% include alert.html type="info" content="Available only in the <a href='#control-room-beta'>Control Room beta</a>." %}
+
+**Usage**:
+
+```console
+$ canvas cr-init [OPTIONS] PLUGIN_NAME
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Path to the plugin to connect to Control Room [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to.
+- `--repo-name TEXT`: Git repository name in Control Room. The plugin path must be an existing directory, but with `--repo-name` its `CANVAS_MANIFEST.json` need not exist yet — Control Room tracks the git repository name separately from the plugin package name. Without `--repo-name`, `cr-init` reads the manifest to default the repository name, so the manifest must be present in that case.
+- `--help`: Show this message and exit.
+
+**Example**:
+
+On success, `cr-init` prints a confirmation naming the connected repository and the `origin` remote, then shows the plain-git commands to publish and deploy — the sequence below. If it cannot reach Control Room, or you lack a plugin-developer role, it fails with an actionable error instead. Git authenticates the push through the credential helper that `cr-init` set up.
+
+```console
+$ git add -A && git commit -m "your message"
+$ git push origin HEAD:main
+$ canvas deploy my_plugin --host buttered-popcorn
+```
+
 ### `canvas uninstall`
 
 Uninstall a plugin from a Canvas instance.
@@ -153,10 +247,19 @@ $ canvas uninstall [OPTIONS] NAME
 
 - `NAME`: Plugin name to delete [required]
 
-**Options**:
+**Options (GA)**:
 
 - `--force`: Force uninstallation of the plugin
 - `--host TEXT`: Canvas instance to connect to
+- `--help`: Show this message and exit.
+
+#### Control Room beta
+
+In the [Control Room beta](#control-room-beta), `uninstall` routes through Control Room, because the instance refuses a direct CLI uninstall of a Control-Room-managed plugin. The beta variant takes the plugin name and `--host` only. It does not expose `--force`.
+
+**Options (Control Room beta)**:
+
+- `--host TEXT`: Canvas instance to connect to.
 - `--help`: Show this message and exit.
 
 ### `canvas enable`
@@ -432,7 +535,7 @@ $ canvas config list my_plugin
 
 ### `canvas config set`
 
-Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables directly on a Canvas instance (the GA path). Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
@@ -465,9 +568,57 @@ $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
  - `PLUGIN`:  Plugin name to set variables for
  - `VARIABLES...`: Variables to set, e.g. Key=value
 
-**Options**:
+**Options (GA)**:
 
 - `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.
+> On the direct-to-instance (GA) path, whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.
+
+#### Control Room beta
+
+In the [Control Room beta](#control-room-beta), `config set` routes through Control Room, which owns each variable's sensitivity.
+
+**Options (Control Room beta)**:
+
+- `--secret TEXT`: Set a sensitive, write-only variable, e.g. Key=value. Repeatable.
+- `--variable TEXT`: Set a plain, non-sensitive variable, e.g. Key=value. Repeatable.
+- `--host TEXT`: Canvas instance to connect to.
+- `--help`: Show this message and exit.
+
+Positional `VARIABLES` are bare `KEY=value` pairs.
+
+**Sensitivity rules**:
+
+- Declaring a net-new variable requires a flag, either `--secret` or `--variable`.
+- A bare `KEY=value` updates an existing variable and preserves its current sensitivity.
+- A bare `KEY=value` for a key that does not exist yet is rejected until you declare it with a flag.
+- A plain variable can be promoted to a secret with `--secret`, but a secret is never demoted to plain.
+
+If the plugin is not installed on the instance, the values are stored in Control Room and applied on the next deploy. The command reports this.
+
+### `canvas config unset`
+
+Unset plugin variables via Control Room. This command has no direct-instance equivalent and appears only in the Control Room beta.
+
+{% include alert.html type="info" content="Available only in the <a href='#control-room-beta'>Control Room beta</a>." %}
+
+**Usage**:
+
+```console
+$ canvas config unset [OPTIONS] PLUGIN_NAME KEYS...
+```
+
+**Arguments**:
+
+- `PLUGIN_NAME`: Plugin name to configure [required]
+- `KEYS...`: Variable key names to unset, e.g. API_KEY [required]
+
+**Options**:
+
+- `--host TEXT`: Canvas instance to connect to.
+- `--help`: Show this message and exit.
+
+**Notes**:
+
+`config unset` clears each key's value on the instance and pushes a reconcile so the instance drops them — omitting a key from the plugin's configuration deletes it. The change is immediate and needs no redeploy. Clearing a key that was never set is a no-op.
