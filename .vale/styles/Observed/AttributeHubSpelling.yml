@@ -1,0 +1,10 @@
+# Rung: Observed. Source: collection analysis style-observations.md (terminology
+# table — "AttributeHub" is one word). Prevalence: 11 of 11 sampled in-scope pages
+# that use the term write the single word "AttributeHub" (100%); preventive check
+# for a spaced variant. Suggestion-level, not stated.
+extends: existence
+message: "Prefer the one-word class name 'AttributeHub', not '%s'. Observed convention (100%% of pages); a suggestion, not a stated rule."
+level: suggestion
+ignorecase: false
+tokens:
+  - '\bAttribute Hubs?\b'
