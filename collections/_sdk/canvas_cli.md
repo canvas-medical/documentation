@@ -70,7 +70,12 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 
 This section covers the Canvas CLI commands available in the Control Room beta.
 
-Control Room is the authoritative git home for a plugin. The CLI never talks to it directly: it goes through your own Canvas instance, which proxies to Control Room and signs short-lived tokens on your behalf. There is no separate Control Room login — authentication stays per-instance and automatic through the `~/.canvas/credentials.ini` OAuth flow described in [Configuration and Authenticating to Your Canvas Instance](#configuration-and-authenticating-to-your-canvas-instance). These commands assume you're comfortable with basic git operations — commits, remotes, and pushes.
+Control Room is the authoritative git home for a plugin. The CLI never talks to it directly: it goes through your own Canvas instance, which proxies to Control Room and signs short-lived tokens on your behalf. There is no separate Control Room login — authentication stays per-instance and automatic through the `~/.canvas/credentials.ini` OAuth flow described in [Configuration and Authenticating to Your Canvas Instance](#configuration-and-authenticating-to-your-canvas-instance). The git credential helper mints a fresh, short-lived credential for each push, so nothing long-lived is stored. These commands assume you're comfortable with basic git operations — commits, remotes, and pushes.
+
+Before you use these commands, make sure your Canvas account meets both prerequisites below. If it doesn't, every beta command fails:
+
+- **A developer role.** The user must hold the Administrative Developer or Clinical Developer role on the instance. Without one of these roles, the command fails and tells you which roles are required.
+- **An email address.** The user must have an email address on their account. Control Room identifies you — the developer it is acting on behalf of — by that email, so a command run as a user with no email, including a client-credentials token, which has no user, fails and tells you to add an email address.
 
 To use these commands, set the environment variable `CONTROL_ROOM_BETA` to `true` (case-insensitive). You must export it yourself. No distribution sets it for you. When it is not set, these commands do not appear and the CLI keeps its existing behavior.
 
