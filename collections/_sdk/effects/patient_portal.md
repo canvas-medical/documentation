@@ -549,6 +549,8 @@ class InviteVerifiedPatient(BaseHandler):
         return [SendInviteEffect(user_dbid=user.dbid).apply()]
 ```
 
+**Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. The chart therefore still shows the patient as never invited, and staff may resend to a patient who already holds a live link.
+
 <br/>
 <br/>
 <br/>
