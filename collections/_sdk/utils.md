@@ -1279,7 +1279,7 @@ Pass a selected contact as the `service_provider` on [Refer](/sdk/commands/#refe
 
 Plugin authors can mint a patient's portal login link using `patient_portal_http`, then deliver portal invites and password resets over their own transport (their own SMS or email provider) instead of letting Canvas send them. To have Canvas send the invite for you instead, use [Send Invite](/sdk/patient-portal/#send-invite).
 
-```python
+```python?partial=true
 from canvas_sdk.utils.patient_portal import PatientPortalLinkError, patient_portal_http
 ```
 
@@ -1306,7 +1306,7 @@ The following handler mints a link, chooses the message copy from whether the pa
 
 **Example**:
 
-```python
+```python?partial=true
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
