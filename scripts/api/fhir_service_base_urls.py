@@ -10,11 +10,15 @@ FHIR Bundle JSON files for non-production and production environments.
 Steps for updating the FHIR service base URLs in the documentation repository:
 
 1. Create a branch in the documentation repository.
-2. Set the CONSOLE_API_BASE_URL environment variable to the correct value
+2. Set the CONSOLE_BASE_URL environment variable to the correct value
    (see https://www.notion.so/canvasmedical/REST-API-3040bd9e403380a8ba1ac0b4a498ac5b).
-3. Set the CONSOLE_API_AUTH_TOKEN environment variable to your Canvas Console auth token.
-3. Run the script: uv run fhir_service_base_urls.py
-4. Create a PR from your branch and merge it.
+3. Set the CONSOLE_AUTH_TOKEN environment variable to your Canvas Console auth token.
+4. Run the script: uv run fhir_service_base_urls.py
+5. Create a PR from your branch and merge it.
+
+This process is also run quarterly (and on demand) by the
+.github/workflows/refresh-fhir-service-base-urls.yml GitHub Actions workflow, which
+opens a PR whenever the regenerated bundles differ from what is published.
 """
 
 # /// script
