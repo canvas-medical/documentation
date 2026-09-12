@@ -34,8 +34,24 @@ Before any effect is emitted, the model runs these checks:
 
 - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
 - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
-- **No Attachments Supported:** The Message effect does not yet support attachments.
 - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
+
+## File attachments
+
+Pass S3 keys on `attachment_upload_keys` to attach files to a message. Each key must live under your plugin's uploads prefix (`plugin-uploads/<your-plugin-name>/...`) — keys outside that prefix are rejected. Canvas performs a server-side S3 copy into message-attachment storage when the effect is applied; no file bytes pass through your plugin. One `MessageAttachment` row is created per key.
+
+Attachments work with `create()`, `create_and_send()`, and `edit()` (edit *adds* attachments; it doesn't replace the existing ones).
+
+```python?partial=True
+Message(
+    content="See attached lab report.",
+    sender_id=staff.id,
+    recipient_id=patient.id,
+    attachment_upload_keys=["plugin-uploads/my_plugin/abc-lab-report.pdf"],
+).create()
+```
+
+See the [SimpleAPI HTTP documentation](/sdk/handlers-simple-api-http/) for the `upload_files=True` flag that produces these keys.
 
 
 ## Effect Methods
