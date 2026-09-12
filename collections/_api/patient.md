@@ -9,7 +9,9 @@ sections:
         description: >-
           Demographics and other administrative information about an individual or animal receiving care or other health-related services.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html)<br><br>
-          Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
+          Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.<br><br>
+          <!-- source: discussion #1293 -->
+          To manage a patient's membership in patient groups, use the FHIR <a href="/api/group">Group</a> endpoints. Group create/update requires sending the complete `member` array, so the recommended workflow is to read the current group, modify the full member list (append to add a patient, or filter out a reference to remove one), then update the group with the modified list. Patient group management is not yet available through the SDK.
 
         attributes:
           - name: resourceType
@@ -275,7 +277,9 @@ sections:
               External identifiers for this patient. None of these identifiers are surfaced on the patient chart, but they may help you correlate the Canvas patient with records in your own systems.
             read_and_search_description: >-
               The array always includes the Canvas-issued MRN (an entry with `system`: **http://canvasmedical.com** and a coded `type` of MR). Additional entries are external identifiers added through prior create/update calls or via the Patient profile in the Canvas UI.
-            create_description: The MRN is auto-issued by Canvas; do not include it on create.
+            # source: discussion #1401
+            create_description: >-
+              The Canvas MRN is system-issued and cannot be set or overwritten; do not include it on create. Any external identifiers you send (for example, an MRN from your own system) are stored and returned on a subsequent Read, but they are not surfaced anywhere in the Canvas UI.
             update_description: >-
               The MRN is managed by Canvas — do not modify it. <br><br>
               <b>Replace semantics:</b> Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing identifier; omit `id` to add a new one. An identifier already in Canvas that is **not** included in the update message will be deleted only if its `period.end` is in the future.
@@ -313,9 +317,10 @@ sections:
                 type: json
                 exclude_in: create, update
                 description: Organization that issued id.
+          # source: discussion #1538
           - name: active
             type: boolean
-            description: Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create.
+            description: Whether the patient is active in the healthcare system. Defaults to `true` if omitted on create. Setting `active` to `false` hides the patient from the default patient list in the Canvas UI (clinical users can still opt to search all patients, including inactive ones), which is a common way to hide duplicate patient records. Note that inactive patients are still returned by default in FHIR Patient Search; add `?active=true` to exclude them.
           - name: name
             type: array[json]
             required_in: create, update
@@ -460,14 +465,15 @@ sections:
                   - name: end
                     type: date
                     description: Inclusive end date.
+          # source: discussion #483
           - name: photo
             type: array[json]
-            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI.
+            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI. Omit this block entirely if you are not supplying a photo — including a `photo` entry whose `data` is null causes the create request to return a 500 error even though the patient is still created.
             attributes:
               - name: data
                 type: string
                 exclude_in: read, search
-                description: Base64-encoded image content. Use on create or update to upload a photo.
+                description: Base64-encoded image content. Use on create or update to upload a photo. Do not send a `photo` entry with null `data`.
               - name: url
                 type: string
                 exclude_in: create, update

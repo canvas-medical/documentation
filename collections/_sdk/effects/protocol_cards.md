@@ -110,6 +110,9 @@ class MyHandler(BaseHandler):
 
 ```
 
+<!-- source: discussion #818 -->
+{% include alert.html type="info" content="Calling <code>.apply()</code> <b>updates an existing protocol card</b> when there is an exact match on both the patient ID and the card's unique <code>key</code>; otherwise it creates a new card. This is how you change a card's <code>status</code> — for example from <code>DUE</code> to <code>SATISFIED</code> so it no longer appears in the active protocols tab — by re-applying a card with the same patient ID and key. To drive a status change off of a task (for example, closing a card when a related task is completed), a common approach is to tag the task with two labels: one indicating the task is linked to a protocol card, and a second carrying the card's unique key so the handler knows which card to update." %}
+
 To apply the effect to all active patients on plugin create and plugin update, you would include the plugin create and update events in `RESPONDS_TO`. And when responding to one of the plugin events you would use `patient_filter` instead of `patient_id` for the ProtocolCard.
 
 ```python
@@ -163,6 +166,9 @@ class MyHandler(BaseHandler):
 ```
 
 ### Supported Commands
+
+<!-- source: discussion #758 -->
+{% include alert.html type="info" content="Commands inserted from a protocol card recommendation populate their fields the same way as a command originated directly from a plugin — the values you set when instantiating the command (for example <code>image_code</code>, <code>diagnosis_codes</code>, <code>comment</code>) carry through to the inserted command." %}
 
 The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
 

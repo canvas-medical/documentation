@@ -54,6 +54,9 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 | `rank`        | `int`                | Priority order of contact methods                                 | Yes      |
 | `has_consent` | `bool` or `None`     | Whether consent has been given to use this contact method         | No       |
 
+<!-- source: discussion #1410 -->
+{% include alert.html type="info" content="If you have already validated a patient's phone or email in a prior workflow, set <code>has_consent=True</code> on the <code>PatientContactPoint</code> when creating the patient. This marks the contact point as okay to text or email and suppresses the additional 'click here' verification message that Canvas would otherwise send. When creating the patient via FHIR instead of the SDK, pass the equivalent <code>has-consent</code> extension on the telecom entry (<code>http://schemas.canvasmedical.com/fhir/extensions/has-consent</code> with <code>'valueBoolean': true</code>) — see the <a href='https://docs.canvasmedical.com/api/patient/#create'>FHIR Patient create docs</a>." %}
+
 ## PatientContact
 
 The `PatientContact` dataclass represents one of the patient's contacts — an emergency contact, next-of-kin, or other related person.
@@ -201,6 +204,9 @@ class MyHandler(BaseHandler):
 
 ### Updating a patient
 
+
+<!-- source: discussion #1005 -->
+{% include alert.html type="info" content="The patient update effect is imported from <code>canvas_sdk.effects.patient</code> (the same module as the create effect; <code>canvas_sdk.effects.patient_metadata_create_form</code> is not a valid import). To update an existing patient, pass <code>patient_id</code> — not <code>id</code> — to the effect. Only the attributes listed in the table above can be set this way; custom fields added through a <a href='/sdk/patient-metadata-create-form-effect/'>patient metadata create form</a> (for example <code>occupation</code>) are not attributes on the <code>Patient</code> effect and will raise <code>AttributeError</code>. Store those values with the separate <a href='/sdk/effect-patient-metadata/'>patient metadata effect</a> instead." %}
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier

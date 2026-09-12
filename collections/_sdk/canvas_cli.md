@@ -55,6 +55,18 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
 - Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
 - To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
 
+<!-- source: discussion #611 -->
+## Checking the SDK/runtime version on an instance
+
+`canvas --version` reports the version of the locally installed CLI. To find the SDK/runtime version actually running on a given Canvas instance — useful when verifying that an expected SDK change is live — import `version` from `canvas_sdk.handlers.base` inside a plugin running on that instance:
+
+```python
+from canvas_sdk.handlers.base import version
+from logger import log
+
+log.info(f"SDK version: {version}")
+```
+
 ## Usage
 
 ```console
@@ -118,6 +130,18 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
+<!-- source: discussion #1159 -->
+The install command takes the plugin folder name and must be run from one directory **above** the folder that contains `CANVAS_MANIFEST.json` — there is no `plugin` subcommand (`canvas plugin install ...` is incorrect). For example, if the manifest lives in `extensions/encounter_list/CANVAS_MANIFEST.json`, run the command from `extensions`:
+
+```console
+$ canvas install encounter_list --host your-host
+```
+
+`canvas install .` works as well when you are inside the directory that contains the manifest.
+
+<!-- source: discussion #1527 -->
+The handler/route class paths declared in `CANVAS_MANIFEST.json` are resolved relative to the plugin's root module — the manifest, the package `__init__.py`, and the subdirectories it references (e.g. `routes/`, `protocols/`) must all live in the same directory. A common mistake is an extra nesting level (manifest outside an inner package directory), which makes the sandbox resolve `my_plugin.routes.charting` to a path one level too deep. Import errors and bad class paths are not always surfaced in `canvas logs`; the symptom is that the plugin loads but its SimpleAPI endpoints return an empty HTTP 404. If an endpoint 404s with no plugin log activity, verify the directory structure and that every import in the referenced module resolves.
+
 Before uploading, `canvas install` runs the same pre-flight validation as [`canvas validate`](#canvas-validate):
 - Manifest validation (schema, tags, handler resolution)
 - [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
@@ -138,6 +162,12 @@ Example
 # Exclude test files
 test_*.py
 ```
+
+<!-- source: discussion #608 -->
+If a `canvas install` reports success but the runtime keeps executing the previous version of the plugin, first run `canvas logs` in a second terminal while reinstalling — load-time errors (syntax errors, disallowed/sandbox-violating imports) prevent the new version from being loaded and show up there. Note that the plugin-reload signaling now relies on the Redis client's built-in reconnect/backoff handling, which makes reinstalled plugin code picked up reliably; earlier versions could occasionally keep running stale code after a reconnect.
+
+<!-- source: discussion #795 -->
+Plugin install can fail with an HTTP 500 when too many files are included in the packaged tarball — most often because a Python virtual environment directory was created inside the plugin directory. Files and directories whose names begin with a `.` are excluded from the tarball, so prefixing the virtualenv folder with a dot (for example renaming `canvas-env` to `.canvas-env`) excludes it and resolves the error.
 
 ### `canvas uninstall`
 
@@ -396,6 +426,9 @@ $ canvas logs [OPTIONS]
 ### `canvas config list`
 
 List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+
+<!-- source: discussion #998 -->
+> By design, `canvas config list` returns only the variable/secret **names** so you can see what can be set via the CLI — it never returns values. Values are not retrievable through the CLI at all.
 
 **Usage**:
 

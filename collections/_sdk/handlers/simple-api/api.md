@@ -789,3 +789,224 @@ curl --request POST \
 
 In this example the note is signed and recorded in Canvas as signed by the staff
 member who authorized the access token, not by Canvas Bot.
+
+## Common use cases
+
+SimpleAPI is the supported way to react to external (non-Canvas) events and to
+expose functionality that the FHIR API does not cover. A few recurring patterns:
+
+<!-- source: discussion #536 -->
+### Reacting to external events
+
+Effects such as Protocol Cards can normally only be created in response to
+internal Canvas events. To create one from an outside trigger, expose a
+SimpleAPI endpoint that accepts the external request and returns the
+corresponding effect. This makes SimpleAPI the supported entry point for any
+workflow that needs to be initiated from outside of Canvas.
+
+<!-- source: discussion #1164 -->
+### Originating commands that have no FHIR resource
+
+There are no FHIR API endpoints for HPI, Assessment, Plan, or Reason for Visit —
+these levels of granularity have no standard FHIR resource, and a custom FHIR
+extension would defeat the purpose of the standard. Instead, expose a SimpleAPI
+endpoint and originate the corresponding commands from your handler using the
+classes in the [command module](/sdk/commands/). You may also use
+`Command.objects` from the data module to check for uniqueness or to edit
+existing commands. This SDK-based approach gives you maximal control and
+correctness.
+
+<!-- source: discussion #708 -->
+### Calling SimpleAPI from an external application
+
+External applications (for example a Node.js service) integrate with Canvas by
+making POST/GET calls to the SimpleAPI endpoints you define in your plugin,
+which in turn trigger effects. Note that not every workflow has a dedicated
+effect — there is, for example, an effect for creating a [note](/sdk/effect-notes/),
+but Care Plan and Next Steps creation may not be directly supported. Task and
+Protocol Card creation are available and can often accomplish the same goal.
+
+<!-- source: discussion #735 -->
+### Creating or updating patients from a third-party webhook
+
+To process a third-party webhook (for example a form-submission webhook), point
+the webhook at a SimpleAPI `POST` endpoint rather than at the FHIR API. This is
+the recommended approach when you need to set custom patient metadata, which is
+not settable via FHIR. In your handler:
+
+1. Construct a [Patient effect](/sdk/effect-patient/) from the request body.
+2. Listen for the resulting [`PatientCreated` or `PatientUpdated` event](/sdk/events/#patients)
+   to obtain the new patient's ID.
+3. Call a [Patient Metadata effect](/sdk/effect-patient-metadata/) to set your
+   custom metadata.
+
+To carry the metadata across from the POST request to the event handler, use the
+[cache](/sdk/caching/): set the value when handling the POST and retrieve it when
+the event fires.
+
+<!-- source: discussion #1242 -->
+### Serving plugin frontends without leaking secrets
+
+If your plugin serves an HTML/JS UI (for example a vitals chart), do **not**
+embed secrets or credentials in client-side JavaScript to call third-party APIs
+directly. Instead, have your JavaScript call a SimpleAPI endpoint provided by the
+same plugin and protected with the [staff session authentication mixin](#staff-session).
+The plugin's Python code holds the secrets and makes the authenticated outbound
+request. This works as long as the HTML/JS is served from the plugin. See the
+[vitals visualizer example plugin](/sdk/example-vitals_visualizer_plugin/#vitals_visualizationhtml)
+for a working implementation.
+
+<!-- source: discussion #1547 -->
+### Grouping custom patient metadata fields
+
+A flat list of `PatientMetadataCreateFormEffect` fields cannot be divided into
+sections or headers. To present custom-grouped metadata UIs, build an
+[Application](/sdk/handlers-applications/) with the
+[`full_chart` scope](/sdk/handlers-applications/#full-chart-scope) — it appears
+as a tab alongside Chart and Profile. Build your own HTML forms, group them as
+you like, and write the values back as `PatientMetadata` through a SimpleAPI
+endpoint so they are stored the same way in the backend.
+
+## Building custom UIs
+
+<!-- source: discussion #1408 -->
+The recommended way to build a custom-styled UI — for either the provider UI or
+the patient portal — is to use `LaunchModalEffect` within a plugin. These are
+surfaced as either [action buttons](/sdk/handlers-action-buttons/) or
+[applications](/sdk/handlers-applications/). A `LaunchModalEffect` can be passed a
+URL, HTML directly, or be paired with a SimpleAPI request to back a custom
+frontend. For applications, the `scope` in `CANVAS_MANIFEST.json` controls where
+the app appears:
+
+- `global` — appears across all contexts in the provider UI except the patient chart.
+- `patient_specific` — appears only on the patient chart page in the provider UI.
+- `provider_menu_item` — appears in the provider UI hamburger menu.
+- `portal_menu_item` — appears in the patient portal sidebar.
+
+<!-- source: discussion #1204 -->
+> **Note:** Patient portal application URLs use the base64-encoded app identifier
+> (for example `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==`,
+> which decodes to `plugin_name.module.path:ClassName`). The browser address bar
+> does not change as the user navigates between apps. Because the identifier is
+> the plugin name, module path, and class name, renaming any of those files or
+> classes invalidates the link. If you need a direct, stable link, consider a URL
+> shortener and update it when those names change.
+
+<!-- source: discussion #556 -->
+> **Note:** Today all installed applications are visible to all users. Per-user
+> visibility control exists for [action buttons](/sdk/handlers-action-buttons/#optional-implement-the-visible-method)
+> via the `visible()` method, but not yet for applications.
+
+<!-- source: discussion #1310 -->
+> **Note:** There is no way to add a custom button to the panel-button list at
+> the top of the patient profile. You can only [reorder the existing panel buttons](/guides/customize-panel-buttons/).
+> The equivalent UX is a custom [Application](/sdk/handlers-applications/), which
+> is accessed from that same panel-button list.
+
+<!-- source: discussion #1411 -->
+> **Note:** Custom visual indicators on calendar/schedule appointments are not
+> currently supported. As a workaround, a `global`-scope Application can be shown
+> as a right-hand modal side by side with the schedule view to display
+> appointment groups, labels, tables, or links into the chart.
+
+<!-- source: discussion #1429 -->
+> **Note:** Action buttons do not currently show a loading or spinner state while
+> processing. For actions that take a few seconds (for example committing all
+> commands in a note), the button gives no visual feedback that work is in
+> progress, so users may click it repeatedly.
+
+<!-- source: discussion #1724 -->
+## Iframe sandbox and top-frame navigation
+
+There is no environment-specific iframe sandbox configuration in Canvas — dev and
+prod run identical code paths. Whether the application iframe gets a `sandbox`
+attribute is decided by matching the loaded URL against your manifest's
+`url_permissions` entries:
+
+- Matching is a **case-insensitive prefix match** of the loaded URL against each
+  `url_permissions[].url`. Every character counts, including scheme, port, and
+  trailing slash. The most common silent mismatch is a trailing-slash difference
+  (`https://example.com/` will not match a runtime URL of `https://example.com`).
+- If a matching entry grants `ALLOW_SAME_ORIGIN`, the iframe is rendered as
+  `sandbox="allow-same-origin allow-forms allow-popups allow-scripts"`. This does
+  **not** include `allow-top-navigation` or `allow-top-navigation-by-user-activation`,
+  so navigating the top frame from inside the iframe is blocked.
+- If no entry matches, no `sandbox` attribute is rendered and top-frame
+  navigation works normally.
+
+If you see top-navigation work in one environment but not another, the URLs are
+matching `url_permissions` differently between them (usually a character-level
+difference such as a missing trailing slash). To navigate while keeping
+`ALLOW_SAME_ORIGIN`, use `window.open(url, '_blank')` — the sandbox already
+includes `allow-popups`. Alternatively, remove `ALLOW_SAME_ORIGIN` from the
+manifest entry if your app does not need same-origin access from inside the
+iframe.
+
+## Troubleshooting
+
+<!-- source: discussion #858 -->
+### A SimpleAPI endpoint returns 404
+
+A 404 from an endpoint you believe is deployed usually means the plugin failed to
+load at reload time even though the deploy appeared to succeed — a runtime error
+when the plugins reload on the server. Keep two shells open: deploy in one and run
+`canvas logs` in the other to catch the load failure (and the line number) as it
+happens. Note also that the **plugin name cannot contain a hyphen** (`-`); use
+underscores in both the plugin name and the class path, or routing will 404.
+
+<!-- source: discussion #551 -->
+### 503 responses when originating many commands
+
+If you receive intermittent **503 No server is available** responses while issuing
+many command requests, have your client retry with
+[exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff#Rate_limiting).
+To reduce the number of round trips, expose a SimpleAPI endpoint that batches
+originate-and-commit in a single call. Normally a command's UUID is generated for
+you on originate, but to commit in the same call you must self-assign it first so
+both operations reference the same command:
+
+```python
+import uuid
+
+command = PlanCommand()
+command.command_uuid = str(uuid.uuid4())
+
+return [command.originate(), command.commit()]
+```
+
+<!-- source: discussion #498 -->
+### Action button "commit all commands" payload key
+
+In a commit-all-commands action button, the effect payload key must be `command`,
+not `command_uuid`:
+
+```python
+payload=json.dumps({"command": str(command.id)}),
+```
+
+Only commands enabled on your instance (non-beta) appear in a note and are
+therefore available to commit. Some commands are still in
+[beta](/product-updates/commands-module/); support can confirm which are enabled
+or turn beta commands on. In the UI, an enabled command shows the three-dot action
+menu before it is committed.
+
+<!-- source: discussion #458 -->
+### `note_id` in action button context is a numeric dbid
+
+The `note_id` provided in an action button's event context is a numeric database
+ID, not a UUID. Look the note up with `Note.objects.get(dbid=note_id)` — using
+`get(id=...)` will raise `Note matching query does not exist`.
+
+## Plugin sandbox
+
+Plugin code runs in a `RestrictedPython` sandbox with an allowlist of imports and
+language features.
+
+<!-- source: discussion #844 -->
+- `match` statements are now allowed in plugin code (they were previously blocked
+  with a `Match statements are not allowed` error).
+
+<!-- source: discussion #796 -->
+- The `cryptography` package is available, so the `jwt` package can sign tokens
+  using RS256. This is required to sign JWTs for external APIs that mandate RS256
+  (for example, Google APIs).

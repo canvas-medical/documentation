@@ -22,6 +22,32 @@ context changes within the application. This method is automatically triggered w
 users navigate to different URLs within Canvas, allowing your application to react
 to contextual changes with rich information about the current page.
 
+<!-- source: discussion #307 -->
+When an application is opened on a patient chart, `on_open()` has access to the
+current patient through `self.context`. The structure looks like
+`{'patient': {'id': '24cfe22ecf74420fb82dc40e44ca6166'}}`, so you can launch your
+application in the current patient context like this:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
+
+
+class MyApplication(Application):
+    """An embeddable application that can be registered to Canvas."""
+
+    def on_open(self) -> Effect:
+        """Handle the on_open event."""
+        patient_id = self.context['patient']['id']
+        patient_specific_url = f"https://example.com/patient-specific-application?patient={patient_id}"
+
+        return LaunchModalEffect(
+            url=patient_specific_url,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+        ).apply()
+```
+
 Context change events are currently supported for revenue workflows and include:
 
 - **URL information**: The current page URL that triggered the context change
@@ -384,6 +410,34 @@ The badge updates in real time without the user reloading the page. See the
 [Application Notification Badge](/sdk/effect-application-notification-badge/)
 effect for details.
 
+
+## Limitations and patterns
+
+<!-- source: discussion #595 -->
+### Third-party scripts only run inside a plugin iframe
+
+Canvas does not provide a way to inject application-wide JavaScript (for example,
+Segment or Sentry snippets) into the Canvas front end. Third-party scripts can
+only run inside the iframe of a plugin's own application.
+
+<!-- source: discussion #389 -->
+### Application iframes cannot access cookies
+
+Application iframes currently cannot access cookies, so each launch behaves like
+an incognito session. This affects auth and session persistence — a user may have
+to authenticate every time the iframe is launched, because the session is not
+remembered between launches.
+
+<!-- source: discussion #571 -->
+### Custom Task views backed by the Task API
+
+To present Tasks with locked fields, predefined dropdowns, or custom labels —
+beyond what the built-in Task command offers — build a custom web Application
+(for example one that launches on the right-hand side of a note) that reads and
+writes Tasks through the [Task API](/api/task/). Give these Tasks a custom label
+so you can filter for them in your application and filter them out of the general
+Tasks section. This requires building and maintaining the custom web app, but
+gives full control over the presentation and behavior of the Task-like objects.
 
 <br/>
 <br/>

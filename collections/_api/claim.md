@@ -287,12 +287,15 @@ sections:
             type: array[json]
             required_in: create,update
             attributes:
+              # source: discussion #1138
               - name: focal
                 type: boolean
                 required_in: create,update
                 description_for_all_endpoints: Coverage to be used for adjudication. 
                 read_and_search_description: Only insurance objects with `focal` as True will be returned in a Search/Read. 
-                create_and_update_description: Canvas will ignore any elements that are set to False. 
+                create_and_update_description: >-
+                  Canvas will ignore any elements that are set to False.<br><br>
+                  For a self-pay claim using the `"No Coverage"` display (with no `coverage.reference`), `focal` must be `false`. Sending `focal: true` with a `"No Coverage"` insurance entry raises a `KeyError` on `resource_identifier` and the claim is not created.
               - name: sequence
                 required_in: create,update
                 type: positive integer

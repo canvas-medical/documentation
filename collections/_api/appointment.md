@@ -326,9 +326,10 @@ sections:
           - name: date
             type: string
             description: Filter by start time. See [Date Filtering](/api/date-filtering) for more information.
+          # source: discussion #653
           - name: status
             type: string
-            description: The status of the appointment.
+            description: The status of the appointment. This parameter does not support comma-separated multi-value token searches — a single request can filter by only one status. To retrieve appointments across multiple statuses, make a separate request per status and combine the results client-side.
             search_options:
               - value: proposed
               - value: pending
@@ -367,7 +368,10 @@ sections:
           example_request: appointment-update-request
           example_response: appointment-update-response
         search:
-          description: Search for an Appointment
+          # source: discussion #1123
+          description: >-
+            Search for an Appointment.<br><br>
+            FHIR search parameters (including date filters) only work against the FHIR API on the `fumage-` subdomain (e.g. `https://fumage-<instance>.canvasmedical.com/Appointment`). The internal, non-FHIR Appointment API at the `/api/Appointment` path on the regular instance subdomain ignores FHIR search parameters and returns all records regardless of the filters supplied.
           responses: [200, 400, 401, 403]
           example_request: appointment-search-request
           example_response: appointment-search-response

@@ -17,6 +17,28 @@ from canvas_sdk.v1.data.staff import Staff
 staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 ```
 
+<!-- source: discussion #548 -->
+To list every staff member, use `Staff.objects.all()`. When you need a stable cross-system mapping, prefer the immutable `dbid` (integer) and `id` (UUID) attributes over names, which can change:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff = Staff.objects.all()
+
+staff_dbids = [s.dbid for s in staff]
+staff_ids = [s.id for s in staff]
+```
+
+<!-- source: discussion #780 -->
+A command's `committer` is a [`CanvasUser`](/sdk/data-canvasuser), not a `Staff` record, so its `dbid` is the user's `dbid` — not the staff `dbid`. To resolve a committer back to the `Staff` record, look it up by `user_id`, not `dbid`:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+# command_instance.committer is a CanvasUser
+staff = Staff.objects.get(user_id=command_instance.committer.dbid)
+```
+
 `Staff` objects are commonly used in related models, for example the `Task` model.
 To see all of a staff member's assigned or created tasks, the following code can be used:
 
@@ -269,6 +291,9 @@ for identifier in staff.external_identifiers.all():
     log.info(f"Staff external identifier: {identifier.system}, {identifier.value}")
     # https://www.example.com - employee-001
 ```
+
+<!-- source: discussion #1684 -->
+`StaffExternalIdentifier` is the supported way to store and read an external system's ID on a Staff/Practitioner record (the equivalent of `PatientExternalIdentifier` for staff). Plugins read it from this data module and write to it with the [`CreateStaffExternalIdentifier`](/sdk/effect-staff-external-identifier/) effect. Note that the FHIR `Practitioner.identifier[]` field is effectively NPI-only and is not a place to store an arbitrary external ID, so use `StaffExternalIdentifier` instead.
 
 ### StaffMetadata
 

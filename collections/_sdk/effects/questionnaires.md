@@ -15,6 +15,9 @@ Creating a questionnaire via the SDK requires current requires defining a YAML t
 
 The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section (see [here](/sdk/questionnaires) for how to control setting `display_result_in_social_history_section` for questionnaires).
 
+<!-- source: discussion #1404 -->
+{% include alert.html type="info" content="The <code>narrative</code> property is the customer-facing string shown alongside the result — it is separate from the numeric <code>score</code>. Use <code>score</code> to store the calculated numeric value and <code>narrative</code> to provide a more user-friendly description, for example <code>'Score: {score}'</code> or <code>'A score of {score} indicates {result}'</code>, giving providers context for how to react to the score. Note that whether a result appears in the Social Determinants section depends on how the questionnaire itself was configured to display there (via the SDK YAML <code>display_results_in_social_history_section</code> / <code>display_result_in_social_history_section</code> attributes, the <b>Display in Social Determinants</b> checkbox in the Questionnaire Builder, or the <code>use_in_shx</code> column when uploading via Google Sheets) — not on the effect alone." %}
+
 
 ### Attributes
 

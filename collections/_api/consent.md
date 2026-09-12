@@ -152,7 +152,10 @@ sections:
 
             A patient consent is uniquely distinguished by its patient and consent coding<br><br>
 
-            This Create endpoint also acts as an Update endpoint. If the patient already has an existing patient consent with the same consent coding, the endpoint updates that consent in place and the id returned in the response will not be changed.
+            This Create endpoint also acts as an Update endpoint. If the patient already has an existing patient consent with the same consent coding, the endpoint updates that consent in place and the id returned in the response will not be changed.<br><br>
+
+            <!-- source: discussion #896 -->
+            The SDK `PatientConsent` data object is read-only, so fields such as the expiration date cannot be changed through the SDK. To update a consent's expiration (for example, to re-prompt a patient before each appointment), use the SDK object to obtain the consent's id and coding, then call this Create/Update endpoint with the new expiration date; matching on the existing consent coding upserts the consent in place.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: consent-create-request
           example_response: consent-create-response

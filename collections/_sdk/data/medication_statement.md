@@ -56,6 +56,27 @@ from canvas_sdk.v1.data import MedicationStatement
 committed_medication_statements = MedicationStatement.objects.committed()
 ```
 
+<!-- source: discussion #1492 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Reading the sig from a command event
+
+The `sig_original_input` attribute on `MedicationStatement` is often empty, so it is not a reliable source for the medication statement's sig (directions). To get the sig, listen for the Medication Statement command's `MEDICATION_STATEMENT_COMMAND__POST_COMMIT` event (see [Medication Statement command events](/sdk/events/#medication-statement-command)) and read it from the command context at `context["fields"]["sig"]`:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from logger import log
+
+
+class MedicationStatementHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT_COMMAND__POST_COMMIT)
+
+    def compute(self):
+        sig = self.context.get("fields", {}).get("sig")
+        log.info(f"Medication Statement committed with sig: {sig}")
+        return []
+```
+
 ## Attributes
 
 ### MedicationStatement

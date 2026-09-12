@@ -41,6 +41,30 @@ parent_appointment = appointment.parent_appointment
 children = parent_appointment.children.all()
 ```
 
+<!-- source: discussion #941 -->
+## Getting the reason for visit
+
+The reason for visit is not currently stored directly on the `Appointment`. Every appointment has an affiliated note, so fetch the [Reason for Visit commands](/sdk/commands/#reasonforvisit) using the appointment's note ID:
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+rfv_commands = Command.objects.filter(
+    note_id=note_id,
+    schema_key="reasonForVisit",
+).exclude(entered_in_error__isnull=False)
+```
+
+<!-- source: discussion #939 -->
+## Detecting rescheduled appointments
+
+Reschedules surface differently depending on how they originate, so a plugin that needs to catch every reschedule must handle both paths:
+
+- **UI (and SDK) reschedules** cancel the current appointment and create a new one, firing `APPOINTMENT_CREATED` with the new appointment's `appointment_rescheduled_from` set to the previous appointment.
+- **FHIR API reschedules** are technically an update of the appointment's attributes (to comply with FHIR), so they fire `APPOINTMENT_UPDATED` rather than creating a new appointment.
+
+If you rely on `appointment_rescheduled_from` alone you will miss API-initiated reschedules; handle `APPOINTMENT_UPDATED` as well, or route reschedules through an SDK API endpoint that initiates a true reschedule event.
+
 ## Filtering
 
 Appointments can be filtered by any attribute that exists on the model.
