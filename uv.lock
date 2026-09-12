@@ -8,6 +8,9 @@ exclude-newer-span = "P7D"
 
 [options.exclude-newer-package]
 canvas = { timestamp = "0001-01-01T00:00:00Z", span = "PT1S" }
+uv = "2035-01-01T00:00:00Z"
+ruff = "2035-01-01T00:00:00Z"
+ty = "2035-01-01T00:00:00Z"
 
 [manifest]
 overrides = [
