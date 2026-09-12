@@ -641,6 +641,7 @@ def compute():
 | `goal_id`            | _int_                    | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.                                     |
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The final achievement status of the goal. Must be one of [`GoalCommand.AchievementStatus`](#goal-achievementstatus). |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -754,6 +755,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
+| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -803,6 +805,7 @@ unstructured = FollowUpCommand(
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#goal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 
 <a id="goal-achievementstatus"></a>
@@ -1056,6 +1059,7 @@ Records a vaccine **administered** during the visit, including the lot it came f
 | `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
 | `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
 | `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
+| `assessment_id`   | _string_  | `false`            | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 *`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
 be omitted.
@@ -1119,6 +1123,7 @@ immunize_unstocked = ImmunizeCommand(
 |-----------|------------|----------|-----------------------------------------------------------------------|
 | `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#get-snomedinstruction--instructions). |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -1413,6 +1418,7 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 |------------|----------------------|----------|------------------------------------------------------|
 | `cpt_code` | _string_ or _[Coding](#coding)_ | `true`   | The CPT code of the procedure or action performed. Look it up in the [Charge Description Master](/sdk/data-charge-description-master/#chargedescriptionmaster).   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
+| `assessment_id` | _string_        | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Coding Support**:
 
@@ -1464,6 +1470,7 @@ perform_unstructured = PerformCommand(
 | Name        | Type     | Required to commit | Description                          |
 |:------------|:---------|:---------|:-------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's plan. |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -2453,6 +2460,7 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
 | `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -2505,6 +2513,7 @@ questionnaire = StructuredAssessmentCommand(
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
+| `assessment_id`     | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Enums and Types**:
 
@@ -2631,6 +2640,7 @@ UpdateDiagnosisCommand(
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 <a id="updategoal-achievementstatus"></a>
 

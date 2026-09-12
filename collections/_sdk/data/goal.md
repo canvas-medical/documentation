@@ -104,6 +104,7 @@ latest = goal.updates.committed().order_by("dbid").last()
 | entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
 | patient            | [Patient](/sdk/data-patient/#patient)           |
 | note               | [Note](/sdk/data-note)                          |
+| assessment         | [Assessment](/sdk/data-assessment/#assessment)  |
 | lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |
 | achievement_status | [GoalAchievementStatus](#goalachievementstatus) |
 | priority           | [GoalPriority](#goalpriority)                   |
@@ -128,6 +129,7 @@ An update or close action recorded against a [Goal](#goal), reachable from a goa
 | entered_in_error   | [CanvasUser](/sdk/data-canvasuser)              |
 | patient            | [Patient](/sdk/data-patient/#patient)           |
 | note               | [Note](/sdk/data-note)                          |
+| assessment         | [Assessment](/sdk/data-assessment/#assessment)  |
 | goal               | [Goal](#goal)                                   |
 | lifecycle_status   | [GoalLifecycleStatus](#goallifecyclestatus)     |
 | achievement_status | [GoalAchievementStatus](#goalachievementstatus) |

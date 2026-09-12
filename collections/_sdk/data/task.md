@@ -171,6 +171,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | committer         | [CanvasUser](/sdk/data-canvasuser/)    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser/)    |
 | note              | [Note](/sdk/data-note/#note)            |
+| assessment        | [Assessment](/sdk/data-assessment/#assessment) |
 | task              | [Task](#task)                           |
 | patient           | [Patient](/sdk/data-patient/#patient)   |
 | original_title    | String                                  |
