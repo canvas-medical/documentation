@@ -43,6 +43,7 @@ The actor is available in the following contexts:
 - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
 - **Note footer events** — `NOTE_FOOTER__GET_CONFIGURATION`
+- **Phone dial events** — `PHONE_DIAL__GET_CONFIGURATION`, `PHONE_NUMBER_CLICKED`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
 - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
 - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
@@ -27308,6 +27309,47 @@ For more information on handling these events, see <a href="/sdk/handlers-action
     <tr>
       <td><pre>note_id</pre></td>
       <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Phone Dial Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PHONE_DIAL__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient chart loads its phone numbers. Allows plugins to make those numbers clickable and choose whether the device or the plugin handles a click. See the <a href='/sdk/effect-phone-dial-configuration/'>Phone Dial Configuration effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PHONE_NUMBER_CLICKED</th></tr>
+    <tr><td colspan="2">Occurs when a user clicks a clickable phone number in a patient chart. Fires under both device and plugin handling. The context includes at least the following:</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>phone_number</pre></td>
+      <td><pre>
+  "phone_number": str
+  "source": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
