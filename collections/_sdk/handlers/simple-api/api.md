@@ -378,6 +378,122 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
+#### File uploads
+
+For endpoints that accept file uploads, declare the route with `file_uploads="stored"`. Canvas
+will intercept `multipart/form-data` requests on these endpoints, write each file part to
+cloud storage *before* invoking your plugin, and pass your handler a `StoredFilePart` for
+each file field instead of the raw bytes.
+
+This is the recommended pattern for any endpoint that accepts files larger than a few KB.
+Files never enter the plugin runner, which keeps your plugin light, fast, and out of the
+business of buffering binary data.
+
+`file_uploads="stored"` is only supported on `POST` and `PUT` routes. The other verbs (`GET`,
+`DELETE`, `PATCH`) do not accept this option.
+
+```python?partial=true
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, StoredFilePart, api
+
+
+class AttachmentApi(api.SimpleAPI):
+    PREFIX = "/attachments"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    @api.post("/upload", file_uploads="stored")
+    def upload(self) -> list[Response]:
+        form = self.request.form_data()
+        # The endpoint decides which part names it looks for; the client must send
+        # matching names in its multipart request.
+        front: StoredFilePart = form["id_card_front"]
+        back: StoredFilePart = form["id_card_back"]
+        # front.key:            "plugin-uploads/your-plugin/<timestamp>-<uuid>-<filename>"
+        # front.filename:       original filename (sanitized)
+        # front.content_type:   MIME type from the multipart part
+        # front.content_length: number of bytes
+        # NOTE: there is no `.content` attribute. Bytes live in cloud storage only.
+        return [JSONResponse({"keys": [front.key, back.key]})]
+```
+
+You choose which part names your endpoint looks for (`id_card_front` and `id_card_back`
+above); the client is responsible for sending parts with matching names in its multipart
+request. If the client sends a part name your endpoint isn't looking for, the lookup will
+fail.
+
+The `StoredFilePart` returned for file fields exposes `name`, `filename`, `content_type`,
+`content_length`, `key`, and `error`. For successful uploads, `key` is the storage key and
+`error` is `None`. For failures (see the next section), `key` is `None` and `error` is set.
+Plain string fields in the same multipart request are returned as `StringFormPart` instances
+with `name` and `value`, just like in a non-upload endpoint.
+
+The storage key your plugin receives is a stable, customer-scoped relative path. Store or
+pass it wherever your plugin needs to reference the file later. When the file needs to be
+served, Canvas generates a fresh short-lived presigned URL on read.
+
+If a caller posts with a non-multipart content type to an endpoint declared with
+`file_uploads="stored"`, the request is rejected with **400 Bad Request** before the handler
+runs. The default for `file_uploads` is `"passthrough"` (file bytes flow through to the
+plugin as before), so existing endpoints are not affected by this feature.
+
+##### Handling partial failures
+
+Uploads happen per file. A failure on one file does not prevent the rest of the batch
+from reaching your handler — only when **every** file in the request fails does Canvas
+return **502 Bad Gateway** to the caller without invoking your handler. Otherwise, both
+successful and failed files are exposed through `request.form_data()` in the same MultiDict
+as `StoredFilePart` instances. Successes have `key` set and `error=None`; failures have
+`key=None` and `error` set to a stable code (for example `"s3_upload_failed"`). Failures
+are surfaced alongside successes so an `if part.is_file():` loop can't accidentally ignore
+them — check `part.error` before reading `part.key`.
+
+```python?partial=true
+from canvas_sdk.handlers.simple_api import StoredFilePart
+
+form = self.request.form_data()
+for name, part in form.multi_items():
+    if not part.is_file():
+        continue
+    assert isinstance(part, StoredFilePart)
+    if part.error:
+        log.error(f"upload failed for {part.filename}: {part.error}")
+        continue
+    # part.key is safe to use
+    ...
+```
+
+If your endpoint needs atomic semantics, fail the request when any part has a non-`None`
+`error` (and optionally delete the successful keys before responding).
+
+##### Using `SimpleAPIRoute`
+
+For routes defined as `SimpleAPIRoute` subclasses, set `FILE_UPLOADS = "stored"` as a class
+attribute to opt in. The setting applies only to the `post` and `put` methods on the class;
+`get`, `delete`, and `patch` methods on the same class register normally. Setting
+`FILE_UPLOADS = "stored"` on a class that defines no `post` or `put` method raises
+`PluginError` at class-definition time — the setting would otherwise silently do nothing.
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute, StoredFilePart
+
+
+class UploadRoute(SimpleAPIRoute):
+    PATH = "/upload"
+    FILE_UPLOADS = "stored"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def post(self) -> list[Response | Effect]:
+        form = self.request.form_data()
+        attachment: StoredFilePart = form["file"]
+        return [JSONResponse({"key": attachment.key})]
+```
+
 ### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that
