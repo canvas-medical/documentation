@@ -1022,6 +1022,9 @@ data_module:
   - title: "Appointment"
     url: /sdk/data-appointment/
     description: A scheduled meeting between a patient and a provider.
+  - title: "AssessCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#assesscodinggapevent
+    description: A record of a coding gap being assessed, with the conditions it was assessed against.
   - title: "Assessment"
     url: /sdk/data-assessment/
     description: Clinical assessment of a patient's condition.
@@ -1079,6 +1082,12 @@ data_module:
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
+  - title: "CreateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#createcodinggapevent
+    description: A record of a coding gap being created.
+  - title: "DeferCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#defercodinggapevent
+    description: A record of a coding gap being deferred.
   - title: "DetectedIssue"
     url: /sdk/data-detected-issue/
     description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
@@ -1271,6 +1280,9 @@ data_module:
   - title: "Vaccine"
     url: /sdk/data-vaccine/
     description: A vaccine in the instance's catalog and the lots of it held in inventory.
+  - title: "ValidateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#validatecodinggapevent
+    description: A record of a coding gap being validated.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
