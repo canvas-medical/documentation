@@ -69,7 +69,64 @@ The payment is always applied to the patient's account:
 
 ## Reconciling the charge
 
-Canvas emits a `REVENUE__STORED_CARD__CHARGE_RESPONSE` event carrying the outcome of the charge, so a plugin can reconcile the payment — for example, to record whether the charge succeeded. Handle this event in a separate handler that responds to `REVENUE__STORED_CARD__CHARGE_RESPONSE`.
+Once the charge has been processed, Canvas emits a `REVENUE__STORED_CARD__CHARGE_RESPONSE` event carrying the outcome. The event targets the patient, and its context carries no card data or PHI. Handle it in a separate handler. Correlate each response with the charge that produced it using the `idempotency_key` you supplied on the request.
+
+This handler records the result of each charge, reading `payment_intent_id` when it succeeds and the `error` object when it does not:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from logger import log
+
+
+class ReconcileStoredCardCharge(BaseHandler):
+    RESPONDS_TO = [EventType.Name(EventType.REVENUE__STORED_CARD__CHARGE_RESPONSE)]
+
+    def compute(self) -> list[Effect]:
+        context = self.event.context
+        idempotency_key = context["idempotency_key"]
+
+        if context["success"]:
+            payment_intent_id = context["payment_intent_id"]
+            log.info(f"Charge {idempotency_key} succeeded: {payment_intent_id}")
+        else:
+            error = context["error"]
+            log.error(f"Charge {idempotency_key} failed [{error['code']}]: {error['message']}")
+
+        return []
+```
+
+### Response context
+
+The event `context` is a sanitized JSON object with the following fields; values that are UUIDs or decimals on the request are echoed here as strings.
+
+| Field             | Type            | Description                                                                                                                       |
+| ----------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| success           | Boolean         | Whether the charge succeeded.                                                                                                      |
+| payment_intent_id | String or null  | The processor's payment identifier on success — the Stripe PaymentIntent id, or a custom processor's transaction id. `null` on failure. |
+| error             | Object or null  | `null` on success. On failure, `error` is an object with `code` and `message` fields. See [Error codes](#error-codes).             |
+| idempotency_key   | String          | Echoed from the request. Correlate the response with the originating charge using this value.                                     |
+| patient_id        | String          | Echoed from the request: the patient that was charged.                                                                            |
+| payment_card_id   | String          | Echoed from the request: the stored card reference that was charged.                                                              |
+| claim_id          | String or null  | Echoed from the request, or `null` when no claim was supplied.                                                                    |
+| amount            | String          | Echoed from the request: the dollar amount that was submitted.                                                                    |
+
+### Error codes
+
+On failure, `error.code` names the condition that stopped the charge.
+
+| `error.code`             | When it occurs                                                                                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `patient_not_found`      | The `patient_id` did not match a patient.                                                                                              |
+| `card_not_found`         | The stored card was not found. For the built-in Stripe processor, this also covers a card that exists but is not owned by the patient; a custom processor may raise a different code for that case — check the processor's own documentation. |
+| `claim_not_found`        | The `claim_id` did not match a claim owned by the patient.                                                                            |
+| `no_outstanding_balance` | A charge with no `claim_id` was attempted, but the patient has no outstanding balance. The balance is checked before the card is charged. |
+| `amount_exceeds_balance` | A charge with no `claim_id` exceeds the patient's outstanding balance. The amount is validated against the balance before the card is charged. |
+| `nothing_to_charge`      | A per-claim charge with `copay` set to `false` was attempted, but the claim has no chargeable, non-copay balance. Set `copay` to `true` to record a copay or prepayment instead. |
+| `charge_failed`          | An unexpected failure occurred while processing the charge. Retry using the same `idempotency_key`; the retry will not double-charge the patient. |
+
+The payment processor's own decline codes also pass through in `error.code` — for example, `card_declined` from Stripe — and can arrive at charge time. Handle an unrecognized code gracefully rather than matching against a fixed set, since the processor can surface codes this list does not name.
 
 ## Imports
 
