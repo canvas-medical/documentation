@@ -119,6 +119,14 @@ plugin via the Canvas UI on your plugin's configuration page
             <img class="hover-secondary" src="/assets/images/sdk/handlers/simple-api-response.png" alt="A curl request to a SimpleAPI route and its JSON response."/>
         </div>
     </a>
+    <a href="/sdk/handlers-payment-processor/">
+        <div class="handler-card">
+            <div class="handler-card-header">
+                <h2>Payment Processor</h2>
+                <span>Integrate a third-party payment processor into Canvas revenue workflows.</span>
+            </div>
+        </div>
+    </a>
 </div>
 
 
