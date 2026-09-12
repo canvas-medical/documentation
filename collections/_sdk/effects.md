@@ -398,6 +398,7 @@ Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation
 
 | Effect | Description |
 |---|---|
+| CREATE_QUESTIONNAIRE | Create a questionnaire programmatically. Check out [Create Questionnaire](/sdk/effect-create-questionnaire/). |
 | CREATE_QUESTIONNAIRE_RESULT | Create a questionnaire result. |
 
 
