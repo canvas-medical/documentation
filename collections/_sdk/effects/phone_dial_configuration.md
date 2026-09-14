@@ -7,7 +7,7 @@ hidden: false
 
 The `PhoneDialConfiguration` effect turns the phone numbers in a patient chart into clickable links — the click-to-dial affordance. It lets a user click to dial a number, or hand it to a softphone, directly from the chart. Return it in response to the `PHONE_DIAL__GET_CONFIGURATION` event, which Canvas fires as a chart loads its phone numbers.
 
-Import the effect and its enums from the submodule — they are not re-exported from `canvas_sdk.effects`:
+Import the effect and its enums from the submodule:
 
 ```python?partial=True
 from canvas_sdk.effects.phone_dial_configuration import (
@@ -21,7 +21,7 @@ from canvas_sdk.effects.phone_dial_configuration import (
 
 ## How it works
 
-As a patient chart loads phone numbers, Canvas fires `PHONE_DIAL__GET_CONFIGURATION`. A handler subscribed to the event returns one or more `PhoneDialConfiguration` effects, each naming the chart sections it makes clickable and how a click on those sections is handled. If no plugin returns a configuration, every number renders as plain text.
+As a patient chart loads phone numbers, Canvas fires `PHONE_DIAL__GET_CONFIGURATION`. A handler subscribed to the event returns one or more `PhoneDialConfiguration` effects, each naming the chart sections it makes clickable and how a click on those sections is handled. If no plugin returns a configuration, every number renders as plain text, except the patient header's primary number when your instance has Dialing Service settings configured. See [Dialing Service settings](#dialing-service-settings) below.
 
 A single effect carries one `click_handling` mode that applies to every section it lists. To handle sections differently — some dialed by the device, some by your plugin — return one effect per handling mode.
 
@@ -39,6 +39,12 @@ When more than one plugin responds, Canvas merges their configurations:
 - A section is clickable if any plugin lists it.
 - A section is plugin-driven if any plugin asks for `PLUGIN` on it.
 - Among the remaining configurations, the first one that names a `dial_label` supplies the label.
+
+## Dialing Service settings
+
+Click-to-dial also exists as an instance setting, independent of any plugin. When both `DIALING_LABEL` and `DIALING_URL_TEMPLATE` are set under Dialing Service, the patient header's primary number becomes clickable on its own, dialed by the device and labeled with `DIALING_LABEL`. Those settings reach only the patient header, so no other section is affected by them.
+
+{% include alert.html type="warning" content="A plugin that answers <code>PHONE_DIAL__GET_CONFIGURATION</code> replaces the Dialing Service settings rather than adding to them. A responding plugin speaks for every section, including the ones it leaves out, so the patient header stops using <code>DIALING_URL_TEMPLATE</code> even if your configuration never mentions the patient section. To keep that behavior, list the patient section in your own configuration." %}
 
 ## Event payload
 
@@ -109,7 +115,7 @@ class ConfigurePhoneDialing(BaseHandler):
 
 ### Dial a plugin-handled section
 
-A `PLUGIN` section does not dial anything on its own — the click only fires `PHONE_NUMBER_CLICKED`. To send the number to a softphone, subscribe to that event and return a [Redirect](/sdk/effect-redirect/) effect that navigates to the softphone's dial URL. `PHONE_NUMBER_CLICKED` carries the clicking user as `event.actor`, so the redirect has a browser to navigate — see [Event Actor](/sdk/events/#event-actor). The click event's context carries the number as `phone_number` and the chart section it came from as `source`.
+A `PLUGIN` section does not dial anything on its own — the click only fires `PHONE_NUMBER_CLICKED`. To send the number to a softphone, subscribe to that event and return a [Redirect](/sdk/effect-redirect/) effect that navigates to the softphone's dial URL. `PHONE_NUMBER_CLICKED` carries the clicking user as `event.actor`, so the redirect has a browser to navigate — see [Event Actor](/sdk/events/#event-actor). The click event's context carries the number as `phone_number` and the chart section it came from as `source`, which is one of `patient`, `contact` or `external_care_team`, matching [`PhoneDialSection`](#attributes). Read it with `.get("source")` rather than indexing, since the key is left out when no section is sent.
 
 {% include alert.html type="warning" content="Set <code>target</code> to <code>RedirectEffect.TargetType.SAME_TAB</code> — the only usable target here. The redirect arrives over a subscription rather than inside the click, so a <code>NEW_TAB</code> target would be treated as an unrequested popup and blocked." %}
 
