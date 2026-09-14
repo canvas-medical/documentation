@@ -70,6 +70,8 @@ for interview_response in interview.interview_responses.all():
     log.info(f"response option: {interview_response.response_option_value}")
 ```
 
+{% include alert.html type="info" content="A date question writes its answer to <code>response_option_date</code> as a real date, and to <code>response_option_value</code> as the same date in ISO-8601 form. Use <code>response_option_date</code> to compare or to filter, because date lookups such as <code>__gte</code> and <code>__year</code> work only on it. It is <code>None</code> for every other question type, and also when nobody answered the date question." %}
+
 ## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
@@ -152,15 +154,13 @@ renders in a note and which value an answer carries.
 | `TXT`  | Free text | Text, on the response's `response_option_value`. |
 | `INT`  | Integer | A whole number. |
 | `DEC`  | Decimal | A decimal number. |
-| `DATE` | Date | A calendar date, picked from a date picker. |
+| `DATE` | Date | A calendar date, on the response's `response_option_date`. |
 | `SING` | Single select | One [ResponseOption](#responseoption). |
 | `MULT` | Multi select | One or more [ResponseOption](#responseoption) records. |
 
 `TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a
 score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see
 [Questionnaires](/sdk/questionnaires/).
-
-{% include alert.html type="warning" content="A <code>DATE</code> answer is not readable through the data module yet. It is stored on a date column that <code>InterviewQuestionResponse</code> does not expose, so <code>response_option_value</code> is empty for a date question. Read it over the FHIR API as a <code>valueDate</code> on <a href='/api/questionnaireresponse/'>QuestionnaireResponse</a> in the meantime." %}
 
 ### ResponseOption
 
@@ -265,6 +265,7 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | question              | [Question](#question)             |
 | response_option       | [ResponseOption](#responseoption) |
 | response_option_value | String                            |
+| response_option_date  | Date                              |
 | questionnaire_state   | String                            |
 | interview_state       | String                            |
 | comment               | String                            |

@@ -979,6 +979,9 @@ effects_module:
   - title: "Payment Processor"
     url: /sdk/payment-processor-effect/
     description: Effects returned by custom payment processors.
+  - title: "Phone Dial Configuration"
+    url: /sdk/effect-phone-dial-configuration/
+    description: Make patient-chart phone numbers clickable for device or plugin dialing.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
@@ -1022,6 +1025,9 @@ data_module:
   - title: "Appointment"
     url: /sdk/data-appointment/
     description: A scheduled meeting between a patient and a provider.
+  - title: "AssessCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#assesscodinggapevent
+    description: A record of a coding gap being assessed, with the conditions it was assessed against.
   - title: "Assessment"
     url: /sdk/data-assessment/
     description: Clinical assessment of a patient's condition.
@@ -1079,6 +1085,12 @@ data_module:
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
+  - title: "CreateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#createcodinggapevent
+    description: A record of a coding gap being created.
+  - title: "DeferCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#defercodinggapevent
+    description: A record of a coding gap being deferred.
   - title: "DetectedIssue"
     url: /sdk/data-detected-issue/
     description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
@@ -1121,6 +1133,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Group"
+    url: /sdk/data-group/
+    description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.
   - title: "HistoryOfPresentIllness"
     url: /sdk/data-history-present-illness/
     description: The History of Present Illness (HPI) narrative recorded on a note.
@@ -1235,6 +1250,9 @@ data_module:
   - title: "Receipt"
     url: /sdk/data-receipt/
     description: A read-only, Canvas-generated payment receipt for a payment collection.
+  - title: "Reference"
+    url: /sdk/data-reference/
+    description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
@@ -1274,6 +1292,9 @@ data_module:
   - title: "Vaccine"
     url: /sdk/data-vaccine/
     description: A vaccine in the instance's catalog and the lots of it held in inventory.
+  - title: "ValidateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#validatecodinggapevent
+    description: A record of a coding gap being validated.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
