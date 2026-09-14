@@ -408,6 +408,10 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
 | follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
 | reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
+| assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
+| assessed_detected_issues | QuerySet[[ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)] | All coding gaps validated on this note |
+| created_detected_issues | QuerySet[[CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)] | All coding gaps created on this note |
+| deferred_detected_issues | QuerySet[[DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)] | All coding gaps deferred on this note |
 | removed_allergies   | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note |
 | resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
 | histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |

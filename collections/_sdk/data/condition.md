@@ -100,6 +100,7 @@ conditions = Condition.objects.find(Diabetes)
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
+| assessed_coding_gaps        | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]  |
 | assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
 | resolutions                 | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  |
 

@@ -2236,6 +2236,8 @@ The command renders as a read-only table. There are no fields for a user to fill
 
 Unlike [ChartSectionReview](#chartsectionreview), it is not committed on origination: it stays staged until you pass `commit=True` to `originate()` or send a separate `commit()`.
 
+Read the committed reference back with the [Reference](/sdk/data-reference/#reference) data model.
+
 {% include alert.html type="warning" content="The rendered name and table are derived from the diagnostic view when the command is originated, and are not recalculated afterwards. Pointing an existing command at a different diagnostic view with <code>edit()</code> leaves the previous view's name and table on display. To change the view, delete the command and originate a new one." %}
 
 **Command-specific parameters**:
