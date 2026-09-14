@@ -5,7 +5,7 @@ excerpt: "Make the phone numbers in a patient chart clickable so a plugin can di
 hidden: false
 ---
 
-The `PhoneDialConfiguration` effect turns the phone numbers in a patient chart into clickable links — the click-to-dial affordance. It lets a user click to dial a number, or hand it to a softphone, directly from the chart. Return it in response to the `PHONE_DIAL__GET_CONFIGURATION` event, which Canvas fires as a chart loads its phone numbers.
+The `PhoneDialConfiguration` effect turns the phone numbers in a patient chart into clickable links — the click-to-dial affordance. It lets a user click to dial a number, or hand it to a softphone, directly from the chart. Return it in response to the [`PHONE_DIAL__GET_CONFIGURATION`](/sdk/events/#phone-dial-configuration) event, which Canvas fires as a chart loads its phone numbers.
 
 Import the effect and its enums from the submodule:
 
@@ -25,12 +25,7 @@ As a patient chart loads phone numbers, Canvas fires `PHONE_DIAL__GET_CONFIGURAT
 
 A single effect carries one `click_handling` mode that applies to every section it lists. To handle sections differently — some dialed by the device, some by your plugin — return one effect per handling mode.
 
-The two handling modes differ in what a click does:
-
-- `DEVICE` — the click opens a `tel:` link that the device's phone app handles. Your plugin does nothing beyond declaring the section.
-- `PLUGIN` — nothing opens locally. The click fires `PHONE_NUMBER_CLICKED`, and your handler decides what to do with it.
-
-`PHONE_NUMBER_CLICKED` fires under either handling mode, so a plugin can observe clicks even on device-dialed sections.
+A click is either dialed by the device or handed to your plugin, depending on the [`click_handling`](#phonedialclickhandling) mode the effect carries.
 
 Two categories of numbers are never affected by this configuration: sections you do not list render as plain text, and fax numbers are always plain text regardless of configuration.
 
@@ -50,19 +45,21 @@ Click-to-dial also exists as an instance setting, independent of any plugin. Whe
 
 | Property          | Value        | Description                                                             |
 |-------------------|--------------|-------------------------------------------------------------------------|
-| `event.target.id` | `str` (UUID) | The id of the patient whose chart is loading phone numbers.             |
-| `event.actor`     | user         | The logged-in user viewing the chart, when available.                   |
+| `event.target.id` | `str` (UUID) | The id of the [Patient](/sdk/data-patient/#patient) whose chart is loading phone numbers. |
+| `event.actor`     | user         | The [logged-in user](/sdk/events/#event-actor) viewing the chart, when available. |
 | `event.context`   | `{}`         | Empty — no additional context is provided.                              |
 
 ## Attributes
 
 | Field                | Type                     | Default  | Description                                                                                                                                                              |
 |----------------------|--------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clickable_sections` | `list[PhoneDialSection]` | Required | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                     |
-| `click_handling`     | `PhoneDialClickHandling` | `DEVICE` | How a click on the listed sections is handled.                                                                                                                           |
-| `dial_label`         | `str \| None`            | `None`   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. |
+| `clickable_sections` | list[[PhoneDialSection](#phonedialsection)] | Required | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                     |
+| `click_handling`     | [PhoneDialClickHandling](#phonedialclickhandling) | `DEVICE` | How a click on the listed sections is handled.                                                                                                                           |
+| `dial_label`         | `str` \| `None`            | `None`   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. |
 
-`PhoneDialSection` — the chart sections you can make clickable:
+### PhoneDialSection
+
+The chart sections you can make clickable:
 
 | Member                                | Value                  |
 |---------------------------------------|------------------------|
@@ -70,12 +67,16 @@ Click-to-dial also exists as an instance setting, independent of any plugin. Whe
 | `PhoneDialSection.CONTACT`            | `"contact"`            |
 | `PhoneDialSection.EXTERNAL_CARE_TEAM` | `"external_care_team"` |
 
-`PhoneDialClickHandling` — how a click is handled:
+### PhoneDialClickHandling
 
-| Member                          | Value      |
-|---------------------------------|------------|
-| `PhoneDialClickHandling.DEVICE` | `"device"` |
-| `PhoneDialClickHandling.PLUGIN` | `"plugin"` |
+How a click is handled:
+
+| Member                          | Value      | What a click does                                                                                                                              |
+|---------------------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PhoneDialClickHandling.DEVICE` | `"device"` | Opens a `tel:` link that the device's phone app handles. Your plugin does nothing beyond declaring the section.                                  |
+| `PhoneDialClickHandling.PLUGIN` | `"plugin"` | Opens nothing locally. Your handler decides what happens, using the [`PHONE_NUMBER_CLICKED`](/sdk/events/#phone-dial-configuration) event.       |
+
+`PHONE_NUMBER_CLICKED` fires under either mode, so a plugin can observe clicks even on device-dialed sections.
 
 ## Example
 
