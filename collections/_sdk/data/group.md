@@ -49,6 +49,13 @@ For a `Group` whose content object is a `Team`, `team` returns the linked [Team]
 
 The `object_id` field holds the target record's `dbid` — its internal integer identifier — rather than its `id` UUID.
 
+Only two kinds of record get a `Group`, so `content_type.model` is always one of these two values. Read it to tell which one a `Group` points at, or use the typed properties below, which do the same check for you.
+
+| `content_type.model` | Content object                                        |
+| -------------------- | ----------------------------------------------------- |
+| `team`               | [Team](/sdk/data-team/#team)                          |
+| `patientgroup`       | [PatientGroup](/sdk/data-patient-group/#patientgroup) |
+
 ## Properties
 
 | Name          | Type                                                            | Description                                                                                          |
