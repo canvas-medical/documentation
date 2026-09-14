@@ -93,6 +93,10 @@ committed_detected_issues = DetectedIssue.objects.committed()
 | issue_identifier_system | String                                            |
 | detail                  | String                                            |
 | evidence                | [DetectedIssueEvidence](#detectedissueevidence)[] |
+| assessed_coding_gap_events  | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]     |
+| created_coding_gap_events   | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[]     |
+| deferred_coding_gap_events  | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]       |
+| validated_coding_gap_events | [ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)[] |
 
 ### DetectedIssueEvidence
 
