@@ -979,6 +979,9 @@ effects_module:
   - title: "Payment Processor"
     url: /sdk/payment-processor-effect/
     description: Effects returned by custom payment processors.
+  - title: "Phone Dial Configuration"
+    url: /sdk/effect-phone-dial-configuration/
+    description: Make patient-chart phone numbers clickable for device or plugin dialing.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
