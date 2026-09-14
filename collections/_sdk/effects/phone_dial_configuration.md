@@ -40,7 +40,7 @@ When more than one plugin responds, Canvas merges their configurations:
 - A section is plugin-driven if any plugin asks for `PLUGIN` on it.
 - Among the remaining configurations, the first one that names a `dial_label` supplies the label.
 
-### Event payload
+## Event payload
 
 | Property          | Value        | Description                                                             |
 |-------------------|--------------|-------------------------------------------------------------------------|
@@ -48,7 +48,7 @@ When more than one plugin responds, Canvas merges their configurations:
 | `event.actor`     | user         | The logged-in user viewing the chart, when available.                   |
 | `event.context`   | `{}`         | Empty — no additional context is provided.                              |
 
-### Attributes
+## Attributes
 
 | Field                | Type                     | Default  | Description                                                                                                                                                              |
 |----------------------|--------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -71,7 +71,7 @@ When more than one plugin responds, Canvas merges their configurations:
 | `PhoneDialClickHandling.DEVICE` | `"device"` |
 | `PhoneDialClickHandling.PLUGIN` | `"plugin"` |
 
-### Example
+## Example
 
 This handler makes three sections clickable with different handling: contact numbers go to your plugin behind a "Dial number with Zoom" button, patient numbers go to your plugin as a plain link, and external-care-team numbers are dialed by the device.
 
