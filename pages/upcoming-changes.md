@@ -33,9 +33,9 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>TBD<br/>(Not Soon)</td>
     </tr>
     <tr>
-      <td>Plugin SDK: Clinical note body structure</td>
+      <td>Read-only replica: Clinical note body structure</td>
       <td style="color: red;">Breaking Change</td>
-      <td>Canvas is changing how a clinical note stores its body, enabled one instance at a time. Charting, the Note API, and FHIR are unchanged. Three changes affect plugins that read note content through the SDK: <code>body</code> cannot be selected with <code>values()</code> or <code>values_list()</code>, <code>body</code> cannot be named through a relation, and <code>Note.checksum</code> is no longer maintained. <a href="/release-notes/note-v2-breaking-change-2026-09-15/">Read more.</a></td>
+      <td>Canvas is changing how a clinical note stores its body, enabled one instance at a time. Charting, the Note API, and FHIR are unchanged, and the plugin SDK changes shipped in the September 8, 2026 release. An integration reading note bodies from the read-only replica needs a query change: on a refactored note the <code>body</code> column is empty and the lines move to <code>body_content</code> and <code>body_order</code>, with <code>checksum</code> no longer maintained. <a href="/release-notes/note-v2-2026-09-15/">Read more.</a></td>
       <td>TBD</td>
       <td></td>
     </tr>
