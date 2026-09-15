@@ -18,23 +18,17 @@ You reference the card by an identifier the configured processor understands, ne
 
 Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`.
 
-`.apply()` raises a `ValidationError` when:
-
-- The `patient_id` does not match a patient.
-- A supplied `claim_id` does not match a claim.
-- `copay` is set without a `claim_id`.
-
-The card itself is not checked here. `payment_card_id` is resolved and validated server-side when the charge is processed, so a reference the configured processor cannot resolve arrives as an error on the [response event](#reconciling-the-charge) rather than raising from `.apply()`. See [Error codes](#error-codes) for the code each processor reports.
-
 | Attribute         |          | Type      | Description                                                                                                                                            |
 | ----------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | patient_id        | required | String    | The Canvas [Patient](/sdk/data-patient/#patient) id to charge.                                                                                          |
 | payment_card_id   | required | String    | A reference to the stored card that the configured processor resolves: the Canvas [PaymentCard](/sdk/data-payment-card/) id for the built-in Stripe processor, or a custom processor's own reference. |
 | amount            | required | Decimal   | The amount to charge, in dollars, with up to two decimal places (for example, `Decimal("49.99")`). Must be greater than `0`.                            |
-| idempotency_key   | required | UUID      | A key that makes the charge safe to retry. Reusing the same key for a retry guarantees the patient is not charged twice. See [Idempotency](#idempotency). |
-| claim_id          | optional | UUID or String | A [Claim](/sdk/data-claim/) id to post the payment against. When omitted, the payment is allocated across the patient's outstanding balance. See [Payment allocation](#payment-allocation). |
+| idempotency_key   | required | UUID or String | A key that makes the charge safe to retry. Reusing the same key for a retry guarantees the patient is not charged twice. See [Idempotency](#idempotency). |
+| claim_id          | optional\* | UUID or String | A [Claim](/sdk/data-claim/) id to post the payment against. When omitted, the payment is allocated across the patient's outstanding balance. See [Payment allocation](#payment-allocation). |
 | copay             | optional | Boolean   | Whether the charge is a copay. When `true`, the amount is posted to the claim's copay line item; requires `claim_id`. Defaults to `false`. See [Payment allocation](#payment-allocation). |
-| description       | optional | String    | A free-text description to record with the payment.                                                                                                    |
+| description       | optional | String    | A free-text description to record with the payment. It has no length limit, and is recorded only on a charge that names a `claim_id`.                   |
+
+\* `claim_id` is required when `copay` is `true`.
 
 **Example:**
 
@@ -68,17 +62,35 @@ class ChargeVisitCopay(BaseHandler):
         return [charge.apply()]
 ```
 
+### Validation
+
+`.apply()` raises a `ValidationError` when:
+
+- The `patient_id` does not match a patient.
+- A supplied `claim_id` does not match a claim.
+- `copay` is set without a `claim_id`.
+
+The card itself is not checked here. `payment_card_id` is resolved and validated server-side when the charge is processed, so a reference the configured processor cannot resolve arrives as an error on the [response event](#reconciling-the-charge) rather than raising from `.apply()`. See [Error codes](#error-codes) for the code each processor reports.
+
+### Card ownership
+
+Under the built-in Stripe processor, Canvas looks the card up scoped to `patient_id`, so a card belonging to a different patient, or one that has been removed, is rejected as `card_not_found` before the card is charged.
+
+A [custom payment processor](/sdk/handlers-payment-processors/) keeps its own cards, which Canvas cannot see, so it passes `payment_card_id` through without checking it. On a custom processor, confirming that a card reference belongs to the patient being charged is the processor's responsibility.
+
 ## Idempotency
 
-Every charge requires an `idempotency_key`. Reusing the same key on a retry guarantees the patient is not charged twice, so the key must be **stable across retries of the same logical charge**. Generate it deterministically from a stable identifier — for example `uuid5(namespace, f"appointment-{id}-charge")` — or persist a `uuid4` before emitting the effect. Do not generate a fresh key on each attempt.
+Every charge requires an `idempotency_key`. Pass either a `UUID` object or its string form, dashed or not; a string that does not parse as a UUID is rejected.
+
+Reusing the same key on a retry guarantees the patient is not charged twice, so the key must be **stable across retries of the same logical charge**. Generate it deterministically from a stable identifier — for example `uuid5(namespace, f"appointment-{id}-charge")` — or persist a `uuid4` before emitting the effect. Do not generate a fresh key on each attempt.
 
 ## Payment allocation
 
 The payment is always applied to the patient's account:
 
-- **Outstanding balance (default).** When no `claim_id` is given, the payment is allocated across the patient's outstanding balance. The charge is rejected if the amount exceeds the total balance.
-- **Against a specific claim.** When `claim_id` is given and `copay` is left `false` (the default), the payment pays down that claim's line-item balances. The charge is rejected if the claim has nothing to charge against.
-- **As a copay on a claim.** When `claim_id` is given with `copay` set to `true`, the amount is recorded as a copay on that claim, posted to its copay line item. This is allowed even when the claim has no outstanding balance, so use it to collect a copay or prepayment against a claim.
+- **Outstanding balance (default).** When no `claim_id` is given, the payment is allocated across the patient's outstanding balance. This is the only case where the amount is measured against a balance: the charge is rejected before the card is touched if the patient has no outstanding balance, and again if the amount exceeds it, so every charged dollar lands on a claim.
+- **Against a specific claim.** When `claim_id` is given and `copay` is left `false` (the default), the payment pays down that claim's non-copay line-item balances. The charge is rejected if the claim has nothing to charge against, but the amount is not capped at the claim's balance, so an amount above it leaves the claim in credit.
+- **As a copay on a claim.** When `claim_id` is given with `copay` set to `true`, the amount is recorded as a copay on that claim, posted to its copay line item. No balance is checked at all, so use this to collect a copay or prepayment against a claim that carries nothing to charge.
 
 ## Reconciling the charge
 
