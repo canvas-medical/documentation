@@ -116,12 +116,16 @@ educational_materials = patient.education_material.all()
 | default_provider_id      | Integer                                                                   |
 | addresses                | [PatientAddress](#patientaddress)[]                                       |
 | allergy_intolerances     | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)[] |
+| assessed_coding_gaps     | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[] |
+| assessed_detected_issues | [ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)[] |
 | billing_line_items       | [BillingLineItem](/sdk/data-billing-line-item/)                           |
 | business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 | care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
 | change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]       |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
 | coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
+| created_detected_issues  | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[] |
+| deferred_detected_issues | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]   |
 | dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
 | devices                  | [Device](/sdk/data-device/#device)[]                                      |
