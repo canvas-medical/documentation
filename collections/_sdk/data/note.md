@@ -117,11 +117,16 @@ The body array contains objects of two types:
      "type": "command",
      "value": "reasonForVisit",
      "data": {
-       "id": 1095,
        "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
      }
    }
    ```
+
+   `command_uuid` identifies the command and is always present. A command object
+   can also carry an `id`, holding the integer identifier of the record the
+   command created, but it is not guaranteed and nothing needs it: read the
+   [Command](/sdk/data-command/) through `command_uuid` and take
+   `anchor_object` from it instead.
 
 #### Querying on the body
 
@@ -370,7 +375,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See [Querying on the body](#querying-on-the-body). |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |

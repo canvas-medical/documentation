@@ -37,6 +37,8 @@ Nothing in the charting workflow. Commands, signing, locking, printing, and the 
 
 Three changes affect code that reads note content through the [Note data model](/sdk/data-note/). Two are already live for every instance. One takes effect on an instance when the new structure is enabled there.
 
+Reading a note body is not one of them. `note.body` returns the same lines in the same order on both structures, and a command line still carries its `command_uuid`, so code that walks a body to resolve its commands keeps working. The one thing not to rely on there is `data["id"]`, the integer identifier of the record a command created: read the [Command](/sdk/data-command/) through `command_uuid` and take `anchor_object` from it instead.
+
 ### Live as of the September 8, 2026 release
 
 **`body` cannot be selected with `values()` or `values_list()`.** Canvas assembles `body` from more than one column, so no single column holds a value to return. Naming it raises a `FieldError`. Load the note and read the property instead:
