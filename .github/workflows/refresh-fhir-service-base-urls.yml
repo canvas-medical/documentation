@@ -1,0 +1,58 @@
+name: Refresh FHIR Service Base URLs
+
+# Regenerates the published FHIR service base URL bundles from Console data and
+# opens a PR when they have changed. ONC 45 CFR 170.404(b)(2) requires these to be
+# "reviewed quarterly and, as necessary, updated" — the quarterly cron run is the
+# review and the resulting PR (or its absence) is the audit trail.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 UTC on the 1st of Jan, Apr, Jul, Oct
+    - cron: "0 9 1 1,4,7,10 *"
+
+jobs:
+  refresh-fhir-service-base-urls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the docs repo
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+
+      # Console (console.canvasmedical.com) is only reachable over Tailscale.
+      # Step copied from canvas-claude-usage/.github/workflows/weekly-report.yml.
+      - name: Tailscale
+        env:
+          TAILSCALE_EXIT_NODE_IP: ${{ secrets.TAILSCALE_EXIT_NODE_IP }}
+        uses: tailscale/github-action@v4.1.2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --exit-node ${{ env.TAILSCALE_EXIT_NODE_IP }}
+          ping: ${{ env.TAILSCALE_EXIT_NODE_IP }}
+
+      - name: Regenerate FHIR service base URL bundles
+        env:
+          CONSOLE_BASE_URL: https://console.canvasmedical.com/api/v1/provisioning
+          CONSOLE_AUTH_TOKEN: ${{ secrets.CONSOLE_AUTH_TOKEN }}
+        run: uv run scripts/api/fhir_service_base_urls.py
+
+      - name: Open pull request if the bundles changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PROJECT_AND_REPO_PAT }}
+          branch: refresh-fhir-service-base-urls-${{ github.run_id }}
+          add-paths: _static/fhir-service-base-urls-*.json
+          title: "Quarterly FHIR service base URL refresh"
+          commit-message: "chore: refresh FHIR service base URLs"
+          body: |
+            Automated quarterly regeneration of the published FHIR service base URL bundles from Console data, satisfying the "reviewed quarterly and, as necessary, updated" requirement in ONC 45 CFR 170.404(b)(2).
+
+            This PR was opened because the regenerated bundles differ from what is currently published — review the diff to confirm the additions/removals (new customers, churned customers, address changes) look correct, then merge to publish.
+
+            If no PR is opened on a scheduled run, the published bundles already match Console and no update was necessary.
