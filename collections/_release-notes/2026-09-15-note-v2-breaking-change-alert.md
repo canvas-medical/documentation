@@ -23,13 +23,24 @@ None of those were reachable while the body was a single block, because nothing 
 
 ## What happens on your instance
 
-Canvas coordinates with your team before turning this on. Once it is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours so no one is interrupted mid-note. A note looks and behaves the same before and after it migrates.
+Once this is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours so no one is interrupted mid-note. A note looks and behaves the same before and after it migrates.
 
 The end state is that every note on your instance uses the new structure. While the migration runs a chart can hold notes of both, so anything that reads a note body needs to handle both during that window, and the new structure from then on.
 
 ## Breaking change: reading a note body from the read-only replica
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
+
+Both surfaces on the replica carry the change, and they differ by a single column name. If you read `api_note` directly, the legacy body is `_body` there rather than `body`:
+
+| Holds | `api_note` | `canvas_sdk_data_api_note_001` |
+|-------|------------|--------------------------------|
+| The legacy body | `_body` | `body` |
+| The line content | `body_content` | `body_content` |
+| The line order | `body_order` | `body_order` |
+| Which structure the note uses | `version` | `version` |
+
+`version` is `NULL` while a note is still in the legacy structure, and `2` once it has been migrated. There is no version `1`. Test for `version IS NULL` rather than `version = 1`, and note that `version <> 2` does not match a legacy note either, because in SQL a comparison against `NULL` is unknown rather than true.
 
 On a note using the new structure:
 
@@ -38,6 +49,38 @@ On a note using the new structure:
 - **A command line's identifier is its key in `body_content`**, not a field inside the line. This is how you resolve a line to a row in the command table.
 - **A line identifier in `body_order` with no `body_content` entry is a blank line.** These are common, because Canvas puts a blank line around each command. Treat a missing entry as empty text rather than dropping the line or reading it as null.
 - **`checksum` is empty and stays empty.** The new structure controls concurrency per line rather than across the whole note, so it computes no checksum. To find notes that changed since your last run, use the `modified` timestamp.
+
+### What the two columns hold
+
+For a note with four lines, `body_order` holds the line identifiers in the order they appear:
+
+```json
+[
+  "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d",
+  "5f3b1a90-7c42-4e18-9a6d-2b81cc4f0e77",
+  "86da9457-c9d3-429c-9dfb-5b33a12934da",
+  "c71e4d38-9b05-42af-8e13-6f9a0d2b5c84"
+]
+```
+
+`body_content` holds only the lines that have content, keyed by those same identifiers:
+
+```json
+{
+  "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d": {
+    "type": "text",
+    "value": "Patient reports feeling better"
+  },
+  "86da9457-c9d3-429c-9dfb-5b33a12934da": {
+    "type": "command",
+    "value": "diagnose"
+  }
+}
+```
+
+Read together, that is four lines: the text line, a blank line, the Diagnose command, and a second blank line. The two identifiers with no entry in `body_content` are the blank lines, and the Diagnose command's identifier is `86da9457-c9d3-429c-9dfb-5b33a12934da`, the key it is stored under.
+
+Blank lines make up most of a typical note, since Canvas puts one on each side of a command, so expect the majority of `body_order` entries to have no `body_content` of their own.
 
 This query reads either structure, so it keeps working through the rollout and after it:
 
@@ -63,6 +106,8 @@ FROM canvas_sdk_data_api_note_001 n
 CROSS JOIN LATERAL jsonb_array_elements(n.body) WITH ORDINALITY AS line(value, idx)
 WHERE n.version IS DISTINCT FROM 2
 ```
+
+It reads the `canvas_sdk_data_api_note_001` view. To run it against `api_note` instead, change `n.body` to `n._body` in the second half and the table name in both. Everything else is the same on either surface.
 
 Identifying a command gets more consistent under the new structure, not less. On a legacy note a command line carries its identifier only if a particular write path recorded one, so a small number of lines have none and can be matched only by position and type. Under the new structure the identifier is the line's key, so every command line has one.
 
