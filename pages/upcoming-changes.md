@@ -33,6 +33,13 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>TBD<br/>(Not Soon)</td>
     </tr>
     <tr>
+      <td>Plugin SDK: Clinical note body structure</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>Canvas is changing how a clinical note stores its body, enabled one instance at a time. Charting, the Note API, and FHIR are unchanged. Three changes affect plugins that read note content through the SDK: <code>body</code> cannot be selected with <code>values()</code> or <code>values_list()</code>, <code>body</code> cannot be named through a relation, and <code>Note.checksum</code> is no longer maintained. <a href="/release-notes/note-v2-breaking-change-2026-09-15/">Read more.</a></td>
+      <td>TBD</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>FHIR API: Setting appointment location using the location integer value</td>
       <td style="color: red;">Breaking Change</td>
       <td>The FHIR Appointment endpoint now uses the reference from the Location Read/Search endpoint for the Location in supportingInformation. We plan to discontinue support of using the location integer.</td>
