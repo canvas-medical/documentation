@@ -14,6 +14,12 @@ You reference the card by an identifier the configured processor understands, ne
 
 {% include alert.html type="warning" content="<b>You are responsible for obtaining patient consent before charging a stored card.</b> Canvas does not enforce consent for charges initiated through this effect." %}
 
+## Imports
+
+```python
+from canvas_sdk.effects.payment import ChargeStoredCard
+```
+
 ## Charging a stored card
 
 Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`.
@@ -43,11 +49,14 @@ from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.v1.data import Patient
 
 
-class ChargeVisitCopay(BaseHandler):
+class ChargeBalanceOnBooking(BaseHandler):
     RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_CREATED)]
 
     def compute(self) -> list[Effect]:
-        patient = Patient.objects.get(id=self.target)
+        # APPOINTMENT_CREATED targets the appointment; the patient is in the context.
+        appointment_id = self.event.target.id
+        patient = Patient.objects.get(id=self.event.context["patient"]["id"])
+
         card = patient.payment_cards.filter(is_default=True).first()
         if card is None:
             return []
@@ -56,11 +65,12 @@ class ChargeVisitCopay(BaseHandler):
             patient_id=str(patient.id),
             payment_card_id=str(card.id),
             amount=Decimal("25.00"),
-            idempotency_key=uuid5(NAMESPACE_URL, f"appointment-{self.target}-copay"),
-            description="Visit copay",
+            idempotency_key=uuid5(NAMESPACE_URL, f"appointment-{appointment_id}-balance"),
         )
         return [charge.apply()]
 ```
+
+This charge names no `claim_id`, so it pays down the patient's outstanding balance and is rejected unless that balance covers the amount. To take a copay instead, supply the `claim_id` it belongs to and set `copay=True`. See [Payment allocation](#payment-allocation).
 
 ### Validation
 
@@ -94,7 +104,11 @@ The payment is always applied to the patient's account:
 
 ## Reconciling the charge
 
-Once the charge has been processed, Canvas emits a `REVENUE__STORED_CARD__CHARGE_RESPONSE` event carrying the outcome. The event targets the patient, and its context carries no card data or PHI. Handle it in a separate handler. Correlate each response with the charge that produced it using the `idempotency_key` you supplied on the request.
+Once the charge has been processed, Canvas emits a [`REVENUE__STORED_CARD__CHARGE_RESPONSE`](/sdk/events/#stored-card-charge-events) event carrying the outcome. It fires whether or not the card was charged, and nothing a handler returns changes the charge, so handle it to reconcile rather than to intervene.
+
+The event targets the patient that was charged: `self.event.target.id` is the patient id, and `self.event.target.instance` is the [Patient](/sdk/data-patient/#patient). Its actor is the one that emitted the originating effect.
+
+Correlate each response with the charge that produced it using the `idempotency_key` you supplied on the request. It is the only field that ties the two together, since nothing in the response identifies the handler that asked for the charge.
 
 This handler records the result of each charge, reading `payment_intent_id` when it succeeds and the `error` object when it does not:
 
@@ -124,7 +138,7 @@ class ReconcileStoredCardCharge(BaseHandler):
 
 ### Response context
 
-The event `context` is a sanitized JSON object with the following fields; values that are UUIDs or decimals on the request are echoed here as strings.
+`self.event.context` arrives already parsed as a dictionary, so read the fields from it directly. It carries no card data or PHI. Apart from `success`, which is a boolean, and `error`, which is an object, every value is a string or `null`, including the amount and the ids that were UUIDs on the request, so cast `amount` before doing arithmetic on it.
 
 | Field             | Type            | Description                                                                                                                       |
 | ----------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -132,9 +146,9 @@ The event `context` is a sanitized JSON object with the following fields; values
 | payment_intent_id | String or null  | The processor's payment identifier on success — the Stripe PaymentIntent id, or a custom processor's transaction id. `null` on failure. |
 | error             | Object or null  | `null` on success. On failure, `error` is an object with `code` and `message` fields. See [Error codes](#error-codes).             |
 | idempotency_key   | String          | Echoed from the request. Correlate the response with the originating charge using this value.                                     |
-| patient_id        | String          | Echoed from the request: the patient that was charged.                                                                            |
-| payment_card_id   | String          | Echoed from the request: the stored card reference that was charged.                                                              |
-| claim_id          | String or null  | Echoed from the request, or `null` when no claim was supplied.                                                                    |
+| patient_id        | String          | Echoed from the request: the [Patient](/sdk/data-patient/#patient) that was charged.                                              |
+| payment_card_id   | String          | Echoed from the request: the stored card that was charged, a [PaymentCard](/sdk/data-payment-card/) id under the built-in processor. |
+| claim_id          | String or null  | Echoed from the request: the [Claim](/sdk/data-claim/) the payment was posted against, or `null` when none was supplied.           |
 | amount            | String          | Echoed from the request: the dollar amount that was submitted.                                                                    |
 
 ### Error codes
@@ -152,12 +166,6 @@ On failure, `error.code` names the condition that stopped the charge.
 | `charge_failed`          | An unexpected failure occurred while processing the charge. Retry using the same `idempotency_key`; the retry will not double-charge the patient. |
 
 The payment processor's own decline codes also pass through in `error.code` — for example, `card_declined` from Stripe — and can arrive at charge time. Handle an unrecognized code gracefully rather than matching against a fixed set, since the processor can surface codes this list does not name.
-
-## Imports
-
-```python
-from canvas_sdk.effects.payment import ChargeStoredCard
-```
 
 <br/>
 <br/>

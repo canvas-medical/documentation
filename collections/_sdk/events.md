@@ -27487,6 +27487,39 @@ The `identifier` is the unique id of the payment processor handler the event is 
   </tbody>
 </table>
 
+### Stored Card Charge Events
+
+This event reports the outcome of a <a href="{% link _sdk/effects/stored_card_charge.md %}">Charge Stored Card</a> effect. Unlike the payment processor events above, it is not a request for a handler to respond to: the charge has already been attempted, and nothing a handler returns changes it. Handle it to reconcile the result, and correlate it with the charge that produced it using `idempotency_key`, which is echoed from the request.
+
+Apart from `success` and `error`, every value arrives as a string or `null`, including the amount and the ids that were UUIDs on the request. The context is already parsed into a dictionary on `self.event.context`, and the actor is the one that emitted the originating effect.
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__STORED_CARD__CHARGE_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when a <a href="{% link _sdk/effects/stored_card_charge.md %}">ChargeStoredCard</a> effect has finished processing, whether or not the card was charged. Carries no card data or PHI.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/#patient'>Patient</a></pre></td>
+      <td><pre>"success": bool          # whether the card was charged
+"payment_intent_id": str # processor's payment id, null on failure
+"error":                 # null on success
+    "code": str          # see <a href="{% link _sdk/effects/stored_card_charge.md %}#error-codes">Error codes</a>
+    "message": str
+"idempotency_key": str   # echoed, use this to correlate
+"patient_id": str        # echoed, a <a href='/sdk/data-patient/#patient'>Patient</a> id
+"payment_card_id": str   # echoed, a <a href='/sdk/data-payment-card/'>PaymentCard</a> id under Stripe
+"claim_id": str          # echoed, a <a href='/sdk/data-claim/'>Claim</a> id, null when none
+"amount": str            # echoed, the dollar amount submitted</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Patient Portal Events
 
 <table>
@@ -27849,20 +27882,6 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 Context object:
       <pre>"schema_key": str
 "purpose": "form" | "print"</pre></td>
-    </tr>
-    <tr>
-      <td>REVENUE__STORED_CARD__CHARGE_RESPONSE</td>
-      <td>A <a href="{% link _sdk/effects/stored_card_charge.md %}" target="_blank">Charge Stored Card</a> effect has finished processing, carrying the outcome of the charge. See <a href="{% link _sdk/effects/stored_card_charge.md %}#reconciling-the-charge" target="_blank">Reconciling the charge</a> for the full context and error-code reference.
-      <br />Target: the patient that was charged.
-      <br />Context object:
-      <pre>"success": bool
-"payment_intent_id": str | None
-"error": {"code": str, "message": str} | None
-"idempotency_key": str
-"patient_id": str
-"payment_card_id": str
-"claim_id": str | None
-"amount": str</pre></td>
     </tr>
   </tbody>
 </table>
