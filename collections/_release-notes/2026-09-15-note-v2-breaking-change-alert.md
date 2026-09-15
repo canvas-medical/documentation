@@ -21,19 +21,19 @@ Nothing about the note looks or behaves differently. Charting, commands, signing
 
 None of those were reachable while the body was a single block, because nothing could refer to one line of it.
 
-## How it rolls out
+## What happens on your instance
 
-Every note records which structure it uses, so this arrives note by note rather than as a single cutover. The two structures work side by side on the same chart, and Canvas coordinates with your team before enabling the new one on your instance. Notes written beforehand keep working as they are until they are converted.
+Canvas coordinates with your team before turning this on. Once it is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours so no one is interrupted mid-note. A note looks and behaves the same before and after it migrates.
 
-That means a chart can hold notes of both structures at once, so anything reading note bodies needs to handle both for the duration of the rollout.
+The end state is that every note on your instance uses the new structure. While the migration runs a chart can hold notes of both, so anything that reads a note body needs to handle both during that window, and the new structure from then on.
 
 ## Breaking change: reading a note body from the read-only replica
 
-An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
+An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
 On a note using the new structure:
 
-- **`body` is empty.** It is not an error and not a partial read, so a query selecting `body` returns an empty array rather than failing.
+- **`body` is empty.** It is not an error and not a partial read, so a query selecting `body` returns an empty array rather than failing. Once the migration finishes that is every note on the instance, so a query left unchanged returns nothing rather than reporting a problem.
 - **The lines live in two columns.** `body_content` is an object keyed by line identifier, and `body_order` is an array of those identifiers holding the order.
 - **A command line's identifier is its key in `body_content`**, not a field inside the line. This is how you resolve a line to a row in the command table.
 - **A line identifier in `body_order` with no `body_content` entry is a blank line.** These are common, because Canvas puts a blank line around each command. Treat a missing entry as empty text rather than dropping the line or reading it as null.

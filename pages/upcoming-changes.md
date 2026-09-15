@@ -35,7 +35,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>Read-only replica: Clinical note body structure</td>
       <td style="color: red;">Breaking Change</td>
-      <td>Canvas is changing how a clinical note stores its body, enabled one instance at a time. Charting, the Note API, and FHIR are unchanged, and the plugin SDK changes shipped in the September 8, 2026 release. An integration reading note bodies from the read-only replica needs a query change: on a refactored note the <code>body</code> column is empty and the lines move to <code>body_content</code> and <code>body_order</code>, with <code>checksum</code> no longer maintained. <a href="/release-notes/note-v2-2026-09-15/">Read more.</a></td>
+      <td>Canvas is changing how a clinical note stores its body, enabled one instance at a time, with every existing note migrated onto the new structure. Nothing looks different in the chart, and the Note API, FHIR, and the plugin SDK need no change. An integration reading note bodies from the read-only replica needs a query change: on a migrated note the <code>body</code> column is empty and the lines move to <code>body_content</code> and <code>body_order</code>, with <code>checksum</code> no longer maintained. <a href="/release-notes/note-v2-2026-09-15/">Read more.</a></td>
       <td>TBD</td>
       <td></td>
     </tr>
