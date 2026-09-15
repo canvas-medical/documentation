@@ -94,6 +94,9 @@ The questionnaire YAML file should adhere to the JSON schema found [here](https:
 
 Like `TXT`, a `DATE` question takes exactly one entry in `responses`: set `name: "DATE"` and omit `value`, since scoring does not apply. In a note it renders as a date picker and accepts a calendar date in `YYYY-MM-DD` format.
 
+<!-- source: discussion #1003 -->
+**Question toggle default:** For Physical Exam (`EXAM`) questionnaires, the per-question enable/disable toggle cannot be set to default-untoggled through the YAML (setting the response `value` to `0` does not control the toggle). To start a question toggled off, set up a plugin that listens for the command origination event and uses the [toggle-questions feature](/sdk/commands/#toggle-questions-feature) to disable the question.
+
 
 ### Example Questionnaire Definition
 
@@ -215,6 +218,16 @@ In this example:
 - **Q1** is always visible.
 - **Q2** only appears if Q1 is answered "Yes" (using `=` with `value_code`).
 - **Q3** only appears if Q1 is "Yes" **and** Q2 has been answered (using `enabled_behavior: all` with two conditions).
+
+<!-- source: discussion #1602 -->
+Only the comparison operators `=`, `!=`, `exists`, and `not_exists` are supported. Numeric comparison operators (`<`, `>`, `<=`, `>=`) are not supported because question responses are stored as strings (free text, single select, and multi select), so there are no numeric values to compare.
+
+#### Editing branching in the Questionnaire Builder
+
+<!-- source: discussion #1602 -->
+The Questionnaire Builder UI can create, update, and delete this branching logic. To edit it: choose **Edit Existing Form**, select the question that needs conditional logic, and open the **Field Rules** tab to view or edit the conditions. The **YAML** tab reflects the resulting `enabled_behavior` and `enabled_conditions`, and the **Preview** tab lets you test the logic as you answer questions. (Access to the Questionnaire Builder is permissioned; contact Canvas support if it is not available to your users.)
+
+Note that editing a questionnaire — whether through YAML or the Questionnaire Builder — versions it: a new questionnaire is created and the previous version is marked inactive.
 
 ## Load Questionnaire definition from YAML file
 

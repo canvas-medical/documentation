@@ -9,6 +9,9 @@ hidden: false
 
 The `Command` model represents a [command](/sdk/commands/) in a note.
 
+<!-- source: discussion #705 -->
+> **Read-only data record.** The `Command` model is a read-only database view used for data retrieval. You cannot call `.delete()` (or otherwise write) on it — doing so raises `cannot delete from view ...`. To write or delete a command, use the corresponding [command effect object](/sdk/commands/) instead. The SDK intentionally separates data-retrieval classes from data-write (effect) classes.
+
 ## Basic usage
 
 To get a command by identifier, use the `get` method on the `Command` model manager:
