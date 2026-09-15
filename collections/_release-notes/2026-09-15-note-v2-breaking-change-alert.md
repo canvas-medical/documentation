@@ -5,21 +5,21 @@ date: 2026-09-15 08:00:00
 layout: productupdates
 tags: breaking-change
 feed_summary: |
-  Canvas is changing how a clinical note stores its body, enabled per instance.
+  Canvas is changing how a clinical note stores its body. Nothing looks different in the chart. The change is what it made possible, including two people editing one note at the same time.
 
-  Charting, the Note API and FHIR are unchanged, and the plugin SDK changes shipped earlier. The breaking change is for integrations reading a note body from the read-only replica: on a refactored note the body column is empty and the lines move to body_content and body_order.
+  The breaking change is for integrations reading a note body from the read-only replica: on a refactored note the body column is empty and the lines move to body_content and body_order.
 ---
 
 Canvas is changing how a clinical note stores its body. Each line of a note becomes an addressable object with its own identity, in place of the single block of content that holds the whole note today.
 
-## What it changes in the chart
+Nothing about the note looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are all exactly as they are today. This is a change to the storage underneath, and what matters about it is what it made possible:
 
 - Two clinicians, or two browser tabs, can work in the same note at the same time. Edits to different lines merge, instead of one person's work being refused because someone else touched the note.
 - A command that is originated always lands in the note, or is rolled back completely.
 - Changes made elsewhere in Canvas appear in an open note without a reload.
 - A note stops refetching itself after every interaction, so a long note stays responsive as it grows.
 
-Commands, signing, locking, printing, and the note's appearance are unchanged.
+None of those were reachable while the body was a single block, because nothing could refer to one line of it.
 
 ## How it rolls out
 
@@ -64,7 +64,7 @@ CROSS JOIN LATERAL jsonb_array_elements(n.body) WITH ORDINALITY AS line(value, i
 WHERE n.version IS DISTINCT FROM 2
 ```
 
-Identifying a command gets more reliable under the new structure, not less. On a legacy note, a command line carries its identifier only if a particular write path happened to record one, so roughly half of them have no identifier in the body at all and can only be matched by position and type. Under the new structure the identifier is the line's key, so every command line has one.
+Identifying a command gets more consistent under the new structure, not less. On a legacy note a command line carries its identifier only if a particular write path recorded one, so a small number of lines have none and can be matched only by position and type. Under the new structure the identifier is the line's key, so every command line has one.
 
 ## Plugins and the SDK
 
