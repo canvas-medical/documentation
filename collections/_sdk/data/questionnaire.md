@@ -193,7 +193,30 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 | show_prologue       | Boolean                                                        |
 | code_system         | String                                                         |
 | code                | String                                                         |
+| enable_behavior     | String                                                         |
 | interview_responses | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+
+`enable_behavior` holds `all` or `any`: whether all or any of the question's [enablement conditions](#questionenablementcondition) must be met for the question to be enabled.
+
+The read-side attribute here is `enable_behavior` (no "d"). When authoring a questionnaire through the effect or the manifest schema, the matching config field is spelled `enabled_behavior` (with a "d"). The difference is intentional.
+
+### QuestionEnablementCondition
+
+A `QuestionEnablementCondition` controls when a `Question` is enabled, following FHIR's `enableWhen` pattern. Import it with `from canvas_sdk.v1.data import QuestionEnablementCondition`. Here `question` is the question the condition governs, and `dependent_on` is the question whose answer is tested.
+
+| Field Name    | Type                                    |
+|---------------|-----------------------------------------|
+| dbid          | Integer                                 |
+| created       | DateTime                                |
+| modified      | DateTime                                |
+| status        | String                                  |
+| question      | [Question](#question)                   |
+| dependent_on  | [Question](#question)                   |
+| operator      | String                                  |
+| answer_option | [ResponseOption](#responseoption)       |
+| answer_value  | String                                  |
+
+`operator` takes the same comparison operators as a questionnaire's enabled conditions — `=`, `!=`, `exists`, and `not_exists` (see [Enabled Condition Settings](/sdk/questionnaires/#enabled-condition-settings)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
 
 ### Questionnaire
 
