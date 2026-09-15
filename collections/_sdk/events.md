@@ -52,6 +52,7 @@ The actor is available in the following contexts:
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
 - **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
+- **Stored card charge events** — `REVENUE__STORED_CARD__CHARGE_RESPONSE`, carrying the actor of the effect that requested the charge
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
@@ -27848,6 +27849,20 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 Context object:
       <pre>"schema_key": str
 "purpose": "form" | "print"</pre></td>
+    </tr>
+    <tr>
+      <td>REVENUE__STORED_CARD__CHARGE_RESPONSE</td>
+      <td>A <a href="{% link _sdk/effects/stored_card_charge.md %}" target="_blank">Charge Stored Card</a> effect has finished processing, carrying the outcome of the charge. See <a href="{% link _sdk/effects/stored_card_charge.md %}#reconciling-the-charge" target="_blank">Reconciling the charge</a> for the full context and error-code reference.
+      <br />Target: the patient that was charged.
+      <br />Context object:
+      <pre>"success": bool
+"payment_intent_id": str | None
+"error": {"code": str, "message": str} | None
+"idempotency_key": str
+"patient_id": str
+"payment_card_id": str
+"claim_id": str | None
+"amount": str</pre></td>
     </tr>
   </tbody>
 </table>

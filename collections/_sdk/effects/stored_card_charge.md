@@ -5,13 +5,26 @@ excerpt: "Charge a patient's stored payment card on file."
 hidden: false
 ---
 
-The `ChargeStoredCard` effect charges a patient's stored payment card through the payment processor configured for your Canvas instance. The charge is processed server-side against the tokenized card, so no card data crosses the plugin boundary — you reference the card by an identifier the configured processor understands: the Canvas [PaymentCard](/sdk/data-payment-card/) id for the built-in Stripe processor, or a [custom payment processor](/sdk/handlers-payment-processors/)'s own reference, never the underlying processor token.
+The `ChargeStoredCard` effect charges a patient's stored payment card through the payment processor configured for your Canvas instance. The charge is processed server-side against the tokenized card, so no card data crosses the plugin boundary.
+
+You reference the card by an identifier the configured processor understands, never the underlying processor token:
+
+- The built-in Stripe processor takes the Canvas [PaymentCard](/sdk/data-payment-card/) id.
+- A [custom payment processor](/sdk/handlers-payment-processors/) takes whichever reference that processor manages.
 
 {% include alert.html type="warning" content="<b>You are responsible for obtaining patient consent before charging a stored card.</b> Canvas does not enforce consent for charges initiated through this effect." %}
 
 ## Charging a stored card
 
-Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`. When the effect is applied, Canvas confirms that the patient exists and, when a `claim_id` is supplied, that the claim exists. It raises a `ValidationError` if either check fails, or if `copay` is set without a `claim_id`. The card is not validated at this point: it is referenced by an identifier the configured processor understands — the Canvas PaymentCard id for the built-in Stripe processor, or a custom processor's own reference. That reference is resolved and validated server-side when the charge is processed, so a card reference the processor cannot resolve is rejected there rather than by `.apply()`.
+Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`.
+
+`.apply()` raises a `ValidationError` when:
+
+- The `patient_id` does not match a patient.
+- A supplied `claim_id` does not match a claim.
+- `copay` is set without a `claim_id`.
+
+The card itself is not checked here. `payment_card_id` is resolved and validated server-side when the charge is processed, so a reference the configured processor cannot resolve arrives as an error on the [response event](#reconciling-the-charge) rather than raising from `.apply()`. See [Error codes](#error-codes) for the code each processor reports.
 
 | Attribute         |          | Type      | Description                                                                                                                                            |
 | ----------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
