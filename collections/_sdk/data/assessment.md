@@ -95,6 +95,8 @@ A Plan- or Procedures-section command written in the same note can be linked to 
 | stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
 | updategoals         | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
 
+A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
+
 ## Enumeration types
 
 ### Assessment Status
