@@ -22,7 +22,7 @@ Once this is on, new notes use the new structure and your existing notes are mig
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
-On a migrated note the legacy body column is empty, returning an empty array rather than an error. The lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
+A note's `version` is `NULL` before it is migrated and `2` after. On a migrated note the legacy body column is empty, returning an empty array rather than an error, and the lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
 
 ```json
 {
@@ -54,7 +54,7 @@ FROM canvas_sdk_data_api_note_001 n
 CROSS JOIN LATERAL unnest(n.body_order) WITH ORDINALITY AS ord(line_uuid, idx)
 ```
 
-It needs no filter on `version`, which is `NULL` on a legacy note and `2` on a migrated one: an unmigrated note has an empty `body_order`, so it contributes no rows until it migrates. The same query runs against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. On that table the legacy body column is `_body` rather than `body`, and the note identifier is an integer rather than a UUID.
+The same query runs against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. On that table the legacy body column is `_body` rather than `body`, and the note identifier is an integer rather than a UUID.
 
 `checksum` is also empty on a migrated note and stays empty, because the new structure controls concurrency per line rather than across the whole note. Use the `modified` timestamp to find notes that changed since your last run.
 
