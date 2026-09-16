@@ -5,9 +5,11 @@ date: 2026-09-15 08:00:00
 layout: productupdates
 tags: breaking-change
 feed_summary: |
-  Canvas is changing how a clinical note stores its body. Nothing looks different in the chart. The change is what it made possible, including two people editing one note at the same time.
+  Canvas is changing how a clinical note stores its body. Nothing looks different in the chart, and two clinicians can edit one note at once.
 
-  The breaking change is for integrations reading a note body from the read-only replica: on a refactored note the body column is empty and the lines move to body_content and body_order.
+  Instances without a read-only replica get it September 21, 2026, and instances with one September 28.
+
+  Breaking change for integrations reading note bodies from the replica: the body column is empty and the lines move to body_content and body_order.
 ---
 
 Canvas is changing how a clinical note stores its body, from a single block of content to a set of individually addressable lines.
@@ -21,6 +23,13 @@ Nothing looks or behaves differently. Charting, commands, signing, locking, prin
 
 None of that was reachable while the body was a single block, because nothing could refer to one line of it.
 
+## When your instance gets it
+
+Canvas turns the new structure on in two waves:
+
+- **September 21, 2026** for instances without a [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database).
+- **September 28, 2026** for instances with one.
+
 ## What happens on your instance
 
 - New notes use the new structure, and your existing notes are migrated onto it in batches outside business hours.
@@ -29,7 +38,7 @@ None of that was reachable while the body was a single block, because nothing co
 
 ## Breaking change: reading a note body from the read-only replica
 
-An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
+An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change in place by September 28, 2026. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
 - A note's `version` is `NULL` before it is migrated and `2` after.
 - On a migrated note the legacy body column is empty.

@@ -122,9 +122,11 @@ The body array contains objects of two types:
    }
    ```
 
-   `command_uuid` identifies the command and is always present. A command object
-   can also carry an `id`, holding the integer identifier of the record the
-   command created, but it is not guaranteed and nothing needs it: read the
+   `command_uuid` identifies the command and is present on every command object.
+   A command object on a note that has not yet moved to the [refactored body
+   structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
+   the integer identifier of the record the command created. A note on the
+   refactored structure never carries one, so read the
    [Command](/sdk/data-command/) through `command_uuid` and take
    `anchor_object` from it instead.
 
