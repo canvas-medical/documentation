@@ -22,7 +22,7 @@ Once this is on, new notes use the new structure and your existing notes are mig
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
-A note's `version` is `NULL` before it is migrated and `2` after. On a migrated note the legacy body column is empty, returning an empty array rather than an error, and the lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
+A note's `version` is `NULL` before it is migrated and `2` after. On a migrated note the legacy body column is empty, and the lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
 
 ```json
 {
@@ -60,6 +60,10 @@ The same query runs against `api_note` by changing the table name, since `body_c
 
 ## Plugins
 
-Plugin code needs no change. The queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and [the note body structure](/sdk/data-note/#understanding-the-note-body-structure) a plugin reads through the SDK is otherwise unchanged, including each command line's `command_uuid`. The one attribute to move off is `Note.checksum`, for the reason above.
+Two queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and both raise rather than failing quietly: `body` cannot be selected with `values()` or `values_list()`, and it cannot be named through a relation such as `note__body`.
+
+One case does fail quietly, so it is worth checking before your instance migrates. `Note.objects.filter(body=...)` still works, but on a migrated note it matches against `body_content` rather than the legacy list of lines, so a filter written for the old shape returns nothing instead of raising.
+
+Otherwise [the note body structure](/sdk/data-note/#understanding-the-note-body-structure) a plugin reads through the SDK is unchanged, including each command line's `command_uuid`. `Note.checksum` is the one attribute to move off, for the reason above.
 
 Keep track of upcoming changes [here.](/product-updates/important-dates/)
