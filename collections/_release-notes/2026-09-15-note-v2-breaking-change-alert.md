@@ -12,7 +12,7 @@ feed_summary: |
 
 Canvas is changing how a clinical note stores its body, from a single block of content to a set of individually addressable lines.
 
-Nothing looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are exactly as they are today, and the [Note API](/api/note/) and FHIR resources are unchanged. This is a change to the storage underneath, and what matters about it is what it made possible: two clinicians can work in the same note at once with their edits merging, a command that is originated always lands in the note or is rolled back completely, changes made elsewhere appear without a reload, and a long note stays responsive as it grows. None of that was reachable while the body was a single block, because nothing could refer to one line of it.
+Nothing looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are exactly as they are today. This is a change to the storage underneath, and what matters about it is what it made possible: two clinicians can work in the same note at once with their edits merging, a command that is originated always lands in the note or is rolled back completely, changes made elsewhere appear without a reload, and a long note stays responsive as it grows. None of that was reachable while the body was a single block, because nothing could refer to one line of it.
 
 ## What happens on your instance
 
