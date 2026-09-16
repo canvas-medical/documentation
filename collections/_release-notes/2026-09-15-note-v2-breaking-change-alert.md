@@ -86,5 +86,3 @@ Everything else a plugin does with a note body is unchanged:
 
 - [The note body structure](/sdk/data-note/#understanding-the-note-body-structure) read through the SDK is the same, including each command line's `command_uuid`.
 - `Note.checksum` is the one attribute to move off, for the reason above.
-
-Keep track of upcoming changes [here.](/product-updates/important-dates/)
