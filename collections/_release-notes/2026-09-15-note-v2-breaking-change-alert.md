@@ -31,20 +31,21 @@ The end state is that every note on your instance uses the new structure. While 
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
-Both surfaces on the replica carry the change, and they differ by a single column name. If you read `api_note` directly, the legacy body is `_body` there rather than `body`:
+Both surfaces on the replica carry the change. The new columns are named the same on each, so most of this applies wherever you read notes:
 
 | Holds | `api_note` | `canvas_sdk_data_api_note_001` |
 |-------|------------|--------------------------------|
-| The legacy body | `_body` | `body` |
 | The line content | `body_content` | `body_content` |
 | The line order | `body_order` | `body_order` |
 | Which structure the note uses | `version` | `version` |
+| The legacy body | `_body` | `body` |
+| The note identifier | `id`, an integer | `id`, a UUID, and `dbid`, an integer |
 
 `version` is `NULL` on a legacy note and `2` on a migrated one. Select legacy notes with `version IS NULL`: both `version = 1` and `version <> 2` return nothing for them.
 
 On a note using the new structure:
 
-- **`body` is empty.** It is not an error and not a partial read, so a query selecting `body` returns an empty array rather than failing. Once the migration finishes that is every note on the instance, so a query left unchanged returns nothing rather than reporting a problem.
+- **The legacy body column is empty.** It is not an error and not a partial read, so a query selecting it returns an empty array rather than failing. Once the migration finishes that is every note on the instance, so a query left unchanged returns nothing rather than reporting a problem.
 - **The lines live in two columns.** `body_content` is an object keyed by line identifier, and `body_order` is an array of those identifiers holding the order.
 - **A command line's identifier is its key in `body_content`**, not a field inside the line. This is how you resolve a line to a row in the command table.
 - **A line identifier in `body_order` with no `body_content` entry is a blank line.** These are common, because Canvas puts a blank line around each command. Treat a missing entry as empty text rather than dropping the line or reading it as null.
@@ -82,7 +83,7 @@ Read together, that is four lines: the text line, a blank line, the Diagnose com
 
 Blank lines make up most of a typical note, since Canvas puts one on each side of a command, so expect the majority of `body_order` entries to have no `body_content` of their own.
 
-This query reads either structure, so it keeps working through the rollout and after it:
+This query reads a note body in the new structure, one row per line, in order:
 
 ```sql
 SELECT n.id AS note_id,
@@ -93,21 +94,11 @@ SELECT n.id AS note_id,
             THEN ord.line_uuid::text END                                 AS command_uuid
 FROM canvas_sdk_data_api_note_001 n
 CROSS JOIN LATERAL unnest(n.body_order) WITH ORDINALITY AS ord(line_uuid, idx)
-WHERE n.version = 2
-
-UNION ALL
-
-SELECT n.id,
-       line.idx,
-       line.value ->> 'type',
-       COALESCE(line.value ->> 'value', ''),
-       line.value -> 'data' ->> 'command_uuid'
-FROM canvas_sdk_data_api_note_001 n
-CROSS JOIN LATERAL jsonb_array_elements(n.body) WITH ORDINALITY AS line(value, idx)
-WHERE n.version IS DISTINCT FROM 2
 ```
 
-It reads the `canvas_sdk_data_api_note_001` view. To run it against `api_note` instead, change `n.body` to `n._body` in the second half and the table name in both. Everything else is the same on either surface.
+It needs no filter on `version`. A note that has not been migrated yet has an empty `body_order`, so it contributes no rows, and it starts appearing once it migrates.
+
+The same query works against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. The note identifier comes back as an integer on that table rather than a UUID.
 
 Identifying a command gets more consistent under the new structure, not less. On a legacy note a command line carries its identifier only if a particular write path recorded one, so a small number of lines have none and can be matched only by position and type. Under the new structure the identifier is the line's key, so every command line has one.
 
