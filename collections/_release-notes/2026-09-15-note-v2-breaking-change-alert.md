@@ -1,7 +1,7 @@
 ---
 slug: note-v2-2026-09-15
 title: Upcoming Change - Clinical Note Body Structure
-date: 2026-09-15 08:00:00
+date: 2026-09-16 08:00:00
 layout: productupdates
 tags: breaking-change
 feed_summary: |
