@@ -12,17 +12,29 @@ feed_summary: |
 
 Canvas is changing how a clinical note stores its body, from a single block of content to a set of individually addressable lines.
 
-Nothing looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are exactly as they are today. This is a change to the storage underneath, and what matters about it is what it made possible: two clinicians can work in the same note at once with their edits merging, a command that is originated always lands in the note or is rolled back completely, changes made elsewhere appear without a reload, and a long note stays responsive as it grows. None of that was reachable while the body was a single block, because nothing could refer to one line of it.
+Nothing looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are exactly as they are today. This is a change to the storage underneath, and what matters about it is what it made possible:
+
+- Two clinicians can work in the same note at once, with their edits merging.
+- A command that is originated always lands in the note, or is rolled back completely.
+- Changes made elsewhere appear without a reload.
+- A long note stays responsive as it grows.
+
+None of that was reachable while the body was a single block, because nothing could refer to one line of it.
 
 ## What happens on your instance
 
-Once this is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours. A note looks the same before and after it migrates, and the end state is that every note on your instance uses the new structure.
+- New notes use the new structure, and your existing notes are migrated onto it in batches outside business hours.
+- A note looks the same before and after it migrates.
+- The end state is that every note on your instance uses the new structure.
 
 ## Breaking change: reading a note body from the read-only replica
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
-A note's `version` is `NULL` before it is migrated and `2` after. On a migrated note the legacy body column is empty, and the lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
+- A note's `version` is `NULL` before it is migrated and `2` after.
+- On a migrated note the legacy body column is empty.
+- The lines move to two columns: `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order.
+- `checksum` is empty and stays empty, because the new structure controls concurrency per line rather than across the whole note. Use the `modified` timestamp to find notes that changed since your last run.
 
 ```json
 {
@@ -39,7 +51,9 @@ A note's `version` is `NULL` before it is migrated and `2` after. On a migrated 
 }
 ```
 
-That is four lines: the text, a blank, the Diagnose command, and another blank. An identifier with no `body_content` entry is a blank line, and most lines are blank because Canvas puts one on each side of a command. A command line's identifier is its key, which is how you resolve it to a row in the command table.
+- That is four lines: the text, a blank, the Diagnose command, and another blank.
+- An identifier with no `body_content` entry is a blank line. Most lines are blank, because Canvas puts one on each side of a command.
+- A command line's identifier is its key, which is how you resolve it to a row in the command table.
 
 This query reads a body in the new structure, one row per line, in order:
 
@@ -54,16 +68,23 @@ FROM canvas_sdk_data_api_note_001 n
 CROSS JOIN LATERAL unnest(n.body_order) WITH ORDINALITY AS ord(line_uuid, idx)
 ```
 
-The same query runs against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. On that table the legacy body column is `_body` rather than `body`, and the note identifier is an integer rather than a UUID.
-
-`checksum` is also empty on a migrated note and stays empty, because the new structure controls concurrency per line rather than across the whole note. Use the `modified` timestamp to find notes that changed since your last run.
+- The same query runs against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there.
+- On that table the legacy body column is `_body` rather than `body`, and the note identifier is an integer rather than a UUID.
 
 ## Plugins
 
-Two queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and both raise rather than failing quietly: `body` cannot be selected with `values()` or `values_list()`, and it cannot be named through a relation such as `note__body`.
+Two changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and both raise rather than failing quietly:
 
-One case does fail quietly, so it is worth checking before your instance migrates. `Note.objects.filter(body=...)` still works, but on a migrated note it matches against `body_content` rather than the legacy list of lines, so a filter written for the old shape returns nothing instead of raising.
+- `body` cannot be selected with `values()` or `values_list()`.
+- `body` cannot be named through a relation, such as `note__body`.
 
-Otherwise [the note body structure](/sdk/data-note/#understanding-the-note-body-structure) a plugin reads through the SDK is unchanged, including each command line's `command_uuid`. `Note.checksum` is the one attribute to move off, for the reason above.
+One case does fail quietly, so it is worth checking before your instance migrates:
+
+- `Note.objects.filter(body=...)` still works, but on a migrated note it matches against `body_content` rather than the legacy list of lines. A filter written for the old shape returns nothing instead of raising.
+
+Everything else a plugin does with a note body is unchanged:
+
+- [The note body structure](/sdk/data-note/#understanding-the-note-body-structure) read through the SDK is the same, including each command line's `command_uuid`.
+- `Note.checksum` is the one attribute to move off, for the reason above.
 
 Keep track of upcoming changes [here.](/product-updates/important-dates/)
