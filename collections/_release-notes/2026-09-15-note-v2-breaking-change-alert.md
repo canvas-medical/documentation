@@ -10,80 +10,38 @@ feed_summary: |
   The breaking change is for integrations reading a note body from the read-only replica: on a refactored note the body column is empty and the lines move to body_content and body_order.
 ---
 
-Canvas is changing how a clinical note stores its body. Each line of a note becomes an addressable object with its own identity, in place of the single block of content that holds the whole note today.
+Canvas is changing how a clinical note stores its body, from a single block of content to a set of individually addressable lines.
 
-Nothing about the note looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are all exactly as they are today. This is a change to the storage underneath, and what matters about it is what it made possible:
-
-- Two clinicians, or two browser tabs, can work in the same note at the same time. Edits to different lines merge, instead of one person's work being refused because someone else touched the note.
-- A command that is originated always lands in the note, or is rolled back completely.
-- Changes made elsewhere in Canvas appear in an open note without a reload.
-- A note stops refetching itself after every interaction, so a long note stays responsive as it grows.
-
-None of those were reachable while the body was a single block, because nothing could refer to one line of it.
+Nothing looks or behaves differently. Charting, commands, signing, locking, printing, and the note's appearance are exactly as they are today, and the [Note API](/api/note/) and FHIR resources are unchanged. This is a change to the storage underneath, and what matters about it is what it made possible: two clinicians can work in the same note at once with their edits merging, a command that is originated always lands in the note or is rolled back completely, changes made elsewhere appear without a reload, and a long note stays responsive as it grows. None of that was reachable while the body was a single block, because nothing could refer to one line of it.
 
 ## What happens on your instance
 
-Once this is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours so no one is interrupted mid-note. A note looks and behaves the same before and after it migrates.
-
-The end state is that every note on your instance uses the new structure. While the migration runs a chart can hold notes of both, so anything that reads a note body needs to handle both during that window, and the new structure from then on.
+Once this is on, new notes use the new structure and your existing notes are migrated onto it, in batches outside business hours. A note looks the same before and after it migrates, and the end state is that every note on your instance uses the new structure.
 
 ## Breaking change: reading a note body from the read-only replica
 
 An integration that reads note bodies from the [read-only replica](/guides/audit-logging-and-telemetry/#read-only-replica-database) needs a query change before its instance is migrated. This is the one place the structure is visible, because SQL reads the stored columns directly rather than going through the SDK.
 
-Both surfaces on the replica carry the change. The new columns are named the same on each, so most of this applies wherever you read notes:
-
-| Holds | `api_note` | `canvas_sdk_data_api_note_001` |
-|-------|------------|--------------------------------|
-| The line content | `body_content` | `body_content` |
-| The line order | `body_order` | `body_order` |
-| Which structure the note uses | `version` | `version` |
-| The legacy body | `_body` | `body` |
-| The note identifier | `id`, an integer | `id`, a UUID, and `dbid`, an integer |
-
-`version` is `NULL` on a legacy note and `2` on a migrated one. Select legacy notes with `version IS NULL`: both `version = 1` and `version <> 2` return nothing for them.
-
-On a note using the new structure:
-
-- **The legacy body column is empty.** It is not an error and not a partial read, so a query selecting it returns an empty array rather than failing. Once the migration finishes that is every note on the instance, so a query left unchanged returns nothing rather than reporting a problem.
-- **The lines live in two columns.** `body_content` is an object keyed by line identifier, and `body_order` is an array of those identifiers holding the order.
-- **A command line's identifier is its key in `body_content`**, not a field inside the line. This is how you resolve a line to a row in the command table.
-- **A line identifier in `body_order` with no `body_content` entry is a blank line.** These are common, because Canvas puts a blank line around each command. Treat a missing entry as empty text rather than dropping the line or reading it as null.
-- **`checksum` is empty and stays empty.** The new structure controls concurrency per line rather than across the whole note, so it computes no checksum. To find notes that changed since your last run, use the `modified` timestamp.
-
-### What the two columns hold
-
-For a note with four lines, `body_order` holds the line identifiers in the order they appear:
-
-```json
-[
-  "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d",
-  "5f3b1a90-7c42-4e18-9a6d-2b81cc4f0e77",
-  "86da9457-c9d3-429c-9dfb-5b33a12934da",
-  "c71e4d38-9b05-42af-8e13-6f9a0d2b5c84"
-]
-```
-
-`body_content` holds only the lines that have content, keyed by those same identifiers:
+On a migrated note the legacy body column is empty, returning an empty array rather than an error. The lines move to `body_content`, an object keyed by line identifier, and `body_order`, an array of those identifiers in order:
 
 ```json
 {
-  "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d": {
-    "type": "text",
-    "value": "Patient reports feeling better"
-  },
-  "86da9457-c9d3-429c-9dfb-5b33a12934da": {
-    "type": "command",
-    "value": "diagnose"
+  "body_order": [
+    "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d",
+    "5f3b1a90-7c42-4e18-9a6d-2b81cc4f0e77",
+    "86da9457-c9d3-429c-9dfb-5b33a12934da",
+    "c71e4d38-9b05-42af-8e13-6f9a0d2b5c84"
+  ],
+  "body_content": {
+    "0d5f2c81-4a19-4e77-b3c2-7e1a9f480b6d": { "type": "text", "value": "Patient reports feeling better" },
+    "86da9457-c9d3-429c-9dfb-5b33a12934da": { "type": "command", "value": "diagnose" }
   }
 }
 ```
 
-Read together, that is four lines: the text line, a blank line, the Diagnose command, and a second blank line. The two identifiers with no entry in `body_content` are the blank lines, and the Diagnose command's identifier is `86da9457-c9d3-429c-9dfb-5b33a12934da`, the key it is stored under.
+That is four lines: the text, a blank, the Diagnose command, and another blank. An identifier with no `body_content` entry is a blank line, and most lines are blank because Canvas puts one on each side of a command. A command line's identifier is its key, which is how you resolve it to a row in the command table.
 
-Blank lines make up most of a typical note, since Canvas puts one on each side of a command, so expect the majority of `body_order` entries to have no `body_content` of their own.
-
-This query reads a note body in the new structure, one row per line, in order:
+This query reads a body in the new structure, one row per line, in order:
 
 ```sql
 SELECT n.id AS note_id,
@@ -96,22 +54,12 @@ FROM canvas_sdk_data_api_note_001 n
 CROSS JOIN LATERAL unnest(n.body_order) WITH ORDINALITY AS ord(line_uuid, idx)
 ```
 
-It needs no filter on `version`. A note that has not been migrated yet has an empty `body_order`, so it contributes no rows, and it starts appearing once it migrates.
+It needs no filter on `version`, which is `NULL` on a legacy note and `2` on a migrated one: an unmigrated note has an empty `body_order`, so it contributes no rows until it migrates. The same query runs against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. On that table the legacy body column is `_body` rather than `body`, and the note identifier is an integer rather than a UUID.
 
-The same query works against `api_note` by changing the table name, since `body_content` and `body_order` are named the same there. The note identifier comes back as an integer on that table rather than a UUID.
+`checksum` is also empty on a migrated note and stays empty, because the new structure controls concurrency per line rather than across the whole note. Use the `modified` timestamp to find notes that changed since your last run.
 
-Identifying a command gets more consistent under the new structure, not less. On a legacy note a command line carries its identifier only if a particular write path recorded one, so a small number of lines have none and can be matched only by position and type. Under the new structure the identifier is the line's key, so every command line has one.
+## Plugins
 
-## Plugins and the SDK
-
-Plugin code needs no further change. The queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release: `body` cannot be selected with `values()` or `values_list()`, and cannot be named through a relation such as `note__body`. Everything else about reading a body through the SDK is unchanged, including a command line's `command_uuid`, so code that walks `note.body` to resolve its commands keeps working on both structures.
-
-One attribute to move off: `Note.checksum` is not maintained under the new structure, for the reason given above. Read the `modified` timestamp instead.
-
-## What is not changing
-
-- The [Note API](/api/note/) payload, in shape or content. This API does not expose the note body.
-- FHIR resources.
-- Note content as it prints or renders.
+Plugin code needs no change. The queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and reading a body through the SDK is otherwise unchanged, including each command line's `command_uuid`. The one attribute to move off is `Note.checksum`, for the reason above.
 
 Keep track of upcoming changes [here.](/product-updates/important-dates/)
