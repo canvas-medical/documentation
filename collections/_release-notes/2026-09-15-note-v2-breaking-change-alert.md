@@ -40,7 +40,7 @@ Both surfaces on the replica carry the change, and they differ by a single colum
 | The line order | `body_order` | `body_order` |
 | Which structure the note uses | `version` | `version` |
 
-`version` is `NULL` while a note is still in the legacy structure, and `2` once it has been migrated. There is no version `1`. Test for `version IS NULL` rather than `version = 1`, and note that `version <> 2` does not match a legacy note either, because in SQL a comparison against `NULL` is unknown rather than true.
+`version` is `NULL` on a legacy note and `2` on a migrated one. Select legacy notes with `version IS NULL`: both `version = 1` and `version <> 2` return nothing for them.
 
 On a note using the new structure:
 
