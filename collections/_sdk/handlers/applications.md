@@ -226,7 +226,7 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer: Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), Docked Applications (a persistent pane pinned to a window edge), provider menu applications (an entry in the provider side menu), and panel applications (an icon in the panel bar). They are declared under `handlers` (not `applications`) and create no application record. The three surface-specific base classes set no scope or icon; the provider menu and panel launcher surfaces instead subclass `EmbeddedApplication` directly and set a Python `SCOPE` class attribute (`ApplicationScope.PROVIDER_MENU` or `ApplicationScope.PANEL`), with a panel application also setting `ICON_URL`. This `ApplicationScope.PROVIDER_MENU` handler scope is distinct from the `provider_menu_item` drawer scope in the [Application Scopes](#application-scopes) table above — these launcher attributes are Python class attributes on a handler, not manifest fields on a drawer application.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
