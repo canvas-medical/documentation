@@ -60,6 +60,6 @@ The same query runs against `api_note` by changing the table name, since `body_c
 
 ## Plugins
 
-Plugin code needs no change. The queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and reading a body through the SDK is otherwise unchanged, including each command line's `command_uuid`. The one attribute to move off is `Note.checksum`, for the reason above.
+Plugin code needs no change. The queryset changes to the [Note data model](/sdk/data-note/) shipped in the September 8, 2026 release, and [the note body structure](/sdk/data-note/#understanding-the-note-body-structure) a plugin reads through the SDK is otherwise unchanged, including each command line's `command_uuid`. The one attribute to move off is `Note.checksum`, for the reason above.
 
 Keep track of upcoming changes [here.](/product-updates/important-dates/)
