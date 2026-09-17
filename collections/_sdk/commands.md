@@ -2364,6 +2364,38 @@ RemoveAllergyCommand(
 
 ---
 
+### Remove Past Medical History
+
+**Command-specific parameters**:
+
+| Name           | Type     | Required to commit | Description                                      |
+|----------------|----------|----------|--------------------------------------------------|
+| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition already recorded on that patient's chart. |
+| `rationale`    | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
+
+Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import RemovePastMedicalHistoryCommand
+from canvas_sdk.v1.data import Condition
+
+patient_id = '<a patient ID from your instance>'
+
+past_medical_history_entry = Condition.objects.for_patient(patient_id).committed().filter(
+    clinical_status="resolved", surgical=False
+).first()
+
+RemovePastMedicalHistoryCommand(
+    condition_id=past_medical_history_entry.id,
+    rationale="Imported in error from the HIE feed.",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+)
+```
+
+---
+
 ### Resolve Condition
 
 **Command-specific parameters**:
