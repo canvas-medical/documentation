@@ -205,6 +205,20 @@ sections:
                             - name: usedUnsignedInt
                               type: unsignedInt
                               description: Benefits used. <br><br>Used for Limitations benefit types.
+                        - name: extension
+                          type: array[json]
+                          read_and_search_description: Canvas supports a benefit message extension on each benefit line for read and search interactions. It is present only when the payor returned a note for that line, and repeats once per note.
+                          attributes:
+                            - name: url
+                              type: string
+                              description: Reference that defines the content of this object.
+                              enum_options:
+                                - value: http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message
+                            - name: valueString
+                              type: string
+                              description: >-
+                                The payor's note for this benefit line, for example "Primary Care Visit or Evaluation" or "Specialist Visit or Evaluation".<br><br>
+                                Payors commonly return several copay or coinsurance lines under one service type and distinguish them only in this note, so it is what identifies which line is which.
 
 
         search_parameters:
@@ -564,6 +578,38 @@ sections:
               "text": "Individual"
           },
           "benefit": [
+            {
+              "type": {
+                  "text": "Co-Payment"
+              },
+              "allowedMoney": {
+                  "value": 0
+              },
+              "extension": [
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "Primary Care Visit or Evaluation"
+                }
+              ]
+            },
+            {
+              "type": {
+                  "text": "Co-Payment"
+              },
+              "allowedMoney": {
+                  "value": 50
+              },
+              "extension": [
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "GYN Visit"
+                },
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "Specialist Visit or Evaluation"
+                }
+              ]
+            },
             {
               "type": {
                   "text": "Co-Insurance"
@@ -1000,6 +1046,38 @@ sections:
                     "text": "Individual"
                 },
                 "benefit": [
+                  {
+                    "type": {
+                        "text": "Co-Payment"
+                    },
+                    "allowedMoney": {
+                        "value": 0
+                    },
+                    "extension": [
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "Primary Care Visit or Evaluation"
+                      }
+                    ]
+                  },
+                  {
+                    "type": {
+                        "text": "Co-Payment"
+                    },
+                    "allowedMoney": {
+                        "value": 50
+                    },
+                    "extension": [
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "GYN Visit"
+                      },
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "Specialist Visit or Evaluation"
+                      }
+                    ]
+                  },
                   {
                     "type": {
                         "text": "Co-Insurance"
