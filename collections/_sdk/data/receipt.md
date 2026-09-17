@@ -88,7 +88,7 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 | receipt                               | String                                                      |
 | receipt\_url                          | String (property) — presigned S3 URL, or None               |
 
-`account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt and defaults to `0.00`. A non-empty `template` marks a legacy per-claim receipt generated before the current revenue schema.
+`account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt. A non-empty `template` marks a legacy per-claim receipt generated before the current revenue schema.
 
 **Computed Properties**:
 
