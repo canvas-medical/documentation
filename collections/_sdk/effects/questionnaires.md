@@ -9,7 +9,11 @@ The Canvas SDK includes functionality for handling questionnaire-related events.
 
 ## Creating a Questionnaire
 
-Creating a questionnaire via the SDK requires current requires defining a YAML template and referencing it in your `CANVAS_MANIFEST.json` file. Read more [here](/sdk/questionnaires/).
+There are two ways to create questionnaires in Canvas:
+
+1. **Via YAML Templates**: Define a questionnaire in a YAML file and reference it in your `CANVAS_MANIFEST.json`. This is ideal for static questionnaires that don't change. Read more [here](/sdk/questionnaires/).
+
+2. **Programmatically via Effect**: Use the `CreateQuestionnaire` effect to dynamically create questionnaires at runtime based on business logic, patient data, or external sources. Read more [here](/sdk/effect-create-questionnaire/).
 
 ## Creating a Questionnaire Result
 
