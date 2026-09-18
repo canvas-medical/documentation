@@ -82,17 +82,6 @@ class IFrameApp(Application):
         return None
 ```
 
-## Installing and Upgrading
-
-Installing or upgrading a plugin reconciles its applications against the `applications` entries in its `CANVAS_MANIFEST.json`. Each declared application is created, or updated in place when it already exists.
-
-An application is identified by its `class` value, the `module:ClassName` path you declare in the manifest. Two consequences follow from that:
-
-- An application that is absent from the manifest is removed when you upgrade the plugin, along with its stored icon, and its app drawer entry disappears with it.
-- Renaming the handler class or the module it lives in is a removal plus a new application rather than a rename, so the entry is recreated from the manifest.
-
-Disabling a plugin hides its applications without removing them, and uninstalling a plugin removes them.
-
 ## Context Change Events
 
 Context change events are automatically triggered when users navigate between different URLs within Canvas. This feature allows your applications to react dynamically to the user's current context, providing relevant information and functionality based on where they are in the system.
