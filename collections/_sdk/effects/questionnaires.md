@@ -23,13 +23,11 @@ Creates a questionnaire while your plugin runs.
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 ```
 
-`CreateQuestionnaire` is not re-exported at the `canvas_sdk.effects` top level.
-
 #### Attributes
 
-| Attribute     | Required | Type                  | Description                             |
-|---------------|----------|-----------------------|-----------------------------------------|
-| questionnaire | Yes      | `QuestionnaireConfig` | The questionnaire definition to create. |
+| Attribute     | Required | Type                                        | Description                             |
+|---------------|----------|---------------------------------------------|-----------------------------------------|
+| questionnaire | Yes      | [QuestionnaireConfig](#questionnaireconfig) | The questionnaire definition to create. |
 
 `.apply()` takes no arguments and returns an `Effect` for your handler to return:
 
@@ -174,51 +172,105 @@ A question carrying more than one condition needs `enabled_behavior` to say whet
 
 ##### Publishing from a SimpleAPI route
 
-This [SimpleAPI](/sdk/handlers-simple-api-http/) route builds a small questionnaire from a request and publishes it:
+A [SimpleAPI](/sdk/handlers-simple-api-http/) route gives you a create-questionnaire endpoint of your own: the caller posts a shape you define, and the route translates it. Canvas's schema stays on your side of the boundary, and changing the questions becomes a different request body rather than a plugin release.
+
+This route takes a title, a code, and a list of questions:
+
+```json
+{
+  "title": "Daily Wellness Check",
+  "code": "daily-wellness-check",
+  "questions": [
+    {
+      "prompt": "How are you feeling today?",
+      "choices": ["Good", "Not good"]
+    },
+    {
+      "prompt": "Anything else you would like us to know?",
+      "type": "text"
+    }
+  ]
+}
+```
+
+Each question in the body becomes a question in the config, with its choices scored by position and codes generated as it goes:
 
 ```python?partial=true
+from typing import Any
+
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.questionnaires.utils import Question, QuestionnaireConfig
 
 
-class PublishWellnessQuestionnaire(SimpleAPIRoute):
-    PATH = "/publish-wellness-questionnaire"
+class PublishQuestionnaire(SimpleAPIRoute):
+    PATH = "/publish-questionnaire"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        # Replace with your own authentication logic.
-        return True
+        return credentials.key == self.secrets["api-key"]
 
     def post(self) -> list[Response | Effect]:
-        config = {
-            "name": "Daily Wellness Check",
+        try:
+            config = self._build_config(self.request.json())
+            # A pydantic ValidationError subclasses ValueError, so the except below returns the
+            # caller a 400 naming the problem instead of letting it fail out of sight on the
+            # Canvas side.
+            effect = CreateQuestionnaire(questionnaire=config).apply()
+        except KeyError as error:
+            return [JSONResponse({"error": f"Missing field {error}"}, status_code=400)]
+        except ValueError as error:
+            return [JSONResponse({"error": str(error)}, status_code=400)]
+
+        return [
+            JSONResponse({"created": config["name"], "questions": len(config["questions"])}),
+            effect,
+        ]
+
+    def _build_config(self, body: dict[str, Any]) -> QuestionnaireConfig:
+        return {
+            "name": body["title"],
             "form_type": "QUES",
             "code_system": "INTERNAL",
-            "code": "daily-wellness-check",
+            "code": body["code"],
             "can_originate_in_charting": True,
             "questions": [
-                {
-                    "content": "How are you feeling today?",
-                    "code_system": "INTERNAL",
-                    "code": "wellness-mood",
-                    "responses_code_system": "INTERNAL",
-                    "responses_type": "SING",
-                    "responses": [
-                        {"name": "Good", "code": "wellness-mood-good", "value": "0"},
-                        {"name": "Not good", "code": "wellness-mood-bad", "value": "1"},
-                    ],
-                },
+                self._build_question(index, item)
+                for index, item in enumerate(body["questions"], start=1)
             ],
         }
 
-        return [
-            CreateQuestionnaire(questionnaire=config).apply(),
-            JSONResponse({"status": "published"}),
-        ]
+    def _build_question(self, index: int, item: dict[str, Any]) -> Question:
+        code = f"Q{index}"
+
+        if item.get("type") == "text":
+            return {
+                "content": item["prompt"],
+                "code_system": "INTERNAL",
+                "code": code,
+                "responses_code_system": "INTERNAL",
+                "responses_type": "TXT",
+                # A typed answer still needs one option to hang the response on.
+                "responses": [{"name": "TXT", "code": f"{code}A1"}],
+            }
+
+        return {
+            "content": item["prompt"],
+            "code_system": "INTERNAL",
+            "code": code,
+            "responses_code_system": "INTERNAL",
+            "responses_type": "SING",
+            "responses": [
+                {"name": choice, "code": f"{code}A{position + 1}", "value": str(position)}
+                for position, choice in enumerate(item["choices"])
+            ],
+        }
 ```
 
-The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_sdk_effect_create_questionnaire) reference plugin shows a fuller version: it translates an external screening definition into a `QuestionnaireConfig`, wires a follow-up question to an earlier answer through `enabled_conditions`, and reads the questionnaire back with its branching.
+Scoring each choice by its position is the kind of thing that is tedious to maintain in a static template and trivial to compute here, which is the case for building the questionnaire in Python rather than declaring it.
+
+The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_sdk_effect_create_questionnaire) reference plugin goes further: it maps a caller's own question types onto `SING`, `MULT`, `TXT`, and `DATE`, wires a follow-up question to an earlier answer through `enabled_conditions`, and reads the questionnaire back with its branching.
 
 ## Creating a Questionnaire Result
 
