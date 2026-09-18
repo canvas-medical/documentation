@@ -54,3 +54,4 @@ facilities = Facility.objects.filter(name="General Hospital", city="Metropolis")
 | phone_number | String   |
 | fax_number   | String   |
 | active       | Boolean  |
+| patient_facilities | QuerySet[[PatientFacilityAddress](/sdk/data-patient/#patientfacilityaddress)] |

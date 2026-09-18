@@ -92,7 +92,6 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | dbid                           | Integer                                                 |
 | created                        | DateTime                                                |
 | modified                       | DateTime                                                |
-| deleted                        | Boolean                                                 |
 | committer                      | [CanvasUser](/sdk/data-canvasuser)                      |
 | entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient                        | [Patient](/sdk/data-patient/#patient)                   |
@@ -108,6 +107,7 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | recorded_date                  | DateTime                                                |
 | narrative                      | String                                                  |
 | codings                        | [AllergyIntoleranceCoding](#allergyintolerancecoding)[] |
+| remove_allergy_events          | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
 
 ### AllergyIntoleranceCoding
 

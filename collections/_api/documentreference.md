@@ -53,6 +53,8 @@ sections:
               - clinical-date  
 
               - A reviewer is required, it can either be a practitioner or a group of practitioners. Provide one or the other, not both.
+           
+              - requires-signature
               "
             attributes:
               - name: url

@@ -61,6 +61,28 @@ printed_letters = Letter.objects.filter(printed__isnull=False)
 staff_letters = Letter.objects.filter(staff_id="a1b2c3d4e5f6")
 ```
 
+## The document reference
+
+`content` holds the letter's body, not the document that goes out. Canvas renders the letter — including anything attached to it — to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the letter.
+
+To read that PDF, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the letter's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, Letter
+
+letter = Letter.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="letter").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=letter.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. The PDF is rendered after the letter is created rather than with it, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### Letter
@@ -75,3 +97,4 @@ staff_letters = Letter.objects.filter(staff_id="a1b2c3d4e5f6")
 | printed    | DateTime                        | When the letter was printed (null if not printed) |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
+| letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |

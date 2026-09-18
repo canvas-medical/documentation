@@ -7,12 +7,14 @@ hidden: false
 
 Notification badges let your plugin surface a count on an
 [application](/sdk/handlers-applications/) icon — the small number that
-indicates, for example, how many unread items are waiting. Badges are shown only
-for applications scoped [`global`](/sdk/handlers-applications/#application-scopes)
-or [`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
+indicates, for example, how many unread items are waiting. Badges are shown for
+applications scoped [`global`](/sdk/handlers-applications/#application-scopes) or
+[`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
 icon in the app drawer, or, when the application sets `show_in_panel`, on the panel
-alongside the other panel buttons. Applications in other scopes (`full_chart`,
-`provider_menu_item`, `portal_menu_item`, and the Provider Companion scopes) do not
+alongside the other panel buttons — and for
+[`provider_menu_item`](/sdk/handlers-applications/#application-scopes) applications,
+next to their label in the provider menu. Applications in other scopes
+(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
 display badges.
 
 There are two ways a badge is set:
@@ -60,7 +62,7 @@ is targeted by that same `class` string:
 from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
 
 # Set a badge of 3 for a specific staff member.
-ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-id"])
 ```
 
 ## Targeting
@@ -91,13 +93,13 @@ from canvas_sdk.effects.application_notification_badge import ApplicationNotific
 
 # Show a badge to staff viewing a specific patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-    patient_ids=["patient-key"]
+    patient_ids=["patient-id"]
 ).broadcast(count=5)
 
 # Combine: only the on-call provider, and only on this patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-    patient_ids=["patient-key"]
-).broadcast(count=1, staff_ids=["staff-key"])
+    patient_ids=["patient-id"]
+).broadcast(count=1, staff_ids=["staff-id"])
 ```
 
 ## Reacting to events
@@ -140,7 +142,7 @@ Broadcast a `count` of `0` to remove the badge from the icon:
 ```python
 from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
 
-ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-id"])
 ```
 
 > **Note:** To set the badge value shown when applications first load (rather than

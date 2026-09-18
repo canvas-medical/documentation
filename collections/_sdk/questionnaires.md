@@ -69,7 +69,7 @@ The questionnaire YAML file should adhere to the JSON schema found [here](https:
 | `code`                                     | The assigned code for the question. Example: `44250-9`. Codes should be unique within the same questionnaire.                | Yes      |
 | `content`                                  | The text displayed when the command is printed.                                                                              | Yes      |
 | `responses_code_system`                    | The coding system for responses. Options: `SNOMED`, `LOINC`, `INTERNAL`, `ICD-10`, `CPT`.                                    | Yes      |
-| `responses_type`                           | Response type: `SING` (Single Select), `MULT` (Multi Select), `TXT` (Free Text).                                             | Yes      |
+| `responses_type`                           | Response type: `SING` (Single Select), `MULT` (Multi Select), `TXT` (Free Text), or `DATE` (Date).                           | Yes      |
 | `display_result_in_social_history_section` | Determines if the response should be shown in the Social History (SHX) section. Values: `TRUE` or `FALSE`. Default: `FALSE`. | No       |
 | `enabled_behavior`                         | Specifies if `all` or `any` of the `enabled_conditions` must be met to enable this question. Only needed when there are multiple conditions. Values: `all`, `any`. | No       |
 | `enabled_conditions`                       | List of conditions that control when this question is displayed. See below.                                                  | No       |
@@ -88,9 +88,11 @@ The questionnaire YAML file should adhere to the JSON schema found [here](https:
 
 | Property           | Description                                                                                                          | Required |
 |--------------------|----------------------------------------------------------------------------------------------------------------------|----------|
-| `name`             | For `SING`/`MULT`, this is the text that will be displayed for each response. For `TXT`, enter "TXT".                | Yes      |
+| `name`             | For `SING`/`MULT`, this is the text that will be displayed for each response. For `TXT`, enter "TXT". For `DATE`, enter "DATE". | Yes      |
 | `code`             | The assigned code for the response. Example: `Z759`. No response codes should be reused within the same question.    | Yes      |
-| `value`            | For `SING`/`MULT`, leave blank if no scoring is desired. If scoring is desired, insert the numerical value assigned. | No       |
+| `value`            | For `SING`/`MULT`, leave blank if no scoring is desired. If scoring is desired, insert the numerical value assigned. For `TXT`, optionally provide a default pre-populated response. Not used for `DATE`. | No       |
+
+Like `TXT`, a `DATE` question takes exactly one entry in `responses`: set `name: "DATE"` and omit `value`, since scoring does not apply. In a note it renders as a date picker and accepts a calendar date in `YYYY-MM-DD` format.
 
 
 ### Example Questionnaire Definition
@@ -101,7 +103,7 @@ form_type: QUES
 code_system: LOINC
 code: QUES_EXAMPLE_NAME
 can_originate_in_charting: true
-prologue: This is an example of a structured assessment with single select, multiselect, and free text responses.
+prologue: This is an example of a structured assessment with single select, multiselect, free text, and date responses.
 questions:
   - content: "This is question #1"
     code_system: CPT
@@ -145,6 +147,15 @@ questions:
       - name: "Free text response"
         code: QUES_EXAMPLE_NAME_Q3_A1
         value: "This is a default pre-populated free text response."
+  - content: "This is question #4"
+    code_system: INTERNAL
+    code: QUES_EXAMPLE_NAME_Q4
+    responses_code_system: INTERNAL
+    responses_type: DATE
+    display_result_in_social_history_section: true
+    responses:
+      - name: "DATE"
+        code: QUES_EXAMPLE_NAME_Q4_A1
 ```
 
 ### Example Questionnaire with Conditional Logic (Branching)

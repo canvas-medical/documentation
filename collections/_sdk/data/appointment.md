@@ -94,6 +94,9 @@ appointment = Appointment.objects.filter(
 | description                  | String                                                            |
 | external_identifiers         | [AppointmentExternalIdentifier](#appointmentexternalidentifier)[] |
 | metadata                     | [AppointmentMetadata](#appointmentmetadata)[]                     |
+| children                     | [Appointment](#appointment)[]                                     |
+| appointment_rescheduled_to   | [Appointment](#appointment)[]                                     |
+| labels                       | [TaskLabel](/sdk/data-task/#tasklabel)[]                          |
 
 
 ### AppointmentExternalIdentifier

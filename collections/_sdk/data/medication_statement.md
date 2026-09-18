@@ -46,6 +46,16 @@ medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 medication_statements = medication.medication_statements.all()
 ```
 
+## Committed records
+
+The `committed` method returns medication statements that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data import MedicationStatement
+
+committed_medication_statements = MedicationStatement.objects.committed()
+```
+
 ## Attributes
 
 ### MedicationStatement

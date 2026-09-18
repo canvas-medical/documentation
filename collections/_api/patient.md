@@ -19,7 +19,7 @@ sections:
           - name: id
             type: string
             exclude_in: create
-            description_for_all_endpoints: Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+            description_for_all_endpoints: Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
             update_description: Must match the ID in the path parameter.
           - name: text
             type: json
@@ -340,7 +340,7 @@ sections:
                 required_in: create, update
                 description: >-
                   Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name. <br><br>
-                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
               - name: prefix
                 type: array[string]
                 description: Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -626,7 +626,7 @@ sections:
               Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>.
           - name: _id
             type: string
-            description: A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+            description: A Canvas-issued unique identifier for the patient. This can be found in the URL of the patient's chart.
           - name: _revinclude
             type: string
             description: Standard FHIR `_revinclude` parameter.

@@ -765,3 +765,27 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
             JSONResponse({"message": "Hello world!"})
         ]
 ```
+
+## Acting as a Canvas user
+
+By default, a SimpleAPI request isn't tied to a specific person, so any effects it
+returns — such as creating, locking, or signing a note — are recorded as Canvas Bot
+rather than a clinician.
+
+To have a request run **as a specific Canvas staff member** — for example, so a note
+is signed under the treating provider's name — call the endpoint with an access token
+obtained through the
+[Authorization Code flow](/api/customer-authentication#authorization-code). That flow
+issues a token that represents the staff member who signed in and approved it. Send it
+as a Bearer token in the `Authorization` header, and Canvas identifies the user from
+the token and treats the request as coming from them, so any effects the handler
+returns are attributed to that staff member.
+
+```bash
+curl --request POST \
+  --url 'https://example.canvasmedical.com/plugin-io/api/my_plugin/note/<note-id>/sign' \
+  --header 'Authorization: Bearer <access-token>'
+```
+
+In this example the note is signed and recorded in Canvas as signed by the staff
+member who authorized the access token, not by Canvas Bot.

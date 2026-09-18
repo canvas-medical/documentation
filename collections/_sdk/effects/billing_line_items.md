@@ -61,6 +61,8 @@ class MyHandler(BaseHandler):
 
 ```
 
+You don't set the line item's description in your plugin. When the line item is created, Canvas matches the `cpt` to a [ChargeDescriptionMaster](/sdk/data-charge-description-master/) charge and populates the description from that charge's `short_name`, truncated to 255 characters. If no charge matches the `cpt`, the description is left empty.
+
 ## Updating a Billing Line Item
 
 To update a billing line item to a note, import the `UpdateBillingLineItem` class, create an

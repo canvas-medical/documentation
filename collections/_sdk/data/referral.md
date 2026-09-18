@@ -65,6 +65,17 @@ reports = ReferralReport.objects.find(DialysisServices)
 
 `find` joins through the report's `codings` reverse relation and matches on `(system, code)` pairs from the value set, so a coding must match both the code system and the code to be included.
 
+### Committed records
+
+The `committed` method returns `Referral` and `ReferralReview` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.referral import Referral, ReferralReview
+
+committed_referrals = Referral.objects.committed()
+committed_reviews = ReferralReview.objects.committed()
+```
+
 ## Related Tasks
 To retrieve an Referral's related tasks, use the `get_task_objects` method on the Referral object.
 
@@ -74,6 +85,37 @@ from canvas_sdk.v1.data.referral import Referral
 referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 tasks = referral.get_task_objects().all()
 ```
+
+The `task_list` computed property returns the same related tasks as a `list[Task]`:
+
+```python
+from canvas_sdk.v1.data.referral import Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = referral.task_list
+```
+
+## The document reference
+
+`ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
+
+To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, ReferralReport
+
+report = ReferralReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="referralreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=report.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>." %}
 
 ## Attributes
 
@@ -86,7 +128,6 @@ tasks = referral.get_task_objects().all()
 | created               | DateTime                                                       |
 | modified              | DateTime                                                       |
 | originator            | [CanvasUser](/sdk/data-canvasuser)                             |
-| deleted               | Boolean                                                        |
 | committer             | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
@@ -100,8 +141,10 @@ tasks = referral.get_task_objects().all()
 | date_referred         | DateTime                                                       |
 | internal_comment      | String                                                         |
 | forwarded             | Boolean                                                        |
+| ignored               | Boolean                                                        |
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
+| reports               | [ReferralReport](#referralreport)[]                            |
 
 ### ReferralReport
 
@@ -137,7 +180,6 @@ tasks = referral.get_task_objects().all()
 | created                       | DateTime                               |
 | modified                      | DateTime                               |
 | originator                    | [CanvasUser](/sdk/data-canvasuser)     |
-| deleted                       | Boolean                                |
 | committer                     | [CanvasUser](/sdk/data-canvasuser)     |
 | entered_in_error              | [CanvasUser](/sdk/data-canvasuser)     |
 | internal_comment              | String                                 |
@@ -146,6 +188,7 @@ tasks = referral.get_task_objects().all()
 | note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
+| reports                       | [ReferralReport](#referralreport)[]    |
 
 ### ReferralReportCoding
 

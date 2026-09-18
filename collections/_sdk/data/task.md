@@ -123,6 +123,16 @@ for note_task in note_tasks:
     print(f"Initial comment: {note_task.internal_comment}")
 ```
 
+## Committed note tasks
+
+The `committed` method on the `NoteTask` model manager returns note tasks whose underlying Task command has been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.task import NoteTask
+
+committed_note_tasks = NoteTask.objects.committed()
+```
+
 ## Attributes
 
 ### Task
@@ -136,6 +146,7 @@ for note_task in note_tasks:
 | creator    | [Staff](/sdk/data-staff/#staff)       |
 | assignee   | [Staff](/sdk/data-staff/#staff)       |
 | patient    | [Patient](/sdk/data-patient/#patient) |
+| team       | [Team](/sdk/data-team/)               |
 | task_type  | [TaskType](#tasktype)                 |
 | tag        | String                                |
 | title      | String                                |
@@ -156,11 +167,11 @@ for note_task in note_tasks:
 | dbid              | Integer                                 |
 | created           | DateTime                                |
 | modified          | DateTime                                |
-| originator        | [CanvasUser](/sdk/data-canvas-user/)    |
-| committer         | [CanvasUser](/sdk/data-canvas-user/)    |
-| entered_in_error  | [CanvasUser](/sdk/data-canvas-user/)    |
-| deleted           | Boolean                                 |
+| originator        | [CanvasUser](/sdk/data-canvasuser/)    |
+| committer         | [CanvasUser](/sdk/data-canvasuser/)    |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser/)    |
 | note              | [Note](/sdk/data-note/#note)            |
+| assessment        | [Assessment](/sdk/data-assessment/#assessment) |
 | task              | [Task](#task)                           |
 | patient           | [Patient](/sdk/data-patient/#patient)   |
 | original_title    | String                                  |
@@ -169,7 +180,6 @@ for note_task in note_tasks:
 | original_role     | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
 | original_due      | DateTime                                |
 | internal_comment  | String                                  |
-| labels            | [TaskLabel](#tasklabel)[]               |
 
 ### TaskComment
 
@@ -182,6 +192,7 @@ for note_task in note_tasks:
 | creator    | [Staff](/sdk/data-staff/#staff) |
 | task       | [Task](/sdk/data-task/#task)    |
 | body       | String                          |
+| referral   | [Referral](/sdk/data-referral/) |
 
 ### TaskLabel
 
@@ -197,6 +208,7 @@ for note_task in note_tasks:
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
+| appointments     | [Appointment](/sdk/data-appointment/)[]             |
 
 ### TaskMetadata
 
