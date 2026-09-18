@@ -426,7 +426,7 @@ Questionnaire names are globally unique, so emitting the effect with a name alre
 - archives the existing questionnaire and renames it `<name> (v<id>)`,
 - then creates a new questionnaire in its place.
 
-Each emission publishes a new version rather than editing the current one, so repeated emissions leave a chain of superseded versions.
+Each emission publishes a new version rather than editing the current one, so repeated emissions leave a chain of superseded versions. That is what keeps completed interviews intact: their responses stay attached to the questions they were answered against, which editing a questionnaire in place would change underneath them.
 
 {% include alert.html type="warning" content="Drive this effect from an explicit trigger, such as a SimpleAPI route. A handler on a recurring event supersedes the questionnaire every time it fires." %}
 
