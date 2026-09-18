@@ -293,13 +293,13 @@ it appeared in, such as the provider menu, and its stored icon is deleted.
 Reconciliation affects only the plugin being installed. Applications that belong
 to other plugins are left unchanged.
 
-An application's identity is its `class` value — the `module:ClassName` string —
+An application's identity is its `class` value, the `module:ClassName` string,
 and Canvas matches applications by `class` during reconciliation:
 
 - Editing only display fields (`name`, `description`, `icon`, `scope`, and so on)
   while keeping the same `class` updates the existing application in place.
-- Changing the `class` value — by editing either the module path or the class
-  name — removes the old application and adds a new one; it does not update the
+- Changing the `class` value, by editing either the module path or the class
+  name, removes the old application and adds a new one rather than updating the
   existing application in place.
 
 > **Note:** Per-application instance settings such as
