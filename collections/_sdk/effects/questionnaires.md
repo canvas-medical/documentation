@@ -5,7 +5,7 @@ excerpt: "Effects for questionnaires"
 hidden: false
 ---
 
-The Canvas SDK includes functionality for handling questionnaire-related events.
+The Canvas SDK provides two effects for questionnaires: `CreateQuestionnaire` builds a questionnaire, and `CreateQuestionnaireResult` records a custom score against a completed one.
 
 ## Creating a Questionnaire
 

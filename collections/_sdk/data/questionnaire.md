@@ -164,59 +164,69 @@ score. Authoring a questionnaire in a plugin sets this through the question's `r
 
 ### ResponseOption
 
-| Field Name          | Type                                                           |
-|---------------------|----------------------------------------------------------------|
-| dbid                | Integer                                                        |
-| created             | DateTime                                                       |
-| modified            | DateTime                                                       |
-| status              | String                                                         |
-| name                | String                                                         |
-| code                | String                                                         |
-| code_description    | String                                                         |
-| value               | String                                                         |
-| response_option_set | [ResponseOptionSet](#responseoptionset)                        |
-| ordering            | Integer                                                        |
-| interview_responses | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| Field Name            | Type                                                           |
+|-----------------------|----------------------------------------------------------------|
+| dbid                  | Integer                                                        |
+| created               | DateTime                                                       |
+| modified              | DateTime                                                       |
+| status                | String                                                         |
+| name                  | String                                                         |
+| code                  | String                                                         |
+| code_description      | String                                                         |
+| value                 | String                                                         |
+| response_option_set   | [ResponseOptionSet](#responseoptionset)                        |
+| ordering              | Integer                                                        |
+| interview_responses   | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| enablement_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
+
+`enablement_conditions` holds the conditions that test for this response option, which is how you find the questions a given answer unlocks.
 
 ### Question
 
-| Field Name          | Type                                                           |
-|---------------------|----------------------------------------------------------------|
-| id                  | UUID                                                           |
-| dbid                | Integer                                                        |
-| created             | DateTime                                                       |
-| modified            | DateTime                                                       |
-| status              | String                                                         |
-| name                | String                                                         |
-| response_option_set | [ResponseOptionSet](#responseoptionset)                        |
-| acknowledge_only    | Boolean                                                        |
-| show_prologue       | Boolean                                                        |
-| code_system         | String                                                         |
-| code                | String                                                         |
-| enable_behavior     | String                                                         |
-| interview_responses | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| Field Name           | Type                                                           |
+|----------------------|----------------------------------------------------------------|
+| id                   | UUID                                                           |
+| dbid                 | Integer                                                        |
+| created              | DateTime                                                       |
+| modified             | DateTime                                                       |
+| status               | String                                                         |
+| name                 | String                                                         |
+| response_option_set  | [ResponseOptionSet](#responseoptionset)                        |
+| acknowledge_only     | Boolean                                                        |
+| show_prologue        | Boolean                                                        |
+| code_system          | String                                                         |
+| code                 | String                                                         |
+| enable_behavior      | String — `all` or `any`                                        |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| dependent_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
+| triggers_condition   | [QuestionEnablementCondition](#questionenablementcondition)[]  |
 
-`enable_behavior` holds `all` or `any`: whether all or any of the question's [enablement conditions](#questionenablementcondition) must be met for the question to be enabled.
+`enable_behavior` decides whether all of the question's [enablement conditions](#questionenablementcondition) must be met for it to be enabled, or only one of them. It is empty on a question authored without an `enabled_behavior`, so handle an empty value when reading it.
 
 The read-side attribute here is `enable_behavior` (no "d"). When authoring a questionnaire through the effect or the manifest schema, the matching config field is spelled `enabled_behavior` (with a "d"). The difference is intentional.
+
+A question sits on both sides of the branching, so it carries a relation for each direction:
+
+- `dependent_conditions`: the conditions that decide whether this question is enabled.
+- `triggers_condition`: the conditions on other questions that test this question's answer.
 
 ### QuestionEnablementCondition
 
 A `QuestionEnablementCondition` controls when a `Question` is enabled, following FHIR's `enableWhen` pattern. Import it with `from canvas_sdk.v1.data import QuestionEnablementCondition`. Here `question` is the question the condition governs, and `dependent_on` is the question whose answer is tested.
 
-| Field Name    | Type                                    |
-|---------------|-----------------------------------------|
-| dbid          | Integer                                 |
-| created       | DateTime                                |
-| modified      | DateTime                                |
-| status        | String                                  |
-| question      | [Question](#question)                   |
-| dependent_on  | [Question](#question)                   |
-| operator      | String                                  |
-| answer_option | [ResponseOption](#responseoption)       |
-| answer_value  | String                                  |
+| Field Name    | Type                                          |
+|---------------|-----------------------------------------------|
+| dbid          | Integer                                       |
+| created       | DateTime                                      |
+| modified      | DateTime                                      |
+| status        | String                                        |
+| question      | [Question](#question)                         |
+| dependent_on  | [Question](#question)                         |
+| operator      | String — `=`, `!=`, `exists`, or `not_exists` |
+| answer_option | [ResponseOption](#responseoption)             |
+| answer_value  | String                                        |
 
-`operator` takes the same comparison operators as a questionnaire's enabled conditions — `=`, `!=`, `exists`, and `not_exists` (see [Enabled Condition Settings](/sdk/questionnaires/#enabled-condition-settings)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
+`operator` takes the same comparison operators as a questionnaire's enabled conditions (see [Enabled Condition Settings](/sdk/questionnaires/#enabled-condition-settings)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
 
 ### Questionnaire
 
