@@ -123,7 +123,8 @@ The body array contains objects of two types:
    ```
 
    `command_uuid` identifies the command and is present on every command object.
-   A command object on a note that has not yet moved to the [refactored body
+   It matches the `id` of the [Command](/sdk/data-command/) model. A command
+   object on a note that has not yet moved to the [refactored body
    structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
    the integer identifier of the record the command created. A note on the
    refactored structure never carries one, so read the
@@ -164,7 +165,7 @@ for note in notes:
     print(note.body)
 ```
 
-The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+The `command_uuid` in a command object matches the `id` field of the [Command](/sdk/data-command/) model. It is present on the command lines of every note, so use it to retrieve the full command:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -382,7 +383,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid` (matching the Command `id`); older notes may additionally include an integer `id`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
