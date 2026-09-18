@@ -95,6 +95,8 @@ Three rules hold at every level of the config:
 
 A `TXT` or `DATE` question still needs exactly one entry in `responses`, carrying a placeholder: `{"name": "TXT", "code": "<code>"}` or `{"name": "DATE", "code": "<code>"}`. A placeholder response is exempt from the response-code rules, both the non-empty check and the uniqueness check.
 
+`value` is the score for a single answer, not a total. Canvas stores it against the response and does not add anything up, so turning a completed questionnaire into a score on the chart means summing the answers yourself and emitting [CreateQuestionnaireResult](#creating-a-questionnaire-result).
+
 On a `TXT` question, `value` carries default text for the answer rather than a score, so it is how you prompt the person answering. A Review of Systems or Physical Exam note then lists that answer only once it differs from the default. Give the placeholder response a `value` to use this:
 
 ```python?partial=true
@@ -399,9 +401,79 @@ The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medica
 
 \* `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
 
-### Example
+### Examples
 
-**Note:** This example assumes that an M-CHAT questionnaire created and loaded into the Canvas instance.
+#### Summing the answers
+
+The simplest scoring is a total of every answer's `value`. This handler runs when a questionnaire command is committed, checks the questionnaire is the one it scores, and adds the answers up:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.questionnaire_result import CreateQuestionnaireResult
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.command import Command
+
+# A TXT or DATE answer is typed rather than chosen from a list, so it carries no score.
+UNSCORED_TYPES = ["TXT", "DATE"]
+
+
+class QuestionnaireScore(BaseHandler):
+    """Score a committed questionnaire by totalling its answers."""
+
+    RESPONDS_TO = [EventType.Name(EventType.QUESTIONNAIRE_COMMAND__POST_COMMIT)]
+
+    QUESTIONNAIRE_CODE_SYSTEM = "LOINC"
+    QUESTIONNAIRE_CODE = "93025-5"
+    SCORE_CODE_SYSTEM = "INTERNAL"
+    SCORE_CODE = "questionnaire-score"
+
+    def compute(self) -> list[Effect]:
+        # The interview is the anchor object on the questionnaire command.
+        command = Command.objects.get(id=self.event.target.id)
+        interview = command.anchor_object
+
+        # The event fires for every questionnaire, so ignore the ones this handler does not score.
+        questionnaire = interview.questionnaires.first()
+        if (
+            questionnaire.code != self.QUESTIONNAIRE_CODE
+            or questionnaire.code_system != self.QUESTIONNAIRE_CODE_SYSTEM
+        ):
+            return []
+
+        scorable = questionnaire.questions.exclude(
+            response_option_set__type__in=UNSCORED_TYPES
+        ).count()
+        answers = interview.interview_responses.exclude(
+            response_option__response_option_set__type__in=UNSCORED_TYPES
+        )
+
+        # A part-answered questionnaire totals lower than a complete one, so publishing a score
+        # for it would understate the result.
+        if answers.count() != scorable:
+            return []
+
+        # An option left unscored has an empty value and contributes nothing.
+        score = sum(int(answer.response_option.value or 0) for answer in answers)
+
+        effect = CreateQuestionnaireResult(
+            interview_id=str(interview.id),
+            score=score,
+            narrative=f"Score of {score}.",
+            code_system=self.SCORE_CODE_SYSTEM,
+            code=self.SCORE_CODE,
+        )
+
+        return [effect.apply()]
+```
+
+Set `QUESTIONNAIRE_CODE_SYSTEM` and `QUESTIONNAIRE_CODE` to the questionnaire you are scoring, and `SCORE_CODE_SYSTEM` and `SCORE_CODE` to the coding you want the result's [Observation](/sdk/data-observation/) to carry.
+
+#### Banding the score into a narrative
+
+A total on its own tells a reader little. This M-CHAT example sums the answers the same way, then turns the total into a risk band with the follow-up it calls for, and marks the result abnormal.
+
+**Note:** This example assumes an M-CHAT questionnaire is already created and loaded into the Canvas instance.
 
 ```python
 from canvas_sdk.effects import Effect
