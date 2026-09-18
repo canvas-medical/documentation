@@ -9,31 +9,60 @@ The Canvas SDK provides two effects for questionnaires: `CreateQuestionnaire` bu
 
 ## Creating a Questionnaire
 
-You can create a questionnaire in one of two ways. A manifest YAML template is the simplest path when the questionnaire's shape is fixed and known when you build the plugin: you define the template and reference it in your `CANVAS_MANIFEST.json` file. Use the `CreateQuestionnaire` effect instead when the questionnaire's shape is not fixed at build time — for example, when it is assembled from external data, user input, or per-tenant configuration. Also use it when the questions change often and you do not want to ship a plugin release for each change. Both paths share the same field contract. See [Questionnaires](/sdk/questionnaires/) for the manifest schema and full field reference.
+There are two ways to create a questionnaire, and both share the same field contract:
+
+- **A manifest YAML template** — the simplest path when the questionnaire's shape is fixed as you build the plugin. Define the template and reference it in your `CANVAS_MANIFEST.json` file.
+- **The `CreateQuestionnaire` effect** — for a shape that is not fixed at build time, such as one assembled from external data, user input, or per-instance configuration. Also the path to take when the questions change often enough that a plugin release per change is impractical.
+
+[Questionnaires](/sdk/questionnaires/) holds the schema and the full field reference for both.
 
 ### CreateQuestionnaire Effect
 
-The `CreateQuestionnaire` effect creates a questionnaire while your plugin runs. Import it as `from canvas_sdk.effects.questionnaire import CreateQuestionnaire`. It is not re-exported at the `canvas_sdk.effects` top level.
+Creates a questionnaire while your plugin runs.
 
-The effect takes a single `questionnaire` attribute: a `QuestionnaireConfig` dictionary that mirrors the manifest YAML template. It carries the questionnaire's `name`, `form_type`, `code_system`, and `code`, and a list of `questions`, each with its `responses` and optional `enabled_conditions`. See [Questionnaires](/sdk/questionnaires/) for the full field reference and the accepted value for each field. Those values are enforced by the JSON schema when the effect is applied.
+```python?partial=true
+from canvas_sdk.effects.questionnaire import CreateQuestionnaire
+```
+
+`CreateQuestionnaire` is not re-exported at the `canvas_sdk.effects` top level.
 
 #### Attributes
 
-| Attribute     | Required | Type                       | Description                                                                                                                                          |
-|---------------|----------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| questionnaire | Yes      | QuestionnaireConfig (dict) | The questionnaire definition to create. Mirrors the manifest YAML template; see [Questionnaires](/sdk/questionnaires/) for the full field reference. |
+| Attribute     | Required | Type                       | Description                             |
+|---------------|----------|----------------------------|-----------------------------------------|
+| questionnaire | Yes      | QuestionnaireConfig (dict) | The questionnaire definition to create. |
+
+The config mirrors the manifest YAML template:
+
+- `name`, `form_type`, `code_system`, and `code` identify the questionnaire.
+- `questions` holds each question with its `responses` and optional `enabled_conditions`.
+
+[Questionnaires](/sdk/questionnaires/) gives the accepted value for every field, and the JSON schema enforces them when the effect is applied.
 
 #### Validation
 
-Call `.apply()` to emit the effect. Validation runs at that point, so applying the effect with an invalid config raises a single pydantic `ValidationError` in the plugin — one error that lists every problem it found rather than stopping at the first — where you can see it. Effect failures raised on the Canvas server go to Sentry rather than back to the plugin, which is why the config is validated plugin-side. That also means the effect's return value alone cannot confirm the questionnaire was created; query it back through the [Questionnaire](/sdk/data-questionnaire/) data model — for example, `Questionnaire.objects.filter(name=...)` or by its `code_system` and `code` — or check `canvas logs`. Beyond the JSON schema, applying the effect checks that:
+Call `.apply()` to emit the effect. Validation runs at that point and raises one pydantic `ValidationError` listing every problem it found, rather than stopping at the first.
+
+Beyond the JSON schema, it checks that:
 
 - Each question's coding (`code_system` plus `code`) is unique within the questionnaire, and each response `code` is unique within its question. Question and response codes are also non-empty, since branching logic attaches to them. `TXT` and `DATE` responses carry a placeholder code and are exempt from the response-code rules.
 - Every `enabled_conditions` entry resolves within the same questionnaire: its `question_code` matches exactly one question, and its `value_code`, when present, is a response of that question.
 - `name` is at most 241 characters, leaving room to rename a superseded questionnaire `<name> (v<id>)` within the 255-character column.
 
+Validation runs plugin-side because a failure raised on the Canvas server goes to Sentry rather than back to your plugin. For the same reason, a clean `.apply()` is not confirmation that the questionnaire was created. To check, read `canvas logs`, or query it back through the [Questionnaire](/sdk/data-questionnaire/) data model with `Questionnaire.objects.filter(name=...)`.
+
 #### Versioning
 
-Questionnaire names are globally unique. Emitting the effect with a name that is already in use archives the existing questionnaire, renames it `<name> (v<id>)`, and creates a new questionnaire in its place. Each emission publishes a new version rather than editing the current one, so repeated emissions leave a chain of superseded versions. Drive the effect from an explicit trigger, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, rather than a handler on a recurring event, which would supersede the questionnaire every time it fires. To read the branching logic back after publishing, see the [Question](/sdk/data-questionnaire/#question) and [QuestionEnablementCondition](/sdk/data-questionnaire/#questionenablementcondition) data models.
+Questionnaire names are globally unique, so emitting the effect with a name already in use:
+
+- archives the existing questionnaire and renames it `<name> (v<id>)`,
+- then creates a new questionnaire in its place.
+
+Each emission publishes a new version rather than editing the current one, so repeated emissions leave a chain of superseded versions.
+
+{% include alert.html type="warning" content="Drive this effect from an explicit trigger, such as a SimpleAPI route. A handler on a recurring event supersedes the questionnaire every time it fires." %}
+
+To read the branching logic back after publishing, see the [Question](/sdk/data-questionnaire/#question) and [QuestionEnablementCondition](/sdk/data-questionnaire/#questionenablementcondition) data models.
 
 #### Example
 
@@ -85,21 +114,23 @@ The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medica
 
 ## Creating a Questionnaire Result
 
-The `CreateQuestionnaireResult` effect allows you to create custom scoring of questionnaires in Canvas. It adds a narrative to the command in the UI and can appear in the Social Determinants section of the left side of the chart if the questionnaire is configured to show in that section (see [here](/sdk/questionnaires) for how to control setting `display_result_in_social_history_section` for questionnaires).
+`CreateQuestionnaireResult` applies your own scoring to a questionnaire. The result:
 
+- adds a narrative to the command in the UI.
+- appears in the Social Determinants section on the left of the chart, when the questionnaire is configured to show there. [Questionnaires](/sdk/questionnaires/) covers the `display_result_in_social_history_section` setting.
 
 ### Attributes
 
-| Attribute    | Required | Type             | Description                                                                                                  |
-|--------------|----------|------------------|--------------------------------------------------------------------------------------------------------------|
-| interview_id | Yes      | string           | The id of the interview to associate the result with.           |
-| score        | Yes      | float            | The numerical score of the questionnaire result.                                                             |
-| abnormal     | No       | bool             | Whether the result is considered abnormal. Defaults to `False`.                                              |
-| narrative    | No       | string           | A text description of the result and any recommended follow-up actions. Defaults to an empty string.         |
-| code_system  | Yes*     | string           | The code system used to identify the questionnaire (e.g., `"INTERNAL"`).                                     |
-| code         | Yes*     | string           | The code identifying the questionnaire within the code system (e.g., `"mchat_scoring"`).                             |
+| Attribute    | Required | Type   | Description                                                                                          |
+|--------------|----------|--------|------------------------------------------------------------------------------------------------------|
+| interview_id | Yes      | string | The id of the interview to associate the result with.                                                |
+| score        | Yes      | float  | The numerical score of the questionnaire result.                                                     |
+| abnormal     | No       | bool   | Whether the result is considered abnormal. Defaults to `False`.                                      |
+| narrative    | No       | string | A text description of the result and any recommended follow-up actions. Defaults to an empty string. |
+| code_system  | Yes*     | string | The code system used to identify the questionnaire, for example `"INTERNAL"`.                        |
+| code         | Yes*     | string | The code identifying the questionnaire within the code system, for example `"mchat_scoring"`.        |
 
-*Note: Questionnaire Results create an associated Observation record. The `code` and `code_system` fields are required in order to distinguish the Observation results. 
+\* `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
 
 ### Example
 
