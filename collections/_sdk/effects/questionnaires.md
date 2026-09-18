@@ -121,6 +121,49 @@ On a `TXT` question, `value` carries default text for the answer rather than a s
 
 A condition names its question by bare `code`, with no code system, so two questions sharing a code under different code systems make the reference ambiguous and validation rejects it.
 
+Pair `=` and `!=` with `value_code` on a `SING` or `MULT` question, or with `value_string` on a `TXT` one. `exists` and `not_exists` take neither, since they test only whether the question was answered:
+
+```python?partial=true
+# Enable when an earlier question was answered "Yes".
+{"question_code": "travel-recent", "operator": "=", "value_code": "travel-recent-yes"}
+
+# Enable for every answer except "None".
+{"question_code": "symptoms", "operator": "!=", "value_code": "symptoms-none"}
+
+# Enable once the earlier question has an answer, whatever it is.
+{"question_code": "current-medications", "operator": "exists"}
+
+# Enable only while the earlier question is unanswered.
+{"question_code": "pharmacy-preference", "operator": "not_exists"}
+
+# Enable when a free text answer matches exactly.
+{"question_code": "employment-status", "operator": "=", "value_string": "Retired"}
+```
+
+A question carrying more than one condition needs `enabled_behavior` to pick between them. Here a `MULT` symptoms question feeds two conditions, and either one is enough:
+
+```python?partial=true
+{
+    "content": "How long have you had these symptoms?",
+    "code_system": "INTERNAL",
+    "code": "symptom-duration",
+    "responses_code_system": "INTERNAL",
+    "responses_type": "SING",
+    "responses": [
+        {"name": "Under a week", "code": "symptom-duration-short", "value": "0"},
+        {"name": "A week or more", "code": "symptom-duration-long", "value": "1"},
+    ],
+    # "all" would require the patient to have reported both a cough and a fever.
+    "enabled_behavior": "any",
+    "enabled_conditions": [
+        {"question_code": "symptoms", "operator": "=", "value_code": "symptoms-cough"},
+        {"question_code": "symptoms", "operator": "=", "value_code": "symptoms-fever"},
+    ],
+}
+```
+
+Every `question_code` and `value_code` above has to resolve inside the same questionnaire. A `value_code` that is not a response of the question it names is rejected when the effect is applied, rather than quietly dropping the branching.
+
 #### Value sets
 
 The tables above reference these by name. They are enforced by the JSON schema, so an unlisted value is rejected when the effect is applied.
@@ -235,7 +278,7 @@ questions = [
 ]
 ```
 
-A question carrying more than one condition needs `enabled_behavior` to say whether all of them or any one of them enables it.
+See [enabled_conditions[]](#enabled_conditions) for the other operators and for a question gated on more than one condition.
 
 ##### Publishing from a SimpleAPI route
 
@@ -260,7 +303,7 @@ This route takes a title, a code, and a list of questions:
 }
 ```
 
-Each question in the body becomes a question in the config, with its choices scored by position and codes generated as it goes:
+Each question in the body becomes a question in the config, with its choices scored by position and codes generated as it goes. [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#api-key) handles authentication, which needs a `simpleapi-api-key` secret declared in the manifest and set on the instance:
 
 ```python?partial=true
 from typing import Any
@@ -268,15 +311,12 @@ from typing import Any
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
 from canvas_sdk.questionnaires.utils import Question, QuestionnaireConfig
 
 
-class PublishQuestionnaire(SimpleAPIRoute):
+class PublishQuestionnaire(APIKeyAuthMixin, SimpleAPIRoute):
     PATH = "/publish-questionnaire"
-
-    def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["api-key"]
 
     def post(self) -> list[Response | Effect]:
         try:
