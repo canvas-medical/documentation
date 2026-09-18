@@ -11,10 +11,9 @@ The Canvas SDK provides two effects for questionnaires: `CreateQuestionnaire` bu
 
 There are two ways to create a questionnaire, and both share the same field contract:
 
-- **A manifest YAML template** — the simplest path when the questionnaire's shape is fixed as you build the plugin. Define the template and reference it in your `CANVAS_MANIFEST.json` file.
-- **The `CreateQuestionnaire` effect** — for a shape that is not fixed at build time, such as one assembled from external data, user input, or per-instance configuration. Also the path to take when the questions change often enough that a plugin release per change is impractical.
-
-[Questionnaires](/sdk/questionnaires/) holds the schema and the full field reference for both.
+- **[A manifest YAML template](/sdk/questionnaires/)** — the simplest path when the questionnaire's shape is fixed as you build the plugin. Define the template and reference it in your `CANVAS_MANIFEST.json` file.
+- **[The `CreateQuestionnaire` effect](#createquestionnaire-effect)** — for a shape that is not fixed at build time, such as one assembled from external data, user input, or per-instance configuration. Also the path to take when the questions change often enough that a plugin release per change is impractical.
+  - This is the route to pair with a [SimpleAPI](/sdk/handlers-simple-api-http/) route to stand up your own create-questionnaire endpoint, where a caller posts the questionnaire it wants and your plugin publishes it. See [Publishing from a SimpleAPI route](#publishing-from-a-simpleapi-route).
 
 ### CreateQuestionnaire Effect
 
