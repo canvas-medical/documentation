@@ -1,0 +1,74 @@
+name: Release - Approval Gate
+
+# Requires an approving review before a release branch merges to main, while
+# leaving every other pull request into main ungated.
+#
+# Branch protection and rulesets match on the base branch only, so the head-ref
+# condition lives here instead. The job posts a `release-approval` commit status
+# to the pull request's head SHA, and that context is the required status check
+# on main. The status is written explicitly rather than left to this job's own
+# check run, because a `pull_request_review` run reports against the base branch
+# and would never update the head SHA the merge button reads.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+jobs:
+  release-approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate and post the gate status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          set -euo pipefail
+
+          # pull_request_review fires for every base branch, so filter here.
+          if [ "$BASE_REF" != "main" ]; then
+            echo "base is '$BASE_REF', not main; nothing to gate"
+            exit 0
+          fi
+
+          case "$HEAD_REF" in
+            release/*)
+              approvals=$(gh api "repos/$REPO/pulls/$PR_NUMBER/reviews" --paginate \
+                --jq '[.[] | select(.state == "APPROVED")] | length')
+              echo "head '$HEAD_REF' is a release branch; approvals: $approvals"
+              if [ "$approvals" -ge 1 ]; then
+                state=success
+                description="Approved ($approvals)"
+              else
+                state=failure
+                description="A release branch needs 1 approval to merge to main"
+              fi
+              ;;
+            *)
+              echo "head '$HEAD_REF' is not a release branch; no approval required"
+              state=success
+              description="Not a release branch"
+              ;;
+          esac
+
+          gh api -X POST "repos/$REPO/statuses/$HEAD_SHA" \
+            -f state="$state" \
+            -f context="release-approval" \
+            -f description="$description" \
+            -f target_url="https://github.com/$REPO/pull/$PR_NUMBER" \
+            --jq '.state'
+
+          # Surface the outcome in the run itself as well as on the commit.
+          [ "$state" = "success" ] || { echo "::error::$description"; exit 1; }

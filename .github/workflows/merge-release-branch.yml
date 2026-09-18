@@ -12,6 +12,10 @@ on:
         required: false
         default: false
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   merge-release-branch-to-main:
     runs-on: ubuntu-latest
