@@ -28,16 +28,86 @@ from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 
 #### Attributes
 
-| Attribute     | Required | Type                       | Description                             |
-|---------------|----------|----------------------------|-----------------------------------------|
-| questionnaire | Yes      | QuestionnaireConfig (dict) | The questionnaire definition to create. |
+| Attribute     | Required | Type                  | Description                             |
+|---------------|----------|-----------------------|-----------------------------------------|
+| questionnaire | Yes      | `QuestionnaireConfig` | The questionnaire definition to create. |
 
-The config mirrors the manifest YAML template:
+`.apply()` takes no arguments and returns an `Effect` for your handler to return:
 
-- `name`, `form_type`, `code_system`, and `code` identify the questionnaire.
-- `questions` holds each question with its `responses` and optional `enabled_conditions`.
+```python?partial=true
+CreateQuestionnaire(questionnaire=config).apply()
+```
 
-[Questionnaires](/sdk/questionnaires/) gives the accepted value for every field, and the JSON schema enforces them when the effect is applied.
+#### QuestionnaireConfig
+
+`QuestionnaireConfig` is a `TypedDict`, so a plain dictionary satisfies it and the import is only needed to annotate the definition you build. `Question`, `Response`, and `EnabledCondition` annotate the nested levels:
+
+```python?partial=true
+from canvas_sdk.questionnaires.utils import (
+    EnabledCondition,
+    Question,
+    QuestionnaireConfig,
+    Response,
+)
+```
+
+These are the config shapes, not the data models. `Question` here is the question you are about to write, while [Question](/sdk/data-questionnaire/#question) in `canvas_sdk.v1.data` is a question already saved, so importing both in one file needs an alias.
+
+Three rules hold at every level of the config:
+
+- **Unknown keys are rejected**, rather than dropped. A misspelled key fails validation instead of silently losing the setting it was meant to carry.
+- **Types are matched strictly.** A score is the string `"0"`, and passing the integer `0` fails.
+- **The accepted values are the manifest template's values**, because both paths validate against the same schema. [Questionnaires](/sdk/questionnaires/) shows the same fields authored as YAML.
+
+##### Top level
+
+| Key                                         | Required | Type | Description                                                                                                                 |
+|---------------------------------------------|----------|------|-----------------------------------------------------------------------------------------------------------------------------|
+| `name`                                      | Yes      | str  | Name of the questionnaire, up to 241 characters. The limit leaves room for the `<name> (v<id>)` rename a supersede applies. |
+| `form_type`                                 | Yes      | str  | `QUES` (questionnaire), `SA` (structured assessment), `EXAM` (physical exam), or `ROS` (review of systems).                 |
+| `code_system`                               | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                                          |
+| `code`                                      | Yes      | str  | The code for the questionnaire, up to 100 characters, for example `72109-2`.                                                |
+| `can_originate_in_charting`                 | Yes      | bool | Whether a user can start this questionnaire from charting.                                                                  |
+| `questions`                                 | Yes      | list | At least one question, each shaped as below.                                                                                |
+| `prologue`                                  | No       | str  | Text shown at the start of the questionnaire, for context.                                                                  |
+| `display_results_in_social_history_section` | No       | bool | Whether completion shows in the Social History section. Defaults to `False`.                                                |
+
+##### questions[]
+
+| Key                                        | Required | Type | Description                                                                                                  |
+|--------------------------------------------|----------|------|--------------------------------------------------------------------------------------------------------------|
+| `code_system`                              | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                           |
+| `code`                                     | Yes      | str  | Up to 100 characters. Must be non-empty and unique within the questionnaire, since branching attaches to it. |
+| `content`                                  | Yes      | str  | The question text, up to 1024 characters.                                                                    |
+| `responses_code_system`                    | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                           |
+| `responses_type`                           | Yes      | str  | `SING` (single select), `MULT` (multi select), `TXT` (free text), or `DATE`.                                 |
+| `responses`                                | Yes      | list | At least one response, each shaped as below.                                                                 |
+| `code_description`                         | No       | str  | A description of the code, up to 255 characters.                                                             |
+| `display_result_in_social_history_section` | No       | bool | Whether this answer shows in the Social History section. Defaults to `False`.                                |
+| `enabled_behavior`                         | No       | str  | `all` or `any`: whether all or one of `enabled_conditions` must be met.                                      |
+| `enabled_conditions`                       | No       | list | Conditions that enable this question, each shaped as below.                                                  |
+
+##### responses[]
+
+| Key                | Required | Type | Description                                                                                                                         |
+|--------------------|----------|------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `name`             | Yes      | str  | Up to 1024 characters. The displayed text for `SING` and `MULT`. Use `"TXT"` on a `TXT` question and `"DATE"` on a `DATE` question. |
+| `code`             | Yes      | str  | Up to 100 characters. Must be non-empty and unique within the question, except on `TXT` and `DATE`.                                 |
+| `code_description` | No       | str  | A description of the code, up to 255 characters.                                                                                    |
+| `value`            | No       | str  | The score for `SING` and `MULT`, up to 1000 characters. Omit it for no scoring. Not used for `DATE`.                                |
+
+A `TXT` or `DATE` question still needs exactly one entry in `responses`, carrying a placeholder: `{"name": "TXT", "code": "<code>"}` or `{"name": "DATE", "code": "<code>"}`. A placeholder response is exempt from the response-code rules, both the non-empty check and the uniqueness check.
+
+##### enabled_conditions[]
+
+| Key             | Required | Type        | Description                                                                                                  |
+|-----------------|----------|-------------|--------------------------------------------------------------------------------------------------------------|
+| `question_code` | Yes      | str         | The `code` of the question whose answer is tested. It must match exactly one question in this questionnaire. |
+| `operator`      | Yes      | str         | `=`, `!=`, `exists`, or `not_exists`.                                                                        |
+| `value_code`    | No       | str or None | The response `code` to match, for a `SING` or `MULT` question.                                               |
+| `value_string`  | No       | str or None | A free text value to match, up to 255 characters.                                                            |
+
+A condition names its question by bare `code`, with no code system, so two questions sharing a code under different code systems make the reference ambiguous and validation rejects it.
 
 #### Validation
 
@@ -64,7 +134,46 @@ Each emission publishes a new version rather than editing the current one, so re
 
 To read the branching logic back after publishing, see the [Question](/sdk/data-questionnaire/#question) and [QuestionEnablementCondition](/sdk/data-questionnaire/#questionenablementcondition) data models.
 
-#### Example
+#### Examples
+
+##### Branching on an earlier answer
+
+`enabled_conditions` wires a question to an answer given earlier in the same questionnaire. Here the second question appears only once the first is answered "Yes":
+
+```python?partial=true
+questions = [
+    {
+        "content": "Have you traveled outside the country in the last 30 days?",
+        "code_system": "INTERNAL",
+        "code": "travel-recent",
+        "responses_code_system": "INTERNAL",
+        "responses_type": "SING",
+        "responses": [
+            {"name": "Yes", "code": "travel-recent-yes"},
+            {"name": "No", "code": "travel-recent-no"},
+        ],
+    },
+    {
+        "content": "Which countries did you visit?",
+        "code_system": "INTERNAL",
+        "code": "travel-countries",
+        "responses_code_system": "INTERNAL",
+        "responses_type": "TXT",
+        "responses": [{"name": "TXT", "code": "travel-countries-text"}],
+        "enabled_conditions": [
+            {
+                "question_code": "travel-recent",
+                "operator": "=",
+                "value_code": "travel-recent-yes",
+            },
+        ],
+    },
+]
+```
+
+A question carrying more than one condition needs `enabled_behavior` to say whether all of them or any one of them enables it.
+
+##### Publishing from a SimpleAPI route
 
 This [SimpleAPI](/sdk/handlers-simple-api-http/) route builds a small questionnaire from a request and publishes it:
 
