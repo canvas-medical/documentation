@@ -58,31 +58,31 @@ Three rules hold at every level of the config:
 
 ##### Top level
 
-| Key                                         | Required | Type | Description                                                                                                                 |
-|---------------------------------------------|----------|------|-----------------------------------------------------------------------------------------------------------------------------|
-| `name`                                      | Yes      | str  | Name of the questionnaire, up to 241 characters. The limit leaves room for the `<name> (v<id>)` rename a supersede applies. |
-| `form_type`                                 | Yes      | str  | `QUES` (questionnaire), `SA` (structured assessment), `EXAM` (physical exam), or `ROS` (review of systems).                 |
-| `code_system`                               | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                                          |
-| `code`                                      | Yes      | str  | The code for the questionnaire, up to 100 characters, for example `72109-2`.                                                |
-| `can_originate_in_charting`                 | Yes      | bool | Whether a user can start this questionnaire from charting.                                                                  |
-| `questions`                                 | Yes      | list | At least one question, each shaped as below.                                                                                |
-| `prologue`                                  | No       | str  | Text shown at the start of the questionnaire, for context.                                                                  |
-| `display_results_in_social_history_section` | No       | bool | Whether completion shows in the Social History section. Defaults to `False`.                                                |
+| Key                                         | Required | Type | Description                                                                                                                                |
+|---------------------------------------------|----------|------|--------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`                                      | Yes      | str  | Name of the questionnaire, up to 241 characters. The limit leaves room for the `<name> (v<id>)` rename a [supersede](#versioning) applies. |
+| `form_type`                                 | Yes      | str  | One of the [form types](#form-types).                                                                                                      |
+| `code_system`                               | Yes      | str  | One of the [code systems](#code-systems).                                                                                                  |
+| `code`                                      | Yes      | str  | The code for the questionnaire, up to 100 characters, for example `72109-2`.                                                               |
+| `can_originate_in_charting`                 | Yes      | bool | Whether a user can start this questionnaire from charting.                                                                                 |
+| `questions`                                 | Yes      | list | At least one [question](#questions).                                                                                                       |
+| `prologue`                                  | No       | str  | Text shown at the start of the questionnaire, for context.                                                                                 |
+| `display_results_in_social_history_section` | No       | bool | Whether completion shows in the Social History section. Defaults to `False`.                                                               |
 
 ##### questions[]
 
-| Key                                        | Required | Type | Description                                                                                                  |
-|--------------------------------------------|----------|------|--------------------------------------------------------------------------------------------------------------|
-| `code_system`                              | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                           |
-| `code`                                     | Yes      | str  | Up to 100 characters. Must be non-empty and unique within the questionnaire, since branching attaches to it. |
-| `content`                                  | Yes      | str  | The question text, up to 1024 characters.                                                                    |
-| `responses_code_system`                    | Yes      | str  | `SNOMED`, `LOINC`, `ICD-10`, `INTERNAL`, or `CPT`.                                                           |
-| `responses_type`                           | Yes      | str  | `SING` (single select), `MULT` (multi select), `TXT` (free text), or `DATE`.                                 |
-| `responses`                                | Yes      | list | At least one response, each shaped as below.                                                                 |
-| `code_description`                         | No       | str  | A description of the code, up to 255 characters.                                                             |
-| `display_result_in_social_history_section` | No       | bool | Whether this answer shows in the Social History section. Defaults to `False`.                                |
-| `enabled_behavior`                         | No       | str  | `all` or `any`: whether all or one of `enabled_conditions` must be met.                                      |
-| `enabled_conditions`                       | No       | list | Conditions that enable this question, each shaped as below.                                                  |
+| Key                                        | Required | Type | Description                                                                                                                                             |
+|--------------------------------------------|----------|------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `code_system`                              | Yes      | str  | One of the [code systems](#code-systems).                                                                                                               |
+| `code`                                     | Yes      | str  | The code for the question, up to 100 characters and non-empty. A question's coding, `code_system` plus `code`, must be unique within the questionnaire. |
+| `content`                                  | Yes      | str  | The question text, up to 1024 characters.                                                                                                               |
+| `responses_code_system`                    | Yes      | str  | One of the [code systems](#code-systems).                                                                                                               |
+| `responses_type`                           | Yes      | str  | One of the [response types](#response-types).                                                                                                           |
+| `responses`                                | Yes      | list | At least one [response](#responses).                                                                                                                    |
+| `code_description`                         | No       | str  | A description of the code, up to 255 characters.                                                                                                        |
+| `display_result_in_social_history_section` | No       | bool | Whether this answer shows in the Social History section. Defaults to `False`.                                                                           |
+| `enabled_behavior`                         | No       | str  | One of the [enablement behaviors](#enablement-behaviors), when the question carries more than one condition.                                            |
+| `enabled_conditions`                       | No       | list | [Conditions](#enabled_conditions) that enable this question.                                                                                            |
 
 ##### responses[]
 
@@ -91,20 +91,87 @@ Three rules hold at every level of the config:
 | `name`             | Yes      | str  | Up to 1024 characters. The displayed text for `SING` and `MULT`. Use `"TXT"` on a `TXT` question and `"DATE"` on a `DATE` question. |
 | `code`             | Yes      | str  | Up to 100 characters. Must be non-empty and unique within the question, except on `TXT` and `DATE`.                                 |
 | `code_description` | No       | str  | A description of the code, up to 255 characters.                                                                                    |
-| `value`            | No       | str  | The score for `SING` and `MULT`, up to 1000 characters. Omit it for no scoring. Not used for `DATE`.                                |
+| `value`            | No       | str  | Up to 1000 characters. The score for `SING` and `MULT`, or default text for `TXT`. Not used for `DATE`.                             |
 
 A `TXT` or `DATE` question still needs exactly one entry in `responses`, carrying a placeholder: `{"name": "TXT", "code": "<code>"}` or `{"name": "DATE", "code": "<code>"}`. A placeholder response is exempt from the response-code rules, both the non-empty check and the uniqueness check.
+
+On a `TXT` question, `value` carries default text for the answer rather than a score, so it is how you prompt the person answering. A Review of Systems or Physical Exam note then lists that answer only once it differs from the default. Give the placeholder response a `value` to use this:
+
+```python?partial=true
+{
+    "content": "Describe anything else you would like us to know",
+    "code_system": "INTERNAL",
+    "code": "other-notes",
+    "responses_code_system": "INTERNAL",
+    "responses_type": "TXT",
+    "responses": [
+        {"name": "TXT", "code": "other-notes-text", "value": "No additional concerns"},
+    ],
+}
+```
 
 ##### enabled_conditions[]
 
 | Key             | Required | Type        | Description                                                                                                  |
 |-----------------|----------|-------------|--------------------------------------------------------------------------------------------------------------|
 | `question_code` | Yes      | str         | The `code` of the question whose answer is tested. It must match exactly one question in this questionnaire. |
-| `operator`      | Yes      | str         | `=`, `!=`, `exists`, or `not_exists`.                                                                        |
+| `operator`      | Yes      | str         | One of the [enablement operators](#enablement-operators).                                                    |
 | `value_code`    | No       | str or None | The response `code` to match, for a `SING` or `MULT` question.                                               |
 | `value_string`  | No       | str or None | A free text value to match, up to 255 characters.                                                            |
 
 A condition names its question by bare `code`, with no code system, so two questions sharing a code under different code systems make the reference ambiguous and validation rejects it.
+
+#### Value sets
+
+The tables above reference these by name. They are enforced by the JSON schema, so an unlisted value is rejected when the effect is applied.
+
+##### Code systems
+
+Taken by `code_system` at both the questionnaire and question level, and by `responses_code_system`.
+
+| Value      | Meaning                                                                           |
+|------------|-----------------------------------------------------------------------------------|
+| `SNOMED`   | SNOMED CT codes.                                                                  |
+| `LOINC`    | LOINC codes.                                                                      |
+| `ICD-10`   | ICD-10 codes.                                                                     |
+| `CPT`      | CPT codes.                                                                        |
+| `INTERNAL` | A coding of your own, when the questionnaire has no code from a published system. |
+
+##### Form types
+
+| Value  | Meaning                |
+|--------|------------------------|
+| `QUES` | Questionnaire.         |
+| `SA`   | Structured assessment. |
+| `EXAM` | Physical exam.         |
+| `ROS`  | Review of systems.     |
+
+##### Response types
+
+| Value  | Answer                                                |
+|--------|-------------------------------------------------------|
+| `SING` | Single select. One response from `responses`.         |
+| `MULT` | Multi select. One or more responses from `responses`. |
+| `TXT`  | Free text. Takes a single placeholder response.       |
+| `DATE` | A calendar date. Takes a single placeholder response. |
+
+The [question types](/sdk/data-questionnaire/#question-types) a saved question can carry also include `INT` and `DEC`. Neither is in this value set, so a questionnaire created through the effect cannot use them.
+
+##### Enablement operators
+
+| Value        | Condition is met when                                     |
+|--------------|-----------------------------------------------------------|
+| `=`          | the answer matches `value_code` or `value_string`.        |
+| `!=`         | the answer does not match `value_code` or `value_string`. |
+| `exists`     | the question has any answer.                              |
+| `not_exists` | the question has no answer.                               |
+
+##### Enablement behaviors
+
+| Value | Meaning                      |
+|-------|------------------------------|
+| `all` | Every condition must be met. |
+| `any` | One condition is enough.     |
 
 #### Validation
 
