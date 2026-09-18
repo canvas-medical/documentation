@@ -9,7 +9,79 @@ The Canvas SDK includes functionality for handling questionnaire-related events.
 
 ## Creating a Questionnaire
 
-Creating a questionnaire via the SDK requires current requires defining a YAML template and referencing it in your `CANVAS_MANIFEST.json` file. Read more [here](/sdk/questionnaires/).
+You can create a questionnaire in one of two ways. A manifest YAML template is the simplest path when the questionnaire's shape is fixed and known when you build the plugin: you define the template and reference it in your `CANVAS_MANIFEST.json` file. Use the `CreateQuestionnaire` effect instead when the questionnaire's shape is not fixed at build time — for example, when it is assembled from external data, user input, or per-tenant configuration. Also use it when the questions change often and you do not want to ship a plugin release for each change. Both paths share the same field contract. See [Questionnaires](/sdk/questionnaires/) for the manifest schema and full field reference.
+
+### CreateQuestionnaire Effect
+
+The `CreateQuestionnaire` effect creates a questionnaire while your plugin runs. Import it as `from canvas_sdk.effects.questionnaire import CreateQuestionnaire`. It is not re-exported at the `canvas_sdk.effects` top level.
+
+The effect takes a single `questionnaire` attribute: a `QuestionnaireConfig` dictionary that mirrors the manifest YAML template. It carries the questionnaire's `name`, `form_type`, `code_system`, and `code`, and a list of `questions`, each with its `responses` and optional `enabled_conditions`. See [Questionnaires](/sdk/questionnaires/) for the full field reference and the accepted value for each field. Those values are enforced by the JSON schema when the effect is applied.
+
+#### Attributes
+
+| Attribute     | Required | Type                       | Description                                                                                                                                          |
+|---------------|----------|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| questionnaire | Yes      | QuestionnaireConfig (dict) | The questionnaire definition to create. Mirrors the manifest YAML template; see [Questionnaires](/sdk/questionnaires/) for the full field reference. |
+
+#### Validation
+
+Call `.apply()` to emit the effect. Validation runs at that point, so applying the effect with an invalid config raises a single pydantic `ValidationError` in the plugin — one error that lists every problem it found rather than stopping at the first — where you can see it. Effect failures raised on the Canvas server go to Sentry rather than back to the plugin, which is why the config is validated plugin-side. That also means the effect's return value alone cannot confirm the questionnaire was created; query it back through the [Questionnaire](/sdk/data-questionnaire/) data model — for example, `Questionnaire.objects.filter(name=...)` or by its `code_system` and `code` — or check `canvas logs`. Beyond the JSON schema, applying the effect checks that:
+
+- Each question's coding (`code_system` plus `code`) is unique within the questionnaire, and each response `code` is unique within its question. Question and response codes are also non-empty, since branching logic attaches to them. `TXT` and `DATE` responses carry a placeholder code and are exempt from the response-code rules.
+- Every `enabled_conditions` entry resolves within the same questionnaire: its `question_code` matches exactly one question, and its `value_code`, when present, is a response of that question.
+- `name` is at most 241 characters, leaving room to rename a superseded questionnaire `<name> (v<id>)` within the 255-character column.
+
+#### Versioning
+
+Questionnaire names are globally unique. Emitting the effect with a name that is already in use archives the existing questionnaire, renames it `<name> (v<id>)`, and creates a new questionnaire in its place. Each emission publishes a new version rather than editing the current one, so repeated emissions leave a chain of superseded versions. Drive the effect from an explicit trigger, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, rather than a handler on a recurring event, which would supersede the questionnaire every time it fires. To read the branching logic back after publishing, see the [Question](/sdk/data-questionnaire/#question) and [QuestionEnablementCondition](/sdk/data-questionnaire/#questionenablementcondition) data models.
+
+#### Example
+
+This [SimpleAPI](/sdk/handlers-simple-api-http/) route builds a small questionnaire from a request and publishes it:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.questionnaire import CreateQuestionnaire
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+
+
+class PublishWellnessQuestionnaire(SimpleAPIRoute):
+    PATH = "/publish-wellness-questionnaire"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        # Replace with your own authentication logic.
+        return True
+
+    def post(self) -> list[Response | Effect]:
+        config = {
+            "name": "Daily Wellness Check",
+            "form_type": "QUES",
+            "code_system": "INTERNAL",
+            "code": "daily-wellness-check",
+            "can_originate_in_charting": True,
+            "questions": [
+                {
+                    "content": "How are you feeling today?",
+                    "code_system": "INTERNAL",
+                    "code": "wellness-mood",
+                    "responses_code_system": "INTERNAL",
+                    "responses_type": "SING",
+                    "responses": [
+                        {"name": "Good", "code": "wellness-mood-good", "value": "0"},
+                        {"name": "Not good", "code": "wellness-mood-bad", "value": "1"},
+                    ],
+                },
+            ],
+        }
+
+        return [
+            CreateQuestionnaire(questionnaire=config).apply(),
+            JSONResponse({"status": "published"}),
+        ]
+```
+
+The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_sdk_effect_create_questionnaire) reference plugin shows a fuller version: it translates an external screening definition into a `QuestionnaireConfig`, wires a follow-up question to an earlier answer through `enabled_conditions`, and reads the questionnaire back with its branching.
 
 ## Creating a Questionnaire Result
 
