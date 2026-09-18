@@ -725,7 +725,7 @@ sdk_overview:
   - title: "Provider Companion"
     url: /sdk/companion/
   - title: "Questionnaires"
-    url: /sdk/questionnaires/
+    url: /sdk/effect-questionnaires/
   - title: "Sandboxing and Allowed Imports"
     url: /sdk/sandboxing-and-allowed-imports/
   - title: "Variables"

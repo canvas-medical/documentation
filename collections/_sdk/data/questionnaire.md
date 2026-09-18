@@ -160,7 +160,7 @@ renders in a note and which value an answer carries.
 
 `TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a
 score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see
-[Questionnaires](/sdk/questionnaires/).
+[Response types](/sdk/effect-questionnaires/#response-types).
 
 ### ResponseOption
 
@@ -226,7 +226,7 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | answer_option | [ResponseOption](#responseoption)             |
 | answer_value  | String                                        |
 
-`operator` takes the same comparison operators as a questionnaire's enabled conditions (see [Enabled Condition Settings](/sdk/questionnaires/#enabled-condition-settings)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
+`operator` takes the same comparison operators as a questionnaire's enabled conditions (see [Enablement operators](/sdk/effect-questionnaires/#enablement-operators)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
 
 ### Questionnaire
 
