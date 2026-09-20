@@ -63,13 +63,47 @@ The panel below is the beta interface, running on sample data. There is no back 
 it and no patient data in it: the visit, the transcript and the suggestions are fixed. It
 walks a visit end to end, with a guide in the corner saying what to press.
 
-<iframe src="/assets/static/ai-scribe-preview.html"
-        title="AI Scribe interface preview"
-        width="100%" height="900"
-        style="border: 1px solid #ccc; background: #fff;"
-        allow="clipboard-write"></iframe>
+<style>
+/* The docs content column is capped at 800px (_scss/_pagelayout.scss), which is not
+   enough room for a two-pane EHR: at 1:1 the app gets 800px total, the 420px panel
+   takes half of it, and the chart beside it is unreadable.
 
-<p><a href="/assets/static/ai-scribe-preview.html" target="_blank" rel="noopener">Open it in its own tab</a></p>
+   So the frame is given a viewport 1/scale wider than the column and drawn at `scale`.
+   `width: calc(100% / var(--embed-scale))` is what makes that responsive: the frame is
+   1.43x the column, scaled to 0.7, which lands at exactly 100% again. At an 800px
+   column the app sees about 1140px, which is enough for the panel and the chart both.
+
+   To change how much is shown, change --embed-scale and nothing else. Lower shows more
+   and reads smaller. Clicks map correctly through a transform, so the frame stays
+   interactive. */
+.scribe-embed {
+  --embed-scale: 0.7;
+  --embed-height: 660px;
+  width: 100%;
+  height: var(--embed-height);
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+.scribe-embed iframe {
+  width: calc(100% / var(--embed-scale));
+  height: calc(var(--embed-height) / var(--embed-scale));
+  transform: scale(var(--embed-scale));
+  transform-origin: 0 0;
+  border: 0;
+  display: block;
+}
+</style>
+
+<div class="scribe-embed">
+  <iframe src="/assets/static/ai-scribe-preview.html"
+          title="AI Scribe interface preview"
+          allow="clipboard-write"></iframe>
+</div>
+
+<p>It is shown at 70% so the whole workspace fits the column.
+<a href="/assets/static/ai-scribe-preview.html" target="_blank" rel="noopener">Open it in its own tab</a>
+for it at full size.</p>
 
 ## What it does
 
