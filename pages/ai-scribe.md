@@ -33,10 +33,10 @@ changes which engine drafts the next note and nothing else.
 
 ## How a visit flows
 
-1. **Pick the visit.** The panel lists the provider's day. A visit is entered by pressing
-   its card, or by the chart announcing the note the provider just expanded. The panel opens
-   nothing on its own, a day holding a single visit included, because a panel that chose for
-   the provider would record into a note nobody named.
+1. **Pick the visit.** The panel lists the provider's day in time order. A visit is entered
+   by pressing its card, or by the chart announcing the note the provider just expanded. The
+   panel opens nothing on its own, a day holding a single visit included, because a panel
+   that chose for the provider would record into a note nobody named.
 2. **Record.** Audio streams to the active engine. Pause releases the microphone and Resume
    continues the same timeline, so a visit interrupted partway is still one recording.
 3. **Read the transcript as it settles.** Lines are attributed to the person who spoke them.
@@ -50,37 +50,18 @@ changes which engine drafts the next note and nothing else.
    in, and the transcript's own words behind it where there are any.
 6. **Add.** Adding stages the command in the note, where the provider finishes and signs it.
 
-A recording survives navigating around the chart, which is the reason the panel is a dock
-rather than a modal: a modal is destroyed by navigation and takes the recording with it.
-Moving to a different patient's chart does end the recording, deliberately, because a
-recording belongs to a visit and one still running on another patient's chart is a
-transcript about to be filed against the wrong person.
-
-## What the review screen knows
-
-A proposal is not offered blind. Before the provider sees it, the core has checked it
-against the note and against the chart:
-
-- **Already on the note.** A proposal matched to a command the note already holds offers to
-  **update** that command rather than adding a second copy of it. This is what lets Scribe
-  work with a note type's template instead of around it: a template that stages a Reason for
-  visit, an empty HPI and an unanswered questionnaire gets those filled, not duplicated.
-- **Already on the chart.** A proposal whose content resembles something the chart already
-  carries is labeled as such. It stays addable, because the chart carrying something
-  similar is information rather than a decision.
-- **Recommendations.** A proposal from a recommender, rather than one extracted from what was
-  said, is marked as a recommendation and is never pre-selected.
-- **Evidence.** Where a proposal came out of a specific moment, it carries the transcript's
-  own words for that value.
-
-Proposals are colored by the note section the command will land in, using the note's own
-section palette, so a card wears the color the command will wear once it is in the note.
+The panel is a dock rather than a modal because a recording has to survive navigation: a
+modal is destroyed by it and takes the recording with it. The recording is held to the visit
+the provider started it on, not to whatever page they are looking at, so they can go to
+another chart, the schedule, or their inbox while it runs. The panel names the patient it is
+recording, and keeps naming them when it is collapsed to a rail, because a live microphone
+whose chart is nowhere on screen has to say whose visit it is filing against.
 
 ## Try the interface
 
-The panel below is a live design preview of the beta interface. It is a front-end mock with
-no back end: the visit, the transcript and the suggestions are fixed sample data, and no
-patient data is involved. It walks the happy path end to end, with a guide in the corner.
+The panel below is the beta interface, running on sample data. There is no back end behind
+it and no patient data in it: the visit, the transcript and the suggestions are fixed. It
+walks a visit end to end, with a guide in the corner saying what to press.
 
 <iframe src="/assets/static/ai-scribe-preview.html"
         title="AI Scribe interface preview"
@@ -88,46 +69,83 @@ patient data is involved. It walks the happy path end to end, with a guide in th
         style="border: 1px solid #ccc; background: #fff;"
         allow="clipboard-write"></iframe>
 
-<p><a href="/assets/static/ai-scribe-preview.html" target="_blank" rel="noopener">Open the preview in its own tab</a></p>
+<p><a href="/assets/static/ai-scribe-preview.html" target="_blank" rel="noopener">Open it in its own tab</a></p>
 
-{% include alert.html type="info" content="The preview shows the interface as it is being designed for the beta, which is ahead of what is deployed today. The table below says which is which." %}
+## What it does
 
-## What is in the beta today
+### Recording
 
-| Capability | State |
-| --- | --- |
-| Record, pause, resume, finish a visit from a docked panel | Available |
-| Live speaker-attributed transcript, recovered after a page reload | Available |
-| Draft note generated from the transcript, with per-step progress | Available |
-| Command proposals reviewed and added one at a time | Available |
-| Proposals matched to commands already on the note, offering an update | Available |
-| Proposals labeled when the chart already carries something similar | Available |
-| Recommendations told apart from what the visit said | Available |
-| Transcription engine selected per instance, swappable | Available |
-| Scribe restricted to chosen note types | Available |
-| Free-text fields edited in the panel before they are written | In design |
-| Dismissed suggestions recoverable rather than discarded | In design |
-| Day list ranked by what Scribe still owes on each visit | In design |
-| Recording that continues while the provider works on another page | In design |
-| Per-provider custom drafting instructions | In design |
-| Transport controls on the collapsed panel | In design |
-| Evidence linked to its moment in the transcript | In design |
-| Per-visit audit trail of accepts and dismissals | In design |
+- Record, pause and resume a visit from a panel docked beside the chart. Pause releases the
+  microphone and Resume continues the same timeline, so a visit interrupted partway is still
+  one recording.
+- The recording is held to the visit rather than to the page, so a provider can keep working
+  elsewhere in Canvas while it runs.
+- Transport controls stay reachable when the panel is collapsed to a rail, along with the
+  name and date of birth of the patient being recorded.
+- A live transcript, attributed to the person who spoke each line, and read back intact
+  after a page reload.
+
+### Drafting
+
+- The active transcription engine drafts the note from the transcript it holds. The core
+  reads that draft and produces the command proposals.
+- Progress is reported step by step while it drafts.
+- Per-provider custom instructions, written in plain language, are carried into every draft
+  that provider's Scribe makes. They change how the draft is written, not what the recording
+  captures.
+
+### Review
+
+- Proposals are grouped the way a visit is worked through: History, Exam, and Assessment and
+  Plan. Assessment and Plan are one group because they are decided together.
+- A proposal matched to a command the note already holds offers to **update** it rather than
+  adding a second copy. This is what lets Scribe fill a note type's template instead of
+  working around it.
+- A proposal is labeled when the chart already carries something similar. It stays addable,
+  because the chart carrying something similar is information rather than a decision.
+- A proposal from a recommender, rather than one extracted from what was said, is marked as
+  a recommendation and is never pre-selected.
+- Where a proposal came out of a specific moment, it carries the transcript's own words for
+  that value, and pressing them goes to that point in the transcript.
+- **Free text is editable in the panel.** A field the command takes as free text can be
+  fixed before it is written. A field backed by a code system, an option set, a date or a
+  constrained number is shown and left to the note, because changing it needs the chart's
+  own autocomplete.
+- Add one proposal, add a selection, or add all. A dismissed proposal drops to a section at
+  the bottom of the list and can be restored, rather than disappearing.
+
+### Fit with the chart
+
+- Every command is staged in the note as the provider, so the finished note carries no
+  marker distinguishing a Scribe-proposed command from a hand-entered one.
+- A proposal is colored by the note section its command will land in, using the note's own
+  section palette.
+- Scribe is offered only on the note types the instance chooses. A visit of any other type
+  is listed and shown as unavailable rather than silently missing.
+
+### The day
+
+- The panel lists the provider's day in the order the calendar shows it, by time, with what
+  Scribe still owes on each visit in the status line.
+- A signed visit says whether Scribe was part of it. One Scribe recorded offers a way back
+  into the transcript and what was suggested; one signed without it has nothing for the
+  panel to show and says so.
 
 ## Limits worth knowing before you enroll
 
-These are properties of the current design rather than open defects, and each one is a
-question beta participants have asked:
+These are deliberate properties rather than open defects, and each one is a question a
+beta participant will ask:
 
 - **One generation per visit.** Finishing the recording is what asks for the note; there is
   no regenerate. A second pass would produce a different set of suggestions over the first,
   which leaves a provider mid-review to reconcile two.
-- **A suggestion is edited in the note, not in the panel, today.** Editing free text in the
-  panel is in design; until then a proposal is added and then finished in the note.
 - **No level meter and no prolonged-silence warning.** Neither is expressible over the
   interface between the app and the engine, so both are absent rather than shown as controls
   that do nothing. The elapsed timer is the browser's clock, not a signal from the engine.
 - **Finalizing is one-way.** A visit's recording cannot be reopened after it is finished.
+- **Coded fields are not editable in the panel.** A code, an option set, a date or a
+  constrained number needs the chart's own autocomplete, so Scribe shows it and leaves it to
+  the note. Free text is the part the panel can fix.
 - **The panel is not a second chart.** Signing, billing and everything else about the note
   stays in the note.
 
