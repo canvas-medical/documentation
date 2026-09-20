@@ -165,6 +165,50 @@ for it at full size.</p>
   into the transcript and what was suggested; one signed without it has nothing for the
   panel to show and says so.
 
+## Getting good audio
+
+Suggestions rather than requirements. Scribe records through the browser using your
+computer's **default microphone**, so it works with whatever you already have and there is
+nothing to install. That also means it does not know or care which microphone that is, and
+it has no device picker of its own yet: if you plug something in, make it the default in
+your operating system's sound settings, or set it for the Canvas site in your browser's
+site settings.
+
+Audio reaches the transcription engine as 16 kHz mono, which is the band speech lives in.
+That matters for what to spend money on. A more expensive microphone mostly buys fidelity
+above that band, and that fidelity is discarded. What is not discarded is how far the
+microphone is from each person, how much of the room it hears, and how much the room echoes,
+and those are what a transcript's accuracy actually turns on.
+
+So, in rough order of how much difference each makes:
+
+- **Move the microphone off the laptop and into the middle of the room.** A tabletop
+  microphone roughly equidistant from both people hears them about equally. A laptop
+  microphone is close to whoever is typing and far from whoever is on the exam table, and
+  many laptops steer their microphone array toward the person at the keyboard, which is the
+  wrong person.
+- **Prefer an omnidirectional tabletop microphone** over anything aimed in one direction. A
+  USB conference speakerphone is the usual shape of this. Canvas has not benchmarked
+  specific models, so treat any particular product as a starting point rather than a
+  recommendation from us, and tell us what worked.
+- **Wired USB over Bluetooth.** Bluetooth drops and renegotiates over a long session, and
+  often switches to a low-quality profile when the microphone opens.
+- **Smaller, softer rooms transcribe better.** Echo off hard walls arrives at the microphone
+  as a smeared copy of what was just said, and the engine has to sort one from the other.
+- **Close anything else using the microphone.** A video call, another recorder, or a
+  note-taking app can hold the device, and the browser may then get nothing.
+
+### Telehealth
+
+Scribe captures a microphone, not your computer's audio output and not a video call's
+stream. On a video visit the patient's voice reaches the microphone only by coming out of
+your speakers into the room, and the browser's echo cancellation is designed to remove
+exactly that, so it will work against you. On headphones it never reaches the microphone
+at all.
+
+Treat telehealth as unsupported for now rather than as something to work around. If it is
+important to your practice, tell us, because it changes what we build next.
+
 ## Limits worth knowing before you enroll
 
 These are deliberate properties rather than open defects, and each one is a question a
@@ -177,6 +221,11 @@ beta participant will ask:
   interface between the app and the engine, so both are absent rather than shown as controls
   that do nothing. The elapsed timer is the browser's clock, not a signal from the engine.
 - **Finalizing is one-way.** A visit's recording cannot be reopened after it is finished.
+- **Scribe records a microphone, not a video call.** There is no capture of your
+  computer's audio output or of a call's stream, so telehealth is not supported today. See
+  Getting good audio.
+- **No microphone picker in Scribe.** It records through whatever your operating system or
+  browser has set as the default input. Changing microphones is done there, not here.
 - **Coded fields are not editable in the panel.** A code, an option set, a date or a
   constrained number needs the chart's own autocomplete, so Scribe shows it and leaves it to
   the note. Free text is the part the panel can fix.
