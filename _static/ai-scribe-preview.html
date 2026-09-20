@@ -1,0 +1,2360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Canvas Scribe — walkthrough demo</title>
+<!--
+  ============================================================================
+  CANVAS SCRIBE — WALKTHROUGH DEMO
+  ============================================================================
+  The happy path, clickable end to end. One file, no build.
+
+    schedule → record → navigate to the chart while it records → pause / finish
+    → wait for the draft → review → dismiss → update what the note already has
+    → add the rest
+
+  The note starts nearly empty on purpose: a Reason for visit of two words, an
+  HPI with nothing in it, and an unanswered PHQ-9. Three of the suggestions
+  update those; five add commands that are not there yet.
+
+  A guide in the bottom-left corner says what to press. It advances when you do
+  the thing, and every control works whether you follow it or not.
+
+  The visual language is shared with `canvas-scribe-mock.html` — its stylesheet
+  and its Canvas shell are copied in here verbatim, so the two cannot drift.
+  Change the look there; change the FLOW here.
+
+  WHAT TO EDIT
+    - `NOTE0`        what the note holds before the visit
+    - `TRANSCRIPT`   what is said, in order
+    - `SUGGESTIONS`  what Scribe proposes, and what each one does to the note
+    - `STEPS`        the walkthrough itself
+  ============================================================================
+-->
+<style>
+
+/* ===========================================================================
+   1. TOKENS  — Canvas palette (home-app themes/theme.ts + styles/variables.scss)
+   =========================================================================== */
+:root {
+  --navy:        #0D2C4C;
+  --blue:        #2185D0;
+  --blue-active: #1F72B3;
+  --blue-light:  #E9F3FA;
+  --cream:       #EEE9D2;
+  --green:       #23b135;
+  --amber:       #f8b10e;
+  --amber-ink:   #8a6d3b;
+  --amber-bg:    #fdf6e3;
+  --red:         #BD0B00;
+  --red-soft:    #fdecec;
+
+  --ink:         #16283d;
+  --ink-soft:    #5a6b7c;
+  --ink-faint:   #8a97a4;
+  --line:        rgba(34, 36, 38, 0.15);
+  --line-soft:   #edf0f2;
+  --surface:     #ffffff;
+  --surface-2:   #f5f6f7;
+  --surface-3:   #fafbfc;
+
+  /* Note section palette — a suggestion wears the color it will wear in the note */
+  --sec-subjective: #212121;
+  --sec-objective:  #2e7d32;
+  --sec-assessment: #ed6c02;
+  --sec-plan:       #1976d2;
+  --sec-history:    #795548;
+  --sec-internal:   #616161;
+
+  --nav-h: 4.2em;
+  --radius: 6px;
+
+  /* Dock widths. DESIGN CHANGE: two working widths, not one 720px slab. */
+  --dock-focus: 420px;
+  --dock-wide:  720px;
+  --dock-rail:  48px;
+  --dock-w: var(--dock-focus);
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* Canvas sets Sentinel SSm for note text; Georgia is the documented fallback. */
+  --serif: "Sentinel SSm A", "Sentinel SSm B", Georgia, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+button { font: inherit; color: inherit; }
+
+/* ===========================================================================
+   2. CANVAS SHELL
+   =========================================================================== */
+.canvas-app { display: flex; flex-direction: column; height: 100vh; }
+
+.app-bar {
+  height: var(--nav-h);
+  flex: 0 0 var(--nav-h);
+  /* Per-customer (`getHeaderColor`). White is the common case. */
+  background: var(--appbar-bg, #ffffff);
+  color: var(--appbar-ink, #16283d);
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 14px; padding: 0 14px; z-index: 101;
+  /* Ends at the pane rather than running under it, so the icon cluster stays reachable.
+     The bar keeps the higher z-index, so its dropdowns still open over everything in
+     the space it does occupy. */
+  margin-right: var(--dock-w);
+  transition: margin-right .12s ease;
+}
+.app-bar .hamburger { font-size: 19px; opacity: .8; }
+.app-bar .logo { font-weight: 700; font-size: 17px; letter-spacing: -.3px; }
+.app-bar .logo em { font-style: normal; color: var(--purple, #7b1fa2); }
+.app-bar .search {
+  margin-left: 14px; border: 1px solid var(--line); border-radius: 4px;
+  height: 30px; width: 270px; display: flex; align-items: center;
+  justify-content: flex-end; padding: 0 9px; color: var(--ink-faint);
+}
+.app-bar .spacer { margin-left: auto; }
+.icon-cluster {
+  display: flex; align-items: center; gap: 2px;
+  border: 1px solid var(--line); border-radius: 5px; padding: 2px;
+}
+.icon-cluster .ic {
+  border: 0; background: transparent; color: var(--ink-soft);
+  width: 32px; height: 28px; border-radius: 4px; font-size: 14px; position: relative;
+}
+.icon-cluster .ic:hover { background: var(--surface-2); }
+.icon-cluster .ic.on { background: var(--blue-light); color: var(--blue-active); }
+.ic-badge {
+  position: absolute; top: -2px; right: 0; background: #d0111f; color: #fff;
+  border-radius: 8px; min-width: 15px; height: 15px; line-height: 15px;
+  font-size: 9.5px; font-weight: 700; font-style: normal; padding: 0 3px;
+}
+
+.layout-main {
+  flex: 1; display: flex; min-height: 0;
+  /* The dock's inset. Mirrors home-app Layout/style.scss margin-right: var(--dock-right). */
+  margin-right: var(--dock-w);
+  background: var(--surface);
+  transition: margin-right .12s ease;
+}
+body[data-dock="rail"] { --dock-w: var(--dock-rail); }
+body[data-dock="wide"] { --dock-w: var(--dock-wide); }
+
+.surface { display: none; flex: 1; min-width: 0; }
+body[data-surface="schedule"] .surface--schedule { display: flex; }
+body[data-surface="chart"]    .surface--chart    { display: flex; }
+
+/* ---- 2a. Schedule surface --------------------------------------------- */
+.surface--schedule { flex-direction: row; }
+
+.sched-sidebar {
+  flex: 0 0 240px; background: var(--surface-2);
+  border-right: 1px solid var(--line); padding: 14px 12px; overflow: auto;
+}
+.sched-sidebar h4 {
+  margin: 0 0 8px; font-size: 11px; text-transform: uppercase;
+  letter-spacing: .7px; color: var(--ink-faint);
+}
+.btn-block {
+  width: 100%; background: var(--blue); color: #fff; border: 0;
+  border-radius: 4px; padding: 8px; font-weight: 600; font-size: 13px; margin-bottom: 14px;
+}
+.minical {
+  background: #fff; border: 1px solid var(--line); border-radius: 4px;
+  padding: 8px; margin-bottom: 16px;
+}
+.minical-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.minical-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 11px; text-align: center; }
+.minical-grid span { padding: 3px 0; border-radius: 3px; color: var(--ink-soft); }
+.minical-grid .dow { color: var(--ink-faint); font-weight: 600; }
+.minical-grid .today { background: var(--green); color: #fff; font-weight: 700; }
+.prov-row { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-size: 13px; }
+
+.sched-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.sched-toolbar {
+  height: 46px; border-bottom: 1px solid var(--line); display: flex;
+  align-items: center; gap: 10px; padding: 0 14px; flex: 0 0 46px;
+}
+.sched-toolbar .date { font-weight: 600; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.seg button { border: 0; background: #fff; padding: 5px 12px; font-size: 12px; color: var(--ink-soft); }
+.seg button.on { background: var(--blue-light); color: var(--blue-active); font-weight: 600; }
+
+.cal { flex: 1; overflow: auto; position: relative; }
+.cal-grid { display: grid; grid-template-columns: 58px 1fr 1fr; position: relative; }
+.cal-gutter div {
+  height: 56px; border-bottom: 1px solid var(--line-soft);
+  font-size: 11px; color: var(--ink-faint); padding: 2px 8px 0; text-align: right;
+}
+.cal-col { position: relative; border-left: 1px solid var(--line-soft); }
+.cal-col .slot { height: 56px; border-bottom: 1px solid var(--line-soft); }
+.cal-colhead {
+  position: sticky; top: 0; z-index: 2; background: #fff;
+  border-bottom: 1px solid var(--line); padding: 7px 10px;
+  font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 7px;
+}
+.evt {
+  position: absolute; left: 4px; right: 8px; border-radius: 5px;
+  background: #fff; box-shadow: -1px 2px 3px rgba(0,0,0,.28);
+  padding: 4px 7px; font-size: 11px; line-height: 15px; overflow: hidden;
+  border-left: 4px solid var(--blue);
+}
+.evt b { display: block; font-size: 11.5px; }
+.evt .t { color: var(--ink-faint); font-size: 10px; }
+.evt.hold { background: #5019be; color: #fff; border-left-color: #3b0f90; }
+/* A completed visit, as the calendar greys one. */
+.evt.done { background: #ccc; color: #000; border-left-color: #b3b3b3; }
+.evt.done .t { color: #555; }
+/* A half-hour slot has no room for two stacked lines, so it lays out in a row —
+   home-app does the same thing with `canvs-event-type--short`. */
+.evt.short {
+  display: flex; flex-direction: row; align-items: baseline;
+  gap: 7px; padding: 4px 7px; overflow: hidden;
+}
+.evt.short b { display: block; flex: 0 0 auto; white-space: nowrap; }
+.evt.short .t {
+  display: block; flex: 1 1 auto; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.evt.is-selected { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+
+/* ---- Canvas's own appointment popover -----------------------------------
+   Pressing an appointment on the schedule opens this, and pressing the visit
+   reason inside it goes to the note. It is here so the demo can show that
+   reaching the chart is not a Scribe-only route: the pane's Open chart button
+   and the normal Canvas navigation both land in the same place. */
+.appt-pop {
+  position: absolute; z-index: 30; width: 340px;
+  background: #fff; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,.24);
+  padding: 16px 18px 14px; font-size: 13px;
+}
+.appt-pop[hidden] { display: none; }
+.ap-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.ap-name { font-size: 17px; font-weight: 700; }
+.ap-meta { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+.ap-rfv-row { display: flex; align-items: center; gap: 10px; }
+.ap-rfv {
+  border: 0; background: transparent; padding: 0; font-size: 17px; font-weight: 700;
+  color: var(--ink); text-align: left; border-bottom: 2px solid transparent;
+}
+.ap-rfv:hover { color: var(--blue); border-bottom-color: var(--blue); }
+.ap-rfv-row .cmd-kebab { margin-left: auto; }
+.ap-when { font-size: 13px; margin-top: 3px; }
+.ap-prov { display: flex; align-items: center; gap: 9px; margin-top: 11px; font-size: 13px; }
+.ap-status { display: flex; align-items: center; gap: 9px; margin-top: 13px; font-size: 13px; }
+.ap-status .box { width: 13px; height: 13px; border: 1.5px solid var(--ink-soft); border-radius: 2px; }
+.ap-label { display: inline-block; margin-top: 12px; font-size: 13px; color: var(--ink); text-decoration: underline; }
+.evt.is-open { outline: 2px solid var(--blue); outline-offset: 1px; }
+
+/* ---- 2b. Patient chart surface ----------------------------------------
+   Modelled on a live instance rather than invented: white app bar with the
+   customer's own logo (the color is per-customer, `getHeaderColor`), an icon
+   cluster rather than a text nav, an MRN chip beside the name, Chart/Profile/
+   Labs tabs, a left column of icon-led sections that mostly read "No X on
+   record", and commands as bordered blocks with small-caps labels, serif
+   values and their own per-command action buttons. */
+.surface--chart { flex-direction: column; }
+
+.profile-header { border-bottom: 1px solid #e0e0e0; background: #fff; }
+.profile-row { display: flex; align-items: center; gap: 12px; padding: 9px 14px 0; }
+.avatar {
+  border-radius: 50%; background: var(--surface-2); color: var(--ink-soft);
+  display: grid; place-items: center; font-size: 12px; font-weight: 600; flex: 0 0 auto;
+}
+.avatar.sz-44 { width: 44px; height: 44px; font-size: 14px; }
+.avatar.sz-40 { width: 40px; height: 40px; font-size: 13px; }
+.avatar.sz-32 { width: 32px; height: 32px; }
+.avatar.sz-28 { width: 28px; height: 28px; font-size: 11px; }
+.avatar.sz-24 { width: 24px; height: 24px; font-size: 10px; }
+.avatar.silhouette { background: #9aa4ae; color: #fff; font-size: 20px; }
+
+.name-row { display: flex; align-items: center; gap: 9px; }
+.profile-name { font-size: 20px; font-weight: 700; letter-spacing: -.2px; }
+.mrn {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); border-radius: 4px; padding: 2px 7px;
+  font-size: 12.5px; color: var(--ink-soft); background: #fff;
+}
+.mrn .copy { opacity: .55; }
+.profile-meta { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px;
+  display: flex; align-items: center; gap: 9px; }
+.tagchip {
+  background: var(--blue); color: #fff; border-radius: 12px;
+  padding: 1px 10px; font-size: 11.5px; font-weight: 600;
+}
+.hdr-btn {
+  border: 1px solid var(--line); background: #fff; border-radius: 4px;
+  height: 30px; min-width: 32px; padding: 0 9px; color: var(--ink-soft);
+  display: inline-grid; place-items: center; position: relative;
+}
+.hdr-btn--primary {
+  background: var(--blue); border-color: var(--blue); color: #fff;
+  font-weight: 600; font-size: 13px; padding: 0 14px;
+}
+.hdr-btn .count {
+  position: absolute; top: -6px; right: -6px; background: #fff;
+  border: 1px solid var(--line); border-radius: 9px; min-width: 17px;
+  font-size: 10px; font-weight: 700; color: var(--ink); line-height: 15px;
+}
+.chart-tabs { display: flex; gap: 0; padding: 0 14px; }
+.chart-tabs button {
+  border: 0; background: #fff; padding: 9px 4px; margin-right: 26px;
+  font-size: 14px; color: var(--ink-soft);
+}
+.chart-tabs button.on { color: var(--ink); box-shadow: inset 0 -3px 0 var(--ink); }
+
+.chart-body { flex: 1; display: grid; grid-template-columns: 27em 1fr; min-height: 0; }
+@media (max-width: 1400px) { .chart-body { grid-template-columns: 20em 1fr; } }
+.chart-col { border-right: 1px solid #e0e0e0; overflow: auto; background: #fff; }
+.clinical-caption {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 16px 14px; border-bottom: 1px solid var(--line-soft);
+  color: #b6bec6; font-size: 17px;
+}
+.caption-collapse {
+  margin-left: auto; border: 1px solid var(--line); background: #fff;
+  border-radius: 4px 0 0 4px; width: 22px; height: 26px; color: var(--ink-soft);
+  display: grid; place-items: center; font-size: 11px; margin-right: -14px;
+}
+.chart-section { padding: 14px; border-bottom: 1px solid var(--line-soft); }
+.chart-section h5 {
+  margin: 0 0 9px; font-size: 15px; font-weight: 600; color: var(--ink);
+  display: flex; align-items: center; gap: 9px;
+}
+.chart-section h5 .ico { font-size: 15px; opacity: .75; width: 18px; text-align: center; }
+.chart-section h5 .act { margin-left: auto; }
+.sec-btn {
+  border: 1px solid var(--line); background: #fff; border-radius: 4px;
+  padding: 3px 9px; font-size: 11.5px; color: var(--ink-soft);
+}
+.sec-btn--solid { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+.chart-empty { font-size: 13.5px; color: var(--ink-soft); }
+.chart-line {
+  font-size: 13.5px; padding: 4px 0; display: flex; align-items: baseline; gap: 8px;
+}
+.chart-line small { color: var(--ink-faint); }
+.chart-line .dotbtn { margin-left: auto; color: var(--ink-faint); font-size: 12px; }
+
+/* ---- the note column --------------------------------------------------- */
+.notes-col { overflow: auto; background: #cfe1f7; padding: 14px 0 40px; }
+.note {
+  background: #fff; border: 1px solid #d6dde4; border-radius: 4px;
+  margin: 0 14px 14px; box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.note-header { padding: 13px 16px 0; display: flex; align-items: flex-start; gap: 0; }
+.note-header .n-title { font-size: 16px; font-weight: 700; }
+.note-header .n-meta { font-size: 13px; color: var(--ink-soft); margin-top: 1px; }
+.note-header .n-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.note-header .assign { font-size: 13px; font-style: italic; color: var(--ink); }
+.note-tabs { display: flex; gap: 0; padding: 10px 16px 0; border-bottom: 1px solid var(--line); }
+.note-tabs span { padding: 6px 4px; margin-right: 26px; font-size: 14px; color: var(--ink-soft); }
+.note-tabs span.on { font-weight: 700; color: #000; box-shadow: inset 0 -3px 0 #000; }
+.note-body { padding: 18px 16px 30px; display: grid; gap: 20px; }
+
+/* A command, as the chart draws one. The stripe is the section the command belongs
+   to, in the same three colors the pane uses for its suggestion cards — so a card and
+   the command it turns into are recognisably the same object. `--p-sec-*` resolves at
+   :root to the note's own palette (sectionColors.ts), which is what the chart uses. */
+.cmd {
+  border-left: 4px solid var(--p-ink-faint); padding: 7px 10px 9px 14px; position: relative;
+}
+.cmd[data-sec="subjective"] { border-left-color: var(--p-sec-subjective); }
+.cmd[data-sec="objective"]  { border-left-color: var(--p-sec-objective); }
+.cmd[data-sec="assessment"] { border-left-color: var(--p-sec-assessment); }
+.cmd[data-sec="plan"]       { border-left-color: var(--p-sec-plan); }
+.cmd[data-sec="history"]    { border-left-color: var(--p-sec-history); }
+.cmd-head { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.cmd-head .cmd-name {
+  font-family: var(--serif); font-size: 17px; font-weight: 700;
+}
+.cmd-head .cmd-tools { margin-left: auto; display: flex; align-items: center; gap: 7px; }
+.cmd-check { color: #b9c2ca; font-size: 14px; }
+.cmd-btn {
+  border: 0; border-radius: 3px; padding: 4px 13px;
+  font-size: 12px; font-weight: 700; letter-spacing: .4px;
+  background: #8fa9c0; color: #fff;
+}
+.cmd-btn--dark { background: #16283d; }
+.cmd-x {
+  border: 0; border-radius: 3px; width: 26px; height: 24px;
+  background: #16283d; color: #fff; font-size: 12px;
+}
+.cmd-kebab { color: var(--ink-soft); font-size: 14px; letter-spacing: -1px; }
+.cmd-fields { display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; align-items: baseline; }
+.cmd-fields dt {
+  font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase;
+  color: var(--ink-soft); padding-top: 2px;
+}
+.cmd-fields dd { margin: 0; font-family: var(--serif); font-size: 15px; }
+.cmd-prose { font-family: var(--serif); font-size: 15px; line-height: 1.5; }
+/* No "added by Scribe" marker, and no tint on the ones it produced. A command is
+   written through commands_kit as the provider rather than as the bot, so one Scribe
+   proposed has to be indistinguishable from one typed by hand. The note is a note. */
+.ros-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; flex-wrap: wrap; }
+.ros-row dt {
+  font-size: 11.5px; letter-spacing: .5px; text-transform: uppercase; color: var(--ink-soft);
+  min-width: 165px;
+}
+.toggle {
+  width: 34px; height: 18px; border-radius: 9px; background: #d5dbe1; position: relative; flex: 0 0 auto;
+}
+.toggle::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: #fff;
+}
+.toggle.on { background: var(--blue); }
+.toggle.on::after { left: auto; right: 2px; }
+.ros-pill {
+  background: #eceff1; border-radius: 4px; padding: 4px 12px; font-size: 13px;
+  font-family: var(--serif);
+}
+.cmd-add {
+  display: flex; align-items: center; gap: 9px; border: 1px solid var(--line);
+  border-radius: 4px; padding: 8px 12px; font-size: 13.5px; color: var(--ink-faint);
+}
+
+/* ===========================================================================
+   3. PANEL THEME  — the pane's own surface, so it does not read as more chart
+   ---------------------------------------------------------------------------
+   Every color the panel uses resolves through one of these, and nothing inside
+   section 4 hardcodes a color. Swapping the theme is therefore swapping this
+   one block — which is what "configurable" has to mean if an instance is ever
+   going to set it.
+
+   Three shipped here. `navy` is the default: the dock takes the app bar's own
+   color, so it reads as part of the Canvas frame rather than as a second chart.
+   =========================================================================== */
+/* The light values live at :root so anything outside the dock that borrows a panel
+   class (.btn, .status, .avatar) still resolves. The dock overrides them below. */
+:root {
+  --p-chrome: #FFFFFF;  --p-bg: #FFFFFF;  --p-surface: #FFFFFF;  --p-surface-2: #FAFBFC;
+  --p-ink: #16283d;  --p-ink-soft: #5a6b7c;  --p-ink-faint: #8a97a4;
+  --p-line: rgba(34,36,38,.15);  --p-line-soft: #EDF0F2;
+  --p-accent: #2185D0;  --p-accent-ink: #FFFFFF;
+  --p-warn-bg: #FDF3D8;  --p-warn-ink: #7a5a06;
+  --p-err-bg: #FDECEC;   --p-err-ink: #8d1008;
+  --p-info-bg: #E9F3FA;  --p-info-ink: #12527f;
+  --p-ok-bg: #E9F8EC;    --p-ok-ink: #1c7a33;
+  --p-rec-bg: #BD0B00;   --p-rec-ink: #FFFFFF;
+  /* The command sections, named and ordered as the Canvas docs list them:
+     Subjective black, Objective green, Assessment orange, Plan blue, History brown.
+     A card wears the color its command will wear in the note, which is per COMMAND
+     and not per review group — an A&P group holds orange and blue at once. */
+  --p-sec-subjective: #212121;
+  --p-sec-objective:  #2e7d32;
+  --p-sec-assessment: #ed6c02;
+  --p-sec-plan:       #1870c4;
+  --p-sec-history:    #795548;
+  /* Chrome — header, transport, tabs, action bar, rail. Its own inks, stated
+     outright in every theme: a `var(--p-ink)` indirection here would be substituted
+     on THIS element and freeze, so no theme below could move it. */
+  --p-chrome-ink: #16283d;
+  --p-chrome-ink-soft: #5a6b7c;
+  --p-chrome-ink-faint: #8a97a4;
+  --p-chrome-line: rgba(34, 36, 38, .15);
+}
+
+.dock {
+  /* --- surfaces --- */
+  --p-chrome:      #0B2540;   /* header, transport, tabs, action bar, rail */
+  --p-bg:          #103050;   /* the scrolling body behind the cards */
+  --p-surface:     #17395C;   /* a card */
+  --p-surface-2:   #0E2A47;   /* group headers, evidence, quiet fills */
+  /* --- ink --- */
+  --p-ink:         #EAF2F9;
+  --p-ink-soft:    #A9C0D4;
+  --p-ink-faint:   #7E99B0;
+  --p-line:        rgba(255, 255, 255, .15);
+  --p-line-soft:   rgba(255, 255, 255, .08);
+  /* --- action --- */
+  --p-accent:      #3D9BE0;
+  --p-accent-ink:  #06233D;
+  /* --- state colors, which have to survive the background they sit on --- */
+  --p-warn-bg:  rgba(248, 177, 14, .16);  --p-warn-ink:  #F6CD6B;
+  --p-err-bg:   rgba(224, 52, 43, .18);   --p-err-ink:   #FFB1AA;
+  --p-info-bg:  rgba(61, 155, 224, .16);  --p-info-ink:  #9CD1F5;
+  --p-ok-bg:    rgba(35, 177, 53, .16);   --p-ok-ink:    #8FE0A0;
+  --p-rec-bg:   #D01A10;                  --p-rec-ink:   #FFFFFF;
+  /* --- the three note sections, as stripes --- */
+  /* Lifted for the pane's own furniture — black does not exist on navy. */
+  --p-sec-subjective: #C6D3DF;
+  --p-sec-objective:  #6FCF8B;
+  --p-sec-assessment: #FFB067;
+  --p-sec-plan:       #7BBEF0;
+  --p-sec-history:    #C79A78;
+  /* --- chrome --- */
+  --p-chrome-ink:       #EAF2F9;
+  --p-chrome-ink-soft:  #A9C0D4;
+  --p-chrome-ink-faint: #7E99B0;
+  --p-chrome-line:      rgba(255, 255, 255, .15);
+}
+
+/* A navy frame with a light body: the pane is marked as its own tool by its
+   chrome, and the clinical content stays on white. */
+body[data-theme="tint"] .dock {
+  --p-chrome: #0D2C4C;  --p-bg: #EEF3F8;  --p-surface: #FFFFFF;  --p-surface-2: #F4F8FB;
+  --p-ink: #16283d;  --p-ink-soft: #5a6b7c;  --p-ink-faint: #8a97a4;
+  --p-line: #D8E2EC;  --p-line-soft: #E8EEF4;
+  --p-accent: #2185D0;  --p-accent-ink: #FFFFFF;
+  --p-warn-bg: #FDF6E3;  --p-warn-ink: #8a6d3b;
+  --p-err-bg: #FDECEC;   --p-err-ink: #8d1008;
+  --p-info-bg: #E9F3FA;  --p-info-ink: #12527f;
+  --p-ok-bg: #E9F8EC;    --p-ok-ink: #1c7a33;
+  --p-rec-bg: #BD0B00;   --p-rec-ink: #FFFFFF;
+  --p-sec-history: #795548;  --p-sec-exam: #2e7d32;  --p-sec-ap: #ed6c02;
+  --p-chrome-ink: #FFFFFF;
+  --p-chrome-ink-soft: rgba(255,255,255,.74);
+  --p-chrome-ink-faint: rgba(255,255,255,.55);
+  --p-chrome-line: rgba(255,255,255,.18);
+}
+/* What it looks like today: indistinguishable from the chart beside it. */
+body[data-theme="plain"] .dock {
+  --p-chrome-ink: #16283d;  --p-chrome-ink-soft: #5a6b7c;
+  --p-chrome-ink-faint: #8a97a4;  --p-chrome-line: rgba(34,36,38,.15);
+  --p-chrome: #FFFFFF;  --p-bg: #FFFFFF;  --p-surface: #FFFFFF;  --p-surface-2: #FAFBFC;
+  --p-ink: #16283d;  --p-ink-soft: #5a6b7c;  --p-ink-faint: #8a97a4;
+  --p-line: rgba(34,36,38,.15);  --p-line-soft: #EDF0F2;
+  --p-accent: #2185D0;  --p-accent-ink: #FFFFFF;
+  --p-warn-bg: #FDF6E3;  --p-warn-ink: #8a6d3b;
+  --p-err-bg: #FDECEC;   --p-err-ink: #8d1008;
+  --p-info-bg: #E9F3FA;  --p-info-ink: #12527f;
+  --p-ok-bg: #E9F8EC;    --p-ok-ink: #1c7a33;
+  --p-rec-bg: #BD0B00;   --p-rec-ink: #FFFFFF;
+  --p-sec-subjective: #212121;  --p-sec-objective: #2e7d32;
+  --p-sec-assessment: #ed6c02;  --p-sec-plan: #1870c4;  --p-sec-history: #795548;
+}
+
+/* ===========================================================================
+   3b. THE DOCK  — right edge, below the app bar, drag-resizable
+   =========================================================================== */
+.dock {
+  /* Full window height. This is a DEVIATION from home-app, which deliberately runs
+     docked panes BELOW the app bar so the bar keeps its full width and its dropdowns
+     open over the panes (`views/components/Docks/style.scss`, `--dock-header-offset`).
+     Taking the whole height means the bar has to end at the pane instead — see
+     `.app-bar` — and it is a home-app change, not something Scribe can do itself. */
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: var(--dock-w);
+  background: var(--p-bg); color: var(--p-ink);
+  border-left: 1px solid var(--line);
+  display: flex; flex-direction: column; z-index: 5;
+  transition: width .12s ease;
+}
+.dock-handle {
+  position: fixed; top: 0; bottom: 0;
+  right: calc(var(--dock-w) - 3px); width: 6px; z-index: 6;
+  cursor: col-resize; background: transparent; transition: background .1s;
+}
+.dock-handle:hover, .dock-handle.dragging { background: rgba(33,133,208,.4); }
+
+/* --- Collapsed rail --------------------------------------------------- */
+.rail {
+  display: none; flex-direction: column; align-items: center; gap: 14px;
+  padding: 14px 0; height: 100%; background: var(--p-chrome);
+}
+body[data-dock="rail"] .rail  { display: flex; }
+body[data-dock="rail"] .panel { display: none; }
+.rail-btn { /* a control, so it has to hold its own against the red wash */
+  border: 1px solid var(--p-chrome-line); background: rgba(127,127,127,.20); border-radius: 6px;
+  width: 30px; height: 30px; display: grid; place-items: center; color: var(--p-chrome-ink);
+}
+.rail-label {
+  writing-mode: vertical-rl; text-orientation: mixed; font-size: 11px;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--p-chrome-ink); font-weight: 700;
+}
+/* The rail is 48px and a provider glances at it from across the room, so a live
+   recording has to read at that size: a solid pill, a pulsing dot, the running clock,
+   and the dock's own edge turned red so the signal is not one small object. */
+.rail-rec {
+  writing-mode: vertical-rl; display: none; align-items: center; gap: 7px;
+  background: var(--p-rec-bg); color: var(--p-rec-ink); border: 1px solid rgba(0,0,0,.25);
+  border-radius: 999px; padding: 11px 6px; font-size: 11.5px; font-weight: 700;
+  letter-spacing: .3px; font-variant-numeric: tabular-nums;
+  animation: pill-halo 2.6s ease-in-out infinite;
+}
+@keyframes pill-halo {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(224, 52, 43, .22); }
+  50%      { box-shadow: 0 0 0 7px rgba(224, 52, 43, .12); }
+}
+.rail-rec .rec-dot { background: #fff; width: 8px; height: 8px; }
+.rail-rec--paused {
+  background: rgba(127,127,127,.22); color: var(--p-chrome-ink-soft); border-color: var(--p-chrome-line);
+  box-shadow: none; animation: none;
+}
+body[data-rec="on"]     .rail-rec:not(.rail-rec--paused) { display: inline-flex; }
+body[data-rec="paused"] .rail-rec.rail-rec--paused       { display: inline-flex; }
+
+/* The whole edge, not just the pill: peripheral vision is what catches a recording
+   the provider has stopped thinking about. */
+body[data-rec="on"] .dock {
+  border-left: 2px solid #D01A10;
+  animation: edge-glow 2.6s ease-in-out infinite;
+}
+@keyframes edge-glow {
+  0%, 100% { box-shadow: -4px 0 14px -6px rgba(208, 26, 16, .35); }
+  50%      { box-shadow: -4px 0 22px -4px rgba(208, 26, 16, .70); }
+}
+body[data-rec="on"] .rail {
+  background: linear-gradient(rgba(208, 26, 16, .28), var(--p-chrome) 190px);
+}
+body[data-rec="paused"] .dock { border-left: 2px solid var(--p-ink-faint); }
+
+/* The transport, on the rail. 36px targets in a rail that widens to 60px while a visit
+   is live, so neither control is a guess. Mirrors the expanded pane's band: status,
+   then pause, then the one that ends the visit. */
+.rail-ctls { display: none; flex-direction: column; gap: 7px; }
+body[data-rec="on"] .rail-ctls, body[data-rec="paused"] .rail-ctls { display: flex; }
+.rail-ctl {
+  width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center;
+  border: 1px solid var(--p-chrome-line); background: rgba(255,255,255,.12);
+  color: var(--p-chrome-ink);
+}
+/* Drawn rather than typed. The pause glyph in particular renders as one bar, or as an
+   emoji, depending on the font — neither of which reads as a control. */
+.ic-pause { display: flex; gap: 3px; }
+.ic-pause::before, .ic-pause::after {
+  content: ""; width: 3px; height: 12px; background: currentColor; border-radius: 1px;
+}
+.ic-stop { width: 11px; height: 11px; background: currentColor; border-radius: 2px; }
+.ic-play {
+  width: 0; height: 0; margin-left: 3px;
+  border-left: 10px solid currentColor;
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+}
+.rail-ctl:hover { background: rgba(255,255,255,.2); }
+.rail-ctl--go { background: var(--p-accent); border-color: var(--p-accent); color: var(--p-accent-ink); }
+/* The loudest thing on the rail is the control that ends the visit, not the status. */
+.rail-ctl--stop {
+  background: var(--p-rec-bg); border-color: var(--p-rec-bg); color: var(--p-rec-ink);
+}
+.rail-ctl--stop:hover { filter: brightness(1.12); }
+.rail-ctl[data-rec-only], .rail-ctl[data-paused-only] { display: none; }
+body[data-rec="on"] .rail-ctl[data-rec-only] { display: grid; }
+body[data-rec="paused"] .rail-ctl[data-paused-only] { display: grid; }
+.sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* So the status chip stops out-shouting the buttons: translucent while the pane is
+   collapsed, where the solid red now belongs to Finish. */
+body[data-dock="rail"] .rail-rec {
+  background: rgba(208, 26, 16, .3); border-color: rgba(255, 140, 130, .55);
+}
+
+/* The rail grows a little while a visit is live, so the controls are not cramped. */
+body[data-dock="rail"][data-rec="on"],
+body[data-dock="rail"][data-rec="paused"] { --dock-rail: 60px; }
+
+/* Name and date of birth, down the rail. Two identifiers rather than one: a name alone
+   is not enough to be sure which patient a live microphone is filed against. */
+.rail-who {
+  display: none; margin-top: 2px; writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: 11px; letter-spacing: .3px; color: var(--p-chrome-ink-soft);
+  max-height: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rail-who b { color: var(--p-chrome-ink); font-weight: 700; }
+body[data-rec="on"] .rail-who, body[data-rec="paused"] .rail-who { display: inline-block; }
+
+.rail-badge {
+  background: var(--amber); color: #3b2c00; border-radius: 999px;
+  min-width: 20px; height: 20px; display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; padding: 0 5px;
+}
+/* Nothing is waiting to be reviewed while the visit is still being recorded. */
+body[data-rec="on"] .rail-badge, body[data-rec="paused"] /* The transport, on the rail. 36px targets in a rail that widens to 60px while a visit
+   is live, so neither control is a guess. Mirrors the expanded pane's band: status,
+   then pause, then the one that ends the visit. */
+.rail-ctls { display: none; flex-direction: column; gap: 7px; }
+body[data-rec="on"] .rail-ctls, body[data-rec="paused"] .rail-ctls { display: flex; }
+.rail-ctl {
+  width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center;
+  border: 1px solid var(--p-chrome-line); background: rgba(255,255,255,.12);
+  color: var(--p-chrome-ink);
+}
+/* Drawn rather than typed. The pause glyph in particular renders as one bar, or as an
+   emoji, depending on the font — neither of which reads as a control. */
+.ic-pause { display: flex; gap: 3px; }
+.ic-pause::before, .ic-pause::after {
+  content: ""; width: 3px; height: 12px; background: currentColor; border-radius: 1px;
+}
+.ic-stop { width: 11px; height: 11px; background: currentColor; border-radius: 2px; }
+.ic-play {
+  width: 0; height: 0; margin-left: 3px;
+  border-left: 10px solid currentColor;
+  border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+}
+.rail-ctl:hover { background: rgba(255,255,255,.2); }
+.rail-ctl--go { background: var(--p-accent); border-color: var(--p-accent); color: var(--p-accent-ink); }
+/* The loudest thing on the rail is the control that ends the visit, not the status. */
+.rail-ctl--stop {
+  background: var(--p-rec-bg); border-color: var(--p-rec-bg); color: var(--p-rec-ink);
+}
+.rail-ctl--stop:hover { filter: brightness(1.12); }
+.rail-ctl[data-rec-only], .rail-ctl[data-paused-only] { display: none; }
+body[data-rec="on"] .rail-ctl[data-rec-only] { display: grid; }
+body[data-rec="paused"] .rail-ctl[data-paused-only] { display: grid; }
+.sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* So the status chip stops out-shouting the buttons: translucent while the pane is
+   collapsed, where the solid red now belongs to Finish. */
+body[data-dock="rail"] .rail-rec {
+  background: rgba(208, 26, 16, .3); border-color: rgba(255, 140, 130, .55);
+}
+
+/* The rail grows a little while a visit is live, so the controls are not cramped. */
+body[data-dock="rail"][data-rec="on"],
+body[data-dock="rail"][data-rec="paused"] { --dock-rail: 60px; }
+
+/* Name and date of birth, down the rail. Two identifiers rather than one: a name alone
+   is not enough to be sure which patient a live microphone is filed against. */
+.rail-who {
+  display: none; margin-top: 2px; writing-mode: vertical-rl; text-orientation: mixed;
+  font-size: 11px; letter-spacing: .3px; color: var(--p-chrome-ink-soft);
+  max-height: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rail-who b { color: var(--p-chrome-ink); font-weight: 700; }
+body[data-rec="on"] .rail-who, body[data-rec="paused"] .rail-who { display: inline-block; }
+
+.rail-badge { display: none; }
+
+/* ===========================================================================
+   4. THE SCRIBE PANEL
+   Anatomy:  header (sticky) · transport · notice · tabs · body · action bar
+   =========================================================================== */
+.panel { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+
+/* --- 4a. Header --------------------------------------------------------- */
+.p-head {
+  flex: 0 0 auto; border-bottom: 1px solid var(--p-chrome-line);
+  background: var(--p-chrome); color: var(--p-chrome-ink);
+  padding: 8px 10px; display: flex; align-items: center; gap: 9px; min-height: 48px;
+}
+.dock .avatar { background: rgba(127,127,127,.20); color: var(--p-ink-soft); }
+.p-back {
+  border: 0; background: transparent; color: var(--p-chrome-ink-faint);
+  padding: 2px 4px; border-radius: 4px; font-size: 16px; line-height: 1;
+}
+.p-back:hover { background: rgba(127,127,127,.25); color: var(--p-chrome-ink); }
+.p-back[disabled] { opacity: .3; }
+.p-ident { min-width: 0; flex: 1; }
+.p-ident .who { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-ident .what { font-size: 11.5px; color: var(--p-chrome-ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.p-headtools { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+/* Only worth offering when the page is somewhere else. Scoped through .p-headtools
+   because `.btn { display: inline-flex }` is declared later at the same specificity
+   and would otherwise win the hide. */
+.p-headtools .go-chart { display: none; }
+body[data-surface="schedule"] .p-headtools .go-chart { display: inline-flex; }
+.go-chart.btn { background: transparent; color: var(--p-chrome-ink-soft); border-color: var(--p-chrome-line); }
+.go-chart.btn:hover { color: var(--p-chrome-ink); border-color: var(--p-accent); }
+.icon-btn {
+  border: 1px solid transparent; background: transparent; color: var(--p-chrome-ink-faint);
+  width: 26px; height: 26px; border-radius: 5px; display: grid; place-items: center; font-size: 13px;
+}
+.icon-btn:hover { background: rgba(127,127,127,.25); color: var(--p-chrome-ink); }
+
+/* Transport band: pinned under the header, so Pause/Finish never scroll away and never
+   compete with the patient's name for the same row. DESIGN CHANGE #1 */
+.p-transportbar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; border-bottom: 1px solid var(--p-chrome-line);
+  background: color-mix(in srgb, var(--p-rec-bg) 14%, var(--p-chrome));
+}
+.p-transportbar .spacer { margin-left: auto; }
+.panel[data-state="paused"] .p-transportbar { background: var(--p-surface-2); }
+.timer {
+  display: inline-flex; align-items: center; gap: 6px;
+  border-radius: 999px; padding: 4px 10px; font-size: 12.5px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: var(--p-rec-bg); color: var(--p-rec-ink);
+}
+.timer--paused { background: rgba(127,127,127,.22); color: var(--p-chrome-ink-soft); border: 1px solid var(--p-chrome-line); }
+
+/* --- 4b. Notice strip ---------------------------------------------------- */
+.p-notice {
+  display: none; gap: 9px; align-items: flex-start;
+  padding: 8px 11px; font-size: 12px; border-bottom: 1px solid var(--p-line);
+}
+.p-notice--warn  { background: var(--p-warn-bg);  color: var(--p-warn-ink); }
+.p-notice--error { background: var(--p-err-bg);   color: var(--p-err-ink); }
+.p-notice--busy  { background: var(--p-info-bg);  color: var(--p-info-ink); }
+.p-notice .n-body { flex: 1; }
+.p-notice--line { align-items: center; padding: 7px 11px; }
+.p-notice--line .spacer { margin-left: auto; }
+.p-notice .n-title { font-weight: 700; display: block; margin-bottom: 1px; }
+.btn-tiny {
+  border: 1px solid currentColor; background: transparent; color: inherit;
+  border-radius: 4px; padding: 3px 9px; font-size: 11.5px; font-weight: 600; white-space: nowrap;
+}
+.steps { display: flex; gap: 5px; margin-top: 11px; }
+.steps i { flex: 1; height: 3px; border-radius: 2px; background: currentColor; opacity: .22; }
+.steps i.done  { opacity: 1; }
+.steps i.doing { opacity: 1; animation: pulse 1.1s infinite; }
+
+/* --- 4c. Tabs ------------------------------------------------------------ */
+.p-tabs {
+  display: none; border-bottom: 1px solid var(--p-chrome-line); padding: 0 6px; gap: 2px;
+  background: var(--p-chrome);
+}
+.p-tabs button {
+  border: 0; background: transparent; padding: 9px 11px 7px; font-size: 12.5px;
+  color: var(--p-chrome-ink-soft); display: flex; align-items: center; gap: 6px;
+}
+.p-tabs button.on { color: var(--p-chrome-ink); font-weight: 600; box-shadow: inset 0 -2px 0 var(--p-accent); }
+.tab-count {
+  background: rgba(127,127,127,.28); color: var(--p-chrome-ink-soft); border-radius: 999px;
+  padding: 0 6px; font-size: 10.5px; font-weight: 700; line-height: 16px;
+}
+.p-tabs button.on .tab-count { background: var(--p-accent); color: var(--p-accent-ink); }
+
+/* --- 4d. Body: the only thing that scrolls -------------------------------- */
+.p-body { flex: 1; min-height: 0; overflow: auto; background: var(--p-bg); }
+.view { display: none; }
+.view.on { display: block; }
+
+/* Visit list (the day, on either surface) --------------------------------- */
+.list-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--p-ink-faint); border-bottom: 1px solid var(--p-line-soft); font-weight: 600;
+}
+.visits { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 7px; }
+.visit {
+  border: 1px solid var(--p-line); border-radius: var(--radius); background: var(--p-surface);
+  padding: 9px 10px; display: grid; gap: 6px; position: relative;
+}
+.visit:hover { border-color: var(--p-accent); }
+.visit.is-selected { border-color: var(--p-accent); }
+.visit.is-inactive { opacity: .55; }
+/* A documented, signed visit. Greyed rather than hidden — it is still somewhere the
+   provider goes, to read back what was recorded. Mirrors the calendar's own treatment
+   of an exited appointment (`canvs-event-status--exited`). */
+.visit.is-done {
+  --p-surface: #EDEFF1;
+  --p-ink: #4b5c6b;
+  --p-ink-soft: #77848f;
+  --p-line: #dfe3e7;
+}
+.visit.is-done .visit-reason { color: var(--p-ink-soft); }
+.visit.is-done::before { background: #c3cad1; }
+.visit[data-status="unscribed"]::before { background: transparent; }
+.visit::before {
+  content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px;
+  border-radius: 0 3px 3px 0; background: transparent;
+}
+.visit[data-status="recording"]::before { background: var(--p-rec-bg); }
+.visit[data-status="review"]::before    { background: var(--amber); }
+.visit[data-status="done"]::before      { background: var(--green); }
+.visit[data-status="ready"]::before     { background: var(--p-accent); }
+.visit-top { display: flex; align-items: flex-start; gap: 8px; }
+.visit-top .nm { font-size: 13.5px; font-weight: 600; }
+.visit-top .sub { font-size: 11.5px; color: var(--p-ink-soft); }
+.visit-top .clock { margin-left: auto; font-size: 11.5px; color: var(--p-ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.visit-reason { font-size: 13px; }
+.visit-meta { font-size: 11.5px; color: var(--p-ink-soft); display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.visit-foot { display: flex; align-items: center; gap: 6px; }
+
+/* One status vocabulary, everywhere a visit appears. DESIGN CHANGE #11 */
+.status {
+  display: inline-flex; align-items: center; gap: 5px; border-radius: 999px;
+  padding: 2px 9px; font-size: 11px; font-weight: 600; white-space: nowrap;
+  background: rgba(127,127,127,.18); color: var(--p-ink-soft);
+}
+.status i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status--ready     { background: var(--p-info-bg); color: var(--p-info-ink); }
+.status--recording { background: var(--p-err-bg);  color: var(--p-err-ink); }
+.status--drafting  { background: var(--p-info-bg); color: var(--p-info-ink); }
+.status--review    { background: var(--p-warn-bg); color: var(--p-warn-ink); }
+.status--done      { background: var(--p-ok-bg);   color: var(--p-ok-ink); }
+/* Signed, but nothing was recorded for it. Scribe has nothing to show for that visit,
+   which is worth saying rather than leaving the row looking like one it did capture.
+   `scribe_core` owns the transcript, so whether one exists is a fact it holds. */
+.status--unscribed { background: rgba(127,127,127,.18); color: var(--p-ink-faint); }
+.status--off       { background: rgba(127,127,127,.18); color: var(--p-ink-faint); }
+
+.labels { display: flex; flex-wrap: wrap; gap: 4px; }
+.label { border-radius: 3px; padding: 1px 7px; font-size: 10.5px; font-weight: 600;
+  background: rgba(127,127,127,.20); color: var(--p-ink-soft); }
+.label--orange { background: var(--p-warn-bg); color: var(--p-warn-ink); }
+
+/* Buttons ------------------------------------------------------------------ */
+.btn {
+  border: 1px solid var(--p-line); background: var(--p-surface); border-radius: 5px;
+  padding: 5px 11px; font-size: 12.5px; font-weight: 600; color: var(--p-ink);
+  display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+.btn:hover { border-color: var(--p-accent); }
+.btn--primary { background: var(--p-accent); border-color: var(--p-accent); color: var(--p-accent-ink); }
+.btn--rec { background: var(--p-rec-bg); border-color: var(--p-rec-bg); color: var(--p-rec-ink); }
+.btn--ghost { border-color: transparent; background: transparent; color: var(--p-ink-soft); font-weight: 500; }
+.btn--ghost:hover { background: rgba(127,127,127,.18); color: var(--p-ink); }
+.btn--sm { padding: 3px 9px; font-size: 11.5px; }
+.btn--lg { padding: 9px 16px; font-size: 13.5px; }
+.btn[disabled] { opacity: .45; }
+
+/* Idle session ------------------------------------------------------------- */
+.start-pad { padding: 20px 16px; text-align: center; }
+.start-pad .mic {
+  width: 40px; height: 40px; border-radius: 50%; margin: 0 auto 10px;
+  background: var(--p-err-bg); color: var(--p-err-ink); display: grid; place-items: center; font-size: 17px;
+}
+.start-pad h3 { margin: 0 0 4px; font-size: 14.5px; }
+.start-pad p { margin: 0 auto 14px; max-width: 34em; font-size: 12.5px; color: var(--p-ink-soft); line-height: 1.5; }
+/* Three things the pane can actually answer. An earlier pass listed a consent check
+   and a "note takes documentation" line: the first does not exist anywhere in the
+   plugin, and the second is what decides whether this screen renders at all rather
+   than something to report on it. */
+.prechecks {
+  margin: 18px auto 0; border-top: 1px solid var(--p-line-soft); padding-top: 11px;
+  font-size: 11.5px; color: var(--p-ink-soft); text-align: left;
+  display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; max-width: 30em;
+}
+.prechecks dt { font-weight: 600; }
+.prechecks dd { margin: 0; }
+.prechecks .ok { color: var(--p-ok-ink); font-weight: 700; }
+.prechecks .pending { color: var(--p-ink-faint); }
+
+/* Transcript --------------------------------------------------------------- */
+.utterances { display: flex; flex-direction: column; }
+.utt { display: flex; gap: 9px; padding: 9px 12px; border-bottom: 1px solid var(--p-line-soft); }
+.utt.is-cited { background: var(--p-warn-bg); box-shadow: inset 3px 0 0 var(--amber); }
+.utt .u-head { display: flex; align-items: baseline; gap: 8px; }
+.utt .u-name { font-size: 12.5px; font-weight: 600; }
+.utt .u-at { font-size: 11px; color: var(--p-ink-faint); font-variant-numeric: tabular-nums; }
+.utt p { margin: 1px 0 0; font-size: 13px; line-height: 1.45; }
+.utt--live .u-name { font-style: italic; color: var(--p-ink-faint); font-weight: 500; }
+.utt--live .dots { width: 28px; height: 28px; border-radius: 50%; background: rgba(127,127,127,.20);
+  display: grid; place-items: center; color: var(--p-ink-faint); flex: 0 0 auto; }
+.live-band {
+  position: sticky; bottom: 0;
+  background: linear-gradient(transparent, var(--p-bg) 55%);
+  padding: 10px 12px 12px; font-size: 11.5px; color: var(--p-ink-faint); text-align: center;
+}
+
+/* Suggestions -------------------------------------------------------------- */
+.sgroup { border-bottom: 1px solid var(--p-line-soft); }
+.sgroup-head {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 9px 12px; background: var(--p-surface-2); border: 0; text-align: left;
+  color: var(--p-ink);
+}
+.sgroup-head .caret { color: var(--p-ink-faint); font-size: 10px; width: 10px; }
+.sgroup-head .gname { margin-left: 2px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; }
+.sgroup-head .gcount { font-size: 11px; color: var(--p-ink-faint); }
+.sgroup-head .gsel { margin-left: auto; font-size: 11px; color: var(--p-accent); font-weight: 600; }
+.sgroup-body { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 8px; }
+.sgroup.closed .sgroup-body { display: none; }
+
+/* The three sections a suggestion can belong to. DESIGN CHANGE #5 */
+/* Swatches rather than colored text: "Assessment & Plan" holds orange commands and
+   blue ones at once, so the heading cannot be one of them. Each swatch is a section
+   the group's commands will land in. */
+.gswatch {
+  width: 9px; height: 9px; border-radius: 2px; flex: 0 0 auto;
+  background: var(--p-sec-subjective);
+}
+.gswatch[data-sec="objective"]  { background: var(--p-sec-objective); }
+.gswatch[data-sec="assessment"] { background: var(--p-sec-assessment); }
+.gswatch[data-sec="plan"]       { background: var(--p-sec-plan); }
+.gswatch[data-sec="history"]    { background: var(--p-sec-history); }
+.gswatch + .gswatch { margin-left: -4px; }
+
+/* --- Content stays on paper -------------------------------------------------
+   The pane's furniture (header, tabs, group headings, list headings, transcript,
+   action bar) wears the theme. The cards on it do not: a suggestion card and a
+   visit card both keep the chart's white sheet and dark ink, because both are
+   chart objects — one is a command about to be written, the other is the
+   appointment and note it belongs to.
+
+   Done by re-declaring the tokens locally rather than by overriding each rule —
+   everything inside already reads them, so chips, details, evidence and buttons
+   all follow with no further work. Deleting this block makes them theme with
+   everything else. */
+.card, .visit {
+  --p-surface:     #FFFFFF;
+  --p-surface-2:   #F4F6F8;
+  --p-ink:         #16283d;
+  --p-ink-soft:    #5a6b7c;
+  --p-ink-faint:   #8a97a4;
+  --p-line:        rgba(34, 36, 38, .15);
+  --p-line-soft:   #EDF0F2;
+  --p-accent:      #2185D0;
+  --p-accent-ink:  #FFFFFF;
+  --p-warn-bg: #FDF3D8;  --p-warn-ink: #7a5a06;
+  --p-err-bg:  #FDECEC;  --p-err-ink:  #8d1008;
+  --p-info-bg: #E9F3FA;  --p-info-ink: #12527f;
+  --p-ok-bg:   #E9F8EC;  --p-ok-ink:   #1c7a33;
+  /* Stripes go back to the note's own palette, which is tuned for white. */
+  --p-sec-subjective: #212121;  --p-sec-objective: #2e7d32;
+  --p-sec-assessment: #ed6c02;  --p-sec-plan: #1870c4;  --p-sec-history: #795548;
+  background: var(--p-surface);
+  color: var(--p-ink);
+}
+.card {
+  border: 1px solid var(--p-line); border-left: 5px solid var(--p-ink-faint);
+  border-radius: var(--radius); padding: 9px 10px;
+  display: grid; gap: 7px;
+}
+.card[data-sec="subjective"] { border-left-color: var(--p-sec-subjective); }
+.card[data-sec="objective"]  { border-left-color: var(--p-sec-objective); }
+.card[data-sec="assessment"] { border-left-color: var(--p-sec-assessment); }
+.card[data-sec="plan"]       { border-left-color: var(--p-sec-plan); }
+.card[data-sec="history"]    { border-left-color: var(--p-sec-history); }
+.card.is-added { background: var(--p-ok-bg); border-color: var(--p-line); }
+
+.card-top { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+.chip {
+  border-radius: 3px; padding: 1.5px 7px; font-size: 10.5px; font-weight: 700;
+  letter-spacing: .3px; background: var(--p-info-bg); color: var(--p-info-ink);
+}
+.chip--muted   { background: rgba(127,127,127,.20); color: var(--p-ink-soft); }
+.chip--outline { background: transparent; border: 1px solid var(--p-line); color: var(--p-ink-soft); }
+.chip--rec     { background: var(--p-ink); color: var(--p-surface); }
+.chip--ok      { background: var(--p-ok-bg); color: var(--p-ok-ink); }
+.card-top .pick { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+.card input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--p-accent); }
+
+.card-display { font-size: 13px; line-height: 1.45; }
+.card-details {
+  display: grid; grid-template-columns: max-content 1fr; gap: 1px 10px;
+  font-size: 11.5px; color: var(--p-ink-soft);
+}
+.card-details dt { font-weight: 600; }
+.card-details dd { margin: 0; }
+
+/* Evidence is a control, not a decoration. DESIGN CHANGE #5 */
+.evidence {
+  display: flex; gap: 7px; align-items: flex-start; width: 100%; text-align: left;
+  border: 0; border-radius: 4px; background: var(--p-surface-2);
+  padding: 6px 8px; font-size: 11.5px; color: var(--p-ink-soft); line-height: 1.4;
+}
+.evidence:hover { background: var(--p-warn-bg); color: var(--p-warn-ink); }
+.evidence .q { font-style: italic; flex: 1; }
+.evidence .at { font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+
+.card-actions { display: flex; align-items: center; gap: 6px; }
+.card-actions .spacer { margin-left: auto; }
+
+
+/* Read-only -------------------------------------------------------------- */
+.ro-banner {
+  margin: 10px; padding: 9px 11px; border-radius: var(--radius);
+  background: var(--p-surface-2); border: 1px solid var(--p-line);
+  font-size: 12px; color: var(--p-ink-soft);
+}
+
+/* Empty / picker ----------------------------------------------------------- */
+.empty { padding: 40px 22px; text-align: center; color: var(--p-ink-soft); font-size: 13px; line-height: 1.55; }
+.picker { list-style: none; margin: 0; padding: 8px; display: grid; gap: 6px; }
+.picker button {
+  width: 100%; display: flex; align-items: center; gap: 9px; text-align: left;
+  border: 1px solid var(--p-line); border-radius: var(--radius);
+  background: var(--p-surface); color: var(--p-ink); padding: 8px 10px; font-size: 13px;
+}
+.picker button:hover { border-color: var(--p-accent); }
+
+/* ---- Scribe preferences -------------------------------------------------
+   One setting: a custom prompt the provider writes for themselves, carried into
+   every draft Scribe makes for them. A pane-level preference rather than a
+   per-visit one, so it lives behind the cog in the header rather than anywhere
+   in the review flow. */
+.prefs { padding: 14px 13px 18px; display: grid; gap: 14px; }
+.prefs-lede { font-size: 12.5px; color: var(--p-ink-soft); line-height: 1.5; }
+.prefs-field { display: grid; gap: 6px; }
+.prefs-field label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--p-ink-soft);
+}
+.prefs-field textarea {
+  width: 100%; min-height: 9.5em; resize: vertical; font: inherit; font-size: 13px;
+  line-height: 1.5; color: var(--p-ink); background: var(--p-surface);
+  border: 1px solid var(--p-line); border-radius: var(--radius); padding: 9px 10px;
+}
+.prefs-field textarea:focus {
+  outline: none; border-color: var(--p-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-accent) 18%, transparent);
+}
+.prefs-field .hint { font-size: 11.5px; color: var(--p-ink-faint); line-height: 1.5; }
+.prefs-row { display: flex; align-items: center; gap: 8px; }
+.prefs-row .spacer { margin-left: auto; }
+.prefs-note {
+  border-top: 1px solid var(--p-line-soft); padding-top: 12px;
+  font-size: 11.5px; color: var(--p-ink-faint); line-height: 1.55;
+}
+
+/* ---- Dismissed, not gone ------------------------------------------------
+   A dismissed suggestion drops to a collapsed section at the bottom instead of
+   vanishing. Dismissing is a judgement made in seconds, sometimes on the wrong
+   card, and a list that silently shrinks gives the provider no way to check what
+   they threw away or to change their mind. */
+.sgroup--dismissed { border-top: 1px solid var(--p-line); border-bottom: 0; margin-top: 4px; }
+.sgroup--dismissed .sgroup-head { background: transparent; }
+.sgroup--dismissed .gname { color: var(--p-ink-faint); }
+.card.is-dismissed {
+  opacity: 1; background: var(--p-surface-2); border-left-color: var(--p-ink-faint);
+}
+.card.is-dismissed .card-display { color: var(--p-ink-soft); }
+.card.is-dismissed .chip { background: rgba(127,127,127,.2); color: var(--p-ink-soft); }
+
+/* ===========================================================================
+   EDITABLE NARRATIVE FIELDS
+   A field the command schema takes as free text (`str`) can be fixed here, in
+   the pane, before it is written. A field backed by a code system, an option
+   set, a date or a constrained number cannot — that needs the chart's own
+   autocomplete, so it is shown and not offered.
+
+     editable   hpi.narrative · plan.narrative · reasonForVisit.comment
+                diagnose.background · diagnose.today_assessment
+                followUp.comment · labOrder.comment · task.title · task.comment
+                questionnaire TextQuestion
+
+     not        diagnose.icd10_code · reasonForVisit.coding · followUp.requested_date
+                labOrder.tests_order_codes · task.assign_to · task.due_date
+                vitals (conint/confloat + unit enums) · Radio and Checkbox questions
+
+   This is a change of stance, not just of styling: `NoteSession` today says a
+   suggestion is never edited in the pane, because a command has one place to be
+   edited and that is the chart.
+   =========================================================================== */
+.f-edit {
+  display: block; width: 100%; text-align: left; font: inherit; color: inherit;
+  background: transparent; border: 0; border-bottom: 1px dashed var(--p-ink-faint);
+  padding: 1px 3px 2px; margin: 0 -3px; border-radius: 3px 3px 0 0; cursor: text;
+  position: relative;
+}
+.f-edit:hover { background: var(--p-surface-2); border-bottom-color: var(--p-accent); }
+.f-edit .f-pen { opacity: 0; font-size: 10.5px; color: var(--p-accent); margin-left: 5px; }
+.f-edit:hover .f-pen { opacity: 1; }
+.f-edit.is-empty { color: var(--p-ink-faint); font-style: italic; }
+
+/* Open editor. Same typography as the value it replaces, so the text does not move. */
+.f-editing { display: grid; gap: 6px; }
+.f-editing textarea {
+  width: 100%; font: inherit; color: var(--p-ink); background: var(--p-surface);
+  border: 1px solid var(--p-accent); border-radius: 4px; padding: 6px 7px;
+  resize: vertical; min-height: 3.4em;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-accent) 18%, transparent);
+}
+.f-editing textarea:focus { outline: none; }
+.f-editing .f-actions { display: flex; align-items: center; gap: 6px; }
+.f-editing .f-hint { font-size: 10.5px; color: var(--p-ink-faint); margin-left: auto; }
+
+/* Not editable here. A code reads as a code, and the reason is on the marker. */
+.f-code {
+  font-family: var(--mono); font-size: 11px; background: var(--p-surface-2);
+  border: 1px solid var(--p-line); border-radius: 3px; padding: 1px 5px;
+}
+.f-locked {
+  font-size: 10px; color: var(--p-ink-faint); margin-left: 6px;
+  border: 1px solid var(--p-line); border-radius: 3px; padding: 0 4px;
+  white-space: nowrap;
+}
+.card-details dd.is-locked { color: var(--p-ink); }
+/* An edited suggestion says so, so a reviewer can tell it apart from what was drafted. */
+.chip--edited { background: var(--p-info-bg); color: var(--p-info-ink); }
+
+/* --- 4e. Action bar. DESIGN CHANGE #6 ------------------------------------- */
+.p-actions {
+  display: none; flex: 0 0 auto; border-top: 1px solid var(--p-chrome-line);
+  padding: 9px 11px; align-items: center; gap: 8px;
+  background: var(--p-chrome); color: var(--p-chrome-ink);
+}
+.p-actions .count { font-size: 12px; color: var(--p-chrome-ink-soft); }
+.p-actions .spacer { margin-left: auto; }
+/* A button sitting on the chrome rather than in the body takes the chrome's ink. */
+.p-transportbar .btn--ghost, .p-actions .btn--ghost { color: var(--p-chrome-ink-soft); }
+
+/* ===========================================================================
+   5. MOCK CONTROLS  — not part of the product
+   =========================================================================== */
+.mockbar {
+  position: fixed; left: 12px; bottom: 12px; z-index: 900;
+  background: rgba(13,44,76,.96); color: #fff; border-radius: 8px;
+  padding: 10px 12px; font-size: 11.5px; box-shadow: 0 6px 24px rgba(0,0,0,.3);
+  max-width: 340px;
+}
+.mockbar h6 {
+  margin: 0 0 7px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+  color: rgba(255,255,255,.55); display: flex; justify-content: space-between; align-items: center;
+}
+.mockbar .row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.mockbar button {
+  border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.08);
+  color: #fff; border-radius: 4px; padding: 4px 8px; font-size: 11px;
+}
+.mockbar button.on { background: var(--blue); border-color: var(--blue); font-weight: 700; }
+.mockbar .hint { color: rgba(255,255,255,.5); line-height: 1.45; }
+.mockbar.min .row, .mockbar.min .hint { display: none; }
+
+/* ===========================================================================
+   DEMO ADDITIONS — the guide, and the few things a live demo needs that a
+   static mock does not.
+   =========================================================================== */
+.guide {
+  position: fixed; left: 16px; bottom: 16px; z-index: 900; width: 330px;
+  background: #0B2540; color: #EAF2F9; border: 1px solid rgba(255,255,255,.18);
+  border-radius: 10px; padding: 14px 15px 13px; box-shadow: 0 10px 34px rgba(0,0,0,.36);
+}
+.guide h6 {
+  margin: 0 0 9px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,.5); display: flex; align-items: center; gap: 8px;
+}
+.guide h6 .sp { margin-left: auto; }
+.guide .dots { display: flex; gap: 4px; }
+.guide .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.22); }
+.guide .dots i.done { background: #6FCF8B; }
+.guide .dots i.now  { background: #3D9BE0; transform: scale(1.35); }
+.guide .g-title { font-size: 14.5px; font-weight: 700; margin-bottom: 4px; }
+.guide .g-body { font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,.8); }
+.guide .g-body b { color: #fff; }
+.guide .g-foot { display: flex; align-items: center; gap: 8px; margin-top: 11px; }
+.guide .g-foot .sp { margin-left: auto; }
+.guide button {
+  border: 1px solid rgba(255,255,255,.25); background: rgba(255,255,255,.08);
+  color: #fff; border-radius: 5px; padding: 5px 11px; font-size: 12px; font-weight: 600;
+}
+.guide button.primary { background: #3D9BE0; border-color: #3D9BE0; color: #06233D; }
+.guide button.link { border-color: transparent; background: transparent; color: rgba(255,255,255,.6); font-weight: 500; }
+.guide.min .g-title, .guide.min .g-body, .guide.min .g-foot { display: none; }
+
+/* What to press next. Pulses so it is findable without reading. */
+.demo-target {
+  position: relative; animation: demo-pulse 1.6s ease-in-out infinite;
+  border-radius: 6px;
+}
+@keyframes demo-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61,155,224,.55); }
+  50%      { box-shadow: 0 0 0 7px rgba(61,155,224,0); }
+}
+
+/* A command that changed a moment ago. Motion, not a badge: the note must not
+   advertise where a command came from, but a demo has to be followable. */
+.cmd.pulse { animation: cmd-pulse 1.1s ease-out 1; }
+@keyframes cmd-pulse {
+  0%   { background: rgba(33,133,208,.16); }
+  100% { background: transparent; }
+}
+.cmd-empty { font-family: var(--font); font-size: 12.5px; color: var(--ink-faint); font-style: italic; }
+
+.phq-row { display: flex; gap: 10px; padding: 2px 0; font-size: 13px; align-items: baseline; }
+.phq-row .q { font-family: var(--serif); flex: 1; }
+.phq-row .a { font-family: var(--serif); color: var(--ink); min-width: 9em; }
+.phq-row .a.none { color: var(--ink-faint); font-style: italic; }
+.phq-score { margin-top: 7px; font-size: 12px; color: var(--ink-soft); }
+
+.sugg-empty { padding: 26px 18px; text-align: center; color: var(--p-ink-faint); font-size: 12.5px; }
+.card.leaving { opacity: 0; transform: translateX(14px); transition: all .22s ease; }
+.card { transition: opacity .22s ease, transform .22s ease; }
+</style>
+</head>
+<body data-surface="schedule" data-state="review" data-dock="focus" data-rec="off" data-theme="navy">
+
+<div class="canvas-app">
+  <!-- ===================== APP BAR =====================
+       White with the customer's own logo, an icon cluster rather than a text
+       nav: navigation lives behind the hamburger. The bar color is per-customer
+       (`getHeaderColor`), so white is the common case rather than the brand navy. -->
+  <header class="app-bar">
+    <span class="hamburger">&#9776;</span>
+    <span class="logo">north<em>star</em> health</span>
+    <span class="search"><span class="s-ico">&#128100;</span></span>
+    <span class="spacer"></span>
+    <nav class="icon-cluster">
+      <button class="ic" title="Messages">&#9993;</button>
+      <button class="ic" title="Patients" data-surface-set="chart">&#128100;</button>
+      <button class="ic" title="Tasks">&#9745;<i class="ic-badge">3</i></button>
+      <button class="ic" title="Revenue">&#36;<i class="ic-badge">1</i></button>
+      <button class="ic" title="Population health">&#9878;</button>
+      <button class="ic" title="Labs">&#129514;</button>
+      <button class="ic" title="Imaging">&#128444;</button>
+      <button class="ic" title="Schedule" data-surface-set="schedule">&#128197;</button>
+      <button class="ic" title="Documents">&#128196;</button>
+      <button class="ic" title="Apps">&#9638;</button>
+      <button class="ic" title="More">&#8942;</button>
+    </nav>
+  </header>
+
+  <div class="layout-main">
+    <main class="surface surface--schedule">
+      <aside class="sched-sidebar">
+        <button class="btn-block">+ Appointment</button>
+        <div class="minical">
+          <div class="minical-head"><span>&#8249;</span><span>September 2026</span><span>&#8250;</span></div>
+          <div class="minical-grid">
+            <span class="dow">S</span><span class="dow">M</span><span class="dow">T</span><span class="dow">W</span>
+            <span class="dow">T</span><span class="dow">F</span><span class="dow">S</span>
+            <span></span><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+            <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+            <span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span>
+            <span class="today">20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span>
+          </div>
+        </div>
+        <h4>Location</h4>
+        <div class="prov-row">Downtown Clinic</div>
+        <h4 style="margin-top:14px">Providers · 2</h4>
+        <div class="prov-row">Dr. R. Alvarez</div>
+        <div class="prov-row">Dr. P. Nkemelu</div>
+      </aside>
+
+      <section class="sched-main">
+        <div class="sched-toolbar">
+          <button class="btn btn--sm">Today</button>
+          <span class="date">Sunday, September 20, 2026</span>
+          <span style="margin-left:auto"></span>
+          <div class="seg">
+            <button>Day</button><button class="on">2 providers</button><button>Week</button>
+          </div>
+        </div>
+
+        <div class="cal">
+          <div class="cal-grid">
+            <div class="cal-gutter">
+              <div style="height:33px;border:0"></div>
+              <div>8 AM</div><div>9 AM</div><div>10 AM</div><div>11 AM</div><div>12 PM</div><div>1 PM</div><div>2 PM</div>
+            </div>
+
+            <div class="cal-col">
+              <div class="cal-colhead"><span class="avatar sz-24">RA</span> Dr. R. Alvarez</div>
+              <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+              <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+              <div class="evt done short" style="top:37px;height:27px">
+                <b>Jordan Webb</b><span class="t">8:00 · Established</span>
+              </div>
+              <div class="evt done short" style="top:65px;height:27px">
+                <b>Nina Petrov</b><span class="t">8:30 · Established</span>
+              </div>
+              <div class="evt" style="top:93px;height:50px">
+                <b>Priya Raman</b><span class="t">9:00 – 9:30 · Follow-up</span>
+              </div>
+              <div class="evt is-selected" data-appt="md" style="top:149px;height:78px">
+                <b>Maria Delgado</b><span class="t">10:00 – 10:45 · Follow-up</span>
+                <span class="t">Downtown Clinic</span>
+              </div>
+              <!-- Canvas's appointment popover. Pressing the visit reason inside it is
+                   the ordinary way to the note, and it works here exactly as the pane's
+                   own Open chart button does. -->
+              <div class="appt-pop" id="apptPop" hidden style="top:60px;left:26px">
+                <div class="ap-top">
+                  <span class="avatar sz-44 silhouette">&#128100;</span>
+                  <div style="min-width:0">
+                    <div class="ap-name">Maria Delgado</div>
+                    <div class="ap-meta">3/14/1972 &middot; 54 &middot; F &middot; (555) 014-2277 &#9742; &middot; &#128340; UNKN</div>
+                  </div>
+                </div>
+                <div class="ap-rfv-row">
+                  <button class="ap-rfv" data-act="open-chart" title="Open this visit's note">Follow Up</button>
+                  <span class="cmd-kebab">&#8942;</span>
+                </div>
+                <div class="ap-when">Sunday, September 20, 2026 &middot; 10:00 &ndash; 10:45am</div>
+                <div class="ap-prov"><span class="avatar sz-24">RA</span> Dr. R. Alvarez at Downtown Clinic</div>
+                <div class="ap-status"><span class="box"></span> Unconfirmed &#8597; &nbsp; John</div>
+                <a class="ap-label" href="#">Add Label</a>
+              </div>
+              <div class="evt" style="top:261px;height:50px">
+                <b>Theo Bright</b><span class="t">12:00 – 12:30 · New patient</span>
+              </div>
+            </div>
+
+            <div class="cal-col">
+              <div class="cal-colhead"><span class="avatar sz-24">PN</span> Dr. P. Nkemelu</div>
+              <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+              <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+              <div class="evt hold short" style="top:37px;height:27px"><b>Admin block</b><span class="t">8:00 – 8:30</span></div>
+              <div class="evt" style="top:93px;height:106px">
+                <b>Sam Okafor</b><span class="t">9:00 – 10:00 · Annual</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <main class="surface surface--chart">
+      <div class="profile-header">
+        <div class="profile-row">
+          <span class="avatar sz-44 silhouette">&#128100;</span>
+          <div style="flex:1;min-width:0">
+            <div class="name-row">
+              <span class="profile-name">Maria Delgado</span>
+              <span class="mrn">884102277 <span class="copy">&#128203;</span></span>
+            </div>
+            <div class="profile-meta">
+              <span>3/14/1972 &middot; 54 &middot; F</span>
+              <span class="tagchip">Care Program</span>
+            </div>
+          </div>
+          <button class="hdr-btn hdr-btn--primary">New note &#9662;</button>
+          <button class="hdr-btn" title="Appointments">&#128197;</button>
+          <button class="hdr-btn" title="Filter">&#9660;<i class="count">2</i></button>
+          <button class="hdr-btn" title="More">&#8942;</button>
+        </div>
+        <div class="chart-tabs">
+          <button class="on">Chart</button><button>Profile</button><button>Labs</button>
+        </div>
+      </div>
+
+      <div class="chart-body">
+        <aside class="chart-col">
+          <div class="clinical-caption">
+            Clinical caption
+            <button class="caption-collapse">&#8249;</button>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#128101;</span> Care Team</h5>
+            <div class="chart-line">Dr. R. Alvarez <small>&middot; Primary care</small></div>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#128203;</span> Conditions</h5>
+            <div class="chart-line">Type 2 diabetes mellitus (E11.9) <span class="dotbtn">&#9678;</span></div>
+            <div class="chart-line">Essential hypertension (I10) <span class="dotbtn">&#9678;</span></div>
+            <div class="chart-line">Migraine, unspecified (G43.909) <span class="dotbtn">&#9678;</span></div>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#128138;</span> Medications
+              <span class="act"><button class="sec-btn sec-btn--solid">Rx History</button></span></h5>
+            <div class="chart-line">Metformin HCl 500 mg tablet <small>&middot; 1 tab BID</small></div>
+            <div class="chart-line">Lisinopril 10 mg tablet <small>&middot; 1 tab daily</small></div>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#9888;</span> Allergies</h5>
+            <div class="chart-line">Penicillin <small>&middot; rash</small></div>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#128200;</span> Vitals</h5>
+            <p class="chart-empty">No vitals recorded</p>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#128737;</span> Immunizations</h5>
+            <p class="chart-empty">No immunizations on record</p>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#9986;</span> Surgical History</h5>
+            <p class="chart-empty">No surgical history on record</p>
+          </div>
+
+          <div class="chart-section">
+            <h5><span class="ico">&#127919;</span> Goals</h5>
+            <div class="chart-line">Walk 20 minutes, 5 days a week</div>
+          </div>
+        </aside>
+
+        <section class="notes-col">
+          <article class="note">
+            <div class="note-header">
+              <div style="min-width:0">
+                <div class="n-title">Office Visit</div>
+                <div class="n-meta">On Sunday, 9/20/26 at 10:00 AM with Dr. R. Alvarez at Downtown Clinic</div>
+              </div>
+              <div class="n-right">
+                <span class="assign">Assign note</span>
+                <span class="cmd-kebab">&#8942;</span>
+              </div>
+            </div>
+            <div class="note-tabs"><span>Billing Slip</span><span class="on">A&amp;P / Sign Note</span></div>
+
+            <div class="note-body" id="noteBody"></div>
+
+          </article>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- The pane. Everything inside it is rendered from state. -->
+<aside class="dock">
+  <div class="rail">
+    <button class="rail-btn" data-dock-set="focus" title="Expand">&#8249;</button>
+    <span class="rail-label">Scribe</span>
+    <span class="rail-rec" title="Recording this visit" aria-live="polite">
+      <i class="rec-dot"></i> REC <span id="railClock">00:00</span>
+    </span>
+    <span class="rail-rec rail-rec--paused" title="Recording paused">&#10073;&#10073; PAUSED</span>
+    <!-- Pause and Finish belong on the rail too. A collapsed pane that can only say it
+         is recording, without offering the two controls that end it, makes the provider
+         expand the pane to do the one thing they wanted. -->
+    <div class="rail-ctls">
+      <button class="rail-ctl" data-rec-only data-act="pause" title="Pause recording">
+        <i class="ic-pause"></i><span class="sr">Pause</span></button>
+      <button class="rail-ctl rail-ctl--go" data-paused-only data-act="resume" title="Resume recording">
+        <i class="ic-play"></i><span class="sr">Resume</span></button>
+      <button class="rail-ctl rail-ctl--stop" data-act="finish" title="Finish visit">
+        <i class="ic-stop"></i><span class="sr">Finish visit</span></button>
+    </div>
+    <span class="rail-who" id="railWho"></span>
+  </div>
+  <div class="panel" id="panel"></div>
+</aside>
+
+<!-- ===================== THE GUIDE (not product) ===================== -->
+<div class="guide" id="guide">
+  <h6><span id="gNum">Step 1</span><span class="sp"></span><span class="dots" id="gDots"></span></h6>
+  <div class="g-title" id="gTitle"></div>
+  <div class="g-body" id="gBody"></div>
+  <div class="g-foot">
+    <button class="link" data-restart>Start over</button>
+    <span class="sp"></span>
+    <button class="link" id="gSkip">Hide</button>
+    <button class="primary" id="gNext">Next</button>
+  </div>
+</div>
+
+<script>
+/* ===========================================================================
+   DEMO DATA — one visit, end to end.
+   Edit these three arrays and the walkthrough follows.
+   =========================================================================== */
+
+// What the note already holds when the visit starts: thin, the way a note is
+// before anyone has documented it.
+const NOTE0 = [
+  { id: 'rfv', name: 'Reason for visit:', sec: 'subjective', kind: 'prose',
+    value: 'Follow-up' },
+  { id: 'hpi', name: 'History of Present Illness:', sec: 'subjective', kind: 'prose',
+    value: '' },
+  { id: 'phq', name: 'Questionnaire: PHQ-9', sec: 'subjective', kind: 'phq',
+    rows: [
+      { q: 'Little interest or pleasure in doing things', a: '' },
+      { q: 'Feeling down, depressed, or hopeless', a: '' }
+    ], answered: 0, score: null },
+];
+
+// The visit, as it is said. Each line arrives about a second and a half apart.
+const TRANSCRIPT = [
+  { who: 'c', at: '00:04', text: 'Good morning. How have things been since we last spoke?' },
+  { who: 'p', at: '00:11', text: 'Better, I think. The headaches used to be three or four times a week and now it is more like once.' },
+  { who: 'c', at: '00:26', text: 'That is a real change. And the metformin, are you managing both doses?' },
+  { who: 'p', at: '00:33', text: 'Yes, morning and night, I have not missed any. My sugars at home are mostly in the low one twenties before breakfast.' },
+  { who: 'c', at: '00:52', text: 'Over the last two weeks, how often have you been bothered by feeling down or hopeless?' },
+  { who: 'p', at: '01:01', text: 'Several days, I would say. Not most days.' },
+  { who: 'c', at: '01:09', text: 'And little interest or pleasure in doing things?' },
+  { who: 'p', at: '01:14', text: 'Not really, I have been okay there.' },
+  { who: 'c', at: '01:22', text: 'Did you get a blood pressure reading anywhere?' },
+  { who: 'p', at: '01:28', text: 'The cuff at the pharmacy read one twenty eight over seventy eight on Friday. And I am about a hundred and sixty eight pounds.' },
+  { who: 'c', at: '01:44', text: 'Let us get another A1c before I see you again, and come back and see me in about three months.' },
+  { who: 'p', at: '01:52', text: 'That works.' },
+  { who: 'c', at: '01:56', text: 'I will send the diabetes handout through to your portal as well.' },
+];
+
+// What Scribe reads out of it. `updates` names a command already on the note;
+// everything else is new.
+const SUGGESTIONS = [
+  // `fields` is the schema, roughly: `edit: true` is a `str` the pane may change,
+  // `kind` is why a field cannot be changed here. A field with no label renders as the
+  // card's own display text.
+  { id: 's-rfv', type: 'RFV', sec: 'subjective', group: 'history', updates: 'rfv',
+    fields: [
+      { k: 'coding',  label: 'Coded as', value: 'Diabetes follow-up', kind: 'code', code: 'R69' },
+      { k: 'comment', value: 'Follow-up on diabetes; headaches less frequent', edit: true },
+    ],
+    evidence: { q: 'How have things been since we last spoke?', at: '00:04' },
+    applyFrom: f => ({ value: f.comment }) },
+
+  { id: 's-hpi', type: 'HPI', sec: 'subjective', group: 'history', updates: 'hpi',
+    fields: [
+      { k: 'narrative', edit: true,
+        value: 'Headaches reduced from three to four per week to about one per week. ' +
+               'Taking metformin twice daily with no missed doses. Home fasting readings ' +
+               'mostly in the low 120s. A pharmacy blood pressure reading on Friday was 128/78.' },
+    ],
+    evidence: { q: 'morning and night, I have not missed any. My sugars at home are mostly in the low one twenties', at: '00:33' },
+    applyFrom: f => ({ value: f.narrative }) },
+
+  { id: 's-phq', type: 'QUESTIONNAIRE', sec: 'subjective', group: 'history', updates: 'phq',
+    display: 'PHQ-9 — 2 of 9 items answered from the visit',
+    fields: [
+      { k: 'q1', label: 'Little interest', value: 'Not at all',   kind: 'choice' },
+      { k: 'q2', label: 'Feeling down',    value: 'Several days', kind: 'choice' },
+      { k: 'note', label: 'Comment', value: 'Reported several days, not most days.', edit: true },
+    ],
+    evidence: { q: 'Several days, I would say. Not most days.', at: '01:01' },
+    applyFrom: () => ({ rows: [
+      { q: 'Little interest or pleasure in doing things', a: 'Not at all' },
+      { q: 'Feeling down, depressed, or hopeless', a: 'Several days' }
+    ], answered: 2, score: 1 }) },
+
+  { id: 's-vitals', type: 'VITALS', sec: 'objective', group: 'exam',
+    display: 'BP 128/78 · Wt 168 lb',
+    fields: [
+      { k: 'bp', label: 'Blood pressure', value: '128 / 78', kind: 'number' },
+      { k: 'wt', label: 'Weight',         value: '168 lb',   kind: 'number' },
+    ],
+    evidence: { q: 'the cuff at the pharmacy read one twenty eight over seventy eight', at: '01:28' },
+    insertFrom: f => ({ id: 'vitals', name: 'Vitals:', sec: 'objective', kind: 'fields',
+      fields: [['Blood pressure:', f.bp], ['Weight:', f.wt]] }) },
+
+  { id: 's-dx', type: 'DIAGNOSE', sec: 'assessment', group: 'ap',
+    display: 'Type 2 diabetes mellitus without complications',
+    fields: [
+      { k: 'icd10', label: 'ICD-10', value: 'E11.9', kind: 'code', code: 'E11.9' },
+      { k: 'today_assessment', label: "Today's assessment", edit: true,
+        value: 'Stable on current therapy' },
+    ],
+    evidence: { q: 'sugars at home are mostly in the low one twenties before breakfast', at: '00:33' },
+    insertFrom: f => ({ id: 'dx', name: 'Diagnose:', sec: 'assessment', kind: 'fields',
+      fields: [['Condition:', 'Type 2 diabetes mellitus without complications'],
+               ['ICD-10:', 'E11.9'], ["Today's assessment:", f.today_assessment]] }) },
+
+  { id: 's-lab', type: 'LAB ORDER', sec: 'plan', group: 'ap',
+    display: 'Hemoglobin A1c',
+    fields: [
+      { k: 'test', label: 'Test', value: 'Hemoglobin A1c', kind: 'code', code: '4548-4' },
+      { k: 'comment', label: 'Comment', value: 'Before the next visit', edit: true },
+    ],
+    evidence: { q: 'let us get another A1c before I see you again', at: '01:44' },
+    insertFrom: f => ({ id: 'lab', name: 'Lab order:', sec: 'plan', kind: 'fields',
+      fields: [['Test:', 'Hemoglobin A1c'], ['Comment:', f.comment]] }) },
+
+  { id: 's-fu', type: 'FOLLOW UP', sec: 'plan', group: 'ap',
+    display: 'Return in 3 months',
+    fields: [
+      { k: 'date', label: 'Requested date', value: 'Dec 20, 2026', kind: 'date' },
+      { k: 'comment', label: 'Comment', value: 'Bring home glucose log', edit: true },
+    ],
+    evidence: { q: 'come back and see me in about three months', at: '01:44' },
+    insertFrom: f => ({ id: 'fu', name: 'Follow up:', sec: 'plan', kind: 'fields',
+      fields: [['Requested date:', 'Dec 20, 2026'], ['Comment:', f.comment]] }) },
+
+  { id: 's-task', type: 'TASK', sec: 'plan', group: 'ap', rec: true,
+    fields: [
+      { k: 'title', edit: true, value: 'Send the diabetes education handout through the portal' },
+      { k: 'assign', label: 'Assign to', value: 'Care coordinator', kind: 'choice' },
+    ],
+    evidence: { q: 'I will send the diabetes handout through to your portal as well', at: '01:56' },
+    insertFrom: f => ({ id: 'task', name: 'Task:', sec: 'plan', kind: 'fields',
+      fields: [['Task:', f.title], ['Assign to:', 'Care coordinator']] }) },
+];
+
+// The provider's day, in the order the calendar shows it. `recorded` is the whole
+// difference between a signed note Scribe captured and one it did not: scribe_core holds
+// the transcript, so it knows which is which. `done` greys the row the way the calendar
+// greys an exited appointment.
+const DAY = [
+  { id: 'jw', at: '8:00 &ndash; 8:30',   name: 'Jordan Webb',   dob: '1/30/1959 · 67 · M',
+    reason: 'Established · Blood pressure check', status: 'done', recorded: '9:12' },
+  { id: 'np', at: '8:30 &ndash; 9:00',   name: 'Nina Petrov',   dob: '6/8/1980 · 46 · F',
+    reason: 'Established · Medication review', status: 'unscribed' },
+  { id: 'pr', at: '9:00 &ndash; 9:30',   name: 'Priya Raman',   dob: '7/2/1988 · 38 · F',
+    reason: 'Follow-up · Thyroid', status: 'review', labels: ['Interpreter'] },
+  { id: 'md', at: '10:00 &ndash; 10:45', name: 'Maria Delgado', dob: '3/14/1972 · 54 · F',
+    reason: 'Follow-up · Diabetes and headaches', status: 'ready', subject: true },
+  { id: 'tb', at: '12:00 &ndash; 12:30', name: 'Theo Bright',   dob: '11/9/2001 · 24 · M',
+    reason: 'New patient · Establish care', status: 'ready' },
+];
+
+const GROUPS = [
+  { key: 'history', label: 'History', swatches: ['subjective'] },
+  { key: 'exam',    label: 'Exam',    swatches: ['objective'] },
+  { key: 'ap',      label: 'Assessment &amp; Plan', swatches: ['assessment', 'plan'] },
+];
+
+// The walkthrough. `expect` is the action that advances it; `target` is what pulses.
+const STEPS = [
+  { id: 'record', title: 'Start the visit',
+    body: 'Maria Delgado is at 10:00 and her card says <b>Ready to record</b>. Press <b>● Record</b>.',
+    target: '[data-act="record"]', expect: 'record' },
+
+  { id: 'navigate', title: 'The pane holds the visit, not the page',
+    body: 'Recording started and Canvas did not move \u2014 you are still on the schedule, ' +
+          'and it keeps recording wherever you go.<br><br>Two ways to her chart, and both ' +
+          'work: <b>Open chart</b> in the pane, or the ordinary Canvas route \u2014 press her ' +
+          'appointment on the calendar, then the visit reason in the popover.',
+    target: '.go-chart', expect: 'open-chart' },
+
+  { id: 'finish', title: 'The note it is documenting',
+    body: 'A Reason for visit of two words, an empty HPI, and an unanswered PHQ-9 \u2014 all ' +
+          'three staged by this note type\'s template before anyone spoke.<br><br>Scribe ' +
+          'reads what is already on the note and works with it rather than around it: it ' +
+          'fills the empty ones, rewrites the thin ones, and answers the questionnaire the ' +
+          'template staged instead of proposing a second copy of it.<br><br>Press ' +
+          '<b>Finish visit</b> when the visit is over, or <b>Pause</b> first \u2014 which ' +
+          'keeps the visit open.',
+    target: '[data-act="finish"]', expect: 'finish' },
+
+  { id: 'wait', title: 'Drafting',
+    body: 'Scribe drafts the note from the transcript, then reads the commands out of the draft. Nothing has touched the chart.',
+    target: null, expect: 'generated' },
+
+  { id: 'dismiss', title: 'Eight suggestions',
+    body: 'Three of them update commands the note already holds; five are new. Press ' +
+          '<b>Dismiss</b> on any card \u2014 it drops to a <b>Dismissed</b> section at the ' +
+          'bottom rather than disappearing, and can be restored from there.',
+    target: '[data-dismiss]', expect: 'dismiss' },
+
+  { id: 'update', title: 'Update what is already there',
+    body: 'A card matched to a command on the note says <b>Update</b> rather than Add. Press one and watch that command change in the note.',
+    target: '[data-accept][data-updates]', expect: 'update' },
+
+  { id: 'addall', title: 'Add the rest',
+    body: 'Bulk lives in one place, the bar at the bottom: <b>Add selected</b> for what is ' +
+          'ticked, <b>Add all</b> for everything left. One request per command, in order.',
+    target: '.p-actions .btn--primary', expect: 'add-all' },
+
+  { id: 'done', title: 'Done',
+    body: 'The note holds what you accepted and nothing else. No command says where it came ' +
+          'from \u2014 they are written as you, not as the bot.<br><br>Press <b>Run it again</b> ' +
+          'to start over, or keep clicking: every control still works.',
+    target: null, expect: null },
+];
+
+/* ===========================================================================
+   DEMO ENGINE — state, rendering, and the walkthrough that follows it.
+   Nothing here is product code; it stands in for the API so the flow can be
+   clicked through end to end.
+   =========================================================================== */
+const $ = (sel, root) => (root || document).querySelector(sel);
+const body = document.body;
+
+const S = {
+  step: 0,
+  phase: 'queue',        // queue | idle | recording | paused | generating | review
+  tab: 'suggestions',
+  secs: 0,
+  lines: 0,              // transcript lines delivered so far
+  live: true,            // show the partial "Listening" row
+  note: JSON.parse(JSON.stringify(NOTE0)),
+  sugg: SUGGESTIONS.map(s => ({ ...s, state: 'open', selected: !s.rec,
+    fields: s.fields.map(f => ({ ...f })), edited: false })),
+  editing: null,           // "<suggestionId>:<fieldKey>" while an editor is open
+  showDismissed: false,    // the bottom section is closed until asked for
+  prefs: '',               // the provider's own custom prompt
+  cameFrom: 'queue',       // where the cog was pressed from
+  pulse: null,           // id of the note command that just changed
+};
+
+const esc = (t) => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+const clock = (n) => String(Math.floor(n / 60)).padStart(2, '0') + ':' + String(n % 60).padStart(2, '0');
+const step = () => STEPS[S.step];
+
+/* ---- the note column ---------------------------------------------------- */
+function renderNote() {
+  $('#noteBody').innerHTML = S.note.map(c => {
+    let inner;
+    if (c.kind === 'prose') {
+      inner = c.value
+        ? `<div class="cmd-prose">${esc(c.value)}</div>`
+        : `<div class="cmd-empty">Nothing documented</div>`;
+    } else if (c.kind === 'fields') {
+      inner = `<dl class="cmd-fields">${c.fields.map(
+        ([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+    } else {
+      inner = c.rows.map(r => `<div class="phq-row"><span class="q">${esc(r.q)}</span>` +
+        `<span class="a${r.a ? '' : ' none'}">${esc(r.a || 'not answered')}</span></div>`).join('') +
+        `<div class="phq-score">${c.answered} of 9 answered` +
+        (c.score === null ? '' : ` · score ${c.score}`) + `</div>`;
+    }
+    // RECORD commits a staged command to the note. Sign is a different act, on the
+    // note as a whole, and on the orders that need it.
+    const btn = 'RECORD';
+    const dark = ' cmd-btn--dark';
+    return `<div class="cmd${S.pulse === c.id ? ' pulse' : ''}" data-sec="${c.sec}" id="cmd-${c.id}">
+      <div class="cmd-head">
+        <span class="cmd-name">${c.name}</span>
+        <span class="cmd-tools">
+          <span class="cmd-check">&#10003;</span>
+          <button class="cmd-btn${dark}">${btn}</button>
+          <button class="cmd-x">&#10005;</button>
+          <span class="cmd-kebab">&#8942;</span>
+        </span>
+      </div>${inner}</div>`;
+  }).join('') + `<div class="cmd-add">&#43;&nbsp; Type a command&hellip;</div>`;
+
+  if (S.pulse) {
+    const el = $('#cmd-' + S.pulse);
+    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    setTimeout(() => { S.pulse = null; }, 1200);
+  }
+}
+
+/* ---- the pane ----------------------------------------------------------- */
+const HEAD_LIST = `
+  <div class="p-head">
+    <span class="avatar sz-32">RA</span>
+    <div class="p-ident">
+      <div class="who">Dr. R. Alvarez</div>
+      <div class="what">Sunday, Sep 20 &middot; 5 visits &middot; 1 needs review</div>
+    </div>
+    <div class="p-headtools">
+      <button class="icon-btn" data-act="prefs" title="Scribe preferences">&#9881;</button>
+      <button class="icon-btn" data-dock-set="rail" title="Collapse">&#8250;&#8250;</button>
+    </div>
+  </div>`;
+
+function headSession(busy) {
+  return `
+  <div class="p-head">
+    <button class="p-back" ${busy ? 'disabled' : ''}
+      title="${busy ? 'Finish or pause the recording to leave' : 'Back to the day'}">&#8249;</button>
+    <div class="p-ident">
+      <div class="who">Maria Delgado &middot; <span style="font-weight:500;color:var(--p-chrome-ink-soft)">10:00 AM</span></div>
+      <div class="what">Follow-up &middot; Diabetes and headaches &middot; Downtown Clinic</div>
+    </div>
+    <div class="p-headtools">
+      <button class="btn btn--sm go-chart" data-act="open-chart" title="Open Maria Delgado's chart">Open chart</button>
+      <button class="icon-btn" data-act="prefs" title="Scribe preferences">&#9881;</button>
+      <button class="icon-btn" data-dock-set="rail" title="Collapse">&#8250;&#8250;</button>
+    </div>
+  </div>`;
+}
+
+function transportBar() {
+  if (S.phase === 'recording') {
+    return `<div class="p-transportbar">
+      <span class="timer"><i class="rec-dot"></i> <span>${clock(S.secs)}</span></span>
+      <span class="spacer"></span>
+      <button class="btn btn--sm" data-act="pause">&#10073;&#10073; Pause</button>
+      <button class="btn btn--sm" data-act="finish">&#9632; Finish visit</button>
+    </div>`;
+  }
+  if (S.phase === 'paused') {
+    return `<div class="p-transportbar">
+      <span class="timer timer--paused">&#10073;&#10073; Paused &middot; ${clock(S.secs)} captured</span>
+      <span class="spacer"></span>
+      <button class="btn btn--sm btn--primary" data-act="resume">&#9654; Resume</button>
+      <button class="btn btn--sm" data-act="finish">&#9632; Finish visit</button>
+    </div>`;
+  }
+  return '';
+}
+
+function queueView() {
+  const initials = (n) => n.split(' ').map(w => w[0]).join('');
+  const rows = DAY.map(v => {
+    // The visit this demo is about changes state as the walkthrough runs; the rest
+    // are fixed.
+    const recording = v.subject && S.phase !== 'queue';
+    const status = recording ? 'recording' : v.status;
+    const chip = {
+      done:      `<span class="status status--done"><i></i> Signed &middot; ${v.recorded} recorded</span>`,
+      unscribed: '<span class="status status--unscribed"><i></i> Signed &middot; not recorded</span>',
+      review:    '<span class="status status--review"><i></i> 5 to review</span>',
+      ready:     '<span class="status status--ready"><i></i> Ready to record</span>',
+      recording: `<span class="status status--recording"><i></i> Recording &middot; ${clock(S.secs)}</span>`,
+    }[status];
+    const actions =
+      status === 'unscribed' ? '' :
+      status === 'done'      ? '<button class="btn btn--sm">Read</button>' :
+      status === 'review'    ? '<button class="btn btn--sm btn--primary">Review</button>' :
+      status === 'recording' ? '<button class="btn btn--sm btn--primary" data-act="open-chart">Open</button>' :
+      v.subject              ? '<button class="btn btn--sm" data-act="open-chart">Open chart</button>' +
+                               '<button class="btn btn--sm btn--rec" data-act="record">&#9679; Record</button>' : '';
+    const done = status === 'done' || status === 'unscribed';
+    return `<li class="visit${done ? ' is-done' : ''}" data-status="${status}">
+      <div class="visit-top">
+        <span class="avatar sz-32">${initials(v.name)}</span>
+        <div style="min-width:0;flex:1">
+          <div class="nm">${v.name}</div><div class="sub">${v.dob}</div>
+        </div><span class="clock">${v.at}</span>
+      </div>
+      <div class="visit-reason">${v.reason}</div>
+      ${v.labels ? `<div class="labels">${v.labels.map(l => `<span class="label label--orange">${l}</span>`).join('')}</div>` : ''}
+      <div class="visit-foot">${chip}<span style="margin-left:auto"></span>${actions}</div>
+    </li>`;
+  }).join('');
+  const needing = DAY.filter(v => v.status === 'review').length;
+  return `<div class="list-head"><span>Sunday, Sep 20 &middot; ${DAY.length} visits</span>` +
+         `<span>${needing} need${needing === 1 ? 's' : ''} review</span></div>` +
+         `<ul class="visits">${rows}</ul>`;
+}
+
+function transcriptView(live) {
+  const rows = TRANSCRIPT.slice(0, S.lines).map(l => `
+    <div class="utt">
+      <span class="avatar sz-28">${l.who === 'c' ? 'RA' : 'MD'}</span>
+      <div style="min-width:0">
+        <div class="u-head">
+          <span class="u-name">${l.who === 'c' ? 'Dr. Alvarez' : 'Maria Delgado'}</span>
+          <span class="u-at">${l.at}</span>
+        </div><p>${esc(l.text)}</p>
+      </div>
+    </div>`).join('');
+  const tail = live && S.phase === 'recording' && S.lines < TRANSCRIPT.length ? `
+    <div class="utt utt--live">
+      <span class="dots">&hellip;</span>
+      <div style="min-width:0">
+        <div class="u-head"><span class="u-name">Listening</span><span class="u-at">${clock(S.secs)}</span></div>
+        <p>${esc((TRANSCRIPT[S.lines] || { text: '' }).text.split(' ').slice(0, 9).join(' '))}</p>
+      </div>
+    </div>` : '';
+  const band = S.phase === 'recording'
+    ? `<div class="live-band">Recording &middot; the transcript settles a few seconds behind the room</div>`
+    : S.phase === 'paused'
+    ? `<div class="live-band">Paused &middot; the microphone is released. Resume continues the same visit.</div>`
+    : '';
+  return `<div class="utterances">${rows}${tail}</div>${band}`;
+}
+
+// What a card says in one line, for the dismissed list: its own display text, or the
+// value of whichever field is its display.
+function summary(s) {
+  if (s.display) return s.display;
+  const lead = s.fields.find(f => !f.label);
+  return lead ? lead.value : s.type;
+}
+
+function card(s) {
+  if (s.state === 'dismissed') {
+    return `<div class="card is-dismissed" data-sec="${s.sec}" id="card-${s.id}">
+      <div class="card-top">
+        <span class="chip">${s.type}</span>
+        <span class="pick" style="margin-left:auto">
+          <button class="btn btn--sm btn--ghost" data-restore="${s.id}">Restore</button>
+        </span>
+      </div>
+      <div class="card-display">${esc(summary(s))}</div>
+    </div>`;
+  }
+  const added = s.state === 'added';
+  const chips = [`<span class="chip">${s.type}</span>`];
+  if (s.rec) chips.push('<span class="chip chip--rec">Recommendation</span>');
+  if (s.edited && !added) chips.push('<span class="chip chip--edited">edited</span>');
+  if (s.updates && !added) chips.push('<span class="chip chip--muted">updates a command on the note</span>');
+  if (added) chips.push('<span class="chip chip--ok">&#10003; ' + (s.updates ? 'Updated' : 'Added to note') + '</span>');
+
+  // A field with no label is the card's display text; the rest go in the detail list.
+  const lead = s.fields.filter(f => !f.label);
+  const rest = s.fields.filter(f => f.label);
+
+  const value = (f) => {
+    const id = `${s.id}:${f.k}`;
+    if (added) return esc(f.value);
+    if (f.edit) {
+      if (S.editing === id) {
+        return `<div class="f-editing">
+          <textarea data-field="${id}" rows="3">${esc(f.value)}</textarea>
+          <div class="f-actions">
+            <button class="btn btn--sm btn--primary" data-save="${id}">Save</button>
+            <button class="btn btn--sm btn--ghost" data-cancel>Cancel</button>
+            <span class="f-hint">Free text on this command</span>
+          </div></div>`;
+      }
+      return `<button class="f-edit${f.value ? '' : ' is-empty'}" data-edit="${id}"
+        title="Free text — editable here">${esc(f.value || 'Add text')}<span class="f-pen">&#9998;</span></button>`;
+    }
+    // Not free text. Shown, with why it cannot be changed in the pane.
+    const why = { code: 'coded', date: 'date', choice: 'choice', number: 'measured' }[f.kind] || 'fixed';
+    const body = f.kind === 'code'
+      ? `${esc(f.value)} <span class="f-code">${esc(f.code || '')}</span>`
+      : esc(f.value);
+    return `${body}<span class="f-locked" title="${why} field — change it in the note">${why}</span>`;
+  };
+
+  const leadHtml = lead.length
+    ? lead.map(f => `<div class="card-display">${value(f)}</div>`).join('')
+    : (s.display ? `<div class="card-display">${esc(s.display)}</div>` : '');
+  const detailsHtml = rest.length
+    ? `<dl class="card-details">${rest.map(f =>
+        `<dt>${esc(f.label)}</dt><dd class="${f.edit ? '' : 'is-locked'}">${value(f)}</dd>`).join('')}</dl>`
+    : '';
+  const ev = s.evidence ? `<button class="evidence" data-cite>
+      <span class="q">&ldquo;${esc(s.evidence.q)}&rdquo;</span><span class="at">${s.evidence.at}</span>
+    </button>` : '';
+  const actions = added ? '' : `<div class="card-actions">
+      <button class="btn btn--sm btn--primary" data-accept="${s.id}" ${s.updates ? `data-updates="${s.updates}"` : ''}>${s.updates ? 'Update' : 'Add to note'}</button>
+      <button class="btn btn--sm btn--ghost" data-dismiss="${s.id}">Dismiss</button>
+    </div>`;
+
+  const pick = added ? '' : `<span class="pick"><input type="checkbox" data-select="${s.id}"
+      ${s.selected ? 'checked' : ''} aria-label="Select ${s.type}" /></span>`;
+
+  return `<div class="card${added ? ' is-added' : ''}" data-sec="${s.sec}" id="card-${s.id}">
+    <div class="card-top">${chips.join('')}${pick}</div>
+    ${leadHtml}${detailsHtml}${ev}${actions}</div>`;
+}
+
+function dismissedView() {
+  const gone = S.sugg.filter(s => s.state === 'dismissed');
+  if (!gone.length) return '';
+  return `<div class="sgroup sgroup--dismissed${S.showDismissed ? '' : ' closed'}">
+    <button class="sgroup-head" data-toggle-dismissed>
+      <span class="caret">${S.showDismissed ? '&#9660;' : '&#9654;'}</span>
+      <span class="gname">Dismissed</span><span class="gcount">${gone.length}</span>
+    </button>
+    <div class="sgroup-body">${gone.map(card).join('')}</div>
+  </div>`;
+}
+
+function suggestionsView() {
+  const live = S.sugg.filter(s => s.state !== 'dismissed');
+  if (!live.length) {
+    return `<div class="sugg-empty">Everything has been reviewed.</div>` + dismissedView();
+  }
+  return GROUPS.map(g => {
+    const items = live.filter(s => s.group === g.key);
+    if (!items.length) return '';
+    const open = items.filter(s => s.state === 'open');
+    return `<div class="sgroup">
+      <button class="sgroup-head" data-group>
+        <span class="caret">&#9660;</span>
+        ${g.swatches.map(w => `<span class="gswatch" data-sec="${w}"></span>`).join('')}
+        <span class="gname">${g.label}</span><span class="gcount">${items.length}</span>
+
+      </button>
+      <div class="sgroup-body">${items.map(card).join('')}</div>
+    </div>`;
+  }).join('') + dismissedView();
+}
+
+const HEAD_PREFS = `
+  <div class="p-head">
+    <button class="p-back" data-act="prefs-back" title="Back">&#8249;</button>
+    <div class="p-ident">
+      <div class="who">Scribe preferences</div>
+      <div class="what">Dr. R. Alvarez &middot; yours only</div>
+    </div>
+    <div class="p-headtools">
+      <button class="icon-btn" data-dock-set="rail" title="Collapse">&#8250;&#8250;</button>
+    </div>
+  </div>`;
+
+function prefsView() {
+  return `<div class="prefs">
+    <p class="prefs-lede">
+      Anything you write here is carried into every note Scribe drafts for you. It does not
+      change what the recording captures &mdash; only how the draft is written.
+    </p>
+    <div class="prefs-field">
+      <label for="prefPrompt">Custom instructions</label>
+      <textarea id="prefPrompt" spellcheck="false"
+        placeholder="e.g. Keep the HPI to four sentences. Write in the third person. Do not infer a diagnosis that was not said out loud. Put any social history that comes up in its own line.">${esc(S.prefs)}</textarea>
+      <p class="hint">Plain language. Scribe reads it the way it reads the visit.</p>
+    </div>
+    <div class="prefs-row">
+      <button class="btn btn--sm btn--primary" data-act="prefs-save">Save</button>
+      <button class="btn btn--sm btn--ghost" data-act="prefs-back">Cancel</button>
+      <span class="spacer"></span>
+      <button class="btn btn--sm btn--ghost" data-act="prefs-clear">Clear</button>
+    </div>
+    <p class="prefs-note">
+      Yours only. It does not change anyone else's notes, and it is not part of the note
+      &mdash; nothing about it is written to the chart.
+    </p>
+  </div>`;
+}
+
+function renderPanel() {
+  const busy = S.phase === 'recording' || S.phase === 'paused' || S.phase === 'generating';
+  body.dataset.rec = S.phase === 'recording' ? 'on' : S.phase === 'paused' ? 'paused' : 'off';
+
+  let head, notice = '', tabs = '', bodyHtml = '', actions = '';
+
+  if (S.phase === 'prefs') {
+    head = HEAD_PREFS;
+    bodyHtml = prefsView();
+  } else if (S.phase === 'queue') {
+    head = HEAD_LIST;
+    bodyHtml = queueView();
+  } else {
+    head = headSession(busy);
+    if (S.phase === 'generating') {
+      const n = Math.min(5, Math.floor(S.genTick / 8) + 1);
+      notice = `<div class="p-notice p-notice--busy" style="display:block">
+        <div style="display:flex;gap:9px;align-items:center">
+          <span>&#9203;</span>
+          <div class="n-body"><span class="n-title">Drafting the note</span>
+            Step ${n} of 5 &middot; ${['reading the transcript','drafting the note','pulling out the commands','matching what is already on the note','checking the chart'][n - 1]}
+            ${S.prefs ? '<br>Using your custom instructions.' : ''}</div>
+        </div>
+        <div class="steps">${[1,2,3,4,5].map(i =>
+          `<i class="${i < n ? 'done' : i === n ? 'doing' : ''}"></i>`).join('')}</div>
+      </div>`;
+    }
+    if (S.phase === 'review') {
+      const count = S.sugg.filter(s => s.state === 'open').length;
+      tabs = `<div class="p-tabs">
+        <button class="${S.tab === 'suggestions' ? 'on' : ''}" data-tab-set="suggestions">Suggestions <span class="tab-count">${count}</span></button>
+        <button class="${S.tab === 'transcript' ? 'on' : ''}" data-tab-set="transcript">Transcript <span class="tab-count">${TRANSCRIPT.length}</span></button>
+      </div>`;
+      bodyHtml = S.tab === 'suggestions' ? suggestionsView() : transcriptView(false);
+      if (count) {
+        const chosen = S.sugg.filter(x => x.state === 'open' && x.selected).length;
+        actions = `<div class="p-actions">
+          <span class="count"><b>${count}</b> to review${chosen ? ` &middot; ${chosen} selected` : ''}</span>
+          <span class="spacer"></span>
+          <button class="btn btn--sm btn--ghost" data-dismiss-all>Dismiss all</button>
+          <button class="btn btn--sm" data-add-all>Add all ${count}</button>
+          ${chosen ? `<button class="btn btn--sm btn--primary" data-add-selected>Add ${chosen} selected</button>` : ''}
+        </div>`;
+      }
+    } else if (S.phase === 'idle') {
+      bodyHtml = `<div class="start-pad">
+        <div class="mic">&#127908;</div><h3>Ready when you are</h3>
+        <p>Scribe records the room, then drafts the note and the commands for this visit.
+           Nothing reaches the chart until you add it.</p>
+        <button class="btn btn--rec btn--lg" data-act="record">&#9679; Start recording</button>
+      </div>`;
+    } else {
+      bodyHtml = transcriptView(true);
+    }
+  }
+
+  $('#panel').innerHTML = head + transportBar() + notice + tabs +
+    `<div class="p-body">${bodyHtml}</div>` + actions;
+  $('#railWho').innerHTML = '<b>Maria Delgado</b> &middot; 3/14/1972';
+  $('#railClock').textContent = clock(S.secs);
+}
+
+/* ---- the walkthrough ---------------------------------------------------- */
+function renderGuide() {
+  const st = step();
+  $('#gDots').innerHTML = STEPS.map((_, i) =>
+    `<i class="${i < S.step ? 'done' : i === S.step ? 'now' : ''}"></i>`).join('');
+  $('#gNum').textContent = `Step ${S.step + 1} of ${STEPS.length}`;
+  $('#gTitle').textContent = st.title;
+  $('#gBody').innerHTML = st.body;
+  $('#gNext').style.display = st.expect ? 'none' : 'inline-flex';
+
+  document.querySelectorAll('.demo-target').forEach(e => e.classList.remove('demo-target'));
+  if (st.target) {
+    requestAnimationFrame(() => {
+      const el = document.querySelector(st.target);
+      if (el) el.classList.add('demo-target');
+    });
+  }
+}
+
+function advance(action) {
+  if (step().expect === action) { S.step = Math.min(S.step + 1, STEPS.length - 1); }
+}
+
+function render() { renderNote(); renderPanel(); renderGuide(); }
+
+/* ---- actions ------------------------------------------------------------ */
+let tick = null;
+S.genTick = 0;
+
+function startClock() {
+  stopClock();
+  tick = setInterval(() => {
+    S.secs += 1;
+    // A line lands roughly every two seconds, so the pane feels live.
+    if (S.secs % 2 === 0 && S.lines < TRANSCRIPT.length) S.lines += 1;
+    renderPanel();
+  }, 1000);
+}
+function stopClock() { if (tick) clearInterval(tick); tick = null; }
+
+function generate() {
+  S.phase = 'generating';
+  S.genTick = 0;
+  render();
+  const g = setInterval(() => {
+    S.genTick += 1;
+    if (S.genTick >= 40) {
+      clearInterval(g);
+      S.phase = 'review';
+      S.tab = 'suggestions';
+      advance('generated');
+      render();
+    } else {
+      renderPanel();
+    }
+  }, 60);
+}
+
+function accept(id) {
+  const s = S.sugg.find(x => x.id === id);
+  if (!s || s.state !== 'open') return;
+  s.state = 'added';
+  s.selected = false;
+  // Read the fields as they stand, so an edit made in the pane is what gets written.
+  const f = {};
+  s.fields.forEach(x => { f[x.k] = x.value; });
+  if (s.updates) {
+    const cmd = S.note.find(c => c.id === s.updates);
+    if (cmd) { Object.assign(cmd, s.applyFrom(f)); S.pulse = cmd.id; }
+  } else if (s.insertFrom) {
+    const built = s.insertFrom(f);
+    S.note.push(built);
+    S.pulse = built.id;
+  }
+  advance(s.updates ? 'update' : 'add');
+}
+
+function dismiss(id) {
+  const el = document.getElementById('card-' + id);
+  const s = S.sugg.find(x => x.id === id);
+  if (!s) return;
+  const finish = () => {
+    s.state = 'dismissed';
+    S.showDismissed = true;   // so the first dismissal is seen to land, not to vanish
+    advance('dismiss');
+    render();
+  };
+  if (el) { el.classList.add('leaving'); setTimeout(finish, 200); } else { finish(); }
+}
+
+// One at a time, in order — the commands kit takes one command per request, and running
+// them together would put them in the note in whatever order they happened to land.
+async function addAll(onlySelected) {
+  const list = S.sugg.filter(s => s.state === 'open' && (!onlySelected || s.selected));
+  for (const s of list) {
+    accept(s.id);
+    render();
+    await new Promise(r => setTimeout(r, 240));
+  }
+  advance('add-all');
+  render();
+}
+
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act],[data-accept],[data-dismiss],[data-select],[data-dismiss-all],[data-add-all],[data-add-selected],[data-restore],[data-toggle-dismissed],[data-tab-set],[data-group],[data-cite],[data-edit],[data-save],[data-cancel],[data-dock-set],[data-surface-set],[data-appt],[data-restart]');
+  if (!t) return;
+
+  if (t.dataset.dockSet) { body.dataset.dock = t.dataset.dockSet; return renderGuide(); }
+  if (t.dataset.surfaceSet) { body.dataset.surface = t.dataset.surfaceSet; return renderGuide(); }
+
+  // Canvas's own route to the note: press the appointment, then the visit reason.
+  if (t.dataset.appt) {
+    const pop = document.getElementById('apptPop');
+    pop.hidden = !pop.hidden;
+    t.classList.toggle('is-open', !pop.hidden);
+    return renderGuide();
+  }
+  if (t.dataset.tabSet) { S.tab = t.dataset.tabSet; return render(); }
+  if (t.hasAttribute('data-restart')) return restart();
+
+  if (t.hasAttribute('data-group')) {
+    const g = t.closest('.sgroup');
+    g.classList.toggle('closed');
+    t.querySelector('.caret').innerHTML = g.classList.contains('closed') ? '&#9654;' : '&#9660;';
+    return;
+  }
+  if (t.hasAttribute('data-cite')) { S.tab = 'transcript'; return render(); }
+
+  if (t.dataset.edit) { S.editing = t.dataset.edit; render();
+    const ta = document.querySelector(`[data-field="${S.editing}"]`);
+    if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    return;
+  }
+  if (t.hasAttribute('data-cancel')) { S.editing = null; return render(); }
+  if (t.dataset.save) {
+    const [sid, key] = t.dataset.save.split(':');
+    const ta = document.querySelector(`[data-field="${t.dataset.save}"]`);
+    const sug = S.sugg.find(x => x.id === sid);
+    const fld = sug && sug.fields.find(f => f.k === key);
+    if (fld && ta) {
+      const next = ta.value.trim();
+      if (next !== fld.value) { fld.value = next; sug.edited = true; }
+    }
+    S.editing = null;
+  S.showDismissed = false;
+  S.prefs = '';
+  S.cameFrom = 'queue';
+    return render();
+  }
+
+  if (t.dataset.accept) return (accept(t.dataset.accept), render());
+  if (t.dataset.dismiss) return dismiss(t.dataset.dismiss);
+  if (t.hasAttribute('data-toggle-dismissed')) { S.showDismissed = !S.showDismissed; return render(); }
+  if (t.dataset.restore) {
+    const s2 = S.sugg.find(x => x.id === t.dataset.restore);
+    if (s2) { s2.state = 'open'; s2.selected = !s2.rec; }
+    return render();
+  }
+  if (t.hasAttribute('data-dismiss-all')) {
+    S.sugg.forEach(s => { if (s.state === 'open') s.state = 'dismissed'; });
+    return render();
+  }
+  if (t.hasAttribute('data-add-all')) return void addAll(false);
+  if (t.hasAttribute('data-add-selected')) return void addAll(true);
+
+  switch (t.dataset.act) {
+    case 'prefs':
+      if (S.phase !== 'prefs') S.cameFrom = S.phase;
+      S.phase = 'prefs'; return render();
+    case 'prefs-back':
+      S.phase = S.cameFrom; return render();
+    case 'prefs-save': {
+      const ta = document.getElementById('prefPrompt');
+      if (ta) S.prefs = ta.value.trim();
+      S.phase = S.cameFrom; return render();
+    }
+    case 'prefs-clear': {
+      const ta = document.getElementById('prefPrompt');
+      if (ta) ta.value = '';
+      S.prefs = ''; return;
+    }
+    case 'record':
+      // The pane takes the visit. The page stays exactly where it is.
+      S.phase = 'recording'; S.secs = 0; S.lines = 1;
+      startClock(); advance('record'); return render();
+    case 'open-chart': {
+      const pop = document.getElementById('apptPop');
+      if (pop) pop.hidden = true;
+      document.querySelectorAll('.evt.is-open').forEach(e => e.classList.remove('is-open'));
+      body.dataset.surface = 'chart'; advance('open-chart'); return render();
+    }
+    case 'pause':
+      S.phase = 'paused'; stopClock(); return render();
+    case 'resume':
+      S.phase = 'recording'; startClock(); return render();
+    case 'finish':
+      S.phase = 'finishing'; stopClock(); S.lines = TRANSCRIPT.length;
+      advance('finish'); render();
+      return void setTimeout(generate, 700);
+  }
+});
+
+document.addEventListener('change', (e) => {
+  const cb = e.target.closest('[data-select]');
+  if (!cb) return;
+  const s = S.sugg.find(x => x.id === cb.dataset.select);
+  if (s) { s.selected = cb.checked; render(); }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!S.editing) return;
+  if (e.key === 'Escape') { S.editing = null; render(); }
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+    const btn = document.querySelector(`[data-save="${S.editing}"]`);
+    if (btn) btn.click();
+  }
+});
+
+function restart() {
+  stopClock();
+  S.step = 0; S.phase = 'queue'; S.tab = 'suggestions';
+  S.secs = 0; S.lines = 0; S.genTick = 0; S.pulse = null;
+  S.note = JSON.parse(JSON.stringify(NOTE0));
+  S.sugg = SUGGESTIONS.map(s => ({ ...s, state: 'open', selected: !s.rec,
+    fields: s.fields.map(f => ({ ...f })), edited: false }));
+  S.editing = null;
+  S.showDismissed = false;
+  S.prefs = '';
+  S.cameFrom = 'queue';
+  body.dataset.surface = 'schedule';
+  body.dataset.dock = 'focus';
+  render();
+}
+
+$('#gNext').addEventListener('click', () => {
+  S.step = Math.min(S.step + 1, STEPS.length - 1); renderGuide();
+});
+$('#gSkip').addEventListener('click', () => { $('#guide').classList.toggle('min'); });
+
+restart();
+
+</script>
+</body>
+</html>
