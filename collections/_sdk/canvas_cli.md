@@ -202,7 +202,7 @@ Running with a dirty or uninitialized git tree and no interactive terminal — i
 
 Control Room requires the `canvas init` layout `<repo>/<package>/CANVAS_MANIFEST.json` and rejects a manifest at the repo root, so the git repo must be rooted one level above the package directory. See [Handler resolution and directory layout](#handler-resolution-and-directory-layout).
 
-A gated deploy — one that needs cross-plugin custom-data access, for example — prints its consent requests and prompts you to approve or deny each one inline. Pass `--yes` or `-y` to approve all non-interactively.
+Some deploys need operator consent before they proceed — one requesting cross-plugin custom-data access, for example. When consent is required, `canvas deploy` prints each consent request and prompts you to approve or deny it inline. Pass `--yes` or `-y` to approve all requests non-interactively.
 
 ### `canvas cr-init`
 
