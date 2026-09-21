@@ -176,6 +176,7 @@ The following effects are available to be applied in Canvas.
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 | REDIRECT                                    | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/). |
+| PHONE_DIAL__CONFIGURATION                   | Make the phone numbers in a patient chart clickable so a plugin can dial them or handle the click. Check out [Phone Dial Configuration](/sdk/effect-phone-dial-configuration/). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
@@ -398,6 +399,7 @@ Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation
 
 | Effect | Description |
 |---|---|
+| CREATE_QUESTIONNAIRE | Create a questionnaire at runtime from a plugin. |
 | CREATE_QUESTIONNAIRE_RESULT | Create a questionnaire result. |
 
 
@@ -506,6 +508,7 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 | Effect | Description |
 |---|---|
+| REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/). |
 | REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module. |

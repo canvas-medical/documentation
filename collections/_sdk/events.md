@@ -43,6 +43,7 @@ The actor is available in the following contexts:
 - **Note UI events** — `NOTE_OPENED`, `NOTE_CLOSED`
 - **Note restrictions events** — `GET_NOTE_RESTRICTIONS`
 - **Note footer events** — `NOTE_FOOTER__GET_CONFIGURATION`
+- **Phone dial events** — `PHONE_DIAL__GET_CONFIGURATION`, `PHONE_NUMBER_CLICKED`
 - **Appointment scheduling events** — all `APPOINTMENT__*` events
 - **Patient chart and profile events** — all `PATIENT_CHART__*` events (conditions, medications, detected issues, etc.), chart summary configuration, panel sections, and patient metadata
 - **Patient timeline events** — `PATIENT_TIMELINE__GET_CONFIGURATION`
@@ -52,6 +53,7 @@ The actor is available in the following contexts:
 - **Claim events** — `CLAIM__CONDITIONS`
 - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
 - **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
+- **Stored card charge events** — `REVENUE__STORED_CARD__CHARGE_RESPONSE`, carrying the actor of the effect that requested the charge
 - **Patient portal events** — all `PATIENT_PORTAL__*` events
 
 ```python
@@ -27312,6 +27314,47 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+### Phone Dial Configuration
+
+<table>
+  <thead>
+    <tr><th colspan="2">PHONE_DIAL__GET_CONFIGURATION</th></tr>
+    <tr><td colspan="2">Occurs when a patient chart loads its phone numbers. Allows plugins to make those numbers clickable and choose whether the device or the plugin handles a click. See the <a href='/sdk/effect-phone-dial-configuration/'>Phone Dial Configuration effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PHONE_NUMBER_CLICKED</th></tr>
+    <tr><td colspan="2">Occurs when a user clicks a clickable phone number in a patient chart. Fires under both device and plugin handling. The context includes at least the following:</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>phone_number</pre></td>
+      <td><pre>
+  "phone_number": str
+  "source": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Application Events
 
 For more information on these events, see <a href="/sdk/handlers-applications" target="_blank">Applications</a>.
@@ -27482,6 +27525,39 @@ The `identifier` is the unique id of the payment processor handler the event is 
 "token": str
 "patient":
     "id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Stored Card Charge Events
+
+This event reports the outcome of a <a href="{% link _sdk/effects/stored_card_charge.md %}">Charge Stored Card</a> effect. Unlike the payment processor events above, it is not a request for a handler to respond to: the charge has already been attempted, and nothing a handler returns changes it. Handle it to reconcile the result, and correlate it with the charge that produced it using `idempotency_key`, which is echoed from the request.
+
+Apart from `success` and `error`, every value arrives as a string or `null`, including the amount and the ids that were UUIDs on the request. The context is already parsed into a dictionary on `self.event.context`, and the actor is the one that emitted the originating effect.
+
+<table>
+  <thead>
+    <tr><th colspan="2">REVENUE__STORED_CARD__CHARGE_RESPONSE</th></tr>
+    <tr><td colspan="2">Occurs when a <a href="{% link _sdk/effects/stored_card_charge.md %}">ChargeStoredCard</a> effect has finished processing, whether or not the card was charged. Carries no card data or PHI.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": pt_id
+"type": <a href='/sdk/data-patient/#patient'>Patient</a></pre></td>
+      <td><pre>"success": bool          # whether the card was charged
+"payment_intent_id": str # processor's payment id, null on failure
+"error":                 # null on success
+    "code": str          # see <a href="{% link _sdk/effects/stored_card_charge.md %}#error-codes">Error codes</a>
+    "message": str
+"idempotency_key": str   # echoed, use this to correlate
+"patient_id": str        # echoed, a <a href='/sdk/data-patient/#patient'>Patient</a> id
+"payment_card_id": str   # echoed, a <a href='/sdk/data-payment-card/'>PaymentCard</a> id under Stripe
+"claim_id": str          # echoed, a <a href='/sdk/data-claim/'>Claim</a> id, null when none
+"amount": str            # echoed, the dollar amount submitted</pre></td>
     </tr>
   </tbody>
 </table>

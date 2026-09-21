@@ -79,6 +79,24 @@ committed_assessments = Assessment.objects.committed()
 | billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[]        |
 | referrals           | [Referral](/sdk/data-referral)[]                        |
 
+### Commands linked to an assessment
+
+A Plan- or Procedures-section command written in the same note can be linked to an assessment, which each of these accessors reads back from the assessment's side. The command holds the other half of the link on its own `assessment` field.
+
+| Field Name          | Type                                                                          |
+| ------------------- | ----------------------------------------------------------------------------- |
+| follow_ups          | [FollowUp](/sdk/data-follow-up/#followup)[]                                   |
+| goals               | [Goal](/sdk/data-goal/#goal)[]                                                |
+| immunizations       | [Immunization](/sdk/data-immunization/#immunization)[]                        |
+| instructions        | [Instruction](/sdk/data-instruction/#instruction)[]                           |
+| note_tasks          | [NoteTask](/sdk/data-task/#notetask)[]                                        |
+| plans               | [Plan](/sdk/data-plan/#plan)[]                                                |
+| procedures          | [Procedure](/sdk/data-procedure/#procedure)[]                                 |
+| stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
+| updategoals         | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
+
+A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
+
 ## Enumeration types
 
 ### Assessment Status

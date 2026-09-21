@@ -66,6 +66,7 @@ committed_stop_medication_events = StopMedicationEvent.objects.committed()
 | dbid             | Integer                               |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
+| assessment       | [Assessment](/sdk/data-assessment/#assessment) |
 | medication       | [Medication](/sdk/data-medication)    |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | committer        | [CanvasUser](/sdk/data-canvasuser)    |
