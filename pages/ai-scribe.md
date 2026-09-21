@@ -118,6 +118,10 @@ for it at full size.</p>
   name and date of birth of the patient being recorded.
 - A live transcript, attributed to the person who spoke each line, and read back intact
   after a page reload.
+- An **Additional note context** box, open while you record. Anything you want the draft
+  to know that was not said out loud goes here: an observation, where you are heading, a
+  correction to something the room got wrong. It reaches the draft rather than being a
+  correction applied to one afterwards, and it is not written to the chart.
 
 ### Drafting
 
@@ -164,6 +168,43 @@ for it at full size.</p>
 - A signed visit says whether Scribe was part of it. One Scribe recorded offers a way back
   into the transcript and what was suggested; one signed without it has nothing for the
   panel to show and says so.
+
+## Where Scribe gets its context
+
+Five sources, and they do two different jobs. Three of them shape how the draft is
+written. Two are what the proposals are then checked against. Keeping those apart is the
+difference between Scribe filling in a note and Scribe arguing with it.
+
+### What shapes the draft
+
+| Source | Scope | What it contributes |
+| --- | --- | --- |
+| **The recording** | This visit | The transcript, and the substance of the draft. Everything else adjusts how it is written. |
+| **Additional note context** | This visit | What you type in the panel while recording. For what the room did not say out loud, or said wrong. |
+| **Your preferences** | Every visit of yours | The custom instructions behind the cog. Standing preferences about how you want notes written, so you are not typing them into every visit. |
+
+The two you write are for different lifespans, which is the whole reason there are two. A
+standing preference such as keeping the HPI to four sentences belongs in preferences. A
+note that the patient arrived on crutches belongs in this visit's context. Putting a
+standing preference in the context box means retyping it all day; putting a visit detail
+in preferences means it leaks into every other patient's note.
+
+### What the proposals are checked against
+
+| Source | What it is used for |
+| --- | --- |
+| **The note** | The commands already staged on it, including whatever the note type's template put there. A proposal matched to one offers to **update** it rather than adding a second copy. |
+| **The patient's chart** | Conditions, medications, allergies and the rest. A proposal resembling something already on the chart is labeled as such, and stays addable, because the chart carrying something similar is information rather than a decision. |
+
+Neither of these writes the draft. They are read after it exists, to work out what each
+proposal would collide with.
+
+### What Scribe does not read
+
+- **Other visits.** A draft is built from this visit's recording. Scribe does not read
+  past notes or previous transcripts to write it.
+- **Anything you have not said or typed.** The context box and preferences are the only
+  places to tell it something. There is no hidden profile being learned from your edits.
 
 ## Getting good audio
 
@@ -226,6 +267,8 @@ beta participant will ask:
   Getting good audio.
 - **No microphone picker in Scribe.** It records through whatever your operating system or
   browser has set as the default input. Changing microphones is done there, not here.
+- **The note context box is context, not documentation.** What you type there shapes the
+  draft. It is not written to the chart, and it is not kept on the note afterwards.
 - **Coded fields are not editable in the panel.** A code, an option set, a date or a
   constrained number needs the chart's own autocomplete, so Scribe shows it and leaves it to
   the note. Free text is the part the panel can fix.

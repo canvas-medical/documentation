@@ -1095,6 +1095,33 @@ body[data-surface="schedule"] .p-headtools .go-chart { display: inline-flex; }
   font-size: 11.5px; color: var(--p-ink-faint); line-height: 1.55;
 }
 
+/* ---- Additional note context --------------------------------------------
+   What the provider wants the draft to know that the room did not say: an
+   observation, a correction to something misheard, where they are heading.
+   Typed during the visit, so it reaches the draft rather than being applied
+   to it afterwards.
+
+   It is context, not documentation. Nothing typed here is written to the
+   chart, which is the thing the label and the hint both have to carry. */
+.ctx {
+  border-bottom: 1px solid var(--p-line); padding: 10px 12px 11px;
+  display: grid; gap: 5px; background: var(--p-surface-2);
+}
+.ctx label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--p-ink-soft);
+}
+.ctx textarea {
+  width: 100%; min-height: 3.2em; resize: vertical; font: inherit; font-size: 12.5px;
+  line-height: 1.45; color: var(--p-ink); background: var(--p-surface);
+  border: 1px solid var(--p-line); border-radius: 5px; padding: 7px 8px;
+}
+.ctx textarea:focus {
+  outline: none; border-color: var(--p-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--p-accent) 18%, transparent);
+}
+.ctx .ctx-hint { margin: 0; font-size: 11px; color: var(--p-ink-faint); }
+
 /* ---- Dismissed, not gone ------------------------------------------------
    A dismissed suggestion drops to a collapsed section at the bottom instead of
    vanishing. Dismissing is a judgement made in seconds, sometimes on the wrong
@@ -1738,6 +1765,7 @@ const S = {
   editing: null,           // "<suggestionId>:<fieldKey>" while an editor is open
   showDismissed: false,    // the bottom section is closed until asked for
   prefs: '',               // the provider's own custom prompt
+  context: '',             // this visit's additional note context
   cameFrom: 'queue',       // where the cog was pressed from
   pulse: null,           // id of the note command that just changed
 };
@@ -1877,6 +1905,17 @@ function queueView() {
          `<ul class="visits">${rows}</ul>`;
 }
 
+function contextBox() {
+  // Typed during the visit so it reaches the draft rather than being applied to one
+  // after the fact. Context, not documentation: nothing here is written to the chart.
+  return `<div class="ctx">
+    <label for="noteCtx">Additional note context</label>
+    <textarea id="noteCtx" rows="2" spellcheck="false"
+      placeholder="Anything you want the draft to know that was not said out loud. An observation, where you are heading, a correction to something the room got wrong.">${esc(S.context)}</textarea>
+    <p class="ctx-hint">Feeds this visit's draft. Not written to the chart.</p>
+  </div>`;
+}
+
 function transcriptView(live) {
   const rows = TRANSCRIPT.slice(0, S.lines).map(l => `
     <div class="utt">
@@ -1901,7 +1940,8 @@ function transcriptView(live) {
     : S.phase === 'paused'
     ? `<div class="live-band">Paused &middot; the microphone is released. Resume continues the same visit.</div>`
     : '';
-  return `<div class="utterances">${rows}${tail}</div>${band}`;
+  const ctx = (S.phase === 'recording' || S.phase === 'paused') ? contextBox() : '';
+  return `${ctx}<div class="utterances">${rows}${tail}</div>${band}`;
 }
 
 // What a card says in one line, for the dismissed list: its own display text, or the
@@ -2073,7 +2113,9 @@ function renderPanel() {
           <span>&#9203;</span>
           <div class="n-body"><span class="n-title">Drafting the note</span>
             Step ${n} of 5 &middot; ${['reading the transcript','drafting the note','pulling out the commands','matching what is already on the note','checking the chart'][n - 1]}
-            ${S.prefs ? '<br>Using your custom instructions.' : ''}</div>
+            ${S.prefs || S.context ? '<br>Using ' +
+              [S.prefs && 'your custom instructions', S.context && 'this visit\'s note context']
+                .filter(Boolean).join(' and ') + '.' : ''}</div>
         </div>
         <div class="steps">${[1,2,3,4,5].map(i =>
           `<i class="${i < n ? 'done' : i === n ? 'doing' : ''}"></i>`).join('')}</div>
@@ -2108,8 +2150,19 @@ function renderPanel() {
     }
   }
 
+  // The clock re-renders this whole panel once a second. Without capturing the caret
+  // first, anything being typed into the context box loses focus mid-word.
+  const active = document.activeElement;
+  const keep = active && active.id === 'noteCtx'
+    ? { start: active.selectionStart, end: active.selectionEnd } : null;
+
   $('#panel').innerHTML = head + transportBar() + notice + tabs +
     `<div class="p-body">${bodyHtml}</div>` + actions;
+
+  if (keep) {
+    const ta = document.getElementById('noteCtx');
+    if (ta) { ta.focus(); ta.setSelectionRange(keep.start, keep.end); }
+  }
   $('#railWho').innerHTML = '<b>Maria Delgado</b> &middot; 3/14/1972';
   $('#railClock').textContent = clock(S.secs);
 }
@@ -2260,6 +2313,7 @@ document.addEventListener('click', (e) => {
     S.editing = null;
   S.showDismissed = false;
   S.prefs = '';
+  S.context = '';
   S.cameFrom = 'queue';
     return render();
   }
@@ -2323,6 +2377,11 @@ document.addEventListener('change', (e) => {
   if (s) { s.selected = cb.checked; render(); }
 });
 
+document.addEventListener('input', (e) => {
+  // Stored, not rendered: re-rendering per keystroke would fight the caret for no gain.
+  if (e.target.id === 'noteCtx') S.context = e.target.value;
+});
+
 document.addEventListener('keydown', (e) => {
   if (!S.editing) return;
   if (e.key === 'Escape') { S.editing = null; render(); }
@@ -2342,6 +2401,7 @@ function restart() {
   S.editing = null;
   S.showDismissed = false;
   S.prefs = '';
+  S.context = '';
   S.cameFrom = 'queue';
   body.dataset.surface = 'schedule';
   body.dataset.dock = 'focus';
