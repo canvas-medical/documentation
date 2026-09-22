@@ -1293,10 +1293,28 @@ Mints a login link for a patient and returns it as a string.
 
 | Name         | Type      | Required | Description                                                                                                                                                                              |
 | :----------- | :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patient_id` | _string_  | `true`   | The patient's id (a dashless UUID).                                                                                                                                                      |
-| `link_type`  | _string_  | `false`  | `"invite"` or `"reset"`. Defaults to `"invite"`. Both return the same link: when it is opened, the portal shows account activation or password reset based on whether the patient has already registered. Read `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module to choose the copy of the message you send. |
-| `next_path`  | _string_  | `false`  | An in-portal path to land on after login; a path pointing outside the portal is rejected. Defaults to `"/"`.                                                                             |
-| `ttl`        | _integer_ | `false`  | The link's lifetime, in seconds. Canvas caps it at 24 hours and rejects a value over that cap or below one second, raising `PatientPortalLinkError`. Omit it to use the account's default link lifetime, which is a Canvas setting rather than a fixed value. |
+| `patient_id` | _string_  | `true`   | The `id` of the [Patient](/sdk/data-patient/#patient), a 32-character UUID without hyphens.                                                                                                                                                      |
+| `link_type`  | `"invite"` or `"reset"` | `false`  | Defaults to `"invite"`. Both return the same link: when it is opened, the portal shows account activation or password reset based on whether the patient has already registered. Read `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module to choose the copy of the message you send. |
+| `next_path`  | _string_  | `false`  | Where in the portal to land the patient, up to 50 characters. Defaults to `"/"`. A path that leaves the portal is rejected. See the destinations below.                                                                             |
+| `ttl`        | _integer_ | `false`  | The link's lifetime, in seconds, from `1` to `86400` (24 hours). A value outside that range raises `PatientPortalLinkError`. Omit it to use the instance's own default, described below. |
+
+**`next_path` destinations**:
+
+| Path | Lands the patient on |
+| :--- | :------------------- |
+| `/` | The portal landing page. |
+| `/appointments` | Appointments, including self-scheduling. |
+| `/messaging` | Messages. |
+| `/payments` | Payments. |
+| `/labs` | Lab results. |
+| `/records` | Health records. |
+| `/my-health` | My Health. |
+| `/contact` | Contact. |
+| `/application/<application_id>` | A patient [application](/sdk/handlers-applications/) your plugin ships. |
+
+The landing page and applications are always reachable. Every other destination requires that section to be turned on for the instance, and a path whose section is off sends the patient to the portal's login screen instead.
+
+Omitting `ttl` uses the `normal` tier of the instance's access token expiration setting, which Canvas ships as `10800` (3 hours). An instance can hold a different value, so treat 3 hours as the shipped default rather than a guarantee. The `86400` cap is the longest tier that setting ships with.
 
 **Returns**: the login URL as a string.
 
@@ -1304,7 +1322,7 @@ Mints a login link for a patient and returns it as a string.
 
 {% include alert.html type="warning" content="Treat the link as a credential: it authenticates as the patient and authorizes a password change. Deliver it only over a channel you have verified for the patient, and never log it." %}
 
-The following handler mints a link, chooses the message copy from whether the patient has registered, and delivers it over the plugin's own provider.
+The following handler fires when a patient's mobile number is added or changed, mints a link for the patient on the event, chooses the message copy from whether they have registered, and texts it over the plugin's own provider.
 
 **Example**:
 
@@ -1314,15 +1332,34 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from canvas_sdk.utils import Http
 from canvas_sdk.utils.patient_portal import PatientPortalLinkError, patient_portal_http
-from canvas_sdk.v1.data import Patient
+from canvas_sdk.v1.data import PatientContactPoint
+from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse
 
 
 class InvitePatient(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED)
+    # A number can arrive as a new contact point or as an edit to an existing one.
+    RESPONDS_TO = [
+        EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED),
+        EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED),
+    ]
 
     def compute(self) -> list[Effect]:
-        patient_id = "b80b1cdc2e6a4aca90ccebc02e683f35"
-        user = Patient.objects.get(id=patient_id).user
+        # The event targets the contact point, which carries the patient it belongs to.
+        contact_point = PatientContactPoint.objects.get(id=self.target)
+
+        # Only the mobile number, since this handler sends a text.
+        if (
+            contact_point.system != ContactPointSystem.PHONE
+            or contact_point.use != ContactPointUse.MOBILE
+        ):
+            return []
+
+        # The link is a credential, so only send it to a number the patient confirmed.
+        if not contact_point.last_verified:
+            return []
+
+        patient = contact_point.patient
+        user = patient.user
         if user is None:
             return []  # No portal user yet, so nothing to invite.
 
@@ -1332,7 +1369,7 @@ class InvitePatient(BaseHandler):
         link_type = "reset" if registered else "invite"
 
         try:
-            login_url = patient_portal_http.get_login_url(patient_id, link_type=link_type)
+            login_url = patient_portal_http.get_login_url(patient.id, link_type=link_type)
         except PatientPortalLinkError:
             return []
 
@@ -1346,7 +1383,7 @@ class InvitePatient(BaseHandler):
         Http().post(
             "https://sms-provider.example.com/send",
             headers={"Authorization": "Bearer <your-provider-token>"},
-            json={"to": user.phone_number, "body": body},
+            json={"to": contact_point.value, "body": body},
         )
 
         return []
