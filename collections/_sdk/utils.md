@@ -1295,10 +1295,10 @@ Mints a login link for a patient and returns it as a string.
 | :----------- | :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `patient_id` | _string_  | `true`   | The `id` of the [Patient](/sdk/data-patient/#patient).                                                                                                                                                      |
 | `link_type`  | `"invite"` or `"reset"` | `false`  | Defaults to `"invite"`. Both return the same link: when it is opened, the portal shows account activation or password reset based on whether the patient has already registered. Read `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module to choose the copy of the message you send. |
-| `next_path`  | _string_  | `false`  | Where in the portal to land the patient, up to 50 characters. Defaults to `"/"`. A path that leaves the portal is rejected. See the destinations below.                                                                             |
+| `next_path`  | _string_  | `false`  | Where in the portal to land the patient, up to 50 characters. Defaults to `"/"`. A path that leaves the portal is rejected. See [`next_path` destinations](#next_path-destinations).                                                                             |
 | `ttl`        | _integer_ | `false`  | The link's lifetime, in seconds, from `1` to `86400` (24 hours). A value outside that range raises `PatientPortalLinkError`. Omit it to use the instance's own default, described below. |
 
-**`next_path` destinations**:
+#### `next_path` destinations
 
 | Path | Lands the patient on |
 | :--- | :------------------- |
@@ -1310,9 +1310,23 @@ Mints a login link for a patient and returns it as a string.
 | `/records` | Health records. |
 | `/my-health` | My Health. |
 | `/contact` | Contact. |
-| `/application/<application_id>` | A patient [application](/sdk/handlers-applications/) your plugin ships. |
+| `/application/<application_id>` | A patient [application](/sdk/handlers-applications/) your plugin ships. See below for the id. |
 
 The landing page and applications are always reachable. Every other destination requires that section to be turned on for the instance, and a path whose section is off sends the patient to the portal's login screen instead.
+
+`<application_id>` is the base64 of the application's `identifier`, which the [Application](/sdk/data-application/) data module holds:
+
+```python?partial=true
+from base64 import b64encode
+
+from canvas_sdk.v1.data import Application
+
+application = Application.objects.get(name="Care Plan")
+application_id = b64encode(application.identifier.encode()).decode()
+next_path = f"/application/{application_id}"
+```
+
+An identifier defaults to `<module>:<ClassName>`, and base64 makes it about a third longer again, so this fits the 50-character limit only for identifiers of 27 characters or fewer. Give an application you intend to link to a short module path, and check the length of the path you build before relying on it.
 
 Omitting `ttl` uses the `normal` tier of the instance's access token expiration setting, which Canvas ships as `10800` (3 hours). An instance can hold a different value, so treat 3 hours as the shipped default rather than a guarantee. The `86400` cap is the longest tier that setting ships with.
 
