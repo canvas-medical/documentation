@@ -1283,9 +1283,11 @@ Plugin authors can mint a patient's portal login link using `patient_portal_http
 from canvas_sdk.utils.patient_portal import PatientPortalLinkError, patient_portal_http
 ```
 
-Unlike the other service clients, `patient_portal_http` is imported from its own `canvas_sdk.utils.patient_portal` module.
+Unlike the other service clients, `patient_portal_http` is imported from its own `canvas_sdk.utils.patient_portal` module, and it exposes only `get_login_url`.
 
-`patient_portal_http.get_login_url()` mints a login link for a patient and returns it as a string.
+### get_login_url
+
+Mints a login link for a patient and returns it as a string.
 
 **Parameters**:
 
