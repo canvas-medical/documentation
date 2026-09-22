@@ -1,15 +1,15 @@
 ---
 permalink: /product-updates/ai-scribe/
 layout: betas
-title: "Beta | AI Scribe"
+title: "Beta | Hyperscribe V2"
 date: 2026-09-20
 ---
 
-{% include alert.html type="warning" content="<b>Beta participation:</b> AI Scribe is in private beta and is not enabled by default. Participation requires a signed beta agreement. Use the interest form at the bottom of this page, or email <a href='mailto:product@canvasmedical.com'>product@canvasmedical.com</a>." %}
+{% include alert.html type="warning" content="<b>Beta participation:</b> Hyperscribe V2 is in closed beta and is not enabled by default. Participation requires a signed beta agreement. Use the interest form at the bottom of this page, or email <a href='mailto:product@canvasmedical.com'>product@canvasmedical.com</a>." %}
 
 ## Overview
 
-AI Scribe records a visit, turns the transcript into a draft note, and proposes Canvas commands for the provider to review.
+Hyperscribe records a visit, turns the transcript into a draft note, and proposes Canvas commands for the provider to review.
 
 The Scribe panel sits beside the chart while you record. When you finish, Scribe generates a draft and a set of proposed commands. You can review the proposals individually, select several, or add them all at once.
 
@@ -49,7 +49,7 @@ The interface is still changing during the beta, so expect some differences betw
 
 <div class="scribe-embed">
   <iframe src="/assets/static/ai-scribe-preview.html"
-          title="AI Scribe interface preview"
+          title="Hyperscribe interface preview"
           allow="clipboard-write"></iframe>
 </div>
 
@@ -96,7 +96,7 @@ will send the beta agreement. The agreement covers the beta scope, how recording
 transcripts are handled, and what to expect during the beta.
 
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf2wv-iKI2F8MJD1Sbtiaed8NnLkA3KEC0o_ItU5JV824pjkA/viewform?embedded=true"
-        title="AI Scribe beta interest form"
+        title="Hyperscribe V2 beta interest form"
         width="100%" height="771" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
 
 
