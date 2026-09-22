@@ -1291,8 +1291,8 @@ Unlike the other service clients, `patient_portal_http` is imported from its own
 
 | Name         | Type      | Required | Description                                                                                                                                                                              |
 | :----------- | :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patient_id` | _string_  | `true`   | The patient key (a dashless UUID).                                                                                                                                                       |
-| `link_type`  | _string_  | `false`  | `"invite"` or `"reset"`. Defaults to `"invite"`. Both return the same link — the portal shows account activation or password reset when the link is opened, based on whether the patient has already registered. Use this to pick which message copy you send. |
+| `patient_id` | _string_  | `true`   | The patient's id (a dashless UUID).                                                                                                                                                      |
+| `link_type`  | _string_  | `false`  | `"invite"` or `"reset"`. Defaults to `"invite"`. Both return the same link: when it is opened, the portal shows account activation or password reset based on whether the patient has already registered. Read `CanvasUser.is_portal_registered` to choose the copy of the message you send. |
 | `next_path`  | _string_  | `false`  | An in-portal path to land on after login; a path pointing outside the portal is rejected. Defaults to `"/"`.                                                                             |
 | `ttl`        | _integer_ | `false`  | The link's lifetime, in seconds. Canvas caps it at 24 hours and rejects a value over that cap or below one second, raising `PatientPortalLinkError`. Omit it to use the account's default link lifetime, which is a Canvas setting rather than a fixed value. |
 
@@ -1322,7 +1322,7 @@ class InvitePatient(BaseHandler):
         patient_id = "b80b1cdc2e6a4aca90ccebc02e683f35"
         user = Patient.objects.get(id=patient_id).user
         if user is None:
-            return []  # No portal user yet — nothing to invite.
+            return []  # No portal user yet, so nothing to invite.
 
         # A registered patient gets a password reset; a new one gets an activation
         # invite. The portal decides the same way when the link is opened.
@@ -1340,7 +1340,7 @@ class InvitePatient(BaseHandler):
             else f"Activate your Canvas portal account: {login_url}"
         )
 
-        # Deliver over your own verified channel — here, an SMS provider's API.
+        # Deliver over your own verified channel: here, an SMS provider's API.
         Http().post(
             "https://sms-provider.example.com/send",
             headers={"Authorization": "Bearer <your-provider-token>"},
