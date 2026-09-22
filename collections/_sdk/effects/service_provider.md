@@ -13,16 +13,19 @@ providers. Providers created this way are readable through the
 
 ## Create Service Provider
 
-Creates a service provider, or updates a matching one.
+Creates a service provider, or updates a matching one. A provider can be an individual — give it a
+`first_name` (and usually a `last_name`) — or a practice or organization, which has no personal name:
+leave those off and put the name in `practice_name`. Either way, `specialty` and `business_address`
+are required.
 
 ### Attributes
 
 | Attribute          | Type            | Description                                     | Required |
 |--------------------|-----------------|-------------------------------------------------|----------|
-| `first_name`       | `str`           | Provider name, or the organization name         | Yes      |
 | `specialty`        | `str`           | Free text                                       | Yes      |
 | `business_address` | `str`           | Business address                                | Yes      |
-| `last_name`        | `str` or `None` | Omit for organizations                          | No       |
+| `first_name`       | `str` or `None` | The provider's first name; omit for a practice  | No       |
+| `last_name`        | `str` or `None` | The provider's last name; omit for a practice   | No       |
 | `practice_name`    | `str` or `None` | Practice or organization name                   | No       |
 | `business_phone`   | `str` or `None` | Business phone number                           | No       |
 | `business_fax`     | `str` or `None` | Business fax number                             | No       |
@@ -52,8 +55,11 @@ When an existing provider is matched:
 - a deactivated provider stays deactivated unless you send `is_active=True`
 
 Because of this, the same create is safe to run repeatedly — on a schedule, on every plugin install,
-or as a re-import of a directory you already loaded. An omitted or empty `last_name` is treated as
-the empty string when matching, so repeated creates for an organization resolve to the same record.
+or as a re-import of a directory you already loaded. An omitted or empty `first_name` or `last_name`
+is treated as the empty string when matching, so repeated creates for a practice resolve to the same
+record. `practice_name` is not one of the identifying fields, so two practices that have no personal
+name and share a `specialty` and `business_address` resolve to the same record — give them distinct
+business addresses to keep them separate.
 
 ### Example Usage
 
@@ -77,9 +83,9 @@ class ProviderLoader(BaseHandler):
                 npi="1234567890",
                 direct_address="jane.doe@direct.example.org",
             ).create(),
-            # An organization has no last name.
+            # A practice or organization has no personal name — put its name in practice_name.
             ServiceProvider(
-                first_name="Acme Imaging Center",
+                practice_name="Acme Imaging Center",
                 specialty="Radiology",
                 business_address="1 Hospital Way",
             ).create(),
@@ -89,7 +95,7 @@ class ProviderLoader(BaseHandler):
 ## Update Service Provider
 
 Updates the provider with the given `id`. Only the fields you set are sent, so an update never
-clears a field you did not mention. `first_name` and `specialty` cannot be set to `None`.
+clears a field you did not mention. `specialty` cannot be set to `None`.
 
 ```python?partial=true
 ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", notes="Prefers fax").update()

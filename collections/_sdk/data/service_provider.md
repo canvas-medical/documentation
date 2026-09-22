@@ -65,6 +65,10 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 
 ```
 
+For a practice or organization with no personal name, `full_name` returns the `practice_name`, so a
+practice renders its own name — not a blank — wherever `full_name` is shown, including the `text` of
+[`as_search_result`](#search-results).
+
 ## Service Provider
 
 ### Fields
@@ -73,13 +77,13 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 | -------------------- | ------- | --------------------------------------------------------------------------- |
 | id                   | UUID    | Unique identifier                                                           |
 | dbid                 | Integer | Internal database identifier                                                |
-| first_name           | String  | Provider name, or the organization name                                     |
-| last_name            | String  | Empty for organizations                                                     |
+| first_name           | String  | The provider's first name; blank for a practice or organization             |
+| last_name            | String  | The provider's last name; blank for a practice or organization              |
 | business_fax         | String  |                                                                             |
 | business_phone       | String  |                                                                             |
 | business_address     | String  |                                                                             |
 | specialty            | String  | Free text                                                                   |
-| practice_name        | String  |                                                                             |
+| practice_name        | String  | Practice or organization name                                               |
 | notes                | String  |                                                                             |
 | is_active            | Boolean | `False` once deactivated; the provider is kept, not deleted                  |
 | npi                  | String  | 10 digits                                                                   |
