@@ -9,21 +9,19 @@ date: 2026-09-20
 
 ## Overview
 
-AI Scribe turns a recorded visit into a reviewable draft and a set of Canvas commands. It
-records the room from a panel docked beside the chart, drafts the note from the transcript,
-and reads that draft back as commands the provider reviews one at a time.
+AI Scribe records a visit, turns the transcript into a draft note, and proposes Canvas commands for the provider to review.
 
-Nothing reaches the chart until a provider adds it, and every command is staged in the note
-as the provider, through the same path a typed command takes. A finished note carries no
-marker distinguishing a Scribe-proposed command from a hand-entered one.
+The Scribe panel sits beside the chart while you record. When you finish, Scribe generates a draft and a set of proposed commands. You can review the proposals individually, select several, or add them all at once.
 
-It records in the browser. There is nothing to install.
+Nothing is added to the chart until you add it. Commands go through the same path as commands entered manually, so once they're in the note there is no distinction between a Scribe-generated command and one entered by hand.
+
+Scribe runs in the browser. There is nothing to install.
 
 ## Try it
 
-The panel below is the beta interface on sample data, with no back end behind it and no
-patient data in it. It walks a visit end to end, with a guide in the corner saying what to
-press.
+The panel below is the target beta interface using sample data. It walks through a visit from recording to finished note, with an in-app guide showing what to do next.
+
+The interface is still changing during the beta, so expect some differences between this preview and what you see in your instance.
 
 <style>
 /* The docs content column is capped at 800px (_scss/_pagelayout.scss), which is not enough
@@ -57,89 +55,48 @@ press.
 
 <p>Shown at 70% so the whole workspace fits the column.
 <a href="/assets/static/ai-scribe-preview.html" target="_blank" rel="noopener">Open it in its own tab</a>
-for it at full size.</p>
+for the full-size version.</p>
 
 ## What it does
 
-- **Record, pause, resume and finish** a visit from the docked panel. The recording is held
-  to the visit rather than to the page, so you can work elsewhere in Canvas while it runs.
-- **A live transcript**, attributed to whoever spoke each line, read back intact after a
-  page reload.
-- **An Additional note context box** while you record, for anything you want the draft to
-  know that was not said out loud. It feeds the draft and is not written to the chart.
-- **Command proposals grouped** as History, Exam, and Assessment and Plan. Add one, add a
-  selection, or add all. A dismissed proposal drops to a section at the bottom and can be
-  restored.
-- **A proposal matched to a command the note already holds offers to update it** rather
-  than adding a second copy, which is what lets Scribe fill a note type's template instead
-  of working around it.
-- **Free text is editable in the panel** before it is written. A field backed by a code
-  system, an option set, a date or a constrained number is shown and left to the note.
-- **Evidence.** Where a proposal came out of a specific moment, it carries the transcript's
-  own words and links back to that point.
-- **Per-provider custom instructions**, in plain language, carried into every draft.
+- **Record a visit from the docked panel.** Pause, resume, and finish the recording without
+  leaving the chart. The recording stays with the visit, so you can move around Canvas while
+  it runs.
+- **Live transcript.** The transcript identifies who said each line and remains available
+  after a page reload.
+- **Additional note context.** Add information while you record that you want Scribe to use
+  when drafting the note. This context is used for the draft and is not written to the chart.
+- **Command proposals.** Proposals are grouped into History, Exam, and Assessment and Plan.
+  Add them individually, select several, or add everything at once. Dismissed proposals move
+  to the bottom of the panel and can be restored.
+- **Updates to existing commands.** If a proposal matches a command already in the note,
+  Scribe offers to update the existing command instead of creating a duplicate. This lets
+  Scribe fill the note type's existing template.
+- **Editable free text.** Edit free-text values in the panel before adding them to the note.
+  Fields backed by a code system, option set, date, or constrained number are shown but remain
+  controlled by the note.
+- **Evidence.** When a proposal comes from a specific part of the conversation, Scribe shows
+  the relevant transcript text and links back to it.
+- **Custom instructions.** Each provider can set plain-language instructions that are used
+  when generating drafts.
 
-## Where its context comes from
+## Where Scribe gets its context
 
-Five sources doing two different jobs. Keeping them apart is the difference between Scribe
-filling in a note and Scribe arguing with it.
+- The **recording**
+- The **Additional note context** you enter during the visit
+- Your **custom instructions** set within each user's preferences
+- The **note's existing commands**, to identify proposals that can update an existing command
+- The **patient's chart**, to identify when a proposal resembles something already documented
 
-**Shapes the draft:** the **recording**, the **note context box** you type during the visit,
-and your **custom instructions**. The last two exist separately because they have different
-lifespans: a standing preference belongs in instructions, a detail about this visit belongs
-in the box.
 
-**Checked against, after the draft exists:** the **note's existing commands**, so a matched
-proposal offers an update, and the **patient's chart**, so a proposal resembling something
-already documented is labeled as such. Neither writes the draft.
+## Request to join the beta
 
-Scribe does not read other visits, and there is nothing it learns from your edits.
-
-## Getting good audio
-
-Suggestions, not requirements. Scribe records through your computer's default microphone,
-so it works with what you have, and it has no device picker of its own yet: if you plug
-something in, make it the default in your system sound settings.
-
-Audio reaches the engine as 16 kHz mono, which is the band speech lives in. A more expensive
-microphone mostly buys fidelity above that band, and that fidelity is discarded. Distance,
-pickup pattern and room echo are not discarded, and those are what accuracy turns on. So, in
-order of how much difference each makes:
-
-- **Move the microphone off the laptop and into the middle of the room**, roughly
-  equidistant from both people. Many laptops steer their microphone array toward whoever is
-  at the keyboard, which is the wrong person.
-- **Prefer an omnidirectional tabletop microphone.** A USB conference speakerphone is the
-  usual shape. Canvas has not benchmarked specific models, so treat any product as a
-  starting point rather than a recommendation, and tell us what worked.
-- **Wired USB over Bluetooth**, which drops and renegotiates over a long session.
-- **Smaller, softer rooms transcribe better.** Echo arrives as a smeared copy of what was
-  just said.
-
-**Telehealth is not supported yet.** Scribe captures a microphone, not your computer's audio
-output or a call's stream. On a video visit the patient's voice reaches the microphone only
-by coming out of your speakers, and the browser's echo cancellation is designed to remove
-exactly that. On headphones it never arrives at all.
-
-## Limits worth knowing
-
-- **One generation per visit.** Finishing the recording is what asks for the note; there is
-  no regenerate.
-- **Finalizing is one-way.** A visit's recording cannot be reopened once finished.
-- **No level meter and no silence warning.** Neither is expressible across the interface
-  between the panel and the engine. The elapsed timer is the browser's clock.
-- **The panel is not a second chart.** Signing, billing and everything else about the note
-  stays in the note.
-
-## Join the beta
-
-Enrollment is per instance rather than per user. Tell us you are interested below, and your
-Canvas team will send the beta agreement, which covers what the beta includes, how
-recordings and transcripts are handled, and what either side can expect while it is in beta.
+Enrollment is per instance, not per user. Submit the interest form below and your Canvas team
+will send the beta agreement. The agreement covers the beta scope, how recordings and
+transcripts are handled, and what to expect during the beta.
 
 <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSf2wv-iKI2F8MJD1Sbtiaed8NnLkA3KEC0o_ItU5JV824pjkA/viewform?embedded=true"
         title="AI Scribe beta interest form"
         width="100%" height="771" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
 
-Questions: [product@canvasmedical.com](mailto:product@canvasmedical.com), or your Canvas
-team in your Slack channel.
+
