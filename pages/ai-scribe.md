@@ -11,9 +11,9 @@ date: 2026-09-20
 
 Hyperscribe records a visit and turns the transcript into Canvas commands for the provider to review.
 
-The scribe panel sits beside the chart while you record. When you finish, Scribe generates a set of proposed commands. You can review the proposals individually, select several, or add them all at once.
+The Hyperscribe panel sits beside the chart while you record. When you finish, Hyperscribe generates a set of proposed commands. You can review the proposals individually, select several, or add them all at once.
 
-Nothing is added to the chart until you add it. Commands go through the same path as commands entered manually, so once they're in the note there is no distinction between a Scribe-generated command and one entered by hand.
+Nothing is added to the chart until you add it. Commands go through the same path as commands entered manually, so once they're in the note there is no distinction between a Hyperscribe-generated command and one entered by hand.
 
 ## Try it
 
