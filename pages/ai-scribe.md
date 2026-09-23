@@ -93,15 +93,7 @@ for the full-size version.</p>
 
 Complete the form below and our team will reach out with next steps. We will enroll a limited set of customers in October, with a plan to open the beta to all in November. Participation will be gated on a beta agreement and up to date AI amendment. 
 
-  <iframe
-    src="https://canvas-medical.portal.usepylon.com/forms/hyperscribe-interest"
-    title="Hyperscribe Interest Form"
-    width="100%"
-    height="500"
-    frameborder="0"
-    allow="clipboard-write"
-    style="border: 0; width: 100%; max-width: 100%;"
-  ></iframe>
+<div style="width: 100%; overflow: hidden;"> <iframe src="https://canvas-medical.portal.usepylon.com/forms/hyperscribe-interest" title="Hyperscribe Interest Form" width="100%" height="500" frameborder="0" allow="clipboard-write" style="display: block; border: 0; width: 100%; max-width: 100%;" ></iframe> </div>
 
 
 
