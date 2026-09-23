@@ -15,7 +15,6 @@ The scribe panel sits beside the chart while you record. When you finish, Scribe
 
 Nothing is added to the chart until you add it. Commands go through the same path as commands entered manually, so once they're in the note there is no distinction between a Scribe-generated command and one entered by hand.
 
-
 ## Try it
 
 The panel below is the target beta interface using sample data. It walks through a visit from recording to finished note, with an in-app guide showing what to do next. The interface is still changing during the beta, so expect some differences between this preview and what you see in your instance.
@@ -57,7 +56,7 @@ for the full-size version.
 
 - **Record a visit from the docked panel.** Pause, resume, and finish the recording while navigating Canvas freely. The recording stays with the visit, so you can move around Canvas while it runs.
 - **Live transcript.** The transcript identifies who said each line and remains available
-  after the visit
+  after the visit.
 - **Additional note context.** Add information while you record that you want Hyperscribe to use
   when drafting the note. This context is used for the draft and is not written to the chart.
 - **Command proposals.** Proposals are grouped into History, Exam, and Assessment and Plan.
@@ -79,13 +78,13 @@ for the full-size version.
 - The **transcript**
 - The **additional note context** you enter during the visit
 - Your **custom instructions** set within each user's preferences
-- The **note's existing commands**, letting you leverage already built templates and document as you are recording. 
+- The **note's existing commands**, letting you leverage already built templates and document as you are recording.
 - The **patient's chart**, to identify when a proposal resembles something previously documented
 
 
 ## Request to join the beta
 
-Complete the form below and our team will reach out with next steps. We will enroll a limited set of customers in October, with a plan to open the beta to all in November. Participation will be gated on a beta agreement and up to date AI amendment. 
+Complete the form below and our team will reach out with next steps. We will enroll a limited set of customers in October, with a plan to open the beta to all in November. Participation will be gated on a beta agreement and up to date AI amendment.
 
 <div style="width: 100%; overflow: hidden;"> <iframe src="https://canvas-medical.portal.usepylon.com/forms/hyperscribe-interest" title="Hyperscribe Interest Form" width="100%" height="500" frameborder="0" allow="clipboard-write" style="display: block; border: 0; width: 100%; max-width: 100%;" ></iframe> </div>
 
