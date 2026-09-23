@@ -156,6 +156,7 @@ Represents a payment applied to a billing line item within a claim.
 | billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) |
 | amount              | Decimal                                         |
 | charged             | Decimal                                         |
+| entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)             |
 | created             | DateTime                                        |
 | modified            | DateTime                                        |
 
@@ -173,6 +174,7 @@ Represents an adjustment applied to a billing line item.
 | group                            | String                                          |
 | deviated\_from\_posting\_ruleset | Boolean                                         |
 | write\_off                       | Boolean                                         |
+| entered\_in\_error               | [CanvasUser](/sdk/data-canvasuser/)             |
 | created                          | DateTime                                        |
 | modified                         | DateTime                                        |
 
@@ -191,6 +193,7 @@ Represents a transfer of a line item balance to another coverage or patient.
 | deviated\_from\_posting\_ruleset | Boolean                                         |
 | transfer\_to                     | [ClaimCoverage](/sdk/data-claim/#claimcoverage) |
 | transfer\_to\_patient            | Boolean                                         |
+| entered\_in\_error               | [CanvasUser](/sdk/data-canvasuser/)             |
 | created                          | DateTime                                        |
 | modified                         | DateTime                                        |
 

@@ -68,8 +68,8 @@ Tracks delivery attempts and status for a message.
 | `created`              | `DateTime`                                  | Timestamp when the transmission was created.                |
 | `modified`             | `DateTime`                                  | Timestamp when the transmission was last modified.          |
 | `message`              | [Message](#message)                         | The message associated with this transmission.              |
-| `delivered`            | `Boolean`                                   | Whether delivery was successful.                            |
-| `failed`               | `Boolean`                                   | Whether delivery failed.                                    |
+| `delivered`            | `DateTime`                                  | When delivery succeeded. Null if not delivered.             |
+| `failed`               | `DateTime`                                  | When delivery failed. Null if it has not failed.            |
 | `contact_point_system` | [TransmissionChannel](#transmissionchannel) | The channel used for delivery.                              |
 | `contact_point_value`  | `String`                                    | The destination address or identifier (e.g., phone, email). |
 | `comment`              | `Text`                                      | Optional comments or error details.                         |
