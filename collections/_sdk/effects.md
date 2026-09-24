@@ -399,6 +399,7 @@ Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation
 
 | Effect | Description |
 |---|---|
+| CREATE_QUESTIONNAIRE | Create a questionnaire at runtime from a plugin. |
 | CREATE_QUESTIONNAIRE_RESULT | Create a questionnaire result. |
 
 

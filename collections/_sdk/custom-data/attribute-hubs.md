@@ -150,6 +150,8 @@ hub.set_attribute("preferences", {
 })
 ```
 
+Each attribute is a `CustomAttribute` row, and the column a value lands in is chosen from its Python type:
+
 | Field Name        | Python Type                  | Django Field Type | PostgreSQL Data Type       |
 |-------------------|------------------------------|-------------------|----------------------------|
 | `text_value`      | `str`                        | `TextField`       | `text`                     |

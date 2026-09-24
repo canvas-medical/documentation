@@ -117,11 +117,19 @@ The body array contains objects of two types:
      "type": "command",
      "value": "reasonForVisit",
      "data": {
-       "id": 1095,
        "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
      }
    }
    ```
+
+   `command_uuid` identifies the command and is present on every command object.
+   It matches the `id` of the [Command](/sdk/data-command/) model. A command
+   object on a note that has not yet moved to the [refactored body
+   structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
+   the integer identifier of the record the command created. A note on the
+   refactored structure never carries one, so read the
+   [Command](/sdk/data-command/) through `command_uuid` and take
+   `anchor_object` from it instead.
 
 #### Querying on the body
 
@@ -140,6 +148,11 @@ but it does limit which query operations can name it:
 
 {% include alert.html type="warning" content="Naming <code>body</code> through a relation stopped working in the <a href=\"/release-notes/1-348-0/\">September 8, 2026 release</a>. A queryset on another model that defers or filters <code>note__body</code> now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with <code>Note.objects.defer(\"body\")</code>." %}
 
+A `body` filter reads the column holding that note's body, and the two columns hold
+different shapes: a legacy note holds an ordered list of lines, while a note on the
+refactored structure holds an object keyed by line identifier. A filter written against one
+shape matches no notes on the other, and returns no rows instead of raising.
+
 So read the body from a note you already have, or filter notes by it, rather than trying
 to select it as a value:
 
@@ -152,7 +165,7 @@ for note in notes:
     print(note.body)
 ```
 
-The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+The `command_uuid` in a command object matches the `id` field of the [Command](/sdk/data-command/) model. It is present on the command lines of every note, so use it to retrieve the full command:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -370,7 +383,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See [Querying on the body](#querying-on-the-body). |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid` (matching the Command `id`); older notes may additionally include an integer `id`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
