@@ -118,6 +118,7 @@ The following table shows the different command `schema_key` values with links t
 | refer               | [Refer](/sdk/commands/#refer)                                    |
 | refill              | [Refill](/sdk/commands/#refill)                                  |
 | removeAllergy       | [RemoveAllergy](/sdk/commands/#removeallergy)                    |
+| removePastMedicalHistory | [RemovePastMedicalHistory](/sdk/commands/#remove-past-medical-history) |
 | resolveCondition    | [ResolveCondition](/sdk/commands/#resolve-condition)              |
 | stopMedication      | [StopMedication](/sdk/commands/#stopmedication)                  |
 | surgicalHistory     | [SurgicalHistory](/sdk/commands/#surgicalhistory)                |
