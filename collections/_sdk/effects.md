@@ -598,6 +598,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Remove Allergy | `*_REMOVE_ALLERGY_COMMAND` | |
+| Remove Past Medical History | `*_REMOVE_PAST_MEDICAL_HISTORY_COMMAND` | |
 | Resolve Condition | `*_RESOLVE_CONDITION_COMMAND` | |
 | Review of Systems | `*_ROS_COMMAND` | |
 | Stop Medication | `*_STOP_MEDICATION_COMMAND` | |
