@@ -79,8 +79,9 @@ coach.modified  # same value until the next write
 ```
 
 They are populated for you on `save()`, `create()`, `bulk_create()`, `update()`, and `bulk_update()`, so a
-queryset-level write keeps `modified` accurate rather than leaving it at the previous write. Passing an
-explicit value overrides the generated one:
+queryset-level write keeps `modified` accurate rather than leaving it at the previous write. A
+`save(update_fields=[...])` writes only the listed fields, so include `"modified"` in the list for it to advance.
+Passing an explicit value overrides the generated one:
 
 ```python?partial=true
 HealthCoach.objects.filter(name="Sam Rivera").update(modified=known_timestamp)
@@ -90,8 +91,9 @@ Both columns are nullable, because a row written before its table carried them h
 value was never recorded, and there is nothing to backfill it from. Every row written once the columns
 exist is stamped.
 
-A model that declares `created` or `modified` itself, or inherits either from an abstract base, keeps its own
-field and does not get the generated one. Prefer the generated columns: a table that spells the same fact a
+A model that declares `created` or `modified` itself keeps its own field and does not get the generated one.
+The same holds for a field inherited from an abstract base listed ahead of `CustomModel` in the class's bases;
+listed after it, `CustomModel`'s field wins. Prefer the generated columns: a table that spells the same fact a
 second way (`created_at`, `created_date`) ends up carrying both columns, and columns cannot be dropped.
 
 Attribution, meaning which user made the write, is not generated, because there is no request context
