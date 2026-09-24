@@ -298,8 +298,32 @@ for identifier in patient_external_identifiers:
 | created    | DateTime            |
 | modified   | DateTime            |
 | patient    | [Patient](#patient) |
-| name       | String              |
+| name       | [String](#setting-names) |
 | value      | JSON                |
+
+#### Setting names
+
+A patient carries at most one setting per `name`. Canvas maintains these:
+
+| Name                          | Holds                                                                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `pharmacy`                    | The patient's preferred pharmacies. Read this through [`preferred_pharmacies`](#patient), which normalizes the older single-pharmacy shape into a list |
+| `preferredSchedulingTimezone` | The timezone to schedule the patient in, for example `America/New_York`                                                                 |
+
+Because `value` is JSON, its shape differs from one setting to the next.
+
+Use `get_setting` to read one by name. It returns `None` when the patient has no setting by that name, so a missing setting and a stored empty value are distinguishable.
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+
+log.info(patient.get_setting("preferredSchedulingTimezone"))  # America/New_York
+log.info(patient.get_setting("unset-setting-name"))  # None
+```
 
 ### PatientMetadata
 

@@ -210,6 +210,16 @@ committed_note_tasks = NoteTask.objects.committed()
 | claims           | [Claim](/sdk/data-claim)[]                          |
 | appointments     | [Appointment](/sdk/data-appointment/)[]             |
 
+### TaskTaskLabel
+
+The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a task through its `labels` attribute rather than querying this model.
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| task       | [Task](#task)           |
+| task_label | [TaskLabel](#tasklabel) |
+
 ### TaskMetadata
 
 | Field Name | Type              |
@@ -267,10 +277,11 @@ for metadata in task_metadata:
 
 ### TaskLabelModule
 
-| Value  | Label  |
-| ------ | ------ |
-| claims | Claims |
-| tasks  | Tasks  |
+| Value        | Label        |
+| ------------ | ------------ |
+| claims       | Claims       |
+| tasks        | Tasks        |
+| appointments | Appointments |
 
 <br/>
 <br/>
