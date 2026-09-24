@@ -84,6 +84,8 @@ data = custom_command.data
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
+| plugin_command   | [PluginCommand](/sdk/data-plugin-command/) |
+| data             | JSON                                  |
 
 <br/>
 <br/>
