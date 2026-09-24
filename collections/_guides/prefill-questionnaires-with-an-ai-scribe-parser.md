@@ -3,12 +3,12 @@ title: "Pre-filling Questionnaires with an AI Scribe Parser"
 guide_for:
 - /sdk/events/
 - /sdk/effects/
-- /sdk/questionnaires/
+- /sdk/effect-questionnaires/
 ---
 
 <!-- sources: discussion #992 -->
 
-This guide extends [Creating, Implementing, and Extending an AI Scribe Parser](/guides/scribe-ai-parser/). The base AI Scribe parser only ever *originates* commands. To pre-fill a [Questionnaire](/sdk/questionnaires/) command with parsed values — so the answers actually appear in the note UI — a section parser must return command *effects* in a specific order, and the event handler must be taught to pass those effects through.
+This guide extends [Creating, Implementing, and Extending an AI Scribe Parser](/guides/scribe-ai-parser/). The base AI Scribe parser only ever *originates* commands. To pre-fill a [Questionnaire](/sdk/effect-questionnaires/) command with parsed values — so the answers actually appear in the note UI — a section parser must return command *effects* in a specific order, and the event handler must be taught to pass those effects through.
 
 ## Why originate alone is not enough
 

@@ -4,12 +4,12 @@ guide_for:
 - /sdk/data-questionnaire/
 - /sdk/events/
 - /sdk/effect-patient/
-- /sdk/form-result-effect/
+- /sdk/patient-portal/
 ---
 
 <!-- sources: discussions #785, #696 -->
 
-This guide builds on [Implementing Patient Portal Forms](/guides/patient-portal-forms/). Once a patient fills out a form in the portal, you often want that data to flow back into the chart — updating demographics, recording insurance coverage, and so on. This guide explains how questionnaires and patients are linked, and how a clinic-side handler can act on a submitted form.
+This guide builds on [patient portal forms](/sdk/patient-portal/#forms). Once a patient fills out a form in the portal, you often want that data to flow back into the chart — updating demographics, recording insurance coverage, and so on. This guide explains how questionnaires and patients are linked, and how a clinic-side handler can act on a submitted form.
 
 ## How questionnaires link to patients: the Interview
 
@@ -39,7 +39,7 @@ You then present the forms the patient is still missing:
 missing_intake_forms = [qname for qname in INTAKE_QUESTIONNAIRES if qname not in completed_forms]
 ```
 
-For the full portal-side flow — listening for `PATIENT_PORTAL__GET_FORMS` and returning `FormResult` effects — see [Implementing Patient Portal Forms](/guides/patient-portal-forms/).
+For the full portal-side flow — listening for `PATIENT_PORTAL__GET_FORMS` and returning `FormResult` effects — see [Forms](/sdk/patient-portal/#forms) in the patient portal effects reference.
 
 ## Acting on a submitted form from the clinic side
 

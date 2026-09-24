@@ -41,7 +41,7 @@ If you are using the beta Commands API, every field value must be nested under a
 "Commands" is an umbrella term for all the structured data within a patient's note. Questionnaire is one specific command type. When a questionnaire is built, its use case in charting can be set to Physical Exam, Structured Assessment, Review of Systems, or Questionnaire; these all share the same underlying database structure but appear in the note as their own distinct command. The `.originate()` method works on all command types.
 
 <!-- source: discussion #1396 -->
-You can use the SDK to auto-populate questionnaire commands (and other commands) in response to an event rather than building many separate per-situation automations. Listen for an appropriate [event](/sdk/events/) — such as a note state change, another command being committed, or metadata being added — and originate the commands you need. You can also insert commands when an [action button](/sdk/handlers-action-button/) is clicked if a manual trigger is preferred.
+You can use the SDK to auto-populate questionnaire commands (and other commands) in response to an event rather than building many separate per-situation automations. Listen for an appropriate [event](/sdk/events/) — such as a note state change, another command being committed, or metadata being added — and originate the commands you need. You can also insert commands when an [action button](/sdk/handlers-action-buttons/) is clicked if a manual trigger is preferred.
 
 ## Common Attributes
 
@@ -398,7 +398,7 @@ Commands have two types of actions:
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
 <!-- source: discussion #1046 -->
-When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-button/) with a custom print template — see the [vitals visualizer](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/vitals_visualizer_plugin) example plugin for the same architectural pattern.
+When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template — see the [vitals visualizer](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/vitals_visualizer_plugin) example plugin for the same architectural pattern.
 
 {% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
@@ -469,7 +469,7 @@ The built-in command classes cannot be customized per-instance: all Canvas insta
 There is no way to define an entirely new named command (such as a "Wound assessment" command). To build a custom assessment, the supported approaches are:
 - **[Custom Commands](/sdk/commands-custom-command/)** — define a read-only command that renders an HTML template in the patient chart.
 - **[Create Observation](/sdk/effect-observation/)** effect — store assessment values in a structured way.
-- **[Questionnaire](/sdk/questionnaires/)**, Review of Systems, Physical Exam, and Structured Assessment commands — the most customizable built-in commands for collecting structured responses.
+- **[Questionnaire](/sdk/effect-questionnaires/)**, Review of Systems, Physical Exam, and Structured Assessment commands — the most customizable built-in commands for collecting structured responses.
 
 For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
 

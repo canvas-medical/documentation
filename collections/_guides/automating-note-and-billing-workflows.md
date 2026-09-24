@@ -80,7 +80,7 @@ The general pattern for a "carry forward" plugin is to read a `Command.data` att
 
 You can detect the payer associated with a note and reassign the note to a different provider (for example, a supervisor). When a billable note type is created, Canvas automatically creates a [Claim](/sdk/data-claim/) for the appointment/note, and that claim carries the payer information.
 
-Listen for both `APPOINTMENT_CREATED` and `NOTE_STATE_CHANGE_EVENT_CREATED`, find the associated claim, check the payer against your rules, and return a [Note](/sdk/effect-notes/) or [Appointment](/sdk/effect-appointments/) effect that updates the provider.
+Listen for both `APPOINTMENT_CREATED` and `NOTE_STATE_CHANGE_EVENT_CREATED`, find the associated claim, check the payer against your rules, and return a [Note](/sdk/effect-notes/) or [Appointment](/sdk/effect-notes/#appointment-effect) effect that updates the provider.
 
 ```python
 from canvas_sdk.effects import Effect

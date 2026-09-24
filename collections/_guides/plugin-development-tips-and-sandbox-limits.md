@@ -85,7 +85,7 @@ https://sns.us-east-2.amazonaws.com/?Action=Publish
 
 These requests must be signed with [AWS Signature Version 4](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html). You can build the signature inside a plugin because `hmac.new` and `hashlib.sha256` are both allowed imports; [this open-source implementation](https://github.com/andrewjroth/requests-auth-aws-sigv4/blob/master/requests_auth_aws_sigv4/__init__.py) shows how. Make the requests with the [`Http`](/sdk/utils/) util and keep your AWS credentials in [secrets](/sdk/secrets/). This is more manual than using Boto3, but it lets you avoid hosting and maintaining a separate proxy service for the AWS calls.
 
-A typical reminders setup is a [CronTask](/sdk/handlers-cron/) that runs on a schedule, builds the list of appointments needing reminders, and sends the notifications (directly to SNS as above, or to your own endpoint).
+A typical reminders setup is a [CronTask](/sdk/handlers-crontask/) that runs on a schedule, builds the list of appointments needing reminders, and sends the notifications (directly to SNS as above, or to your own endpoint).
 
 ## Sandbox restrictions on dict reads and writes
 

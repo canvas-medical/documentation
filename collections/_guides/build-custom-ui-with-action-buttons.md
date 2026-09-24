@@ -1,8 +1,8 @@
 ---
 title: "Building Custom Plugin UI with Action Buttons and SimpleAPI"
 guide_for:
-- /sdk/handlers-action-button/
-- /sdk/effect-launch-modal/
+- /sdk/handlers-action-buttons/
+- /sdk/layout-effect/
 - /sdk/handlers-simple-api-http/
 - /sdk/effects/
 ---
@@ -11,7 +11,7 @@ guide_for:
 
 A common need is to add your own button to the Canvas UI that opens a custom screen — a printable visit summary, a data-entry form, a dashboard — and then act on what the user does there. The building blocks are always the same three pieces:
 
-1. An [`ActionButton`](/sdk/handlers-action-button/) (or [`Application`](/sdk/handlers-application/)) places a button in the UI and, when clicked, returns a [`LaunchModalEffect`](/sdk/effect-launch-modal/).
+1. An [`ActionButton`](/sdk/handlers-action-buttons/) (or [`Application`](/sdk/handlers-applications/)) places a button in the UI and, when clicked, returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals).
 2. The modal shows HTML/JavaScript, either inlined with `content=` or loaded from a URL served by your own [`SimpleAPI`](/sdk/handlers-simple-api-http/).
 3. The `SimpleAPI` endpoint queries data, renders HTML, and/or receives requests from the modal's JavaScript and returns [effects](/sdk/effects/) (such as [commands](/sdk/commands/)) that change the note.
 
@@ -344,6 +344,6 @@ Both patterns above register more than one component in a single plugin. When de
 
 - **Deploy and update together.** Components in one plugin are installed, updated, and removed as a unit, so components that depend on one another are guaranteed to be deployed and updated together.
 - **They do not crash together.** If a handler errors on installation, only that affected handler fails to load — the others in the plugin still run. (Interdependent components can still misbehave if one is missing, so account for that.)
-- **Cache and pub/sub are scoped per plugin.** A plugin can only read and write its own [cache](/sdk/caching/) (keys are namespaced by plugin), and can only publish to its own [pub/sub](/sdk/websockets/) channel (channels are namespaced too). If two components must share cached state or a channel, they need to live in the same plugin.
+- **Cache and pub/sub are scoped per plugin.** A plugin can only read and write its own [cache](/sdk/caching/) (keys are namespaced by plugin), and can only publish to its own [pub/sub](/sdk/handlers-simple-api-websocket/) channel (channels are namespaced too). If two components must share cached state or a channel, they need to live in the same plugin.
 
 There are no known performance benefits or penalties to grouping itself.
