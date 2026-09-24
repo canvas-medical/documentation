@@ -1352,10 +1352,10 @@ releasenotes_product_updates:
     url: /product-updates/important-dates/
   - title: "Roadmap"
     url: /product-updates/roadmap/
-  - title: "Recently Released"
-    url: /product-updates/recently-released/
 
 releasenotes_betas:
+  - title: "Hyperscribe V2"
+    url: /product-updates/ai-scribe/
   - title: "CancelRX"
     url: /product-updates/cancelrx/
   - title: "Commands Module"

@@ -138,6 +138,16 @@ appointment = Appointment.objects.filter(
 | expiration_date | Date                        |
 | appointment     | [Appointment](#appointment) |
 
+### AppointmentLabel
+
+The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Reach the labels on an appointment through its `labels` attribute rather than querying this model.
+
+| Field Name  | Type                                   |
+|-------------|----------------------------------------|
+| dbid        | Integer                                |
+| appointment | [Appointment](#appointment)            |
+| task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
+
 ### AppointmentMetadata
 
 | Field Name  | Type                        |
