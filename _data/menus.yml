@@ -1070,6 +1070,9 @@ data_module:
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
+  - title: "Clipboard"
+    url: /sdk/data-clipboard/
+    description: Free-text content staged on a note by a clipboard command.
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
