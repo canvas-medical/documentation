@@ -74,15 +74,15 @@ class CustomHTMLActionButton(ActionButton):
     def handle(self):
         return [
             LaunchModalEffect(
-                url=f"/plugin-io/api/patient_visit_summary/?patient_id={self.target}&note_id={self.event.context['note_id']}"
+                url=f"/plugin-io/api/patient_visit_summary/?patient_id={self.event.target.id}&note_id={self.event.context['note_id']}"
             ).apply()
         ]
 ```
 
 Key details:
 
-- `self.target` gives the patient ID.
-- `self.event.context['note_id']` gives the current note.
+- `self.event.target.id` gives the patient ID.
+- `self.event.context['note_id']` gives the current note's database id (`dbid`), not its UUID.
 - The URL pattern `/plugin-io/api/<plugin_name>/` routes to your `SimpleAPI`.
 
 ### SimpleAPI that renders the HTML
@@ -94,8 +94,8 @@ from http import HTTPStatus
 
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import HTMLResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SimpleAPI, api
-from canvas_sdk.handlers.simple_api.security import SessionCredentials
+from canvas_sdk.handlers.simple_api import Credentials, SessionCredentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api.exceptions import InvalidCredentialsError
 from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data.note import Note
 from canvas_sdk.v1.data.patient import Patient
@@ -188,7 +188,7 @@ A clean layout for this kind of plugin is:
 
 ### Flow summary
 
-```
+```text
 User clicks "Patient Visit Summary" in the note header
   → ActionButton.handle() fires
   → LaunchModalEffect opens /plugin-io/api/patient_visit_summary/?patient_id=X&note_id=Y
@@ -221,9 +221,9 @@ class AddDiagnosisButton(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
 
     def handle(self) -> list[Effect]:
-        note_dbid = self.context.get("note_id", "")
+        note_dbid = self.event.context.get("note_id", "")
         note_id = Note.objects.filter(dbid=note_dbid).values_list("id", flat=True).first()
-        patient_id = self.context.get("patient", {}).get("id", "")
+        patient_id = self.event.target.id
 
         context = {
             "note_id": note_id,
@@ -282,6 +282,7 @@ Use `StaffSessionAuthMixin` so only logged-in staff can call the endpoint. Parse
 
 ```python
 from http import HTTPStatus
+from uuid import uuid4
 
 from canvas_sdk.commands import DiagnoseCommand
 from canvas_sdk.effects import Effect
@@ -303,6 +304,8 @@ class AddDiagnosisAPI(StaffSessionAuthMixin, SimpleAPIRoute):
         assessment = body.get("assessment", "")
 
         diagnose = DiagnoseCommand(
+            # Set command_uuid so the response can return the new command's ID.
+            command_uuid=str(uuid4()),
             note_uuid=note_id,
             icd10_code=icd10_code,
             background=background,
@@ -326,7 +329,7 @@ class AddDiagnosisAPI(StaffSessionAuthMixin, SimpleAPIRoute):
 
 ### Flow summary
 
-```
+```text
 User clicks "Add Diagnosis" in the note header
   → ActionButton.handle() returns a LaunchModalEffect with HTML/JS (note_id embedded)
   → The modal form captures input and POSTs to the SimpleAPI endpoint

@@ -63,9 +63,10 @@ The **Required to** column (depending on the command's terminal action) in each 
 <!-- source: discussion #1693 -->
 The only field required to **originate** any command is `note_uuid`. Skip `.commit()` and the command persists in the note in its empty/staged state until the user (or a later plugin call) fills it in and commits it:
 
-```python
+```python?partial=true
 from canvas_sdk.commands import PrescribeCommand
 
+# inside a handler's compute(), on an event whose context carries the note
 p = PrescribeCommand()
 p.note_uuid = self.event.context["note"]["uuid"]
 return [p.originate()]
@@ -1462,6 +1463,8 @@ The `fdb_code` parameter accepts either:
 ```python
 from urllib.parse import urlencode
 
+from canvas_sdk.utils.http import ontologies_http
+
 # search for a specific RxNorm RXCUI
 response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
 ```
@@ -1961,10 +1964,11 @@ The questionnaire referenced by `questionnaire_id` must have been built with a u
 <!-- source: discussion #1381 -->
 **Order matters when populating responses.** When you return both `originate()` and `edit()`, list `originate()` **first** so the command is inserted with the correct `command_uuid` before its questions are edited. Returning `edit()` before `originate()` causes the responses not to populate. Iterate over `exam.questions`, check each question's type, and call `question.add_response(...)` with the appropriate keyword argument for that type (see the [Questionnaire usage example](#usage-example)):
 
-```python
+```python?partial=true
 from uuid import uuid4
 from canvas_sdk.commands import PhysicalExamCommand
 
+# inside a handler's compute(); note_uuid and questionnaire_id come from your own lookup
 exam = PhysicalExamCommand(
     note_uuid=note_uuid,
     questionnaire_id=questionnaire_id,
@@ -3065,6 +3069,8 @@ prescribe = PrescribeCommand(
 **Looking up `representative_ndc` and `ncpdp_quantity_qualifier_code`:** When a Prescribe command uses an `fdb_code`, `type_to_dispense` requires a `ClinicalQuantity` with both `representative_ndc` and `ncpdp_quantity_qualifier_code`. You can obtain these values from the [ontologies service](/sdk/utils/#making-requests-to-the-ontologies-service). The FDB code is the `med_medication_id` returned by a medication search; query the grouped-medication endpoint directly by that ID to read its clinical quantities:
 
 ```python
+from canvas_sdk.utils.http import ontologies_http
+
 med_medication_id = 436095  # this is the fdb_code
 response_json = ontologies_http.get_json(f"/fdb/grouped-medication/{med_medication_id}/").json()
 ```

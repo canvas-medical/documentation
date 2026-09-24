@@ -271,8 +271,10 @@ class MyHandler(BaseHandler):
 <!-- source: discussion #1428 -->
 To lock and sign a note in a single plugin action, return the `lock()` effect before the `sign()` effect:
 
-```python
-return [Note(instance_id="existing-note-uuid").lock(), Note(instance_id="existing-note-uuid").sign()]
+```python?partial=true
+# inside compute()
+note = Note(instance_id="existing-note-uuid")
+return [note.lock(), note.sign()]
 ```
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}

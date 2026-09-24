@@ -965,10 +965,13 @@ originate-and-commit in a single call. Normally a command's UUID is generated fo
 you on originate, but to commit in the same call you must self-assign it first so
 both operations reference the same command:
 
-```python
+```python?partial=true
 import uuid
 
-command = PlanCommand()
+from canvas_sdk.commands import PlanCommand
+
+# inside a SimpleAPI route; note_uuid identifies the target note
+command = PlanCommand(note_uuid=note_uuid)
 command.command_uuid = str(uuid.uuid4())
 
 return [command.originate(), command.commit()]
@@ -978,9 +981,10 @@ return [command.originate(), command.commit()]
 ### Action button "commit all commands" payload key
 
 In a commit-all-commands action button, the effect payload key must be `command`,
-not `command_uuid`:
+not `command_uuid`. A command class's `.commit()` builds this payload for you; if you
+construct the `Effect` yourself, set:
 
-```python
+```python?partial=true
 payload=json.dumps({"command": str(command.id)}),
 ```
 

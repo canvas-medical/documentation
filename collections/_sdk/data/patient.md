@@ -38,20 +38,15 @@ patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_da
 <!-- source: discussion #294 -->
 ### Retrieving only committed, recorded data
 
-There is no named convenience filter yet for "only the patient's recorded data" (the behavior the Workflow Kit's `self.patient` object provided). To restrict a related model to committed, non-deleted, non-entered-in-error records, filter on those fields explicitly. For example, for a patient's observations:
+To restrict a patient's clinical data to committed records (the behavior the Workflow Kit's `self.patient` object provided), use the queryset's `committed()` method. It keeps records with a non-null `committer` and a null `entered_in_error`, and the model's default manager already excludes deleted records. For example, for a patient's observations:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.observation import Observation
 
-observations = Observation.objects.filter(
-    patient=patient,
-    deleted=False,
-    entered_in_error_id__isnull=True,
-    committer_id__isnull=False,
-)
+observations = Observation.objects.for_patient(patient.id).committed()
 ```
 
-Mirror this pattern on the other patient-related data models to exclude draft, deleted, and retracted records.
+`committed()` is available on the committable clinical models, including `AllergyIntolerance`, `Assessment`, `Condition`, `Immunization`, `Medication`, `Observation`, and `Prescription`. On a model without it, filter on `committer_id__isnull=False, entered_in_error_id__isnull=True` directly.
 
 ## Accessing the patient photo
 

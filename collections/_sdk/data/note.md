@@ -342,7 +342,10 @@ is_signed = current_state is not None and current_state.state == NoteStates.SIGN
 
 Because a note can be signed, amended, and re-signed, the full state history lives in [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent). To get the signer and the timestamp of the most recent signature, query for the latest `SGN` event and read its `originator` (the [`CanvasUser`](/sdk/data-canvasuser) who signed) and `created` timestamp:
 
-```python
+```python?partial=true
+from canvas_sdk.v1.data.note import NoteStateChangeEvent, NoteStates
+
+# `note` is the Note from the previous example
 sign_event = NoteStateChangeEvent.objects.filter(
     note=note,
     state=NoteStates.SIGNED,

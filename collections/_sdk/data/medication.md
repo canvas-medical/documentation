@@ -124,30 +124,23 @@ Filtering on `status == "active"` alone does not reproduce the chart's medicatio
 1. Exclude uncommitted and entered-in-error records — a medication must have a non-null `committer` (it was finalized) and a null `entered_in_error` (no one flagged it as erroneous).
 2. Filter by `status` — the chart defaults to `status == "active"`; users can toggle to inactive or all.
 
-To replicate the chart's "active medications" view:
+The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the chart's "active medications" view:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.medication import Medication
 
-active_meds = Medication.objects.filter(
-    patient__id=patient_id,
-    committer_id__isnull=False,
-    entered_in_error_id__isnull=True,
-    status="active",
-)
+active_meds = Medication.objects.for_patient(patient_id).active()
 ```
 
-For all visible medications (the chart's "All" filter — active plus inactive), omit the status filter:
+For all visible medications (the chart's "All" filter — active plus inactive), use `committed()` without the status filter:
 
-```python
-all_visible_meds = Medication.objects.filter(
-    patient__id=patient_id,
-    committer_id__isnull=False,
-    entered_in_error_id__isnull=True,
-)
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+all_visible_meds = Medication.objects.for_patient(patient_id).committed()
 ```
 
-Per Canvas, the precedence of the relevant fields is: `entered_in_error` (highest — excludes from all chart views) → `committer` (must be set for the record to count as finalized) → `status` (only distinguishes active vs. inactive after the first two pass). `start_date` and `end_date` are informational only and are not used for filtering, so you should not derive your own normalized status from them. The `deleted` field is inherited from a base class but is effectively never `True` on `Medication` records and can be ignored.
+Per Canvas, the precedence of the relevant fields is: `entered_in_error` (highest — excludes from all chart views) → `committer` (must be set for the record to count as finalized) → `status` (only distinguishes active vs. inactive after the first two pass). `start_date` and `end_date` are informational only and are not used for filtering, so you should not derive your own normalized status from them. `Medication.objects` already excludes records with `deleted` set, so there is no need to filter on it.
 
 ### How status is computed
 

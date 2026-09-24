@@ -30,13 +30,13 @@ staff_ids = [s.id for s in staff]
 ```
 
 <!-- source: discussion #780 -->
-A command's `committer` is a [`CanvasUser`](/sdk/data-canvasuser), not a `Staff` record, so its `dbid` is the user's `dbid` — not the staff `dbid`. To resolve a committer back to the `Staff` record, look it up by `user_id`, not `dbid`:
+A command's `committer` is a [`CanvasUser`](/sdk/data-canvasuser), not a `Staff` record, so its `dbid` is the user's `dbid` — not the staff `dbid`. To resolve a committer back to the `Staff` record, look it up by `user`, not `dbid`:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data.staff import Staff
 
 # command_instance.committer is a CanvasUser
-staff = Staff.objects.get(user_id=command_instance.committer.dbid)
+staff = Staff.objects.get(user=command_instance.committer)
 ```
 
 `Staff` objects are commonly used in related models, for example the `Task` model.

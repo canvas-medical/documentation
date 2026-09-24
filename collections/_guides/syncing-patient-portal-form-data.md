@@ -17,7 +17,7 @@ A [`Questionnaire`](/sdk/data-questionnaire/) is the form definition. A patient'
 
 This matters when you decide which forms to present in the portal. To find which intake forms a patient has already completed, filter Interviews for that patient:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import Interview
 
 INTAKE_QUESTIONNAIRES = ["Tobacco", "Stress"]
@@ -35,7 +35,7 @@ completed_forms = set(
 
 You then present the forms the patient is still missing:
 
-```python
+```python?partial=true
 missing_intake_forms = [qname for qname in INTAKE_QUESTIONNAIRES if qname not in completed_forms]
 ```
 
@@ -43,17 +43,17 @@ For the full portal-side flow — listening for `PATIENT_PORTAL__GET_FORMS` and 
 
 ## Acting on a submitted form from the clinic side
 
-To sync the responses into the chart, set up a handler that listens for the [questionnaire created event](/sdk/events/#questionnaire-command). When it fires, read the responses from the resulting [Interview](/sdk/data-questionnaire/#interview) and return whatever [effects](/sdk/effects/) you need:
+To sync the responses into the chart, set up a handler that listens for the [`INTERVIEW_CREATED` event](/sdk/events/#interviews) (and `INTERVIEW_UPDATED`, since details can arrive after the Interview is created). The event's target is the Interview and its context carries the patient ID. When it fires, read the responses from the resulting [Interview](/sdk/data-questionnaire/#interview) and return whatever [effects](/sdk/effects/) you need:
 
 - To update demographics (name, contact details, and so on), use the [patient effects](/sdk/effect-patient/).
 - To record insurance coverage, use the [FHIR API coverage endpoints](/api/coverage/), since coverage is not currently writable through a dedicated SDK effect.
 
 The high-level flow for a "collect demographics and coverage in the portal, write them to the chart" workflow is:
 
-```
+```text
 Patient submits the portal form
   → Responses are stored as an Interview linking the Patient and Questionnaire
-  → A questionnaire created event fires
+  → INTERVIEW_CREATED fires
   → Clinic-side handler reads the Interview responses
   → Returns a patient effect to update demographics
   → Calls the FHIR Coverage endpoint to record insurance coverage

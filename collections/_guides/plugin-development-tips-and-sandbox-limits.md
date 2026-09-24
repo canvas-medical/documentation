@@ -17,10 +17,11 @@ Before debugging logic, confirm the code running on the instance is the code you
 1. **Save and deploy your edits.** Editing a file locally does nothing until you push it to the instance with the [Canvas CLI](/sdk/canvas_cli/). Re-deploy after every change you want to test.
 2. **Verify through the logs.** Stream the instance logs with `canvas logs` and add `log.info(...)` statements to confirm your handler is firing and to inspect the values it sees. If you do not see your log lines, the event you expect is not reaching your handler, or the plugin did not load.
 
-```python
+```python?partial=true
 from logger import log
 
-log.info(f"Handler fired for note {self.context.get('note')}")
+# inside a handler method
+log.info(f"Handler fired for note {self.event.context.get('note')}")
 ```
 
 If a handler fails to load (for example, an import error at install time), only that handler is skipped — other handlers in the same plugin keep running — so check the logs for load-time errors as well as runtime ones.
@@ -31,12 +32,12 @@ Deploying plugins does **not** require any IP allowlisting. You only need the co
 
 IP allowlisting is only relevant for **read-replica database access**. If your team needs that, [file a support ticket](https://portal.usepylon.com/canvas-medical/forms/standard) and the Canvas team will set it up.
 
-## Relative imports within a plugin
+## Sharing code between modules in a plugin
 
-Relative imports are allowed *within a single plugin*. If you have several handlers that do nearly the same thing, factor the shared logic into a base class and import it:
+A plugin can import its own modules. If you have several handlers that do nearly the same thing, factor the shared logic into a base class and import it by its full path from the plugin package (here the plugin package is `my_plugin`):
 
-```python
-# protocols/base.py
+```python?partial=true
+# my_plugin/protocols/base.py
 from canvas_sdk.handlers import BaseHandler
 
 
@@ -45,16 +46,16 @@ class SharedBase(BaseHandler):
         ...
 ```
 
-```python
-# protocols/my_handler.py
-from .base import SharedBase
+```python?partial=true
+# my_plugin/protocols/my_handler.py
+from my_plugin.protocols.base import SharedBase
 
 
 class MyHandler(SharedBase):
     ...
 ```
 
-This lets you share a base handler class across the protocols in one plugin. (Note that the sandbox still enforces the allowed-imports list for third-party and standard-library modules — relative imports between your own plugin files are what is permitted here.)
+Use the absolute form. The sandbox rejects relative imports such as `from .base import SharedBase` with `ImportError: 'base' is not an allowed import.`, because it checks the module name without its package. The allowed-imports list applies to third-party and standard-library modules; any module inside your own plugin package is importable.
 
 ## Time zones: use `zoneinfo.ZoneInfo`
 
@@ -67,13 +68,11 @@ TIME_ZONE = "US/Eastern"
 TZ = ZoneInfo(TIME_ZONE)
 ```
 
-(Early on, `ZoneInfo` was not allowlisted and raised `ImportError: 'zoneinfo' is not an allowed import.`; it has since been added, so prefer it over workarounds.)
-
 ## Calling AWS services without Boto3 (e.g. SNS for reminders)
 
 The Boto3 library is not available in the sandbox, but you can still call AWS HTTP APIs directly. For example, to build custom branded email/SMS reminders you can publish to Amazon SNS with a normal HTTP request to the region's SNS endpoint:
 
-```
+```text
 https://sns.us-east-2.amazonaws.com/?Action=Publish
 &TopicArn=arn%3Aaws%3Asns%3Aus-east-2%3A698519295917%3AMy-Topic
 &Subject=My%20first%20message
@@ -90,23 +89,20 @@ A typical reminders setup is a [CronTask](/sdk/handlers-cron/) that runs on a sc
 
 ## Sandbox restrictions on dict reads and writes
 
-The sandbox wraps item access and assignment with internal `_safe_getitem` and `_safe_write` checks. In normal use these are transparent, but they explain occasional errors you may see in the logs around dictionary access — for example reading a key that is not present, or writing to an object the guard does not recognize:
+The sandbox routes item access and assignment through internal `_safe_getitem` and `_safe_write` checks. Ordinary lookup errors pass straight through them, so a traceback for a missing key or an empty list names the guard even though the cause is your data:
 
-```
-File ".../sandbox.py", line 690, in _safe_getitem
+```text
+File ".../sandbox.py", in _safe_getitem
     return ob[index]
 KeyError: 0
 ```
 
-```
-File ".../sandbox.py", line 668, in _safe_write
-    full_name = f"{_ob.__module__}.{_ob.__class__.__qualname__}"
-AttributeError: 'dict' object has no attribute '__module__'
-```
-
-To stay on the supported path, guard your lookups rather than indexing blindly:
+Guard your lookups rather than indexing blindly:
 
 - Read optional keys with `.get(...)` and provide defaults instead of `ob[key]`, so a missing key does not raise.
 - Confirm a collection is non-empty before indexing into it (`ob[0]`).
 
-If previously working code suddenly starts raising these errors after a platform update, it may indicate the sandbox briefly tightened more than intended; report it through a support ticket so the team can confirm and, if needed, release a fix.
+The guards also raise their own `AttributeError`s for a few patterns:
+
+- Reading an item whose key is a string starting with `_` (`data["_private"]`) raises `"_private" is an invalid item name because it starts with "_"`.
+- On an object that does not come from your plugin, writing a dictionary key that starts with `_`, overwriting an attribute or item that holds a callable, or setting an attribute on something you imported (`SomeImportedClass.attr = ...`) raises `Forbidden assignment to a non-module attribute: ...`.

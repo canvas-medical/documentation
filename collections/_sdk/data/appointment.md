@@ -44,15 +44,14 @@ children = parent_appointment.children.all()
 <!-- source: discussion #941 -->
 ## Getting the reason for visit
 
-The reason for visit is not currently stored directly on the `Appointment`. Every appointment has an affiliated note, so fetch the [Reason for Visit commands](/sdk/commands/#reasonforvisit) using the appointment's note ID:
+The reason for visit is recorded on the appointment's note, not on the `Appointment` itself. Read the note's [`ReasonForVisit`](/sdk/data-reason-for-visit/) records through its `reasons_for_visit` attribute, and use `committed()` to skip uncommitted and entered-in-error ones:
 
 ```python
-from canvas_sdk.v1.data.command import Command
+from canvas_sdk.v1.data.appointment import Appointment
 
-rfv_commands = Command.objects.filter(
-    note_id=note_id,
-    schema_key="reasonForVisit",
-).exclude(entered_in_error__isnull=False)
+appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+if appointment.note:
+    reasons = appointment.note.reasons_for_visit.committed()
 ```
 
 <!-- source: discussion #939 -->
