@@ -119,8 +119,10 @@ intend to query.
 
 ## Limitations (for Safety)
 
-* Values stored in `text` and `json` fields may not exceed 1mb as measured by character count.
-* Bulk operations (e.g., `bulk_create`) are limited to 10,000 records at a time.
+* Values stored in `text` and `json` fields may not exceed 1mb as measured by character count. Going over raises `FieldValueTooLarge`.
+* Bulk operations (e.g., `bulk_create`) are limited to 10,000 records at a time. Going over raises `BulkOperationTooLarge`.
+
+Both are subclasses of `ValueError`, so a single `except ValueError:` catches either.
 
 ## See Also
 

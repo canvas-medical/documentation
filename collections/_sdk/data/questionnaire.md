@@ -285,6 +285,19 @@ A `QuestionEnablementCondition` controls when a `Question` is enabled, following
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
 | assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
 
+### InterviewQuestionnaireMap
+
+The join between an [Interview](#interview) and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
+
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
+| status        | String                          |
+| interview     | [Interview](#interview)         |
+| questionnaire | [Questionnaire](#questionnaire) |
+
 ### InterviewQuestionResponse
 
 | Field Name            | Type                              |
