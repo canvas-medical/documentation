@@ -23,6 +23,12 @@ sections:
           - Any [Educational Material](https://canvas-medical.help.usepylon.com/articles/4966226408-educational-material-command) committed on a patient's chart.
           
           - Any [Invoices](https://help.canvasmedical.com/articles/9992348572-claim-management#invoicing-statements-128) generated for a patient.
+        # sources: discussions #627, #803, #1237, #629
+        additional_information: |-
+          - Every DocumentReference belongs to a patient. Patient-agnostic and practitioner-only documents are not supported.
+          - To download a document's PDF: run a DocumentReference search, take the `content.attachment.url` of the entry you want, and request that URL with your Bearer token. The response is a 307 redirect to a pre-signed S3 URL. A client that follows redirects (the default for most) receives the PDF; otherwise read the S3 URL from the `location` header.
+          - Send create requests to the `https` URL. An `http` request is redirected to `https`, and the redirect turns the POST into a GET, so instead of a 201 you receive a 200 with DocumentReference search results.
+          - The create request body, including the base64-encoded file in `content.attachment.data`, is limited to roughly 1MB. Larger payloads return `413 Request Entity Too Large`.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -222,9 +228,8 @@ sections:
                       - value: referralreport
                         exclude_in: create
                       - value: uncategorizedclinicaldocument
-          # source: discussion #627
           - name: subject
-            description: Who/what is the subject of the document. The subject must reference a Patient — patient-agnostic or practitioner-only documents are not currently supported.
+            description: Who/what is the subject of the document. Must reference a Patient.
             type: json
             required_in: create
             attributes:
@@ -296,11 +301,8 @@ sections:
                     description: Mime type of the content, with charset etc.
                     type: string
                     required_in: create
-                  # source: discussion #803
                   - name: url
-                    description: >-
-                      URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.<br><br>
-                      To download a document's PDF, follow these steps: (1) run a DocumentReference search to list documents, (2) extract this `content.attachment.url` value from the entry you want, and (3) make an authenticated request (with your Bearer token) to that URL. That request returns a 307 redirect to a pre-signed S3 URL — if your HTTP client follows redirects (the default) you will receive the PDF; if not, read the S3 URL from the response's `location` header.
+                    description: URI where the data can be found. This URL requires a Bearer token and returns a redirect to a pre-signed S3 URL. See <a href="/api/accessing-resource-attachment-files">Accessing Resource Attachment Files</a> for details on how to access the file.
                     exclude_in: create
                     type: string
                   - name: data
@@ -394,12 +396,7 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           example_request: documentreference-create-request
           example_response: documentreference-create-response
-          # source: discussion #1237
-          # source: discussion #629
-          description: >-
-            Create DocumentReference with provided fields and values. A successful create returns a 201.<br><br>
-            <b>Use https, not http.</b> Requests sent over http are redirected to https, and the redirect drops the HTTP verb — a POST silently becomes a GET, so instead of creating a document you receive a 200 with the DocumentReference search results. Always POST directly to the https URL.<br><br>
-            <b>Request body size limit.</b> The request body (including the base64-encoded file in `content.attachment.data`) is limited to roughly 1MB. Larger payloads return a 413 Request Entity Too Large error; compress or reduce the file to under 1MB before uploading.
+          description: Create DocumentReference with provided fields and values. The request body is limited to roughly 1MB.
         read:
           responses: [200, 401, 403, 404]
           example_request: documentreference-read-request

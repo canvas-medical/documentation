@@ -8,9 +8,11 @@ sections:
         article: "a"
         description: >-
           Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.<br><br>
-          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html)<br><br>
-          <!-- source: discussion #670 -->
-          The insurance card front/back images shown in the coverage section of the Canvas UI can only be uploaded and viewed through the UI — they cannot be uploaded, retrieved, or distinguished (front vs. back) via the API. A <a href="/api/documentreference">DocumentReference</a> created through the API does not appear in the coverage card section; it lands in the patient's admin documents instead.
+          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html)
+        # sources: discussions #670, #1194
+        additional_information: |-
+          - The insurance card front and back images in the coverage section of the Canvas UI are uploaded and viewed only through the UI. The API cannot upload them, retrieve them, or tell front from back. A [DocumentReference](/api/documentreference) created through the API lands in the patient's admin documents, not in the coverage card section.
+          - Coverage search does not filter by date. The `period.start` and `period.end` values on each Coverage are its effective-date data.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -276,12 +278,10 @@ sections:
                    - value: 53  (Life Partner)
                    - value: 29  (Significant Other)
                    - value: G8  (Other)
-          # source: discussion #1194
           - name: period
             description: >-
               The period during which the Coverage is in force.<br><br>
-              A missing end date means the coverage continues to be in force.<br><br>
-              The Coverage resource does not support date filtering via search parameters; the `period.start` and `period.end` values returned here are the available effective-date data for a coverage.
+              A missing end date means the coverage continues to be in force.
             create_and_update_description:
               If the start date is missing for a create/update interaction, it will be set to the current date of ingestion.
             type: json

@@ -12,6 +12,10 @@ sections:
           <br><br>
           This may result in one or more [Encounters](/api/encounter).<br><br>
           The appointment resource maps to both [patient appointments](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management) as well as [other events](https://canvas-medical.help.usepylon.com/articles/4617508394-appointment-management#scheduling-other-events-30) in Canvas. Instructions for configuring event and note types can be found [here](https://canvas-medical.help.usepylon.com/articles/6785045644-appointment-event-note-types).
+        # sources: discussions #1123, #653
+        additional_information: |-
+          - FHIR search parameters, including date filters, work only against the FHIR API on the `fumage-` subdomain (e.g. `https://fumage-<instance>.canvasmedical.com/Appointment`). The internal, non-FHIR Appointment API at the `/api/Appointment` path on the regular instance subdomain ignores FHIR search parameters and returns all records regardless of the filters supplied.
+          - The `status` search parameter takes one value per request; comma-separated multi-value token searches are not supported. To retrieve appointments across several statuses, make one request per status and combine the results client-side.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -326,10 +330,9 @@ sections:
           - name: date
             type: string
             description: Filter by start time. See [Date Filtering](/api/date-filtering) for more information.
-          # source: discussion #653
           - name: status
             type: string
-            description: The status of the appointment. This parameter does not support comma-separated multi-value token searches — a single request can filter by only one status. To retrieve appointments across multiple statuses, make a separate request per status and combine the results client-side.
+            description: The status of the appointment. Accepts a single value per request.
             search_options:
               - value: proposed
               - value: pending
@@ -368,10 +371,7 @@ sections:
           example_request: appointment-update-request
           example_response: appointment-update-response
         search:
-          # source: discussion #1123
-          description: >-
-            Search for an Appointment.<br><br>
-            FHIR search parameters (including date filters) only work against the FHIR API on the `fumage-` subdomain (e.g. `https://fumage-<instance>.canvasmedical.com/Appointment`). The internal, non-FHIR Appointment API at the `/api/Appointment` path on the regular instance subdomain ignores FHIR search parameters and returns all records regardless of the filters supplied.
+          description: Search for an Appointment
           responses: [200, 400, 401, 403]
           example_request: appointment-search-request
           example_response: appointment-search-response

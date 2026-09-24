@@ -18,6 +18,9 @@ sections:
             - [Physical Exam](https://canvas-medical.help.usepylon.com/articles/1745103290-command-physical-exam)
 
           QuestionnaireResponse resources contain answers to questions in a Questionnaire resource. Use the [Questionnaire search endpoint](/api/questionnaire/#search) to find Questionnaire resources.
+        # source: discussion #625
+        additional_information: |-
+          - For responses collected outside Canvas, set `authored` to the time the answers were actually collected, so the recorded timestamp is accurate for audit purposes.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -133,11 +136,9 @@ sections:
                 - name: type
                   type: string
                   description: Type the reference refers to (e.g. "Encounter")
-          # source: discussion #625
           - name: authored
             description_for_all_endpoints: >-
               Note datetime of service where the answers are associated with in ISO 8601 format like `"2022-03-19T14:54:12.194952+00:00"`.<br><br>
-              For responses captured outside Canvas, set `authored` to the time the answers were actually collected so the recorded timestamp is accurate for audit purposes.<br><br>
             create_description: If omitted, the current timestamp will be used.
             type: datetime
           - name: author
