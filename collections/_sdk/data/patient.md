@@ -298,19 +298,16 @@ for identifier in patient_external_identifiers:
 | created    | DateTime            |
 | modified   | DateTime            |
 | patient    | [Patient](#patient) |
-| name       | [Setting name](#setting-names) |
+| name       | [String](#setting-names) |
 | value      | JSON                |
 
 #### Setting names
 
-A patient carries at most one setting per `name`, and `name` is one of:
+A patient carries at most one setting per `name`. Canvas maintains these:
 
 | Name                          | Holds                                                                                                                                  |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `pharmacy`                    | The patient's preferred pharmacies. Read this through [`preferred_pharmacies`](#patient), which normalizes the older single-pharmacy shape into a list |
-| `lab`                         | The patient's preferred lab                                                                                                             |
-| `imagingCenter`               | The patient's preferred imaging center                                                                                                  |
-| `contactMethod`               | How the patient prefers to be contacted, for example `text`                                                                             |
 | `preferredSchedulingTimezone` | The timezone to schedule the patient in, for example `America/New_York`                                                                 |
 
 Because `value` is JSON, its shape differs from one setting to the next.
