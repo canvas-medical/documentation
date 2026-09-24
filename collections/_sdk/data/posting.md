@@ -154,6 +154,7 @@ Represents a payment applied to a billing line item within a claim.
 | dbid                | Integer                                         |
 | posting             | [BasePosting](#baseposting)                     |
 | billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) |
+| claim\_line\_item   | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount              | Decimal                                         |
 | charged             | Decimal                                         |
 | created             | DateTime                                        |
@@ -168,6 +169,7 @@ Represents an adjustment applied to a billing line item.
 | dbid                             | Integer                                         |
 | posting                          | [BasePosting](#baseposting)                     |
 | billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) |
+| claim\_line\_item                | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount                           | Decimal                                         |
 | code                             | String                                          |
 | group                            | String                                          |
@@ -185,6 +187,7 @@ Represents a transfer of a line item balance to another coverage or patient.
 | dbid                             | Integer                                         |
 | posting                          | [BasePosting](#baseposting)                     |
 | billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) |
+| claim\_line\_item                | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount                           | Decimal                                         |
 | code                             | String                                          |
 | group                            | String                                          |
