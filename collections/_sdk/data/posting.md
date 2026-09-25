@@ -28,6 +28,21 @@ claim = Claim.objects.get(id="<uuid>")
 claim_postings = claim.postings.active()
 ```
 
+Payments, adjustments, and transfers each record the claim line item the amount was posted to. To find the charge behind a payment, go through its claim line item:
+
+```python
+from canvas_sdk.v1.data import NewLineItemPayment
+
+payment = NewLineItemPayment.objects.select_related("claim_line_item").get(dbid=1234)
+claim_line_item = payment.claim_line_item
+print(claim_line_item.proc_code)
+
+# None when the claim line item has no billing line item
+charge = claim_line_item.billing_line_item
+```
+
+{% include alert.html type="warning" content="<b>Deprecation Notice:</b> The <code>billing_line_item</code> attribute on <code>NewLineItemPayment</code>, <code>NewLineItemAdjustment</code>, and <code>LineItemTransfer</code> is deprecated. It can return an unrelated charge, because the stored ID belongs to a claim line item, not a billing line item. Use <code>claim_line_item.billing_line_item</code> instead. <code>billing_line_item_id</code> holds the same claim line item ID as <code>claim_line_item_id</code>." %}
+
 ## Attributes
 
 ### BasePosting
@@ -147,13 +162,13 @@ Captures metadata about the method and details of a collected payment.
 
 ### NewLineItemPayment
 
-Represents a payment applied to a billing line item within a claim.
+Represents a payment applied to a claim line item.
 
 | Field Name          | Type                                            |
 |---------------------|-------------------------------------------------|
 | dbid                | Integer                                         |
 | posting             | [BasePosting](#baseposting)                     |
-| billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) |
+| billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) (deprecated) |
 | claim\_line\_item   | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount              | Decimal                                         |
 | charged             | Decimal                                         |
@@ -162,13 +177,13 @@ Represents a payment applied to a billing line item within a claim.
 
 ### NewLineItemAdjustment
 
-Represents an adjustment applied to a billing line item.
+Represents an adjustment applied to a claim line item.
 
 | Field Name                       | Type                                            |
 |----------------------------------|-------------------------------------------------|
 | dbid                             | Integer                                         |
 | posting                          | [BasePosting](#baseposting)                     |
-| billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) |
+| billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) (deprecated) |
 | claim\_line\_item                | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount                           | Decimal                                         |
 | code                             | String                                          |
@@ -180,13 +195,13 @@ Represents an adjustment applied to a billing line item.
 
 ### LineItemTransfer
 
-Represents a transfer of a line item balance to another coverage or patient.
+Represents a transfer of a claim line item balance to another coverage or patient.
 
 | Field Name                       | Type                                            |
 |----------------------------------|-------------------------------------------------|
 | dbid                             | Integer                                         |
 | posting                          | [BasePosting](#baseposting)                     |
-| billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) |
+| billing\_line\_item              | [BillingLineItem](/sdk/data-billing-line-item/) (deprecated) |
 | claim\_line\_item                | [ClaimLineItem](/sdk/data-claim/#claimlineitem) |
 | amount                           | Decimal                                         |
 | code                             | String                                          |
