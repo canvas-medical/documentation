@@ -15,8 +15,10 @@ Return this effect in response to the `NOTE__GET_CUSTOM_CONTENT` event. If no ha
 
 When a note renders, Canvas fires `NOTE__GET_CUSTOM_CONTENT` targeting that note. `event.target.id` holds the note's id. A handler subscribed to the event returns one or more `NoteCustomContent` effects, and Canvas renders each block in the section it names.
 
-- **Placement:** Set `section` to place a block inside a note section. Leave `section` unset to place the block above the note body in the combined note view.
+- **Placement:** Set `section` to place a block at the top of that note section. Leave `section` unset to place the block above the note body.
+- **Note views:** Blocks with a `section` appear only while the note is grouped into sections, and are hidden while their section is collapsed. When a user views the whole note instead, or sections are turned off for the instance, only blocks without a `section` appear.
 - **Multiple blocks:** A handler can return several effects. Blocks returned for the same section stack in the order the handlers ran.
+- **Frames:** Canvas renders each block in its own iframe, so one plugin's block can't reach another's.
 - **Sections:** `section` names a section as the note renders it, not the clinical note section of a command. Canvas decides which commands each rendered section gathers, so a plugin that targets a rendered section keeps working if that grouping changes.
 
 ### Attributes
@@ -45,6 +47,31 @@ Set exactly one of `url` or `content`. The effect raises a validation error when
 Use `content` for a static block you can build as an HTML string inside the handler.
 
 Use `url` for a block that updates itself after the note renders. Canvas renders inline `content` in a frame it manages, and a [WebSocket](/sdk/handlers-simple-api-websocket/) opened from that frame receives no messages. A page served from your plugin keeps its WebSocket connection open and can receive `Broadcast` messages. For example, a section card can update its command count when a command is added to the note.
+
+### Permissions for URL blocks
+
+A `url` block's frame receives the permissions your plugin registers for that URL in the `url_permissions` section of `CANVAS_MANIFEST.json`, such as `MICROPHONE` or `ALLOW_SAME_ORIGIN`. The format is the same as for [modals and widgets](/sdk/layout-effect/#additional-configuration). Inline `content` blocks receive no permissions.
+
+### Frame height
+
+Each frame starts 120 pixels tall. To fit the frame to your block, send a `RESIZE` message with the block's height over the message channel Canvas opens with the frame:
+
+```html
+<script>
+  window.addEventListener('message', (event) => {
+    if (event.data?.type !== 'INIT_CHANNEL' || !event.ports?.[0]) {
+      return;
+    }
+
+    const port = event.ports[0];
+    const reportHeight = () =>
+      port.postMessage({ type: 'RESIZE', height: document.body.scrollHeight });
+
+    reportHeight();
+    new ResizeObserver(reportHeight).observe(document.body);
+  });
+</script>
+```
 
 ### Examples
 
