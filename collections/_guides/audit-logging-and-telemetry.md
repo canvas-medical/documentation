@@ -18,11 +18,28 @@ timestamp.
 | Create | Yes | Per record, per model, attributed to the acting user |
 | Edit or change | Yes | Per record, with full authorship history |
 | Delete, void, or enter-in-error | Yes | Per record, covering hard deletion, soft deletion, and marking entered-in-error |
-| Print | Yes | Note-print events |
+| Print | Yes | Every printed document, attributed to the user who printed it |
 | Chart access | Yes | Chart-open events, attributed to the user opening the chart |
 
 Individual record reads within an already-opened chart are not enumerated separately;
 chart access is recorded at the point the chart is opened.
+
+### Print events
+
+Printing discloses patient information, so Canvas records every print. Recorded
+documents include notes, After Visit Summaries, letters, appointment lists, claim forms,
+and superbills. Patient receipts and ledgers, insurance cards, and cash reconciliation
+reports are recorded too. So are full chart exports that a plugin requests on a staff
+member's behalf.
+
+Each print event records the document printed, its identifier, the acting user, the
+patient in context, and a UTC timestamp. Some documents, such as appointment lists and
+cash reconciliation reports, are not about a single patient, so their events have no
+patient. If Canvas cannot record the event, the print fails and the document is not
+delivered.
+
+Opening a fax preview is recorded as a fax preview rather than a print. Sending the fax
+does not record a separate print event.
 
 Alongside the record audit trail, Canvas captures:
 
@@ -81,7 +98,11 @@ point-in-time extract, an ongoing feed, or ad-hoc investigation.
 
 The Audit Report is generated from the admin console and exports the audit trail for a
 selected date range. This is the most direct route to the record-level events described
-above.
+above, including chart access and print events.
+
+For print events, the report shows the document type as the data accessed and `print` or
+`faxpreview` as the action. When an event has no patient in context, the patient columns
+read `N/A`.
 
 {% include alert.html type="warning" content="Audit Report access is permission-based. If you need access, your internal administrators can work with Canvas support to assign it to the appropriate groups." %}
 
