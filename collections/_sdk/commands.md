@@ -520,7 +520,7 @@ add_condition = AddConditionCommand(
 )
 ```
 
-{% include alert.html type="info" content="Once the condition this command recorded carries an assessment, the command can no longer be entered in error, because reverting it would take the condition out from under that assessment. Resolve the condition instead." %}
+{% include alert.html type="info" content="Once the condition this command recorded carries an assessment, the command can no longer be entered in error, because reverting it would take the condition out from under that assessment. This holds for plugins as well as for the note: an <code>ENTER_IN_ERROR</code> effect against such a command is rejected with <em>Command could not be entered in error due to command-specific business logic</em>. Resolve the condition instead." %}
 
 ---
 
