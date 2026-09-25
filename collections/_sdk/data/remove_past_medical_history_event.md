@@ -37,7 +37,7 @@ note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 removals = note.removed_past_medical_history.all()
 ```
 
-You can also access the removed entry with the `condition` attribute. It can be `None`, so check it before use:
+You can also access the removed entry with the `condition` attribute:
 
 ```python?partial=true
 from canvas_sdk.v1.data import RemovePastMedicalHistoryEvent
@@ -84,7 +84,7 @@ patient_removals = RemovePastMedicalHistoryEvent.objects.for_patient(
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    | |
 | patient          | [Patient](/sdk/data-patient/#patient) | |
 | note             | [Note](/sdk/data-note)                | |
-| condition        | [Condition](/sdk/data-condition)      | The removed past medical history entry. Can be `None`. |
+| condition        | [Condition](/sdk/data-condition)      | The removed past medical history entry. |
 | rationale        | String                                | The reason for the removal, up to 512 characters. Empty when none was given. |
 
 <br/>
