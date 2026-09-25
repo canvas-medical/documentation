@@ -405,6 +405,25 @@ Beyond the built-in validation each command performs on its own fields, you can 
 
 See the [Command Validation effect](/sdk/effect-command-validation/) documentation for the full API and examples.
 
+## Choosing Between Similar Commands
+
+Some commands write to the same part of the chart and differ only in intent. The tables below cover
+the cases where more than one command could plausibly apply.
+
+### Recording a condition
+
+Three commands put a condition on the patient's Conditions list. Which one fits depends on whether
+the condition is active now, and whether you are assessing it.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
+| [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+
+To record an assessment against a condition that is already on the list, use
+[Assess](#assess) rather than any of the three.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -425,7 +444,10 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 
 ### AddCondition
 
-Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in the note's History section. Unlike [Diagnose](#diagnose), AddCondition does not open an assessment for the condition. [Past Medical History](#medicalhistory) also records a condition without assessing it, but as free text rather than a code.
+Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in
+the note's History section, without opening an assessment for it. Reach for it when the condition was
+diagnosed previously and is still active. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and MedicalHistory.
 
 **Command-specific parameters**:
 
@@ -687,6 +709,10 @@ close_goal = CloseGoalCommand(
 ```
 
 ### Diagnose
+
+Records an active condition and assesses it for the first time. See
+[Recording a condition](#recording-a-condition) for how it compares to MedicalHistory and
+AddCondition.
 
 **Command-specific parameters**:
 
@@ -1292,6 +1318,9 @@ lab_review = LabReviewCommand(
 ---
 
 ### MedicalHistory
+
+Backfills a condition the patient had in the past that is not active now. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and AddCondition.
 
 **Command-specific parameters**:
 
@@ -2405,13 +2434,15 @@ RemoveAllergyCommand(
 
 Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart.
 
+{% include alert.html type="info" content="The in-note picker leaves out any past medical history entry that carries a committed assessment, on the grounds that the assessment would be left describing nothing. A plugin is not held to that: a <code>condition_id</code> naming an assessed entry passes validation and commits. Read the condition's <a href='/sdk/data-condition/#condition'>assessments</a> yourself if you want to match what a clinician sees." %}
+
 **Example**:
 
 ```python
 from canvas_sdk.commands import RemovePastMedicalHistoryCommand
 from canvas_sdk.v1.data import Condition
 
-patient_id = '<a patient ID from your instance>'
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 
 past_medical_history_entry = Condition.objects.for_patient(patient_id).committed().filter(
     clinical_status="resolved", surgical=False
@@ -2440,7 +2471,7 @@ RemovePastMedicalHistoryCommand(
 from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
-patient_id = '<a patient ID from your instance>'
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 
 patient_condition = Condition.objects.for_patient(patient_id).committed().active().first()
 
