@@ -2492,12 +2492,14 @@ RemoveAllergyCommand(
 
 | Name           | Type     | Required to commit | Description                                      |
 |----------------|----------|----------|--------------------------------------------------|
-| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition already recorded on that patient's chart. |
+| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition on that patient's chart that carries no assessment. |
 | `rationale`    | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
 
 Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart.
 
-{% include alert.html type="info" content="The in-note picker offers any of the patient's committed, resolved, non-surgical conditions that carry no committed assessment, whichever command recorded them. It leaves out one that carries an assessment, on the grounds that the assessment would be left describing nothing. A plugin is not held to that: a <code>condition_id</code> naming an assessed entry passes validation and commits. Read the condition's <a href='/sdk/data-condition/#condition'>assessments</a> yourself if you want to match what a clinician sees." %}
+{% include alert.html type="info" content="The command accepts any of the patient's committed, resolved, non-surgical conditions that carry no committed assessment, whichever command recorded them. One that carries an assessment is refused, on the grounds that the assessment would be left describing nothing. This applies to plugins as well as to the note's picker: a <code>condition_id</code> naming an assessed condition fails validation with <em>Condition &lt;id&gt; has assessments recorded against it, so this command cannot remove it</em>. An assessment that was itself entered in error does not hold the entry." %}
+
+Committed removals are readable through the [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/) data module.
 
 **Example**:
 
