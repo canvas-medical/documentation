@@ -27492,6 +27492,23 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   </tbody>
 </table>
 
+### Note Custom Content
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE__GET_CUSTOM_CONTENT</th></tr>
+    <tr><td colspan="2">Occurs when a note renders. Plugins respond with custom content blocks to show above the note body or inside a note section. See the <a href='/sdk/effect-note-custom-content/'>Note Custom Content effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">Target</td>
+    </tr>
+    <tr>
+      <td colspan="2"><pre>note_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Note Footer Configuration
 
 <table>

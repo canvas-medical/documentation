@@ -934,6 +934,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Custom Content"
+    url: /sdk/effect-note-custom-content/
+    description: Render custom HTML blocks inside a clinical note.
   - title: "Note Footer Configuration"
     url: /sdk/effect-note-footer-configuration/
     description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.

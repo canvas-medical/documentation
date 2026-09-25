@@ -257,6 +257,7 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
+| NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. See [Note Custom Content](/sdk/effect-note-custom-content/). |
 
 
 ### Appointments
