@@ -90,6 +90,8 @@ conditions = Condition.objects.find(Diabetes)
 |-----------------------------|----------------------------------------------------------------------------|
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
+| created                     | DateTime                                                                   |
+| modified                    | DateTime                                                                   |
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
 | committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |
@@ -109,6 +111,8 @@ conditions = Condition.objects.find(Diabetes)
 | Field Name    | Type                    |
 |---------------|-------------------------|
 | dbid          | Integer                 |
+| created       | DateTime                |
+| modified      | DateTime                |
 | system        | String                  |
 | version       | String                  |
 | code          | String                  |

@@ -204,6 +204,8 @@ educational_materials = patient.education_material.all()
 | ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
+| created     | DateTime                                                |
+| modified    | DateTime                                                |
 | line1       | String                                                  |
 | line2       | String                                                  |
 | city        | String                                                  |
@@ -238,6 +240,8 @@ for addr in patient_addresses:
 | ------------------ | --------------------------------------------------------------------- |
 | id                 | UUID                                                                  |
 | dbid               | Integer                                                               |
+| created            | DateTime                                                              |
+| modified           | DateTime                                                              |
 | system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value              | String                                                                |
 | use                | String                                                                |
@@ -460,6 +464,8 @@ Use this to look up a coding before writing it with the [Patient effect](/sdk/ef
 | Field Name | Type    |
 | ---------- | ------- |
 | dbid       | Integer |
+| created    | DateTime |
+| modified   | DateTime |
 | name       | String  |
 | code       | String  |
 | system     | String  |

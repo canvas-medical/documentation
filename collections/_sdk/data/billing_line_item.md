@@ -99,6 +99,8 @@ For examples of how to use the BillingLineItem data class with the BillingLineIt
 | Field Name    | Type                                |
 | ------------- | ----------------------------------- |
 | dbid          | Integer                             |
+| created       | DateTime                            |
+| modified      | DateTime                            |
 | line_item     | [BillingLineItem](#billinglineitem) |
 | system        | String                              |
 | version       | String                              |

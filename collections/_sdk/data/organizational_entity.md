@@ -36,6 +36,8 @@ For entities of any other `type`, the `service_provider` property returns `None`
 | ------------ | --------------------------------------------------------------------- |
 | id           | UUID                                                                  |
 | dbid         | Integer                                                               |
+| created      | DateTime                                                              |
+| modified     | DateTime                                                              |
 | content_type | [ContentType](/sdk/data-content-type/#contenttype)                    |
 | object_id    | Integer                                                               |
 | name         | String                                                                |

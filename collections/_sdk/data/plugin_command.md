@@ -57,6 +57,8 @@ if plugin_command:
 |-------------|---------|
 | id          | UUID    |
 | dbid        | Integer |
+| created     | DateTime |
+| modified    | DateTime |
 | name        | String  |
 | command_key | String  |
 | schema_key  | String  |

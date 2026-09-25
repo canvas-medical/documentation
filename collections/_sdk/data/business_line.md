@@ -63,6 +63,8 @@ The `filter` method can be used to filter by desired attributes. The following e
 | ------------ | --------------------------------------- |
 | id           | UUID                                    |
 | dbid         | Integer                                 |
+| created      | DateTime                                |
+| modified     | DateTime                                |
 | name         | String                                  |
 | description  | String                                  |
 | area_code    | String                                  |

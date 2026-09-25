@@ -149,6 +149,8 @@ The `filter` method can be used to filter by desired attributes. The following e
 | Field Name                   | Type                                                |
 | ---------------------------- | --------------------------------------------------- |
 | dbid                         | Integer                                             |
+| created                      | DateTime                                            |
+| modified                     | DateTime                                            |
 | payer_id                     | String                                              |
 | name                         | String                                              |
 | type                         | String                                              |
