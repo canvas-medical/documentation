@@ -66,6 +66,7 @@ Use `CommandValidationErrorEffect` with a command's `__POST_VALIDATION` event to
 
 The following command types fire `__POST_VALIDATION` and can be validated with this effect:
 
+- `ADD_CONDITION_COMMAND__POST_VALIDATION`
 - `ADJUST_PRESCRIPTION_COMMAND__POST_VALIDATION`
 - `ALLERGY_COMMAND__POST_VALIDATION`
 - `APPROVE_REFILL_COMMAND__POST_VALIDATION`
@@ -179,6 +180,7 @@ Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler 
 
 `__PRE_DELETE` is fired by the following command types (every command except Chart Section Review):
 
+- `ADD_CONDITION_COMMAND__PRE_DELETE`
 - `ADJUST_PRESCRIPTION_COMMAND__PRE_DELETE`
 - `ALLERGY_COMMAND__PRE_DELETE`
 - `APPROVE_REFILL_COMMAND__PRE_DELETE`

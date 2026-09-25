@@ -94,6 +94,7 @@ The following table shows the different command `schema_key` values with links t
 
 | Schema Key          | Command Data                                                     |
 |---------------------|------------------------------------------------------------------|
+| addCondition        | [AddCondition](/sdk/commands/#addcondition)                      |
 | adjustPrescription  | [AdjustPrescription](/sdk/commands/#adjustprescription)          |
 | allergy             | [Allergy](/sdk/commands/#allergy)                                |
 | assess              | [Assess](/sdk/commands/#assess)                                  |
