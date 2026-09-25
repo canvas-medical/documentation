@@ -11,6 +11,9 @@ sections:
           [https://hl7.org/fhir/R4/consent.html](https://hl7.org/fhir/R4/consent.html)
           <br><br>
           For more information on consents in canvas, see this [article](https://help.canvasmedical.com/articles/8144965836-manging-patient-consents).
+        # source: discussion #896
+        additional_information: |-
+          - The SDK `PatientConsent` data model is read-only, so a plugin cannot change fields such as the expiration date through the SDK. To update a consent's expiration (for example, to re-prompt a patient before each appointment), read the consent's coding from the SDK model, then call [Consent Create](#create) with the new expiration date. Because a consent is matched on patient and coding, the call updates the existing consent in place.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

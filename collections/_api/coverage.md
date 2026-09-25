@@ -9,6 +9,10 @@ sections:
         description: >-
           Financial instrument which may be used to reimburse or pay for health care products and services. Includes both insurance and self-payment.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-coverage.html)
+        # sources: discussions #670, #1194
+        additional_information: |-
+          - The insurance card front and back images in the coverage section of the Canvas UI are uploaded and viewed only through the UI. The API cannot upload them, retrieve them, or tell front from back. A [DocumentReference](/api/documentreference) created through the API lands in the patient's admin documents, not in the coverage card section.
+          - Coverage search does not filter by date. The `period.start` and `period.end` values on each Coverage are its effective-date data.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

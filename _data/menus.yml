@@ -660,6 +660,43 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Building Custom Plugin UI with Action Buttons and SimpleAPI"
+    url: /guides/build-custom-ui-with-action-buttons/
+    description: Open your own screen from a button and act on what the user does there
+    uses:
+      - sdk
+
+  - title: "Automating Note and Billing Workflows"
+    url: /guides/automating-note-and-billing-workflows/
+    description: Carry commands forward, reassign notes by payer, link billing to diagnoses, and act on note lock
+    uses:
+      - sdk
+
+  - title: "Syncing Patient Portal Form Data to the Chart"
+    url: /guides/syncing-patient-portal-form-data/
+    description: Find completed portal forms and write their answers back to the chart
+    uses:
+      - sdk
+      - fhir_api
+
+  - title: "Pre-filling Questionnaires with an AI Scribe Parser"
+    url: /guides/prefill-questionnaires-with-an-ai-scribe-parser/
+    description: Originate a questionnaire and fill its answers from parsed scribe output
+    uses:
+      - sdk
+
+  - title: "Plugin Development Tips and Sandbox Limits"
+    url: /guides/plugin-development-tips-and-sandbox-limits/
+    description: Deploying, debugging, and working within the plugin sandbox
+    uses:
+      - sdk
+
+  - title: "Using Canvas Docs with AI Code Editors"
+    url: /guides/using-canvas-docs-with-ai-code-editors/
+    description: Give an AI coding assistant the Canvas docs through Context7
+    uses:
+      - sdk
+
   - title: "Platform Security Overview"
     url: /guides/platform-security-overview/
     description: Tenancy model, trust boundaries, platform controls, and shared responsibility

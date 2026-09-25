@@ -11,6 +11,12 @@ sections:
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html)<br><br>
           Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
 
+        # sources: discussions #1293, #1401, #1538, #483
+        additional_information: |-
+          - Manage a patient's patient-group membership with the FHIR [Group](/api/group) endpoints, or from a plugin with the SDK [Patient Group effect](/sdk/effect-patient-group/). Group create and update take the complete `member` array, so read the current group, change the member list (append a patient to add, filter a reference out to remove), and send the whole list back.
+          - External identifiers you send on create or update (for example, an MRN from your own system) are stored and returned on a later Read, but they are not shown anywhere in the Canvas UI. The Canvas MRN itself is system-issued and cannot be set or overwritten.
+          - Setting `active` to `false` hides the patient from the default patient list in the Canvas UI, which is a common way to hide duplicate records; clinical users can still search all patients, including inactive ones. FHIR Patient Search returns inactive patients by default; add `active=true` to exclude them.
+          - Leave out the `photo` block entirely when you are not supplying a photo. A `photo` entry whose `data` is null makes the create request return a 500, even though the patient is still created.
         attributes:
           - name: resourceType
             type: string
@@ -462,12 +468,12 @@ sections:
                     description: Inclusive end date.
           - name: photo
             type: array[json]
-            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI.
+            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI. Omit the block when not supplying a photo.
             attributes:
               - name: data
                 type: string
                 exclude_in: read, search
-                description: Base64-encoded image content. Use on create or update to upload a photo.
+                description: Base64-encoded image content. Use on create or update to upload a photo. Do not send a `photo` entry with null `data`.
               - name: url
                 type: string
                 exclude_in: create, update

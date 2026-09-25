@@ -18,6 +18,9 @@ sections:
             - [Physical Exam](https://canvas-medical.help.usepylon.com/articles/1745103290-command-physical-exam)
 
           QuestionnaireResponse resources contain answers to questions in a Questionnaire resource. Use the [Questionnaire search endpoint](/api/questionnaire/#search) to find Questionnaire resources.
+        # source: discussion #625
+        additional_information: |-
+          - For responses collected outside Canvas, set `authored` to the time the answers were actually collected, so the recorded timestamp is accurate for audit purposes.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
