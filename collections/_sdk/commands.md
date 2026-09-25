@@ -520,6 +520,8 @@ add_condition = AddConditionCommand(
 )
 ```
 
+{% include alert.html type="info" content="Once the condition this command recorded carries an assessment, the command can no longer be entered in error, because reverting it would take the condition out from under that assessment. Resolve the condition instead." %}
+
 ---
 
 ### AdjustPrescription
