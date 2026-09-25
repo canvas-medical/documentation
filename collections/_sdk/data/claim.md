@@ -160,6 +160,9 @@ Represents individual billed procedures or services tied to a claim.
 | family_planning   | [FamilyPlanningOptions](#familyplanningoptions)             |
 | created           | DateTime                                                    |
 | modified          | DateTime                                                    |
+| newlineitempayments    | QuerySet[[NewLineItemPayment](/sdk/data-posting/#newlineitempayment)]       |
+| newlineitemadjustments | QuerySet[[NewLineItemAdjustment](/sdk/data-posting/#newlineitemadjustment)] |
+| lineitemtransfers      | QuerySet[[LineItemTransfer](/sdk/data-posting/#lineitemtransfer)]           |
 
 ### ClaimLineItemDiagnosisCode
 
