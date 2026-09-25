@@ -48,6 +48,9 @@ sections:
               - name: use
                 type: enum [ home | work | temp | old | billing ]
                 description: Purpose of this address
+              - name: type
+                type: enum [ both | physical | postal ]
+                description: Distinguishes between physical and postal addresses.
               - name: line
                 type: array[string]
                 description: "Street name, number, direction & P.O. Box etc. This repeating element order: The order in which lines should appear in an address label."

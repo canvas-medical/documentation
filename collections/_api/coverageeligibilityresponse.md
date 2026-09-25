@@ -21,6 +21,7 @@ sections:
             description: Status of the resource. The value is "entered-in-error" if the call to the third-party eligibility service failed.
             enum_options:
               - value: active
+              - value: draft
               - value: entered-in-error
           - name: purpose
             type: array[string]
@@ -141,7 +142,7 @@ sections:
                             - name: system
                               description: The system url of the coding.
                               enum_options: 
-                                - value: http://terminology.hl7.org/CodeSystem/benefit-unit
+                                - value: http://terminology.hl7.org/CodeSystem/benefit-network
                               type: string
                             - name: code
                               description: The code of the benefit network.
@@ -180,7 +181,7 @@ sections:
                                 - value: 'Out of Pocket (Stop Loss)'
                                 - value: 'Limitations'
                                 - value: 'Contact following entity for eligibility or benefit information'
-                                - value: '<information_type> (Incomplete Information)'
+                                - value: '<information_type> (Incomplete information)'
                             - name: allowedString
                               type: string
                               description: Benefits allowed. <br><br>Used for Co-Insurance benefit types.
@@ -204,6 +205,20 @@ sections:
                             - name: usedUnsignedInt
                               type: unsignedInt
                               description: Benefits used. <br><br>Used for Limitations benefit types.
+                        - name: extension
+                          type: array[json]
+                          read_and_search_description: Canvas supports a benefit message extension on each benefit line for read and search interactions. It is present only when the payor returned a note for that line, and repeats once per note.
+                          attributes:
+                            - name: url
+                              type: string
+                              description: Reference that defines the content of this object.
+                              enum_options:
+                                - value: http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message
+                            - name: valueString
+                              type: string
+                              description: >-
+                                The payor's note for this benefit line, for example "Primary Care Visit or Evaluation" or "Specialist Visit or Evaluation".<br><br>
+                                Payors commonly return several copay or coinsurance lines under one service type and distinguish them only in this note, so it is what identifies which line is which.
 
 
         search_parameters:
@@ -565,6 +580,38 @@ sections:
           "benefit": [
             {
               "type": {
+                  "text": "Co-Payment"
+              },
+              "allowedMoney": {
+                  "value": 0
+              },
+              "extension": [
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "Primary Care Visit or Evaluation"
+                }
+              ]
+            },
+            {
+              "type": {
+                  "text": "Co-Payment"
+              },
+              "allowedMoney": {
+                  "value": 50
+              },
+              "extension": [
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "GYN Visit"
+                },
+                {
+                  "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                  "valueString": "Specialist Visit or Evaluation"
+                }
+              ]
+            },
+            {
+              "type": {
                   "text": "Co-Insurance"
               },
               "allowedString": "0.0%"
@@ -659,7 +706,7 @@ sections:
 </div>
 
 <div id="coverageeligibilityresponse-search-request">
-{% include search-request.html resource_type="Group" search_string="request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1" %}
+{% include search-request.html resource_type="CoverageEligibilityResponse" search_string="request=CoverageEligibilityRequest/b41c7cda738d440cb55e0e6cb67499a1" %}
 </div>
 
 <div id="coverageeligibilityresponse-search-response">
@@ -999,6 +1046,38 @@ sections:
                     "text": "Individual"
                 },
                 "benefit": [
+                  {
+                    "type": {
+                        "text": "Co-Payment"
+                    },
+                    "allowedMoney": {
+                        "value": 0
+                    },
+                    "extension": [
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "Primary Care Visit or Evaluation"
+                      }
+                    ]
+                  },
+                  {
+                    "type": {
+                        "text": "Co-Payment"
+                    },
+                    "allowedMoney": {
+                        "value": 50
+                    },
+                    "extension": [
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "GYN Visit"
+                      },
+                      {
+                        "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                        "valueString": "Specialist Visit or Evaluation"
+                      }
+                    ]
+                  },
                   {
                     "type": {
                         "text": "Co-Insurance"

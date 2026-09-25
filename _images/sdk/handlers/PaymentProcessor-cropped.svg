@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="500" viewBox="0 0 860 500" xml:space="preserve">
+  <rect width="860" height="500" fill="#22252e"/>
+  <style>
+    text { font-family: 'SF Mono','Menlo','DejaVu Sans Mono','Courier New',monospace; font-size: 22px; }
+    .kw { fill: #e06c9f; }
+    .ty { fill: #82aaff; }
+    .fn { fill: #82aaff; }
+    .id { fill: #d6deeb; }
+    .self { fill: #c792ea; font-style: italic; }
+    .mut { fill: #5f7e97; }
+  </style>
+
+  <text x="28" y="52"><tspan class="kw">from</tspan><tspan class="id"> canvas_sdk.handlers.payment_processors.card </tspan><tspan class="kw">import</tspan><tspan class="id"> (</tspan></text>
+  <text x="81" y="88"><tspan class="ty">CardPaymentProcessor</tspan><tspan class="id">,</tspan></text>
+  <text x="28" y="124"><tspan class="id">)</tspan></text>
+
+  <text x="28" y="196"><tspan class="kw">class</tspan><tspan class="ty"> MyPaymentProcessor</tspan><tspan class="id">(</tspan><tspan class="ty">CardPaymentProcessor</tspan><tspan class="id">):</tspan></text>
+
+  <text x="81" y="232"><tspan class="kw">def</tspan><tspan class="fn"> payment_form</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, patient=None):</tspan><tspan class="mut"> ...</tspan></text>
+  <text x="81" y="268"><tspan class="kw">def</tspan><tspan class="fn"> add_card_form</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, patient=None):</tspan><tspan class="mut"> ...</tspan></text>
+  <text x="81" y="304"><tspan class="kw">def</tspan><tspan class="fn"> charge</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, amount, token, patient=None, **kwargs):</tspan><tspan class="mut"> ...</tspan></text>
+  <text x="81" y="340"><tspan class="kw">def</tspan><tspan class="fn"> payment_methods</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, patient=None):</tspan><tspan class="mut"> ...</tspan></text>
+  <text x="81" y="376"><tspan class="kw">def</tspan><tspan class="fn"> add_payment_method</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, token, patient, **kwargs):</tspan><tspan class="mut"> ...</tspan></text>
+  <text x="81" y="412"><tspan class="kw">def</tspan><tspan class="fn"> remove_payment_method</tspan><tspan class="id">(</tspan><tspan class="self">self</tspan><tspan class="id">, token, patient):</tspan><tspan class="mut"> ...</tspan></text>
+</svg>

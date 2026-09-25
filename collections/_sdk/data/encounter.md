@@ -72,6 +72,7 @@ encounters = Encounter.objects.filter(state=EncounterState.CONCLUDED)
 | medium     | [EncounterMedium](#encountermedium) |
 | start_time | DateTime                            |
 | end_time   | DateTime                            |
+| document_references | QuerySet[[DocumentReference](/sdk/data-document-reference/#documentreference)] |
 
 ## Enumeration types
 

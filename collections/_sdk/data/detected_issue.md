@@ -60,6 +60,16 @@ from canvas_sdk.v1.data.detected_issue import DetectedIssue
 detected_issues = DetectedIssue.objects.filter(status="active")
 ```
 
+### Committed detected issues
+
+The `committed` method returns detected issues that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.detected_issue import DetectedIssue
+
+committed_detected_issues = DetectedIssue.objects.committed()
+```
+
 ## Attributes
 
 ### DetectedIssue
@@ -71,19 +81,22 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | created                 | DateTime                                          |
 | modified                | DateTime                                          |
 | identified              | DateTime                                          |
-| deleted                 | Boolean                                           |
 | originator              | [CanvasUser](/sdk/data-canvasuser)                |
 | committer               | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error        | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                 | [Patient](/sdk/data-patient/#patient)             |
 | code                    | String                                            |
-| status                  | String                                            |
-| severity                | String                                            |
+| status                  | [DetectedIssueStatus](#detectedissuestatus)       |
+| severity                | [DetectedIssueSeverity](#detectedissueseverity)   |
 | reference               | String                                            |
 | issue_identifier        | String                                            |
 | issue_identifier_system | String                                            |
 | detail                  | String                                            |
 | evidence                | [DetectedIssueEvidence](#detectedissueevidence)[] |
+| assessed_coding_gap_events  | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]     |
+| created_coding_gap_events   | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[]     |
+| deferred_coding_gap_events  | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]       |
+| validated_coding_gap_events | [ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)[] |
 
 ### DetectedIssueEvidence
 
@@ -97,6 +110,32 @@ detected_issues = DetectedIssue.objects.filter(status="active")
 | display        | String                                                   |
 | user_selected  | Boolean                                                  |
 | detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue) |
+
+### DetectedIssueStatus
+
+Available on the model as `DetectedIssue.Status`, so a comparison reads
+`detected_issue.status == DetectedIssue.Status.FINAL`.
+
+| Enum             | Value            | Label            |
+| ---------------- | ---------------- | ---------------- |
+| REGISTERED       | registered       | Registered       |
+| PRELIMINARY      | preliminary      | Preliminary      |
+| CANCELLED        | cancelled        | Cancelled        |
+| AMENDED          | amended          | Amended          |
+| FINAL            | final            | Final            |
+| CORRECTED        | corrected        | Corrected        |
+| ENTERED_IN_ERROR | entered-in-error | Entered in Error |
+
+### DetectedIssueSeverity
+
+Available on the model as `DetectedIssue.Severity`. A detected issue that carries no
+severity holds an empty string rather than `None`.
+
+| Enum     | Value    | Label    |
+| -------- | -------- | -------- |
+| HIGH     | high     | High     |
+| MODERATE | moderate | Moderate |
+| LOW      | low      | Low      |
 
 <br/>
 <br/>

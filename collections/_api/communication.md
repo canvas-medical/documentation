@@ -225,9 +225,13 @@ print(response.text)
       "resource": {
         "resourceType": "Communication",
         "id": "7433b4b2-0d18-45ca-bb12-71105c80386b",
-        "status": "unknown",
+        "status": "completed",
         "sent": "2021-03-21T10:46:17+00:00",
         "received": "2022-03-14T12:03:58.958000+00:00",
+        "subject": {
+          "reference": "Patient/4c21512185184e579b09bfac16dfdd2f",
+          "type": "Patient"
+        },
         "recipient": [
           {
             "reference": "Patient/4c21512185184e579b09bfac16dfdd2f",
@@ -315,8 +319,13 @@ print(response.text)
 {
     "resourceType": "Communication",
     "id": "17b7d61e-4b0e-4940-bd37-b64f5c2ae29d",
-    "status": "unknown",
+    "status": "completed",
     "sent": "2023-10-23T21:19:22.865089+00:00",
+    "received": "2023-10-23T21:21:00.000000+00:00",
+    "subject": {
+        "reference": "Patient/43f1418bae9c41919203e0006761067c",
+        "type": "Patient"
+    },
     "recipient": [
         {
             "reference": "Practitioner/3640cd20de8a470aa570a852859ac87e",
@@ -332,25 +341,6 @@ print(response.text)
             "contentString": "What's up doc?"
         }
     ]
-}
-```
-
-    {% endtab %}
-    {% tab communication-read-response 400 %}
-
-```json
-{
-  "resourceType": "OperationOutcome",
-  "id": "101",
-  "issue": [
-    {
-      "severity": "error",
-      "code": "invalid",
-      "details": {
-        "text": "Bad request"
-      }
-    }
-  ]
 }
 ```
 

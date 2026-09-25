@@ -139,14 +139,6 @@ sections:
           - name: authored
             description: Filter by **authoredOn**. See [Date Filtering](/api/date-filtering) for more information.
             type: date
-          - name: status
-            description: The status of the request. Filters by the `status` field.
-            type: string
-            search_options:
-              - value: active
-              - value: completed
-              - value: draft
-              - value: entered-in-error
           - name: category
             description: Categorization of the request (SNOMED CT). Filters by `category.coding` code and/or system. You can search by code alone or `system|code`.
             type: string
@@ -299,15 +291,15 @@ sections:
   "link": [
     {
       "relation": "self",
-      "url": "/ServiceRequest?_count=10&_offset=0"
+      "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
     },
     {
       "relation": "first",
-      "url": "/ServiceRequest?_count=10&_offset=0"
+      "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
     },
     {
       "relation": "last",
-      "url": "/ServiceRequest?_count=10&_offset=0"
+      "url": "/ServiceRequest?patient=Patient%2Fc4ff2ee2e41b4636b7d37ac7f9297d95&_count=10&_offset=0"
     }
   ],
   "entry": [

@@ -1,4 +1,5 @@
 ---
+slug: beta-commands-2024-06-04
 title: New Commands Added to Commands Module
 date: 2024-06-03
 layout: productupdates

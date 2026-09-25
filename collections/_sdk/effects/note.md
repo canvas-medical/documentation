@@ -17,21 +17,23 @@ Creates a new note. Can be passed an optional UUID as `instance_id` from the `uu
 
 #### Attributes
 
-| Attribute              | Type                | Description                          | Required |
-|------------------------|---------------------|--------------------------------------|----------|
-| `instance_id`          | `UUID` or `str`     | Identifier for the note              | No       |
-| `note_type_id`         | `UUID` or `str`     | Identifier for the note type         | Yes      |
-| `datetime_of_service`  | `datetime.datetime` | When the service was provided        | Yes      |
-| `patient_id`           | `str`               | Identifier for the patient           | Yes      |
-| `practice_location_id` | `UUID` or `str`     | Identifier for the practice location | Yes      |
-| `provider_id`          | `str`               | Identifier for the provider          | Yes      |
-| `title`                | `str` or `None`     | Optional title for the note          | No       |
+| Attribute                  | Type                | Description                                    | Required |
+|----------------------------|---------------------|------------------------------------------------|----------|
+| `instance_id`              | `UUID` or `str`     | Identifier for the note                        | No       |
+| `note_type_id`             | `UUID` or `str`     | Identifier for the note type                   | Yes      |
+| `datetime_of_service`      | `datetime.datetime` | When the service was provided                  | Yes      |
+| `patient_id`               | `str`               | Identifier for the patient                     | Yes      |
+| `practice_location_id`     | `UUID` or `str`     | Identifier for the practice location           | Yes      |
+| `provider_id`              | `str`               | Identifier for the provider                    | Yes      |
+| `title`                    | `str` or `None`     | Optional title for the note                    | No       |
+| `supervising_provider_id`  | `str` or `None`     | Staff identifier for the supervising provider  | No       |
 
 #### Implementation Details
 
 - Validates that the note type exists and has an appropriate category
 - Ensures the patient exists in the system
 - Verifies that the practice location and provider are valid
+- If `supervising_provider_id` is provided, validates that the Staff record exists
 
 #### Example Usage
 
@@ -61,13 +63,14 @@ Updates an existing note. Only certain fields can be modified after creation.
 
 #### Attributes
 
-| Attribute              | Type                | Description                          | Required | Updatable |
-|------------------------|---------------------|--------------------------------------|----------|-----------|
-| `instance_id`          | `UUID` or `str`     | Identifier of the note to update     | Yes      | No        |
-| `title`                | `str` or `None`     | Updated title for the note           | No       | Yes       |
-| `datetime_of_service`  | `datetime.datetime` | Updated service date/time            | No       | Yes       |
-| `practice_location_id` | `UUID` or `str`     | Updated practice location            | No       | Yes       |
-| `provider_id`          | `str`               | Updated provider                     | No       | Yes       |
+| Attribute                  | Type                | Description                                    | Required | Updatable |
+|----------------------------|---------------------|------------------------------------------------|----------|-----------|
+| `instance_id`              | `UUID` or `str`     | Identifier of the note to update               | Yes      | No        |
+| `title`                    | `str` or `None`     | Updated title for the note                     | No       | Yes       |
+| `datetime_of_service`      | `datetime.datetime` | Updated service date/time                      | No       | Yes       |
+| `practice_location_id`     | `UUID` or `str`     | Updated practice location                      | No       | Yes       |
+| `provider_id`              | `str`               | Updated provider                               | No       | Yes       |
+| `supervising_provider_id`  | `str` or `None`     | Staff identifier for the supervising provider  | No       | Yes       |
 
 **Note**: `patient_id` and `note_type_id` cannot be updated after creation.
 
@@ -732,7 +735,7 @@ Reverts a booked or checked-in appointment back to a state where it can be check
 | ------------- | --------------- | --------------------------------------- | -------- |
 | `instance_id` | `UUID` or `str` | Identifier of the appointment to revert | Yes      |
 
-**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED` or `CONVERTED` state.
+**Note**: `instance_id` must be a valid, existing Appointment whose current state allows reversion. An appointment can only be reverted when it is in the `CANCELLED`, `CONVERTED`, or `NOSHOW` state.
 
 #### Example Usage
 

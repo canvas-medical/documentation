@@ -15,8 +15,6 @@ sections:
           - name: id
             description: The identifier of the payment notice.
             type: string
-            required_in: update
-            exclude_in: create
           - name: extension
             type: array[json]
             description_for_all_endpoints: Specific FHIR extensions on resources are supported to be able to map some Canvas specific attributes. The copayment extensions contains references to claims used for copayments.
@@ -49,57 +47,57 @@ sections:
                         description: The reference string of the [Claim](/api/claim) used for copayments in the format of `"Claim/f0dfefbe-3fe0-4ee7-bd44-636f7be073e9"`.
           - name: status
             type: string
-            required_in: create,update
+            required_in: create
             description: The status of the resource instance.
             enum_options: 
                 - value: active
           - name: request
             type: json
-            required_in: create,update
+            required_in: create
             description: >-
               A reference to the patient whose balance this payment is being applied to.
             attributes:
                 - name: reference
                   type: string
-                  required_in: create,update
+                  required_in: create
                   description: The reference string of the patient in the format of `"Patient/a39cafb9d1b445be95a2e2548e12a787"`.
                 - name: type
                   type: string
                   description: Type the reference refers to (e.g. "Patient").
           - name: created
             type: datetime
-            required_in: create,update
+            required_in: create
             description: >-
               Required by the FHIR spec. Canvas recommends sending the current date on create; however, the value returned by the search interaction will be the creation timestamp of the actual database record in Canvas.
           - name: payment
             type: json
-            required_in: create,update
+            required_in: create
             description_for_all_endpoints: >-
               The `payment` field is required by FHIR, but is not used by Canvas. 
             create_description: Canvas recommends sending an empty JSON object.
-            exclude_attributes_in: create,update
+            exclude_attributes_in: create
             attributes:
                 - name: display
-                  exclude_in: create,update
+                  exclude_in: create
                   description: Text alternative for the resource.
                   enum_options: 
                     - value: unused
           - name: recipient
             type: json
-            required_in: create,update
+            required_in: create
             description_for_all_endpoints: >-
               The `recipient` field is required by FHIR, but is not used by Canvas. 
             create_description: Canvas recommends sending an empty JSON object.
-            exclude_attributes_in: create,update
+            exclude_attributes_in: create
             attributes:
                 - name: display
-                  exclude_in: create,update
+                  exclude_in: create
                   description: Text alternative for the resource.
                   enum_options: 
                     - value: unused
           - name: amount
             type: json
-            required_in: create,update
+            required_in: create
             description: >-
               The payment amount.
             attributes:

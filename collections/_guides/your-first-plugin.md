@@ -27,7 +27,7 @@ referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 1. Install the Canvas CLI
 
-To install the Canvas CLI, simply `pip install canvas`. Python 3.11 or 3.12 is required. You can find
+To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find
 additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 
 ## 2. Configure the Canvas CLI for your instances
@@ -216,7 +216,7 @@ class Handler(BaseHandler):
 
 ## 5. Listen for an Event
 
-Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types) you're interested in.
+Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types-and-context) you're interested in.
 
 ## 6. Return an Effect
 

@@ -49,7 +49,7 @@ Navigate to the Canvas UI (sandbox or production instance) and log in using the 
 
 For more detail about making Patient Create requests, check out the API documentation for Patient Create.
 
-{% include alert.html type="info" content="As part of the request's response, you will see a patient ID within the location: header. Copy the ID value between Patient/ and / history - you will need it to create an appointment in the next step.<br><br> Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chat: https://{customer}.canvasmedication.com/patient/{patientID}" %} 
+{% include alert.html type="info" content="As part of the request's response, you will see a patient ID within the location: header. Copy the ID value between Patient/ and / history - you will need it to create an appointment in the next step.<br><br> Also to note that ID will match the ID you will find in your browser when you navigate to the patient's chart: https://{customer}.canvasmedical.com/patient/{patientID}" %} 
 
 
 ## Create an Appointment
@@ -96,7 +96,6 @@ You will then get a response similar to:
         ]
       }
     }
-   }
   ]
 }
 ```
@@ -114,41 +113,39 @@ curl -i --location 'https://fumage-<sandbox-name>.canvasmedical.com/Appointment'
   --header 'Authorization: Bearer <bearer-token>' \
   --header 'Content-Type: application/json' \
   --data '{
-    "resource": {
-        "resourceType": "Appointment",
-        "status": "booked",
-        "appointmentType": {
-            "coding": [
-                {
-                    "system": "http://snomed.info/sct",
-                    "code": "448337001",
-                    "display": "Telemedicine consultation with patient (procedure)"
-                }
-            ]
-        },
-        "description": "Weekly check-in.",
-        "supportingInformation" : [
-          {
-            "reference" : "Location/1"
-          }
-        ],
-        "start": "2022-02-19T13:30:00.000Z",
-        "end": "2022-02-19T14:00:00.000Z",
-        "participant": [
+    "resourceType": "Appointment",
+    "status": "booked",
+    "appointmentType": {
+        "coding": [
             {
-                "actor": {
-                    "reference": "Practitioner/<practitioner-id>"
-                },
-                "status": "accepted"
-            },
-            {
-                "actor": {
-                    "reference": "Patient/<patient-id>"
-                },
-                "status": "accepted"
+                "system": "http://snomed.info/sct",
+                "code": "448337001",
+                "display": "Telemedicine consultation with patient (procedure)"
             }
         ]
-    }
+    },
+    "description": "Weekly check-in.",
+    "supportingInformation" : [
+      {
+        "reference" : "Location/1"
+      }
+    ],
+    "start": "2022-02-19T13:30:00.000Z",
+    "end": "2022-02-19T14:00:00.000Z",
+    "participant": [
+        {
+            "actor": {
+                "reference": "Practitioner/<practitioner-id>"
+            },
+            "status": "accepted"
+        },
+        {
+            "actor": {
+                "reference": "Patient/<patient-id>"
+            },
+            "status": "accepted"
+        }
+    ]
 }'
 ```
 

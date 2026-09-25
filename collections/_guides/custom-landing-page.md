@@ -14,7 +14,7 @@ working through this exercise." %}
 
 ## What Are Widgets in the Patient Portal?
 
-[Widgets](/sdk/layout-effect/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
+[Widgets](/sdk/patient-portal/#portal-landing-page-widgets) in the patient portal are interactive components that enhance the user experience by providing quick access to information and functionalities. 
 They can display key details like upcoming appointments. Widgets can be fully customized with unique content or leverage ready-made components—such as Appointments and Messaging provided by Canvas to ensure consistency and ease of use. 
 These widgets are organized on the landing page using a grid layout, which supports various sizes to optimize the visual presentation and responsiveness across different devices.
 
@@ -48,8 +48,8 @@ class Handler(BaseHandler):
 
     def compute(self):
         widget = PortalWidget(
-          content="Hello World", 
-          size=PortalWidget.Size.COMPACT, 
+          content="Hello World",
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [widget.apply()]
@@ -277,8 +277,8 @@ class Handler(BaseHandler):
         }
 
         medication_widget = PortalWidget(
-          content=render_to_string("templates/medication_widget.html", medication_info), 
-          size=PortalWidget.Size.COMPACT, 
+          content=render_to_string("templates/medication_widget.html", medication_info),
+          size=PortalWidget.Size.COMPACT,
           priority=10
         )
         return [medication_widget.apply()]

@@ -205,25 +205,30 @@ sections:
                 type: json
                 required_in: create, update
                 description: Classification of the supplied information.
-                attributes: 
-                  - name: system
+                attributes:
+                  - name: coding
+                    description: Code defined by a terminology system.
+                    type: array[json]
                     required_in: create,update
-                    description: The system url of the coding.
-                    enum_options: 
-                      - value: http://hl7.org/fhir/ValueSet/claim-informationcategory
-                      - value: http://terminology.hl7.org/CodeSystem/claiminformationcategory
-                    type: string
-                  - name: code
-                    required_in: create,update
-                    description: The code.
-                    type: string
-                    enum_options: 
-                      - value: patientreasonforvisit
-                  - name: display
-                    description: The display name of the coding.
-                    type: string
-                    enum_options: 
-                      - value: Patient Reason for Visit
+                    attributes:
+                      - name: system
+                        required_in: create,update
+                        description: The system url of the coding.
+                        enum_options:
+                          - value: http://hl7.org/fhir/ValueSet/claim-informationcategory
+                          - value: http://terminology.hl7.org/CodeSystem/claiminformationcategory
+                        type: string
+                      - name: code
+                        required_in: create,update
+                        description: The code.
+                        type: string
+                        enum_options:
+                          - value: patientreasonforvisit
+                      - name: display
+                        description: The display name of the coding.
+                        type: string
+                        enum_options:
+                          - value: Patient Reason for Visit
               - name: valueString
                 type: string
                 description: Data to be provided.<br><br>Canvas supports free text to be passed as the reason for visit associated with the claim.
@@ -235,28 +240,33 @@ sections:
             required_in: create
             attributes:
               - name: sequence
-                required_in: create,update
+                required_in: create
                 type: positive integer
                 description: Diagnosis instance identifier.<br><br>The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
               - name: diagnosisCodeableConcept
                 description: Nature of illness or problem.
-                type: array[json]
-                required_in: create,update
-                attributes: 
-                  - name: system
-                    required_in: create,update
-                    description: The system url of the coding.
-                    enum_options: 
-                      - value: http://hl7.org/fhir/ValueSet/icd-10
-                      - value: http://hl7.org/fhir/sid/icd-10-cm
-                    type: string
-                  - name: code
-                    required_in: create,update
-                    description: The ICD10 code. Canvas will automatically add the `.` when displaying in the UI (e.g the code 'H9190' is for the ICD10 H91.90 for unspecified hearing loss in an unspecified ear)
-                    type: string
-                  - name: display
-                    description: The display name of the coding.
-                    type: string
+                type: json
+                required_in: create
+                attributes:
+                  - name: coding
+                    description: Code defined by a terminology system.
+                    type: array[json]
+                    required_in: create
+                    attributes:
+                      - name: system
+                        required_in: create
+                        description: The system url of the coding.
+                        enum_options:
+                          - value: http://hl7.org/fhir/ValueSet/icd-10
+                          - value: http://hl7.org/fhir/sid/icd-10-cm
+                        type: string
+                      - name: code
+                        required_in: create
+                        description: The ICD10 code. Canvas will automatically add the `.` when displaying in the UI (e.g the code 'H9190' is for the ICD10 H91.90 for unspecified hearing loss in an unspecified ear)
+                        type: string
+                      - name: display
+                        description: The display name of the coding.
+                        type: string
           - name: insurance
             description_for_all_endpoints: >-
               Patient insurance information. Contains the list of coverage's associated with the claim in Canvas.
@@ -312,7 +322,7 @@ sections:
                 description: Item instance identifier.<br><br>The `sequence` should be unique within the Claim message, usually starting at 1 and incrementing as needed.
               - name: diagnosisSequence
                 type: array[positive integer]
-                required_in: create, update
+                required_in: create
                 description: Applicable diagnoses. This list of integers corresponds one or more diagnoses in the `Claim.diagnosis` list that this service charge is associated with. 
               - name: productOrService
                 type: json
@@ -341,7 +351,7 @@ sections:
                         type: string
               - name: quantity
                 type: json
-                required_in: create, update
+                required_in: create
                 description: Count of products or services.
                 attributes:
                  - name: value
@@ -349,7 +359,7 @@ sections:
                    description:  Numerical value.
               - name: unitPrice
                 type: json
-                required_in: create, update
+                required_in: create
                 description: Fee, charge or cost per item.
                 attributes:
                  - name: value
@@ -379,7 +389,7 @@ sections:
                         required_in: create,update
                         description: The system url of the coding.
                         enum_options: 
-                          - value: hhttp://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers
+                          - value: http://hl7.org/fhir/us/carin-bb/ValueSet/AMACPTCMSHCPCSModifiers
                           - value: https://www.cms.gov/Medicare/Coding/HCPCSReleaseCodeSets
                         type: string
                       - name: code
@@ -387,7 +397,6 @@ sections:
                         description: The code.
                         type: string
                       - name: display
-                        required_in: create,update
                         description: The display name of the coding.
                         type: string
         search_parameters:
@@ -699,6 +708,10 @@ print(response.text)
             "code": "NeedsClinicianReview",
             "display": "Clinician"
         }
+      },
+      {
+        "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+        "valueId": "d4a09e6c-bcfb-4d7f-bcc6-aa6cc77eaff3"
       }
     ],
     "status": "active",

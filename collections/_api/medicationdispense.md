@@ -129,6 +129,9 @@ sections:
           - name: patient
             description: The patient reference associated with the MedicationDispense in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string
+          - name: _revinclude
+            description: Standard FHIR `_revinclude` parameter.
+            type: string
         endpoints: [read, search]
         read:
           description: Read a MedicationDispense resource.

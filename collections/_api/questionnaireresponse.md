@@ -104,6 +104,8 @@ sections:
                 exclude_in: update
               - value: entered-in-error
                 exclude_in: create
+              - value: in-progress
+                exclude_in: create, update
             type: string
           - name: subject
             required_in: create,update
@@ -158,8 +160,9 @@ sections:
               Canvas supports the following question formats:<br><br>
               • Free text<br>
               • Single choice<br>
-              • Multiple choice<br><br>
-              Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. See the request and response examples for more information.<br><br>
+              • Multiple choice<br>
+              • Date<br><br>
+              Answers to free text questions are provided as a `valueString`. Answers to decimal questions are provided as a `valueDecimal`. Answers to single and multiple choice questions are provided as a `valueCoding`. Answers to date questions are provided as a `valueDate`, an ISO 8601 calendar date (`YYYY-MM-DD`). See the request and response examples for more information.<br><br>
               The following mappings show how the FHIR system URI is mapped to the Canvas system (FHIR -> Canvas):<br><br>
 
                 | FHIR system uri                                                        | Canvas system value |
@@ -178,7 +181,7 @@ sections:
                   description: A Canvas assigned identifier that uniquely identifies this question in Canvas. This linkId must only occur at most once in the payload. You can retrieve this from FHIR Questionnaire Search/Read
                 - name: text
                   type: string
-                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions.
+                  description: Human readable text of the question. This value is not stored for QuestionnaireResponse resources that respond to FHIR questionnaires (i.e. QuestionnaireResponse resources that have a value for `questionnaire`), but it is stored for (and is required by) QuestionnaireResponse resources that respond to questionnaires that are not represented by a FHIR resource, such as a PDF containing a set of questions. Required for QuestionnaireResponses that target an external questionnaire URL.
                 - name: answer
                   type: array[json]
                   required_in: create,update
@@ -190,6 +193,9 @@ sections:
                     - name: valueDecimal
                       type: decimal
                       description: For question where the answer is a decimal (i.e. Questionnaire item type = "decimal"), then the list will contain a single object containing a valueDecimal field with the response value.
+                    - name: valueDate
+                      type: date
+                      description: For a question where the answer is a date (i.e. Questionnaire item type = "date"), then the list will contain a single object containing a valueDate field with the response date, as an ISO 8601 calendar date (YYYY-MM-DD).
                     - name: valueCoding
                       type: json
                       description: For a question where the answer is a single or multiple choice selection (i.e. Questionnaire item `type` = "choice" and `repeats` is "false" for single or "true" for multiple), then the list will have one or more ValueCoding objects. You can retrieve these coding options in the Questionnaire Read/Search endpoint.
@@ -217,8 +223,10 @@ sections:
                       description: >-
                         Nested questionnaire response items. This `item` attribute is nested underneath an `answer`, which means it contains response items to questions or groups that are nested under a question. 
                       type: array[json]
+                      exclude_in: create, update
                 - name: item
                   type: array[json]
+                  exclude_in: create, update
                   description: >-
                     Nested questionnaire response items. This `item` attribute is nested underneath another `item` attribute, meaning that the containing `item` represents a group. The attributes for nested items are the same as the attributes for items at the root level.
         search_parameters:
@@ -263,7 +271,8 @@ sections:
             For free text questions, the answer object must include a `valueString` or you will get the error: `Question of type TXT expects a valueString answer`<br><br>
             For single or multiple choice questions, the answer objects must include a `valueCoding` or you will see one of these errors:<br>
             `Question of type SING expects a valueCoding answer`<br>
-            `Question of type MULT expects a valueCoding answer`
+            `Question of type MULT expects a valueCoding answer`<br><br>
+            For date questions, the answer object must include a `valueDate` or you will get the error: `Question of type DATE expects a valueDate answer`
           responses: [201, 400, 401, 403, 405, 422]
           example_request: questionnaireresponse-create-request
           example_response: questionnaireresponse-create-response
@@ -304,7 +313,7 @@ curl --request POST \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -362,6 +371,15 @@ curl --request POST \
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -388,7 +406,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -446,6 +464,15 @@ payload = {
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -481,7 +508,7 @@ print(response.text)
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         },
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
@@ -543,6 +570,15 @@ print(response.text)
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -624,7 +660,7 @@ curl --request PUT \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -682,6 +718,15 @@ curl --request PUT \
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -708,7 +753,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "questionnaire": "https://fumage-example.canvasmedical.com/Questionnaire/7eefd6fc-0000-44c2-8224-d95f0ceaa2fd",
@@ -766,6 +811,15 @@ payload = {
             "answer": [
                 {
                     "valueString": "Yep"
+                }
+            ]
+        },
+        {
+            "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+            "text": "If you quit smoking, what day?",
+            "answer": [
+                {
+                    "valueDate": "2026-07-14"
                 }
             ]
         }
@@ -821,7 +875,7 @@ print(response.text)
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     },
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/questionnaire-permalink",
@@ -883,6 +937,15 @@ print(response.text)
                         "answer": [
                             {
                                 "valueString": "Yep"
+                            }
+                        ]
+                    },
+                    {
+                        "linkId": "b3f7c21d-5e48-4a9c-9d16-7a0c4e83f1b2",
+                        "text": "If you quit smoking, what day?",
+                        "answer": [
+                            {
+                                "valueDate": "2026-07-14"
                             }
                         ]
                     }

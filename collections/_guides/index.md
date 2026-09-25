@@ -1,5 +1,5 @@
 ---
-slug: /
+permalink: /guides/
 title: "Guides"
 layout: "landingpage"
 ---

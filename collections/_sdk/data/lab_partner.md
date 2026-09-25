@@ -70,6 +70,7 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 | electronic_ordering_enabled | Boolean | Indicates if electronic ordering is enabled for this lab partner.   |
 | keywords                    | Text    | Keywords associated with the lab partner.                           |
 | default_lab_account_number  | String  | The default lab account number used for orders.                     |
+| available_tests             | [LabPartnerTest](#labpartnertest)[] | The tests offered by this lab partner (reverse relation, accessible via `available_tests`). |
 
 ### LabPartnerTest Attributes
 

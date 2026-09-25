@@ -1,4 +1,5 @@
 ---
+slug: addtl-beta-commands-2024-02-08
 title: New Commands Added to Commands Module
 date: 2024-02-08
 layout: productupdates

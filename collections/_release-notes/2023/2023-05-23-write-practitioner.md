@@ -1,4 +1,5 @@
 ---
+slug: write-practitioner-2023-05-23
 title: Manage Staff with the FHIR Practitioner Create & Update Endpoints
 date: 2024-05-23
 tags: api
