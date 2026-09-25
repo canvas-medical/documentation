@@ -7,6 +7,8 @@ hidden: false
 
 Action buttons are UI elements that trigger specific actions when clicked in the Canvas UI. These buttons can be placed in different locations and can interact with runtime data to execute custom code.
 
+{% include compute-availability-warning.html %}
+
 ## Overview
   
 An `ActionButton` class allows you to define custom buttons that appear in different sections of the Canvas UI. When a user clicks the button, the action associated with the button is executed. Action buttons can be added to various locations in the UI, and you can control their visibility and behavior through effects in a handler class.
