@@ -412,17 +412,64 @@ the cases where more than one command could plausibly apply.
 
 ### Recording a condition
 
-Three commands put a condition on the patient's Conditions list. Which one fits depends on whether
-the condition is active now, and whether you are assessing it.
+Four commands create a condition. Which one fits depends on whether the condition is active now,
+whether you are assessing it, and whether it is surgical.
 
 | Command | Use it when |
 |:--------|:------------|
 | [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
 | [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+| [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
 
-To record an assessment against a condition that is already on the list, use
-[Assess](#assess) rather than any of the three.
+All four write a [Condition](/sdk/data-condition/#condition). They differ in what they set on it,
+which is what decides where it shows up and which commands can act on it later:
+
+| Command | `clinical_status` | `surgical` | Opens an assessment |
+|:--------|:------------------|:-----------|:--------------------|
+| [Diagnose](#diagnose) | `active` | `false` | Yes |
+| [MedicalHistory](#medicalhistory) | `resolved` | `false` | No |
+| [AddCondition](#addcondition) | `active` | `false` | No |
+| [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
+
+Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
+from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
+surgical entry, and [AddCondition](#addcondition) ignores one when checking whether a condition is
+already on the list.
+
+### Updating or removing a condition
+
+Four more commands act on a condition that is already on the chart.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
+| [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
+| [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. Resolve Condition will not take it, because the entry is already resolved. |
+
+The last two are easy to confuse. Resolve Condition closes a condition that was genuinely present
+and leaves it on the record as resolved. Remove Past Medical History withdraws an entry that should
+not have been recorded, taking it off the conditions list entirely.
+
+### Recording a medication
+
+Six commands touch a patient's medication list. Three of them produce a prescription that can be
+sent to a pharmacy with [`send()`](#send), and three only change what the chart says.
+
+| Command | Use it when | Produces a prescription |
+|:--------|:------------|:------------------------|
+| [Prescribe](#prescribe) | You are prescribing a medication the patient is not already on. | Yes |
+| [Refill](#refill) | You are renewing a medication the patient is already on. The `fdb_code` must match one of that patient's active medications. | Yes |
+| [AdjustPrescription](#adjustprescription) | You are replacing a prescribed medication with a different one, given as `new_fdb_code`. A different strength or formulation is a different FDB code, so it goes here too. | Yes |
+| [ChangeMedication](#changemedication) | You are changing the `sig` on an active medication without issuing a new prescription. | No |
+| [StopMedication](#stopmedication) | The patient is stopping a medication, and you want the reason on the chart. | No |
+| [MedicationStatement](#medicationstatement) | You are recording a medication the patient reports taking, without prescribing it. | No |
+
+Canceling a prescription that has already gone to a pharmacy is a Cancel Prescription command in
+the note. There is no SDK command class for it, so a plugin cannot originate one, though the
+resulting records are readable through the
+[CancelPrescription](/sdk/data-cancel-prescription/) data module.
 
 ## Commands
 
@@ -476,6 +523,8 @@ add_condition = AddConditionCommand(
 ---
 
 ### AdjustPrescription
+
+Replaces a prescribed medication with a different one, and can send the new prescription to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -571,6 +620,8 @@ allergy = AllergyCommand(
 
 ### Assess
 
+Records an assessment against a condition already on the patient's chart. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
 **Command-specific parameters**:
 
 | Name           | Type          | Required to commit | Description                                                                |
@@ -611,6 +662,8 @@ The check needs that note or command to exist, so it is skipped when you create 
 ---
 
 ### ChangeMedication
+
+Changes the sig on an active medication without issuing a new prescription. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -1361,6 +1414,8 @@ MedicalHistoryCommand(
 
 ### MedicationStatement
 
+Records a medication the patient reports taking, without prescribing it. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Command-specific parameters**:
 
 | Name       | Type                 | Required to commit | Description                                            |
@@ -1414,6 +1469,8 @@ medication_statement_unstructured = MedicationStatementCommand(
 ---
 
 ### SurgicalHistory
+
+Records a past surgical procedure, coded in SNOMED. See [Recording a condition](#recording-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
@@ -1629,6 +1686,8 @@ command.set_test_value("pH", "6.8")
 ---
 
 ### Prescribe
+
+Writes a new prescription for a medication the patient is not already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
 
@@ -2370,6 +2429,8 @@ referral_review = ReferralReviewCommand(
 
 ### Refill
 
+Renews a prescription for a medication the patient is already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Command-specific parameters**:
 
 Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
@@ -2458,6 +2519,8 @@ RemovePastMedicalHistoryCommand(
 ---
 
 ### Resolve Condition
+
+Closes an active condition that is no longer relevant to track. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
@@ -2548,6 +2611,8 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 
 
 ### StopMedication
+
+Records that a patient is stopping a medication, along with the reason. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -2697,6 +2762,8 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 ---
 
 ### UpdateDiagnosis
+
+Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
