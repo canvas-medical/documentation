@@ -1091,6 +1091,9 @@ data_module:
   - title: "CreateCodingGapEvent"
     url: /sdk/data-coding-gap-event/#createcodinggapevent
     description: A record of a coding gap being created.
+  - title: "CustomCommand"
+    url: /sdk/data-custom-command/
+    description: A plugin-defined read-only command recorded on a note (the custom command).
   - title: "DeferCodingGapEvent"
     url: /sdk/data-coding-gap-event/#defercodinggapevent
     description: A record of a coding gap being deferred.
