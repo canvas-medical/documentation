@@ -131,6 +131,8 @@ observations = Observation.objects.find(Weight)
 | Field Name    | Type                       |
 |---------------|----------------------------|
 | dbid          | Integer                    |
+| created       | DateTime                   |
+| modified      | DateTime                   |
 | system        | String                     |
 | version       | String                     |
 | code          | String                     |
@@ -156,6 +158,8 @@ observations = Observation.objects.find(Weight)
 | Field Name            | Type                                |
 |-----------------------|-------------------------------------|
 | dbid                  | Integer                             |
+| created               | DateTime                            |
+| modified              | DateTime                            |
 | system                | String                              |
 | version               | String                              |
 | code                  | String                              |
@@ -168,6 +172,8 @@ observations = Observation.objects.find(Weight)
 | Field Name    | Type                       |
 |---------------|----------------------------|
 | dbid          | Integer                    |
+| created       | DateTime                   |
+| modified      | DateTime                   |
 | system        | String                     |
 | version       | String                     |
 | code          | String                     |

@@ -158,6 +158,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | system        | String                            |
 | version       | String                            |
 | code          | String                            |
@@ -190,6 +192,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name             | Type                                              |
 |------------------------|---------------------------------------------------|
 | dbid                   | Integer                                           |
+| created                | DateTime                                          |
+| modified               | DateTime                                          |
 | system                 | String                                            |
 | version                | String                                            |
 | code                   | String                                            |

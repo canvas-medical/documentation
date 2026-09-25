@@ -114,6 +114,8 @@ allergies = AllergyIntolerance.objects.find(EggSubstance)
 | Field Name          | Type                                      |
 | ------------------- | ----------------------------------------- |
 | dbid                | Integer                                   |
+| created             | DateTime                                  |
+| modified            | DateTime                                  |
 | system              | String                                    |
 | version             | String                                    |
 | code                | String                                    |

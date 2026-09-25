@@ -195,6 +195,8 @@ url = document.document_url if document else None
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | report        | [ReferralReport](#referralreport) |
 | system        | String                            |
 | version       | String                            |

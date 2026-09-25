@@ -79,6 +79,8 @@ The `filter` method can be used to filter by desired attributes. The following e
 | Field Name    | Type                                                            |
 | ------------- | --------------------------------------------------------------- |
 | dbid          | Integer                                                         |
+| created       | DateTime                                                        |
+| modified      | DateTime                                                        |
 | system        | String                                                          |
 | version       | String                                                          |
 | code          | String                                                          |

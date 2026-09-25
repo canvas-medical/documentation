@@ -123,6 +123,8 @@ for medication in medications:
 | ------------------------------ | -------------------------------------------------------- |
 | id                             | UUID                                                     |
 | dbid                           | Integer                                                  |
+| created                        | DateTime                                                 |
+| modified                       | DateTime                                                 |
 | patient                        | [Patient](/sdk/data-patient/#patient)                    |
 | entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
 | committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
@@ -148,6 +150,8 @@ for medication in medications:
 | Field Name    | Type                      |
 | ------------- | ------------------------- |
 | dbid          | Integer                   |
+| created       | DateTime                  |
+| modified      | DateTime                  |
 | system        | String                    |
 | version       | String                    |
 | code          | String                    |

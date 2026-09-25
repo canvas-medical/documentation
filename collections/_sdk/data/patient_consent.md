@@ -99,6 +99,8 @@ for reference in consent.document_references:
 | ---------------- | --------------------------------------------------------------- |
 | id               | UUID                                                            |
 | dbid             | Integer                                                         |
+| created          | DateTime                                                        |
+| modified         | DateTime                                                        |
 | patient          | [Patient](/sdk/data-patient)                                    |
 | category         | [PatientConsentCoding](#patientconsentcoding)                   |
 | state            | [PatientConsentStatus](#patientconsentstatus)                   |
@@ -115,6 +117,8 @@ for reference in consent.document_references:
 | Field Name             | Type                                                          |
 | ---------------------- | ------------------------------------------------------------- |
 | dbid                   | Integer                                                       |
+| created                | DateTime                                                      |
+| modified               | DateTime                                                      |
 | system                 | String                                                        |
 | version                | String                                                        |
 | code                   | String                                                        |
@@ -135,6 +139,8 @@ for reference in consent.document_references:
 | Field Name    | Type    |
 | ------------- | ------- |
 | dbid          | Integer |
+| created       | DateTime |
+| modified      | DateTime |
 | system        | String  |
 | version       | String  |
 | code          | String  |
