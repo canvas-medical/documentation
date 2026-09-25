@@ -124,6 +124,8 @@ class MyApplication(Application):
 - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
 - `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
 
+When opened in a patient's chart, both right chart pane targets stay open while the user moves around the same patient's chart. They close when the user opens a different patient or leaves the chart.
+
 ## Step 5: Installing the Application
 
 To install your application, run:
