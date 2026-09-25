@@ -28055,6 +28055,10 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>Canvas is requesting the content for a custom patient chart summary section. See <a href='/sdk/patient-chart-summary-custom-section-handler/'>Patient Chart Summary Custom Section Handler</a>.</td>
     </tr>
     <tr>
+      <td>NOTE__GET_CUSTOM_CONTENT</td>
+      <td>Canvas is rendering a note and asking what content to show inside it. See <a href='/sdk/note-custom-content-effect/'>Note Custom Content</a>.</td>
+    </tr>
+    <tr>
       <td>PANEL_SECTIONS_CONFIGURATION</td>
       <td>The panel section is loading.</td>
     </tr>
