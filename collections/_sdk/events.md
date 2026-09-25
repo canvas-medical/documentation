@@ -27099,6 +27099,27 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__POST_LOGIN</th></tr>
+    <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a `LaunchModalEffect` with the `DEFAULT_MODAL` target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"login_method": str["credentials" |
+                    "access_token" |
+                    "registration"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
