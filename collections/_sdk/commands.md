@@ -2497,7 +2497,7 @@ RemoveAllergyCommand(
 
 Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart.
 
-{% include alert.html type="info" content="The in-note picker leaves out any past medical history entry that carries a committed assessment, on the grounds that the assessment would be left describing nothing. A plugin is not held to that: a <code>condition_id</code> naming an assessed entry passes validation and commits. Read the condition's <a href='/sdk/data-condition/#condition'>assessments</a> yourself if you want to match what a clinician sees." %}
+{% include alert.html type="info" content="The in-note picker offers any of the patient's committed, resolved, non-surgical conditions that carry no committed assessment, whichever command recorded them. It leaves out one that carries an assessment, on the grounds that the assessment would be left describing nothing. A plugin is not held to that: a <code>condition_id</code> naming an assessed entry passes validation and commits. Read the condition's <a href='/sdk/data-condition/#condition'>assessments</a> yourself if you want to match what a clinician sees." %}
 
 **Example**:
 
