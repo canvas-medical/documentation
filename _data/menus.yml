@@ -1255,7 +1255,7 @@ data_module:
     description: The reason for a patient's visit.
   - title: "Reference"
     url: /sdk/data-reference/
-    description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
+    description: A saved reference embedded on a note, optionally backed by a diagnostic view.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
