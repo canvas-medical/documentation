@@ -405,6 +405,72 @@ Beyond the built-in validation each command performs on its own fields, you can 
 
 See the [Command Validation effect](/sdk/effect-command-validation/) documentation for the full API and examples.
 
+## Choosing Between Similar Commands
+
+Some commands write to the same part of the chart and differ only in intent. The tables below cover
+the cases where more than one command could plausibly apply.
+
+### Recording a condition
+
+Four commands create a condition. Which one fits depends on whether the condition is active now,
+whether you are assessing it, and whether it is surgical.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
+| [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+| [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
+
+All four write a [Condition](/sdk/data-condition/#condition). They differ in what they set on it,
+which is what decides where it shows up and which commands can act on it later:
+
+| Command | `clinical_status` | `surgical` | Opens an assessment |
+|:--------|:------------------|:-----------|:--------------------|
+| [Diagnose](#diagnose) | `active` | `false` | Yes |
+| [MedicalHistory](#medicalhistory) | `resolved` | `false` | No |
+| [AddCondition](#addcondition) | `active` | `false` | No |
+| [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
+
+Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
+from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
+surgical entry, and [AddCondition](#addcondition) ignores one when checking whether a condition is
+already on the list.
+
+### Updating or removing a condition
+
+Four more commands act on a condition that is already on the chart.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
+| [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
+| [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
+
+The last two are easy to confuse. Resolve Condition closes a condition that was genuinely present
+and leaves it on the record as resolved. Remove Past Medical History withdraws an entry that should
+not have been recorded, taking it off the conditions list entirely.
+
+### Recording a medication
+
+Six commands touch a patient's medication list. Three of them produce a prescription that can be
+sent to a pharmacy with [`send()`](#send), and three only change what the chart says.
+
+| Command | Use it when | Produces a prescription |
+|:--------|:------------|:------------------------|
+| [Prescribe](#prescribe) | You are prescribing a medication the patient is not already on. | Yes |
+| [Refill](#refill) | You are renewing a medication the patient is already on. The `fdb_code` must match one of that patient's active medications. | Yes |
+| [AdjustPrescription](#adjustprescription) | You are replacing a prescribed medication with a different one, given as `new_fdb_code`. A different strength or formulation is a different FDB code, so it goes here too. | Yes |
+| [ChangeMedication](#changemedication) | You are changing the `sig` on an active medication without issuing a new prescription. | No |
+| [StopMedication](#stopmedication) | The patient is stopping a medication, and you want the reason on the chart. | No |
+| [MedicationStatement](#medicationstatement) | You are recording a medication the patient reports taking, without prescribing it. | No |
+
+Canceling a prescription that has already gone to a pharmacy is a Cancel Prescription command in
+the note. There is no SDK command class for it, so a plugin cannot originate one, though the
+resulting records are readable through the
+[CancelPrescription](/sdk/data-cancel-prescription/) data module.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -423,7 +489,44 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 
 ---
 
+### AddCondition
+
+Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in
+the note's History section, without opening an assessment for it. Reach for it when the condition was
+diagnosed previously and is still active. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and MedicalHistory.
+
+**Command-specific parameters**:
+
+| Name                        | Type     | Required to commit | Description                                                |
+|:----------------------------|:---------|:---------|:-----------------------------------------------------------|
+| `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `background`                | _string_ | `false`  | Background information about the condition.                |
+| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Example**:
+
+```python?partial=true
+from canvas_sdk.commands import AddConditionCommand
+from datetime import date
+
+add_condition = AddConditionCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='N183',
+    background='Diagnosed at outside nephrology practice.',
+    approximate_date_of_onset=date(2023, 4, 1),
+    comments='Stable on last three panels.'
+)
+```
+
+{% include alert.html type="info" content="Once the condition this command recorded carries an assessment, the command can no longer be entered in error, because reverting it would take the condition out from under that assessment. This holds for plugins as well as for the note: an <code>ENTER_IN_ERROR</code> effect against such a command is rejected with <em>Command could not be entered in error due to command-specific business logic</em>. Resolve the condition instead." %}
+
+---
+
 ### AdjustPrescription
+
+Replaces a prescribed medication with a different one, and can send the new prescription to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -519,6 +622,8 @@ allergy = AllergyCommand(
 
 ### Assess
 
+Records an assessment against a condition already on the patient's chart. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
 **Command-specific parameters**:
 
 | Name           | Type          | Required to commit | Description                                                                |
@@ -559,6 +664,8 @@ The check needs that note or command to exist, so it is skipped when you create 
 ---
 
 ### ChangeMedication
+
+Changes the sig on an active medication without issuing a new prescription. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -657,6 +764,10 @@ close_goal = CloseGoalCommand(
 ```
 
 ### Diagnose
+
+Records an active condition and assesses it for the first time. See
+[Recording a condition](#recording-a-condition) for how it compares to MedicalHistory and
+AddCondition.
 
 **Command-specific parameters**:
 
@@ -1263,6 +1374,9 @@ lab_review = LabReviewCommand(
 
 ### MedicalHistory
 
+Backfills a condition the patient had in the past that is not active now. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and AddCondition.
+
 **Command-specific parameters**:
 
 | Name                     | Type      | Required to commit | Description                                                |
@@ -1301,6 +1415,8 @@ MedicalHistoryCommand(
 ---
 
 ### MedicationStatement
+
+Records a medication the patient reports taking, without prescribing it. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -1355,6 +1471,8 @@ medication_statement_unstructured = MedicationStatementCommand(
 ---
 
 ### SurgicalHistory
+
+Records a past surgical procedure, coded in SNOMED. See [Recording a condition](#recording-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
@@ -1570,6 +1688,8 @@ command.set_test_value("pH", "6.8")
 ---
 
 ### Prescribe
+
+Writes a new prescription for a medication the patient is not already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
 
@@ -2311,6 +2431,8 @@ referral_review = ReferralReviewCommand(
 
 ### Refill
 
+Renews a prescription for a medication the patient is already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Command-specific parameters**:
 
 Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
@@ -2364,7 +2486,48 @@ RemoveAllergyCommand(
 
 ---
 
+### Remove Past Medical History
+
+**Command-specific parameters**:
+
+| Name           | Type     | Required to commit | Description                                      |
+|----------------|----------|----------|--------------------------------------------------|
+| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition already recorded on that patient's chart, with no committed assessment against it. An assessment that was entered in error, or is not committed yet, does not block removal. |
+| `rationale`    | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
+
+Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart. Each removal is recorded as a [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/), which you can query from the data module.
+
+{% include alert.html type="info" content="An entry with a committed assessment cannot be removed, because the assessment would be left describing nothing. The in-note picker leaves these entries out, and a plugin that names one gets a validation error: <code>Condition {id} has assessments recorded against it, so this command cannot remove it</code>. The rule also applies at commit, so an assessment committed after the removal was originated still blocks the commit." %}
+
+**Example**:
+
+```python
+from canvas_sdk.commands import RemovePastMedicalHistoryCommand
+from canvas_sdk.v1.data import Condition
+
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+
+# Leave out entries with a committed assessment, which this command refuses.
+past_medical_history_entry = (
+    Condition.objects.for_patient(patient_id)
+    .committed()
+    .filter(clinical_status="resolved", surgical=False)
+    .exclude(assessments__committer__isnull=False, assessments__entered_in_error__isnull=True)
+    .first()
+)
+
+RemovePastMedicalHistoryCommand(
+    condition_id=past_medical_history_entry.id,
+    rationale="Imported in error from the HIE feed.",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+)
+```
+
+---
+
 ### Resolve Condition
+
+Closes an active condition that is no longer relevant to track. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
@@ -2378,7 +2541,7 @@ RemoveAllergyCommand(
 from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
-patient_id = '<a patient ID from your instance>'
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 
 patient_condition = Condition.objects.for_patient(patient_id).committed().active().first()
 
@@ -2455,6 +2618,8 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 
 
 ### StopMedication
+
+Records that a patient is stopping a medication, along with the reason. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -2604,6 +2769,8 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 ---
 
 ### UpdateDiagnosis
+
+Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
