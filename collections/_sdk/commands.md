@@ -446,7 +446,7 @@ Four more commands act on a condition that is already on the chart.
 | [Assess](#assess) | You are recording an assessment against an existing condition. |
 | [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
 | [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
-| [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. Resolve Condition will not take it, because the entry is already resolved. |
+| [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
 
 The last two are easy to confuse. Resolve Condition closes a condition that was genuinely present
 and leaves it on the record as resolved. Remove Past Medical History withdraws an entry that should
@@ -2492,14 +2492,12 @@ RemoveAllergyCommand(
 
 | Name           | Type     | Required to commit | Description                                      |
 |----------------|----------|----------|--------------------------------------------------|
-| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition on that patient's chart that carries no assessment. |
+| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition already recorded on that patient's chart, with no committed assessment against it. An assessment that was entered in error, or is not committed yet, does not block removal. |
 | `rationale`    | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
 
-Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart.
+Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart. Each removal is recorded as a [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/), which you can query from the data module.
 
-{% include alert.html type="info" content="The command accepts any of the patient's committed, resolved, non-surgical conditions that carry no committed assessment, whichever command recorded them. One that carries an assessment is refused, on the grounds that the assessment would be left describing nothing. This applies to plugins as well as to the note's picker: a <code>condition_id</code> naming an assessed condition fails validation with <em>Condition &lt;id&gt; has assessments recorded against it, so this command cannot remove it</em>. An assessment that was itself entered in error does not hold the entry." %}
-
-Committed removals are readable through the [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/) data module.
+{% include alert.html type="info" content="An entry with a committed assessment cannot be removed, because the assessment would be left describing nothing. The in-note picker leaves these entries out, and a plugin that names one gets a validation error: <code>Condition {id} has assessments recorded against it, so this command cannot remove it</code>. The rule also applies at commit, so an assessment committed after the removal was originated still blocks the commit." %}
 
 **Example**:
 
@@ -2509,9 +2507,14 @@ from canvas_sdk.v1.data import Condition
 
 patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 
-past_medical_history_entry = Condition.objects.for_patient(patient_id).committed().filter(
-    clinical_status="resolved", surgical=False
-).first()
+# Leave out entries with a committed assessment, which this command refuses.
+past_medical_history_entry = (
+    Condition.objects.for_patient(patient_id)
+    .committed()
+    .filter(clinical_status="resolved", surgical=False)
+    .exclude(assessments__committer__isnull=False, assessments__entered_in_error__isnull=True)
+    .first()
+)
 
 RemovePastMedicalHistoryCommand(
     condition_id=past_medical_history_entry.id,

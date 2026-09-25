@@ -192,6 +192,7 @@ educational_materials = patient.education_material.all()
 | follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                                |
 | reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
 | removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
+| removed_past_medical_history | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)[] |
 | resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
 | cancel_prescriptions     | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  |
 | cancel_prescription_responses | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[] |

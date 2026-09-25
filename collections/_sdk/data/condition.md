@@ -103,6 +103,7 @@ conditions = Condition.objects.find(Diabetes)
 | assessed_coding_gaps        | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]  |
 | assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
 | resolutions                 | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  |
+| past_medical_history_removals | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)[] |
 
 ### ConditionCoding
 
