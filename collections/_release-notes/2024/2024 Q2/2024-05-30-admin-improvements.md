@@ -1,4 +1,5 @@
 ---
+slug: admin-improvements-2024-05-30
 title: Admin Improvements
 layout: productupdates
 tags: config

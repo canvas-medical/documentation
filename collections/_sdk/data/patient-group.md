@@ -86,6 +86,9 @@ active_memberships = PatientGroupMember.objects.filter(active=True, patient_grou
 | id         | UUID                            |
 | name       | String                          |
 | members    | [Patient](/sdk/data-patient/)[] |
+| created    | DateTime                        |
+| modified   | DateTime                        |
+| patientgroupmember_set | [PatientGroupMember](#patientgroupmember)[] |
 
 ### PatientGroupMember
 

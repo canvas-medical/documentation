@@ -97,6 +97,7 @@ calendars = Calendar.objects.for_calendar_name(
 | recurrence               | String                  | Recurrence rule for recurring events                   |
 | recurrence_ends_at       | DateTime                | The date and time when the recurrence pattern ends     |
 | recurring_parent_event   | [Event](#event)         | The parent event                                       |
+| exceptions               | [Event](#event)[]       | Exception (override) events for this recurring parent event |
 | original_starts_at       | DateTime                | The original start time for recurring event exceptions |
 | is_all_day               | Boolean                 | Whether this is an all-day event (default: false)      |
 | is_cancelled             | Boolean                 | Whether this event has been cancelled (default: false) |

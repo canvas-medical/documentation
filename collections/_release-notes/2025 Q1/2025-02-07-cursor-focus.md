@@ -1,4 +1,5 @@
 ---
+slug: cursor-focus-2025-02-07
 title: Fixes Cursor Focus Bug in SDK Command Handling  
 layout: productupdates  
 tags: bugfix ui

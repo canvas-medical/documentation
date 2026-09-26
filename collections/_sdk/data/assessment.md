@@ -44,6 +44,16 @@ from canvas_sdk.v1.data.assessment import Assessment, AssessmentStatus
 assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de1d790", status=AssessmentStatus.STATUS_IMPROVING)
 ```
 
+### Committed assessments
+
+The `committed` method returns assessments that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.assessment import Assessment
+
+committed_assessments = Assessment.objects.committed()
+```
+
 ## Attributes
 
 ### Assessment
@@ -55,7 +65,6 @@ assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de
 | created             | DateTime                                                |
 | modified            | DateTime                                                |
 | originator          | [CanvasUser](/sdk/data-canvasuser)                      |     |
-| deleted             | Boolean                                                 |
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                      |
 | committer           | [CanvasUser](/sdk/data-canvasuser)                      |
 | patient             | [Patient](/sdk/data-patient/#patient)                   |
@@ -68,6 +77,25 @@ assessments = Assessment.objects.filter(patient__id="1eed3ea2a8d546a1b681a2a45de
 | care_team           | String                                                  |
 | treatments_stated   | [MedicationStatement](/sdk/data-medication-statement)[] |
 | billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[]        |
+| referrals           | [Referral](/sdk/data-referral)[]                        |
+
+### Commands linked to an assessment
+
+A Plan- or Procedures-section command written in the same note can be linked to an assessment, which each of these accessors reads back from the assessment's side. The command holds the other half of the link on its own `assessment` field.
+
+| Field Name          | Type                                                                          |
+| ------------------- | ----------------------------------------------------------------------------- |
+| follow_ups          | [FollowUp](/sdk/data-follow-up/#followup)[]                                   |
+| goals               | [Goal](/sdk/data-goal/#goal)[]                                                |
+| immunizations       | [Immunization](/sdk/data-immunization/#immunization)[]                        |
+| instructions        | [Instruction](/sdk/data-instruction/#instruction)[]                           |
+| note_tasks          | [NoteTask](/sdk/data-task/#notetask)[]                                        |
+| plans               | [Plan](/sdk/data-plan/#plan)[]                                                |
+| procedures          | [Procedure](/sdk/data-procedure/#procedure)[]                                 |
+| stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
+| updategoals         | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
+
+A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 
 ## Enumeration types
 

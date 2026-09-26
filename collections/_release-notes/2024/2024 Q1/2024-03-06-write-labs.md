@@ -1,4 +1,5 @@
 ---
+slug: write-labs-2024-03-06
 title: Write Labs Via the API
 date: 2024-03-06
 layout: productupdates

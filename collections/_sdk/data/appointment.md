@@ -94,6 +94,9 @@ appointment = Appointment.objects.filter(
 | description                  | String                                                            |
 | external_identifiers         | [AppointmentExternalIdentifier](#appointmentexternalidentifier)[] |
 | metadata                     | [AppointmentMetadata](#appointmentmetadata)[]                     |
+| children                     | [Appointment](#appointment)[]                                     |
+| appointment_rescheduled_to   | [Appointment](#appointment)[]                                     |
+| labels                       | [TaskLabel](/sdk/data-task/#tasklabel)[]                          |
 
 
 ### AppointmentExternalIdentifier
@@ -111,6 +114,16 @@ appointment = Appointment.objects.filter(
 | issued_date     | Date                        |
 | expiration_date | Date                        |
 | appointment     | [Appointment](#appointment) |
+
+### AppointmentLabel
+
+The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Reach the labels on an appointment through its `labels` attribute rather than querying this model.
+
+| Field Name  | Type                                   |
+|-------------|----------------------------------------|
+| dbid        | Integer                                |
+| appointment | [Appointment](#appointment)            |
+| task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
 
 ### AppointmentMetadata
 

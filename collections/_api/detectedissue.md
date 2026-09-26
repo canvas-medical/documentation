@@ -451,6 +451,7 @@ payload = {
         ],
         "text": "Codinggap"
     },
+    "severity": "moderate",
     "patient": {
         "reference": "Patient/a39cafb9d1b445be95a2e2548e12a787",
         "type": "Patient"
@@ -720,8 +721,8 @@ payload = {
 </div>
 
 <div id="detectedissue-search-response">
-{% tabs search-response %}
-{% tab search-response 200 %}
+{% tabs detectedissue-search-response %}
+{% tab detectedissue-search-response 200 %}
 ```json
 {
     "resourceType": "Bundle",

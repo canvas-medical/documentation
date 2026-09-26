@@ -12,8 +12,10 @@ The Canvas SDK provides comprehensive models for working with laboratory data th
 - **`LabOrder`**: Represents a lab order placed for a patient, including order details, transmission type, and associated tests
 - **`LabTest`**: Individual tests within a lab order, tracking status from creation through processing
 - **`LabReport`**: Contains the results returned from the lab, including all values and associated metadata
+- **`LabReportRemark`**: Report-level remarks from lab personnel, accessible via `LabReport.remarks`
 - **`LabValue`**: Individual test results within a lab report, including values, units, and reference ranges
 - **`LabReview`**: Tracks the clinical review process for lab results, including provider comments and patient communication
+- **`DiagnosticReport`**: The `DiagnosticReport` linked to a `LabReport`, accessible via `LabReport.diagnostic_reports`
 
 ## Basic Usage
 
@@ -211,6 +213,65 @@ for test in lab_order.tests.all():
         print(f"Report ID: {test.report.id}")
 ```
 
+### Working with Diagnostic Reports
+
+A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+
+#### Getting the DiagnosticReport(s) from a LabReport
+
+```python
+from canvas_sdk.v1.data.lab import LabReport
+
+lab_report = LabReport.objects.get(id="report-id")
+
+for diagnostic_report in lab_report.diagnostic_reports.all():
+    print(f"DiagnosticReport ID: {diagnostic_report.id}")
+    print(f"Status: {diagnostic_report.status}")
+```
+
+#### Following a DiagnosticReport back to its LabReport
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+
+diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
+
+# Follow the `lab` foreign key back to the originating LabReport
+lab_report = diagnostic_report.lab
+if lab_report:
+    print(f"LabReport ID: {lab_report.id}")
+```
+
+#### Filtering DiagnosticReports by patient
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+
+diagnostic_reports = DiagnosticReport.objects.for_patient("patient-id")
+```
+
+#### Reconciling with FHIR
+
+A `DiagnosticReport`'s `id` is the same id used by the FHIR API, so you can start from a `LabReport`, grab its `DiagnosticReport`, and use the FHIR client to read the corresponding FHIR [DiagnosticReport](/api/diagnosticreport/) resource:
+
+```python?partial=true
+from canvas_sdk.clients.canvas_fhir import CanvasFhir
+from canvas_sdk.v1.data.lab import LabReport
+
+lab_report = LabReport.objects.get(id="report-id")
+diagnostic_report = lab_report.diagnostic_reports.first()
+
+# Declare these secrets in the CANVAS_MANIFEST.json and set the values on the
+# plugin configuration page.
+client = CanvasFhir(
+    self.secrets["CANVAS_FHIR_CLIENT_ID"],
+    self.secrets["CANVAS_FHIR_CLIENT_SECRET"],
+)
+
+# Use the DiagnosticReport's id to read the corresponding FHIR DiagnosticReport resource.
+fhir_diagnostic_report = client.read("DiagnosticReport", str(diagnostic_report.id))
+```
+
 ### Working with Lab Reviews
 
 Lab reviews track the clinical review process for lab results, including provider comments and patient communication. Here's how to work with the LabReport and LabReview relationship:
@@ -298,6 +359,41 @@ for report in lab_reports:
                 print(f"  {coding.name}: {value.value} {value.units} (Flag: {value.abnormal_flag})")
 ```
 
+### Committed records
+
+The `committed` method returns `LabReport`, `LabReview`, `LabOrder`, and `LabOrderReason` records that have been committed and not entered in error:
+
+```python
+from canvas_sdk.v1.data.lab import LabReport, LabReview, LabOrder, LabOrderReason
+
+committed_reports = LabReport.objects.committed()
+committed_reviews = LabReview.objects.committed()
+committed_orders = LabOrder.objects.committed()
+committed_order_reasons = LabOrderReason.objects.committed()
+```
+
+## The document reference
+
+`LabReport` carries the report's values and review state, not a file. When the report is reviewed, Canvas renders it to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report.
+
+To find it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, LabReport
+
+report = LabReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="labreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=report.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that has not been reviewed yet has no document reference, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### LabReport
@@ -308,7 +404,7 @@ for report in lab_reports:
 | dbid                 | Integer                               |
 | created              | DateTime                              |
 | modified             | DateTime                              |
-| review_mode          | String                                |
+| review_mode          | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |
@@ -325,9 +421,37 @@ for report in lab_reports:
 | originator           | [CanvasUser](/sdk/data-canvasuser)    |
 | committer            | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
+| ordered_tests        | [LabTest](#labtest)[]                 |
+| result_tests         | [LabTest](#labtest)[]                 |
+| remarks              | [LabReportRemark](#labreportremark)[] |
+| diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
+| laborder_set         | [LabOrder](#laborder)[]               |
+
+### LabReportRemark
+
+| Field Name | Type                    |
+|------------|-------------------------|
+| dbid       | Integer                 |
+| created    | DateTime                |
+| modified   | DateTime                |
+| report     | [LabReport](#labreport) |
+| comment    | String                  |
+
+### DiagnosticReport
+
+The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport id.
+
+| Field Name | Type                                                  |
+|------------|-------------------------------------------------------|
+| id         | UUID                                                  |
+| dbid       | Integer                                               |
+| created    | DateTime                                              |
+| modified   | DateTime                                              |
+| status     | [DiagnosticReportStatus](#diagnosticreportstatus)     |
+| subject    | [Patient](/sdk/data-patient/#patient)                 |
+| lab        | [LabReport](#labreport)                               |
 
 ### LabReview
 
@@ -338,7 +462,6 @@ for report in lab_reports:
 | created                      | DateTime                              |
 | modified                     | DateTime                              |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted                      | Boolean                               |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)    |
 | internal_comment             | String                                |
@@ -348,7 +471,6 @@ for report in lab_reports:
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
 | reports                      | [LabReport](#labreport)[]             |
-| tests                        | [LabTest](#labtest)[]                 |
 
 ### LabValue
 
@@ -391,7 +513,6 @@ for report in lab_reports:
 | created                   | DateTime                                          |
 | modified                  | DateTime                                          |
 | originator                | [CanvasUser](/sdk/data-canvasuser)                |
-| deleted                   | Boolean                                           |
 | committer                 | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
@@ -416,6 +537,7 @@ for report in lab_reports:
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
+| laborder_set              | [LabOrder](#laborder)[]                           |
 
 ### LabOrderReason
 
@@ -425,7 +547,6 @@ for report in lab_reports:
 | created           | DateTime                                              |
 | modified          | DateTime                                              |
 | originator        | [CanvasUser](/sdk/data-canvasuser)                    |
-| deleted           | Boolean                                               |
 | committer         | [CanvasUser](/sdk/data-canvasuser)                    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                    |
 | order             | [LabOrder](#laborder)                                 |
@@ -439,10 +560,6 @@ for report in lab_reports:
 | dbid               | Integer                               |
 | created            | DateTime                              |
 | modified           | DateTime                              |
-| originator         | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted            | Boolean                               |
-| committer          | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
 | reason             | [LabOrderReason](#laborderreason)     |
 | condition          | [Condition](/sdk/data-condition)      |
 
@@ -454,8 +571,6 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 |-----------------------------|-------------------------------------------|
 | id                          | UUID                                      |
 | dbid                        | Integer                                   |
-| created                     | DateTime                                  |
-| modified                    | DateTime                                  |
 | ontology_test_name          | String                                    |
 | ontology_test_code          | String                                    |
 | status                      | [LabTestOrderStatus](#labtestorderstatus) |
@@ -470,6 +585,21 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 | values                      | [LabValue](#labvalue)[]                   |
 
 ## Enumeration types
+
+### DiagnosticReportStatus
+
+| Value              | Label            |
+|--------------------|------------------|
+| `REGISTERED`       | Registered       |
+| `PARTIAL`          | Partial          |
+| `PRELIMINARY`      | Preliminary      |
+| `FINAL`            | Final            |
+| `AMENDED`          | Amended          |
+| `CORRECTED`        | Corrected        |
+| `APPENDED`         | Appended         |
+| `CANCELLED`        | Cancelled        |
+| `ENTERED_IN_ERROR` | Entered-in-error |
+| `UNKNOWN`          | Unknown          |
 
 ### TransmissionType
 

@@ -44,7 +44,7 @@ Regardless of the authentication method used, a successful request includes `"ex
 response body.  The corresponding value will be an integer for the number of seconds until
 the token will be expired in Canvas.  By reusing the token and eliminating redundant token requests,
 there is a **performance** gain from reducing the overall number of requests. The system is also more
-**secure** - having fewer tokens reduces the overall surface area for illegitamate access
+**secure** - having fewer tokens reduces the overall surface area for illegitimate access
 
 **General Guidelines:**
 - store the access token as securely as the client id and secret
@@ -87,7 +87,7 @@ def get_new_auth_token():
         expiration_date = datetime.now() + timedelta(seconds=response.json()["expires_in"])
 
         os.environ["CANVAS_API_ACCESS_TOKEN"] = access_token
-        os.environ["CANVAS_ACESS_TOKEN_EXPIRATION_DATE"] = expiration_date.strftime("%m/%d/%y %H:%M:%S")
+        os.environ["CANVAS_ACCESS_TOKEN_EXPIRATION_DATE"] = expiration_date.strftime("%m/%d/%y %H:%M:%S")
 
         return response.json()["access_token"]
     else:
@@ -125,7 +125,7 @@ if __name__ == '__main__':
     patients = response.json()["entry"]
     for patient in patients:
         patient_id = patient["resource"]["id"]
-        response = requests.get(f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}")
+        response = requests.get(f"{FUMAGE_BASE_URL}/Appointment?patient=Patient/{patient_id}", headers=headers)
 
         # do something with the appointments - save locally, modify and update, etc.
 

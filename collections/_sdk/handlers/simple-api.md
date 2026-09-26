@@ -20,4 +20,10 @@ The Canvas SDK allows developers to define both HTTP and WebSocket APIs to integ
             <p>Establish real-time communication channels for interactive plugin behavior and updates.</p>
         </div>
     </a>
+    <a href="/sdk/handlers-simple-api-commands">
+        <div class="sdk-card">
+            <span class="cardHeading">Commands API</span>
+            <p>Expose commands as HTTP endpoints, validated against the command itself.</p>
+        </div>
+    </a>
 </div>

@@ -45,6 +45,9 @@ sections:
                   - name: display
                     description: The display name of the coding.
                     type: string
+              - name: text
+                description: Plain text representation of the medication.
+                type: string
         endpoints: [read, search]
         search_requirements_description: A Medication Search requires either a code or _text search parameter to perform. 
         search_parameters:

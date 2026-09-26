@@ -71,8 +71,6 @@ INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
 INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
 INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:04:24,410 A Task was created!
-INFO 2024-09-26 17:04:24,410 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (0 ms)
-INFO 2024-09-26 17:04:24,411 Responded to Event TASK_CREATED (1 ms)
 ```
 
 Awesome! But we're not here to log, we need to make an API request. To do
@@ -127,14 +125,12 @@ created a task, you should see this in your log stream:
 INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
 INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
-INFO 2024-09-26 17:18:33,851 task_webhook:task_webhook.handlers.event_handlers:Handler.compute() completed (693 ms)
-INFO 2024-09-26 17:18:33,851 Responded to Event TASK_CREATED (696 ms)
 ```
 
-This log output is a great reminder for me to mention that making HTTP
-requests to external servers will slow plugin execution while it waits on the
-external server to respond. It's a good idea to make sure the servers you're
-hitting have a sufficiently quick response time.
+One thing worth mentioning here: making HTTP requests to external servers will
+slow plugin execution while it waits on the external server to respond. It's a
+good idea to make sure the servers you're hitting have a sufficiently quick
+response time.
 
 Checking in on our webhook.site logs shows it received our request!
 ![Log of web
@@ -257,7 +253,7 @@ request](/assets/images/webhook-guide/webhook-guide-second-request.png)
 
 A single plugin handler can listen for multiple event types. The event type will
 be available in `self.event.type`, which will contain a member of the `EventType`
-enum. The [full list of events is available](/sdk/events/#event-types).
+enum. The [full list of events is available](/sdk/events/#event-types-and-context).
 Here is a short example that listens for two different events:
 
 ```python
@@ -285,7 +281,7 @@ class Handler(BaseHandler):
         headers = {"Authorization": f"Bearer {self.secrets['AUTH_TOKEN']}"}
 
         # self.event.type is a member of the EventType enum corresponding to
-        # one of the event types in the plugin's RESPONDS_TO attribute
+        # one of the event types in the handler's RESPONDS_TO attribute
         verb = 'created' if self.event.type == EventType.TASK_CREATED else 'updated'
 
         payload = {

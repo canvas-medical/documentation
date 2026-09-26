@@ -70,6 +70,8 @@ for interview_response in interview.interview_responses.all():
     log.info(f"response option: {interview_response.response_option_value}")
 ```
 
+{% include alert.html type="info" content="A date question writes its answer to <code>response_option_date</code> as a real date, and to <code>response_option_value</code> as the same date in ISO-8601 form. Use <code>response_option_date</code> to compare or to filter, because date lookups such as <code>__gte</code> and <code>__year</code> work only on it. It is <code>None</code> for every other question type, and also when nobody answered the date question." %}
+
 ## Filtering
 
 Questionnaires and interviews can be filtered by any attribute that exists on the models.
@@ -89,6 +91,8 @@ interviews = Interview.objects.filter(progress_status="F")
 
 ### By ValueSet
 
+See [Value Sets](/sdk/data-value-sets/) for the library of built-in value sets and how to create your own.
+
 Filtering by ValueSet works a little differently. The `find` method on the model manager is used to perform `ValueSet` filtering:
 
 ```python
@@ -96,6 +100,28 @@ from canvas_sdk.v1.data.questionnaire import Questionnaire
 from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
 
 questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
+```
+
+`Interview` also supports `find`, which returns the interviews whose questionnaire has a code in the value set:
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
+
+interviews = Interview.objects.find(TobaccoUseScreening)
+```
+
+For interviews, `find` matches against the related `Questionnaire` through the `questionnaires` relation. Questionnaires store their code system by name (for example, `"LOINC"`) rather than by URL, and `find` handles this for you. It also composes with `for_patient`:
+
+```python
+from canvas_sdk.v1.data.questionnaire import Interview
+from canvas_sdk.value_set.v2022.assessment import TobaccoUseScreening
+
+interviews = (
+    Interview.objects
+    .for_patient("1eed3ea2a8d546a1b681a2a45de1d790")
+    .find(TobaccoUseScreening)
+)
 ```
 
 ## Attributes
@@ -111,43 +137,96 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | name        | String                              |
 | code_system | String                              |
 | code        | String                              |
-| type        | String                              |
+| type        | String — one of the [question types](#question-types) below |
 | use_in_shx  | Boolean                             |
 | options     | [ResponseOption](#responseoption)[] |
 | questions   | [Question](#question)[]             |
 
+<a id="question-types"></a>
+
+#### Question types
+
+`type` holds the code for the kind of question the option set describes. It decides how the question
+renders in a note and which value an answer carries.
+
+| `type` | Question | Answer |
+|:-------|:---------|:-------|
+| `TXT`  | Free text | Text, on the response's `response_option_value`. |
+| `INT`  | Integer | A whole number. |
+| `DEC`  | Decimal | A decimal number. |
+| `DATE` | Date | A calendar date, on the response's `response_option_date`. |
+| `SING` | Single select | One [ResponseOption](#responseoption). |
+| `MULT` | Multi select | One or more [ResponseOption](#responseoption) records. |
+
+`TXT` and `DATE` questions are not scored, so they are skipped when a questionnaire calculates a
+score. Authoring a questionnaire in a plugin sets this through the question's `responses_type` — see
+[Response types](/sdk/effect-questionnaires/#response-types).
+
 ### ResponseOption
 
-| Field Name          | Type                                                           |
-|---------------------|----------------------------------------------------------------|
-| dbid                | Integer                                                        |
-| created             | DateTime                                                       |
-| modified            | DateTime                                                       |
-| status              | String                                                         |
-| name                | String                                                         |
-| code                | String                                                         |
-| code_description    | String                                                         |
-| value               | String                                                         |
-| response_option_set | [ResponseOptionSet](#responseoptionset)                        |
-| ordering            | Integer                                                        |
-| interview_responses | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| Field Name            | Type                                                           |
+|-----------------------|----------------------------------------------------------------|
+| dbid                  | Integer                                                        |
+| created               | DateTime                                                       |
+| modified              | DateTime                                                       |
+| status                | String                                                         |
+| name                  | String                                                         |
+| code                  | String                                                         |
+| code_description      | String                                                         |
+| value                 | String                                                         |
+| response_option_set   | [ResponseOptionSet](#responseoptionset)                        |
+| ordering              | Integer                                                        |
+| interview_responses   | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| enablement_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
+
+`enablement_conditions` holds the conditions that test for this response option, which is how you find the questions a given answer unlocks.
 
 ### Question
 
-| Field Name          | Type                                                           |
-|---------------------|----------------------------------------------------------------|
-| id                  | UUID                                                           |
-| dbid                | Integer                                                        |
-| created             | DateTime                                                       |
-| modified            | DateTime                                                       |
-| status              | String                                                         |
-| name                | String                                                         |
-| response_option_set | [ResponseOptionSet](#responseoptionset)                        |
-| acknowledge_only    | Boolean                                                        |
-| show_prologue       | Boolean                                                        |
-| code_system         | String                                                         |
-| code                | String                                                         |
-| interview_responses | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| Field Name           | Type                                                           |
+|----------------------|----------------------------------------------------------------|
+| id                   | UUID                                                           |
+| dbid                 | Integer                                                        |
+| created              | DateTime                                                       |
+| modified             | DateTime                                                       |
+| status               | String                                                         |
+| name                 | String                                                         |
+| response_option_set  | [ResponseOptionSet](#responseoptionset)                        |
+| acknowledge_only     | Boolean                                                        |
+| show_prologue        | Boolean                                                        |
+| code_system          | String                                                         |
+| code                 | String                                                         |
+| enable_behavior      | String — `all` or `any`                                        |
+| interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| dependent_conditions | [QuestionEnablementCondition](#questionenablementcondition)[]  |
+| triggers_condition   | [QuestionEnablementCondition](#questionenablementcondition)[]  |
+
+`enable_behavior` decides whether all of the question's [enablement conditions](#questionenablementcondition) must be met for it to be enabled, or only one of them. It is empty on a question authored without an `enabled_behavior`, so handle an empty value when reading it.
+
+The read-side attribute here is `enable_behavior` (no "d"). When authoring a questionnaire through the effect or the manifest schema, the matching config field is spelled `enabled_behavior` (with a "d"). The difference is intentional.
+
+A question sits on both sides of the branching, so it carries a relation for each direction:
+
+- `dependent_conditions`: the conditions that decide whether this question is enabled.
+- `triggers_condition`: the conditions on other questions that test this question's answer.
+
+### QuestionEnablementCondition
+
+A `QuestionEnablementCondition` controls when a `Question` is enabled, following FHIR's `enableWhen` pattern. Import it with `from canvas_sdk.v1.data import QuestionEnablementCondition`. Here `question` is the question the condition governs, and `dependent_on` is the question whose answer is tested.
+
+| Field Name    | Type                                          |
+|---------------|-----------------------------------------------|
+| dbid          | Integer                                       |
+| created       | DateTime                                      |
+| modified      | DateTime                                      |
+| status        | String                                        |
+| question      | [Question](#question)                         |
+| dependent_on  | [Question](#question)                         |
+| operator      | String — `=`, `!=`, `exists`, or `not_exists` |
+| answer_option | [ResponseOption](#responseoption)             |
+| answer_value  | String                                        |
+
+`operator` takes the same comparison operators as a questionnaire's enabled conditions (see [Enablement operators](/sdk/effect-questionnaires/#enablement-operators)). `answer_option` references the [ResponseOption](#responseoption) matched, the read-side counterpart of a condition's `value_code`; `answer_value` holds a literal value matched, the counterpart of a condition's `value_string`.
 
 ### Questionnaire
 
@@ -190,7 +269,6 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 |----------------------|----------------------------------------------------------------|
 | id                   | UUID                                                           |
 | dbid                 | Integer                                                        |
-| deleted              | Boolean                                                        |
 | committer            | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                             |
 | status               | String                                                         |
@@ -205,6 +283,20 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | created              | DateTime                                                       |
 | modified             | DateTime                                                       |
 | interview_responses  | [InterviewQuestionResponse](#interviewquestionnaireresponse)[] |
+| assessment_set       | [Assessment](/sdk/data-assessment/#assessment)[]               |
+
+### InterviewQuestionnaireMap
+
+The join between an [Interview](#interview) and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
+
+| Field Name    | Type                            |
+|---------------|---------------------------------|
+| dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
+| status        | String                          |
+| interview     | [Interview](#interview)         |
+| questionnaire | [Questionnaire](#questionnaire) |
 
 ### InterviewQuestionResponse
 
@@ -219,6 +311,7 @@ questionnaires = Questionnaire.objects.find(TobaccoUseScreening)
 | question              | [Question](#question)             |
 | response_option       | [ResponseOption](#responseoption) |
 | response_option_value | String                            |
+| response_option_date  | Date                              |
 | questionnaire_state   | String                            |
 | interview_state       | String                            |
 | comment               | String                            |

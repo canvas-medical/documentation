@@ -70,7 +70,7 @@ class HelloWorld(ActionButton):
     BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
 
     def handle(self) -> list[Effect]:
-        launch_modal = LaunchModalEffect(content=render_to_string("protocols/hello-world.html", { "title": "hello world" }))
+        launch_modal = LaunchModalEffect(content=render_to_string("templates/hello-world.html", { "title": "hello world" }))
 
         return [launch_modal.apply()]
 ```

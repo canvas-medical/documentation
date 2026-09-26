@@ -6,8 +6,10 @@ frontend:
         - rvm install $(cat .ruby-version)
         - rvm use $(cat .ruby-version)
         - gem install bundler -v 2.4.12
+        - curl -LsSf https://astral.sh/uv/install.sh | sh
     build:
       commands:
+        - export PATH="$HOME/.local/bin:$PATH"
         - bundle install
         - yarn install
         - yarn build

@@ -25,7 +25,7 @@ Each item in the `errors` list is a `ValidationError` dataclass with the followi
 
 ## Example Usage
 
-Return an `EventValidationError` from your protocol's `compute` method to block the event and show a message to the user. You can also return other effects alongside `EventValidatinoError`.
+Return an `EventValidationError` from your protocol's `compute` method to block the event and show a message to the user. You can also return other effects alongside `EventValidationError`.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -99,3 +99,4 @@ class MyHandler(BaseHandler):
 
 - If an `EventValidationError` is returned, the event is aborted and the error message is shown in the UI (if initiated from the UI).
 - This effect is typically used for pre-create validation of events, such as note state changes or appointment scheduling.
+- Any other effects returned alongside an `EventValidationError` are still applied, even though the event itself is blocked. In the example above, the `AddBannerAlert` effect is added and persists even when the note state change is rejected.

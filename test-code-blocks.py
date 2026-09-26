@@ -16,7 +16,10 @@ from markdown_it import MarkdownIt
 
 Kind = Literal["PYTHON"] | Literal["PYTHON_IMPORTS_ONLY"] | Literal["MISSING"]
 
-BUILTINS = set(dir(builtins) + ["__classdict__"])
+# Names the compiler puts in a scope's symbol table that no code imports or assigns:
+# __class__/__classdict__ in a class body, and __conditional_annotations__ wherever
+# Python 3.14 defers an annotation (PEP 649).
+BUILTINS = set(dir(builtins) + ["__class__", "__classdict__", "__conditional_annotations__"])
 
 
 def extract_code_blocks(
@@ -254,6 +257,11 @@ def check(fail_fast: bool = False, quiet: bool = False) -> None:
 
     for markdown_file in glob.iglob("**/*.md", recursive=True):
         if "node_modules" in markdown_file:
+            continue
+
+        # Skip build output (_site/): generate-llms.py writes a .md mirror of
+        # every page there, and those are validated via their collection source.
+        if markdown_file.startswith("_site/") or "/_site/" in markdown_file:
             continue
 
         # Choosing to skip generated example plugin documentation.

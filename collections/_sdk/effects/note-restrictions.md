@@ -28,7 +28,7 @@ If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by def
 | `event.actor.id`  | `str` (int)  | The database ID of the authenticated user requesting the note. Use `Staff.objects.filter(user__dbid=event.actor.id)` to resolve to a staff record. |
 | `event.context`   | `{}`         | Empty — no additional context is provided.                                                                                                         |
 
-### Fields
+### Attributes
 
 | Field             | Type            | Default | Description                                                                                            |
 |-------------------|-----------------|---------|--------------------------------------------------------------------------------------------------------|
@@ -78,7 +78,7 @@ class NoteAccessHandler(BaseHandler):
 
 When a plugin performs an action that changes whether a note is restricted (e.g. writing an edit lock to `NoteMetadata`, updating an access rule), it can emit a `NoteRestrictionsUpdatedEffect`. Canvas will broadcast a WebSocket notification to all clients currently viewing that note, causing them to refetch their restrictions immediately — no page reload required.
 
-### Fields
+### Attributes
 
 | Field     | Type  | Description                                         |
 |-----------|-------|-----------------------------------------------------|

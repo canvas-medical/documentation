@@ -53,7 +53,7 @@ sections:
           - name: encounter
             description_for_all_endpoints: Encounter associated with media.
             create_description: >-
-                Supply an encounter reference to be able to insert the allergy command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+                Supply an encounter reference to be able to insert the Visual Exam Finding command into a specific note on the patient's timeline. If no encounter is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
                 <br><br>
                 **Canvas does not currently support concurrent creation of resources on the same encounter.** Please avoid issuing concurrent requests that reference the same encounter to this endpoint, or to any other endpoints that reference encounters. It is OK to issue concurrent requests to these endpoints as long as the requests reference different encounters.
             type: json
@@ -72,7 +72,6 @@ sections:
             attributes:
               - name: reference
                 type: string
-                required_in: create
                 description: The reference string of the operator in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`.
               - name: type
                 type: string
@@ -123,11 +122,6 @@ sections:
           responses: [200, 401, 403, 404]
           example_request: media-read-request
           example_response: media-read-response
-        update:
-          description: Update an Media resource.
-          responses: [200, 400, 401, 403, 404, 405, 412, 422]
-          example_request: media-update-request
-          example_response: media-update-response
         search:
           description: Search for Media resources.
           responses: [200, 400, 401, 403]
@@ -158,7 +152,7 @@ curl --request POST \
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "status": "completed",
@@ -205,7 +199,7 @@ payload = {
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "status": "completed",
@@ -262,7 +256,7 @@ print(response.text)
     "extension": [
         {
             "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+            "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
         }
     ],
     "status": "completed",
@@ -384,7 +378,7 @@ print(response.text)
                 "extension": [
                     {
                         "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
-                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5",
+                        "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
                     }
                 ],
                 "status": "completed",

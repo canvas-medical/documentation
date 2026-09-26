@@ -47,7 +47,7 @@ To build the website run the following line
 ```sh
 yarn build
 ```
-The built website will be in `_site` folder.
+The built website will be in `_site` folder. The build also emits LLM-facing artifacts into `_site`: `llms.txt` (index), `llms-full.txt` (full corpus), and a `.md` mirror of every page (via `generate-llms.py`). These require `uv` on the PATH. To regenerate them against an existing `_site` without a full rebuild, run `yarn build:llms`.
 
 You can also run a local server to test it with this command
 ```sh

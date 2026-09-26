@@ -79,9 +79,20 @@ for command in note.commands.all():
 
 For more information about command types and their data structure, see the [Command](/sdk/data-command/) documentation.
 
+### Retrieve educational materials for a note
+
+Educational material shared through the Educational Material command is recorded on the note. If you have a note object, those records can be found using the `education_material` reverse relation:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+educational_materials = note.education_material.all()
+```
+
 ### Understanding the note body structure
 
-The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+The `body` of a note is a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
 
 ```python
 import json
@@ -106,13 +117,55 @@ The body array contains objects of two types:
      "type": "command",
      "value": "reasonForVisit",
      "data": {
-       "id": 1095,
        "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
      }
    }
    ```
 
-The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+   `command_uuid` identifies the command and is present on every command object.
+   It matches the `id` of the [Command](/sdk/data-command/) model. A command
+   object on a note that has not yet moved to the [refactored body
+   structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
+   the integer identifier of the record the command created. A note on the
+   refactored structure never carries one, so read the
+   [Command](/sdk/data-command/) through `command_uuid` and take
+   `anchor_object` from it instead.
+
+#### Querying on the body
+
+`body` is computed on each access rather than stored in a column, because Canvas
+assembles it from more than one column. That does not change the value you read,
+but it does limit which query operations can name it:
+
+| Operation                                              | Supported | Notes                                                                                              |
+|--------------------------------------------------------|-----------|----------------------------------------------------------------------------------------------------|
+| `Note.objects.filter(body=...)`                        | Yes       | Also `exclude()` and `get()`, and lookups nested inside a `Q` object                               |
+| `Note.objects.only("body")`                            | Yes       | Loads every column the property reads, so building a body costs no further queries                 |
+| `Note.objects.defer("body")`                           | Yes       | Defers all of them                                                                                 |
+| `Note.objects.values("body")`, `values_list("body")`   | No        | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return |
+| `Note.objects.order_by("body")`                        | No        | Raises a `FieldError`                                                                              |
+| `body` named through a relation                        | No        | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead |
+
+{% include alert.html type="warning" content="Naming <code>body</code> through a relation stopped working in the <a href=\"/release-notes/1-348-0/\">September 8, 2026 release</a>. A queryset on another model that defers or filters <code>note__body</code> now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with <code>Note.objects.defer(\"body\")</code>." %}
+
+A `body` filter reads the column holding that note's body, and the two columns hold
+different shapes: a legacy note holds an ordered list of lines, while a note on the
+refactored structure holds an object keyed by line identifier. A filter written against one
+shape matches no notes on the other, and returns no rows instead of raising.
+
+So read the body from a note you already have, or filter notes by it, rather than trying
+to select it as a value:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+# Load only the columns the body needs.
+notes = Note.objects.only("body").filter(patient__id="b80b1cdc2e6a4aca90ccebc02e683f35")
+for note in notes:
+    print(note.body)
+```
+
+The `command_uuid` in a command object matches the `id` field of the [Command](/sdk/data-command/) model. It is present on the command lines of every note, so use it to retrieve the full command:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -182,6 +235,35 @@ if CurrentNoteStateEvent.objects.filter(note=note, state=NoteStates.LOCKED).exis
     # This note is locked!
     pass
 ```
+
+### Retrieve the PDF of a locked note
+
+Locking a note captures it as a PDF showing the note at the moment of the lock. The file is stored on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent) that recorded the lock, so you get there through the note's state history rather than from the note itself.
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the lock event's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, DocumentReferenceStatus
+from canvas_sdk.v1.data.note import Note, NoteStates
+
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+lock_events = note.state_history.filter(state=NoteStates.LOCKED)
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="notestatechangeevent"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type,
+    object_id__in=[event.dbid for event in lock_events],
+    status=DocumentReferenceStatus.CURRENT,
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="A note can be locked more than once. Each lock captures its own PDF, and Canvas supersedes the earlier ones — so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version. Only encounter, inpatient, and review note types are captured this way; other note types have no PDF." %}
 
 ### Find all open notes
 
@@ -301,26 +383,61 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid` (matching the Command `id`); older notes may additionally include an integer `id`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
+| supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
+| last_modified_by_staff | [Staff](/sdk/data-staff/#staff)      | The staff member who last modified the note                                                                                                                                                          |
 | checksum            | String                                 |                                                                                                                                                                                                      |
 | billing_note        | String                                 |                                                                                                                                                                                                      |
 | related_data        | JSON                                   | Can contain one key, `roomNumber`, if the Note is an inpatient stay.                                                                                                                                 |
 | datetime_of_service | DateTime                               |                                                                                                                                                                                                      |
 | place_of_service    | String                                 |                                                                                                                                                                                                      |
 | encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
+| location            | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note                                                                                                                             |
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 | metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
 | lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
 | imaging_reviews            | QuerySet[[ImagingReview](/sdk/data-imaging/#imagingreview)] | All imaging reviews associated with this note                                                                                                                                              |
 | referral_reviews            | QuerySet[[ReferralReview](/sdk/data-referral/#referralreview)] | All referral reviews associated with this note                                                                                                                                              |
+| chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
+| visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
+| state_history       | QuerySet[[NoteStateChangeEvent](#notestatechangeevent)] | The note's state-change audit history                                                                                                                                       |
+| current_state       | [CurrentNoteStateEvent](#currentnotestateevent) | The note's current state event                                                                                                                                                      |
+| assessments         | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note                                                                                                                                  |
+| goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |
+| updategoals         | QuerySet[[UpdateGoal](/sdk/data-goal/#updategoal)] | All goal updates and closures recorded on this note                                                                                                                          |
+| instructions        | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note                                                                                                                              |
+| immunizations       | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note                                                                                                                           |
+| claims              | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)                                                                                                                       |
+| letter              | [Letter](/sdk/data-letter/#letter) | The letter associated with this note, if any                                                                                                                                                        |
+| referral_set        | QuerySet[[Referral](/sdk/data-referral/#referral)] | All referrals associated with this note                                                                                                                                            |
+| laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
+| appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
+| education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
+| procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
+| family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
+| plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
+| follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
+| reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
+| assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
+| assessed_detected_issues | QuerySet[[ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)] | All coding gaps validated on this note |
+| created_detected_issues | QuerySet[[CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)] | All coding gaps created on this note |
+| deferred_detected_issues | QuerySet[[DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)] | All coding gaps deferred on this note |
+| removed_allergies   | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note |
+| resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
+| histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
+| vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
+| cancel_prescriptions | QuerySet[[CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)] | All prescription cancellations recorded on this note |
+| prescription_change_requests | QuerySet[[PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)] | All pharmacy change requests recorded on this note |
+| prescription_change_responses | QuerySet[[PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)] | All responses to change requests recorded on this note |
 
 ### NoteType
 
 | Field Name                                  | Type                                               |
 | ------------------------------------------- | -------------------------------------------------- |
+| id                                          | UUID                                               |
 | dbid                                        | Integer                                            |
 | created                                     | DateTime                                           |
 | modified                                    | DateTime                                           |
@@ -350,6 +467,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | is_scheduleable_via_patient_portal          | Boolean                                            |
 | online_duration                             | Integer                                            |
 | is_sig_required                             | Boolean                                            |
+| notes                                       | QuerySet[[Note](#note)]                            |
+| appointments                                | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] |
 
 ### NoteMetadata
 

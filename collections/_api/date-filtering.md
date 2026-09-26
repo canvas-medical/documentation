@@ -25,24 +25,19 @@ We support the following date search modifiers:
 
 - `eq`
     Strictly equal to the date. <br>
-    Example: `"?date=eq2021-01-01"`
-
-- `ne`
-    Not equal to the date. <br>
-    Example: `"?date=ne2021-01-01"`<br><br>
+    Example: `"?date=eq2021-01-01"`<br><br>
 
 You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
 
 The API endpoints that support date search parameters include:
-* [AllergyIntolerance](/api/allergyintolerance/) (/AllergyIntolerance) - Filter by recorded date
 * [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
-* [CarePlan](/api/careplan/) (/CarePlan) - Filter by care plan date/period
-* [CareTeam](/api/careteam/) (/CareTeam) - Filter by care team period
 * [Consent](/api/consent/) (/Consent) - Filter by consent date
+* [DetectedIssue](/api/detectedissue/) (/DetectedIssue) - Filter by identified date
 * [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
 * [DocumentReference](/api/documentreference/) (/DocumentReference) - Filter by document date
 * [Encounter](/api/encounter/) (/Encounter) - Filter by encounter date/period
-* [Immunization](/api/immunization/) (/Immunization) - Filter by immunization date
 * [Observation](/api/observation/) (/Observation) - Filter by observation date/time
-* [Procedure](/api/procedure/) (/Procedure) - Filter by procedure date
+* [QuestionnaireResponse](/api/questionnaireresponse/) (/QuestionnaireResponse) - Filter by authored date
+* [ServiceRequest](/api/servicerequest/) (/ServiceRequest) - Filter by authored date
+* [Task](/api/task/) (/Task) - Filter by date
 

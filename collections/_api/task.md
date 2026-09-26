@@ -28,7 +28,6 @@ sections:
             attributes:
                 - name: url
                   type: string
-                  required_in: create,update
                   description: Reference that defines the content of this object. 
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/task-permalink
@@ -47,7 +46,7 @@ sections:
                     - name: reference
                       type: string
                       required_in: create,update
-                      description: The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e`.
+                      description: The reference string of the group in the format of `"Group/13f3941f-0b51-4409-9a2f-e2f0353b324e"`.
                     - name: type
                       type: string
                       exclude_in: create, update
@@ -66,6 +65,13 @@ sections:
                 - value: completed
                 - value: cancelled
                   description: In canvas this maps to a status of closed.
+          - name: priority
+            type: string
+            description: The priority level of the task.
+            enum_options:
+                - value: stat
+                - value: urgent
+                - value: routine
           - name: description
             type: string
             required_in: create,update
@@ -77,7 +83,7 @@ sections:
                 - name: reference
                   type: string
                   required_in: create,update
-                  description: The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f`.
+                  description: The reference string of the patient in the format of `"Patient/cfd91cd3bd9046db81199aa8ee4afd7f"`.
                 - name: type
                   type: string
                   exclude_in: create, update
@@ -97,7 +103,7 @@ sections:
               - name: reference
                 type: string
                 required_in: create,update
-                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
               - name: type
                 type: string
                 exclude_in: create, update
@@ -109,7 +115,7 @@ sections:
               - name: reference
                 type: string
                 required_in: create,update
-                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
               - name: type
                 type: string
                 exclude_in: create, update
@@ -156,7 +162,7 @@ sections:
                     - name: reference
                       type: string
                       required_in: create,update
-                      description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e`.
+                      description: The reference string of the practitioner in the format of `"Practitioner/4150cd20de8a470aa570a852859ac87e"`.
                     - name: type
                       type: string
                       exclude_in: create, update
@@ -164,7 +170,10 @@ sections:
           - name: input
             type: array[json]
             description_for_all_endpoints: Information used to perform the task. In Canvas this translates to added labels on a Task. 
-            create_and_update_description: If the label doesn't exist in Canvas already, it will be created.
+            create_and_update_description: >-
+              If the label doesn't exist in Canvas already, it will be created.
+              <br><br>
+              When labels are created or updated through the Task endpoint, Canvas automatically scopes them to the Tasks module. If you reference an existing label that does not yet include the Tasks module, Canvas adds it during ingestion. Labels with an empty `modules` array remain global and continue to work across every module.
             attributes: 
                 - name: type
                   type: json
@@ -210,6 +219,13 @@ sections:
           - name: patient
             type: string
             description: Search by patient in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+          - name: priority
+            type: string
+            description: Search by task priority
+            search_options:
+                - value: stat
+                - value: urgent
+                - value: routine
           - name: requester
             type: string
             description: Search by task requester in the format `Practitioner/3a9cafb9d1b445be95a2e2548e12a787`.
@@ -268,6 +284,7 @@ curl --request POST \
         }
     ],
     "status": "requested",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -310,6 +327,7 @@ payload = {
         }
     ],
     "status": "requested",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -382,6 +400,7 @@ print(response.text)
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for":
     {
@@ -512,6 +531,7 @@ curl --request PUT \
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -554,6 +574,7 @@ payload = {
         }
     ],
     "status": "completed",
+    "priority": "urgent",
     "description": "Ask patient for new insurance information.",
     "for": { "reference": "Patient/cfd91cd3bd9046db81199aa8ee4afd7f" },
     "authoredOn": "2023-09-22T14:00:00.000Z",
@@ -648,6 +669,7 @@ print(response.text)
                     }
                 ],
                 "status": "completed",
+                "priority": "urgent",
                 "description": "Ask patient for new insurance information.",
                 "for":
                 {

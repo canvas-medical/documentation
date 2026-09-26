@@ -37,6 +37,8 @@ Represents an individual message record.
 | `recipient` | [CanvasUser](/sdk/data-canvasuser)        | The user who received the message. May be null.                |
 | `note`      | [Note](/sdk/data-note)                    | Associated note (if any) for contextual linkage. May be null.  |
 | `read`      | `DateTime`                                | Timestamp when the recipient read the message. Null if unread. |
+| `transmissions` | QuerySet[[MessageTransmission](#messagetransmission)] | The delivery transmissions associated with this message.   |
+| `message`   | QuerySet[[MessageAttachment](#messageattachment)] | The file attachments associated with this message.             |
 
 ## MessageAttachment
 

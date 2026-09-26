@@ -22,7 +22,7 @@ A namespace is created automatically when the **first plugin** with `"access": "
 The installation process:
 
 1. Creates a PostgreSQL schema named after the namespace
-2. Generates two authentication keys (`namespace_read_access_key` and `namespace_read_write_access_key`)
+2. Establishes two authentication keys (`namespace_read_access_key` and `namespace_read_write_access_key`) — auto-generated UUIDs by default, or values supplied by the installer (see [Pre-Supplying Keys at Creation](/sdk/custom-data-sharing-data/#pre-supplying-keys-at-creation))
 3. Stores the keys as secrets in the plugin
 4. Creates any CustomModel tables defined by the plugin
 
@@ -62,10 +62,11 @@ The path depends on the declared access level and whether the namespace already 
 
 | Declared Access | Namespace Exists | Key Provided | Result |
 |-----------------|------------------|--------------|--------|
-| `read_write` | No | N/A | Creates namespace and tables |
-| `read_write` | Yes | Valid `read_write_access_key` | Plugin installed, tables created |
+| `read_write` | No | Neither | Creates namespace and tables; auto-generates both keys |
+| `read_write` | No | Both `namespace_read_access_key` and `namespace_read_write_access_key` | Creates namespace and tables using the supplied keys (see [Pre-Supplying Keys at Creation](/sdk/custom-data-sharing-data/#pre-supplying-keys-at-creation)) |
+| `read_write` | Yes | Valid `namespace_read_write_access_key` | Plugin installed, tables created |
 | `read_write` | Yes | Invalid or missing | Installation fails |
-| `read` | Yes | Valid `read_access_key` | Plugin installed with read access |
+| `read` | Yes | Valid `namespace_read_access_key` | Plugin installed with read access |
 | `read` | No | N/A | Installation fails |
 | `read` | Yes | Invalid or missing | Installation fails |
 
