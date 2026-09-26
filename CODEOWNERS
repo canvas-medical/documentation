@@ -1,3 +1,5 @@
 /collections/_api/*				@canvas-medical/technical-documentation @canvas-medical/interoperability
 /collections/_guides/*			@canvas-medical/technical-documentation
 /collections/_sdk/*				@canvas-medical/technical-documentation
+/_static/fhir-service-base-urls-*.json	@canvas-medical/interoperability
+/scripts/api/*					@canvas-medical/interoperability
