@@ -24,6 +24,7 @@ layout: apipage
 
 
   - You'll need to set a name for the app, set the `Client type` to `Confidential`, choose one of the `Authorization grant types`, and set the `Redirect URIs` if needed. Leave the `Algorithm` at `No OIDC support` for now.
+  - Leave `Hash client secret` unchecked. Canvas uses the stored client secret for bulk FHIR export and token introspection, and `HS256` token signing requires an unhashed secret. A hashed secret also can't be viewed again after you save the application.
   - Here's how it should look if you created a new "Test Application" with the `client-credentials` grant type:
 <img src="/assets/images/6190a01-Screenshot_2021-10-26_at_16.26.59.png" alt="Application Example" style="width: 50%;" />
 
