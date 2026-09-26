@@ -16,9 +16,18 @@ Steps for updating the FHIR service base URLs in the documentation repository:
 4. Run the script: uv run fhir_service_base_urls.py
 5. Create a PR from your branch and merge it.
 
-This process is also run quarterly (and on demand) by the
-.github/workflows/refresh-fhir-service-base-urls.yml GitHub Actions workflow, which
-opens a PR whenever the regenerated bundles differ from what is published.
+The script exits with an error before contacting Console if CONSOLE_BASE_URL or
+CONSOLE_AUTH_TOKEN is unset.
+
+Output is deterministic: every Endpoint and Organization id is a UUIDv5 derived from a stable
+key (the Endpoint's service base URL, the Organization's name), and entries are sorted. The same
+instance list therefore produces byte-identical bundles, and a change to one instance changes
+only the entries for that instance and its Organization.
+
+The .github/workflows/refresh-fhir-service-base-urls.yml GitHub Actions workflow runs this
+script quarterly (and on demand). When the regenerated bundles differ from the published ones it
+opens a PR for engineering review; when they match, no PR is opened and the workflow run summary
+records the review as "reviewed, no changes".
 """
 
 # /// script
@@ -57,6 +66,11 @@ CONSOLE_SQL_QUERY = (
     " INNER JOIN api_organization as org ON address.organization_id = org.id;"
 )
 
+# Fixed namespace for the UUIDv5 resource ids. Changing it changes every published id.
+RESOURCE_ID_NAMESPACE = uuid.uuid5(
+    uuid.NAMESPACE_URL, "https://docs.canvasmedical.com/_static/fhir-service-base-urls"
+)
+
 STATIC_DIR = Path(__file__).resolve().parent.parent.parent / "_static"
 DEFAULT_NONPROD_FILENAME = "fhir-service-base-urls-nonproduction.json"
 DEFAULT_PROD_FILENAME = "fhir-service-base-urls-production.json"
@@ -88,11 +102,18 @@ def fetch_org_data(client: httpx.Client) -> list[dict[str, Any]]:
     return cast(list[dict[str, Any]], response.json())
 
 
+def resource_id(resource_type: str, key: str) -> str:
+    """Return a stable UUIDv5 id for a resource, derived from its type and a stable key."""
+    return str(uuid.uuid5(RESOURCE_ID_NAMESPACE, f"{resource_type}:{key}"))
+
+
+def endpoint_address(customer_identifier: str) -> str:
+    """Return the FHIR service base URL for a customer instance."""
+    return f"https://fumage-{customer_identifier}.canvasmedical.com"
+
+
 def load_orgs() -> dict[str, dict[str, Any]]:
     """Fetch data from the Console API and organize into a dict keyed by org_name."""
-    orgs: dict[str, dict[str, Any]] = {}
-    customer_org_ids: dict[str, str] = {}
-
     with httpx.Client(
         headers={"Authorization": f"Token {CONSOLE_AUTH_TOKEN}"},
         timeout=CONSOLE_API_TIMEOUT,
@@ -100,6 +121,17 @@ def load_orgs() -> dict[str, dict[str, Any]]:
     ) as client:
         slug_to_type = fetch_instance_types(client)
         rows = fetch_org_data(client)
+
+    return organize_orgs(slug_to_type, rows)
+
+
+def organize_orgs(
+    slug_to_type: Mapping[str, str],
+    rows: list[dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    """Organize Console query rows into a dict keyed by org_name, in a stable order."""
+    orgs: dict[str, dict[str, Any]] = {}
+    customer_org_ids: dict[str, str] = {}
 
     for row in rows:
         if row.get("_error"):
@@ -132,7 +164,7 @@ def load_orgs() -> dict[str, dict[str, Any]]:
 
         if org_name not in orgs:
             orgs[org_name] = {
-                "id": str(uuid.uuid4()),
+                "id": resource_id("Organization", org_name),
                 "addresses": [],
                 "customer_identifiers": [],
             }
@@ -144,12 +176,14 @@ def load_orgs() -> dict[str, dict[str, Any]]:
         if customer not in orgs[org_name]["customer_identifiers"]:
             orgs[org_name]["customer_identifiers"].append(customer)
 
-    org_identifier_value_counter = 1
-    for org_name, org_data in sorted(orgs.items()):
-        org_data["identifier_value"] = str(org_identifier_value_counter)
-        org_identifier_value_counter += 1
+    # Console returns rows in no guaranteed order, so sort everything that ends up in the output.
+    for org_data in orgs.values():
+        org_data["addresses"].sort(
+            key=lambda a: (a["line1"], a["line2"], a["city"], a["state"], a["postal_code"])
+        )
+        org_data["customer_identifiers"].sort(key=lambda c: (c["value"], c["type"]))
 
-    return orgs
+    return dict(sorted(orgs.items()))
 
 
 def build_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> Bundle:
@@ -169,9 +203,10 @@ def build_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> Bundle:
 
         endpoint_ids = []
         for customer in matching_customers:
+            base_url = endpoint_address(customer["value"])
             endpoint = Endpoint.model_validate(
                 {
-                    "id": str(uuid.uuid4()),
+                    "id": resource_id("Endpoint", base_url),
                     "status": "active",
                     "connectionType": {
                         "system": "http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
@@ -179,7 +214,7 @@ def build_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> Bundle:
                         "display": "HL7 FHIR",
                     },
                     "payloadType": [{"text": "Canvas FHIR Service Base URL"}],
-                    "address": f"https://fumage-{customer['value']}.canvasmedical.com",
+                    "address": base_url,
                 }
             )
             entries.append(
@@ -195,13 +230,13 @@ def build_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> Bundle:
                 "identifier": [
                     {
                         "system": "http://canvasmedical.com",
-                        "value": org_data["identifier_value"],
+                        "value": org_data["id"],
                     }
                 ],
                 "name": org_name,
                 "address": [
                     {
-                        "line": [l for l in (address["line1"], address["line2"]) if l],
+                        "line": [line for line in (address["line1"], address["line2"]) if line],
                         "city": address["city"],
                         "state": address["state"],
                         "postalCode": address["postal_code"],
@@ -218,6 +253,11 @@ def build_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> Bundle:
         )
 
     return Bundle(type="collection", entry=entries)
+
+
+def render_bundle(orgs: Mapping[str, Mapping[str, Any]], mode: str) -> str:
+    """Render the bundle for a mode as the JSON text that gets published."""
+    return build_bundle(orgs, mode).model_dump_json(indent=2, exclude_none=True)
 
 
 def main() -> None:
@@ -238,11 +278,16 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if not CONSOLE_API_BASE_URL:
-        raise RuntimeError("CONSOLE_BASE_URL environment variable is required")
-
-    if not CONSOLE_AUTH_TOKEN:
-        raise RuntimeError("CONSOLE_AUTH_TOKEN environment variable is required")
+    missing = [
+        name
+        for name, value in (
+            ("CONSOLE_BASE_URL", CONSOLE_API_BASE_URL),
+            ("CONSOLE_AUTH_TOKEN", CONSOLE_AUTH_TOKEN),
+        )
+        if not value
+    ]
+    if missing:
+        raise SystemExit(f"Missing required environment variable(s): {', '.join(missing)}")
 
     orgs = load_orgs()
 
@@ -250,9 +295,8 @@ def main() -> None:
         ("nonprod", args.nonprod_output_file),
         ("prod", args.prod_output_file),
     ]:
-        bundle = build_bundle(orgs, mode)
         with open(output_file, "w") as f:
-            f.write(bundle.model_dump_json(indent=2, exclude_none=True))
+            f.write(render_bundle(orgs, mode))
 
 
 if __name__ == "__main__":
