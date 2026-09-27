@@ -255,6 +255,51 @@ Both methods return a `PdfUrlResponse` on success, or `None` on failure.
 | Plugin serves an HTML page via SimpleAPI that requires authentication     | `from_url` with `PdfAuthRequest`    |
 | You already have the HTML string in memory (e.g. from `render_to_string`) | `from_html`                         |
 
+## Sanitizing untrusted HTML
+
+Content that comes from a patient or an integration, such as a patient portal message or a `POST /Communication` request, can contain HTML. If a plugin renders that HTML as-is, any script in it runs in the session of the staff member who views the page. Escaping the content prevents that, but it also shows formatting that staff wrote, such as bold text or lists, as literal tags.
+
+`sanitize_html` keeps a small set of formatting markup and removes everything else. Use it whenever you render HTML from an untrusted source.
+
+```python
+from canvas_sdk.utils.html import sanitize_html
+
+safe = sanitize_html(message.content)
+```
+
+**Parameters**:
+
+| Name    | Type     | Required | Description               |
+|:--------|:---------|:---------|:--------------------------|
+| `value` | _string_ | `true`   | The HTML to sanitize.     |
+
+**Returns**: `str` — the sanitized HTML.
+
+The sanitizer keeps:
+
+- The tags `p`, `br`, `b`, `strong`, `i`, `em`, `u`, `ul`, `ol`, `li`, `a`, `span`, and `div`.
+- The `href` attribute on `a` tags, when the URL uses the `http`, `https`, or `mailto` scheme. Every link also gets `rel="noopener noreferrer"`.
+
+The sanitizer removes:
+
+- All other tags and attributes, including `style`, `class`, `id`, `title`, and event handlers such as `onclick`.
+- Comments, and the contents of `script` and `style` tags.
+- Link URLs that use any other scheme, such as `javascript:`, `data:`, or `vbscript:`. The link text stays.
+
+Text is HTML-escaped, so `5 < 6` becomes `5 &lt; 6`.
+
+### Using the template filter
+
+In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates), use the builtin `sanitize_html` filter. You don't need a `{% raw %}{% load %}{% endraw %}` tag.
+
+{% raw %}
+```html
+<span class="message-text-content">{{ msg.text|sanitize_html }}</span>
+```
+{% endraw %}
+
+The filter marks its output as safe, so don't add `|safe`. A `None` value renders as an empty string.
+
 ## Making requests to the Ontologies service
 
 Plugin authors can make requests to our Ontologies service using the
