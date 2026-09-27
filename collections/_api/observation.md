@@ -42,7 +42,7 @@ sections:
             1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)<br>
             2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`). <br>
             3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it. <br>
-            4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
+            4. Once weight and either height or pediatric body length are entered on a patient's chart, Canvas calculates one body size observation, chosen by the patient's age on the date the vitals were recorded (category coding will be `vital-signs`): Weight-for-Length Percentile for patients under 24 months, BMI for Age Percentile from 24 months up to the 20th birthday, and Body Mass Index (kg/m2) for patients 20 and older. Percentiles come from WHO growth charts under 24 months and CDC growth charts from 24 months on. If the instance has no growth chart data for the patient's sex and age or length, no percentile observation is created. This also applies to the Head Occipital-Frontal Circumference Percentile. <br>
             5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
             6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
               
@@ -189,6 +189,7 @@ sections:
                       - value: Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems
                       - value: Any code from a Questionnaire Scoring Result
                       - value: "Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference)"
+                      - value: 39156-5 (LOINC code for Body Mass Index)
                       - value: 59576-9 (LOINC code for BMI for Age Percentile)
                       - value: 77606-2 (LOINC code for Weight-for-Length Percentile)
                       - value: Any LOINC codes from Lab Report Values captured 

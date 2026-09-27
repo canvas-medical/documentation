@@ -170,11 +170,24 @@ vitals were recorded:
 - **A committed pediatric physical exam questionnaire** records `length` and
   `head_circumference_tape_measure`, taken from the answers carrying those LOINC codes.
 
-Derived measurements are **not** `VitalSign` records. When a height, weight or length is
-recorded, Canvas calculates BMI from the height and weight and stores the results — the
-BMI-for-age, head-circumference and weight-for-height percentiles — as
-[Observation](/sdk/data-observation/) records attached to the reading, because each is
-computed from more than one measurement. Read them there rather than looking for a `sign`.
+Derived measurements are **not** `VitalSign` records. Canvas stores them as
+[Observation](/sdk/data-observation/) records, so read them there rather than looking for a
+`sign`. Each one's `is_member_of` points to the reading's Vital Signs Panel observation.
+
+When a reading has a weight and a height or length, Canvas derives one body size
+observation from them. The patient's age on the date the reading was recorded decides which
+one. It is attached to the reading, because it is computed from more than one measurement.
+
+| Age at reading                    | Observation                                      | LOINC   | Unit    |
+| --------------------------------- | ------------------------------------------------ | ------- | ------- |
+| Under 24 months                   | Weight-for-Length Percentile, from WHO charts    | 77606-2 | `%`     |
+| 24 months up to the 20th birthday | BMI for Age Percentile, from CDC charts          | 59576-9 | `%`     |
+| 20 years and older                | Body Mass Index, rounded to one decimal place    | 39156-5 | `kg/m2` |
+
+A recorded head circumference also produces a head circumference percentile observation,
+attached to that `VitalSign`. Percentiles are read from the growth chart data loaded in the
+instance. When no chart data covers the patient's sex and age or length, Canvas creates no
+percentile observation for the reading.
 
 | Value                            | Label                                          |
 | -------------------------------- | ---------------------------------------------- |
