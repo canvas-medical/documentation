@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-When a user faxes a note, referral, imaging order, lab order, letter, or integration task, Canvas records an action event on that document and a `Fax` record for the transmission. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to.
+When a user faxes a note, referral, imaging order, lab order, letter, or integration task, Canvas records an action event on that document and a `Fax` record for the transmission. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to. Faxes Canvas receives are `Fax` records too, with their [status history](#status-history-of-a-fax) in `FaxStatusModel`.
 
 Each document type has its own action event model:
 
@@ -90,6 +90,19 @@ fax = Fax.objects.get(id="d2a6c1f4-7b3e-4c1a-9f5e-0a8b7c6d5e4f")
 note_events = fax.noteactionevent_set.all()
 ```
 
+### Status history of a fax
+
+Canvas records a `FaxStatusModel` row when it receives a fax: `Received`, or `Error` if the fax couldn't be received. A fax's status rows are reachable through its `fax_statuses` accessor. Faxes sent from Canvas don't get status rows, so read a sent fax's outcome from `delivered_by_fax` on its action event.
+
+```python
+from canvas_sdk.v1.data import Fax, FaxDirection, FaxStatus
+
+failed_inbound = Fax.objects.filter(
+    direction=FaxDirection.INBOUND,
+    fax_statuses__status=FaxStatus.ERROR,
+)
+```
+
 ## Attributes
 
 ### Fax
@@ -107,6 +120,17 @@ note_events = fax.noteactionevent_set.all()
 | fax_pages       | Integer                       | The number of pages                                                           |
 | direction       | [FaxDirection](#faxdirection) |                                                                               |
 | success         | Boolean                       | Whether the faxing service accepted the fax. See [Delivery status](#delivery-status). |
+
+### FaxStatusModel
+
+| Field Name | Type                    | Notes                         |
+|------------|-------------------------|-------------------------------|
+| id         | UUID                    |                               |
+| dbid       | Integer                 |                               |
+| created    | DateTime                | When the status was recorded  |
+| modified   | DateTime                |                               |
+| fax        | [Fax](#fax)             | The fax the status belongs to |
+| status     | [FaxStatus](#faxstatus) |                               |
 
 ### Action event fields
 
@@ -174,6 +198,15 @@ The [action event fields](#action-event-fields), plus:
 |-------|----------|
 | O     | Outbound |
 | I     | Inbound  |
+
+### FaxStatus
+
+| Value | Label      |
+|-------|------------|
+| P     | Processing |
+| S     | Sent       |
+| R     | Received   |
+| E     | Error      |
 
 ### Event Type
 

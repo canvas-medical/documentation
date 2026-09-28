@@ -1139,6 +1139,9 @@ data_module:
   - title: "Fax"
     url: /sdk/data-fax/
     description: Faxes sent or received through Canvas, and the action events that record a document's fax delivery status.
+  - title: "FaxStatusModel"
+    url: /sdk/data-fax/#faxstatusmodel
+    description: The status recorded when Canvas receives a fax.
   - title: "FollowUp"
     url: /sdk/data-follow-up/
     description: A requested follow-up (recall) recorded on a note via the follow_up command.
