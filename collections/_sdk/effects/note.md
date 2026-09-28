@@ -116,6 +116,7 @@ Sends an existing note via fax to a specified recipient. This effect allows you 
   - `comment`: Additional comments to include on the coversheet
   - `location_id`: The practice location identifier (must exist in the system)
 - Validates that the practice location exists if provided
+- Records a `NoteActionEvent` on the note. Read it through `note.action_events` to check whether the fax was delivered and which number it went to. See [Fax](/sdk/data-fax/#read-the-result-of-a-note-fax).
 
 #### Example Usage
 

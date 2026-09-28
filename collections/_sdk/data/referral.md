@@ -145,6 +145,7 @@ url = document.document_url if document else None
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
+| action_events         | [ReferralActionEvent](/sdk/data-fax/#action-event-fields)[]    |
 
 ### ReferralReport
 
