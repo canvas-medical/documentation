@@ -393,7 +393,7 @@ The `LaunchModalEffect` class has the following properties:
   - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
-  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
   - `PAGE`: Opens the content as a full page.
   - `NOTE`: Opens the content within a note tab (used with Note Applications).
   - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
