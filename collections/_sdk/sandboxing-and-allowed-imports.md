@@ -451,7 +451,15 @@ Two of those return a restricted stand-in rather than the real object:
 - **`__class__`** on an object defined outside your plugin returns a read-only proxy that exposes only `__name__`. This is what prevents `__class__.__mro__` and `__class__.__subclasses__()` from being used to reach code outside the sandbox.
 - **`__traceback__`** returns a safe traceback exposing only `tb_frame`, `tb_lineno`, and `tb_next`. Its frame exposes only `f_code`, and that code object exposes only `co_filename` and `co_name`. Local and global variables are never reachable. [`extract_exc_frames()`](#extract_exc_frames) is the more convenient way to read a traceback.
 
-Reading a plain attribute off an imported module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+Reading a plain attribute off an external module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+
+Modules in your plugin's own package aren't on the allow-list and don't need to be. You can import one of them and read its attributes through the module object, the same as importing those names directly:
+
+```python
+from my_plugin.lib import store
+
+store.get_latest()  # same as: from my_plugin.lib.store import get_latest
+```
 
 ### Reading items
 
