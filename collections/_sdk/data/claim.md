@@ -423,6 +423,8 @@ Captures clearinghouse submission details about a claim.
 | ---------------------- | ------------------------------- |
 | id                     | UUID                            |
 | dbid                   | Integer                         |
+| created                | DateTime                        |
+| modified               | DateTime                        |
 | claim                  | [Claim](#claim)                 |
 | coverage               | [ClaimCoverage](#claimcoverage) |
 | clearinghouse_claim_id | String                          |

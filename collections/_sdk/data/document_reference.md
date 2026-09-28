@@ -96,6 +96,8 @@ A coding entry representing the type of a document reference.
 | Field Name     | Type    |
 |----------------|---------|
 | dbid           | Integer |
+| created        | DateTime |
+| modified       | DateTime |
 | system         | String  |
 | version        | String  |
 | code           | String  |
@@ -109,6 +111,8 @@ A coding entry representing the category of a document reference.
 | Field Name     | Type    |
 |----------------|---------|
 | dbid           | Integer |
+| created        | DateTime |
+| modified       | DateTime |
 | system         | String  |
 | version        | String  |
 | code           | String  |

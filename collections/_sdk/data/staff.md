@@ -171,6 +171,8 @@ url = staff.signature_url
 | ---------- | --------------------------------------------------------------------- |
 | id         | UUID                                                                  |
 | dbid       | Integer                                                               |
+| created    | DateTime                                                              |
+| modified   | DateTime                                                              |
 | system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value      | String                                                                |
 | use        | String                                                                |
@@ -185,6 +187,8 @@ url = staff.signature_url
 | ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
+| created     | DateTime                                                |
+| modified    | DateTime                                                |
 | line1       | String                                                  |
 | line2       | String                                                  |
 | city        | String                                                  |
@@ -207,6 +211,8 @@ url = staff.signature_url
 |-------------------------------------|------------------------------|
 | id                                  | UUID                         |      
 | dbid                                | Integer                      |
+| created                             | DateTime                     |
+| modified                            | DateTime                     |
 | staff                               | [Staff](#staff)              |
 | issuing_authority_long_name         | String                       |
 | issuing_authority_url               | URL                          |
@@ -233,6 +239,8 @@ url = staff.signature_url
 | Field Name             | Type                       |
 | ---------------------- | -------------------------- |
 | dbid                   | Integer                    |
+| created                | DateTime                   |
+| modified               | DateTime                   |
 | staff                  | [Staff](#staff)            |
 | internal_code          | String                     |
 | public_abbreviation    | String                     |

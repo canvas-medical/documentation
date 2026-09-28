@@ -201,6 +201,8 @@ document = DocumentReference.objects.filter(
 | Field Name    | Type                            |
 |---------------|---------------------------------|
 | dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
 | report        | [ImagingReport](#imagingreport) |
 | system        | String                          |
 | version       | String                          |
