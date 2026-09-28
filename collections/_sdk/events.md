@@ -27099,6 +27099,26 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
+    <tr><td colspan="3">Occurs after a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is sent asynchronously after the document is served, so a handler can't delay or block the download. Patients download the after-visit summary of their own locked note at <code>/app/AfterVisitSummary/&lt;note_id&gt;</code>; any other note ID returns a 404 error.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"document": str["after_visit_summary"]
+"note_id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
