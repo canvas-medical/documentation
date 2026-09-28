@@ -426,6 +426,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | created_detected_issues | QuerySet[[CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)] | All coding gaps created on this note |
 | deferred_detected_issues | QuerySet[[DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)] | All coding gaps deferred on this note |
 | removed_allergies   | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note |
+| removed_past_medical_history | QuerySet[[RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)] | All past medical history entries removed on this note |
 | resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
 | histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
 | vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
