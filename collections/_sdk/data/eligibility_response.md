@@ -100,6 +100,21 @@ from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
 failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
 ```
 
+`valid_request` shows whether the check reached the payer. It is `True` when ClaimMD returned a result, including a rejection from ClaimMD or the payer. It is `False` when the request to ClaimMD failed with an HTTP error or timed out. These responses also have a non-empty `errors`, so their `status` is `FAILED`. Canvas's daily automatic eligibility check ignores responses with `valid_request` set to `False`, so it checks those coverages again on its next run.
+
+To separate checks that never reached the payer from checks that ClaimMD or the payer rejected, filter on `valid_request` as well:
+
+```python
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
+
+not_sent = EligibilityResponse.objects.filter(valid_request=False)
+rejected = (
+    EligibilityResponse.objects.filter(valid_request=True)
+    .exclude(errors=None)
+    .exclude(errors=[])
+)
+```
+
 ## Enumeration types
 
 ### EligibilityResponseStatus
