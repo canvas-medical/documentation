@@ -81,13 +81,13 @@ latest = (
 
 ### From a fax
 
-A `Fax` reaches its action events through `noteactionevent_set`, `referralactionevent_set`, `imagingorderactionevent_set`, `laborderactionevent_set`, `letteractionevent_set`, and `integrationtaskactionevent_set`:
+A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
 
 ```python
 from canvas_sdk.v1.data import Fax
 
 fax = Fax.objects.get(id="d2a6c1f4-7b3e-4c1a-9f5e-0a8b7c6d5e4f")
-note_events = fax.noteactionevent_set.all()
+note_events = fax.noteactionevents.all()
 ```
 
 ### Status history of a fax
