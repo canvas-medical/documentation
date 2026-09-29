@@ -1227,6 +1227,33 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes. The event fires once per claim after the change is saved. The context includes the previous and current balances as strings with two decimal places. Use this event instead of <code>CLAIM_UPDATED</code> to react to balance changes: <code>CLAIM_UPDATED</code> fires on every claim save and doesn't include balance data.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"patient":
+  "id": pt_id
+"note":
+  "id": note_id
+"previous":
+  "patient_balance": str
+  "aggregate_coverage_balance": str
+"current":
+  "patient_balance": str
+  "aggregate_coverage_balance": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
