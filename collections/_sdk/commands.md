@@ -1696,7 +1696,8 @@ Writes a new prescription for a medication the patient is not already on, and ca
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
 - The prescriber must have an SPI (Surescripts Prescriber Identifier) number on file, or the send is restricted with `eRx unavailable, prescriber missing SPI number`. SPI is a send requirement only: a prescriber without one can still review and sign the prescription.
-- For a controlled substance, the prescriber must be enrolled in EPCS, or the send is restricted with `eRx unavailable, prescriber not enrolled in EPCS`.
+- For a controlled substance, the prescriber must be enrolled in EPCS (Electronic Prescriptions for Controlled Substances), or the command fails validation with `eRx unavailable, prescriber not enrolled in EPCS`. Unlike SPI, enrollment is also checked before review, so an unenrolled prescriber cannot move a controlled substance into review or sign it.
+- A controlled substance that was printed for manual signature cannot also be sent electronically, as DEA rules require. Printing a prescription that has not been transmitted records the print, whether it comes from a print action or from rendering the printout. From then on, the send is restricted with `This controlled substance was printed for manual signature and cannot be transmitted electronically.` Reprinting does not clear the record.
 - For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
 
 These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
@@ -1746,7 +1747,7 @@ def compute():
 |--------------------|----------------------|--------------------------------------------------------------------------|
 | `sign_send_action` | command is in review | Signs and immediately sends the prescription electronically.             |
 | `sign_action`      | command is in review | Signs the prescription, transitioning it from staged to committed state. |
-| `print_action`     | command is in review | Prints and commits the command.                                          |
+| `print_action`     | command is in review | Prints and commits the command. For a controlled substance, printing removes `send_action`. |
 | `make_changes`     | command is in review | Allow users to revert the command to staged state and make changes.      |
 | `send_action`      | command is committed | Sends the prescription electronically.                                   |
 
@@ -1903,6 +1904,8 @@ def compute():
     # This raises a validation error naming both values.
     return [prescribe.originate()]
 ```
+
+Controlled substances also have DEA refill limits, which Canvas checks when it validates the command rather than when the effect is built. A Schedule I or II medication allows no refills, and a Schedule III, IV, or V medication allows 0 to 5.
 
 ---
 
