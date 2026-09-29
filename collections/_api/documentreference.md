@@ -117,7 +117,7 @@ sections:
 
               - For Educational Material, the status will be `current` if the command is committed. If the command was entered-in-error in the chart, the status will also be `entered-in-error`.
 
-              - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` if an automated invoice gets archived as it is older than the invoice interval defined Constance Config in Settings.
+              - For Invoices, the status will be `current` if it is a latest version or an adhoc invoice. The status will be `entered-in-error` if there was a problem generating or sending out the invoice to the patient. The status will be `superseded` when the invoice is archived. Each time invoices are generated in bulk, on the automated schedule or as a batch, Canvas archives automated invoices older than the invoice interval defined in Constance Config in Settings, along with all batch invoices.
             create_description: Status must be set to `current` on creation; the value has no further effect.
             enum_options: 
               - value: current
