@@ -1685,6 +1685,8 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
+<a id="document-review-delegation"></a>
+
 #### Document Hand-off
 
 These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncategorized review from the document review screen or the document's card. They are review-workflow events, separate from the Data Integration document-lifecycle events above. They fire for documents created in the chart as well as for inbound documents. Each hand-off is also recorded as a [DocumentHistoryEvent](/sdk/data-document-history-event/).
