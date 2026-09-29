@@ -104,6 +104,16 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
 
+### Sign-in links in notifications
+
+When the care team sends a patient a message, shares a lab result, or issues an invoice, Canvas notifies the patient by email or text. Each notification carries a sign-in link, so the patient can go straight to the new item without entering a password. Opening the link signs the patient in and opens the matching page: Messaging, Lab, or Payment.
+
+- **Each link works once.** The email and the text for the same notification carry separate links, so opening one doesn't invalidate the other. After a link has been used, the patient signs in with their password as usual.
+- **Links stay valid for 30 days** by default, so the patient can open one well after the notification arrives.
+- **The session lasts 15 minutes** by default. It doesn't extend while the patient is active; when it ends, the patient returns to the login page.
+
+Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
+
 ### Branding
 
 You can put your organization's identity on the portal without building anything:
