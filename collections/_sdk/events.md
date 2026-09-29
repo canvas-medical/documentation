@@ -1685,14 +1685,87 @@ These events fire during the lifecycle of documents in the <a href="https://canv
   </tbody>
 </table>
 
-#### Document Review Delegation
+#### Document Hand-off
 
-The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's review is delegated to another staff member or team, or routed back to its owner. It is a review-workflow event, separate from the Data Integration document-lifecycle events above.
+These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncategorized review from the document review screen or the document's card. They are review-workflow events, separate from the Data Integration document-lifecycle events above. They fire for documents created in the chart as well as for inbound documents. Each hand-off is also recorded as a [DocumentHistoryEvent](/sdk/data-document-history-event/).
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_REASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>reviewer</code> and <code>team</code> hold the new assignment, and either can be null. <code>reassigned_by</code> is null when the change came from outside a staff session, such as an API client or a plugin. <code>signature_released</code> is true when the reassigning staff member also released their signature; that release fires DOCUMENT_DELEGATED.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"reassigned_at": datetime str
+"reassigned_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"previous_reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"previous_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"comment": str
+"signature_released": bool
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_COMMENT_ADDED</th></tr>
+    <tr><td colspan="2">Occurs when staff add a comment to a reviewable document without changing who holds it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"commented_at": datetime str
+"commented_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"comment": str
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
-    <tr><td colspan="2">Occurs when an uncategorized clinical document review is delegated to another staff member or team from the document review surface, or routed back to its owner. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>signature_consent</code> indicates whether the recipient may apply the owner's signature; <code>routed_back</code> is true when the document was returned to its owner; <code>comment</code> carries the delegator's instructions.</td></tr>
+    <tr><td colspan="2">Occurs when staff reassign a reviewable document and release their signature to a staff member, a team, or both. A DOCUMENT_REASSIGNED event fires for the same reassignment. For an inbound document, the target is its <a href="/sdk/data-integration-task/">IntegrationTask</a> and <code>document</code> holds the inbound document metadata. For a document created in the chart, the target is the report itself and <code>document</code> is null. <code>delegated_to</code> is the recipient staff member, or the recipient team when no staff member was chosen; <code>delegated_to_team</code> is the recipient team, or null. <code>on_behalf_of</code> is the staff member whose signature the recipients may apply, and <code>comment</code> carries the comment left with the reassignment. <code>routed_back</code> is kept for compatibility and is false for these releases, because staff can't release their signature to themselves.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1701,8 +1774,14 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
     </tr>
     <tr>
       <td><pre>"id": document_id
-"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
-      <td><pre>"document": <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a>
+"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre>
+or, for a document created in the chart:
+<pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"document":
   "id": document_id
   "channel": str
   "status": str
@@ -1719,6 +1798,10 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
 "delegated_to": <a href="/sdk/data-staff/#staff">Staff</a> or <a href="/sdk/data-team/#team">Team</a>
   "type": str ("STAFF" or "TEAM")
   "id": staff_or_team_id
+  "name": str
+"delegated_to_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
   "name": str
 "on_behalf_of": <a href="/sdk/data-staff/#staff">Staff</a>
   "type": str ("STAFF")
