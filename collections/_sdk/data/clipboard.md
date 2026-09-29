@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Clipboard` model is a read-only record of a Clipboard command. It holds free-text content staged on a patient's note, such as a pasted transcript or summary. A plugin queries it to read that content along with the patient and note the text belongs to.
+The `Clipboard` model is the record of a Clipboard command. It holds free-text content staged on a patient's note, such as a pasted transcript or summary. A plugin queries it to read that content along with the patient and note the text belongs to.
 
 Clipboards are included regardless of command state (staged or committed); use `committed()` to filter to only committed commands. A plugin does not write clipboard content through this model. That content is recorded through the Clipboard command.
 
@@ -30,7 +30,7 @@ clipboard = Clipboard.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 text = clipboard.text
 ```
 
-The manager is read-only, so there is no create or save. `get`, `filter`, and `committed` are available on it.
+`get`, `filter`, and `committed` are available on the manager.
 
 ## Accessing clipboards from a patient or note
 

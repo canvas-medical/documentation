@@ -13,7 +13,7 @@ A `Group` is a stable external identifier that Canvas attaches through a generic
 
 Reach for `Group` when you hold a FHIR Group `id` — the stable external identifier — and need to resolve which SDK record it names, a `Team` or a `PatientGroup`. When you already have a `Team` in hand, its [`group_id`](/sdk/data-team/#reconciling-with-fhir) is the shorter path, because it exposes the FHIR Group id directly.
 
-`Group` exposes the linked record through typed property accessors, and the `Group` record itself is read-only; create or update the underlying FHIR Group through the [FHIR API](/api/group/) rather than an SDK effect.
+`Group` exposes the linked record through typed property accessors. Create the underlying FHIR Group through the [FHIR API](/api/group/). To add or deactivate members of an existing patient group, use the [patient group effects](/sdk/effect-patient-group/).
 
 ## Basic usage
 

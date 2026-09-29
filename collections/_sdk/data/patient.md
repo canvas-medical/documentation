@@ -122,9 +122,11 @@ educational_materials = patient.education_material.all()
 | business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
 | care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
 | change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]       |
+| clipboards               | [Clipboard](/sdk/data-clipboard/#clipboard)[]                             |
 | conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
 | coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | created_detected_issues  | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[] |
+| custom_commands          | [CustomCommand](/sdk/data-custom-command/#customcommand)[]                |
 | deferred_detected_issues | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]   |
 | dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
 | detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
