@@ -154,7 +154,7 @@ document = DocumentReference.objects.filter(
 | delegated           | Boolean                                                        |
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
-| action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#action-event-fields)[] |
+| action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
 
 ### ImagingReview
 

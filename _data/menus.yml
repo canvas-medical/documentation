@@ -1130,9 +1130,6 @@ data_module:
   - title: "FamilyHistory"
     url: /sdk/data-family-history/
     description: A patient's family medical history — conditions recorded for a relative.
-  - title: "Fax"
-    url: /sdk/data-fax/
-    description: Fax records and the action events that track fax delivery for notes, referrals, imaging orders, lab orders, integration tasks, and letters.
   - title: "FollowUp"
     url: /sdk/data-follow-up/
     description: A requested follow-up (recall) recorded on a note via the follow_up command.

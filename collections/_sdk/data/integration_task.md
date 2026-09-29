@@ -112,7 +112,7 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | patient          | [Patient](/sdk/data-patient/#patient)                          |
 | service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |
-| action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#action-event-fields)[] |
+| action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)[] |
 
 #### Properties
 

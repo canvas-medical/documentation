@@ -418,7 +418,6 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
 | procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
 | family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
-| action_events       | QuerySet[[NoteActionEvent](/sdk/data-fax/#action-event-fields)] | Print and fax events recorded for this note, with fax delivery status                                                                              |
 | plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
 | follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
 | reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |

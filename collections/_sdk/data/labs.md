@@ -538,7 +538,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
 | laborder_set              | [LabOrder](#laborder)[]                           |
-| action_events             | [LabOrderActionEvent](/sdk/data-fax/#action-event-fields)[] |
+| action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
 
 ### LabOrderReason
 

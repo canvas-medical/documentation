@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `LetterActionEvent` model represents occurrences of a letter being printed or faxed within Canvas. LetterActionEvents are associated with a [Letter](/sdk/data-letter/). Notes, referrals, imaging orders, lab orders, and integration tasks have their own action event models with the same fields; see [Fax](/sdk/data-fax/).
+The `LetterActionEvent` model represents occurrences of a letter being printed or faxed within Canvas. LetterActionEvents are associated with a [Letter](/sdk/data-letter/).
 
 ## Basic Usage
 
@@ -62,12 +62,11 @@ letter_action_events = LetterActionEvent.objects.filter(send_fax_id="a1b2c3d4e5f
 | modified         | DateTime                         |                                                 |
 | event_type       | [EventType](#event-type)         | The type of the event                           |
 | send_fax_id      | String                           | The id of the sent fax                          |
-| received_by_fax  | Boolean                          | Whether the faxing service accepted the fax     |
-| delivered_by_fax | Boolean                          | Whether the fax was delivered. `None` while delivery is in progress. See [Delivery status](/sdk/data-fax/#delivery-status). |
-| fax_result_msg   | str                              | The reason a fax failed. Empty when the fax is in progress or delivered. |
+| received_by_fax  | Boolean                          | The isSuccess status of the received by fax     |
+| delivered_by_fax | Boolean                          | The isSuccess status of the delivered by fax    |
+| fax_result_msg   | str                              | The fax result message                          |
 | letter           | [Letter](/sdk/data-letter/)      | The letter this action event is associated with |
-| originator       | [User](/sdk/data-canvasuser/)          | The user who printed or faxed the letter (nullable) |
-| fax              | [Fax](/sdk/data-fax/#fax)        | The fax record, with the recipient's fax number (nullable) |
+| originator       | [User](/sdk/data-canvasuser/)          | The user who created the letter (nullable)      |
 
 
 ## Enumeration types
