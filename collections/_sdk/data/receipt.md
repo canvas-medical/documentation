@@ -78,7 +78,9 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 | total\_posted\_amount                | Decimal (computed)                                        | Sum of the payments and write-off adjustments across the payment collection's active postings            |
 | copay\_amount                        | Decimal (computed)                                        | Amount posted as copays with the payment collection                                                      |
 
-`account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt, and is `0.00` when no discount was applied. `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
+- `account_balance_before_collection` and `account_balance_after_collection` are snapshots of the patient's account balance taken when the receipt was generated. They don't change as the balance changes.
+- `discount` is the discount amount recorded on the receipt, or `0.00` when no discount was applied.
+- `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
 
 ## See also
 
