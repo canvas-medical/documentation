@@ -9,7 +9,7 @@ Embedded applications render **inside a specific Canvas surface** (a tab within
 a note, the scheduling modal, or a pane pinned to a window edge) rather than as
 an icon in the app drawer. They
 are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
-register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders
+register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
 There are three kinds:

@@ -40,7 +40,7 @@ class PatientSummaryButton(ActionButton):
         ]
 ```
 
-Then register the class under `handlers` in your `CANVAS_MANIFEST.json`:
+Then register the class under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers):
 
 ```json
 {
