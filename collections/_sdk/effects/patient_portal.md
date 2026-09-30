@@ -420,7 +420,7 @@ class WelcomeModal(BaseHandler):
         ]
 ```
 
-{% include alert.html type="warning" content="The portal's built-in consents dialog still opens when the <code>PATIENT_APP_CONSENTS</code> setting is on. If your plugin collects consent after login, ask Canvas Support to turn <code>PATIENT_APP_CONSENTS</code> off so the patient doesn't see both. See <a href='/guides/choosing-your-patient-experience/'>Choosing Your Patient Experience</a> for the portal settings." %}
+{% include alert.html type="warning" content="The portal's built-in consents dialog also opens after login for any <a href='https://help.canvasmedical.com/articles/8144965836-Managing-Consents'>Patient Consent Coding</a> marked <strong>Show in patient portal</strong> that the patient hasn't completed. If your plugin collects consent after login, clear <strong>Show in patient portal</strong> on those consent codings in Settings so the patient doesn't see both." %}
 
 ## Forms
 
