@@ -106,7 +106,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 
 ### Sign-in links in notifications
 
-When the care team sends a patient a message, shares a lab result, or issues an invoice, Canvas notifies the patient by email or text. Each notification carries a sign-in link, so the patient can go straight to the new item without entering a password. Opening the link signs the patient in and opens the matching page: Messaging, Lab, or Payment.
+When the care team sends a patient a message or shares a lab result, Canvas notifies the patient by email or text message. When the patient is sent a statement, Canvas notifies them by email. Each notification carries a sign-in link, so the patient can go straight to the new item without entering a password. Opening the link signs the patient in and opens the matching page: Messaging, Labs, or Payments.
 
 - **Each link works once.** The email and the text for the same notification carry separate links, so opening one doesn't invalidate the other. After a link has been used, the patient signs in with their password as usual.
 - **Links stay valid for 30 days** by default, so the patient can open one well after the notification arrives.
