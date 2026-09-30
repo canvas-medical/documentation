@@ -39,9 +39,8 @@ receipts = []
 for payment in patient.payments.select_related("payment_collection__receipt"):
     # The reverse accessor raises when a collection has no receipt, so default to None.
     receipt = getattr(payment.payment_collection, "receipt", None)
-    # A patient-portal plugin must not surface a deleted or entered-in-error receipt.
-    # The reverse accessor bypasses the default deleted=False filter, so screen it here.
-    if receipt is None or receipt.deleted or receipt.entered_in_error_id is not None:
+    # A patient-portal plugin must not surface a receipt entered in error.
+    if receipt is None or receipt.entered_in_error_id is not None:
         continue
     receipts.append(receipt)
 ```
@@ -68,16 +67,14 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 | created                               | DateTime                                                    |
 | modified                              | DateTime                                                    |
 | originator                            | [CanvasUser](/sdk/data-canvasuser/)                         |
-| committer                             | [CanvasUser](/sdk/data-canvasuser/)                         |
 | entered\_in\_error                    | [CanvasUser](/sdk/data-canvasuser/)                         |
-| deleted                               | Boolean                                                     |
 | payment\_collection                   | [PaymentCollection](/sdk/data-posting/#paymentcollection)   |
 | account\_balance\_before\_collection  | Decimal                                                     |
 | account\_balance\_after\_collection   | Decimal                                                     |
 | discount                              | Decimal                                                     |
 | template                              | String                                                      |
 | receipt                               | String                                                      |
-| receipt\_url                          | String (property) (property): presigned S3 URL, or None               |
+| receipt\_url                          | String (computed)                                           |
 
 `account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt, and is `0.00` when no discount was applied. `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
 
