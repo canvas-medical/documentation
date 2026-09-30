@@ -26,23 +26,17 @@ receipt = collection.receipt  # the one-to-one Receipt; raises if the collection
 
 ## Finding a patient's receipts
 
-A patient-portal plugin should reach only the authenticated patient's receipts. Walk there from the patient's own payments rather than querying `Receipt` directly.
-
-Each of the patient's payments (`patient.payments`, a [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting) queryset) belongs to one `payment_collection`, which has at most one receipt. A collection may not have one yet, so the code must handle its absence.
+A patient-portal plugin should show only the signed-in patient's receipts. A receipt belongs to a [PaymentCollection](/sdk/data-posting/#paymentcollection), and the patient who paid is the `payer` on that collection's [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting), so filter on that path:
 
 ```python
-from canvas_sdk.v1.data import Patient
+from canvas_sdk.v1.data import Patient, Receipt
 
 patient = Patient.objects.get(id="b80b1cdc2e6a4aca90ccebc02e683f35")
 
-receipts = []
-for payment in patient.payments.select_related("payment_collection__receipt"):
-    # The reverse accessor raises when a collection has no receipt, so default to None.
-    receipt = getattr(payment.payment_collection, "receipt", None)
-    # A patient-portal plugin must not surface a receipt entered in error.
-    if receipt is None or receipt.entered_in_error_id is not None:
-        continue
-    receipts.append(receipt)
+receipts = Receipt.objects.filter(
+    payment_collection__bulkpatientposting__payer=patient,
+    entered_in_error__isnull=True,
+)
 ```
 
 ## Accessing the receipt PDF
