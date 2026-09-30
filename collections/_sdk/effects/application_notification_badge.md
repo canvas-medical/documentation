@@ -13,9 +13,11 @@ applications scoped [`global`](/sdk/handlers-applications/#application-scopes) o
 icon in the app drawer, or, when the application sets `show_in_panel`, on the panel
 alongside the other panel buttons — and for
 [`provider_menu_item`](/sdk/handlers-applications/#application-scopes) applications,
-next to their label in the provider menu. Applications in other scopes
-(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
-display badges.
+next to their label in the provider menu. Badges also appear for
+[`portal_menu_item`](/sdk/handlers-applications/#application-scopes)
+applications, next to their label in the patient portal menu. Use them to show a
+patient how many items are waiting for them. Applications in other scopes
+(`full_chart` and the Provider Companion scopes) do not display badges.
 
 There are two ways a badge is set:
 
@@ -38,7 +40,7 @@ application's identifier, optionally `.filter(...)` to target patients, then cal
 | `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in `CANVAS_MANIFEST.json` — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
 | `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
 | `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
-| `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys whose chart context the update applies to.                                                       |
+| `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys the update applies to: their charts, and their own patient portal.                               |
 
 The `application_identifier` is the application's `class` string from
 `CANVAS_MANIFEST.json` (`<module path>:<ClassName>`). For example, an `InboxApp`
@@ -73,12 +75,20 @@ ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3,
 | `staff_ids` | `patient_ids` | Who sees the badge                                                                       |
 | ----------- | ------------- | ---------------------------------------------------------------------------------------- |
 | set         | empty         | The listed staff, on any patient (and on global views).                                  |
-| empty       | set           | Staff currently viewing the listed patients' charts.                                     |
+| empty       | set           | Staff currently viewing the listed patients' charts, and the listed patients in the patient portal. |
 | set         | set           | The listed staff, but only while viewing the listed patients' charts.                    |
-| empty       | empty         | All staff, all patients (a system-wide update).                                          |
+| empty       | empty         | All staff, all patients (a system-wide update). The patient portal is not updated.       |
 
-Patients are never subscribers themselves — `patient_ids` scopes the badge to a
-patient's chart, where staff viewing that chart will see it.
+The patient portal receives an update only when you set `patient_ids` and leave
+`staff_ids` empty. Each listed patient sees the new count on the matching
+`portal_menu_item` application while they're logged in to the portal. Updates
+that name staff, and system-wide updates, never reach the portal. A patient
+only ever receives updates for their own key.
+
+Because `patient_ids` reaches both audiences, the application's scope decides
+where the badge appears. A `patient_specific` application shows it to staff on
+the chart. A `portal_menu_item` application shows it to the patient in the
+portal.
 
 > **Note on "all patients" (empty `patient_ids`):** the update is delivered
 > **live** only to charts a staff member currently has open. Other patients'
@@ -95,6 +105,11 @@ from canvas_sdk.effects.application_notification_badge import ApplicationNotific
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
     patient_ids=["patient-id"]
 ).broadcast(count=5)
+
+# Show a badge to a patient in the patient portal (portal_menu_item application).
+ApplicationNotificationBadge("my_plugin.apps.messages:PortalMessagesApp").filter(
+    patient_ids=["patient-id"]
+).broadcast(count=2)
 
 # Combine: only the on-call provider, and only on this patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
