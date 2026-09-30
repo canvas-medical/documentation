@@ -4,7 +4,7 @@ slug: "secrets"
 hidden: false
 ---
 
-Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's `CANVAS_MANIFEST.json` as **variables**, set at install time or through the Admin UI, and read from `self.secrets` at runtime.
+Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables) as **variables**, set at install time or through the Admin UI, and read from `self.secrets` at runtime.
 
 Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification). All variable values are write-only through the CLI and API.
 

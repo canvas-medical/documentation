@@ -205,7 +205,7 @@ class AdvancedRevenueApp(Application):
         ).apply()
 ```
 
-In addition, your `CANVAS_MANIFEST.json` file must provide some information
+In addition, your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file must provide some information
 about your application. You reference your class in the "applications"
 section of the components so your application is registered in the app drawer
 on plugin installation.

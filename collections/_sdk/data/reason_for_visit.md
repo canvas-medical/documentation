@@ -89,6 +89,8 @@ codings = rfv.codings.all()
 | Field Name       | Type                                             | Description                                              |
 | ---------------- | ------------------------------------------------ | -------------------------------------------------------- |
 | dbid             | Integer                                          | The database identifier for this coding record.          |
+| created          | DateTime                                         | When the record was created.                             |
+| modified         | DateTime                                         | When the record was last modified.                       |
 | code             | String                                           | The code representing the concept.                       |
 | display          | String                                           | The human-readable display name for the concept.         |
 | system           | String                                           | The coding system.                                       |
@@ -127,6 +129,8 @@ codings = ReasonForVisitSettingCoding.objects.filter(system="http://snomed.info/
 | ---------- | ----------------- | --------------------------------------------------------------------------------- |
 | id         | UUID              | The universally unique identifier for this coding record.                         |
 | dbid       | Integer           | The database identifier for this coding record.                                   |
+| created    | DateTime          | When the record was created.                                                      |
+| modified   | DateTime          | When the record was last modified.                                                |
 | code       | String            | The code representing the concept.                                                |
 | display    | String            | The human-readable display name for the concept.                                  |
 | system     | String            | The coding system (e.g., `http://snomed.info/sct`).                               |

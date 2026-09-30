@@ -149,13 +149,16 @@ Before uploading, `canvas install` runs the same pre-flight validation as [`canv
 
 If the static lint reports an error, or any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin is built or uploaded, so it never reaches your instance. Run `canvas validate` first for detailed per-handler results.
 
-The CLI automatically excludes common build artifacts from the plugin bundle:
+The CLI packages every file in the plugin directory except:
 - `__pycache__` directories
 - `*.pyc` and `*.pyo` files
 - `node_modules` directories
 - Hidden files and directories (e.g., `.git`, `.env`)
+- Symlinks
 
-To exclude additional files, create a `.canvasignore` file in your plugin directory. This file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore).
+To exclude additional files, create a `.canvasignore` file in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin directory, so run the command from the directory that holds your `.canvasignore`. The file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore), and its patterns match paths relative to the plugin directory.
+
+The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
 
 Example
 ```md

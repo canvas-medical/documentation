@@ -101,7 +101,8 @@ paperwork-eviscerator/
 ### CANVAS_MANIFEST.json
 
 The CANVAS_MANIFEST.json is particularly important. It is used during the
-installation of the plugin.
+installation of the plugin. See the [Canvas Manifest](/sdk/canvas_manifest/)
+reference for every field it can contain.
 
 ```json
 {

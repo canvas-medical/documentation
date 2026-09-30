@@ -523,6 +523,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Drive Navigator from your coding agent (MCP)"
+    url: /guides/navigator-mcp/
+    description: Ask the Canvas AI assistant from Claude Code or Cursor over MCP
+    uses:
+      - sdk
+
   - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
@@ -733,6 +739,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
@@ -1107,6 +1115,9 @@ data_module:
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
+  - title: "Clipboard"
+    url: /sdk/data-clipboard/
+    description: Free-text content staged on a note by a clipboard command.
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
@@ -1128,6 +1139,9 @@ data_module:
   - title: "CreateCodingGapEvent"
     url: /sdk/data-coding-gap-event/#createcodinggapevent
     description: A record of a coding gap being created.
+  - title: "CustomCommand"
+    url: /sdk/data-custom-command/
+    description: A plugin-defined read-only command recorded on a note (the custom command).
   - title: "DeferCodingGapEvent"
     url: /sdk/data-coding-gap-event/#defercodinggapevent
     description: A record of a coding gap being deferred.
@@ -1290,6 +1304,9 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Receipt"
+    url: /sdk/data-receipt/
+    description: A Canvas-generated payment receipt for a payment collection.
   - title: "Reference"
     url: /sdk/data-reference/
     description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
