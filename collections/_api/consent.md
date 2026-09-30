@@ -146,7 +146,7 @@ sections:
         endpoints: [create, read, search]
         create:
           description: >-
-            Before creating a consent via the API, Patient Consent Codings **must** be [configured in Canvas](https://canvas-medical.help.usepylon.com/articles/8727821967-patient-consents).<br><br>
+            Before creating a consent via the API, Patient Consent Codings **must** be [configured in Canvas](https://help.canvasmedical.com/articles/8144965836-Managing-Consents).<br><br>
 
             **Updating existing patient consent objects**<br><br>
 
