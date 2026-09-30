@@ -75,6 +75,8 @@ results = LabReportTemplate.objects.search("glucose")
 |-----------------|--------------------------------------------------------|
 | id              | UUID                                                   |
 | dbid            | Integer                                                |
+| created         | DateTime                                               |
+| modified        | DateTime                                               |
 | name            | String                                                 |
 | code            | String                                                 |
 | code_system     | String                                                 |
@@ -89,6 +91,8 @@ results = LabReportTemplate.objects.search("glucose")
 | Field Name      | Type                                                                 |
 |-----------------|----------------------------------------------------------------------|
 | dbid            | Integer                                                              |
+| created         | DateTime                                                             |
+| modified        | DateTime                                                             |
 | report_template | [LabReportTemplate](#labreporttemplate)                              |
 | sequence        | Integer                                                              |
 | code            | String                                                               |
@@ -104,6 +108,8 @@ results = LabReportTemplate.objects.search("glucose")
 | Field Name | Type                                                    |
 |------------|---------------------------------------------------------|
 | dbid       | Integer                                                 |
+| created    | DateTime                                                |
+| modified   | DateTime                                                |
 | field      | [LabReportTemplateField](#labreporttemplatefield)       |
 | label      | String                                                  |
 | key        | String                                                  |
