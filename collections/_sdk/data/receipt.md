@@ -72,7 +72,6 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 | account\_balance\_before\_collection | Decimal                                                   |                                                                                                          |
 | account\_balance\_after\_collection  | Decimal                                                   |                                                                                                          |
 | discount                             | Decimal                                                   |                                                                                                          |
-| template                             | String                                                    |                                                                                                          |
 | receipt                              | String                                                    |                                                                                                          |
 | receipt\_url                         | String (computed)                                         | Presigned S3 URL for the receipt PDF, valid for 1 hour, or `None` while the PDF is still being generated |
 | total\_posted\_amount                | Decimal (computed)                                        | Sum of the payments and write-off adjustments across the payment collection's active postings            |
@@ -80,4 +79,3 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 
 - `account_balance_before_collection` and `account_balance_after_collection` are snapshots of the patient's account balance taken when the receipt was generated. They don't change as the balance changes.
 - `discount` is the discount amount recorded on the receipt, or `0.00` when no discount was applied.
-- `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
