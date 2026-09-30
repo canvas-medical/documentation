@@ -39,6 +39,8 @@ You can also access `PayorSpecificCharge`s from the `ChargeDescriptionMaster` mo
 | Field Name     | Type                            |
 | -------------- | ------------------------------- |
 | dbid           | Integer                         |
+| created        | DateTime                        |
+| modified       | DateTime                        |
 | cpt_code       | String                          |
 | name           | String                          |
 | short_name     | String                          |
@@ -48,6 +50,7 @@ You can also access `PayorSpecificCharge`s from the `ChargeDescriptionMaster` mo
 | code_system    | [CDMCodeSystem](#cdmcodesystem) |
 | ndc_code       | String                          |
 | transactor_charges | QuerySet[[PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)] |
+| vaccines       | QuerySet[[Vaccine](/sdk/data-vaccine/#vaccine)] |
 
 ## Enumeration types
 

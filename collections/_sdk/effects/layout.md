@@ -270,6 +270,101 @@ Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
 <br/>
 <br/>
 
+## Provider Menu Configuration
+
+The `ProviderMenuConfiguration` effect allows you to define which items appear in the provider menu (the hamburger menu at the top left of Canvas).
+
+The effect replaces the default set of items, so every item that should stay visible has to be listed. Anything you omit is not rendered. If no installed plugin emits the effect, the menu renders unchanged.
+
+Passing an empty list is allowed and hides every native item — useful if your plugin replaces the menu entirely with its own items.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.provider_menu_configuration import ProviderMenuConfiguration
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class ProviderMenuHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.GET_PROVIDER_MENU_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [ProviderMenuConfiguration(items=[
+            ProviderMenuConfiguration.Items.PATIENTS,
+            ProviderMenuConfiguration.Items.CAMPAIGNS,
+            ProviderMenuConfiguration.Items.SETTINGS,
+        ]).apply()]
+```
+
+Three things the effect does not do:
+
+- **It does not reorder the menu.** Items render in Canvas's native order and grouping, regardless of the order you list them in.
+- **It does not grant access.** Permissions still apply on top, so an item you list will still render disabled for a user who lacks the permission for it.
+- **It does not affect plugin-provided menu items.** Applications with the `provider_menu_item` scope are independent of the allow-list.
+
+The user's avatar and name, and the **Sign out** button, are always rendered and cannot be hidden.
+
+Because this is an allow-list rather than a block-list, it does not pick up native items added in future Canvas releases. If a new item ships and you want it visible, add it to your list — otherwise it stays hidden on your instance.
+
+#### When the allow-list is not applied
+
+Canvas falls back to rendering every native item, rather than a partial or empty menu, in each of these cases:
+
+- No installed plugin responds to the event.
+- The plugin raises while resolving the configuration.
+- The allow-list reaches Canvas containing an item it does not recognize — the whole list is discarded, not just the unrecognized entry.
+
+Passing something that is not an `Items` member raises a validation error when you construct `ProviderMenuConfiguration`, so most mistakes surface in your plugin before they ever reach Canvas.
+
+If more than one installed plugin responds with a `ProviderMenuConfiguration`, the last effect Canvas receives wins — its allow-list replaces the earlier ones rather than merging with them.
+
+### Attributes
+
+| Attribute | Type          | Description                        |
+| --------- | ------------- | ---------------------------------- |
+| `items`   | `list[Items]` | List of menu items to display.     |
+
+Values in the `ProviderMenuConfiguration.Items` enum are:
+
+| Constant                    | Description                                                    |
+| --------------------------- | -------------------------------------------------------------- |
+| SCHEDULE                    | Go to the schedule page                                        |
+| PATIENTS                    | Go to the patient directory                                    |
+| REVENUE                     | Go to the revenue page                                         |
+| POPULATIONS                 | Go to the populations page                                     |
+| CAMPAIGNS                   | Go to the campaigns page                                       |
+| DATA_INTEGRATION            | Go to the data integration queue                               |
+| QUESTIONNAIRE_BUILDER       | Go to the questionnaire builder                                |
+| SETTINGS                    | Open the Canvas admin site in a new tab                        |
+| MULTI_FACTOR_AUTHENTICATION | Open multi-factor authentication setup in a new tab            |
+| CHANGELOG                   | Open the Canvas release notes in a new tab                     |
+| HELP_CENTER                 | Open the Canvas help center in a new tab                       |
+
+### Hiding the Schedule item
+
+Hiding `SCHEDULE` does not change where providers land after logging in — that still defaults to the schedule page. Pair the effect with a [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) so providers do not arrive on a page they can no longer navigate back to.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.default_homepage import DefaultHomepageEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class ScheduleFreeHomepage(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.GET_HOMEPAGE_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [DefaultHomepageEffect(page=DefaultHomepageEffect.Pages.PATIENTS).apply()]
+```
+
+Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place. Removing the scheduling experience end to end means coordinating three independent controls: this effect for the menu item, [`PanelConfiguration`](#panel-configuration) for the Appointments filter, and [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) for the landing page.
+
+Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
+
+<br/>
+<br/>
+
 ## Modals
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
@@ -298,10 +393,17 @@ The `LaunchModalEffect` class has the following properties:
   - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
-  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
   - `PAGE`: Opens the content as a full page.
   - `NOTE`: Opens the content within a note tab (used with Note Applications).
+  - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
+
+### Where Modals Open
+
+A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal. In the patient portal, use the `DEFAULT_MODAL` target.
+
+An application's `on_open`, an action button click, and the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/patient-portal/#show-a-modal-after-login) event return the modal in their own response, so it opens right away. Canvas pushes a modal from any other handler, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, to that user's browser. The modal opens only if the user has Canvas or the portal open at that moment. If the event has no acting user, the modal doesn't open.
 
 ### Closing Modals from Applications
 

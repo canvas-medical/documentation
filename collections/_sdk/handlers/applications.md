@@ -226,7 +226,7 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
@@ -281,6 +281,36 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
 }
 ```
 
+## Installing and updating applications
+
+When you install or upgrade a plugin, Canvas reconciles its applications to match
+`CANVAS_MANIFEST.json`. Canvas creates each application declared under
+`components.applications` that is new and updates each one that already exists.
+Canvas removes any registered application that the manifest no longer declares.
+The removed application's entry disappears from the app drawer and from any menu
+it appeared in, such as the provider menu, and its stored icon is deleted.
+
+Reconciliation affects only the plugin being installed. Applications that belong
+to other plugins are left unchanged.
+
+An application's identity is its `class` value, the `module:ClassName` string,
+and Canvas matches applications by `class` during reconciliation:
+
+- Editing only display fields (`name`, `description`, `icon`, `scope`, and so on)
+  while keeping the same `class` updates the existing application in place.
+- Changing the `class` value, by editing either the module path or the class
+  name, removes the old application and adds a new one rather than updating the
+  existing application in place.
+
+> **Note:** Per-application instance settings such as
+> [Open on load](#opening-an-application-on-load) attach to a specific
+> application. Because changing an application's `class` creates a new
+> application, those settings do not carry over to the new application.
+
+Application changes apply together with the plugin's other install or upgrade
+changes, such as commands and questionnaires, as a single all-or-nothing
+operation, so if an install fails, the plugin's applications are left unchanged.
+
 ## Opening an Application on Load
 
 You can configure an application to open **automatically**, without the user
@@ -312,12 +342,14 @@ preserved when the plugin is reinstalled or updated.
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on the icon of a `global`
-or `patient_specific` application: in the app drawer, or on the panel when the
-application sets `show_in_panel`. A badge is useful for surfacing how many items
-are waiting for attention, such as unread messages or open tasks. Applications in
-other scopes (`full_chart`, `provider_menu_item`, `portal_menu_item`, and the
-Provider Companion scopes) do not display badges.
+You can display a notification badge — a small count — on a `global`,
+`patient_specific`, or `provider_menu_item` application: on the icon in the app
+drawer or panel (`global` / `patient_specific`, the latter when the application
+sets `show_in_panel`), or next to the label in the provider menu
+(`provider_menu_item`). A badge is useful for surfacing how many items are waiting
+for attention, such as unread messages or open tasks. Applications in other scopes
+(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
+display badges.
 
 ### Initial count on load
 

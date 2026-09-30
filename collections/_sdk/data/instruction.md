@@ -62,7 +62,7 @@ for coding in instruction.codings.all():
     log.info(f"display: {coding.display}")
 ```
 
-Instruct commands originated through the SDK use either the SNOMED CT code system or an internal "unstructured" system for free-text instructions. See the [InstructCommand](/sdk/commands/#instructcommand) effect for the write-side details.
+Instruct commands originated through the SDK use either the SNOMED CT code system or an internal "unstructured" system for free-text instructions. See the [InstructCommand](/sdk/commands/#instruct) effect for the write-side details.
 
 ## Committed instructions
 
@@ -125,6 +125,7 @@ cessation_counseling = (
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)          |
 | patient          | [Patient](/sdk/data-patient/#patient)       |
 | note             | [Note](/sdk/data-note/#note)                |
+| assessment       | [Assessment](/sdk/data-assessment/#assessment) |
 | narrative        | String                                      |
 | codings          | [InstructionCoding](#instructioncoding)[]   |
 
@@ -133,6 +134,8 @@ cessation_counseling = (
 | Field Name    | Type                        |
 |---------------|-----------------------------|
 | dbid          | Integer                     |
+| created       | DateTime                    |
+| modified      | DateTime                    |
 | system        | String                      |
 | version       | String                      |
 | code          | String                      |

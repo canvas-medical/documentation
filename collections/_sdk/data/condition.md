@@ -90,6 +90,8 @@ conditions = Condition.objects.find(Diabetes)
 |-----------------------------|----------------------------------------------------------------------------|
 | id                          | UUID                                                                       |
 | dbid                        | Integer                                                                    |
+| created                     | DateTime                                                                   |
+| modified                    | DateTime                                                                   |
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)                                         |
 | committer                   | [CanvasUser](/sdk/data-canvasuser)                                         |
 | patient                     | [Patient](/sdk/data-patient/#patient)                                      |
@@ -100,13 +102,18 @@ conditions = Condition.objects.find(Diabetes)
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
+| assessed_coding_gaps        | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]  |
 | assessments                 | [Assessment](/sdk/data-assessment/#assessment)[]                           |
+| resolutions                 | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]  |
+| past_medical_history_removals | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)[] |
 
 ### ConditionCoding
 
 | Field Name    | Type                    |
 |---------------|-------------------------|
 | dbid          | Integer                 |
+| created       | DateTime                |
+| modified      | DateTime                |
 | system        | String                  |
 | version       | String                  |
 | code          | String                  |

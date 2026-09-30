@@ -77,6 +77,8 @@ appointment = Appointment.objects.filter(
 |------------------------------|-------------------------------------------------------------------|
 | id                           | UUID                                                              |
 | dbid                         | Integer                                                           |
+| created                      | DateTime                                                          |
+| modified                     | DateTime                                                          |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                |
 | patient                      | [Patient](/sdk/data-patient/#patient)                             |
 | appointment_rescheduled_from | [Appointment](#appointment)                                       |
@@ -114,6 +116,16 @@ appointment = Appointment.objects.filter(
 | issued_date     | Date                        |
 | expiration_date | Date                        |
 | appointment     | [Appointment](#appointment) |
+
+### AppointmentLabel
+
+The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Reach the labels on an appointment through its `labels` attribute rather than querying this model.
+
+| Field Name  | Type                                   |
+|-------------|----------------------------------------|
+| dbid        | Integer                                |
+| appointment | [Appointment](#appointment)            |
+| task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
 
 ### AppointmentMetadata
 

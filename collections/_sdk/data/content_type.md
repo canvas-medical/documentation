@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `ContentType` model provides read-only access to Django content types. Use it to resolve the content type id for a given model, which is required when working with generic relations (such as [document references](/sdk/data-document-reference)) and when generating permalinks.
+The `ContentType` model exposes Django content types. Use it to resolve the content type id for a given model, which is required when working with generic relations (such as [document references](/sdk/data-document-reference)) and when generating permalinks.
 
 A content type is identified by two **stable** values — `app_label` and `model` — that are the same on every Canvas instance. Its `dbid` (the content type id) is a per-database auto-increment that **is not stable across environments**. Always resolve the `dbid` at runtime from the `app_label` and `model`; never hardcode a content type id, or it will point at the wrong model in another environment.
 
@@ -90,6 +90,7 @@ Use these stable values to resolve a content type with `ContentType.objects.filt
 | [Note](/sdk/data-note/) | `api` | `note` |
 | [Observation](/sdk/data-observation/) | `api` | `observation` |
 | [Organization](/sdk/data-organization/) | `api` | `organization` |
+| [OrganizationalEntity](/sdk/data-organizational-entity/) | `api` | `organizationalentity` |
 | [Patient](/sdk/data-patient/) | `api` | `patient` |
 | [PatientConsent](/sdk/data-patient-consent/) | `api` | `patientconsent` |
 | [PatientGroup](/sdk/data-patient-group/) | `api` | `patientgroup` |

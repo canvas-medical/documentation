@@ -53,7 +53,7 @@ Each `PatientConsentCoding` has a `document` field containing the URL to the con
 
 ## Accessing Document Files
 
-The `document_url` property returns a presigned S3 URL for securely accessing the consent form.
+The `document_url` property returns a presigned S3 URL for securely accessing the blank consent template — the form you send to a patient to collect their consent. The copy the patient signs and returns is a separate record; see [Signed consent documents](#signed-consent-documents).
 
 ```python
 from canvas_sdk.v1.data import PatientConsentCoding
@@ -64,40 +64,74 @@ consent_coding = PatientConsentCoding.objects.first()
 url = consent_coding.document_url
 ```
 
+## Signed consent documents
+
+The `PatientConsentCoding.document` above is the blank **template** sent to the patient. The **signed** documents the patient completes and returns are [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) records, reachable from the consent through the `documents` relation:
+
+```python
+from canvas_sdk.v1.data import PatientConsent
+
+consent = PatientConsent.objects.get(id="8a2b1c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d")
+
+# Every signed document attached to this consent.
+signed_documents = consent.documents.all()
+
+# The current signed document (the most recent non-junked one), or None.
+current = consent.active_document
+```
+
+Each signed document's FHIR [DocumentReference](/sdk/data-document-reference/) is reachable through `document_references`, so a plugin can read the reference (and its `related_object`) in-process without a FHIR call:
+
+```python
+from canvas_sdk.v1.data import PatientConsent
+
+consent = PatientConsent.objects.get(id="8a2b1c3d-4e5f-6a7b-8c9d-0e1f2a3b4c5d")
+
+for reference in consent.document_references:
+    url = reference.document_url
+```
+
 ## Attributes
 
 ### PatientConsent
 
-| Field Name       | Type                                                            |
-| ---------------- | --------------------------------------------------------------- |
-| id               | UUID                                                            |
-| dbid             | Integer                                                         |
-| patient          | [Patient](/sdk/data-patient)                                    |
-| category         | [PatientConsentCoding](#patientconsentcoding)                   |
-| state            | [PatientConsentStatus](#patientconsentstatus)                   |
-| effective_date   | DateTime                                                        |
-| expired_date     | DateTime                                                        |
-| rejection_reason | [PatientConsentRejectionCoding](#patientconsentrejectioncoding) |
-| originator       | [CanvasUser](/sdk/data-canvasuser)                              |
+| Field Name          | Type                                                                                   | Description                            |
+|---------------------|----------------------------------------------------------------------------------------|----------------------------------------|
+| id                  | UUID                                                                                   |                                        |
+| dbid                | Integer                                                                                |                                        |
+| created             | DateTime                                                                               |                                        |
+| modified            | DateTime                                                                               |                                        |
+| patient             | [Patient](/sdk/data-patient)                                                           |                                        |
+| category            | [PatientConsentCoding](#patientconsentcoding)                                          |                                        |
+| state               | [PatientConsentStatus](#patientconsentstatus)                                          |                                        |
+| effective_date      | DateTime                                                                               |                                        |
+| expired_date        | DateTime                                                                               |                                        |
+| rejection_reason    | [PatientConsentRejectionCoding](#patientconsentrejectioncoding)                        |                                        |
+| originator          | [CanvasUser](/sdk/data-canvasuser)                                                     |                                        |
+| documents           | QuerySet[[PatientAdministrativeDocument](/sdk/data-patient-administrative-document/)]  | The signed consent documents           |
+| active_document     | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) (computed) | The current signed document, or `None` |
+| document_references | QuerySet[[DocumentReference](/sdk/data-document-reference/)] (computed)                | References for the signed documents    |
 
 ### PatientConsentCoding
 
-| Field Name             | Type                                                          |
-| ---------------------- | ------------------------------------------------------------- |
-| dbid                   | Integer                                                       |
-| system                 | String                                                        |
-| version                | String                                                        |
-| code                   | String                                                        |
-| display                | String                                                        |
-| user_selected          | Boolean                                                       |
-| expiration_rule        | [PatientConsentExpirationRule](#patientconsentexpirationrule) |
-| is_mandatory           | Boolean                                                       |
-| is_proof_required      | Boolean                                                       |
-| show_in_patient_portal | Boolean                                                       |
-| summary                | String                                                        |
-| document               | String                                                        |
-| document_url           | String (property) — presigned S3 URL                          |
-| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |
+| Field Name             | Type                                                          | Description      |
+|------------------------|---------------------------------------------------------------|------------------|
+| dbid                   | Integer                                                       |                  |
+| created                | DateTime                                                      |                  |
+| modified               | DateTime                                                      |                  |
+| system                 | String                                                        |                  |
+| version                | String                                                        |                  |
+| code                   | String                                                        |                  |
+| display                | String                                                        |                  |
+| user_selected          | Boolean                                                       |                  |
+| expiration_rule        | [PatientConsentExpirationRule](#patientconsentexpirationrule) |                  |
+| is_mandatory           | Boolean                                                       |                  |
+| is_proof_required      | Boolean                                                       |                  |
+| show_in_patient_portal | Boolean                                                       |                  |
+| summary                | String                                                        |                  |
+| document               | String                                                        |                  |
+| document_url           | String (computed)                                             | Presigned S3 URL |
+| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |                  |
 
 
 ### PatientConsentRejectionCoding
@@ -105,6 +139,8 @@ url = consent_coding.document_url
 | Field Name    | Type    |
 | ------------- | ------- |
 | dbid          | Integer |
+| created       | DateTime |
+| modified      | DateTime |
 | system        | String  |
 | version       | String  |
 | code          | String  |
