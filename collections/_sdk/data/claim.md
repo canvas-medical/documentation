@@ -46,7 +46,16 @@ for alert in active_alerts:
 <!-- source: discussion #1274 -->
 ## When a claim is created
 
-A claim is automatically created for an appointment/note only when the note's `NoteType` has `is_billable` set to `True`. Note types with `is_billable` set to `False` (for example, a "Historical Note") create a note but no claim. If you rely on a claim existing for a note, check the `NoteType.is_billable` flag (see [NoteType](/sdk/data-note/#notetype)) rather than assuming every appointment produces a claim.
+A claim is created for an appointment or note only when the note's type is billable. A note type with `is_billable` set to `False`, such as the built-in Chart review type, produces a note and no claim, so check the flag rather than assuming every appointment produces a claim.
+
+The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+expects_claim = note.note_type_version.is_billable
+```
 
 <!-- source: discussion #1642 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
