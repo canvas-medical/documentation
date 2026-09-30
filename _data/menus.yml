@@ -1259,6 +1259,9 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Receipt"
+    url: /sdk/data-receipt/
+    description: A read-only, Canvas-generated payment receipt for a payment collection.
   - title: "Reference"
     url: /sdk/data-reference/
     description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
