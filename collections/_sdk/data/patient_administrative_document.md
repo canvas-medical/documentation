@@ -5,8 +5,6 @@ excerpt: "Patient-facing administrative documents, such as signed consent forms 
 hidden: false
 ---
 
-# PatientAdministrativeDocument
-
 The `PatientAdministrativeDocument` model represents patient-facing administrative documents: prior authorizations, advance directives and beneficiary notices, signed consent forms and agreements, insurance and prescription cards, driver's licenses, intake forms, releases of information, powers of attorney, and workers' compensation attachments. Each carries a document file and an optional `DocumentCoding`.
 
 A signed consent form is one of these records: `patient_consents` lists the [PatientConsent](/sdk/data-patient-consent/#signed-consent-documents) records it was signed for. The blank template the patient was sent lives on the consent itself, not here.

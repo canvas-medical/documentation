@@ -1,13 +1,11 @@
 ---
 title: "Receipt"
 slug: "data-receipt"
-excerpt: "A read-only, Canvas-generated payment receipt, one per payment collection, with a presigned URL to its PDF."
+excerpt: "A Canvas-generated payment receipt, one per payment collection, with a presigned URL to its PDF."
 hidden: false
 ---
 
-# Receipt
-
-The `Receipt` model represents the single canonical payment receipt Canvas generates for a payment collection. It is read-only: Canvas creates one receipt per [PaymentCollection](/sdk/data-posting/#paymentcollection), and the model exposes that existing receipt PDF through a presigned URL. It does not create, edit, or regenerate receipts.
+The `Receipt` model represents the single canonical payment receipt Canvas generates for a payment collection. Canvas creates one receipt per [PaymentCollection](/sdk/data-posting/#paymentcollection), and the model exposes that receipt's PDF through a presigned URL.
 
 ## Basic Usage
 
@@ -47,8 +45,6 @@ for payment in patient.payments.select_related("payment_collection__receipt"):
         continue
     receipts.append(receipt)
 ```
-
-{% include alert.html type="warning" content="Canvas does not set a committer on receipts, so <code>Receipt.objects.committed()</code> returns no receipts. Filter on <code>entered_in_error</code> instead, as above." %}
 
 ## Accessing the receipt PDF
 

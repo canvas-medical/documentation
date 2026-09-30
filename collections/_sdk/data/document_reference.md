@@ -5,8 +5,6 @@ excerpt: "References to documents stored in Canvas, with presigned URL support f
 hidden: false
 ---
 
-# DocumentReference
-
 The `DocumentReference` model represents references to documents stored in Canvas, such as uploaded PDFs, scanned files, and other clinical documents. Each document reference can link to a file stored in S3 and provides secure access via presigned URLs.
 
 ## Basic Usage
