@@ -27907,7 +27907,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <code>PATIENT_PORTAL__FORM_RESULT</code> effect as a return value</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27932,7 +27932,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__POST_LOGIN</th></tr>
-    <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a `LaunchModalEffect` with the `DEFAULT_MODAL` target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
+    <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a <code>LaunchModalEffect</code> with the <code>DEFAULT_MODAL</code> target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
