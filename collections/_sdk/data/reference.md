@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `Reference` model is the read-only record of a diagnostic view embedded in a note, created when the [Reference](/sdk/commands/#reference) command is originated — for example, when a clinician adds a diagnostic view to a note through diagnostic theater, or a plugin originates a `ReferenceCommand`. It captures a snapshot of the referenced diagnostic view's rendered table. The command creates the reference record when it is originated, and commits it when the command is committed.
+The `Reference` model is the record of a diagnostic view embedded in a note, created when the [Reference](/sdk/commands/#reference) command is originated, for example when a clinician adds a diagnostic view to a note through diagnostic theater, or a plugin originates a `ReferenceCommand`. It captures a snapshot of the referenced diagnostic view's rendered table. The command creates the reference record when it is originated, and commits it when the command is committed.
 
 ## Basic usage
 

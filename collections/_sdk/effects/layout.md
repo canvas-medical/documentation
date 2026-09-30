@@ -393,11 +393,17 @@ The `LaunchModalEffect` class has the following properties:
   - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
   - `NEW_WINDOW`: Opens the content in a new browser window.
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
-  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
+  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
   - `PAGE`: Opens the content as a full page.
   - `NOTE`: Opens the content within a note tab (used with Note Applications).
   - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
+
+### Where Modals Open
+
+A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal. In the patient portal, use the `DEFAULT_MODAL` target.
+
+An application's `on_open`, an action button click, and the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/patient-portal/#show-a-modal-after-login) event return the modal in their own response, so it opens right away. Canvas pushes a modal from any other handler, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, to that user's browser. The modal opens only if the user has Canvas or the portal open at that moment. If the event has no acting user, the modal doesn't open.
 
 ### Closing Modals from Applications
 

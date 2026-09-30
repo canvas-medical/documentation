@@ -92,78 +92,84 @@ url = staff.signature_url
 
 ### Staff
 
-| Field Name                 | Type                                                            |
-| -------------------------- | --------------------------------------------------------------- |
-| id                         | UUID                                                            |
-| dbid                       | Integer                                                         |
-| created                    | DateTime                                                        |
-| modified                   | DateTime                                                        |
-| prefix                     | String                                                          |
-| suffix                     | String                                                          |
-| first_name                 | String                                                          |
-| middle_name                | String                                                          |
-| last_name                  | String                                                          |
-| maiden_name                | String                                                          |
-| nickname                   | String                                                          |
-| previous_names             | JSON                                                            |
-| birth_date                 | Date                                                            |
-| sex_at_birth               | [PersonSex](/sdk/data-enumeration-types/#personsex)             |
-| sexual_orientation_term    | String                                                          |
-| sexual_orientation_code    | String                                                          |
-| gender_identity_term       | String                                                          |
-| gender_identity_code       | String                                                          |
-| preferred_pronouns         | String                                                          |
-| biological_race_codes      | Array[String]                                                   |
-| biological_race_terms      | Array[String]                                                   |
-| cultural_ethnicity_codes   | Array[String]                                                   |
-| cultural_ethnicity_terms   | Array[String]                                                   |
-| last_known_timezone        | TimeZone                                                        |
-| active                     | Boolean                                                         |
-| primary_practice_location  | [PracticeLocation](/sdk/data-practicelocation/)                 |
-| npi_number                 | String                                                          |
-| nadean_number              | String                                                          |
-| group_npi_number           | String                                                          |
-| bill_through_organization  | Boolean                                                         |
-| tax_id                     | String                                                          |
-| tax_id_type                | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)             |
-| spi_number                 | String                                                          |
-| personal_meeting_room_link | URL                                                             |
-| language                   | Language                                                        |
-| language_secondary         | Language                                                        |
-| schedule_column_ordering   | Integer                                                         |
-| state                      | JSON                                                            |
-| user                       | [CanvasUser](/sdk/data-canvasuser)                              |
-| signature                  | String                                                          |
-| supervising_team           | [Staff](#staff)[]                                               |
-| default_supervising_provider | [Staff](#staff)                                               |
-| notes                      | Note[]                                                          |
-| supervised_notes           | Note[]                                                          |
-| creator_tasks              | [Task](/sdk/data-task/#task)[]                                  |
-| assignee_tasks             | [Task](/sdk/data-task/#task)[]                                  |
-| comments                   | [TaskComment](/sdk/data-task/#taskcomment)[]                    |
-| care_team_memberships      | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[] |
-| teams                      | [Team](/sdk/data-team/#team)[]                                  |
-| telecom                    | [StaffContactPoint](#staffcontactpoint)[]                       |
-| external_identifiers       | [StaffExternalIdentifier](#staffexternalidentifier)[]           |
-| metadata                   | [StaffMetadata](#staffmetadata)[]                               |
-| addresses                  | [StaffAddress](#staffaddress)[]                                 |
-| photos                     | [StaffPhoto](#staffphoto)[]                                     |
-| roles                      | [StaffRole](#staffrole)[]                                       |
-| licenses                   | [StaffLicense](#stafflicense)[]                                 |
-| letters                    | [Letter](/sdk/data-letter/#letter)[]                            |
-| imaging_orders             | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]               |
-| immunizations_given        | [Immunization](/sdk/data-immunization/#immunization)[]          |
-| supervising_prescriptions  | [Prescription](/sdk/data-prescription/#prescription)[]          |
-| refill_requests            | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]      |
-| default_patients           | [Patient](/sdk/data-patient/#patient)[]                         |
-| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
-| transmissions_delivered    | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |
-| integration_task_reviews   | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
-| assignee_note_tasks        | [NoteTask](/sdk/data-task/#notetask)[]                          |
-| appointment_set            | [Appointment](/sdk/data-appointment/#appointment)[]             |
-| prescription_set           | [Prescription](/sdk/data-prescription/#prescription)[]          |
-| note_set                   | [Note](/sdk/data-note/#note)[]                                  |
-| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
+| Field Name                   | Type                                                                                            | Description                                                                                                                                         |
+|------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| id                           | UUID                                                                                            |                                                                                                                                                     |
+| dbid                         | Integer                                                                                         |                                                                                                                                                     |
+| created                      | DateTime                                                                                        |                                                                                                                                                     |
+| modified                     | DateTime                                                                                        |                                                                                                                                                     |
+| prefix                       | String                                                                                          |                                                                                                                                                     |
+| suffix                       | String                                                                                          |                                                                                                                                                     |
+| first_name                   | String                                                                                          |                                                                                                                                                     |
+| middle_name                  | String                                                                                          |                                                                                                                                                     |
+| last_name                    | String                                                                                          |                                                                                                                                                     |
+| maiden_name                  | String                                                                                          |                                                                                                                                                     |
+| nickname                     | String                                                                                          |                                                                                                                                                     |
+| previous_names               | JSON                                                                                            |                                                                                                                                                     |
+| birth_date                   | Date                                                                                            |                                                                                                                                                     |
+| sex_at_birth                 | [PersonSex](/sdk/data-enumeration-types/#personsex)                                             |                                                                                                                                                     |
+| sexual_orientation_term      | String                                                                                          |                                                                                                                                                     |
+| sexual_orientation_code      | String                                                                                          |                                                                                                                                                     |
+| gender_identity_term         | String                                                                                          |                                                                                                                                                     |
+| gender_identity_code         | String                                                                                          |                                                                                                                                                     |
+| preferred_pronouns           | String                                                                                          |                                                                                                                                                     |
+| biological_race_codes        | Array[String]                                                                                   |                                                                                                                                                     |
+| biological_race_terms        | Array[String]                                                                                   |                                                                                                                                                     |
+| cultural_ethnicity_codes     | Array[String]                                                                                   |                                                                                                                                                     |
+| cultural_ethnicity_terms     | Array[String]                                                                                   |                                                                                                                                                     |
+| last_known_timezone          | TimeZone                                                                                        |                                                                                                                                                     |
+| active                       | Boolean                                                                                         |                                                                                                                                                     |
+| primary_practice_location    | [PracticeLocation](/sdk/data-practicelocation/)                                                 |                                                                                                                                                     |
+| npi_number                   | String                                                                                          |                                                                                                                                                     |
+| nadean_number                | String                                                                                          |                                                                                                                                                     |
+| group_npi_number             | String                                                                                          |                                                                                                                                                     |
+| bill_through_organization    | Boolean                                                                                         |                                                                                                                                                     |
+| tax_id                       | String                                                                                          |                                                                                                                                                     |
+| tax_id_type                  | [TaxIDType](/sdk/data-enumeration-types/#taxidtype)                                             |                                                                                                                                                     |
+| spi_number                   | String                                                                                          |                                                                                                                                                     |
+| personal_meeting_room_link   | URL                                                                                             |                                                                                                                                                     |
+| language                     | Language                                                                                        |                                                                                                                                                     |
+| language_secondary           | Language                                                                                        |                                                                                                                                                     |
+| schedule_column_ordering     | Integer                                                                                         |                                                                                                                                                     |
+| state                        | JSON                                                                                            |                                                                                                                                                     |
+| user                         | [CanvasUser](/sdk/data-canvasuser)                                                              |                                                                                                                                                     |
+| signature                    | String                                                                                          |                                                                                                                                                     |
+| supervising_team             | [Staff](#staff)[]                                                                               |                                                                                                                                                     |
+| default_supervising_provider | [Staff](#staff)                                                                                 |                                                                                                                                                     |
+| notes                        | Note[]                                                                                          |                                                                                                                                                     |
+| supervised_notes             | Note[]                                                                                          |                                                                                                                                                     |
+| creator_tasks                | [Task](/sdk/data-task/#task)[]                                                                  |                                                                                                                                                     |
+| assignee_tasks               | [Task](/sdk/data-task/#task)[]                                                                  |                                                                                                                                                     |
+| comments                     | [TaskComment](/sdk/data-task/#taskcomment)[]                                                    |                                                                                                                                                     |
+| care_team_memberships        | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]                                 |                                                                                                                                                     |
+| teams                        | [Team](/sdk/data-team/#team)[]                                                                  |                                                                                                                                                     |
+| telecom                      | [StaffContactPoint](#staffcontactpoint)[]                                                       |                                                                                                                                                     |
+| external_identifiers         | [StaffExternalIdentifier](#staffexternalidentifier)[]                                           |                                                                                                                                                     |
+| metadata                     | [StaffMetadata](#staffmetadata)[]                                                               |                                                                                                                                                     |
+| addresses                    | [StaffAddress](#staffaddress)[]                                                                 |                                                                                                                                                     |
+| photos                       | [StaffPhoto](#staffphoto)[]                                                                     |                                                                                                                                                     |
+| roles                        | [StaffRole](#staffrole)[]                                                                       |                                                                                                                                                     |
+| licenses                     | [StaffLicense](#stafflicense)[]                                                                 |                                                                                                                                                     |
+| letters                      | [Letter](/sdk/data-letter/#letter)[]                                                            |                                                                                                                                                     |
+| imaging_orders               | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                                               |                                                                                                                                                     |
+| immunizations_given          | [Immunization](/sdk/data-immunization/#immunization)[]                                          |                                                                                                                                                     |
+| supervising_prescriptions    | [Prescription](/sdk/data-prescription/#prescription)[]                                          |                                                                                                                                                     |
+| refill_requests              | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                                      |                                                                                                                                                     |
+| default_patients             | [Patient](/sdk/data-patient/#patient)[]                                                         |                                                                                                                                                     |
+| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[]          |                                                                                                                                                     |
+| transmissions_delivered      | [MessageTransmission](/sdk/data-message/#messagetransmission)[]                                 |                                                                                                                                                     |
+| integration_task_reviews     | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]                    |                                                                                                                                                     |
+| assignee_note_tasks          | [NoteTask](/sdk/data-task/#notetask)[]                                                          |                                                                                                                                                     |
+| appointment_set              | [Appointment](/sdk/data-appointment/#appointment)[]                                             |                                                                                                                                                     |
+| prescription_set             | [Prescription](/sdk/data-prescription/#prescription)[]                                          |                                                                                                                                                     |
+| note_set                     | [Note](/sdk/data-note/#note)[]                                                                  |                                                                                                                                                     |
+| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |                                                                                                                                                     |
+| full_name                    | String (computed)                                                                               | The staff member's first and last name, for example `Larry Weed`                                                                                    |
+| credentialed_name            | String (computed)                                                                               | The staff member's full name suffixed with their topmost credential abbreviation, for example `Larry Weed MD`                                       |
+| top_clinical_role            | [StaffRole](#staffrole) (computed)                                                              | The staff member's highest-ranking clinical role, selected by privilege level when they hold more than one, or `None` if they have no clinical role |
+| top_role_abbreviation        | String (computed)                                                                               | The public credential abbreviation of `top_clinical_role`, for example `MD`, or `None` if there is no clinical role                                 |
+| photo_url                    | String (computed)                                                                               | The URL of the staff member's photo, or a placeholder image URL                                                                                     |
+| signature_url                | String (computed)                                                                               | A presigned S3 URL for the staff member's signature file, valid for 1 hour, or `None` if no signature is on file                                    |
 
 ### StaffContactPoint
 
@@ -171,6 +177,8 @@ url = staff.signature_url
 | ---------- | --------------------------------------------------------------------- |
 | id         | UUID                                                                  |
 | dbid       | Integer                                                               |
+| created    | DateTime                                                              |
+| modified   | DateTime                                                              |
 | system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value      | String                                                                |
 | use        | String                                                                |
@@ -185,6 +193,8 @@ url = staff.signature_url
 | ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
+| created     | DateTime                                                |
+| modified    | DateTime                                                |
 | line1       | String                                                  |
 | line2       | String                                                  |
 | city        | String                                                  |
@@ -207,6 +217,8 @@ url = staff.signature_url
 |-------------------------------------|------------------------------|
 | id                                  | UUID                         |      
 | dbid                                | Integer                      |
+| created                             | DateTime                     |
+| modified                            | DateTime                     |
 | staff                               | [Staff](#staff)              |
 | issuing_authority_long_name         | String                       |
 | issuing_authority_url               | URL                          |
@@ -233,6 +245,8 @@ url = staff.signature_url
 | Field Name             | Type                       |
 | ---------------------- | -------------------------- |
 | dbid                   | Integer                    |
+| created                | DateTime                   |
+| modified               | DateTime                   |
 | staff                  | [Staff](#staff)            |
 | internal_code          | String                     |
 | public_abbreviation    | String                     |
@@ -327,18 +341,6 @@ to upsert it from a plugin.
 | NON_LICENSED | Non-Licensed |
 | LICENSED     | Licensed     |
 | PROVIDER     | Provider     |
-
-
-
-## Computed Properties
-
-- `full_name`: The staff member's first and last name (for example, `Larry Weed`).
-- `credentialed_name`: The staff member's full name suffixed with their topmost credential abbreviation (for example, `Larry Weed MD`).
-- `top_clinical_role`: The staff member's highest-ranking clinical [StaffRole](#staffrole), selected by privilege level when they hold more than one, or `None` if they have no clinical role.
-- `top_role_abbreviation`: The public credential abbreviation of the `top_clinical_role` (for example, `MD`), or `None` if there is no clinical role.
-- `photo_url`: The URL of the staff member's photo, if available, or a placeholder image URL.
-- `signature_url`: A presigned S3 URL for the staff member's signature file (valid for 1 hour), or `None` if no signature is on file.
-
 
 <br/>
 <br/>
