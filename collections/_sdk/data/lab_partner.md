@@ -65,6 +65,8 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 | --------------------------- | ------- | ------------------------------------------------------------------- |
 | id                          | UUID    | The universally unique identifier for the lab partner.              |
 | dbid                        | Integer | The internal database identifier (primary key) for the lab partner. |
+| created                     | DateTime | When the record was created.                                        |
+| modified                    | DateTime | When the record was last modified.                                  |
 | name                        | String  | The name of the lab partner.                                        |
 | active                      | Boolean | Indicates whether the lab partner is currently active.              |
 | electronic_ordering_enabled | Boolean | Indicates if electronic ordering is enabled for this lab partner.   |
@@ -78,6 +80,8 @@ tests_with_code = LabPartnerTest.objects.filter(order_code="XYZ123")
 | ----------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | id          | UUID                                                | The universally unique identifier for the test record.                                       |
 | dbid        | Integer                                             | The internal database identifier (primary key) for the test record.                          |
+| created     | DateTime                                            | When the record was created.                                                                 |
+| modified    | DateTime                                            | When the record was last modified.                                                           |
 | lab_partner | [LabPartner](#labpartner)                           | A reference to the related `LabPartner` (accessible via the related name `available_tests`). |
 | order_code  | String                                              | A code used to identify the test order. May be blank.                                        |
 | order_name  | Text                                                | The name of the test order.                                                                  |
