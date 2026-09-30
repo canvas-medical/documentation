@@ -76,122 +76,137 @@ educational_materials = patient.education_material.all()
 
 ### Patient
 
-| Field Name               | Type                                                                      |
-|--------------------------|---------------------------------------------------------------------------|
-| id                       | String                                                                    |
-| dbid                     | Integer                                                                   |
-| first_name               | String                                                                    |
-| last_name                | String                                                                    |
-| birth_date               | Date                                                                      |
-| sex_at_birth             | [SexAtBirth](#sexatbirth)                                                 |
-| created                  | DateTime                                                                  |
-| modified                 | DateTime                                                                  |
-| prefix                   | String                                                                    |
-| suffix                   | String                                                                    |
-| middle_name              | String                                                                    |
-| maiden_name              | String                                                                    |
-| nickname                 | String                                                                    |
-| sexual_orientation_term  | String                                                                    |
-| sexual_orientation_code  | String                                                                    |
-| gender_identity_term     | String                                                                    |
-| gender_identity_code     | String                                                                    |
-| preferred_pronouns       | String                                                                    |
-| biological_race_codes    | Array[String]                                                             |
-| cultural_ethnicity_codes | Array[String]                                                             |
-| last_known_timezone      | String                                                                    |
-| mrn                      | String                                                                    |
-| active                   | Boolean                                                                   |
-| deceased                 | Boolean                                                                   |
-| deceased_datetime        | DateTime                                                                  |
-| deceased_cause           | String                                                                    |
-| deceased_comment         | String                                                                    |
-| other_gender_description | String                                                                    |
-| social_security_number   | String                                                                    |
-| administrative_note      | String                                                                    |
-| clinical_note            | String                                                                    |
-| mothers_maiden_name      | String                                                                    |
-| multiple_birth_indicator | Boolean                                                                   |
-| birth_order              | Integer                                                                   |
-| default_location_id      | Integer                                                                   |
-| default_provider_id      | Integer                                                                   |
-| addresses                | [PatientAddress](#patientaddress)[]                                       |
-| allergy_intolerances     | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)[] |
-| billing_line_items       | [BillingLineItem](/sdk/data-billing-line-item/)                           |
-| business_line            | [BusinessLine](/sdk/data-business-line/)                                  |
-| care_team_memberships    | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]           |
-| change_medications       | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]       |
-| conditions               | [Condition](/sdk/data-condition/#condition)[]                             |
-| coverages                | [Coverage](/sdk/data-coverage/#coverage)[]                                |
-| dependent_coverages      | [Coverage](/sdk/data-coverage/#coverage)[]                                |
-| detected_issues          | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                |
-| devices                  | [Device](/sdk/data-device/#device)[]                                      |
-| external_identifiers     | [PatientExternalIdentifier](#patientexternalidentifier)[]                 |
-| identification_cards     | [PatientIdentificationCard](#patientidentificationcard)[]                 |
-| imaging_orders           | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                         |
-| imaging_results          | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                       |
-| imaging_reviews          | [ImagingReview](/sdk/data-imaging/#imagingreview)[]                       |
-| interviews               | [Interview](/sdk/data-questionnaire/#interview)[]                         |
-| lab_orders               | [LabOrder](/sdk/data-labs/#laborder)[]                                    |
-| lab_reports              | [LabReport](/sdk/data-labs/#labreport)[]                                  |
-| lab_reviews              | [LabReview](/sdk/data-labs/#labreview)[]                                  |
-| medications              | [Medication](/sdk/data-medication/#medication)[]                          |
-| metadata                 | [PatientMetadata](#patientmetadata)[]                                     |
-| observations             | [Observation](/sdk/data-observation/#observation)[]                       |
-| photos                   | [PatientPhoto](#patientphoto)[]                                           |
-| preferred_pharmacy       | JSON                                                                      |
-| preferred_pharmacies     | JSON                                                                      |
-| protocol_overrides       | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]       |
-| settings                 | [PatientSetting](#patientsetting)                                         |
-| subscribed_coverages     | [Coverage](/sdk/data-coverage/#coverage)[]                                |
-| tasks                    | [Task](/sdk/data-task/#task)[]                                            |
-| telecom                  | [PatientContactPoint](#patientcontactpoint)[]                             |
-| contacts                 | [PatientContactPerson](#patientcontactperson)[]                           |
-| related_contacts         | [PatientContactPerson](#patientcontactperson)[] — contacts on *other* patients that reference this one |
-| user                     | [CanvasUser](/sdk/data-canvasuser/)[]                                     |
-| patient_groups           | [PatientGroup](/sdk/data-patient-group/)[]                                |
-| chart_section_reviews    | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]|
-| visual_exam_findings     | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]   |
-| vital_sign_readings      | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]      |
-| assessments              | [Assessment](/sdk/data-assessment/#assessment)[]                          |
-| patient_visits           | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                |
-| patient_events           | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                |
-| medication_statements    | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement)[] |
-| diagnostic_reports       | DiagnosticReport[]        |
-| medication_history_medications | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[] |
-| medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[] |
-| payments                 | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]              |
-| protocol_currents        | [ProtocolCurrent](/sdk/data-protocol-current/)[]           |
-| stopped_medications      | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
-| banner_alerts            | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                       |
-| immunizations            | [Immunization](/sdk/data-immunization/#immunization)[]                     |
-| immunization_statements  | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]   |
-| integration_tasks        | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]           |
-| installment_plans        | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]                      |
-| uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |
-| patient_consent          | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]              |
-| goals                    | [Goal](/sdk/data-goal/#goal)[]                                             |
-| updategoals              | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                 |
-| instructions             | [Instruction](/sdk/data-instruction/#instruction)[]                        |
-| appointments             | [Appointment](/sdk/data-appointment/#appointment)[]                        |
-| notes                    | [Note](/sdk/data-note/#note)[]                                             |
-| prescriptions            | [Prescription](/sdk/data-prescription/#prescription)[]                     |
-| refill_requests          | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                 |
-| referral_reviews         | [ReferralReview](/sdk/data-referral/#referralreview)[]                     |
-| referral_reports         | [ReferralReport](/sdk/data-referral/#referralreport)[]                     |
-| invoices                 | Invoice[]                                    |
-| education_material       | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
-| procedures               | [Procedure](/sdk/data-procedure/#procedure)[]                              |
-| family_histories         | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                 |
-| histories_of_present_illness | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[] |
-| plans                    | [Plan](/sdk/data-plan/#plan)[]                                             |
-| follow_ups               | [FollowUp](/sdk/data-follow-up/#followup)[]                                |
-| reasons_for_visit        | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]             |
-| removed_allergies        | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[] |
-| resolved_conditions      | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[] |
-| cancel_prescriptions     | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]  |
-| cancel_prescription_responses | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[] |
-| prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |
-| prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
+| Field Name                              | Type                                                                                                                    | Description                                                                                    |
+|-----------------------------------------|-------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| id                                      | String                                                                                                                  |                                                                                                |
+| dbid                                    | Integer                                                                                                                 |                                                                                                |
+| first_name                              | String                                                                                                                  |                                                                                                |
+| last_name                               | String                                                                                                                  |                                                                                                |
+| birth_date                              | Date                                                                                                                    |                                                                                                |
+| sex_at_birth                            | [SexAtBirth](#sexatbirth)                                                                                               |                                                                                                |
+| created                                 | DateTime                                                                                                                |                                                                                                |
+| modified                                | DateTime                                                                                                                |                                                                                                |
+| prefix                                  | String                                                                                                                  |                                                                                                |
+| suffix                                  | String                                                                                                                  |                                                                                                |
+| middle_name                             | String                                                                                                                  |                                                                                                |
+| maiden_name                             | String                                                                                                                  |                                                                                                |
+| nickname                                | String                                                                                                                  |                                                                                                |
+| sexual_orientation_term                 | String                                                                                                                  |                                                                                                |
+| sexual_orientation_code                 | String                                                                                                                  |                                                                                                |
+| gender_identity_term                    | String                                                                                                                  |                                                                                                |
+| gender_identity_code                    | String                                                                                                                  |                                                                                                |
+| preferred_pronouns                      | String                                                                                                                  |                                                                                                |
+| biological_race_codes                   | Array[String]                                                                                                           |                                                                                                |
+| cultural_ethnicity_codes                | Array[String]                                                                                                           |                                                                                                |
+| last_known_timezone                     | String                                                                                                                  |                                                                                                |
+| mrn                                     | String                                                                                                                  |                                                                                                |
+| active                                  | Boolean                                                                                                                 |                                                                                                |
+| deceased                                | Boolean                                                                                                                 |                                                                                                |
+| deceased_datetime                       | DateTime                                                                                                                |                                                                                                |
+| deceased_cause                          | String                                                                                                                  |                                                                                                |
+| deceased_comment                        | String                                                                                                                  |                                                                                                |
+| other_gender_description                | String                                                                                                                  |                                                                                                |
+| social_security_number                  | String                                                                                                                  |                                                                                                |
+| administrative_note                     | String                                                                                                                  |                                                                                                |
+| clinical_note                           | String                                                                                                                  |                                                                                                |
+| mothers_maiden_name                     | String                                                                                                                  |                                                                                                |
+| multiple_birth_indicator                | Boolean                                                                                                                 |                                                                                                |
+| birth_order                             | Integer                                                                                                                 |                                                                                                |
+| default_location_id                     | Integer                                                                                                                 |                                                                                                |
+| default_provider_id                     | Integer                                                                                                                 |                                                                                                |
+| addresses                               | [PatientAddress](#patientaddress)[]                                                                                     |                                                                                                |
+| allergy_intolerances                    | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance)[]                                               |                                                                                                |
+| assessed_coding_gaps                    | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]                                              |                                                                                                |
+| assessed_detected_issues                | [ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)[]                                          |                                                                                                |
+| billing_line_items                      | [BillingLineItem](/sdk/data-billing-line-item/)                                                                         |                                                                                                |
+| business_line                           | [BusinessLine](/sdk/data-business-line/)                                                                                |                                                                                                |
+| care_team_memberships                   | [CareTeamMembership](/sdk/data-care-team/#careteammembership)[]                                                         |                                                                                                |
+| change_medications                      | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]                                                     |                                                                                                |
+| clipboards                              | [Clipboard](/sdk/data-clipboard/#clipboard)[]                                                                           |                                                                                                |
+| conditions                              | [Condition](/sdk/data-condition/#condition)[]                                                                           |                                                                                                |
+| coverages                               | [Coverage](/sdk/data-coverage/#coverage)[]                                                                              |                                                                                                |
+| created_detected_issues                 | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)[]                                              |                                                                                                |
+| custom_commands                         | [CustomCommand](/sdk/data-custom-command/#customcommand)[]                                                              |                                                                                                |
+| deferred_detected_issues                | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)[]                                                |                                                                                                |
+| dependent_coverages                     | [Coverage](/sdk/data-coverage/#coverage)[]                                                                              |                                                                                                |
+| detected_issues                         | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                                                              |                                                                                                |
+| devices                                 | [Device](/sdk/data-device/#device)[]                                                                                    |                                                                                                |
+| external_identifiers                    | [PatientExternalIdentifier](#patientexternalidentifier)[]                                                               |                                                                                                |
+| identification_cards                    | [PatientIdentificationCard](#patientidentificationcard)[]                                                               |                                                                                                |
+| imaging_orders                          | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                                                                       |                                                                                                |
+| imaging_results                         | [ImagingReport](/sdk/data-imaging/#imagingreport)[]                                                                     |                                                                                                |
+| imaging_reviews                         | [ImagingReview](/sdk/data-imaging/#imagingreview)[]                                                                     |                                                                                                |
+| interviews                              | [Interview](/sdk/data-questionnaire/#interview)[]                                                                       |                                                                                                |
+| lab_orders                              | [LabOrder](/sdk/data-labs/#laborder)[]                                                                                  |                                                                                                |
+| lab_reports                             | [LabReport](/sdk/data-labs/#labreport)[]                                                                                |                                                                                                |
+| lab_reviews                             | [LabReview](/sdk/data-labs/#labreview)[]                                                                                |                                                                                                |
+| medications                             | [Medication](/sdk/data-medication/#medication)[]                                                                        |                                                                                                |
+| metadata                                | [PatientMetadata](#patientmetadata)[]                                                                                   |                                                                                                |
+| observations                            | [Observation](/sdk/data-observation/#observation)[]                                                                     |                                                                                                |
+| payment_cards                           | [PaymentCard](/sdk/data-payment-card/#paymentcard)[]                                                                    |                                                                                                |
+| photos                                  | [PatientPhoto](#patientphoto)[]                                                                                         |                                                                                                |
+| preferred_pharmacy                      | JSON                                                                                                                    |                                                                                                |
+| preferred_pharmacies                    | JSON                                                                                                                    |                                                                                                |
+| protocol_overrides                      | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride)[]                                                     |                                                                                                |
+| settings                                | [PatientSetting](#patientsetting)                                                                                       |                                                                                                |
+| subscribed_coverages                    | [Coverage](/sdk/data-coverage/#coverage)[]                                                                              |                                                                                                |
+| tasks                                   | [Task](/sdk/data-task/#task)[]                                                                                          |                                                                                                |
+| telecom                                 | [PatientContactPoint](#patientcontactpoint)[]                                                                           |                                                                                                |
+| contacts                                | [PatientContactPerson](#patientcontactperson)[]                                                                         |                                                                                                |
+| related_contacts                        | [PatientContactPerson](#patientcontactperson)[]                                                                         | Contacts on *other* patients that reference this one                                           |
+| user                                    | [CanvasUser](/sdk/data-canvasuser/)[]                                                                                   |                                                                                                |
+| patient_groups                          | [PatientGroup](/sdk/data-patient-group/)[]                                                                              |                                                                                                |
+| chart_section_reviews                   | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]                                              |                                                                                                |
+| visual_exam_findings                    | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]                                                 |                                                                                                |
+| vital_sign_readings                     | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]                                                    |                                                                                                |
+| assessments                             | [Assessment](/sdk/data-assessment/#assessment)[]                                                                        |                                                                                                |
+| patient_visits                          | [ExternalVisit](/sdk/data-external-event/#externalvisit)[]                                                              |                                                                                                |
+| patient_events                          | [ExternalEvent](/sdk/data-external-event/#externalevent)[]                                                              |                                                                                                |
+| medication_statements                   | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement)[]                                            |                                                                                                |
+| diagnostic_reports                      | DiagnosticReport[]                                                                                                      |                                                                                                |
+| medication_history_medications          | [MedicationHistoryMedication](/sdk/data-medication-history/#medicationhistorymedication)[]                              |                                                                                                |
+| medication_history_responses            | [MedicationHistoryResponse](/sdk/data-medication-history/#medicationhistoryresponse)[]                                  |                                                                                                |
+| payments                                | [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting)[]                                                           |                                                                                                |
+| protocol_currents                       | [ProtocolCurrent](/sdk/data-protocol-current/)[]                                                                        |                                                                                                |
+| stopped_medications                     | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[]                                           |                                                                                                |
+| banner_alerts                           | [BannerAlert](/sdk/data-banner-alert/#banneralert)[]                                                                    |                                                                                                |
+| immunizations                           | [Immunization](/sdk/data-immunization/#immunization)[]                                                                  |                                                                                                |
+| immunization_statements                 | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement)[]                                                |                                                                                                |
+| integration_tasks                       | [IntegrationTask](/sdk/data-integration-task/#integrationtask)[]                                                        |                                                                                                |
+| installment_plans                       | [InstallmentPlan](/sdk/data-claim/#installmentplan)[]                                                                   |                                                                                                |
+| uncategorized_clinical_document_reviews | [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview)[] |                                                                                                |
+| patient_consent                         | [PatientConsent](/sdk/data-patient-consent/#patientconsent)[]                                                           |                                                                                                |
+| goals                                   | [Goal](/sdk/data-goal/#goal)[]                                                                                          |                                                                                                |
+| updategoals                             | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                                                              |                                                                                                |
+| instructions                            | [Instruction](/sdk/data-instruction/#instruction)[]                                                                     |                                                                                                |
+| appointments                            | [Appointment](/sdk/data-appointment/#appointment)[]                                                                     |                                                                                                |
+| notes                                   | [Note](/sdk/data-note/#note)[]                                                                                          |                                                                                                |
+| prescriptions                           | [Prescription](/sdk/data-prescription/#prescription)[]                                                                  |                                                                                                |
+| refill_requests                         | [RefillRequest](/sdk/data-refill-request/#refillrequest)[]                                                              |                                                                                                |
+| referral_reviews                        | [ReferralReview](/sdk/data-referral/#referralreview)[]                                                                  |                                                                                                |
+| referral_reports                        | [ReferralReport](/sdk/data-referral/#referralreport)[]                                                                  |                                                                                                |
+| invoices                                | Invoice[]                                                                                                               |                                                                                                |
+| education_material                      | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]                                            |                                                                                                |
+| procedures                              | [Procedure](/sdk/data-procedure/#procedure)[]                                                                           |                                                                                                |
+| family_histories                        | [FamilyHistory](/sdk/data-family-history/#familyhistory)[]                                                              |                                                                                                |
+| histories_of_present_illness            | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)[]                                 |                                                                                                |
+| plans                                   | [Plan](/sdk/data-plan/#plan)[]                                                                                          |                                                                                                |
+| follow_ups                              | [FollowUp](/sdk/data-follow-up/#followup)[]                                                                             |                                                                                                |
+| reasons_for_visit                       | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)[]                                                          |                                                                                                |
+| removed_allergies                       | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)[]                                              |                                                                                                |
+| removed_past_medical_history            | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)[]           |                                                                                                |
+| resolved_conditions                     | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)[]                                     |                                                                                                |
+| cancel_prescriptions                    | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]                                               |                                                                                                |
+| cancel_prescription_responses           | [CancelPrescriptionResponse](/sdk/data-cancel-prescription-response/#cancelprescriptionresponse)[]                      |                                                                                                |
+| prescription_change_requests            | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[]                         |                                                                                                |
+| prescription_change_responses           | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[]                      |                                                                                                |
+| full_name                               | String (computed)                                                                                                       | The full name of the patient, combining first, middle, and last names                          |
+| preferred_pharmacy                      | Dict (computed)                                                                                                         | The patient's preferred pharmacy for medication fulfillment                                    |
+| preferred_full_name                     | String (computed)                                                                                                       | The patient's preferred full name, if different from the legal name                            |
+| preferred_first_name                    | String (computed)                                                                                                       | The patient's preferred first name, if different from the legal first name                     |
+| primary_phone_number                    | [PatientContactPoint](#patientcontactpoint) (computed)                                                                  | The patient's primary contact number                                                           |
+| photo                                   | [PatientPhoto](#patientphoto) (computed)                                                                                | The patient's first uploaded avatar, if any                                                    |
+| photo_url                               | String (computed)                                                                                                       | A presigned URL for the patient's avatar photo, or the default avatar URL when no photo is set |
 
 ### PatientAddress
 
@@ -199,6 +214,8 @@ educational_materials = patient.education_material.all()
 | ----------- | ------------------------------------------------------- |
 | id          | UUID                                                    |
 | dbid        | Integer                                                 |
+| created     | DateTime                                                |
+| modified    | DateTime                                                |
 | line1       | String                                                  |
 | line2       | String                                                  |
 | city        | String                                                  |
@@ -233,6 +250,8 @@ for addr in patient_addresses:
 | ------------------ | --------------------------------------------------------------------- |
 | id                 | UUID                                                                  |
 | dbid               | Integer                                                               |
+| created            | DateTime                                                              |
+| modified           | DateTime                                                              |
 | system             | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value              | String                                                                |
 | use                | String                                                                |
@@ -293,8 +312,32 @@ for identifier in patient_external_identifiers:
 | created    | DateTime            |
 | modified   | DateTime            |
 | patient    | [Patient](#patient) |
-| name       | String              |
+| name       | [String](#setting-names) |
 | value      | JSON                |
+
+#### Setting names
+
+A patient carries at most one setting per `name`. Canvas maintains these:
+
+| Name                          | Holds                                                                                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `pharmacy`                    | The patient's preferred pharmacies. Read this through [`preferred_pharmacies`](#patient), which normalizes the older single-pharmacy shape into a list |
+| `preferredSchedulingTimezone` | The timezone to schedule the patient in, for example `America/New_York`                                                                 |
+
+Because `value` is JSON, its shape differs from one setting to the next.
+
+Use `get_setting` to read one by name. It returns `None` when the patient has no setting by that name, so a missing setting and a stored empty value are distinguishable.
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+from logger import log
+
+patient_id = "d7af3e356368446c85b40a5d6ff7288e"
+patient = Patient.objects.get(id=patient_id)
+
+log.info(patient.get_setting("preferredSchedulingTimezone"))  # America/New_York
+log.info(patient.get_setting("unset-setting-name"))  # None
+```
 
 ### PatientMetadata
 
@@ -347,16 +390,16 @@ for photo in patient.photos.all():
 
 Represents a patient identification card image (e.g., driver's license, insurance card).
 
-| Field Name | Type                      |
-|------------|---------------------------|
-| dbid       | Integer                   |
-| created    | DateTime                  |
-| modified   | DateTime                  |
-| patient    | [Patient](#patient)       |
-| image      | String                    |
-| title      | String                    |
-| active     | Boolean                   |
-| image_url  | String (property) — presigned S3 URL |
+| Field Name | Type                | Description      |
+|------------|---------------------|------------------|
+| dbid       | Integer             |                  |
+| created    | DateTime            |                  |
+| modified   | DateTime            |                  |
+| patient    | [Patient](#patient) |                  |
+| image      | String              |                  |
+| title      | String              |                  |
+| active     | Boolean             |                  |
+| image_url  | String (computed)   | Presigned S3 URL |
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -431,6 +474,8 @@ Use this to look up a coding before writing it with the [Patient effect](/sdk/ef
 | Field Name | Type    |
 | ---------- | ------- |
 | dbid       | Integer |
+| created    | DateTime |
+| modified   | DateTime |
 | name       | String  |
 | code       | String  |
 | system     | String  |
@@ -455,18 +500,6 @@ for coding in ContactCategory.objects.order_by("code"):
 | O                 | other   |
 | UNK               | unknown |
 | "" (empty string) | ""      |
-
-## Computed Properties
-
-### Patient
-
-- `full_name`: The full name of the patient, combining first, middle, and last names.
-- `preferred_pharmacy`: The patient's preferred pharmacy for medication fulfillment.
-- `preferred_full_name`: The patient's preferred full name, if different from the legal name.
-- `preferred_first_name`: The patient's preferred first name, if different from the legal first name.
-- `primary_phone_number`: The patient's primary contact number.
-- `photo`: The patient's first uploaded avatar [PatientPhoto](#patientphoto), if any.
-- `photo_url`: A presigned URL for the patient's avatar photo, or the default avatar URL when no photo is set.
 
 <br/>
 <br/>

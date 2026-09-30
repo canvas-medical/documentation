@@ -599,6 +599,13 @@ guides_list:
     uses:
       - fhir_api
 
+  - title: "Testing Pharmacy Workflows in Staging"
+    url: /guides/pharmacy-staging-testing/
+    description: Point a dev instance at staging to test e-prescribing, eligibility, benefit, and medication-history workflows
+    uses:
+      - fhir_api
+      - sdk
+
   - title: "Tailoring the Chart to Your Patient"
     url: /guides/tailoring-the-chart-to-the-patient/
     description: Customize a patient's chart so the features most relevant to them are front-and-center
@@ -695,6 +702,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
@@ -724,7 +733,7 @@ sdk_overview:
   - title: "Provider Companion"
     url: /sdk/companion/
   - title: "Questionnaires"
-    url: /sdk/questionnaires/
+    url: /sdk/effect-questionnaires/
   - title: "Sandboxing and Allowed Imports"
     url: /sdk/sandboxing-and-allowed-imports/
   - title: "Variables"
@@ -876,6 +885,9 @@ effects_module:
   - title: "C-CDA Export"
     url: /sdk/effect-create-ccda-export/
     description: Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient.
+  - title: "Charge Stored Card"
+    url: /sdk/effect-charge-stored-card/
+    description: Charge a patient's stored payment card on file.
   - title: "Claims"
     url: /sdk/effect-claims/
     description: Manage labels, update line items, move to a queue, or post a payment.
@@ -978,6 +990,9 @@ effects_module:
   - title: "Payment Processor"
     url: /sdk/payment-processor-effect/
     description: Effects returned by custom payment processors.
+  - title: "Phone Dial Configuration"
+    url: /sdk/effect-phone-dial-configuration/
+    description: Make patient-chart phone numbers clickable for device or plugin dialing.
   - title: "Protocol Cards"
     url: /sdk/effect-protocol-cards/
     description: Calls to action in a patient's chart, commonly used for decision support intervention.
@@ -1021,6 +1036,9 @@ data_module:
   - title: "Appointment"
     url: /sdk/data-appointment/
     description: A scheduled meeting between a patient and a provider.
+  - title: "AssessCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#assesscodinggapevent
+    description: A record of a coding gap being assessed, with the conditions it was assessed against.
   - title: "Assessment"
     url: /sdk/data-assessment/
     description: Clinical assessment of a patient's condition.
@@ -1060,6 +1078,9 @@ data_module:
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
+  - title: "Clipboard"
+    url: /sdk/data-clipboard/
+    description: Free-text content staged on a note by a clipboard command.
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
@@ -1078,6 +1099,15 @@ data_module:
   - title: "Coverage"
     url: /sdk/data-coverage/
     description: Patient insurance coverage.
+  - title: "CreateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#createcodinggapevent
+    description: A record of a coding gap being created.
+  - title: "CustomCommand"
+    url: /sdk/data-custom-command/
+    description: A plugin-defined read-only command recorded on a note (the custom command).
+  - title: "DeferCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#defercodinggapevent
+    description: A record of a coding gap being deferred.
   - title: "DetectedIssue"
     url: /sdk/data-detected-issue/
     description: Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient.
@@ -1120,6 +1150,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Group"
+    url: /sdk/data-group/
+    description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.
   - title: "HistoryOfPresentIllness"
     url: /sdk/data-history-present-illness/
     description: The History of Present Illness (HPI) narrative recorded on a note.
@@ -1192,6 +1225,9 @@ data_module:
   - title: "PatientGroup"
     url: /sdk/data-patient-group/
     description: A collection of patients.
+  - title: "PaymentCard"
+    url: /sdk/data-payment-card/
+    description: A patient's stored payment card on file.
   - title: "PayorSpecificCharge"
     url: /sdk/data-payor-specific-charge/
     description: A billing charge specific to a certain transactor in Canvas.
@@ -1231,6 +1267,12 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Receipt"
+    url: /sdk/data-receipt/
+    description: A Canvas-generated payment receipt for a payment collection.
+  - title: "Reference"
+    url: /sdk/data-reference/
+    description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
@@ -1240,6 +1282,9 @@ data_module:
   - title: "RemoveAllergyEvent"
     url: /sdk/data-remove-allergy-event/
     description: A record of an allergy being removed via the remove_allergy command.
+  - title: "RemovePastMedicalHistoryEvent"
+    url: /sdk/data-remove-past-medical-history-event/
+    description: A record of a past medical history entry being removed via the remove_past_medical_history command.
   - title: "ResolveConditionEvent"
     url: /sdk/data-resolve-condition-event/
     description: A record of a condition being resolved via the resolve_condition command.
@@ -1270,6 +1315,9 @@ data_module:
   - title: "Vaccine"
     url: /sdk/data-vaccine/
     description: A vaccine in the instance's catalog and the lots of it held in inventory.
+  - title: "ValidateCodingGapEvent"
+    url: /sdk/data-coding-gap-event/#validatecodinggapevent
+    description: A record of a coding gap being validated.
   - title: "ValueSets"
     url: /sdk/data-value-sets/
     description: Lists of codes and terms from various clinical coding systems grouped by a defining concept.
@@ -1324,10 +1372,10 @@ releasenotes_product_updates:
     url: /product-updates/important-dates/
   - title: "Roadmap"
     url: /product-updates/roadmap/
-  - title: "Recently Released"
-    url: /product-updates/recently-released/
 
 releasenotes_betas:
+  - title: "Hyperscribe V2"
+    url: /product-updates/ai-scribe/
   - title: "CancelRX"
     url: /product-updates/cancelrx/
   - title: "Commands Module"

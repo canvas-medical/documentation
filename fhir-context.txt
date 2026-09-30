@@ -13618,6 +13618,19 @@ usedUnsignedInt
 unsignedInt 
 Benefits used.   
 Used for Limitations benefit types.
+extension 
+array[json] 
+Canvas supports a benefit message extension on each benefit line for read and search interactions. It is present only when the payor returned a note for that line, and repeats once per note.
+Click to view child attributes
+url 
+string 
+Reference that defines the content of this object.
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message 
+valueString 
+string 
+The payor's note for this benefit line, for example "Primary Care Visit or Evaluation" or "Specialist Visit or Evaluation".  
+Payors commonly return several copay or coinsurance lines under one service type and distinguish them only in this note, so it is what identifies which line is which.
 ### Responses
 200 OK 
 Request was successful. 
@@ -13866,6 +13879,19 @@ usedUnsignedInt
 unsignedInt 
 Benefits used.   
 Used for Limitations benefit types.
+extension 
+array[json] 
+Canvas supports a benefit message extension on each benefit line for read and search interactions. It is present only when the payor returned a note for that line, and repeats once per note.
+Click to view child attributes
+url 
+string 
+Reference that defines the content of this object.
+**Value Options Supported:**
+  - http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message 
+valueString 
+string 
+The payor's note for this benefit line, for example "Primary Care Visit or Evaluation" or "Specialist Visit or Evaluation".  
+Payors commonly return several copay or coinsurance lines under one service type and distinguish them only in this note, so it is what identifies which line is which.
 ### Responses
 200 OK 
 Request was successful. 
@@ -14223,6 +14249,38 @@ The request requires user authorization.
                       "text": "Individual"
                   },
                   "benefit": [
+                    {
+                      "type": {
+                          "text": "Co-Payment"
+                      },
+                      "allowedMoney": {
+                          "value": 0
+                      },
+                      "extension": [
+                        {
+                          "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                          "valueString": "Primary Care Visit or Evaluation"
+                        }
+                      ]
+                    },
+                    {
+                      "type": {
+                          "text": "Co-Payment"
+                      },
+                      "allowedMoney": {
+                          "value": 50
+                      },
+                      "extension": [
+                        {
+                          "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                          "valueString": "GYN Visit"
+                        },
+                        {
+                          "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                          "valueString": "Specialist Visit or Evaluation"
+                        }
+                      ]
+                    },
                     {
                       "type": {
                           "text": "Co-Insurance"
@@ -14661,6 +14719,38 @@ The request requires user authorization.
                         "benefit": [
                           {
                             "type": {
+                                "text": "Co-Payment"
+                            },
+                            "allowedMoney": {
+                                "value": 0
+                            },
+                            "extension": [
+                              {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                                "valueString": "Primary Care Visit or Evaluation"
+                              }
+                            ]
+                          },
+                          {
+                            "type": {
+                                "text": "Co-Payment"
+                            },
+                            "allowedMoney": {
+                                "value": 50
+                            },
+                            "extension": [
+                              {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                                "valueString": "GYN Visit"
+                              },
+                              {
+                                "url": "http://schemas.canvasmedical.com/fhir/extensions/eligibility-benefit-message",
+                                "valueString": "Specialist Visit or Evaluation"
+                              }
+                            ]
+                          },
+                          {
+                            "type": {
                                 "text": "Co-Insurance"
                             },
                             "allowedString": "0.0%"
@@ -14793,7 +14883,7 @@ Open the following URL in the user's browser:
 **Important notes:**
   - **`launch` parameter (required for staff users):** Staff users must include a `launch` parameter containing a base64-encoded JSON object with context. Without this parameter, the authorization will be denied with `error=access_denied`.
         ```bash
-        # Encode a launch context with a patient key
+        # Encode a launch context with a patient id
         echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
         # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
         # Or with an empty patient (if no specific patient context is needed)
@@ -21003,7 +21093,8 @@ The display name of the coding.
 reasonReference 
 array[json] 
 Reason the encounter takes place (reference).   
-In Canvas this represents any encounters that were diagnosed, assessed, or indicated during the encounter.
+In Canvas this represents the conditions that were **created** during the encounter, via the Diagnose command or another command that creates a condition.   
+This list does **not** include conditions that were only assessed during the encounter. An Assess command records an assessment against a condition that already exists in the chart, and it does not change which encounter that condition belongs to, so an encounter whose only condition activity was an Assess returns an empty `reasonReference`. To retrieve the conditions assessed during an encounter, use the [Assessment](/sdk/data-assessment) model in the Canvas SDK, which links each assessment to both the note it was documented on and the condition it assessed. For the diagnoses associated with a billed service, use `diagnosis` and `item.diagnosisSequence` on the [Claim](/api/claim) resource.
 Click to view child attributes
 reference 
 string 
@@ -21292,7 +21383,8 @@ The display name of the coding.
 reasonReference 
 array[json] 
 Reason the encounter takes place (reference).   
-In Canvas this represents any encounters that were diagnosed, assessed, or indicated during the encounter.
+In Canvas this represents the conditions that were **created** during the encounter, via the Diagnose command or another command that creates a condition.   
+This list does **not** include conditions that were only assessed during the encounter. An Assess command records an assessment against a condition that already exists in the chart, and it does not change which encounter that condition belongs to, so an encounter whose only condition activity was an Assess returns an empty `reasonReference`. To retrieve the conditions assessed during an encounter, use the [Assessment](/sdk/data-assessment) model in the Canvas SDK, which links each assessment to both the note it was documented on and the condition it assessed. For the diagnoses associated with a billed service, use `diagnosis` and `item.diagnosisSequence` on the [Claim](/api/claim) resource.
 Click to view child attributes
 reference 
 string 
@@ -28582,6 +28674,7 @@ The request requires user authorization.
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/api/note/
+> **Warning:** This API will be deprecated in favor of the Canvas SDK's [Note Effects](/sdk/effect-notes/), which create, update, sign, lock, and unlock notes from a plugin. Build new integrations against Note Effects. 
 This API allows customers to create and update notes. The effect of creating a note is the same as creating a note in the user interface (for example for a note with category "encounter" will create an encounter, a note that is billable will create a claim). Not all note attributes can be modified on update. For example, note type cannot be changed after note creation.
 ##  Authentication 
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
@@ -32036,6 +32129,8 @@ In this example, `entry` contains 10 Observation resources - following the relat
 Demographics and other administrative information about an individual or animal receiving care or other health-related services.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html>  
 Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
+**Related guides:**
+  - [Testing Pharmacy Workflows in a Staging Environment](/guides/pharmacy-staging-testing/)
 ### Endpoints
 post /Patient get /Patient/{id} put /Patient/{id} get /Patient
 post
@@ -32464,7 +32559,7 @@ string
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 text 
 json 
 A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
@@ -32948,7 +33043,7 @@ string required
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 Must match the ID in the path parameter.
 extension 
 array[json] required
@@ -33388,7 +33483,7 @@ string
 Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. `_has:CareTeam:participant:member=Practitioner/{practitioner_id}`.
 _id 
 string 
-A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+A Canvas-issued unique identifier for the patient. This can be found in the URL of the patient's chart.
 _revinclude 
 string 
 Standard FHIR `_revinclude` parameter.
@@ -33463,7 +33558,7 @@ string
 The FHIR Resource name.
 id 
 string 
-Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
 text 
 json 
 A human-readable narrative summarizing the resource. Generated by Canvas; not accepted on create or update.
@@ -37091,6 +37186,8 @@ The bearer token included in requests send to this endpoint must have one of the
 A person who is directly or indirectly involved in the provisioning of healthcare.  
 <https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html>  
 To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).  
+**Related guides:**
+  - [Testing Pharmacy Workflows in a Staging Environment](/guides/pharmacy-staging-testing/)
 ### Endpoints
 post /Practitioner get /Practitioner/{id} put /Practitioner/{id} get /Practitioner
 post
