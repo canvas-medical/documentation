@@ -81,9 +81,3 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 - `account_balance_before_collection` and `account_balance_after_collection` are snapshots of the patient's account balance taken when the receipt was generated. They don't change as the balance changes.
 - `discount` is the discount amount recorded on the receipt, or `0.00` when no discount was applied.
 - `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
-
-## See also
-
-* [Posting](/sdk/data-posting/): `PaymentCollection`, `BulkPatientPosting`, and `PatientPosting`.
-* [Patient](/sdk/data-patient/#patient): the starting point for a patient-scoped receipt walk.
-* [DocumentReference](/sdk/data-document-reference/): the other model that serves a stored file through a presigned URL.
