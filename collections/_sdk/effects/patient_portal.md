@@ -390,8 +390,8 @@ The event targets the patient. Its context carries `login_method`, which tells y
 
 | `login_method`   | How the patient logged in                                  |
 |------------------|------------------------------------------------------------|
-| `"credentials"`  | Entered their username and password on the login page      |
-| `"access_token"` | Followed a link, such as a portal invite or password reset |
+| `"credentials"`  | Entered their username and password on the login page, including after setting a password from a portal invite or password reset link |
+| `"access_token"` | Followed the sign-in link in a message, lab result, or statement notification |
 | `"registration"` | Completed self-registration                                |
 
 The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
