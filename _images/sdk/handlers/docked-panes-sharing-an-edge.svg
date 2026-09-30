@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 456" width="760" height="456" role="img" aria-labelledby="dpe-title dpe-desc" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif">
+  <title id="dpe-title">Two docked panes sharing one edge</title>
+  <desc id="dpe-desc">Two Canvas windows. In the first, two panes share the right edge: they occupy a single track as wide as the larger of their two DOCK_SIZE values, stack top to bottom, and split the edge's height evenly, with the lower PRIORITY value at the top. In the second, two panes share the bottom edge: they occupy a single track as tall as the larger DOCK_SIZE, sit side by side, and split the edge's width evenly, with the lower PRIORITY value on the left.</desc>
+
+  <defs>
+    <marker id="dpe-arrow" markerWidth="8" markerHeight="8" refX="3" refY="4" orient="auto-start-reverse">
+      <path d="M0,1 L6,4 L0,7 z" fill="#082b48"/>
+    </marker>
+  </defs>
+
+  <!-- right edge: panes stack top to bottom -->
+  <line x1="350" y1="44" x2="479" y2="44" stroke="#082b48" stroke-width="1" marker-start="url(#dpe-arrow)" marker-end="url(#dpe-arrow)"/>
+  <line x1="350" y1="38" x2="350" y2="50" stroke="#082b48" stroke-width="1"/>
+  <line x1="479" y1="38" x2="479" y2="50" stroke="#082b48" stroke-width="1"/>
+
+  <rect x="40" y="56" width="440" height="150" rx="6" fill="#ffffff" stroke="#082b48" stroke-width="1.5"/>
+  <rect x="41" y="57" width="309" height="148" fill="#f5f5f5"/>
+  <rect x="350" y="57" width="129" height="74" fill="#98d2dc"/>
+  <rect x="350" y="131" width="129" height="74" fill="#cfe9ee"/>
+  <line x1="350" y1="131" x2="479" y2="131" stroke="#22698c" stroke-width="1.5"/>
+  <line x1="350" y1="56" x2="350" y2="206" stroke="#22698c" stroke-width="3"/>
+  <text x="195" y="136" fill="#5b6672" font-size="13" text-anchor="middle">Canvas EHR</text>
+  <text x="414" y="99" fill="#082b48" font-size="13" text-anchor="middle">Pane A</text>
+  <text x="414" y="173" fill="#082b48" font-size="13" text-anchor="middle">Pane B</text>
+  <text x="40" y="230" fill="#082b48" font-size="12" font-weight="600">A left or right edge: the panes stack top to bottom.</text>
+
+  <g font-size="11" fill="#5b6672">
+    <text x="496" y="52" fill="#082b48" font-size="12" font-weight="600">One track</text>
+    <text x="496" y="70">As wide as the larger of the two</text>
+    <text x="496" y="85">DOCK_SIZE values, not as wide as</text>
+    <text x="496" y="100">both added together.</text>
+    <text x="496" y="128" fill="#082b48" font-size="12" font-weight="600">PRIORITY decides the order</text>
+    <text x="496" y="146">The lower value goes first, which</text>
+    <text x="496" y="161">is the top of the stack here.</text>
+    <text x="496" y="189">Each pane gets half the edge.</text>
+  </g>
+
+  <!-- bottom edge: panes sit side by side -->
+  <line x1="30" y1="346" x2="30" y2="418" stroke="#082b48" stroke-width="1" marker-start="url(#dpe-arrow)" marker-end="url(#dpe-arrow)"/>
+  <line x1="24" y1="346" x2="36" y2="346" stroke="#082b48" stroke-width="1"/>
+  <line x1="24" y1="418" x2="36" y2="418" stroke="#082b48" stroke-width="1"/>
+
+  <rect x="40" y="268" width="440" height="150" rx="6" fill="#ffffff" stroke="#082b48" stroke-width="1.5"/>
+  <rect x="41" y="269" width="438" height="75" fill="#f5f5f5"/>
+  <rect x="41" y="344" width="219" height="73" fill="#98d2dc"/>
+  <rect x="260" y="344" width="219" height="73" fill="#cfe9ee"/>
+  <line x1="260" y1="344" x2="260" y2="417" stroke="#22698c" stroke-width="1.5"/>
+  <line x1="40" y1="344" x2="480" y2="344" stroke="#22698c" stroke-width="3"/>
+  <text x="260" y="311" fill="#5b6672" font-size="13" text-anchor="middle">Canvas EHR</text>
+  <text x="150" y="385" fill="#082b48" font-size="13" text-anchor="middle">Pane C</text>
+  <text x="370" y="385" fill="#082b48" font-size="13" text-anchor="middle">Pane D</text>
+  <text x="40" y="442" fill="#082b48" font-size="12" font-weight="600">A top or bottom edge: the panes sit side by side.</text>
+
+  <g font-size="11" fill="#5b6672">
+    <text x="496" y="290" fill="#082b48" font-size="12" font-weight="600">The same rules, turned 90°</text>
+    <text x="496" y="308">One track, as tall as the larger</text>
+    <text x="496" y="323">DOCK_SIZE. Pane C has the lower</text>
+    <text x="496" y="338">PRIORITY, so it takes the</text>
+    <text x="496" y="353">left-hand position, and the two</text>
+    <text x="496" y="368">split the edge's width.</text>
+  </g>
+</svg>

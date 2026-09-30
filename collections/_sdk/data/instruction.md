@@ -125,6 +125,7 @@ cessation_counseling = (
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)          |
 | patient          | [Patient](/sdk/data-patient/#patient)       |
 | note             | [Note](/sdk/data-note/#note)                |
+| assessment       | [Assessment](/sdk/data-assessment/#assessment) |
 | narrative        | String                                      |
 | codings          | [InstructionCoding](#instructioncoding)[]   |
 
@@ -133,6 +134,8 @@ cessation_counseling = (
 | Field Name    | Type                        |
 |---------------|-----------------------------|
 | dbid          | Integer                     |
+| created       | DateTime                    |
+| modified      | DateTime                    |
 | system        | String                      |
 | version       | String                      |
 | code          | String                      |

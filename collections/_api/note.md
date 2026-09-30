@@ -3,6 +3,8 @@ title: Note
 layout: apipage
 ---
 
+{% include alert.html type="warning" content="This API will be deprecated in favor of the Canvas SDK's <a href='/sdk/effect-notes/'>Note Effects</a>, which create, update, sign, lock, and unlock notes from a plugin. Build new integrations against Note Effects." %}
+
 This API allows customers to create and update notes. The effect of creating a note is the same as creating a note in the user interface (for example for a note with category “encounter” will create an encounter, a note that is billable will create a claim). Not all note attributes can be modified on update. For example, note type cannot be changed after note creation.
 
 ## Authentication

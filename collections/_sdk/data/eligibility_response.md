@@ -44,6 +44,8 @@ is_active = response is not None and response.status == EligibilityResponseStatu
 
 A coverage with no eligibility responses (an empty `coverage.eligibility_responses` queryset) has not been verified.
 
+`NOT_APPLICABLE`, like `UNKNOWN`, is a value returned by [`Coverage.eligibility_status`](/sdk/data-coverage/#eligibility-status), never by an individual `EligibilityResponse.status`. A single response only ever resolves to `FAILED`, `INACTIVE`, or `ACTIVE`.
+
 ## Attributes
 
 ### EligibilityRequest
@@ -87,8 +89,8 @@ A coverage with no eligibility responses (an empty `coverage.eligibility_respons
 | eligid              | String                                                                       |
 | x12_response        | String                                                                       |
 | parsed_x12_response | JSON                                                                         |
-| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (read-only property) |
-| eligibility_or_benefit_information | List (read-only property)                                     |
+| status              | [EligibilityResponseStatus](#eligibilityresponsestatus) (computed)           |
+| eligibility_or_benefit_information | List (computed)                                               |
 
 `status` and `eligibility_or_benefit_information` are computed from `errors` and `parsed_x12_response` rather than stored, so neither can be used in `filter()`. To select responses by outcome, filter on the columns they derive from — a failed check is one with a non-empty `errors`:
 
@@ -102,12 +104,13 @@ failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
 
 ### EligibilityResponseStatus
 
-| Name     | Value    |
-| -------- | -------- |
-| ACTIVE   | Active   |
-| INACTIVE | Inactive |
-| FAILED   | Failed   |
-| UNKNOWN  | Unknown  |
+| Name           | Value         |
+| -------------- | ------------- |
+| ACTIVE         | Active        |
+| INACTIVE       | Inactive      |
+| FAILED         | Failed        |
+| UNKNOWN        | Unknown       |
+| NOT_APPLICABLE | NotApplicable |
 
 <br/>
 <br/>

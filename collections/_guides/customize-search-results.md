@@ -306,14 +306,14 @@ A few things worth carrying over into your own version:
 
 PRE_SEARCH and POST_SEARCH events include information about the user performing the search in the event context. This includes search events for command fields like prescriber, medication, diagnosis, pharmacy, and many others. It also includes the non-command fax recipient and external care team directory searches listed under [Other Events](/sdk/events/#other-events). All of these searches can be customized the same way.
 
-You can access the user's staff key from the context:
+You can access the user's staff id from the context:
 
 ```python
 def compute(self):
     user_context = self.context.get("user", {})
     staff_key = user_context.get("staff")
 
-    # Use the staff key to customize search results
+    # Use the staff id to customize search results
     # based on the user's role, preferences, or permissions
 ```
 

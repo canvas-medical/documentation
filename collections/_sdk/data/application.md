@@ -44,3 +44,5 @@ applications = Application.objects.filter(name="application name")
 | identifier          | str                                                     |
 | name                | str                                                     |
 | description         | str                                                     |
+| created             | datetime                                                |
+| modified            | datetime                                                |

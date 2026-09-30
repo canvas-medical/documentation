@@ -62,7 +62,7 @@ is targeted by that same `class` string:
 from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
 
 # Set a badge of 3 for a specific staff member.
-ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3, staff_ids=["staff-id"])
 ```
 
 ## Targeting
@@ -93,13 +93,13 @@ from canvas_sdk.effects.application_notification_badge import ApplicationNotific
 
 # Show a badge to staff viewing a specific patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-    patient_ids=["patient-key"]
+    patient_ids=["patient-id"]
 ).broadcast(count=5)
 
 # Combine: only the on-call provider, and only on this patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
-    patient_ids=["patient-key"]
-).broadcast(count=1, staff_ids=["staff-key"])
+    patient_ids=["patient-id"]
+).broadcast(count=1, staff_ids=["staff-id"])
 ```
 
 ## Reacting to events
@@ -142,7 +142,7 @@ Broadcast a `count` of `0` to remove the badge from the icon:
 ```python
 from canvas_sdk.effects.application_notification_badge import ApplicationNotificationBadge
 
-ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-key"])
+ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=0, staff_ids=["staff-id"])
 ```
 
 > **Note:** To set the badge value shown when applications first load (rather than

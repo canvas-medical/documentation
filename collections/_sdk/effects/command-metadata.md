@@ -12,6 +12,13 @@ This method enables the creation and updating of custom metadata entries associa
 
 Command metadata serves as a powerful extension mechanism for storing custom command-related information that doesn't fit within the standard command data model. Metadata is managed through the `upsert_metadata` method available on all command effect classes.
 
+Metadata can be written two ways, and they store to the same place:
+
+- **From your plugin**, with the `upsert_metadata` method documented on this page.
+- **From the note**, with the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/), which displays additional fields alongside a command in the chart and stores whatever a user enters as metadata against that command.
+
+Either way, the entries are readable as [CommandMetadata](/sdk/data-command/#commandmetadata) in the data module.
+
 ## Method
 
 ### upsert_metadata(key: str, value: str) → Effect
@@ -178,6 +185,7 @@ class CommandMetadataListener(BaseHandler):
 - There is no built-in versioning; updating a key overwrites the previous value
 - The system does not enforce any schema on metadata values — validation is the responsibility of the implementing code
 - The `key` field supports up to 256 characters
+- To collect metadata from a user in the chart rather than writing it from a plugin, see the [Command Metadata Create form effect](/sdk/command-metadata-create-form-effect/)
 
 <br/>
 <br/>

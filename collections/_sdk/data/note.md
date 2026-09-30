@@ -92,7 +92,7 @@ educational_materials = note.education_material.all()
 
 ### Understanding the note body structure
 
-The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+The `body` of a note is a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
 
 ```python
 import json
@@ -117,13 +117,55 @@ The body array contains objects of two types:
      "type": "command",
      "value": "reasonForVisit",
      "data": {
-       "id": 1095,
        "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
      }
    }
    ```
 
-The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+   `command_uuid` identifies the command and is present on every command object.
+   It matches the `id` of the [Command](/sdk/data-command/) model. A command
+   object on a note that has not yet moved to the [refactored body
+   structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
+   the integer identifier of the record the command created. A note on the
+   refactored structure never carries one, so read the
+   [Command](/sdk/data-command/) through `command_uuid` and take
+   `anchor_object` from it instead.
+
+#### Querying on the body
+
+`body` is computed on each access rather than stored in a column, because Canvas
+assembles it from more than one column. That does not change the value you read,
+but it does limit which query operations can name it:
+
+| Operation                                              | Supported | Notes                                                                                              |
+|--------------------------------------------------------|-----------|----------------------------------------------------------------------------------------------------|
+| `Note.objects.filter(body=...)`                        | Yes       | Also `exclude()` and `get()`, and lookups nested inside a `Q` object                               |
+| `Note.objects.only("body")`                            | Yes       | Loads every column the property reads, so building a body costs no further queries                 |
+| `Note.objects.defer("body")`                           | Yes       | Defers all of them                                                                                 |
+| `Note.objects.values("body")`, `values_list("body")`   | No        | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return |
+| `Note.objects.order_by("body")`                        | No        | Raises a `FieldError`                                                                              |
+| `body` named through a relation                        | No        | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead |
+
+{% include alert.html type="warning" content="Naming <code>body</code> through a relation stopped working in the <a href=\"/release-notes/1-348-0/\">September 8, 2026 release</a>. A queryset on another model that defers or filters <code>note__body</code> now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with <code>Note.objects.defer(\"body\")</code>." %}
+
+A `body` filter reads the column holding that note's body, and the two columns hold
+different shapes: a legacy note holds an ordered list of lines, while a note on the
+refactored structure holds an object keyed by line identifier. A filter written against one
+shape matches no notes on the other, and returns no rows instead of raising.
+
+So read the body from a note you already have, or filter notes by it, rather than trying
+to select it as a value:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+# Load only the columns the body needs.
+notes = Note.objects.only("body").filter(patient__id="b80b1cdc2e6a4aca90ccebc02e683f35")
+for note in notes:
+    print(note.body)
+```
+
+The `command_uuid` in a command object matches the `id` field of the [Command](/sdk/data-command/) model. It is present on the command lines of every note, so use it to retrieve the full command:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -341,7 +383,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid` (matching the Command `id`); older notes may additionally include an integer `id`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
@@ -354,6 +396,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
 | location            | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note                                                                                                                             |
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
+| clipboards          | QuerySet[[Clipboard](/sdk/data-clipboard/#clipboard)] | All clipboard commands recorded on this note                                                                                                                                          |
+| custom_commands     | QuerySet[[CustomCommand](/sdk/data-custom-command/#customcommand)] | All custom commands recorded on this note                                                                                                                  |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 | metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
 | lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
@@ -376,7 +420,21 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
 | procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
 | family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
+| plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
+| follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
+| reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
+| assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
+| assessed_detected_issues | QuerySet[[ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)] | All coding gaps validated on this note |
+| created_detected_issues | QuerySet[[CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)] | All coding gaps created on this note |
+| deferred_detected_issues | QuerySet[[DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)] | All coding gaps deferred on this note |
+| removed_allergies   | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note |
+| removed_past_medical_history | QuerySet[[RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)] | All past medical history entries removed on this note |
+| resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
 | histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
+| vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
+| cancel_prescriptions | QuerySet[[CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)] | All prescription cancellations recorded on this note |
+| prescription_change_requests | QuerySet[[PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)] | All pharmacy change requests recorded on this note |
+| prescription_change_responses | QuerySet[[PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)] | All responses to change requests recorded on this note |
 
 ### NoteType
 

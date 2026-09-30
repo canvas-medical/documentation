@@ -99,50 +99,40 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 
 ### IntegrationTask
 
-| Field Name       | Type                                                           |
-|------------------|----------------------------------------------------------------|
-| id               | UUID                                                           |
-| dbid             | Integer                                                        |
-| created          | DateTime                                                       |
-| modified         | DateTime                                                       |
-| status           | [IntegrationTaskStatus](#integrationtaskstatus)                |
-| type             | String                                                         |
-| title            | String                                                         |
-| channel          | [IntegrationTaskChannel](#integrationtaskchannel)              |
-| patient          | [Patient](/sdk/data-patient/#patient)                          |
-| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
-| reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |
-
-#### Properties
-
-| Property     | Type    | Description                              |
-|--------------|---------|------------------------------------------|
-| is_fax       | Boolean | Whether this is a fax task               |
-| is_pending   | Boolean | Whether this task is pending review      |
-| is_processed | Boolean | Whether this task has been processed     |
-| has_error    | Boolean | Whether this task has an error           |
-| is_junked    | Boolean | Whether this task is junked              |
+| Field Name       | Type                                                           | Description                          |
+|------------------|----------------------------------------------------------------|--------------------------------------|
+| id               | UUID                                                           |                                      |
+| dbid             | Integer                                                        |                                      |
+| created          | DateTime                                                       |                                      |
+| modified         | DateTime                                                       |                                      |
+| status           | [IntegrationTaskStatus](#integrationtaskstatus)                |                                      |
+| type             | String                                                         |                                      |
+| title            | String                                                         |                                      |
+| channel          | [IntegrationTaskChannel](#integrationtaskchannel)              |                                      |
+| patient          | [Patient](/sdk/data-patient/#patient)                          |                                      |
+| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |                                      |
+| reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |                                      |
+| is_fax           | Boolean (computed)                                             | Whether this is a fax task           |
+| is_pending       | Boolean (computed)                                             | Whether this task is pending review  |
+| is_processed     | Boolean (computed)                                             | Whether this task has been processed |
+| has_error        | Boolean (computed)                                             | Whether this task has an error       |
+| is_junked        | Boolean (computed)                                             | Whether this task is junked          |
 
 ### IntegrationTaskReview
 
-| Field Name    | Type                                          |
-|---------------|-----------------------------------------------|
-| id            | UUID                                          |
-| dbid          | Integer                                       |
-| created       | DateTime                                      |
-| modified      | DateTime                                      |
-| task          | [IntegrationTask](#integrationtask)           |
-| template_name | String                                        |
-| document_key  | String                                        |
-| reviewer      | [Staff](/sdk/data-staff/#staff)               |
-| team_reviewer | [Team](/sdk/data-team/#team)                  |
-| junked        | Boolean                                       |
-
-#### Properties
-
-| Property  | Type    | Description                               |
-|-----------|---------|-------------------------------------------|
-| is_active | Boolean | Whether this review is active (not junked) |
+| Field Name    | Type                                | Description                                |
+|---------------|-------------------------------------|--------------------------------------------|
+| id            | UUID                                |                                            |
+| dbid          | Integer                             |                                            |
+| created       | DateTime                            |                                            |
+| modified      | DateTime                            |                                            |
+| task          | [IntegrationTask](#integrationtask) |                                            |
+| template_name | String                              |                                            |
+| document_key  | String                              |                                            |
+| reviewer      | [Staff](/sdk/data-staff/#staff)     |                                            |
+| team_reviewer | [Team](/sdk/data-team/#team)        |                                            |
+| junked        | Boolean                             |                                            |
+| is_active     | Boolean (computed)                  | Whether this review is active (not junked) |
 
 ## Enumeration types
 

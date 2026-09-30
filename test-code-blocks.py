@@ -16,7 +16,10 @@ from markdown_it import MarkdownIt
 
 Kind = Literal["PYTHON"] | Literal["PYTHON_IMPORTS_ONLY"] | Literal["MISSING"]
 
-BUILTINS = set(dir(builtins) + ["__class__", "__classdict__"])
+# Names the compiler puts in a scope's symbol table that no code imports or assigns:
+# __class__/__classdict__ in a class body, and __conditional_annotations__ wherever
+# Python 3.14 defers an annotation (PEP 649).
+BUILTINS = set(dir(builtins) + ["__class__", "__classdict__", "__conditional_annotations__"])
 
 
 def extract_code_blocks(
