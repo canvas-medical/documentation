@@ -255,11 +255,11 @@ The older `secrets` field is a list of names, each treated as a non-sensitive va
 
 ## URL permissions
 
-Iframes a plugin opens, such as an application's `LaunchModalEffect`, only render URLs listed in `url_permissions`. Each entry names a URL and the iframe capabilities it is granted.
+A [`LaunchModalEffect` or `PortalWidget`](/sdk/layout-effect/#additional-configuration) only loads URLs and external scripts listed in `url_permissions`. Each entry names a URL and the iframe capabilities it is granted.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `url` | string | Yes | The URL to allow. |
+| `url` | string | Yes | The URL to allow, in [CSP host-source](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source) format. |
 | `permissions` | array of strings | Yes | Capabilities granted to the URL. Can be empty. |
 
 | Permission | Grants |
@@ -282,7 +282,7 @@ Iframes a plugin opens, such as an application's `LaunchModalEffect`, only rende
 }
 ```
 
-See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on the `LaunchModalEffect` page for more detail.
+See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on the layout effects page for when each permission is needed.
 
 ### Origins (legacy)
 

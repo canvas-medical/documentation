@@ -17,7 +17,7 @@ Follow the instructions in
 [Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
-Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
+Open [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/) in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
 value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 
