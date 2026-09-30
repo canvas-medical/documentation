@@ -571,6 +571,8 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 |-----------------------------|-------------------------------------------|
 | id                          | UUID                                      |
 | dbid                        | Integer                                   |
+| created                     | DateTime                                  |
+| modified                    | DateTime                                  |
 | ontology_test_name          | String                                    |
 | ontology_test_code          | String                                    |
 | status                      | [LabTestOrderStatus](#labtestorderstatus) |

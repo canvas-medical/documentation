@@ -5825,6 +5825,7 @@ Name | Type | Required to commit | Description
 `goal_id` | _int_ | `true` | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.  
 `achievement_status` | _AchievementStatus enum_ | `false` | The final achievement status of the goal. Must be one of `GoalCommand.AchievementStatus`.  
 `progress` | _string_ | `false` | A narrative about the patient's progress toward the goal.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Example** :
     ```python
     from canvas_sdk.commands import CloseGoalCommand, GoalCommand
@@ -5913,6 +5914,7 @@ Name | Type | Required to commit | Description
 `note_type_id` | _UUID (str)_ | `false` | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).  
 `coding` | _Coding_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full Coding object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a Coding is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records  
 `comment` | _string_ | `false` | Additional commentary on the RFV.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Example** :
     ```python
     from canvas_sdk.commands import FollowUpCommand
@@ -5952,6 +5954,7 @@ Name | Type | Required to commit | Description
 `achievement_status` | _AchievementStatus enum_ | `false` | The current achievement status of the goal.  
 `priority` | _Priority enum_ | `false` | The priority of the goal.  
 `progress` | _string_ | `false` | A narrative about the patient's progress toward the goal.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 `AchievementStatus` | Value | Description  
 ---|---|---  
 `IN_PROGRESS` | `"in-progress"` | The goal is being pursued.  
@@ -6145,6 +6148,7 @@ Name | Type | Required to commit | Description
 `sig` | _string_ | `false` | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).  
 `consent_given` | _boolean_ | `true` | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit.  
 `given_by_id` | _string_ | `true` | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 *`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may be omitted.
 **Choosing a vaccine and lot** :
 Both are instance-specific data, so look them up rather than hard-coding identifiers. A vaccine is only selectable on a note if it is active and carries an active CPT charge. See [Vaccine](/sdk/data-vaccine/) for the query.
@@ -6186,6 +6190,7 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `coding` | **Coding** | `true` | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#get-snomedinstruction--instructions).  
 `comment` | _string_ | `false` | Additional comments related to the instruction.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Example** :
     ```python
     from canvas_sdk.commands import InstructCommand
@@ -6406,6 +6411,7 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `cpt_code` | _string_ or _Coding_ | `true` | The CPT code of the procedure or action performed. Look it up in the [Charge Description Master](/sdk/data-charge-description-master/#chargedescriptionmaster).  
 `notes` | _string_ | `false` | Additional notes related to the performed procedure.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Coding Support** :
 The `cpt_code` parameter accepts either:
   - **String** : Searches for matching procedures
@@ -6446,6 +6452,7 @@ The `cpt_code` parameter accepts either:
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `narrative` | _string_ | `true` | The narrative of the patient's plan.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Example** :
     ```python
     from canvas_sdk.commands import PlanCommand
@@ -7166,6 +7173,7 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `medication_id` | _string_ | `true` | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart.  
 `rationale` | _string_ | `false` | The reason for stopping the medication.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Example** :
     ```python
     from canvas_sdk.commands import StopMedicationCommand
@@ -7203,6 +7211,7 @@ Name | Type | Required to commit | Description
 `comment` | _string_ | `false` | Additional comments or notes about the task.  
 `labels` | _list[string]_ | `false` | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored.  
 `linked_items_urns` | _list[string]_ | `false` | URNs for items linked to the task.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 **Enums and Types** :
 **`TaskPriority`**
 Priority | Description  
@@ -7294,6 +7303,7 @@ Name | Type | Required to commit | Description
 `achievement_status` | _AchievementStatus enum_ | `false` | The current achievement status of the goal.  
 `priority` | _Priority enum_ | `false` | The priority of the goal.  
 `progress` | _string_ | `false` | A narrative about the patient's progress toward the goal.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared.  
 `AchievementStatus` | Value | Description  
 ---|---|---  
 `IN_PROGRESS` | `"in-progress"` | The goal is being pursued.  
@@ -10866,6 +10876,20 @@ care_team | String |
 treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |   
 billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[] |   
 referrals | [Referral](/sdk/data-referral)[] |   
+###  Commands linked to an assessment 
+A Plan- or Procedures-section command written in the same note can be linked to an assessment, which each of these accessors reads back from the assessment's side. The command holds the other half of the link on its own `assessment` field.
+Field Name | Type  
+---|---  
+follow_ups | [FollowUp](/sdk/data-follow-up/#followup)[]  
+goals | [Goal](/sdk/data-goal/#goal)[]  
+immunizations | [Immunization](/sdk/data-immunization/#immunization)[]  
+instructions | [Instruction](/sdk/data-instruction/#instruction)[]  
+note_tasks | [NoteTask](/sdk/data-task/#notetask)[]  
+plans | [Plan](/sdk/data-plan/#plan)[]  
+procedures | [Procedure](/sdk/data-procedure/#procedure)[]  
+stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[]  
+updategoals | [UpdateGoal](/sdk/data-goal/#updategoal)[]  
+A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 ##  Enumeration types 
 ###  Assessment Status 
 Value | Label  
@@ -14077,6 +14101,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 appointment_note | [Note](/sdk/data-note)  
 requested_appointment_date | Date  
 requested_appointment_date_original_input | String  
@@ -14164,6 +14189,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 lifecycle_status | GoalLifecycleStatus  
 achievement_status | GoalAchievementStatus  
 priority | GoalPriority  
@@ -14185,6 +14211,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 goal | Goal  
 lifecycle_status | GoalLifecycleStatus  
 achievement_status | GoalAchievementStatus  
@@ -14635,6 +14662,7 @@ id | UUID
 dbid | Integer  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note/#note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 status | ImmunizationStatus  
 lot_number | String  
 manufacturer | String  
@@ -14791,6 +14819,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note/#note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 narrative | String  
 codings | InstructionCoding[]  
 ###  InstructionCoding 
@@ -16087,6 +16116,27 @@ Filtering by ValueSet works a little differently. The `find` method on the model
     from canvas_sdk.value_set.v2022.medication import AdhdMedications
     medications = Medication.objects.find(AdhdMedications)
     ```
+##  Latest sig 
+The `latest_sig` property returns a medication's most recent sig — its directions for use — as a string. It draws on three sources: the medication's active [prescriptions](/sdk/data-prescription/), its [change medications](/sdk/data-change-medication/) that are not entered in error, and its [medication statements](/sdk/data-medication-statement/). It returns the sig from whichever of those is most recent. Because `latest_sig` is a property computed in Python, it is read from each `Medication` object and is not available to a queryset `.filter()` or `.order_by()`.
+When both an active prescription and a change medication exist, the source whose [note](/sdk/data-note/) has the later date of service wins. Otherwise the sig comes from the first source that has one, in this order:
+  1. The latest prescription.
+  2. The latest change medication.
+  3. The latest medication statement.
+The latest source is the one with the highest `dbid`. A prescription contributes its `combined_sig` (its sig text, plus a maximum daily dose when one is set); a change medication or medication statement contributes its sig text. When no source has a sig, `latest_sig` returns an empty string.
+    ```python
+    from canvas_sdk.v1.data.medication import Medication
+    medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    sig = medication.latest_sig  # "" when no source has a sig
+    ```
+###  Sig across many medications 
+Reading `latest_sig` on each medication in a queryset issues a separate query per medication for the prescriptions, change medications, and medication statements `latest_sig` inspects. The `with_latest_sig` method prefetches those sources, so `latest_sig` resolves without a per-medication query:
+    ```python
+    from canvas_sdk.v1.data.medication import Medication
+    patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+    medications = Medication.objects.for_patient(patient_id).with_latest_sig()
+    for medication in medications:
+        sig = medication.latest_sig
+    ```
 ##  Attributes 
 ###  Medication 
 Field Name | Type  
@@ -16111,6 +16161,7 @@ stopmedicationevent_set | [StopMedicationEvent](/sdk/data-stop-medication-event)
 prescriptions | [Prescription](/sdk/data-prescription)[]  
 previous_medications | [Prescription](/sdk/data-prescription)[]  
 prescription_change_responses | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[]  
+latest_sig | String (property) — see Latest sig  
 ###  MedicationCoding 
 Field Name | Type  
 ---|---  
@@ -16256,11 +16307,11 @@ The body array contains objects of two types:
            "type": "command",
            "value": "reasonForVisit",
            "data": {
-             "id": 1095,
              "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
            }
          }
          ```
+`command_uuid` identifies the command and is present on every command object. A command object on a note that has not yet moved to the [refactored body structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding the integer identifier of the record the command created. A note on the refactored structure never carries one, so read the [Command](/sdk/data-command/) through `command_uuid` and take `anchor_object` from it instead.
 ####  Querying on the body 
 `body` is computed on each access rather than stored in a column, because Canvas assembles it from more than one column. That does not change the value you read, but it does limit which query operations can name it:
 Operation | Supported | Notes  
@@ -16272,6 +16323,7 @@ Operation | Supported | Notes
 `Note.objects.order_by("body")` | No | Raises a `FieldError`  
 `body` named through a relation | No | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead  
 > **Warning:** Naming `body` through a relation stopped working in the [September 8, 2026 release](/release-notes/1-348-0/). A queryset on another model that defers or filters `note__body` now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with `Note.objects.defer("body")`. 
+A `body` filter reads the column holding that note's body, and the two columns hold different shapes: a legacy note holds an ordered list of lines, while a note on the refactored structure holds an object keyed by line identifier. A filter written against one shape matches no notes on the other, and returns no rows instead of raising.
 So read the body from a note you already have, or filter notes by it, rather than trying to select it as a value:
     ```python
     from canvas_sdk.v1.data.note import Note
@@ -16426,7 +16478,7 @@ modified | DateTime |
 patient | [Patient](/sdk/data-patient/#patient) |   
 note_type_version | NoteType |   
 title | String |   
-body | JSON (computed) | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. See Querying on the body.  
+body | JSON (computed) | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid`. See Understanding the note body structure.  
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 provider | [Staff](/sdk/data-staff/#staff) |   
 supervising_provider | [Staff](/sdk/data-staff/#staff) | The note's supervising provider, if one has been set  
@@ -17289,6 +17341,7 @@ lab_reviews | [LabReview](/sdk/data-labs/#labreview)[]
 medications | [Medication](/sdk/data-medication/#medication)[]  
 metadata | PatientMetadata[]  
 observations | [Observation](/sdk/data-observation/#observation)[]  
+payment_cards | [PaymentCard](/sdk/data-payment-card/#paymentcard)[]  
 photos | PatientPhoto[]  
 preferred_pharmacy | JSON  
 preferred_pharmacies | JSON  
@@ -17564,6 +17617,44 @@ UNK | unknown
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-patient/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-payment-card/
+##  Introduction 
+The `PaymentCard` model represents a patient's stored payment card on file. Cards are tokenized and stored by Canvas's payment processor, and this model exposes only the non-sensitive card metadata — brand, last four digits, expiration, cardholder name, and whether the card is the patient's default. The underlying processor token is never exposed through the SDK.
+Reference a `PaymentCard` by its Canvas `id` when charging a patient's card on file with the [Charge Stored Card](/sdk/effect-charge-stored-card/) effect.
+##  Basic usage 
+Each `PaymentCard` is linked to a [Patient](/sdk/data-patient/#patient). Access a patient's stored cards through the `payment_cards` reverse relation:
+    ```python
+    >>> from canvas_sdk.v1.data import Patient
+    >>> patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+    >>> cards = patient.payment_cards.all()
+    >>> print([(card.brand, card.card_last_four_digits, card.is_default) for card in cards])
+    [('visa', '4242', True), ('mastercard', '5555', False)]
+    ```
+To retrieve the patient's default card:
+    ```python
+    >>> from canvas_sdk.v1.data import Patient
+    >>> patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+    >>> default_card = patient.payment_cards.filter(is_default=True).first()
+    ```
+##  Attributes 
+###  PaymentCard 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+patient | [Patient](/sdk/data-patient/#patient)  
+brand | String  
+card_last_four_digits | String  
+expiration_month | String  
+expiration_year | String  
+card_holder_name | String  
+postal_code | String  
+is_default | Boolean  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-payment-card/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-payor-specific-charge/
 ##  Introduction 
 The `PayorSpecificCharge` model represents charges specific to a [Transactor](/sdk/data-coverage/#transactor) in Canvas.
@@ -17645,6 +17736,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 narrative | String  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-plan/
 
@@ -18171,6 +18263,13 @@ The `committed` method returns prescriptions that have been committed and not en
     from canvas_sdk.v1.data.prescription import Prescription
     committed_prescriptions = Prescription.objects.committed()
     ```
+##  Combined sig 
+The `combined_sig` property returns a prescription's sig — its directions for use — as a string. It returns `sig_original_input`, and when `maximum_daily_dose` is set, `combined_sig` appends `. Maximum Daily Dose: {maximum_daily_dose}` to the sig. For example, a prescription with the sig `1 tab bid` and a maximum daily dose of `2 tabs` returns `1 tab bid. Maximum Daily Dose: 2 tabs`. When `maximum_daily_dose` is not set, `combined_sig` returns `sig_original_input` unchanged. When the prescription has no sig, `combined_sig` returns an empty string. Because `combined_sig` is a property computed in Python, it is read from each `Prescription` object and is not available to a queryset `.filter()` or `.order_by()`.
+    ```python
+    from canvas_sdk.v1.data.prescription import Prescription
+    prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    sig = prescription.combined_sig  # "" when the prescription has no sig
+    ```
 ##  Attributes 
 ###  Prescription 
 Field Name | Type  
@@ -18204,6 +18303,7 @@ dose_quantity | Float
 dose_frequency | Float  
 dose_frequency_interval | String  
 maximum_daily_dose | String  
+combined_sig | String (property) — see Combined sig  
 potency_quantity | Float  
 dispense_quantity | Float  
 duration_in_days | Integer  
@@ -18323,6 +18423,7 @@ committer | [CanvasUser](/sdk/data-canvasuser)
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 provider | [Staff](/sdk/data-staff/)  
 status | ProcedureStatus  
 notes | String  
@@ -19732,6 +19833,7 @@ id | UUID
 dbid | Integer  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 medication | [Medication](/sdk/data-medication)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
 committer | [CanvasUser](/sdk/data-canvasuser)  
@@ -19862,6 +19964,7 @@ originator | [CanvasUser](/sdk/data-canvasuser/)
 committer | [CanvasUser](/sdk/data-canvasuser/)  
 entered_in_error | [CanvasUser](/sdk/data-canvasuser/)  
 note | [Note](/sdk/data-note/#note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 task | Task  
 patient | [Patient](/sdk/data-patient/#patient)  
 original_title | String  
@@ -20593,7 +20696,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -21222,6 +21325,122 @@ billing_line_item_id | required | String | The id of the [BillingLineItem](/sdk/
     ```
 For more information about the BillingLineItem data class, check out [this page](/sdk/data-billing-line-item).
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-billing-line-items/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-charge-stored-card/
+The `ChargeStoredCard` effect charges a patient's stored payment card through the payment processor configured for your Canvas instance. The charge is processed server-side against the tokenized card, so no card data crosses the plugin boundary.
+You reference the card by an identifier the configured processor understands, never the underlying processor token:
+  - The built-in Stripe processor takes the Canvas [PaymentCard](/sdk/data-payment-card/) id.
+  - A [custom payment processor](/sdk/handlers-payment-processors/) takes whichever reference that processor manages.
+> **Warning:** **You are responsible for obtaining patient consent before charging a stored card.** Canvas does not enforce consent for charges initiated through this effect. 
+##  Imports 
+    ```python
+    from canvas_sdk.effects.payment import ChargeStoredCard
+    ```
+##  Charging a stored card 
+Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`.
+Attribute |  | Type | Description  
+---|---|---|---  
+patient_id | required | String | The Canvas [Patient](/sdk/data-patient/#patient) id to charge.  
+payment_card_id | required | String | A reference to the stored card that the configured processor resolves: the Canvas [PaymentCard](/sdk/data-payment-card/) id for the built-in Stripe processor, or a custom processor's own reference.  
+amount | required | Decimal | The amount to charge, in dollars, with up to two decimal places (for example, `Decimal("49.99")`). Must be greater than `0`.  
+idempotency_key | required | UUID or String | A key that makes the charge safe to retry. Reusing the same key for a retry guarantees the patient is not charged twice. See Idempotency.  
+claim_id | optional* | UUID or String | A [Claim](/sdk/data-claim/) id to post the payment against. When omitted, the payment is allocated across the patient's outstanding balance. See Payment allocation.  
+copay | optional | Boolean | Whether the charge is a copay. When `true`, the amount is posted to the claim's copay line item; requires `claim_id`. Defaults to `false`. See Payment allocation.  
+description | optional | String | A free-text description to record with the payment. It has no length limit, and is recorded only on a charge that names a `claim_id`.  
+* `claim_id` is required when `copay` is `true`.
+**Example:**
+    ```python
+    from decimal import Decimal
+    from uuid import uuid5, NAMESPACE_URL
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.payment import ChargeStoredCard
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Patient
+    class ChargeBalanceOnBooking(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.APPOINTMENT_CREATED)]
+        def compute(self) -> list[Effect]:
+            # APPOINTMENT_CREATED targets the appointment; the patient is in the context.
+            appointment_id = self.event.target.id
+            patient = Patient.objects.get(id=self.event.context["patient"]["id"])
+            card = patient.payment_cards.filter(is_default=True).first()
+            if card is None:
+                return []
+            charge = ChargeStoredCard(
+                patient_id=str(patient.id),
+                payment_card_id=str(card.id),
+                amount=Decimal("25.00"),
+                idempotency_key=uuid5(NAMESPACE_URL, f"appointment-{appointment_id}-balance"),
+            )
+            return [charge.apply()]
+    ```
+This charge names no `claim_id`, so it pays down the patient's outstanding balance and is rejected unless that balance covers the amount. To take a copay instead, supply the `claim_id` it belongs to and set `copay=True`. See Payment allocation.
+###  Validation 
+`.apply()` raises a `ValidationError` when:
+  - The `patient_id` does not match a patient.
+  - A supplied `claim_id` does not match a claim.
+  - `copay` is set without a `claim_id`.
+The card itself is not checked here. `payment_card_id` is resolved and validated server-side when the charge is processed, so a reference the configured processor cannot resolve arrives as an error on the response event rather than raising from `.apply()`. See Error codes for the code each processor reports.
+###  Card ownership 
+Under the built-in Stripe processor, Canvas looks the card up scoped to `patient_id`, so a card belonging to a different patient, or one that has been removed, is rejected as `card_not_found` before the card is charged.
+A [custom payment processor](/sdk/handlers-payment-processors/) keeps its own cards, which Canvas cannot see, so it passes `payment_card_id` through without checking it. On a custom processor, confirming that a card reference belongs to the patient being charged is the processor's responsibility.
+##  Idempotency 
+Every charge requires an `idempotency_key`. Pass either a `UUID` object or its string form, dashed or not; a string that does not parse as a UUID is rejected.
+Reusing the same key on a retry guarantees the patient is not charged twice, so the key must be **stable across retries of the same logical charge**. Generate it deterministically from a stable identifier — for example `uuid5(namespace, f"appointment-{id}-charge")` — or persist a `uuid4` before emitting the effect. Do not generate a fresh key on each attempt.
+##  Payment allocation 
+The payment is always applied to the patient's account:
+  - **Outstanding balance (default).** When no `claim_id` is given, the payment is allocated across the patient's outstanding balance. This is the only case where the amount is measured against a balance: the charge is rejected before the card is touched if the patient has no outstanding balance, and again if the amount exceeds it, so every charged dollar lands on a claim.
+  - **Against a specific claim.** When `claim_id` is given and `copay` is left `false` (the default), the payment pays down that claim's non-copay line-item balances. The charge is rejected if the claim has nothing to charge against, but the amount is not capped at the claim's balance, so an amount above it leaves the claim in credit.
+  - **As a copay on a claim.** When `claim_id` is given with `copay` set to `true`, the amount is recorded as a copay on that claim, posted to its copay line item. No balance is checked at all, so use this to collect a copay or prepayment against a claim that carries nothing to charge.
+##  Reconciling the charge 
+Once the charge has been processed, Canvas emits a [`REVENUE__STORED_CARD__CHARGE_RESPONSE`](/sdk/events/#stored-card-charge-events) event carrying the outcome. It fires whether or not the card was charged, and nothing a handler returns changes the charge, so handle it to reconcile rather than to intervene.
+The event targets the patient that was charged: `self.event.target.id` is the patient id, and `self.event.target.instance` is the [Patient](/sdk/data-patient/#patient). Its actor is the one that emitted the originating effect.
+Correlate each response with the charge that produced it using the `idempotency_key` you supplied on the request. It is the only field that ties the two together, since nothing in the response identifies the handler that asked for the charge.
+This handler records the result of each charge, reading `payment_intent_id` when it succeeds and the `error` object when it does not:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from logger import log
+    class ReconcileStoredCardCharge(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.REVENUE__STORED_CARD__CHARGE_RESPONSE)]
+        def compute(self) -> list[Effect]:
+            context = self.event.context
+            idempotency_key = context["idempotency_key"]
+            if context["success"]:
+                payment_intent_id = context["payment_intent_id"]
+                log.info(f"Charge {idempotency_key} succeeded: {payment_intent_id}")
+            else:
+                error = context["error"]
+                log.error(f"Charge {idempotency_key} failed [{error['code']}]: {error['message']}")
+            return []
+    ```
+###  Response context 
+`self.event.context` arrives already parsed as a dictionary, so read the fields from it directly. It carries no card data or PHI. Apart from `success`, which is a boolean, and `error`, which is an object, every value is a string or `null`, including the amount and the ids that were UUIDs on the request, so cast `amount` before doing arithmetic on it.
+Field | Type | Description  
+---|---|---  
+success | Boolean | Whether the charge succeeded.  
+payment_intent_id | String or null | The processor's payment identifier on success — the Stripe PaymentIntent id, or a custom processor's transaction id. `null` on failure.  
+error | Object or null | `null` on success. On failure, `error` is an object with `code` and `message` fields. See Error codes.  
+idempotency_key | String | Echoed from the request. Correlate the response with the originating charge using this value.  
+patient_id | String | Echoed from the request: the [Patient](/sdk/data-patient/#patient) that was charged.  
+payment_card_id | String | Echoed from the request: the stored card that was charged, a [PaymentCard](/sdk/data-payment-card/) id under the built-in processor.  
+claim_id | String or null | Echoed from the request: the [Claim](/sdk/data-claim/) the payment was posted against, or `null` when none was supplied.  
+amount | String | Echoed from the request: the dollar amount that was submitted.  
+###  Error codes 
+On failure, `error.code` names the condition that stopped the charge.
+`error.code` | When it occurs  
+---|---  
+`patient_not_found` | The `patient_id` did not match a patient.  
+`card_not_found` | The stored card was not found. For the built-in Stripe processor, this also covers a card that exists but is not owned by the patient; a custom processor may raise a different code for that case — check the processor's own documentation.  
+`claim_not_found` | The `claim_id` did not match a claim owned by the patient.  
+`no_outstanding_balance` | A charge with no `claim_id` was attempted, but the patient has no outstanding balance. The balance is checked before the card is charged.  
+`amount_exceeds_balance` | A charge with no `claim_id` exceeds the patient's outstanding balance. The amount is validated against the balance before the card is charged.  
+`nothing_to_charge` | A per-claim charge with `copay` set to `false` was attempted, but the claim has no chargeable, non-copay balance. Set `copay` to `true` to record a copay or prepayment instead.  
+`charge_failed` | An unexpected failure occurred while processing the charge. Retry using the same `idempotency_key`; the retry will not double-charge the patient.  
+The payment processor's own decline codes also pass through in `error.code` — for example, `card_declined` from Stripe — and can arrive at charge time. Handle an unrecognized code gracefully rather than matching against a fixed set, since the processor can surface codes this list does not name.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-charge-stored-card/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-claims/
@@ -27095,7 +27314,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -27354,6 +27573,7 @@ HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Mo
 ###  Revenue / Payment Processor 
 Effect | Description  
 ---|---  
+REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/).  
 REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module.  
 REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module.  
 REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module.  
@@ -27512,6 +27732,7 @@ The actor is available in the following contexts:
   - **Claim events** — `CLAIM__CONDITIONS`
   - **SSO events** — `SSO__PROCESS_ADDITIONAL_REQUEST_DATA`, `SSO__GET_POST_LOGIN_REDIRECT`
   - **Payment processor events** — all `REVENUE__PAYMENT_PROCESSOR__*` events
+  - **Stored card charge events** — `REVENUE__STORED_CARD__CHARGE_RESPONSE`, carrying the actor of the effect that requested the charge
   - **Patient portal events** — all `PATIENT_PORTAL__*` events
     ```python
     from canvas_sdk.effects import Effect
@@ -43258,6 +43479,26 @@ Target | Context object
     "token": str
     "patient":
         "id": str  
+###  Stored Card Charge Events 
+This event reports the outcome of a [Charge Stored Card](/sdk/effect-charge-stored-card/) effect. Unlike the payment processor events above, it is not a request for a handler to respond to: the charge has already been attempted, and nothing a handler returns changes it. Handle it to reconcile the result, and correlate it with the charge that produced it using `idempotency_key`, which is echoed from the request.
+Apart from `success` and `error`, every value arrives as a string or `null`, including the amount and the ids that were UUIDs on the request. The context is already parsed into a dictionary on `self.event.context`, and the actor is the one that emitted the originating effect.
+REVENUE__STORED_CARD__CHARGE_RESPONSE  
+---  
+Occurs when a [ChargeStoredCard](/sdk/effect-charge-stored-card/) effect has finished processing, whether or not the card was charged. Carries no card data or PHI.  
+Target object | Context object  
+    "id": pt_id
+    "type": [Patient](/sdk/data-patient/#patient)
+| 
+    "success": bool          # whether the card was charged
+    "payment_intent_id": str # processor's payment id, null on failure
+    "error":                 # null on success
+        "code": str          # see [Error codes](/sdk/effect-charge-stored-card/#error-codes)
+        "message": str
+    "idempotency_key": str   # echoed, use this to correlate
+    "patient_id": str        # echoed, a [Patient](/sdk/data-patient/#patient) id
+    "payment_card_id": str   # echoed, a [PaymentCard](/sdk/data-payment-card/) id under Stripe
+    "claim_id": str          # echoed, a [Claim](/sdk/data-claim/) id, null when none
+    "amount": str            # echoed, the dollar amount submitted  
 ###  Patient Portal Events 
 APPLICATION__ON_CONTEXT_CHANGE  
 ---  

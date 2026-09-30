@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `PluginCommand` model exposes the custom commands a plugin registers in its `CANVAS_MANIFEST.json`. Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
+The `PluginCommand` model exposes the custom commands a plugin registers in its [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#commands). Use it to read back a registered command's `label` and `section` instead of reconstructing display text from its camelCase `command_key`.
 
 ## Basic usage
 
@@ -57,6 +57,8 @@ if plugin_command:
 |-------------|---------|
 | id          | UUID    |
 | dbid        | Integer |
+| created     | DateTime |
+| modified    | DateTime |
 | name        | String  |
 | command_key | String  |
 | schema_key  | String  |

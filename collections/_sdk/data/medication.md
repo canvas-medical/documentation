@@ -119,35 +119,39 @@ for medication in medications:
 
 ### Medication
 
-| Field Name                     | Type                                                     |
-| ------------------------------ | -------------------------------------------------------- |
-| id                             | UUID                                                     |
-| dbid                           | Integer                                                  |
-| patient                        | [Patient](/sdk/data-patient/#patient)                    |
-| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
-| committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
-| status                         | String                                                   |
-| start_date                     | Date                                                     |
-| end_date                       | Date                                                     |
-| quantity_qualifier_description | String                                                   |
-| clinical_quantity_description  | String                                                   |
-| potency_unit_code              | String                                                   |
-| national_drug_code             | String                                                   |
-| erx_quantity                   | String                                                   |
-| codings                        | [MedicationCoding](#medicationcoding)[]                  |
-| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
-| change_medications             | [ChangeMedication](/sdk/data-change-medication)[]        |
-| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
-| prescriptions                  | [Prescription](/sdk/data-prescription)[]                 |
-| previous_medications           | [Prescription](/sdk/data-prescription)[]                 |
-| prescription_change_responses  | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
-| latest_sig                     | String (property) — see [Latest sig](#latest-sig)        |
+| Field Name                     | Type                                                                                               | Description                   |
+|--------------------------------|----------------------------------------------------------------------------------------------------|-------------------------------|
+| id                             | UUID                                                                                               |                               |
+| dbid                           | Integer                                                                                            |                               |
+| created                        | DateTime                                                                                           |                               |
+| modified                       | DateTime                                                                                           |                               |
+| patient                        | [Patient](/sdk/data-patient/#patient)                                                              |                               |
+| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                                                                 |                               |
+| committer                      | [CanvasUser](/sdk/data-canvasuser)                                                                 |                               |
+| status                         | String                                                                                             |                               |
+| start_date                     | Date                                                                                               |                               |
+| end_date                       | Date                                                                                               |                               |
+| quantity_qualifier_description | String                                                                                             |                               |
+| clinical_quantity_description  | String                                                                                             |                               |
+| potency_unit_code              | String                                                                                             |                               |
+| national_drug_code             | String                                                                                             |                               |
+| erx_quantity                   | String                                                                                             |                               |
+| codings                        | [MedicationCoding](#medicationcoding)[]                                                            |                               |
+| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]                                            |                               |
+| change_medications             | [ChangeMedication](/sdk/data-change-medication)[]                                                  |                               |
+| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[]                                           |                               |
+| prescriptions                  | [Prescription](/sdk/data-prescription)[]                                                           |                               |
+| previous_medications           | [Prescription](/sdk/data-prescription)[]                                                           |                               |
+| prescription_change_responses  | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |                               |
+| latest_sig                     | String (computed)                                                                                  | See [Latest sig](#latest-sig) |
 
 ### MedicationCoding
 
 | Field Name    | Type                      |
 | ------------- | ------------------------- |
 | dbid          | Integer                   |
+| created       | DateTime                  |
+| modified      | DateTime                  |
 | system        | String                    |
 | version       | String                    |
 | code          | String                    |

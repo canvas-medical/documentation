@@ -86,6 +86,8 @@ url = document.document_url if document else None
 | Field Name     | Type                                              |
 |----------------|---------------------------------------------------|
 | dbid           | Integer                                           |
+| created        | DateTime                                          |
+| modified       | DateTime                                          |
 | originator     | [CanvasUser](/sdk/data-canvasuser/)               |
 | recipient      | [Patient](/sdk/data-patient/#patient)             |
 | recipient_type | [InvoiceRecipients](#invoicerecipients)           |

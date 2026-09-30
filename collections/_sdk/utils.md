@@ -1275,6 +1275,136 @@ The response contains a `results` list of contact objects:
 
 Pass a selected contact as the `service_provider` on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), or other commands that accept a `ServiceProvider`; its `businessFax` and `businessAddress` also drive outbound faxing.
 
+## Getting a patient portal login link
+
+Plugin authors can mint a patient's portal login link using `patient_portal_http`, then deliver portal invites and password resets over their own transport (their own SMS or email provider) instead of letting Canvas send them. To have Canvas send the invite for you instead, use [Send Invite](/sdk/patient-portal/#send-invite).
+
+```python?partial=true
+from canvas_sdk.utils.patient_portal import PatientPortalLinkError, patient_portal_http
+```
+
+Unlike the other service clients, `patient_portal_http` is imported from its own `canvas_sdk.utils.patient_portal` module, and it exposes only `get_login_url`.
+
+### get_login_url
+
+Mints a login link for a patient and returns it as a string.
+
+**Parameters**:
+
+| Name         | Type      | Required | Description                                                                                                                                                                              |
+| :----------- | :-------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `patient_id` | _string_  | `true`   | The `id` of the [Patient](/sdk/data-patient/#patient).                                                                                                                                                      |
+| `link_type`  | `"invite"` or `"reset"` | `false`  | Defaults to `"invite"`. Both return the same link: when it is opened, the portal shows account activation or password reset based on whether the patient has already registered. Read `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module to choose the copy of the message you send. |
+| `next_path`  | _string_  | `false`  | Where in the portal to land the patient, up to 50 characters. Defaults to `"/"`. A path that leaves the portal is rejected. See [`next_path` destinations](#next_path-destinations).                                                                             |
+| `ttl`        | _integer_ | `false`  | The link's lifetime, in seconds, from `1` to `86400` (24 hours). A value outside that range raises `PatientPortalLinkError`. Omit it to use the instance's own default, described below. |
+
+#### `next_path` destinations
+
+| Path | Lands the patient on |
+| :--- | :------------------- |
+| `/` | The portal landing page. |
+| `/appointments` | Appointments, including self-scheduling. |
+| `/messaging` | Messages. |
+| `/payments` | Payments. |
+| `/labs` | Lab results. |
+| `/records` | Health records. |
+| `/my-health` | My Health. |
+| `/contact` | Contact. |
+| `/application/<application_id>` | A patient [application](/sdk/handlers-applications/) your plugin ships. See below for the id. |
+
+The landing page and applications are always reachable. Every other destination requires that section to be turned on for the instance, and a path whose section is off sends the patient to the portal's login screen instead.
+
+`<application_id>` is the base64 of the application's `identifier`, which the [Application](/sdk/data-application/) data module holds:
+
+```python?partial=true
+from base64 import b64encode
+
+from canvas_sdk.v1.data import Application
+
+application = Application.objects.get(name="Care Plan")
+application_id = b64encode(application.identifier.encode()).decode()
+next_path = f"/application/{application_id}"
+```
+
+An identifier defaults to `<module>:<ClassName>`, and base64 makes it about a third longer again, so this fits the 50-character limit only for identifiers of 27 characters or fewer. Give an application you intend to link to a short module path, and check the length of the path you build before relying on it.
+
+Omitting `ttl` uses the `normal` tier of the instance's access token expiration setting, which Canvas ships as `10800` (3 hours). An instance can hold a different value, so treat 3 hours as the shipped default rather than a guarantee. The `86400` cap is the longest tier that setting ships with.
+
+**Returns**: the login URL as a string.
+
+`get_login_url()` raises `PatientPortalLinkError` when it can't obtain a link: Canvas was unreachable, returned a non-success response, or returned a response with no link. This is the one exception to catch, because a plugin can't catch the underlying `requests` exceptions.
+
+{% include alert.html type="warning" content="Treat the link as a credential: it authenticates as the patient and authorizes a password change. Deliver it only over a channel you have verified for the patient, and never log it." %}
+
+The following handler fires when a patient's mobile number is added or changed, mints a link for the patient on the event, chooses the message copy from whether they have registered, and texts it over the plugin's own provider.
+
+**Example**:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils import Http
+from canvas_sdk.utils.patient_portal import PatientPortalLinkError, patient_portal_http
+from canvas_sdk.v1.data import PatientContactPoint
+from canvas_sdk.v1.data.common import ContactPointSystem, ContactPointUse
+
+
+class InvitePatient(BaseHandler):
+    # A number can arrive as a new contact point or as an edit to an existing one.
+    RESPONDS_TO = [
+        EventType.Name(EventType.PATIENT_CONTACT_POINT_CREATED),
+        EventType.Name(EventType.PATIENT_CONTACT_POINT_UPDATED),
+    ]
+
+    def compute(self) -> list[Effect]:
+        # The event targets the contact point, which carries the patient it belongs to.
+        contact_point = PatientContactPoint.objects.get(id=self.target)
+
+        # Only the mobile number, since this handler sends a text.
+        if (
+            contact_point.system != ContactPointSystem.PHONE
+            or contact_point.use != ContactPointUse.MOBILE
+        ):
+            return []
+
+        # The link is a credential, so only send it to a number the patient confirmed.
+        if not contact_point.last_verified:
+            return []
+
+        patient = contact_point.patient
+        user = patient.user
+        if user is None:
+            return []  # No portal user yet, so nothing to invite.
+
+        # A registered patient gets a password reset; a new one gets an activation
+        # invite. The portal decides the same way when the link is opened.
+        registered = user.is_portal_registered
+        link_type = "reset" if registered else "invite"
+
+        try:
+            login_url = patient_portal_http.get_login_url(patient.id, link_type=link_type)
+        except PatientPortalLinkError:
+            return []
+
+        body = (
+            f"Reset your Canvas portal password: {login_url}"
+            if registered
+            else f"Activate your Canvas portal account: {login_url}"
+        )
+
+        # Deliver over your own verified channel: here, an SMS provider's API.
+        Http().post(
+            "https://sms-provider.example.com/send",
+            headers={"Authorization": "Bearer <your-provider-token>"},
+            json={"to": contact_point.value, "body": body},
+        )
+
+        return []
+```
+
+For a full, runnable plugin that mints a link, delivers it over a configurable provider, and reports the provider's delivery status, see the [patient_portal_link example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_link).
+
 <br/>
 <br/>
 <br/>

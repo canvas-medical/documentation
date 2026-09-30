@@ -151,7 +151,7 @@ class DialClickedNumber(BaseHandler):
         ]
 ```
 
-Declare both keys under `variables` in your plugin's `CANVAS_MANIFEST.json` so an admin can set them — an undeclared variable has nowhere to receive a value, so the secret read and the redirect both fail silently:
+Declare both keys under `variables` in your plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables) so an admin can set them — an undeclared variable has nowhere to receive a value, so the secret read and the redirect both fail silently:
 
 ```json
 {

@@ -73,6 +73,8 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 | -------------------- | ------- | --------------------------------------------------------------------------- |
 | id                   | UUID    | Unique identifier                                                           |
 | dbid                 | Integer | Internal database identifier                                                |
+| created              | DateTime | When the record was created                                                |
+| modified             | DateTime | When the record was last changed                                           |
 | first_name           | String  | Provider name, or the organization name                                     |
 | last_name            | String  | Empty for organizations                                                     |
 | business_fax         | String  |                                                                             |

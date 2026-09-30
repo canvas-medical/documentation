@@ -34,28 +34,25 @@ claim_postings = claim.postings.active()
 
 Base model for aggregating multiple line item-level transactions (payments, adjustments, transfers) associated with a claim.
 
-| Field Name          | Type                                    |
-|---------------------|-----------------------------------------|
-| dbid                | Integer                                 |
-| corrected\_posting  | BasePosting                             |
-| claim               | [Claim](/sdk/data-claim/#claim)         |
-| payment\_collection | [PaymentCollection](#paymentcollection) |
-| description         | String                                  |
-| entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)           |
-| created             | DateTime                                |
-| modified            | DateTime                                |
-| correction\_postings | QuerySet[[BasePosting](#baseposting)]  |
-
-**Computed Properties**:
-
-* `paid_amount`: Total paid
-* `contractual_adjusted_amount`: Adjustments marked as write-offs
-* `non_write_off_adjusted_amount`: Non-write-off adjustments
-* `transferred_amount`: Total transferred
-* `transferred_to_patient_amount`: Portion transferred to patient
-* `transferred_to_coverage_amount`: Portion transferred to another coverage
-* `adjusted_and_transferred_amount`: Combined adjusted and transferred amount
-* `posted_amount`: Total of payments and write-offs
+| Field Name                         | Type                                    | Description                              |
+|------------------------------------|-----------------------------------------|------------------------------------------|
+| dbid                               | Integer                                 |                                          |
+| corrected\_posting                 | BasePosting                             |                                          |
+| claim                              | [Claim](/sdk/data-claim/#claim)         |                                          |
+| payment\_collection                | [PaymentCollection](#paymentcollection) |                                          |
+| description                        | String                                  |                                          |
+| entered\_in\_error                 | [CanvasUser](/sdk/data-canvasuser/)     |                                          |
+| created                            | DateTime                                |                                          |
+| modified                           | DateTime                                |                                          |
+| correction\_postings               | QuerySet[[BasePosting](#baseposting)]   |                                          |
+| paid\_amount                       | Decimal (computed)                      | Total paid                               |
+| contractual\_adjusted\_amount      | Decimal (computed)                      | Adjustments marked as write-offs         |
+| non\_write\_off\_adjusted\_amount  | Decimal (computed)                      | Non-write-off adjustments                |
+| transferred\_amount                | Decimal (computed)                      | Total transferred                        |
+| transferred\_to\_patient\_amount   | Decimal (computed)                      | Portion transferred to the patient       |
+| transferred\_to\_coverage\_amount  | Decimal (computed)                      | Portion transferred to another coverage  |
+| adjusted\_and\_transferred\_amount | Decimal (computed)                      | Combined adjusted and transferred amount |
+| posted\_amount                     | Decimal (computed)                      | Total of payments and write-offs         |
 
 ### CoveragePosting
 
@@ -74,58 +71,49 @@ Represents an insurance payment or adjustment associated with a claim's coverage
 
 Represents patient-side payments or adjustments, including links to copays or patient-level discounts.
 
-| Field Name       | Type                                          |
-|------------------|-----------------------------------------------|
-| claim\_patient   | [ClaimPatient](/sdk/data-claim/#claimpatient) |
-| patient\_payment | [BulkPatientPosting](#bulkpatientposting)     |
-| copay            | [BulkPatientPosting](#bulkpatientposting)     |
-
-**Computed Properties**:
-
-* `discounted_amount`: Discount applied
-* `charges_amount`: Discount + paid amount
+| Field Name         | Type                                          | Description               |
+|--------------------|-----------------------------------------------|---------------------------|
+| claim\_patient     | [ClaimPatient](/sdk/data-claim/#claimpatient) |                           |
+| patient\_payment   | [BulkPatientPosting](#bulkpatientposting)     |                           |
+| copay              | [BulkPatientPosting](#bulkpatientposting)     |                           |
+| discounted\_amount | Decimal (computed)                            | Discount applied          |
+| charges\_amount    | Decimal (computed)                            | Discount plus paid amount |
 
 ### BulkPatientPosting
 
  Aggregates bulk patient payments on multiple claims.
 
-| Field Name          | Type                                    |
-|---------------------|-----------------------------------------|
-| id                  | UUID                                    |
-| dbid                | Integer                                 |
-| payment\_collection | [PaymentCollection](#paymentcollection) |
-| total\_paid         | Decimal                                 |
-| created             | DateTime                                |
-| modified            | DateTime                                |
-| discount            | [Discount](#discount)                   |
-| payer               | [Patient](/sdk/data-patient/)           |
-| postings            | QuerySet[[PatientPosting](#patientposting)] |
-| copays              | QuerySet[[PatientPosting](#patientposting)] |
-
-**Computed Properties**:
-
-* `total_posted_amount`: Sum of all posted amounts
-* `discounted_amount`: Sum of discounted amounts
+| Field Name            | Type                                        | Description               |
+|-----------------------|---------------------------------------------|---------------------------|
+| id                    | UUID                                        |                           |
+| dbid                  | Integer                                     |                           |
+| payment\_collection   | [PaymentCollection](#paymentcollection)     |                           |
+| total\_paid           | Decimal                                     |                           |
+| created               | DateTime                                    |                           |
+| modified              | DateTime                                    |                           |
+| discount              | [Discount](#discount)                       |                           |
+| payer                 | [Patient](/sdk/data-patient/)               |                           |
+| postings              | QuerySet[[PatientPosting](#patientposting)] |                           |
+| copays                | QuerySet[[PatientPosting](#patientposting)] |                           |
+| total\_posted\_amount | Decimal (computed)                          | Sum of all posted amounts |
+| discounted\_amount    | Decimal (computed)                          | Sum of discounted amounts |
 
 ### BaseRemittanceAdvice
 
 Represents shared data for both electronic and manual remittance advice.
 
-| Field Name          | Type                                          |
-|---------------------|-----------------------------------------------|
-| id                  | UUID                                          |
-| dbid                | Integer                                       |
-| payment\_collection | [PaymentCollection](#paymentcollection)       |
-| total\_paid         | Decimal                                       |
-| created             | DateTime                                      |
-| modified            | DateTime                                      |
-| transactor          | [Transactor](/sdk/data-coverage/#transactor) |
-| era\_id             | String                                        |
-| postings            | QuerySet[[CoveragePosting](#coverageposting)] |
-
-**Computed Properties**:
-
-* `total_posted_amount`: Sum of all posted amounts
+| Field Name            | Type                                          | Description               |
+|-----------------------|-----------------------------------------------|---------------------------|
+| id                    | UUID                                          |                           |
+| dbid                  | Integer                                       |                           |
+| payment\_collection   | [PaymentCollection](#paymentcollection)       |                           |
+| total\_paid           | Decimal                                       |                           |
+| created               | DateTime                                      |                           |
+| modified              | DateTime                                      |                           |
+| transactor            | [Transactor](/sdk/data-coverage/#transactor)  |                           |
+| era\_id               | String                                        |                           |
+| postings              | QuerySet[[CoveragePosting](#coverageposting)] |                           |
+| total\_posted\_amount | Decimal (computed)                            | Sum of all posted amounts |
 
 ### PaymentCollection
 
@@ -144,6 +132,7 @@ Captures metadata about the method and details of a collected payment.
 | created          | DateTime                          |
 | modified         | DateTime                          |
 | postings         | QuerySet[[BasePosting](#baseposting)] |
+| receipt          | [Receipt](/sdk/data-receipt/#receipt) |
 
 ### NewLineItemPayment
 
@@ -156,6 +145,7 @@ Represents a payment applied to a billing line item within a claim.
 | billing\_line\_item | [BillingLineItem](/sdk/data-billing-line-item/) |
 | amount              | Decimal                                         |
 | charged             | Decimal                                         |
+| entered\_in\_error  | [CanvasUser](/sdk/data-canvasuser/)             |
 | created             | DateTime                                        |
 | modified            | DateTime                                        |
 
@@ -173,6 +163,7 @@ Represents an adjustment applied to a billing line item.
 | group                            | String                                          |
 | deviated\_from\_posting\_ruleset | Boolean                                         |
 | write\_off                       | Boolean                                         |
+| entered\_in\_error               | [CanvasUser](/sdk/data-canvasuser/)             |
 | created                          | DateTime                                        |
 | modified                         | DateTime                                        |
 
@@ -191,9 +182,9 @@ Represents a transfer of a line item balance to another coverage or patient.
 | deviated\_from\_posting\_ruleset | Boolean                                         |
 | transfer\_to                     | [ClaimCoverage](/sdk/data-claim/#claimcoverage) |
 | transfer\_to\_patient            | Boolean                                         |
+| entered\_in\_error               | [CanvasUser](/sdk/data-canvasuser/)             |
 | created                          | DateTime                                        |
 | modified                         | DateTime                                        |
-
 
 ### Discount
 
@@ -209,7 +200,6 @@ Represents a discount applied to a claim or patient posting, linked by adjustmen
 | created          | DateTime  |
 | modified         | DateTime  |
 | patient_postings | QuerySet[[BulkPatientPosting](#bulkpatientposting)] |
-
 
 ## Enumeration types
 

@@ -9,8 +9,8 @@ Embedded applications render **inside a specific Canvas surface** instead of
 appearing as an icon in the app drawer: a tab within a note, the scheduling
 modal, a pane pinned to a window edge, an entry in the provider side menu, or an
 icon in the panel bar. They are ordinary [handlers](/sdk/handlers-basehandler/): you register
-each one under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders it in
-the appropriate surface.
+each one under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers),
+and Canvas renders it in the appropriate surface.
 
 They come in two families, which differ in how you reach the surface.
 
@@ -354,7 +354,7 @@ When installed, this application replaces the built-in scheduling modal. If no s
 
 A Docked Application mounts as a persistent **docked pane** pinned to a window edge. It stays in place as the user moves between pages, including between a patient chart and global pages, rather than opening fresh each time.
 
-Reach for a docked pane when a surface needs to follow the user instead of being opened and re-opened: a telephony or messaging bar that has to survive navigation mid-call, a live worklist the user works through while moving between charts, or an ambient scribe that keeps recording as the clinician moves around a note. Because the pane stays mounted, whatever state it holds survives that navigation, whether that's a scroll position, a half-filled form, or an open connection. A modal or an overlay cannot do this, since both are torn down when the page changes.
+Reach for a docked pane when a surface needs to follow the user instead of being opened and re-opened: a telephony or messaging bar that has to survive navigation mid-call, a live worklist the user works through while moving between charts, or an ambient scribe that keeps recording as the clinician moves around a note. Because the pane stays mounted, whatever state it holds survives that navigation, whether that's a scroll position, a half-filled form, or an open connection. A right chart pane keeps its state only while the user stays in one patient's chart. It closes when they open a different patient or leave the chart, while a docked pane stays open.
 
 ### Implementing a Docked Application
 
@@ -566,7 +566,8 @@ The patient portal is outside the shell as well, so a docked pane cannot appear 
 Docked Application is a staff-facing surface only.
 
 Because the pane stays mounted across every navigation inside the shell, it keeps its
-state there instead of being recreated like a modal or overlay that opens and closes.
+state there. A right chart pane, by contrast, closes when the user opens a different
+patient or leaves the chart.
 
 ### Multiple Docked Panes
 
