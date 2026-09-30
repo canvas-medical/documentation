@@ -27932,7 +27932,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
-    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. Signed-in patients download the after-visit summary of their own locked note at <code>/app/AfterVisitSummary/&lt;note_id&gt;</code>; any other note ID returns a 404 error.</td></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
   </thead>
   <tbody>
     <tr>
