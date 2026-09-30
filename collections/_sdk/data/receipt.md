@@ -60,28 +60,25 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 
 ### Receipt
 
-| Field Name                            | Type                                                        |
-|---------------------------------------|-------------------------------------------------------------|
-| id                                    | UUID                                                        |
-| dbid                                  | Integer                                                     |
-| created                               | DateTime                                                    |
-| modified                              | DateTime                                                    |
-| originator                            | [CanvasUser](/sdk/data-canvasuser/)                         |
-| entered\_in\_error                    | [CanvasUser](/sdk/data-canvasuser/)                         |
-| payment\_collection                   | [PaymentCollection](/sdk/data-posting/#paymentcollection)   |
-| account\_balance\_before\_collection  | Decimal                                                     |
-| account\_balance\_after\_collection   | Decimal                                                     |
-| discount                              | Decimal                                                     |
-| template                              | String                                                      |
-| receipt                               | String                                                      |
-| receipt\_url                          | String (computed)                                           |
+| Field Name                           | Type                                                      | Description                                                                                              |
+|--------------------------------------|-----------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| id                                   | UUID                                                      |                                                                                                          |
+| dbid                                 | Integer                                                   |                                                                                                          |
+| created                              | DateTime                                                  |                                                                                                          |
+| modified                             | DateTime                                                  |                                                                                                          |
+| originator                           | [CanvasUser](/sdk/data-canvasuser/)                       |                                                                                                          |
+| entered\_in\_error                   | [CanvasUser](/sdk/data-canvasuser/)                       |                                                                                                          |
+| payment\_collection                  | [PaymentCollection](/sdk/data-posting/#paymentcollection) |                                                                                                          |
+| account\_balance\_before\_collection | Decimal                                                   |                                                                                                          |
+| account\_balance\_after\_collection  | Decimal                                                   |                                                                                                          |
+| discount                             | Decimal                                                   |                                                                                                          |
+| template                             | String                                                    |                                                                                                          |
+| receipt                              | String                                                    |                                                                                                          |
+| receipt\_url                         | String (computed)                                         | Presigned S3 URL for the receipt PDF, valid for 1 hour, or `None` while the PDF is still being generated |
+| total\_posted\_amount                | Decimal (computed)                                        | Sum of the payments and write-off adjustments across the payment collection's active postings            |
+| copay\_amount                        | Decimal (computed)                                        | Amount posted as copays with the payment collection                                                      |
 
 `account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt, and is `0.00` when no discount was applied. `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
-
-**Computed Properties**:
-
-* `total_posted_amount`: Total posted with the payment collection: the sum of payments and write-off adjustments across its active postings.
-* `copay_amount`: The amount posted as copays on the payment collection.
 
 ## See also
 

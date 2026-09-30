@@ -176,25 +176,25 @@ document = DocumentReference.objects.filter(
 
 ### ImagingReport
 
-| Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
-| id                 | UUID                                                                  |
-| dbid               | Integer                                                               |
-| created            | DateTime                                                              |
-| modified           | DateTime                                                              |
-| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
-| junked             | Boolean                                                               |
-| requires_signature | Boolean                                                               |
-| assigned_date      | DateTime                                                              |
-| patient            | [Patient](/sdk/data-patient/#patient)                                 |
-| order              | [ImagingOrder](#imagingorder)                                         |
-| source             | [ImagingReportSource](#imagingreportsource)                           |
-| name               | String                                                                |
-| result_date        | Date                                                                  |
-| original_date      | Date                                                                  |
-| review             | [ImagingReview](#imagingreview)                                       |
-| document_url       | String (property) — presigned S3 URL, or `None` if the report has no file |
-| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+| Field Name         | Type                                                                  | Description                                           |
+|--------------------|-----------------------------------------------------------------------|-------------------------------------------------------|
+| id                 | UUID                                                                  |                                                       |
+| dbid               | Integer                                                               |                                                       |
+| created            | DateTime                                                              |                                                       |
+| modified           | DateTime                                                              |                                                       |
+| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |                                                       |
+| junked             | Boolean                                                               |                                                       |
+| requires_signature | Boolean                                                               |                                                       |
+| assigned_date      | DateTime                                                              |                                                       |
+| patient            | [Patient](/sdk/data-patient/#patient)                                 |                                                       |
+| order              | [ImagingOrder](#imagingorder)                                         |                                                       |
+| source             | [ImagingReportSource](#imagingreportsource)                           |                                                       |
+| name               | String                                                                |                                                       |
+| result_date        | Date                                                                  |                                                       |
+| original_date      | Date                                                                  |                                                       |
+| review             | [ImagingReview](#imagingreview)                                       |                                                       |
+| document_url       | String (computed)                                                     | Presigned S3 URL, or `None` if the report has no file |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |                                                       |
 
 ### ImagingReportCoding
 
