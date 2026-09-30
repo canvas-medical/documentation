@@ -384,7 +384,7 @@ class ProviderFilter(BaseHandler):
 
 ## Show a Modal After Login
 
-Show a patient a consent form, a tour, or an alert as soon as they log in to the portal. Respond to the `PATIENT_PORTAL__POST_LOGIN` event and return a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with the `DEFAULT_MODAL` target. The portal opens the modal over the page the patient lands on.
+Show a patient a consent form, a tour, or an alert as soon as they log in to the portal. Respond to the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/events/#patient-portal-events) event and return a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with the `DEFAULT_MODAL` target. The portal opens the modal over the page the patient lands on.
 
 The event targets the patient. Its context carries `login_method`, which tells you how the patient logged in:
 
