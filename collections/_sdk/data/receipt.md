@@ -28,11 +28,9 @@ receipt = collection.receipt  # the one-to-one Receipt; raises if the collection
 
 ## Finding a patient's receipts
 
-A patient-portal plugin should reach only the authenticated patient's receipts. Walk there from the patient's own payments rather than querying `Receipt` directly:
+A patient-portal plugin should reach only the authenticated patient's receipts. Walk there from the patient's own payments rather than querying `Receipt` directly.
 
-1. `patient.payments` returns a [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting) queryset.
-2. Each bulk posting's `postings` are [PatientPosting](/sdk/data-posting/#patientposting) records.
-3. Each posting's `payment_collection` links to at most one receipt. A collection may not have one yet, so the code must handle its absence.
+Each of the patient's payments (`patient.payments`, a [BulkPatientPosting](/sdk/data-posting/#bulkpatientposting) queryset) belongs to one `payment_collection`, which has at most one receipt. A collection may not have one yet, so the code must handle its absence.
 
 ```python
 from canvas_sdk.v1.data import Patient
@@ -40,20 +38,17 @@ from canvas_sdk.v1.data import Patient
 patient = Patient.objects.get(id="b80b1cdc2e6a4aca90ccebc02e683f35")
 
 receipts = []
-for bulk_payment in patient.payments.all():
-    # active() excludes postings that have been marked entered-in-error.
-    for posting in bulk_payment.postings.active():
-        # The reverse accessor raises when a collection has no receipt, so default to None.
-        receipt = getattr(posting.payment_collection, "receipt", None)
-        # A patient-portal plugin must not surface a deleted or entered-in-error receipt.
-        # The reverse accessor bypasses the default deleted=False filter, so screen it here.
-        if receipt is None or receipt.deleted or receipt.entered_in_error is not None:
-            continue
-        # A patient's postings can span multiple claims or bulk payments that resolve to the
-        # same PaymentCollection, so dedupe to avoid collecting the same receipt twice.
-        if receipt not in receipts:
-            receipts.append(receipt)
+for payment in patient.payments.select_related("payment_collection__receipt"):
+    # The reverse accessor raises when a collection has no receipt, so default to None.
+    receipt = getattr(payment.payment_collection, "receipt", None)
+    # A patient-portal plugin must not surface a deleted or entered-in-error receipt.
+    # The reverse accessor bypasses the default deleted=False filter, so screen it here.
+    if receipt is None or receipt.deleted or receipt.entered_in_error_id is not None:
+        continue
+    receipts.append(receipt)
 ```
+
+{% include alert.html type="warning" content="Canvas does not set a committer on receipts, so <code>Receipt.objects.committed()</code> returns no receipts. Filter on <code>entered_in_error</code> instead, as above." %}
 
 ## Accessing the receipt PDF
 
@@ -86,17 +81,17 @@ url = receipt.receipt_url  # presigned S3 URL (valid for 1 hour), or None
 | discount                              | Decimal                                                     |
 | template                              | String                                                      |
 | receipt                               | String                                                      |
-| receipt\_url                          | String (property) — presigned S3 URL, or None               |
+| receipt\_url                          | String (property) (property): presigned S3 URL, or None               |
 
 `account_balance_before_collection` and `account_balance_after_collection` are point-in-time snapshots of the patient's account balance captured when the receipt was generated, not live balances. `discount` is the discount amount snapshotted on the receipt, and is `0.00` when no discount was applied. `template` has a value only on legacy per-claim receipts generated before the current revenue schema. On other receipts it is usually `None`, so check `if receipt.template:` rather than comparing it to an empty string.
 
 **Computed Properties**:
 
-* `total_posted_amount`: Total posted with the payment collection — the sum of payments and write-off adjustments across its active postings.
+* `total_posted_amount`: Total posted with the payment collection: the sum of payments and write-off adjustments across its active postings.
 * `copay_amount`: The amount posted as copays on the payment collection.
 
 ## See also
 
-* [Posting](/sdk/data-posting/) — `PaymentCollection`, `BulkPatientPosting`, and `PatientPosting`.
-* [Patient](/sdk/data-patient/#patient) — the starting point for a patient-scoped receipt walk.
-* [DocumentReference](/sdk/data-document-reference/) — the other model that serves a stored file through a presigned URL.
+* [Posting](/sdk/data-posting/): `PaymentCollection`, `BulkPatientPosting`, and `PatientPosting`.
+* [Patient](/sdk/data-patient/#patient): the starting point for a patient-scoped receipt walk.
+* [DocumentReference](/sdk/data-document-reference/): the other model that serves a stored file through a presigned URL.
