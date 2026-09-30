@@ -49,15 +49,11 @@ rfv = ReasonForVisit.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 text = rfv.narrative
 ```
 
-### Committed reasons for visit
+### Commit state
 
-The `committed` method returns records that have been committed and not entered in error:
+The Reason for Visit command has no commit step, so a recorded reason is readable as soon as it exists. Read the records directly, as shown above, rather than filtering for committed ones.
 
-```python?partial=true
-from canvas_sdk.v1.data import ReasonForVisit
-
-committed = ReasonForVisit.objects.committed()
-```
+{% include alert.html type="warning" content="<code>committed()</code> is inherited from the shared queryset for committable models, so it runs against <code>ReasonForVisit</code> without raising. It filters on <code>committer</code>, a field the Reason for Visit command has no step to populate, so it can return nothing at all. For the actions this command does support, see the command types table under <a href='/sdk/effects/#commands'>Commands</a> in Effects." %}
 
 ### Codings
 
@@ -81,7 +77,7 @@ codings = rfv.codings.all()
 | created          | DateTime                              | When the record was created.                                           |
 | modified         | DateTime                              | When the record was last modified.                                     |
 | originator       | [CanvasUser](/sdk/data-canvasuser)    | The user who originated the command.                                   |
-| committer        | [CanvasUser](/sdk/data-canvasuser)    | The user who committed the command, if it has been committed.          |
+| committer        | [CanvasUser](/sdk/data-canvasuser)    | The user who committed the record, if set. The Reason for Visit command has no commit step, so this field is not reliably populated. |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    | The user who entered the record in error, if it has been.              |
 | patient          | [Patient](/sdk/data-patient/#patient) | The patient the reason for visit was recorded for.                     |
 | note             | [Note](/sdk/data-note)                | The note it was recorded on.                                           |
