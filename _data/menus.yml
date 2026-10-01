@@ -523,6 +523,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Drive Navigator from your coding agent (MCP)"
+    url: /guides/navigator-mcp/
+    description: Ask the Canvas AI assistant from Claude Code or Cursor over MCP
+    uses:
+      - sdk
+
   - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
@@ -696,6 +702,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
@@ -1381,6 +1389,8 @@ releasenotes_product_updates:
     url: /product-updates/release-notes/
   - title: "FDB Drug Database"
     url: /product-updates/fdb-changelogs/
+  - title: "ICD Updates"
+    url: /product-updates/icd-updates/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"
