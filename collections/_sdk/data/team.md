@@ -109,6 +109,8 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 |------------|-----------------------------------------------------------------------|
 | id         | UUID                                                                  |
 | dbid       | Integer                                                               |
+| created    | DateTime                                                              |
+| modified   | DateTime                                                              |
 | system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value      | String                                                                |
 | use        | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)       |

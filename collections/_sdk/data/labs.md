@@ -538,6 +538,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
 | laborder_set              | [LabOrder](#laborder)[]                           |
+| action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
 
 ### LabOrderReason
 
@@ -571,6 +572,8 @@ Represents an individual test within a lab order. Each `LabTest` tracks the life
 |-----------------------------|-------------------------------------------|
 | id                          | UUID                                      |
 | dbid                        | Integer                                   |
+| created                     | DateTime                                  |
+| modified                    | DateTime                                  |
 | ontology_test_name          | String                                    |
 | ontology_test_code          | String                                    |
 | status                      | [LabTestOrderStatus](#labtestorderstatus) |

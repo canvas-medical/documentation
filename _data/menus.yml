@@ -523,6 +523,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Drive Navigator from your coding agent (MCP)"
+    url: /guides/navigator-mcp/
+    description: Ask the Canvas AI assistant from Claude Code or Cursor over MCP
+    uses:
+      - sdk
+
   - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
@@ -696,6 +702,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
@@ -1073,6 +1081,9 @@ data_module:
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
+  - title: "Clipboard"
+    url: /sdk/data-clipboard/
+    description: Free-text content staged on a note by a clipboard command.
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
@@ -1094,6 +1105,9 @@ data_module:
   - title: "CreateCodingGapEvent"
     url: /sdk/data-coding-gap-event/#createcodinggapevent
     description: A record of a coding gap being created.
+  - title: "CustomCommand"
+    url: /sdk/data-custom-command/
+    description: A plugin-defined read-only command recorded on a note (the custom command).
   - title: "DeferCodingGapEvent"
     url: /sdk/data-coding-gap-event/#defercodinggapevent
     description: A record of a coding gap being deferred.
@@ -1133,6 +1147,12 @@ data_module:
   - title: "FamilyHistory"
     url: /sdk/data-family-history/
     description: A patient's family medical history — conditions recorded for a relative.
+  - title: "Fax"
+    url: /sdk/data-fax/
+    description: Faxes sent or received through Canvas, and the action events that record a document's fax delivery status.
+  - title: "FaxStatusModel"
+    url: /sdk/data-fax/#faxstatusmodel
+    description: The status recorded when Canvas receives a fax.
   - title: "FollowUp"
     url: /sdk/data-follow-up/
     description: A requested follow-up (recall) recorded on a note via the follow_up command.
@@ -1148,6 +1168,9 @@ data_module:
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
+  - title: "ImagingOrderActionEvent"
+    url: /sdk/data-fax/#imagingorderactionevent
+    description: Faxes of an imaging order, with their delivery status.
   - title: "ImagingReportTemplate"
     url: /sdk/data-imaging-report-template/
     description: Templates used for imaging reports, defining fields and options.
@@ -1160,9 +1183,15 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
+  - title: "IntegrationTaskActionEvent"
+    url: /sdk/data-fax/#integrationtaskactionevent
+    description: Faxes of an integration task, with their delivery status.
   - title: "Invoice"
     url: /sdk/data-invoice/
     description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
+  - title: "LabOrderActionEvent"
+    url: /sdk/data-fax/#laborderactionevent
+    description: Faxes of a lab order, with their delivery status.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
@@ -1193,6 +1222,9 @@ data_module:
   - title: "Note"
     url: /sdk/data-note/
     description: Clinical notes on patient charts.
+  - title: "NoteActionEvent"
+    url: /sdk/data-fax/#noteactionevent
+    description: Faxes of a note, with their delivery status.
   - title: "Observation"
     url: /sdk/data-observation/
     description: Measurements and simple assertions made about a patient.
@@ -1256,18 +1288,27 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Receipt"
+    url: /sdk/data-receipt/
+    description: A Canvas-generated payment receipt for a payment collection.
   - title: "Reference"
     url: /sdk/data-reference/
     description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "ReferralActionEvent"
+    url: /sdk/data-fax/#referralactionevent
+    description: Faxes of a referral, with their delivery status.
   - title: "RefillRequest"
     url: /sdk/data-refill-request/
     description: An incoming request to refill a patient's medication and its responding prescriptions.
   - title: "RemoveAllergyEvent"
     url: /sdk/data-remove-allergy-event/
     description: A record of an allergy being removed via the remove_allergy command.
+  - title: "RemovePastMedicalHistoryEvent"
+    url: /sdk/data-remove-past-medical-history-event/
+    description: A record of a past medical history entry being removed via the remove_past_medical_history command.
   - title: "ResolveConditionEvent"
     url: /sdk/data-resolve-condition-event/
     description: A record of a condition being resolved via the resolve_condition command.
@@ -1351,6 +1392,8 @@ releasenotes_product_updates:
     url: /product-updates/release-notes/
   - title: "FDB Drug Database"
     url: /product-updates/fdb-changelogs/
+  - title: "ICD Updates"
+    url: /product-updates/icd-updates/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"

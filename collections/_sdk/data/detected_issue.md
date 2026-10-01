@@ -104,6 +104,8 @@ committed_detected_issues = DetectedIssue.objects.committed()
 | -------------- | -------------------------------------------------------- |
 | id             | UUID                                                     |
 | dbid           | Integer                                                  |
+| created        | DateTime                                                 |
+| modified       | DateTime                                                 |
 | system         | String                                                   |
 | version        | String                                                   |
 | code           | String                                                   |

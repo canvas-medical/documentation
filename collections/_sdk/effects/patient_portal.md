@@ -382,6 +382,46 @@ class ProviderFilter(BaseHandler):
         ]
 ```
 
+## Show a Modal After Login
+
+Show a patient a consent form, a tour, or an alert as soon as they log in to the portal. Respond to the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/events/#patient-portal-events) event and return a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with the `DEFAULT_MODAL` target. The portal opens the modal over the page the patient lands on.
+
+The event targets the patient. Its context carries `login_method`, which tells you how the patient logged in:
+
+| `login_method`   | How the patient logged in                                  |
+|------------------|------------------------------------------------------------|
+| `"credentials"`  | Entered their username and password on the login page, including after setting a password from a portal invite or password reset link |
+| `"access_token"` | Followed the sign-in link in a message, lab result, or statement notification |
+| `"registration"` | Completed self-registration                                |
+
+The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class WelcomeModal(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__POST_LOGIN)
+
+    def compute(self) -> list[Effect]:
+        # Only greet patients who just registered
+        if self.context.get("login_method") != "registration":
+            return []
+
+        return [
+            LaunchModalEffect(
+                content="<h2>Welcome to the portal</h2><p>Here's how to get started.</p>",
+                target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                title="Welcome",
+            ).apply()
+        ]
+```
+
+{% include alert.html type="warning" content="The portal's built-in consents dialog also opens after login for any <a href='https://help.canvasmedical.com/articles/8144965836-Managing-Consents'>Patient Consent Coding</a> marked <strong>Show in patient portal</strong> that the patient hasn't completed. If your plugin collects consent after login, clear <strong>Show in patient portal</strong> on those consent codings in Settings so the patient doesn't see both." %}
+
 ## Forms
 
 Forms let you dynamically display questionnaires to patients in the portal based on your own criteria, and commit each response to the patient's chart as a Questionnaire Command when they submit. Because your handler runs on every portal page load, return only the forms that should currently appear.
