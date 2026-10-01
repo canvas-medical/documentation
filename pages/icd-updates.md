@@ -1,17 +1,23 @@
 ---
-permalink: /product-updates/icd-10-cm-2027/
-title: "2027 ICD-10-CM Code Changes"
+permalink: /product-updates/icd-updates/
+title: "ICD Updates"
 layout: betas
 date: 2026-09-30
 ---
 
-The 2027 ICD-10-CM code set takes effect for dates of service on and after October 1, 2026. Canvas loads it into diagnosis search, which now includes 190 new codes, no longer includes 30 retired codes, and shows updated descriptions for 4 codes. The changes below come from the [CMS 2027 ICD-10-CM release](https://www.cms.gov/medicare/coding-billing/icd-10-codes).
+CMS releases a new ICD-10-CM code set every year, effective for dates of service on and after October 1. Canvas loads each one into diagnosis search. Each year's changes are listed below, newest first, from the [CMS ICD-10 release](https://www.cms.gov/medicare/coding-billing/icd-10-codes).
 
-- [190 new codes](#new-codes)
-- [30 retired codes](#retired-codes)
-- [4 updated descriptions](#updated-descriptions)
+- [2027](#icd-10-cm-2027)
 
-## New codes
+## 2027 {#icd-10-cm-2027}
+
+The 2027 ICD-10-CM code set takes effect for dates of service on and after October 1, 2026. Diagnosis search now includes 190 new codes, no longer includes 30 retired codes, and shows updated descriptions for 4 codes.
+
+- [190 new codes](#icd-10-cm-2027-new-codes)
+- [30 retired codes](#icd-10-cm-2027-retired-codes)
+- [4 updated descriptions](#icd-10-cm-2027-updated-descriptions)
+
+### New codes {#icd-10-cm-2027-new-codes}
 
 | Code | Description |
 | --- | --- |
@@ -206,7 +212,7 @@ The 2027 ICD-10-CM code set takes effect for dates of service on and after Octob
 | Z87.8909 | Personal history of unspecified gender transition |
 | Z87.893 | Personal history of gender detransition |
 
-## Retired codes
+### Retired codes {#icd-10-cm-2027-retired-codes}
 
 Diagnosis search for a date on or after October 1, 2026, such as a note date or claim service date, does not return retired codes. Search for an earlier date still returns them, and diagnoses already recorded with a retired code keep it.
 
@@ -243,7 +249,7 @@ Diagnosis search for a date on or after October 1, 2026, such as a note date or 
 | Z68.1 | Body mass index [BMI] 19.9 or less, adult |
 | Z87.890 | Personal history of sex reassignment |
 
-## Updated descriptions
+### Updated descriptions {#icd-10-cm-2027-updated-descriptions}
 
 | Code | Previous description | New description |
 | --- | --- | --- |
