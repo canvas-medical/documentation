@@ -1368,6 +1368,8 @@ releasenotes_product_updates:
     url: /product-updates/release-notes/
   - title: "FDB Drug Database"
     url: /product-updates/fdb-changelogs/
+  - title: "ICD-10-CM 2027"
+    url: /product-updates/icd-10-cm-2027/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"
