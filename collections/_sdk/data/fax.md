@@ -7,7 +7,10 @@ hidden: false
 
 ## Introduction
 
-When a user faxes a note, referral, imaging order, lab order, letter, or integration task, Canvas records an action event on that document and a `Fax` record for the transmission. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to. Faxes Canvas receives are `Fax` records too, with their [status history](#status-history-of-a-fax) in `FaxStatusModel`.
+Canvas creates a `Fax` record for every fax it sends or receives. `direction` tells the two apart.
+
+- **Sent faxes:** when a user faxes a note, referral, imaging order, lab order, letter, or integration task, Canvas also records an action event on that document. Plugins can read them to see whether a fax was delivered, who sent it, and which number it went to.
+- **Received faxes:** each one has a `Fax` record with the sender's number, the page count, and [whether it was received successfully](#faxes-canvas-receives).
 
 Each document type has its own action event model:
 
@@ -20,7 +23,7 @@ Each document type has its own action event model:
 | [IntegrationTask](/sdk/data-integration-task/#integrationtask) | [IntegrationTaskActionEvent](#integrationtaskactionevent) | `action_events` |
 | [Letter](/sdk/data-letter/) | [LetterActionEvent](/sdk/data-letter-action-event/) | `letter_action_events` |
 
-All six have the same [action event fields](#action-event-fields) and differ only in the document they point to. The models are read-only.
+All six have the same [action event fields](#action-event-fields) and differ only in the document they point to.
 
 ## Delivery status
 
@@ -64,20 +67,25 @@ for event in failed:
 
 ### Faxes sent by a plugin
 
-A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, attributed to the Canvas Bot user. To read its outcome, look it up by the note and the number it was sent to. Numbers are stored in E.164 format:
+A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
 
 ```python?partial=true
 from canvas_sdk.v1.data import NoteActionEvent
+
+CANVAS_BOT_STAFF_ID = "5eede137ecfe4124b8b773040e33be14"
 
 latest = (
     NoteActionEvent.objects.filter(
         note__id="89992c23-c298-4118-864a-26cb3e1ae822",
         fax__to_fax_number="+15555550100",
+        originator__staff__id=CANVAS_BOT_STAFF_ID,
     )
     .order_by("-created")
     .first()
 )
 ```
+
+Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugin's faxes from another plugin's. If more than one plugin faxes the same note to the same number, compare `created` with when your plugin returned the effect.
 
 ### From a fax
 
@@ -90,17 +98,15 @@ fax = Fax.objects.get(id="d2a6c1f4-7b3e-4c1a-9f5e-0a8b7c6d5e4f")
 note_events = fax.noteactionevents.all()
 ```
 
-### Status history of a fax
+### Faxes Canvas receives
 
-Canvas records a `FaxStatusModel` row when it receives a fax: `Received`, or `Error` if the fax couldn't be received. A fax's status rows are reachable through its `fax_statuses` accessor. Faxes sent from Canvas don't get status rows, so read a sent fax's outcome from `delivered_by_fax` on its action event.
+Filter on `direction` to read received faxes. `success` is `False` when the faxing service reported a problem receiving the fax, such as a call that dropped partway through. Canvas still creates an integration task with the pages that arrived, so the document may be incomplete.
 
 ```python?partial=true
-from canvas_sdk.v1.data import Fax, FaxDirection, FaxStatus
+from canvas_sdk.v1.data import Fax, FaxDirection
 
-failed_inbound = Fax.objects.filter(
-    direction=FaxDirection.INBOUND,
-    fax_statuses__status=FaxStatus.ERROR,
-)
+received = Fax.objects.filter(direction=FaxDirection.INBOUND).order_by("-date_utc")
+failed = received.filter(success=False)
 ```
 
 ## Attributes
@@ -114,14 +120,23 @@ failed_inbound = Fax.objects.filter(
 | created         | DateTime                      |                                                                               |
 | modified        | DateTime                      |                                                                               |
 | fax_id          | String                        | The faxing service's id for the fax                                           |
-| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`                    |
-| from_fax_number | String                        | The number the fax was sent from                                              |
-| date_utc        | DateTime                      | When the faxing service accepted the fax                                      |
+| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it |
+| from_fax_number | String                        | The number the fax was sent from. For a received fax, the sender's number     |
+| date_utc        | DateTime                      | When the faxing service accepted a sent fax, or finished receiving a received fax |
 | fax_pages       | Integer                       | The number of pages                                                           |
-| direction       | [FaxDirection](#faxdirection) |                                                                               |
-| success         | Boolean                       | Whether the faxing service accepted the fax. See [Delivery status](#delivery-status). |
+| direction       | [FaxDirection](#faxdirection) | Whether Canvas sent or received the fax                                       |
+| success         | Boolean                       | For a sent fax, whether the faxing service accepted it. See [Delivery status](#delivery-status). For a received fax, whether it was received successfully |
+| noteactionevents            | QuerySet[[NoteActionEvent](#noteactionevent)]                      | The note faxes sent as this fax                |
+| referralactionevents        | QuerySet[[ReferralActionEvent](#referralactionevent)]              | The referral faxes sent as this fax            |
+| imagingorderactionevents    | QuerySet[[ImagingOrderActionEvent](#imagingorderactionevent)]      | The imaging order faxes sent as this fax       |
+| laborderactionevents        | QuerySet[[LabOrderActionEvent](#laborderactionevent)]              | The lab order faxes sent as this fax           |
+| letteractionevents          | QuerySet[[LetterActionEvent](/sdk/data-letter-action-event/)]      | The letter faxes sent as this fax              |
+| integrationtaskactionevents | QuerySet[[IntegrationTaskActionEvent](#integrationtaskactionevent)] | The integration task faxes sent as this fax    |
+| fax_statuses                | QuerySet[[FaxStatusModel](#faxstatusmodel)]                        | The status recorded when this fax was received |
 
 ### FaxStatusModel
+
+Canvas records a status when it receives a fax: `Received`, or `Error` if the faxing service reported a problem receiving it. It's reachable through the fax's `fax_statuses` accessor and matches the fax's `success` value. Faxes sent from Canvas don't get one. Use [`success`](#fax) on the fax instead, which every received fax has.
 
 | Field Name | Type                    | Notes                         |
 |------------|-------------------------|-------------------------------|
