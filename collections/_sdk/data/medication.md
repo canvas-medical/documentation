@@ -115,6 +115,39 @@ for medication in medications:
     sig = medication.latest_sig
 ```
 
+<!-- source: discussion #1613 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Filtering to match the patient chart
+
+Filtering on `status == "active"` alone does not reproduce the chart's medication list. Per Canvas, the chart applies two exclusion layers before considering status:
+
+1. Exclude uncommitted and entered-in-error records — a medication must have a non-null `committer` (it was finalized) and a null `entered_in_error` (no one flagged it as erroneous).
+2. Filter by `status` — the chart defaults to `status == "active"`; users can toggle to inactive or all.
+
+The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the chart's "active medications" view:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+active_meds = Medication.objects.for_patient(patient_id).active()
+```
+
+For all visible medications (the chart's "All" filter — active plus inactive), use `committed()` without the status filter:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+all_visible_meds = Medication.objects.for_patient(patient_id).committed()
+```
+
+Per Canvas, the precedence of the relevant fields is: `entered_in_error` (highest — excludes from all chart views) → `committer` (must be set for the record to count as finalized) → `status` (only distinguishes active vs. inactive after the first two pass). `start_date` and `end_date` are informational only and are not used for filtering, so you should not derive your own normalized status from them. `Medication.objects` already excludes records with `deleted` set, so there is no need to filter on it.
+
+### How status is computed
+
+Per Canvas, `status` is set automatically from the medication's command history, not set directly by users. A medication is `inactive` if it has a committed, non-entered-in-error stop medication event; a committed, non-entered-in-error prescription cancellation; only refill denials; or no committed commands linked to it. Otherwise it is `active`. Canvas recomputes `status`, `start_date`, and `end_date` whenever a related command is committed, entered in error, or created (for example a medication statement, a prescription/refill/adjust, a stop event, a prescription cancellation, an eRx refill response, or a note date-of-service change).
+
+Per Canvas, one exception is the FHIR API: creating a `MedicationStatement` via FHIR writes `effectivePeriod.start`/`effectivePeriod.end` and the FHIR-derived status directly to the `Medication` record and bypasses this synchronization, so those values are preserved until a later action triggers recomputation from the command chain.
+
 ## Attributes
 
 ### Medication

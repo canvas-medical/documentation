@@ -707,7 +707,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_RESCHEDULED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is moved to a different time.</td></tr>
+    <tr><td colspan="2">Occurs when an appointment is rescheduled by cancelling it and creating a replacement, which is what the provider UI, the patient portal, and the Appointment effect's <code>reschedule()</code> all do. The target is the new appointment, and <code>APPOINTMENT_CREATED</code> fires for it as well. Moving an appointment by updating it in place instead, through the Appointment effect's <code>update()</code> or the FHIR API, fires only <code>APPOINTMENT_UPDATED</code>. See <a href='/sdk/data-appointment/#detecting-rescheduled-appointments'>Detecting rescheduled appointments</a>.</td></tr>
   </thead>
   <tbody>
     <tr>

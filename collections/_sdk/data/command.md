@@ -130,6 +130,86 @@ The following table shows the different command `schema_key` values with links t
 
 __PLEASE NOTE__ the Commands Module is under development and Canvas is working to migrate all commands to be available. This means that some commands are not able to emit events available in plugins, and historical commands created prior to their Commands Module availability may not be able to be queried using the data module. [This product updates table](/product-updates/commands-module/) shows the commands and their release statuses.  If a command in a chart is not available by querying the `Command` data model, the data is still available to be queried using corresponding data models (i.e. [Questionnaire](/sdk/data-questionnaire/), [ImagingOrder](/sdk/data-imaging/), etc.).
 
+## The anchor object
+
+Most commands write a record of their own when they are entered: a Diagnose command creates a `Condition`, a Prescribe command creates a `Prescription`, and so on. That record is the command's anchor object, and `anchor_object` returns it as an instance of the matching data model:
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
+anchor = command.anchor_object
+```
+
+`anchor_object_type` and `anchor_object_dbid` identify the record, and `anchor_object` looks it up for you. It returns `None` when the command has no anchor recorded.
+
+| `schema_key` | `anchor_object` returns |
+| --- | --- |
+| `addCondition` | `Condition` |
+| `adjustDiagnosis` | `Assessment` |
+| `adjustPrescription` | `Prescription` |
+| `adjustProtocol` | `ProtocolOverride` |
+| `allergy` | `AllergyIntolerance` |
+| `approveChange` | `PrescriptionChangeResponse` |
+| `approveRefill` | `Prescription` |
+| `assess` | `Assessment` |
+| `assessCodingGap` | `AssessCodingGapEvent` |
+| `cancelPrescription` | `CancelPrescription` |
+| `changeMedication` | `ChangeMedication` |
+| `chartSectionReview` | `ChartSectionReview` |
+| `clipboard` | `Clipboard` |
+| `closeGoal` | `UpdateGoal` |
+| `createCodingGap` | `CreateCodingGapEvent` |
+| `deferCodingGap` | `DeferCodingGapEvent` |
+| `denyChange` | `PrescriptionChangeResponse` |
+| `denyRefill` | `Prescription` |
+| `device` | `Device` |
+| `diagnose` | `Condition` |
+| `educationalMaterial` | `EducationalMaterial` |
+| `exam` | `Interview` |
+| `familyHistory` | `FamilyHistory` |
+| `followUp` | `FollowUp` |
+| `goal` | `Goal` |
+| `hpi` | `HistoryOfPresentIllness` |
+| `imagingOrder` | `ImagingOrder` |
+| `imagingReview` | `ImagingReview` |
+| `immunizationStatement` | `ImmunizationStatement` |
+| `immunize` | `Immunization` |
+| `instruct` | `Instruction` |
+| `labOrder` | `LabOrder` |
+| `labReview` | `LabReview` |
+| `medicalHistory` | `Condition` |
+| `medicationStatement` | `MedicationStatement` |
+| `perform` | `Procedure` |
+| `plan` | `Plan` |
+| `pocLabTest` | `LabReport` |
+| `prescribe` | `Prescription` |
+| `questionnaire` | `Interview` |
+| `reasonForVisit` | `ReasonForVisit` |
+| `refer` | `Referral` |
+| `reference` | `Reference` |
+| `referralReview` | `ReferralReview` |
+| `refill` | `Prescription` |
+| `removeAllergy` | `RemoveAllergyEvent` |
+| `removePastMedicalHistory` | `RemovePastMedicalHistoryEvent` |
+| `resolveCondition` | `ResolveConditionEvent` |
+| `ros` | `Interview` |
+| `snoozeProtocol` | `ProtocolOverride` |
+| `stopMedication` | `StopMedicationEvent` |
+| `structuredAssessment` | `Interview` |
+| `surgicalHistory` | `Condition` |
+| `task` | `NoteTask` |
+| `updateDiagnosis` | `Condition` |
+| `updateGoal` | `UpdateGoal` |
+| `validateCodingGap` | `ValidateCodingGapEvent` |
+| `visualExamFinding` | `VisualExamFinding` |
+| `vitals` | `VitalSignReading` |
+| Custom commands | `CustomCommand` |
+
+{% include alert.html type="warning" content="<code>anchor_object</code> is not supported for the <code>uncategorizedDocumentReview</code> and <code>privateNotes</code> commands. Their anchor records have no matching data model, so reading <code>anchor_object</code> on either raises <code>LookupError</code>. Use <code>anchor_object_type</code> and <code>anchor_object_dbid</code> to identify the record instead." %}
+
+If a command's anchor record has been deleted, `anchor_object` raises the data model's `DoesNotExist` rather than returning `None`.
+
 ## Attributes
 
 ### Command
