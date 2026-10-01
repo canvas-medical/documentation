@@ -8,7 +8,7 @@ sections:
         article: "a"
         description: >-
           A slot of time on a schedule that may be available for booking appointments.<br><br>[http://hl7.org/fhir/R4/slot.html](http://hl7.org/fhir/R4/slot.html)<br><br>
-          All slots are determined through our Google Calendar integration. Find out how to set this up [here](https://help.canvasmedical.com/articles/6105998178-managing-provider-availability).
+          All slots are determined through our Google Calendar integration. Find out how to set this up [here](https://help.canvasmedical.com/articles/6105998178-managing-provider-availability). When a provider connects their own Google account, busy events on the Google calendars they select also block those times. See [Syncing Provider Google Calendars](/guides/syncing-provider-google-calendars/).
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
