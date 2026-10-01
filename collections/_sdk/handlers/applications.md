@@ -226,7 +226,15 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer: Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), Docked Applications (a persistent pane pinned to a window edge), provider menu applications (an entry in the provider side menu), and panel applications (an icon in the panel bar). They are declared under `handlers` (not `applications`) and create no application record. The three surface-specific base classes set no scope or icon; the provider menu and panel launcher surfaces instead subclass `EmbeddedApplication` directly and set a Python `SCOPE` class attribute (`ApplicationScope.PROVIDER_MENU` or `ApplicationScope.PANEL`), with a panel application also setting `ICON_URL`. This `ApplicationScope.PROVIDER_MENU` handler scope is distinct from the `provider_menu_item` drawer scope in the [Application Scopes](#application-scopes) table above — these launcher attributes are Python class attributes on a handler, not manifest fields on a drawer application.
+**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. There are five kinds:
+
+- Note Applications, which add tabs inside a note
+- Scheduling Applications, which replace the built-in scheduling modal
+- Docked Applications, which pin a persistent pane to a window edge
+- Provider Menu Applications, which add an entry to the provider side menu
+- Panel Applications, which add an icon to the panel bar
+
+They are declared under `handlers` (not `applications`), take no `scope`, and create no application record. A `ProviderMenuApplication` is separate from a drawer application that uses the `provider_menu_item` scope, and a `PanelApplication` is separate from a drawer application shown with `show_in_panel`; each pair can coexist.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
