@@ -51,7 +51,7 @@ faxes = note.action_events.filter(event_type="FAXED").select_related("fax")
 
 `originator` is the [CanvasUser](/sdk/data-canvasuser/) who sent the fax, and `fax.to_fax_number` is the number it was sent to:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import ReferralActionEvent
 
 failed = ReferralActionEvent.objects.filter(delivered_by_fax=False).select_related(
@@ -66,7 +66,7 @@ for event in failed:
 
 A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, attributed to the Canvas Bot user. To read its outcome, look it up by the note and the number it was sent to. Numbers are stored in E.164 format:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import NoteActionEvent
 
 latest = (
@@ -83,7 +83,7 @@ latest = (
 
 A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import Fax
 
 fax = Fax.objects.get(id="d2a6c1f4-7b3e-4c1a-9f5e-0a8b7c6d5e4f")
@@ -94,7 +94,7 @@ note_events = fax.noteactionevents.all()
 
 Canvas records a `FaxStatusModel` row when it receives a fax: `Received`, or `Error` if the fax couldn't be received. A fax's status rows are reachable through its `fax_statuses` accessor. Faxes sent from Canvas don't get status rows, so read a sent fax's outcome from `delivered_by_fax` on its action event.
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import Fax, FaxDirection, FaxStatus
 
 failed_inbound = Fax.objects.filter(
