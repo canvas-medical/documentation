@@ -48,20 +48,41 @@ for alert in active_alerts:
 
 A claim is created for an appointment or note only when the note's type is billable. A note type with `is_billable` set to `False`, such as the built-in Chart review type, produces a note and no claim, so check the flag rather than assuming every appointment produces a claim.
 
-The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute:
+The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, use the note's `claims` reverse relation; a note has at most one claim, so take it with `first()`:
 
 ```python
 from canvas_sdk.v1.data.note import Note
 
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
 expects_claim = note.note_type_version.is_billable
+claim = note.claims.first()
 ```
 
 <!-- source: discussion #1642 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
-## Computing patient-allocated charges
+## Claim balances and totals
 
-To determine how much has been allocated/charged to the patient on a claim, add the current patient balance to what the patient has already paid:
+The money on a claim comes from two stored balance fields plus a set of computed properties layered over the claim's line items and postings.
+
+`patient_balance` and `aggregate_coverage_balance` are stored on the claim and kept in sync by signals as coverage postings transfer money to the patient, as coverage is added or removed, and as the patient makes payments. Reading them needs no aggregation on your part, and they stay correct when coverage is added after a note is signed.
+
+The rest are computed on access, each over a different slice of the claim:
+
+| Property | What it adds up |
+| --- | --- |
+| `total_charges` | `charge` across the claim's active line items, with copay and unlinked items excluded |
+| `total_paid` | `paid_amount` across every active posting on the claim, coverage and patient alike |
+| `total_payer_paid` | `paid_amount` across the active postings of the claim's active coverages |
+| `total_patient_paid` | `paid_amount` across the active postings on the claim's patient record |
+| `total_adjusted` | `contractual_adjusted_amount` plus `transferred_amount` across every active posting |
+| `balance` | `aggregate_coverage_balance` plus `patient_balance`, the coverage side and the patient side together |
+
+A posting counts as active when it has not been entered in error. Because `total_paid` spans both sides of the claim, `total_payer_paid` and `total_patient_paid` are that figure split by who paid it.
+
+### Computing patient-allocated charges
+
+To find how much has been allocated to the patient on a claim, add what the patient still owes to what they have already paid:
 
 ```python
 from canvas_sdk.v1.data.claim import Claim
@@ -71,10 +92,7 @@ claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
 patient_allocated = claim.patient_balance + claim.total_patient_paid
 ```
 
-- `patient_balance` is a database field holding the amount still owed by the patient. It is kept in sync via signals as coverage postings transfer money to the patient, as coverage is added or removed, and as the patient makes payments — so it reflects the current allocation without requiring you to aggregate line item transfers.
-- `total_patient_paid` is the sum of `paid_amount` across the patient's active postings.
-
-Because `patient_balance` is maintained directly (including when coverage is added after a note is signed, in which case it is auto-adjusted), this sum is correct for both self-pay and insured claims, including the edge case where a self-pay claim has no postings at all. See also the related `Claim` computed properties documented in the [Attributes](#claim) section (`total_charges`, `total_paid`, `total_payer_paid`, `total_adjusted`, `balance`, and `aggregate_coverage_balance`).
+This holds for self-pay and insured claims alike, including a self-pay claim carrying no postings at all.
 
 <!-- source: discussion #1407 -->
 ## Detecting claim changes in the read replica
