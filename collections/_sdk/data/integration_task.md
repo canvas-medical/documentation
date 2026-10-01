@@ -112,6 +112,7 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | patient          | [Patient](/sdk/data-patient/#patient)                          |                                      |
 | service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |                                      |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |                                      |
+| action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)[] | Faxes of this task, with their [delivery status](/sdk/data-fax/#delivery-status) |
 | is_fax           | Boolean (computed)                                             | Whether this is a fax task           |
 | is_pending       | Boolean (computed)                                             | Whether this task is pending review  |
 | is_processed     | Boolean (computed)                                             | Whether this task has been processed |
