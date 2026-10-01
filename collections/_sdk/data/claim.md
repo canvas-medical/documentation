@@ -58,54 +58,51 @@ active_claims = Claim.objects.active()
 
 Represents a complete healthcare claim. Claim belongs to a Note and has a one-to-one relationship with a ClaimPatient.
 
-| Field Name                 | Type                                        |
-| -------------------------- | ------------------------------------------- |
-| id                         | UUID                                        |
-| dbid                       | Integer                                     |
-| note                       | [Note](/sdk/data-note/)                     |
-| installment_plan           | [InstallmentPlan](#installmentplan)         |
-| current_queue              | [ClaimQueue](#claimqueue)                   |
-| current_coverage           | [ClaimCoverage](#claimcoverage)             |
-| accept_assign              | Boolean                                     |
-| auto_accident              | Boolean                                     |
-| auto_accident_state        | String                                      |
-| employment_related         | Boolean                                     |
-| other_accident             | Boolean                                     |
-| accident_code              | String                                      |
-| illness_date               | Date                                        |
-| remote_batch_id            | String                                      |
-| remote_file_id             | String                                      |
-| prior_auth                 | String                                      |
-| narrative                  | String                                      |
-| account_number             | String                                      |
-| snoozed_until              | Date                                        |
-| patient_balance            | Decimal                                     |
-| aggregate_coverage_balance | Decimal                                     |
-| created                    | DateTime                                    |
-| modified                   | DateTime                                    |
-| diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[] |
-| comments                   | [ClaimComment](#claimcomment)[]             |
-| line_items                 | [ClaimLineItem](#claimlineitem)[]           |
-| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]    |
-| metadata                   | [ClaimMetadata](#claimmetadata)[]           |
-| banner_alerts              | [ClaimBannerAlert](#claimbanneralert)[]     |
-| provider                   | [ClaimProvider](#claimprovider)             |
-| incident_to                | Boolean                                     |
-| supervising_provider       | [ClaimSupervisingProvider](#claimsupervisingprovider) |
-| latest_invoice             | [Invoice](/sdk/data-invoice/#invoice)       |
-| patient                    | [ClaimPatient](#claimpatient)               |
-| coverages                  | [ClaimCoverage](#claimcoverage)[]           |
-| submissions                | [ClaimSubmission](#claimsubmission)[]       |
-| postings                   | [BasePosting](/sdk/data-posting/#baseposting)[] |
-
-**Computed Properties**:
-
-- `total_charges`: Total charges for active line items
-- `total_paid`: Sum of paid amounts from postings
-- `total_adjusted`: Sum of adjustments and transfers
-- `balance`: Remaining balance (coverage + patient)
-- `total_patient_paid`: Paid amount by the patient
-- `total_payer_paid`: Paid amount by coverages
+| Field Name                 | Type                                                  | Description                               |
+|----------------------------|-------------------------------------------------------|-------------------------------------------|
+| id                         | UUID                                                  |                                           |
+| dbid                       | Integer                                               |                                           |
+| note                       | [Note](/sdk/data-note/)                               |                                           |
+| installment_plan           | [InstallmentPlan](#installmentplan)                   |                                           |
+| current_queue              | [ClaimQueue](#claimqueue)                             |                                           |
+| current_coverage           | [ClaimCoverage](#claimcoverage)                       |                                           |
+| accept_assign              | Boolean                                               |                                           |
+| auto_accident              | Boolean                                               |                                           |
+| auto_accident_state        | String                                                |                                           |
+| employment_related         | Boolean                                               |                                           |
+| other_accident             | Boolean                                               |                                           |
+| accident_code              | String                                                |                                           |
+| illness_date               | Date                                                  |                                           |
+| remote_batch_id            | String                                                |                                           |
+| remote_file_id             | String                                                |                                           |
+| prior_auth                 | String                                                |                                           |
+| narrative                  | String                                                |                                           |
+| account_number             | String                                                |                                           |
+| snoozed_until              | Date                                                  |                                           |
+| patient_balance            | Decimal                                               |                                           |
+| aggregate_coverage_balance | Decimal                                               |                                           |
+| created                    | DateTime                                              |                                           |
+| modified                   | DateTime                                              |                                           |
+| diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |
+| comments                   | [ClaimComment](#claimcomment)[]                       |                                           |
+| line_items                 | [ClaimLineItem](#claimlineitem)[]                     |                                           |
+| labels                     | [TaskLabel](/sdk/data-task/#tasklabel)[]              |                                           |
+| metadata                   | [ClaimMetadata](#claimmetadata)[]                     |                                           |
+| banner_alerts              | [ClaimBannerAlert](#claimbanneralert)[]               |                                           |
+| provider                   | [ClaimProvider](#claimprovider)                       |                                           |
+| incident_to                | Boolean                                               |                                           |
+| supervising_provider       | [ClaimSupervisingProvider](#claimsupervisingprovider) |                                           |
+| latest_invoice             | [Invoice](/sdk/data-invoice/#invoice)                 |                                           |
+| patient                    | [ClaimPatient](#claimpatient)                         |                                           |
+| coverages                  | [ClaimCoverage](#claimcoverage)[]                     |                                           |
+| submissions                | [ClaimSubmission](#claimsubmission)[]                 |                                           |
+| postings                   | [BasePosting](/sdk/data-posting/#baseposting)[]       |                                           |
+| total_charges              | Decimal (computed)                                    | Total charges for active line items       |
+| total_paid                 | Decimal (computed)                                    | Sum of paid amounts from postings         |
+| total_adjusted             | Decimal (computed)                                    | Sum of adjustments and transfers          |
+| balance                    | Decimal (computed)                                    | Remaining balance (coverage plus patient) |
+| total_patient_paid         | Decimal (computed)                                    | Amount paid by the patient                |
+| total_payer_paid           | Decimal (computed)                                    | Amount paid by coverages                  |
 
 **Helpful Methods**:
 
@@ -160,6 +157,9 @@ Represents individual billed procedures or services tied to a claim.
 | family_planning   | [FamilyPlanningOptions](#familyplanningoptions)             |
 | created           | DateTime                                                    |
 | modified          | DateTime                                                    |
+| newlineitempayments    | QuerySet[[NewLineItemPayment](/sdk/data-posting/#newlineitempayment)]       |
+| newlineitemadjustments | QuerySet[[NewLineItemAdjustment](/sdk/data-posting/#newlineitemadjustment)] |
+| lineitemtransfers      | QuerySet[[LineItemTransfer](/sdk/data-posting/#lineitemtransfer)]           |
 
 ### ClaimLineItemDiagnosisCode
 

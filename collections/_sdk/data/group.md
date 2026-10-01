@@ -38,27 +38,22 @@ For a `Group` whose content object is a `Team`, `team` returns the linked [Team]
 
 ### Group
 
-| Field Name   | Type                                               |
-| ------------ | -------------------------------------------------- |
-| id           | UUID                                               |
-| dbid         | Integer                                            |
-| created      | DateTime                                           |
-| modified     | DateTime                                           |
-| content_type | [ContentType](/sdk/data-content-type/#contenttype) |
-| object_id    | Integer                                            |
+| Field Name    | Type                                                                       | Description                                                                                         |
+|---------------|----------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| id            | UUID                                                                       |                                                                                                     |
+| dbid          | Integer                                                                    |                                                                                                     |
+| created       | DateTime                                                                   |                                                                                                     |
+| modified      | DateTime                                                                   |                                                                                                     |
+| content_type  | [ContentType](/sdk/data-content-type/#contenttype)                         |                                                                                                     |
+| object_id     | Integer                                                                    |                                                                                                     |
+| team          | [Team](/sdk/data-team/#team) \| `None` (computed)                          | The `Team` this group points at, or `None` when its content object is not a `Team`.                 |
+| patient_group | [PatientGroup](/sdk/data-patient-group/#patientgroup) \| `None` (computed) | The `PatientGroup` this group points at, or `None` when its content object is not a `PatientGroup`. |
 
 The `object_id` field holds the target record's `dbid` — its internal integer identifier — rather than its `id` UUID.
 
-Only two kinds of record get a `Group`, so `content_type.model` is always one of these two values. Read it to tell which one a `Group` points at, or use the typed properties below, which do the same check for you.
+Only two kinds of record get a `Group`, so `content_type.model` is always one of these two values. Read it to tell which one a `Group` points at, or read `team` or `patient_group` in the table below, which do the same check for you.
 
 | `content_type.model` | Content object                                        |
 | -------------------- | ----------------------------------------------------- |
 | `team`               | [Team](/sdk/data-team/#team)                          |
 | `patientgroup`       | [PatientGroup](/sdk/data-patient-group/#patientgroup) |
-
-## Properties
-
-| Name          | Type                                                            | Description                                                                                          |
-| ------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| team          | [Team](/sdk/data-team/#team) \| `None`                          | The `Team` this group points at, or `None` when its content object is not a `Team`.                 |
-| patient_group | [PatientGroup](/sdk/data-patient-group/#patientgroup) \| `None` | The `PatientGroup` this group points at, or `None` when its content object is not a `PatientGroup`. |
