@@ -362,6 +362,12 @@ Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place
 
 Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
 
+### The Identity verification item
+
+The provider menu also carries a native **Identity verification** item, which opens the page where prescribers [verify their identity with ID.me](/guides/prescriber-identity-verification/) for Surescripts enrollment. Canvas shows the item only on instances where ID.me identity verification is turned on. That condition also applies when Canvas falls back to rendering every native item.
+
+`ProviderMenuConfiguration.Items` has no member for this item, so any allow-list your plugin emits hides it. If prescribers on your instance need to verify, give them another route to the page at `https://<instance>.canvasmedical.com/api/IdMe/dashboard/`.
+
 <br/>
 <br/>
 

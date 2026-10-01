@@ -684,6 +684,10 @@ guides_list:
     url: /guides/roles-and-permissions/
     description: How authorization is evaluated, the default roles, and how to extend them
 
+  - title: "Verifying Prescriber Identity with ID.me"
+    url: /guides/prescriber-identity-verification/
+    description: Let prescribers complete the identity verification Surescripts enrollment requires, then review what Canvas records
+
 guides_templates:
   - title: "Behavioral Health"
     url: /guides/bh/
