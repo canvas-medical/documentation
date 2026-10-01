@@ -5533,6 +5533,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5558,6 +5562,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5583,6 +5591,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5608,6 +5620,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5654,6 +5670,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5679,6 +5699,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5704,6 +5728,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5729,6 +5757,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5754,6 +5786,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5779,6 +5815,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5804,6 +5844,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5829,6 +5873,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5854,6 +5902,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5879,6 +5931,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5904,6 +5960,10 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
