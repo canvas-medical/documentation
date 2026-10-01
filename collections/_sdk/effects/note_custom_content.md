@@ -9,6 +9,8 @@ The `NoteCustomContent` effect adds a custom content block to a clinical note. U
 
 Return this effect in response to the `NOTE__GET_CUSTOM_CONTENT` event. If no handler returns one, the note renders without custom content.
 
+Custom content is part of the updated note layout, which Canvas turns on per instance. On an instance without the updated layout, Canvas doesn't fire `NOTE__GET_CUSTOM_CONTENT`, and notes render without custom content.
+
 ---
 
 ## How it works
