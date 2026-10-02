@@ -28324,8 +28324,56 @@ For more information on handling these events, see <a href="/sdk/handlers-action
 
 <table>
   <thead>
+    <tr><th colspan="3">SHOW_CLAIM_QUEUE_HEADER_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when a claim queue is loaded in Revenue, for buttons at the top of the queue</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>claim_queue_id</pre></td>
+      <td><pre><a href='/sdk/data-claim/#claimqueue'>ClaimQueue</a></pre></td>
+      <td><pre>
+  "queue":
+    "id": str
+    "name": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">SHOW_CLAIM_DETAILS_BUTTON</th></tr>
+    <tr><td colspan="3">Occurs when a claim's details page is loaded in Revenue</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>claim_id</pre></td>
+      <td><pre><a href='/sdk/data-claim/'>Claim</a></pre></td>
+      <td><pre>
+  "claim_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ACTION_BUTTON_CLICKED</th></tr>
-    <tr><td colspan="2">Occurs when an action button is clicked</td></tr>
+    <tr><td colspan="2">Occurs when an action button is clicked. The target and context depend on the button's location.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -28333,12 +28381,34 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>patient_id</pre></td>
+      <td><pre>patient_id</pre>Note, patient header, and chart summary locations</td>
       <td><pre>
   "key": action_button_key
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+    <tr>
+      <td><pre>claim_queue_id</pre><code>CLAIM_QUEUE_HEADER</code>, target type <a href='/sdk/data-claim/#claimqueue'>ClaimQueue</a></td>
+      <td><pre>
+  "key": action_button_key
+  "queue":
+    "id": str
+    "name": str
+  "claim_ids": list[str]
+  "claim_count": int
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre><code>claim_ids</code> lists the claims the queue shows with its current filters, oldest first and capped at 5,000. <code>claim_count</code> is the total number of matching claims.</td>
+    </tr>
+    <tr>
+      <td><pre>claim_id</pre><code>CLAIM_DETAILS</code>, target type <a href='/sdk/data-claim/'>Claim</a></td>
+      <td><pre>
+  "key": action_button_key
+  "claim_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
     </tr>
   </tbody>
 </table>
