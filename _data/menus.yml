@@ -593,6 +593,12 @@ guides_list:
       - sdk
       - fhir_api
 
+  - title: "Syncing Provider Google Calendars"
+    url: /guides/syncing-provider-google-calendars/
+    description: What syncs between Canvas and each provider's Google Calendar
+    uses:
+      - fhir_api
+
   - title: "Submit a Full Vital Panel via FHIR"
     url: /guides/submit-vitals-via-fhir/
     description: Learn how to document a full vitals panel via FHIR
