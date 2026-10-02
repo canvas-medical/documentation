@@ -629,7 +629,7 @@ allergy = AllergyCommand(
 Records an assessment of a patient's condition. Name the condition in one of two ways:
 
 - `condition_id` assesses a specific condition already on the patient's chart.
-- `icd10_code` assesses a condition by its ICD-10 code, so the condition doesn't have to be charted first. If the patient already has a charted condition with that code, the assessment uses it. Otherwise, a new condition is recorded on the problem list.
+- `icd10_code` assesses a condition by its ICD-10 code, so the condition doesn't have to be charted first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
 
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
@@ -639,7 +639,7 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 |:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
-| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began.                                  |
+| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
