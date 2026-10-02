@@ -108,6 +108,24 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## Review assignment
+
+An imaging report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import ImagingReport, Staff
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the imaging report is assigned to
+reviewers = imaging_report.reviewers.all()
+team = imaging_report.team
+
+# Every imaging report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
+```
+
 ## The document reference
 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
@@ -187,6 +205,10 @@ document = DocumentReference.objects.filter(
 | junked             | Boolean                                                               |                                                       |
 | requires_signature | Boolean                                                               |                                                       |
 | assigned_date      | DateTime                                                              |                                                       |
+| assigned_by        | [CanvasUser](/sdk/data-canvasuser)                                    |                                                       |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |                                                       |
+| team               | [Team](/sdk/data-team/#team)                                          |                                                       |
+| team_assigned_date | DateTime                                                              |                                                       |
 | patient            | [Patient](/sdk/data-patient/#patient)                                 |                                                       |
 | order              | [ImagingOrder](#imagingorder)                                         |                                                       |
 | source             | [ImagingReportSource](#imagingreportsource)                           |                                                       |

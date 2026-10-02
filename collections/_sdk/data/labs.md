@@ -336,6 +336,24 @@ for report in unreviewed_reports:
     print(f"Report from {report.date_performed} - {report.values.count()} values")
 ```
 
+#### Finding Lab Reports Assigned to a Reviewer
+
+A lab report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import LabReport, Staff
+
+lab_report = LabReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the lab report is assigned to
+reviewers = lab_report.reviewers.all()
+team = lab_report.team
+
+# Every lab report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = LabReport.objects.filter(reviewers__id=staff.id)
+```
+
 ### Filtering Lab Results by Abnormal Values
 
 A common use case is to identify abnormal lab values that may require clinical attention:
@@ -408,6 +426,10 @@ url = document.document_url if document else None
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |
+| assigned_by          | [CanvasUser](/sdk/data-canvasuser)    |
+| reviewers            | [Staff](/sdk/data-staff/#staff)[]     |
+| team                 | [Team](/sdk/data-team/#team)          |
+| team_assigned_date   | DateTime                              |
 | patient              | [Patient](/sdk/data-patient/#patient) |
 | transmission_type    | [TransmissionType](#transmissiontype) |
 | for_test_only        | Boolean                               |

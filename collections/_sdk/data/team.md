@@ -102,6 +102,9 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 | integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
 | uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[] |
 | referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[] |
+| labreport_set | [LabReport](/sdk/data-labs/#labreport)[] |
+| imagingreport_set | [ImagingReport](/sdk/data-imaging/#imagingreport)[] |
+| patientadministrativedocument_set | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument)[] |
 
 ### TeamContactPoint
 

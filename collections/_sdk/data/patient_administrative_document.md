@@ -52,6 +52,24 @@ document = PatientAdministrativeDocument.objects.exclude(document="").first()
 url = document.document_url
 ```
 
+## Review assignment
+
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import PatientAdministrativeDocument, Staff
+
+document = PatientAdministrativeDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the document is assigned to
+reviewers = document.reviewers.all()
+team = document.team
+
+# Every document assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = PatientAdministrativeDocument.objects.filter(reviewers__id=staff.id)
+```
+
 ## The document reference
 
 Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the document's coding, category and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
@@ -119,6 +137,7 @@ Clinical document types are stored as [UncategorizedClinicalDocument](/sdk/data-
 | originator              | [CanvasUser](/sdk/data-canvasuser)                                         |                                                |
 | assigned_by             | [CanvasUser](/sdk/data-canvasuser)                                         |                                                |
 | team                    | [Team](/sdk/data-team/#team)                                               |                                                |
+| reviewers               | [Staff](/sdk/data-staff/#staff)[]                                          |                                                |
 | integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |                                                |
 | code                    | [DocumentCoding](#documentcoding)                                          |                                                |
 | name                    | String                                                                     |                                                |
