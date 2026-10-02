@@ -2,9 +2,25 @@
 title: "Quickstart"
 layout: apipage
 ---
+<!-- source: discussion #1355 -->
+<!-- source: discussion #784 -->
+## Base URL and finding your sandbox name
+
+FHIR API requests must be made against the `fumage-` subdomain for your instance, using the pattern `https://fumage-<sandbox-name>.canvasmedical.com`. The `<sandbox-name>` is the same name that appears in the URL when you log in to your Canvas instance (e.g. for `https://example-dev.canvasmedical.com` the sandbox name is `example-dev`, and the FHIR base URL is `https://fumage-example-dev.canvasmedical.com`).
+
+The regular instance subdomain (`https://<sandbox-name>.canvasmedical.com`) does not serve FHIR endpoints — requests there return HTML 404 pages rather than FHIR responses. The FHIR API is available on development environments as well, with no additional provisioning required beyond OAuth client credentials.
+
+If you do not have your own instance yet, hobbyists and developers can use the shared `xpc-dev` developer sandbox, which has a FHIR base URL of `https://fumage-xpc-dev.canvasmedical.com`.
+
 ## Authentication
 
 To access our FHIR API, you will need to request an access token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up. Access tokens expire 10 hours after they are created. You can and should reuse access tokens to reduce the number of tokens that are valid at any given time.
+
+<!-- source: discussion #1566 -->
+{% include alert.html type="info" content="The OAuth token endpoint (<code>/auth/token/</code>) lives on the regular instance host, not the fumage- FHIR host. Request tokens from <code>https://&lt;sandbox-name&gt;.canvasmedical.com/auth/token/</code> — requesting them against the fumage- subdomain returns a <code>Not Found</code> error. The legacy Notes API (<code>/core/api/notes/v1/Note</code>) is also served from the regular instance host, not the fumage- host. That Notes API is deprecated; use the Plugin SDK (for example the <a href='/sdk/effect-notes/'>Note effect</a>) to create and manage notes instead." %}
+
+<!-- source: discussion #1532 -->
+{% include alert.html type="info" content="There are currently no fixed rate limits on the FHIR API or on SDK SimpleAPI endpoints. However, because FHIR requests are served by your underlying Canvas instance, very high-volume polling can affect the stability of that instance. Caching access tokens and using webhooks instead of polling are recommended to keep request volume manageable." %}
 
 ## Create a patient
 

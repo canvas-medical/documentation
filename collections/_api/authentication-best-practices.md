@@ -135,3 +135,15 @@ if __name__ == '__main__':
 - **Safely stored access tokens can and should be reused!**<br>
 - Additional reading:
     - [Token Best Practices from Auth0](https://auth0.com/docs/secure/tokens/token-best-practices)
+
+<!-- source: discussion #942 -->
+### Don't expose bearer tokens in front-end code
+
+When building patient-portal pages or other browser-based experiences, do not pass an access token into client-side JavaScript and make FHIR API calls directly from the browser. Doing so exposes the bearer token to anyone who can view the page source or network traffic.
+
+Instead, keep the token server-side and proxy the request through a back-end endpoint. With the Canvas Plugin SDK you can define your own [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint that runs inside the platform, accepts the form data from the front end, and performs the privileged operation server-side — so the bearer token is never sent to the browser.
+
+<!-- source: discussion #945 -->
+### Resolving `access_denied` on the authorization code flow
+
+If the OAuth 2.0 authorization code flow returns `?error=access_denied` to your redirect URI even though login and scope selection succeed, the authorization server may be looking for a launch context (such as a patient) and not finding one. When no launch context exists, append `&launch=e30K` to your call to `/auth/authorize`. `e30K` is the base64 encoding of `{}` (an empty JSON object), which supplies an empty launch context and avoids the `access_denied` error.

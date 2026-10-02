@@ -46,6 +46,10 @@ sections:
             5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
             6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
               
+        # REVIEW: clinical-accuracy sign-off required
+        # source: discussion #538
+        additional_information: |-
+          - **LOINC codes on lab orders:** Canvas lab orders are placed with a lab-specific identifier or a CPT code, not a LOINC code, so an ordered lab test generally carries no LOINC code at order time. Treat the lab vendor as the source of truth for the panel-level LOINC code. A generic LOINC code for a laboratory result exists and works, but a more specific code from the lab vendor is preferable, because what is ordered can differ slightly from what the lab performs.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
