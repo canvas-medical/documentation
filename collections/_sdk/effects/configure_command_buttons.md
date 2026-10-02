@@ -194,4 +194,4 @@ The iframe listens for `NOTE_TAB_CHANGE` messages from Canvas and calls the appr
 </script>
 ```
 
-Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` in your `CANVAS_MANIFEST.json`.
+Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers).

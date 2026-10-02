@@ -481,7 +481,7 @@ For creating custom commands with HTML-rendered content that can be inserted int
 
 Custom commands are different from standard commands:
 - They allow you to display read-only HTML content in the patient chart
-- They must be configured in your plugin's manifest before use
+- They must be configured in your plugin's [manifest](/sdk/canvas_manifest/#commands) before use
 - They support both display and print versions of content
 - They are designed for displaying formatted data, not for capturing user input
 

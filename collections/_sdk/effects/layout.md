@@ -567,9 +567,9 @@ class PortalWidgetHandler:
 
 ## Additional Configuration
 
-To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the `CANVAS_MANIFEST.json` file of your plugin.
+To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#url-permissions) file of your plugin.
 
-- **Allowing URLs**: URLs specified in the **url** property must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
+- **Allowing URLs**: URLs specified in the **url** property must be added to the [`url_permissions`](/sdk/canvas_manifest/#url-permissions) section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
 - **Allowing custom scripts**: If you need to load scripts from an external source, the URL for the script must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` and `'SCRIPTS'` must be in the permissions list.
 - **Requesting microphone access**: If the site in your modal or widget needs microphone access, `'MICROPHONE'` must be in the URL's permissions list.
 - **Requesting camera access**: If the site in your modal or widget needs camera access, `'CAMERA'` must be in the URL's permissions list.

@@ -16,7 +16,7 @@ To implement a custom section you need two things:
 1. A `PatientChartSummaryConfiguration` handler that includes the section in the layout.
 2. A `PatientChartSummaryCustomSectionHandler` subclass that returns the section content.
 
-Both handlers must be registered in `CANVAS_MANIFEST.json`.
+Both handlers must be registered in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers).
 
 ## Creating a Custom Section Handler
 

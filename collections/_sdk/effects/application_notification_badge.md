@@ -37,7 +37,7 @@ application's identifier, optionally `.filter(...)` to target patients, then cal
 
 | Method / Attribute       |          | Type        | Description                                                                                                                                                |
 | ------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in `CANVAS_MANIFEST.json` — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
+| `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
 | `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
 | `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
 | `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys the update applies to: their charts, and their own patient portal.                               |
