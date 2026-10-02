@@ -43,6 +43,57 @@ for alert in active_alerts:
     print(f"[{alert.intent}] {alert.narrative}")
 ```
 
+<!-- source: discussion #1274 -->
+## When a claim is created
+
+A claim is created for an appointment or note only when the note's type is billable. A note type with `is_billable` set to `False`, such as the built-in Chart review type, produces a note and no claim, so check the flag rather than assuming every appointment produces a claim.
+
+The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, call the note's `get_claim()` method, which returns the note's most recent claim, or `None` when it has none:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+expects_claim = note.note_type_version.is_billable
+claim = note.get_claim()
+```
+
+<!-- source: discussion #1642 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Claim balances and totals
+
+The money on a claim comes from two stored balance fields plus a set of computed properties layered over the claim's line items and postings.
+
+`patient_balance` and `aggregate_coverage_balance` are stored on the claim and kept in sync by signals as coverage postings transfer money to the patient, as coverage is added or removed, and as the patient makes payments. Reading them needs no aggregation on your part, and they stay correct when coverage is added after a note is signed.
+
+The rest are computed on access, each over a different slice of the claim:
+
+| Property | What it adds up |
+| --- | --- |
+| `total_charges` | `charge` across the claim's active line items, with copay and unlinked items excluded |
+| `total_paid` | `paid_amount` across every active posting on the claim, coverage and patient alike |
+| `total_payer_paid` | `paid_amount` across the active postings of the claim's active coverages |
+| `total_patient_paid` | `paid_amount` across the active postings on the claim's patient record |
+| `total_adjusted` | `contractual_adjusted_amount` plus `transferred_amount` across every active posting |
+| `balance` | `aggregate_coverage_balance` plus `patient_balance`, the coverage side and the patient side together |
+
+A posting counts as active when it has not been entered in error. Because `total_paid` spans both sides of the claim, `total_payer_paid` and `total_patient_paid` are that figure split by who paid it.
+
+### Computing patient-allocated charges
+
+To find how much has been allocated to the patient on a claim, add what the patient still owes to what they have already paid:
+
+```python
+from canvas_sdk.v1.data.claim import Claim
+
+claim = Claim.objects.get(id="9d2e0f58-338b-11ec-8d3d-0242ac130003")
+
+patient_allocated = claim.patient_balance + claim.total_patient_paid
+```
+
+This holds for self-pay and insured claims alike, including a self-pay claim carrying no postings at all.
+
 ## Filtering
 
 ```python

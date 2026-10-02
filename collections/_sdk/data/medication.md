@@ -115,6 +115,45 @@ for medication in medications:
     sig = medication.latest_sig
 ```
 
+<!-- source: discussion #1613 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Filtering to match the Patient Summary
+
+The Medications list in the Patient Summary section of the chart is not reproduced by filtering on `status == "active"` alone. Per Canvas, that list applies two exclusion layers before considering status:
+
+1. Exclude uncommitted and entered-in-error records — a medication must have a non-null `committer` (it was finalized) and a null `entered_in_error` (no one flagged it as erroneous).
+2. Filter by `status` — the list defaults to `status == "active"`; users can toggle to inactive or all.
+
+The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the Patient Summary's active medications:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+active_meds = Medication.objects.for_patient(patient_id).active()
+```
+
+For every medication the list can show (its "All" toggle, active plus inactive), use `committed()` without the status filter:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+all_visible_meds = Medication.objects.for_patient(patient_id).committed()
+```
+
+### How status is computed
+
+Canvas sets a medication's `status` from its command history; users do not set it directly. A medication is `inactive` when any of the following is true, and `active` otherwise:
+
+- It has a committed stop medication event that has not been entered in error.
+- Its prescription has a committed cancellation that has not been entered in error.
+- A newer medication in the same chain of commands has replaced it, for example through an adjusted prescription.
+- Its only commands are refill denials.
+- It has no committed commands linked to it, apart from ones entered in error.
+
+Canvas recomputes `status`, `start_date`, and `end_date` whenever a related command is created, committed, or entered in error. Related commands include medication statements, prescriptions, refills, adjustments, stop medication events, prescription cancellations, and eRx refill responses, and a change to a note's date of service triggers it too.
+
+The FHIR API is the exception. Creating a `MedicationStatement` through FHIR writes `status` and the `effectivePeriod` start and end straight onto the `Medication` record without recomputing them, and those values stay until a later command triggers a recomputation.
+
 ## Attributes
 
 ### Medication
