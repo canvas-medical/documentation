@@ -1227,6 +1227,33 @@ These events fire as a result of records being created, updated, or deleted.
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs once per claim after the transaction commits, when the claim's patient balance or aggregate coverage balance changed. A transaction that writes several postings, adjustments or transfers sends one event with the net change. Nothing is sent when the balances end where they started or the transaction rolls back. Balances are decimal strings with two decimal places, such as <code>"25.00"</code> or <code>"-12.50"</code>. Balances rewritten by the manual <code>fix_claim_precomputed_fields</code> repair command don't send this event.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"patient":
+  "id": pt_id
+"note":
+  "id": note_id
+"previous":
+  "patient_balance": str
+  "aggregate_coverage_balance": str
+"current":
+  "patient_balance": str
+  "aggregate_coverage_balance": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Billing Line Items
 
 <table>
