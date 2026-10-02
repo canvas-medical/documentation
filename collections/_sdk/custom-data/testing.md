@@ -178,10 +178,9 @@ Test custom model creation, relationships, and queries:
 
 ```python
 import factory
-from datetime import datetime
 from django.db.models import (
     ForeignKey, ManyToManyField, OneToOneField, TextField, IntegerField,
-    DateTimeField, Index, DO_NOTHING
+    Index, DO_NOTHING
 )
 from canvas_sdk.test_utils.factories import StaffFactory
 from canvas_sdk.v1.data import Staff, ModelExtension
@@ -232,7 +231,6 @@ class Language(CustomModel):
     )
     name = TextField()
     code = TextField()
-    created = DateTimeField(default=datetime.now)
 
 
 class StaffSpecialty(CustomModel):
