@@ -401,9 +401,11 @@ The `LaunchModalEffect` class has the following properties:
 
 ### Where Modals Open
 
-A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal. In the patient portal, use the `DEFAULT_MODAL` target.
+A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal.
 
 An application's `on_open`, an action button click, and the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/patient-portal/#show-a-modal-after-login) event return the modal in their own response, so it opens right away. Canvas pushes a modal from any other handler, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, to that user's browser. The modal opens only if the user has Canvas or the portal open at that moment. If the event has no acting user, the modal doesn't open.
+
+In the patient portal, use the `DEFAULT_MODAL` target. The exception is a portal application's `on_open`. It can return the `PAGE` target to show content as the application's page, as in the [patient portal application example](/sdk/example-portal-customization-launch_application/). The portal ignores a pushed modal with the `PAGE` target.
 
 ### Closing Modals from Applications
 
