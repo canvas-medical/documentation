@@ -397,13 +397,16 @@ The `LaunchModalEffect` class has the following properties:
   - `PAGE`: Opens the content as a full page.
   - `NOTE`: Opens the content within a note tab (used with Note Applications).
   - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
+- **dismissible**: A boolean that controls whether the user can close a `DEFAULT_MODAL` themselves. Defaults to `True`. Set it to `False` for a [blocking modal](#blocking-modals) that only your application can close.
 - **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
 
 ### Where Modals Open
 
-A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal. In the patient portal, use the `DEFAULT_MODAL` target.
+A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal.
 
 An application's `on_open`, an action button click, and the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/patient-portal/#show-a-modal-after-login) event return the modal in their own response, so it opens right away. Canvas pushes a modal from any other handler, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, to that user's browser. The modal opens only if the user has Canvas or the portal open at that moment. If the event has no acting user, the modal doesn't open.
+
+In the patient portal, use the `DEFAULT_MODAL` target. The exception is a portal application's `on_open`. It can return the `PAGE` target to show content as the application's page, as in the [patient portal application example](/sdk/example-portal-customization-launch_application/). The portal ignores a pushed modal with the `PAGE` target.
 
 ### Closing Modals from Applications
 
@@ -434,6 +437,30 @@ And that's it! This script establishes a communication channel with the Canvas A
 While developers might find odd to be sending a message to themselves, this is the current method supported by the Canvas SDK for dismissing modals, in order to avoid potential security issues with cross-origin messaging and flooding the main application with messages.
 
 This twist on the _Holywood Principle_ ensures that your application remains secure while still providing the functionality needed to manage modals effectively.
+
+### Blocking Modals
+
+Use a blocking modal when the user has to finish a step before moving on, such as signing a consent form. Set `dismissible=False`:
+
+```python
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+
+modal_effect = LaunchModalEffect(
+    url="https://example.com/consent",
+    target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+    title="Consent",
+    dismissible=False,
+)
+```
+
+A blocking modal stays open when the user:
+
+- Presses Escape or selects the backdrop.
+- Navigates to another page or selects the browser's Back button.
+
+On small screens, a blocking modal doesn't show the back arrow. Signing out of Canvas or the patient portal closes it.
+
+{% include alert.html type="warning" content="Only the modal's own frame can close a blocking modal. It closes when the frame posts <code>CLOSE_MODAL</code>, as shown in <a href='#closing-modals-from-applications'>Closing Modals from Applications</a>. If your application never posts <code>CLOSE_MODAL</code>, the user can't close the modal." %}
 
 <br/>
 <br/>
