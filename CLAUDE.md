@@ -92,17 +92,12 @@ So for any release whose notes run past that, write a `feed_summary:` override t
 
 ```yaml
 feed_summary: |
-  sdk
-
   • DocumentReference now exposes the record a document was generated from.
   • The Assess command rejects a condition belonging to another patient.
-
-  ui
-
   • A tab left open through an update now offers to reload.
 ```
 
-Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~400 characters — the rest of the ~490 bytes goes on the `See full notes:` trailer the feed appends. Over that, the built feed carries an XML comment saying so. Don't hand-wrap the lines: Slack soft-wraps, so your line breaks only spend budget. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
+Write flat `•` bullets only, one per line: no tag headers (`sdk`, `ui`, `bugfix`) and no blank lines between groups. Use a YAML block scalar (`|`) so the newlines survive, and write plain text — markup is what gets cut open mid-tag. It is emitted verbatim, so keep it under ~400 characters — the rest of the ~490 bytes goes on the `See full notes:` trailer the feed appends. Over that, the built feed carries an XML comment saying so. Don't hand-wrap the lines: Slack soft-wraps, so your line breaks only spend budget. Confirm with `bundle exec jekyll build` and read the `<summary>` for the entry in `_site/release-notes.xml`.
 
 ### API docs (`collections/_api/*.md`)
 
