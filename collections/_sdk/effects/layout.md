@@ -458,11 +458,9 @@ A blocking modal stays open when the user:
 - Presses Escape or selects the backdrop.
 - Navigates to another page or selects the browser's Back button.
 
-On small screens, a blocking modal doesn't show the back arrow. Signing out of the patient portal closes it.
+On small screens, a blocking modal doesn't show the back arrow. Signing out of Canvas or the patient portal closes it.
 
 {% include alert.html type="warning" content="Only the modal's own frame can close a blocking modal. It closes when the frame posts <code>CLOSE_MODAL</code>, as shown in <a href='#closing-modals-from-applications'>Closing Modals from Applications</a>. If your application never posts <code>CLOSE_MODAL</code>, the user can't close the modal." %}
-
-A Canvas instance that doesn't support `dismissible` yet ignores it and opens a modal the user can close.
 
 <br/>
 <br/>

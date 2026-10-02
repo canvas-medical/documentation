@@ -422,6 +422,34 @@ class WelcomeModal(BaseHandler):
 
 {% include alert.html type="warning" content="The portal's built-in consents dialog also opens after login for any <a href='https://help.canvasmedical.com/articles/8144965836-Managing-Consents'>Patient Consent Coding</a> marked <strong>Show in patient portal</strong> that the patient hasn't completed. If your plugin collects consent after login, clear <strong>Show in patient portal</strong> on those consent codings in Settings so the patient doesn't see both." %}
 
+## Link to After-Visit Summaries
+
+A patient can download the after-visit summary of their own locked notes from the portal at `/app/note/<note id>/aftervisitsummary`, where `<note id>` is the [note's](/sdk/data-note/) `id`. The portal has no built-in link to it, so share the link from a plugin, such as a [widget](#portal-landing-page-widgets) or a [portal page](/sdk/handlers-applications/), or in a message.
+
+- The PDF is the same after-visit summary a clinician prints from the note.
+- Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient.
+
+Each download also fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which summaries a patient has received. The event targets the patient, and its context carries the `document` (`"after_visit_summary"`) and the `note_id`. It is sent after the PDF is served, so a handler can't delay or block the download.
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from logger import log
+
+
+class TrackSummaryDownloads(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
+
+    def compute(self) -> list[Effect]:
+        if self.context.get("document") != "after_visit_summary":
+            return []
+
+        log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        return []
+```
+
 ## Forms
 
 Forms let you dynamically display questionnaires to patients in the portal based on your own criteria, and commit each response to the patient's chart as a Questionnaire Command when they submit. Because your handler runs on every portal page load, return only the forms that should currently appear.
