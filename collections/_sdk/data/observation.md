@@ -40,7 +40,33 @@ observations = Observation.objects.for_patient(patient_id)
 <!-- source: discussion #720 -->
 ## Accessing questionnaire scores
 
-The `QuestionnaireResult` model (and its `score`) is not exposed in the SDK data model. When a questionnaire result is created, an `Observation` is created alongside it, so questionnaire scores are accessible through the patient's observations rather than through `QuestionnaireResult`. There is no clean 1:1 mapping, so filter on the observation [codings](#codings) to find the score observation you are looking for.
+The `QuestionnaireResult` model, and the `score` on it, is not exposed in the SDK data module. When Canvas scores a questionnaire, it records the score on an `Observation` created alongside the result, so you read scores through the patient's observations. Each scored questionnaire produces one observation:
+
+| Attribute | Value |
+| --- | --- |
+| `name` | The questionnaire's name, such as `PHQ-9` |
+| `value` | The score, as a string |
+| `category` | `survey` |
+| `note_id` | The `dbid` of the note the questionnaire was completed in |
+| [`codings`](#codings) | The questionnaire's scoring code, such as LOINC `44261-6` for the PHQ-9 total score. A questionnaire that could not be scored, such as one left incomplete, has no coding. |
+
+To find a patient's scores for one questionnaire, filter on its coding. `effective_datetime` is not set on these observations, so order by `created`:
+
+```python
+from canvas_sdk.v1.data.observation import Observation
+
+phq9_scores = (
+    Observation.objects.for_patient("b80b1cdc2e6a4aca90ccebc02e683f35")
+    .committed()
+    .filter(category="survey", codings__system="http://loinc.org", codings__code="44261-6")
+    .order_by("-created")
+)
+
+for observation in phq9_scores:
+    print(observation.name, observation.value, observation.created)
+```
+
+To get the scores recorded in a specific note, filter on `note_id` with the note's `dbid` instead of the coding.
 
 ## Codings
 

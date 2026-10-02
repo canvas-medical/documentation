@@ -46,6 +46,17 @@ medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 medication_statements = medication.medication_statements.all()
 ```
 
+## Latest sig
+
+A medication statement's sig is one of the sources a medication's [`latest_sig`](/sdk/data-medication/#latest-sig) draws on, alongside its active prescriptions and change medications. To get the most recent sig for the medication, read `latest_sig` from the referenced medication:
+
+```python
+from canvas_sdk.v1.data import MedicationStatement
+
+medication_statement = MedicationStatement.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+sig = medication_statement.medication.latest_sig
+```
+
 ## Committed records
 
 The `committed` method returns medication statements that have been committed and not entered in error:
@@ -54,27 +65,6 @@ The `committed` method returns medication statements that have been committed an
 from canvas_sdk.v1.data import MedicationStatement
 
 committed_medication_statements = MedicationStatement.objects.committed()
-```
-
-<!-- source: discussion #1492 -->
-<!-- REVIEW: clinical-accuracy sign-off required -->
-## Reading the sig from a command event
-
-The `sig_original_input` attribute on `MedicationStatement` is often empty, so it is not a reliable source for the medication statement's sig (directions). To get the sig, listen for the Medication Statement command's `MEDICATION_STATEMENT_COMMAND__POST_COMMIT` event (see [Medication Statement command events](/sdk/events/#medication-statement-command)) and read it from the command context at `context["fields"]["sig"]`:
-
-```python
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers.base import BaseHandler
-from logger import log
-
-
-class MedicationStatementHandler(BaseHandler):
-    RESPONDS_TO = EventType.Name(EventType.MEDICATION_STATEMENT_COMMAND__POST_COMMIT)
-
-    def compute(self):
-        sig = self.context.get("fields", {}).get("sig")
-        log.info(f"Medication Statement committed with sig: {sig}")
-        return []
 ```
 
 ## Attributes

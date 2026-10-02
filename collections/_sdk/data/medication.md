@@ -117,14 +117,14 @@ for medication in medications:
 
 <!-- source: discussion #1613 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
-## Filtering to match the patient chart
+## Filtering to match the Patient Summary
 
-Filtering on `status == "active"` alone does not reproduce the chart's medication list. Per Canvas, the chart applies two exclusion layers before considering status:
+The Medications list in the Patient Summary section of the chart is not reproduced by filtering on `status == "active"` alone. Per Canvas, that list applies two exclusion layers before considering status:
 
 1. Exclude uncommitted and entered-in-error records — a medication must have a non-null `committer` (it was finalized) and a null `entered_in_error` (no one flagged it as erroneous).
-2. Filter by `status` — the chart defaults to `status == "active"`; users can toggle to inactive or all.
+2. Filter by `status` — the list defaults to `status == "active"`; users can toggle to inactive or all.
 
-The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the chart's "active medications" view:
+The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the Patient Summary's active medications:
 
 ```python?partial=true
 from canvas_sdk.v1.data.medication import Medication
@@ -132,7 +132,7 @@ from canvas_sdk.v1.data.medication import Medication
 active_meds = Medication.objects.for_patient(patient_id).active()
 ```
 
-For all visible medications (the chart's "All" filter — active plus inactive), use `committed()` without the status filter:
+For every medication the list can show (its "All" toggle, active plus inactive), use `committed()` without the status filter:
 
 ```python?partial=true
 from canvas_sdk.v1.data.medication import Medication
@@ -140,13 +140,19 @@ from canvas_sdk.v1.data.medication import Medication
 all_visible_meds = Medication.objects.for_patient(patient_id).committed()
 ```
 
-Per Canvas, the precedence of the relevant fields is: `entered_in_error` (highest — excludes from all chart views) → `committer` (must be set for the record to count as finalized) → `status` (only distinguishes active vs. inactive after the first two pass). `start_date` and `end_date` are informational only and are not used for filtering, so you should not derive your own normalized status from them. `Medication.objects` already excludes records with `deleted` set, so there is no need to filter on it.
-
 ### How status is computed
 
-Per Canvas, `status` is set automatically from the medication's command history, not set directly by users. A medication is `inactive` if it has a committed, non-entered-in-error stop medication event; a committed, non-entered-in-error prescription cancellation; only refill denials; or no committed commands linked to it. Otherwise it is `active`. Canvas recomputes `status`, `start_date`, and `end_date` whenever a related command is committed, entered in error, or created (for example a medication statement, a prescription/refill/adjust, a stop event, a prescription cancellation, an eRx refill response, or a note date-of-service change).
+Canvas sets a medication's `status` from its command history; users do not set it directly. A medication is `inactive` when any of the following is true, and `active` otherwise:
 
-Per Canvas, one exception is the FHIR API: creating a `MedicationStatement` via FHIR writes `effectivePeriod.start`/`effectivePeriod.end` and the FHIR-derived status directly to the `Medication` record and bypasses this synchronization, so those values are preserved until a later action triggers recomputation from the command chain.
+- It has a committed stop medication event that has not been entered in error.
+- Its prescription has a committed cancellation that has not been entered in error.
+- A newer medication in the same chain of commands has replaced it, for example through an adjusted prescription.
+- Its only commands are refill denials.
+- It has no committed commands linked to it, apart from ones entered in error.
+
+Canvas recomputes `status`, `start_date`, and `end_date` whenever a related command is created, committed, or entered in error. Related commands include medication statements, prescriptions, refills, adjustments, stop medication events, prescription cancellations, and eRx refill responses, and a change to a note's date of service triggers it too.
+
+The FHIR API is the exception. Creating a `MedicationStatement` through FHIR writes `status` and the `effectivePeriod` start and end straight onto the `Medication` record without recomputing them, and those values stay until a later command triggers a recomputation.
 
 ## Attributes
 

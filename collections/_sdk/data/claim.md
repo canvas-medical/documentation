@@ -48,7 +48,7 @@ for alert in active_alerts:
 
 A claim is created for an appointment or note only when the note's type is billable. A note type with `is_billable` set to `False`, such as the built-in Chart review type, produces a note and no claim, so check the flag rather than assuming every appointment produces a claim.
 
-The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, use the note's `claims` reverse relation; a note has at most one claim, so take it with `first()`:
+The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, call the note's `get_claim()` method, which returns the note's most recent claim, or `None` when it has none:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -56,7 +56,7 @@ from canvas_sdk.v1.data.note import Note
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 
 expects_claim = note.note_type_version.is_billable
-claim = note.claims.first()
+claim = note.get_claim()
 ```
 
 <!-- source: discussion #1642 -->
@@ -93,34 +93,6 @@ patient_allocated = claim.patient_balance + claim.total_patient_paid
 ```
 
 This holds for self-pay and insured claims alike, including a self-pay claim carrying no postings at all.
-
-<!-- source: discussion #1407 -->
-## Detecting claim changes in the read replica
-
-The `quality_and_revenue_claim.last_modified` column does not update when a claim only moves between queues (the `current_queue_id` changes). Queue movements are sometimes recorded as rows in the `quality_and_revenue_claimstatechangeevent` table instead of updating the claim's modified timestamp. To find claims that changed for any reason in the read replica, take the most recent of the two timestamps with `GREATEST(claim.modified, claimstatechangeevent.modified)`:
-
-```sql
-SELECT
-    c.id AS claim_id,
-    GREATEST(c.modified, csc.modified) AS claim_modified,
-    c.created AS claim_created,
-    q.name AS current_queue
-FROM quality_and_revenue_claim c
-    -- Latest claim state change event per claim
-    LEFT JOIN LATERAL (
-        SELECT id, modified, queue_entered_id
-        FROM quality_and_revenue_claimstatechangeevent
-        WHERE claim_id = c.id
-        ORDER BY modified DESC, id DESC
-        LIMIT 1
-    ) csc ON TRUE
-    LEFT JOIN quality_and_revenue_queue q
-        ON c.current_queue_id = q.id
-WHERE
-    c.modified >= NOW() - INTERVAL '1 day'
-    OR csc.modified >= NOW() - INTERVAL '1 day'
-ORDER BY 2;
-```
 
 ## Filtering
 
@@ -236,6 +208,9 @@ Represents individual billed procedures or services tied to a claim.
 | family_planning   | [FamilyPlanningOptions](#familyplanningoptions)             |
 | created           | DateTime                                                    |
 | modified          | DateTime                                                    |
+| newlineitempayments    | QuerySet[[NewLineItemPayment](/sdk/data-posting/#newlineitempayment)]       |
+| newlineitemadjustments | QuerySet[[NewLineItemAdjustment](/sdk/data-posting/#newlineitemadjustment)] |
+| lineitemtransfers      | QuerySet[[LineItemTransfer](/sdk/data-posting/#lineitemtransfer)]           |
 
 ### ClaimLineItemDiagnosisCode
 

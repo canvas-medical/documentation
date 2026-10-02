@@ -378,7 +378,16 @@ committed_order_reasons = LabOrderReason.objects.committed()
 <!-- REVIEW: clinical-accuracy sign-off required -->
 ### POC (point-of-care) Lab Test results
 
-Per Canvas, the POC Lab Test command (shown as `pocLabTest` on a note) has not yet been migrated to the `Command` model, so you cannot jump from that command to its structured lab value through the `Command` data class. Once committed, the information it captures is accessible through [`LabReport`](#labreport) and [`Observation`](/sdk/data-observation/), and the `Observation` record carries a `note_id` foreign key back to the note. To react to a new POC Lab Test, listen for the [`OBSERVATION_CREATED`](/sdk/events/#observations) event and trace it to the discrete observation it creates.
+A [POC Lab Test](/sdk/commands/#poclabtest) command records its results as a [`LabReport`](#labreport). The command's `Command` record, with a `schema_key` of `pocLabTest`, points at that report through `anchor_object`, so you can move from the command to its results:
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
+lab_report = command.anchor_object
+```
+
+To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
 
 ## The document reference
 
@@ -546,6 +555,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
 | laborder_set              | [LabOrder](#laborder)[]                           |
+| action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
 
 ### LabOrderReason
 
