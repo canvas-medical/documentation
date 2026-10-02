@@ -307,7 +307,7 @@ for identifier in staff.external_identifiers.all():
 ```
 
 <!-- source: discussion #1684 -->
-`StaffExternalIdentifier` is the supported way to store and read an external system's ID on a Staff/Practitioner record (the equivalent of `PatientExternalIdentifier` for staff). Plugins read it from this data module and write to it with the [`CreateStaffExternalIdentifier`](/sdk/effect-staff-external-identifier/) effect. Note that the FHIR `Practitioner.identifier[]` field is effectively NPI-only and is not a place to store an arbitrary external ID, so use `StaffExternalIdentifier` instead.
+`StaffExternalIdentifier` is the supported way to store and read an external system's ID on a Staff/Practitioner record (the equivalent of `PatientExternalIdentifier` for staff). Plugins read it from this data module and write to it with the [`CreateStaffExternalIdentifier`](/sdk/effect-staff-external-identifier/) effect. The FHIR `Practitioner.identifier` field carries only the NPI: Canvas stores the first identifier's value as the practitioner's NPI and ignores the rest, so an external ID sent there would replace the NPI. Use `StaffExternalIdentifier` instead.
 
 ### StaffMetadata
 

@@ -48,7 +48,7 @@ for alert in active_alerts:
 
 A claim is created for an appointment or note only when the note's type is billable. A note type with `is_billable` set to `False`, such as the built-in Chart review type, produces a note and no claim, so check the flag rather than assuming every appointment produces a claim.
 
-The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, use the note's `claims` reverse relation; a note has at most one claim, so take it with `first()`:
+The flag lives on [NoteType](/sdk/data-note/#notetype), reached through the note's `note_type_version` attribute. To read the claim itself, call the note's `get_claim()` method, which returns the note's most recent claim, or `None` when it has none:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -56,7 +56,7 @@ from canvas_sdk.v1.data.note import Note
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 
 expects_claim = note.note_type_version.is_billable
-claim = note.claims.first()
+claim = note.get_claim()
 ```
 
 <!-- source: discussion #1642 -->

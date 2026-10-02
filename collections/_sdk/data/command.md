@@ -145,68 +145,78 @@ anchor = command.anchor_object
 
 | `schema_key` | `anchor_object` returns |
 | --- | --- |
-| `addCondition` | `Condition` |
-| `adjustDiagnosis` | `Assessment` |
-| `adjustPrescription` | `Prescription` |
-| `adjustProtocol` | `ProtocolOverride` |
-| `allergy` | `AllergyIntolerance` |
-| `approveChange` | `PrescriptionChangeResponse` |
-| `approveRefill` | `Prescription` |
-| `assess` | `Assessment` |
-| `assessCodingGap` | `AssessCodingGapEvent` |
-| `cancelPrescription` | `CancelPrescription` |
-| `changeMedication` | `ChangeMedication` |
-| `chartSectionReview` | `ChartSectionReview` |
-| `clipboard` | `Clipboard` |
-| `closeGoal` | `UpdateGoal` |
-| `createCodingGap` | `CreateCodingGapEvent` |
-| `deferCodingGap` | `DeferCodingGapEvent` |
-| `denyChange` | `PrescriptionChangeResponse` |
-| `denyRefill` | `Prescription` |
-| `device` | `Device` |
-| `diagnose` | `Condition` |
-| `educationalMaterial` | `EducationalMaterial` |
-| `exam` | `Interview` |
-| `familyHistory` | `FamilyHistory` |
-| `followUp` | `FollowUp` |
-| `goal` | `Goal` |
-| `hpi` | `HistoryOfPresentIllness` |
-| `imagingOrder` | `ImagingOrder` |
-| `imagingReview` | `ImagingReview` |
-| `immunizationStatement` | `ImmunizationStatement` |
-| `immunize` | `Immunization` |
-| `instruct` | `Instruction` |
-| `labOrder` | `LabOrder` |
-| `labReview` | `LabReview` |
-| `medicalHistory` | `Condition` |
-| `medicationStatement` | `MedicationStatement` |
-| `perform` | `Procedure` |
-| `plan` | `Plan` |
-| `pocLabTest` | `LabReport` |
-| `prescribe` | `Prescription` |
-| `questionnaire` | `Interview` |
-| `reasonForVisit` | `ReasonForVisit` |
-| `refer` | `Referral` |
-| `reference` | `Reference` |
-| `referralReview` | `ReferralReview` |
-| `refill` | `Prescription` |
-| `removeAllergy` | `RemoveAllergyEvent` |
-| `removePastMedicalHistory` | `RemovePastMedicalHistoryEvent` |
-| `resolveCondition` | `ResolveConditionEvent` |
-| `ros` | `Interview` |
-| `snoozeProtocol` | `ProtocolOverride` |
-| `stopMedication` | `StopMedicationEvent` |
-| `structuredAssessment` | `Interview` |
-| `surgicalHistory` | `Condition` |
-| `task` | `NoteTask` |
-| `updateDiagnosis` | `Condition` |
-| `updateGoal` | `UpdateGoal` |
-| `validateCodingGap` | `ValidateCodingGapEvent` |
-| `visualExamFinding` | `VisualExamFinding` |
-| `vitals` | `VitalSignReading` |
-| Custom commands | `CustomCommand` |
+| `addCondition` | [Condition](/sdk/data-condition/#condition) |
+| `adjustDiagnosis` | [Assessment](/sdk/data-assessment/#assessment) |
+| `adjustPrescription` | [Prescription](/sdk/data-prescription/#prescription) |
+| `adjustProtocol` | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride) |
+| `allergy` | [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) |
+| `approveChange` | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse) |
+| `approveRefill` | [Prescription](/sdk/data-prescription/#prescription) |
+| `assess` | [Assessment](/sdk/data-assessment/#assessment) |
+| `assessCodingGap` | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent) |
+| `cancelPrescription` | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription) |
+| `changeMedication` | [ChangeMedication](/sdk/data-change-medication/#changemedication) |
+| `chartSectionReview` | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview) |
+| `clipboard` | [Clipboard](/sdk/data-clipboard/#clipboard) |
+| `closeGoal` | [UpdateGoal](/sdk/data-goal/#updategoal) |
+| `createCodingGap` | [CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent) |
+| `deferCodingGap` | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent) |
+| `denyChange` | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse) |
+| `denyRefill` | [Prescription](/sdk/data-prescription/#prescription) |
+| `device` | [Device](/sdk/data-device/#device) |
+| `diagnose` | [Condition](/sdk/data-condition/#condition) |
+| `educationalMaterial` | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial) |
+| `exam` | [Interview](/sdk/data-questionnaire/#interview) |
+| `familyHistory` | [FamilyHistory](/sdk/data-family-history/#familyhistory) |
+| `followUp` | [FollowUp](/sdk/data-follow-up/#followup) |
+| `goal` | [Goal](/sdk/data-goal/#goal) |
+| `hpi` | [HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness) |
+| `imagingOrder` | [ImagingOrder](/sdk/data-imaging/#imagingorder) |
+| `imagingReview` | [ImagingReview](/sdk/data-imaging/#imagingreview) |
+| `immunizationStatement` | [ImmunizationStatement](/sdk/data-immunization/#immunizationstatement) |
+| `immunize` | [Immunization](/sdk/data-immunization/#immunization) |
+| `instruct` | [Instruction](/sdk/data-instruction/#instruction) |
+| `labOrder` | [LabOrder](/sdk/data-labs/#laborder) |
+| `labReview` | [LabReview](/sdk/data-labs/#labreview) |
+| `medicalHistory` | [Condition](/sdk/data-condition/#condition) |
+| `medicationStatement` | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement) |
+| `perform` | [Procedure](/sdk/data-procedure/#procedure) |
+| `plan` | [Plan](/sdk/data-plan/#plan) |
+| `pocLabTest` | [LabReport](/sdk/data-labs/#labreport) |
+| `prescribe` | [Prescription](/sdk/data-prescription/#prescription) |
+| `questionnaire` | [Interview](/sdk/data-questionnaire/#interview) |
+| `reasonForVisit` | [ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit) |
+| `refer` | [Referral](/sdk/data-referral/#referral) |
+| `reference` | [Reference](/sdk/data-reference/#reference) |
+| `referralReview` | [ReferralReview](/sdk/data-referral/#referralreview) |
+| `refill` | [Prescription](/sdk/data-prescription/#prescription) |
+| `removeAllergy` | [RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent) |
+| `removePastMedicalHistory` | [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent) |
+| `resolveCondition` | [ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent) |
+| `ros` | [Interview](/sdk/data-questionnaire/#interview) |
+| `snoozeProtocol` | [ProtocolOverride](/sdk/data-protocol-override/#protocoloverride) |
+| `stopMedication` | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent) |
+| `structuredAssessment` | [Interview](/sdk/data-questionnaire/#interview) |
+| `surgicalHistory` | [Condition](/sdk/data-condition/#condition) |
+| `task` | [NoteTask](/sdk/data-task/#notetask) |
+| `updateDiagnosis` | [Condition](/sdk/data-condition/#condition) |
+| `updateGoal` | [UpdateGoal](/sdk/data-goal/#updategoal) |
+| `validateCodingGap` | [ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent) |
+| `visualExamFinding` | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding) |
+| `vitals` | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading) |
+| Custom commands | [CustomCommand](/sdk/data-custom-command/#customcommand) |
 
-{% include alert.html type="warning" content="<code>anchor_object</code> is not supported for the <code>uncategorizedDocumentReview</code> and <code>privateNotes</code> commands. Their anchor records have no matching data model, so reading <code>anchor_object</code> on either raises <code>LookupError</code>. Use <code>anchor_object_type</code> and <code>anchor_object_dbid</code> to identify the record instead." %}
+{% include alert.html type="warning" content="<code>anchor_object</code> does not yet support the <code>uncategorizedDocumentReview</code> command, and reading it raises <code>LookupError</code>. Support is coming in an upcoming release. Until then, look the record up directly as shown below." %}
+
+The `uncategorizedDocumentReview` anchor is available as [UncategorizedClinicalDocumentReview](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocumentreview); `anchor_object` cannot find it because the model goes by a different name. Look it up from `anchor_object_dbid` instead:
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocumentReview
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
+review = UncategorizedClinicalDocumentReview.objects.get(dbid=command.anchor_object_dbid)
+```
 
 If a command's anchor record has been deleted, `anchor_object` raises the data model's `DoesNotExist` rather than returning `None`.
 
