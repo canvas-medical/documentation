@@ -2,9 +2,32 @@
 title: "Quickstart"
 layout: apipage
 ---
+<!-- source: discussion #1355 -->
+<!-- source: discussion #784 -->
+## Base URL and finding your sandbox name
+
+FHIR API requests must be made against the `fumage-` subdomain for your instance, using the pattern `https://fumage-<sandbox-name>.canvasmedical.com`. The `<sandbox-name>` is the same name that appears in the URL when you log in to your Canvas instance (e.g. for `https://example-dev.canvasmedical.com` the sandbox name is `example-dev`, and the FHIR base URL is `https://fumage-example-dev.canvasmedical.com`).
+
+Always send requests over `https`, including requests to the OAuth token endpoint. An `http` request is answered with a `301` redirect to `https`, and most HTTP clients resend a redirected `POST` as a `GET` without its body. A create request sent over `http` therefore comes back as a search instead of creating the resource, and a token request sent over `http` does not return a token.
+
+The regular instance subdomain (`https://<sandbox-name>.canvasmedical.com`) does not serve FHIR endpoints — requests there return HTML 404 pages rather than FHIR responses. The FHIR API is available on development environments as well, with no additional provisioning required beyond OAuth client credentials.
+
 ## Authentication
 
 To access our FHIR API, you will need to request an access token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) and [Authentication Best Practices](/api/authentication-best-practices) to get you set up. Access tokens expire 10 hours after they are created. You can and should reuse access tokens to reduce the number of tokens that are valid at any given time.
+
+<!-- source: discussion #1566 -->
+{% include alert.html type="info" content="The OAuth token endpoint (<code>/auth/token/</code>) lives on the regular instance host, not the fumage- FHIR host. Request tokens from <code>https://&lt;sandbox-name&gt;.canvasmedical.com/auth/token/</code> — requesting them against the fumage- subdomain returns a <code>Not Found</code> error." %}
+
+<!-- source: discussion #1532 -->
+{% include alert.html type="info" content="There are currently no fixed rate limits on the FHIR API or on SDK SimpleAPI endpoints. However, because FHIR requests are served by your underlying Canvas instance, very high-volume polling can affect the stability of that instance. Caching access tokens and using webhooks instead of polling are recommended to keep request volume manageable." %}
+
+<!-- source: discussion #1403 -->
+## Data written through the FHIR API is committed
+
+Every create and update through the FHIR API records its data in a committed state, the same as data a provider has committed in a note. The FHIR API has no way to stage data for review first, such as a questionnaire whose answers are pre-filled but still editable.
+
+To originate or stage data that a provider reviews and commits later, use the Plugin SDK instead: originate [commands](/sdk/commands/) in a note. If an external system needs an HTTP entry point for this, expose one with a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint in your plugin that originates the commands.
 
 ## Create a patient
 

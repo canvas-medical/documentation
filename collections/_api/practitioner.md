@@ -11,6 +11,9 @@ sections:
          [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-practitioner.html)<br><br>
           To create a new staff member manually in the Canvas UI, see this [article](https://canvas-medical.help.usepylon.com/articles/4283873790-add-a-new-staff-member).<br><br>
           
+        # source: discussion #1708
+        additional_information: |-
+          - Search returns only schedulable practitioners unless `include-non-schedulable-practitioners` is `true`. A practitioner is schedulable when at least one of their roles is in the organization's `SCHEDULABLE_STAFF_ROLES` setting; a practitioner with no such role (for example, a Medical Assistant) is left out of search results regardless of `active` or any other parameter.
         attributes:
           - name: id
             type: string
