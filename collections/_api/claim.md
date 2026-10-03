@@ -9,9 +9,6 @@ sections:
         description: |-
           A provider issued list of professional services and products which have been provided, or are to be provided, to a patient which is sent to an insurer for reimbursement.<br><br>
           [http://hl7.org/fhir/R4/claim.html](http://hl7.org/fhir/R4/claim.html)
-        # source: discussion #1138
-        additional_information: |-
-          - For a self-pay claim using the `"No Coverage"` insurance display (with no `coverage.reference`), set `insurance.focal` to `false`. Sending `focal: true` with a `"No Coverage"` entry raises a `KeyError` on `resource_identifier` and the claim is not created.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -295,7 +292,8 @@ sections:
                 required_in: create,update
                 description_for_all_endpoints: Coverage to be used for adjudication. 
                 read_and_search_description: Only insurance objects with `focal` as True will be returned in a Search/Read. 
-                create_and_update_description: Canvas will ignore any elements that are set to False. Must be `false` for a `"No Coverage"` (self-pay) entry.
+                # source: discussion #1138
+                create_and_update_description: Canvas will ignore any elements that are set to False. For a self-pay claim, send a single `"No Coverage"` entry with no `coverage.reference` and `focal` set to `false`. If that entry has `focal` set to `true`, the claim is not created.
               - name: sequence
                 required_in: create,update
                 type: positive integer

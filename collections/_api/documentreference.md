@@ -26,8 +26,7 @@ sections:
         # sources: discussions #627, #803, #1237, #629
         additional_information: |-
           - Every DocumentReference belongs to a patient. Patient-agnostic and practitioner-only documents are not supported.
-          - To download a document's PDF: run a DocumentReference search, take the `content.attachment.url` of the entry you want, and request that URL with your Bearer token. The response is a 307 redirect to a pre-signed S3 URL. A client that follows redirects (the default for most) receives the PDF; otherwise read the S3 URL from the `location` header.
-          - Send create requests to the `https` URL. An `http` request is redirected to `https`, and the redirect turns the POST into a GET, so instead of a 201 you receive a 200 with DocumentReference search results.
+          - To download a document's file, see [Accessing Resource Attachment Files](/api/accessing-resource-attachment-files/).
           - The create request body, including the base64-encoded file in `content.attachment.data`, is limited to roughly 1MB. Larger payloads return `413 Request Entity Too Large`.
         attributes:
           - name: resourceType
@@ -294,6 +293,7 @@ sections:
               - name: attachment
                 description: >-
                     Where to access the document.<br><br>
+                    The create request body, including the base64-encoded file in `content.attachment.data`, is limited to roughly 1MB. Larger payloads return `413 Request Entity Too Large`.
                 type: json
                 required_in: create
                 attributes: 

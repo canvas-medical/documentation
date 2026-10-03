@@ -20,7 +20,7 @@ sections:
           QuestionnaireResponse resources contain answers to questions in a Questionnaire resource. Use the [Questionnaire search endpoint](/api/questionnaire/#search) to find Questionnaire resources.
         # source: discussion #625
         additional_information: |-
-          - For responses collected outside Canvas, set `authored` to the time the answers were actually collected, so the recorded timestamp is accurate for audit purposes.
+          - For responses collected outside Canvas, set `authored` to the time the answers were actually collected. When the request references no existing note or encounter, Canvas creates a new data note for the response and uses `authored` as that note's date of service. When it references one, the response is added to that note and the note's date of service is unchanged.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.

@@ -306,17 +306,3 @@ response = requests.request("GET", url, headers=headers, data=payload)
 
 print(response.text)
 ```
-
-<br>
-
-## Related workflows
-
-<!-- source: discussion #1403 -->
-### Pre-filling an editable (uncommitted) Questionnaire
-
-The FHIR [QuestionnaireResponse Create](/api/questionnaireresponse/#create) endpoint only adds data to a patient's chart in a committed state — it cannot create an `in-progress`, still-editable Questionnaire command. To originate a Questionnaire command in a note and pre-fill its answers while leaving it uncommitted (so a provider can review and edit the values during the visit), use the Plugin SDK [commands](/sdk/commands/#usage-example) instead. If you want an external HTTP entry point similar to the FHIR API, you can expose your own endpoint with the SDK's [SimpleAPI](/sdk/handlers-simple-api-http/) that originates and pre-fills the appropriate Questionnaire command.
-
-<!-- source: discussion #1064 -->
-### Staging a Letter with chart, command, or ICD data
-
-Letter Template placeholders cannot access command values or ICD codes from a note — only the fixed set of patient/provider/practice placeholders is supported. To produce a letter populated with chart data, command values, or ICD codes, stage the letter through a plugin using the [Letter API](/api/letter/) with the values you read from the SDK [data module](/sdk/data/).

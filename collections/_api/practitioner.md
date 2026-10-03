@@ -14,8 +14,6 @@ sections:
         # source: discussion #1708
         additional_information: |-
           - Search returns only schedulable practitioners unless `include-non-schedulable-practitioners` is `true`. A practitioner is schedulable when at least one of their roles is in the organization's `SCHEDULABLE_STAFF_ROLES` setting; a practitioner with no such role (for example, a Medical Assistant) is left out of search results regardless of `active` or any other parameter.
-          - Read by id returns a practitioner regardless of role or `active` status, so one missing from search results can still be retrieved directly.
-          - A patient's care team membership is set and updated through the FHIR [CareTeam](/api/careteam) endpoint; the SDK has no effect for it.
         attributes:
           - name: id
             type: string

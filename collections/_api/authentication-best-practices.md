@@ -137,11 +137,19 @@ if __name__ == '__main__':
     - [Token Best Practices from Auth0](https://auth0.com/docs/secure/tokens/token-best-practices)
 
 <!-- source: discussion #942 -->
-### Don't expose bearer tokens in front-end code
+### Keep access tokens and client secrets out of browser code
 
-When building patient-portal pages or other browser-based experiences, do not pass an access token into client-side JavaScript and make FHIR API calls directly from the browser. Doing so exposes the bearer token to anyone who can view the page source or network traffic.
+If your application has a browser front end, never put your Canvas client ID and secret, or any access token, in client-side code. Anyone who can view the page source or watch its network traffic can read them, and a leaked client secret lets anyone request new tokens as your application. Canvas applications are registered as confidential clients, so the secret belongs on your server.
 
-Instead, keep the token server-side and proxy the request through a back-end endpoint. With the Canvas Plugin SDK you can define your own [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint that runs inside the platform, accepts the form data from the front end, and performs the privileged operation server-side — so the bearer token is never sent to the browser.
+Keep the secret and tokens on your application's server, have the browser call your server, and have your server call the FHIR API.
+
+Request tokens from `/auth/token/` on your server, using the flow that matches who the calls are for:
+
+- [Client credentials](/api/customer-authentication/#client-credentials), for calls your application makes on its own behalf.
+- [Authorization code](/api/customer-authentication/#authorization-code), for calls on behalf of a specific Canvas user. Store each user's refresh token in your backend, as in the [recommended pattern for external applications](/api/customer-authentication/#recommended-pattern-for-external-applications).
+- [Patient scoped tokens](/api/customer-authentication/#patient-scoped-tokens), for a patient-facing application, so that each token can read and write only one patient's records.
+
+Reuse each access token until it expires rather than requesting a new one for every call, as described in [The Access Token: Don't lose it, reuse it](#the-access-token-dont-lose-it-reuse-it).
 
 <!-- source: discussion #945 -->
 ### Resolving `access_denied` on the authorization code flow

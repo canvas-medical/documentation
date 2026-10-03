@@ -12,7 +12,6 @@ sections:
         # sources: discussions #670, #1194
         additional_information: |-
           - The insurance card front and back images in the coverage section of the Canvas UI are uploaded and viewed only through the UI. The API cannot upload them, retrieve them, or tell front from back. A [DocumentReference](/api/documentreference) created through the API lands in the patient's admin documents, not in the coverage card section.
-          - Coverage search does not filter by date. The `period.start` and `period.end` values on each Coverage are its effective-date data.
         attributes:
           - name: resourceType
             description: The FHIR Resource name.
@@ -426,6 +425,7 @@ sections:
           example_request: coverage-update-request
           example_response: coverage-update-response
         search:
+          description: Search for Coverage resources. Search does not filter by date; each Coverage's effective dates are in its `period.start` and `period.end`.
           responses: [200, 400, 401, 403]
           example_request: coverage-search-request
           example_response: coverage-search-response
