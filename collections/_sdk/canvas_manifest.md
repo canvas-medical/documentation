@@ -4,7 +4,7 @@ excerpt: "Reference for every field in a plugin's CANVAS_MANIFEST.json"
 hidden: false
 ---
 
-Every plugin has a `CANVAS_MANIFEST.json` file at the root of its package. The manifest names the plugin, lists the handlers and applications Canvas loads, and declares the variables, URL permissions, and custom data namespace the plugin needs.
+Every plugin has a `CANVAS_MANIFEST.json` file at the root of its package. The manifest names the plugin, lists the handlers and applications Canvas loads, and declares the variables, URL permissions, and custom data namespace the plugin needs. It can also describe how the plugin is listed in the plugin catalog.
 
 The manifest is validated against a JSON schema when you run [`canvas validate`](/sdk/canvas_cli/#canvas-validate), [`canvas validate-manifest`](/sdk/canvas_cli/#canvas-validate-manifest), or [`canvas install`](/sdk/canvas_cli/#canvas-install). Unknown top-level keys and unknown component types fail validation.
 
@@ -74,6 +74,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `url_permissions` | array | No | External URLs the plugin's iframes may load, and what each may do. See [URL permissions](#url-permissions). |
 | `origins` | object | No | Legacy form of `url_permissions`. |
 | `custom_data` | object | No | The custom data namespace the plugin uses. See [Custom data](#custom-data). |
+| `catalog` | object | No | How the plugin is listed in the Canvas plugin catalog. See [Catalog](#catalog). |
 | `references` | array of strings | No | Links to related documentation or resources. |
 | `diagram` | string or boolean | No | Path to an architecture or workflow diagram, or `false`. |
 
@@ -311,6 +312,118 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
   "custom_data": {
     "namespace": "my_org__my_plugin",
     "access": "read_write"
+  }
+}
+```
+
+## Catalog
+
+`catalog` describes the plugin's listing in the Canvas plugin catalog. The listing covers the plugin's title, where it appears in Canvas, and what changed in this version. Because the listing lives in the manifest, it ships with the code it describes and changes in the same commit.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `title` | string | Yes | The name shown on the plugin's card and page. Up to 64 characters. |
+| `category` | string | Yes | The catalog category. See [Categories](#categories). |
+| `surfaces` | array of strings | Yes | Every place in Canvas the plugin's work shows up. At least one, with no value repeated. See [Surfaces](#surfaces). |
+| `kind` | string | No | `"agent"` for a plugin that calls a model and acts with some latitude, or `"plugin"` for one that is deterministic. Defaults to `"plugin"`. |
+| `agent` | object | Agents only | What an agent does and doesn't do. Required when `kind` is `"agent"`, and refused otherwise. See [Agent](#agent). |
+| `keywords` | array of strings | No | Search terms for the listing. Each is lowercase letters, digits, and hyphens, starts with a letter or digit, and is up to 32 characters. Keywords are free text, separate from the fixed [tags](#tags). |
+| `screenshots` | array of objects | No | Up to eight images, in display order. See [Screenshots](#screenshots). |
+| `integration` | object | No | Include for an integration. Its one field, `unit`, is required and names what the integration's volume is counted in, such as `"visits"`. |
+| `setup_instructions` | string | No | Path to a file in the plugin package with the setup instructions for organizations that install the plugin, such as `"setup_instructions.md"`. |
+| `release_notes` | object | No | What changed in this `plugin_version`. See [Release notes](#release-notes). |
+
+Text fields such as `title`, `alt`, and the `agent` fields must contain at least one character other than whitespace. Leave out an optional field you don't use rather than setting it to `null`, because a `null` value fails validation. A field not listed here also fails validation, at every level of the block.
+
+```json
+{
+  "catalog": {
+    "title": "Claims Scrubber",
+    "category": "Billing & RCM",
+    "surfaces": ["Background"]
+  }
+}
+```
+
+### Categories
+
+`category` is one of:
+
+- `Billing & RCM`
+- `Charting`
+- `Decision support`
+- `Interoperability`
+- `Labs & devices`
+- `Operations`
+- `Patient engagement`
+- `Population health`
+- `Prescribing`
+- `Scheduling`
+
+### Surfaces
+
+Each entry in `surfaces` is one of `Note`, `Chart app`, `Command`, `Background`, `Patient portal`, or `Waffle`.
+
+### Agent
+
+An agent's listing states the boundary of what it decides. Set `kind` to `"agent"` and add an `agent` object with all four fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `does` | string | What the agent does. |
+| `does_not` | string | What the agent isn't allowed to do. |
+| `runs_when` | string | When the agent runs. |
+| `models` | array of strings | The models the agent calls. At least one. |
+
+A plugin whose `kind` is `"plugin"`, or left out, must not have an `agent` object.
+
+### Screenshots
+
+Each entry in `screenshots` has these fields:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `path` | string | Yes | Path to the image in the plugin package. Must end in `.png`, `.jpg`, `.jpeg`, or `.webp`, in lowercase. |
+| `alt` | string | Yes | Alternative text describing the image. Up to 200 characters. |
+| `caption` | string | No | Caption shown with the image. Up to 40 characters. |
+
+`path` and `setup_instructions` must stay inside the plugin package: they can't start with `/`, contain a `..` segment, or contain a backslash. Validation checks the form of each path, not that the file exists, so check that each file is in the package before you install.
+
+### Release notes
+
+`release_notes` describes the current `plugin_version` only. Replace it when you bump the version instead of adding to it; each version's manifest carries its own notes.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `kind` | string | Yes | `"fix"`, `"performance"`, or `"breaking"`. |
+| `title` | string | Yes | A one-line summary of the change. |
+| `body` | string | No | More detail about the change. |
+
+A complete listing for an agent:
+
+```json
+{
+  "catalog": {
+    "title": "Scribe",
+    "kind": "agent",
+    "category": "Charting",
+    "surfaces": ["Note", "Command"],
+    "keywords": ["ambient", "llm"],
+    "screenshots": [
+      {"path": "assets/chart.png", "caption": "In the chart", "alt": "A drafted note in the patient chart"}
+    ],
+    "agent": {
+      "does": "Drafts note commands from the visit transcript.",
+      "does_not": "Does not commit a draft without the provider's review.",
+      "runs_when": "A provider opens a note.",
+      "models": ["claude-sonnet-5"]
+    },
+    "setup_instructions": "setup_instructions.md",
+    "release_notes": {
+      "kind": "fix",
+      "title": "Cache transcripts",
+      "body": "Transcripts are cached between drafts, so redrafting a note is faster."
+    }
   }
 }
 ```
