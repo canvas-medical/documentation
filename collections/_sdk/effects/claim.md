@@ -144,6 +144,9 @@ class MyHandler(BaseHandler):
 
 `ClaimEffect.move_to_queue()`: moves a claim to a specific queue.
 
+<!-- source: discussion #658 -->
+{% include alert.html type="info" content="Combined with the <a href='/sdk/data-claim/'>claim data module</a> and the label effects above, this effect lets a plugin control which claims land in the coding queue. For example, when a visit does not meet your billable criteria, you can move its claim out of the coding queue to avoid manual clean-up, and use labels to categorize claims for downstream workflows." %}
+
 #### Parameters
 
 | Parameter | Type  | Description                                                                                            | Required |
