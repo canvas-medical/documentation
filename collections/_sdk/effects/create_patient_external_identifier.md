@@ -7,15 +7,24 @@ hidden: false
 
 Creates a new external identifier for a patient.
 
-### Parameters
+## Methods
 
-| Name      | Type   | Description                                 |
-|-----------|--------|---------------------------------------------|
-| patient_id| UUID   | The unique identifier of the patient.        |
-| system    | String | The system for the external identifier (url).      |
-| value     | String | The value of the external identifier.        |
+### create() → Effect
 
-### Example
+Creates the external identifier on the patient.
+
+- `value` and `patient_id` are required.
+
+## Attributes
+
+| Attribute    | Type   | Description                                    | Required |
+|--------------|--------|------------------------------------------------|----------|
+| `patient_id` | `str`  | The id of the [patient](/sdk/data-patient/).    | Yes      |
+| `system`     | `str`  | The system for the external identifier (url).  | No       |
+| `value`      | `str`  | The value of the external identifier.          | Yes      |
+
+## Example
+
 
 ```python
 from canvas_sdk.effects.patient import CreatePatientExternalIdentifier
