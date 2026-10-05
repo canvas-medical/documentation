@@ -470,7 +470,7 @@ This enables embedded applications to optimize their display area based on conte
 ## Custom HTML and Django Templates
 
 <!-- source: discussion #461 -->
-There are two ways to render content in a side drawer or modal: load a hosted page in an iframe by setting the effect's `url` (see [Implementing an Application](/sdk/handlers-applications/#implementing-an-application)), or supply custom HTML rendered from a Django template. Only HTML is supported for the template option — you cannot render a React application this way, though you can render static markup populated with data your plugin has assembled.
+Every `LaunchModalEffect` target, from a modal or side pane to a full page, and every application that opens one, renders its content in one of two ways: load a page in an iframe by setting the effect's `url` (see [Implementing an Application](/sdk/handlers-applications/#implementing-an-application)), or pass HTML in `content`, for example rendered from a Django template with `render_to_string`. Either can be a single-page application such as React: serve the page from your plugin and point `url` at it, or include the app's scripts in the HTML you pass as `content`.
 
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 

@@ -12,6 +12,10 @@ The `CommandValidationErrorEffect` returns structured error messages that are di
 
 In both cases you build a `CommandValidationErrorEffect`, attach one or more error messages, and return it from your handler.
 
+<!-- source: discussion #1513 -->
+<!-- source: discussion #822 -->
+Validating a command is the supported way to require fields, or to run any custom validation such as checking a free-text date entered in a questionnaire, **before a command is committed**. It is different from validating a note before it is locked: pre-lock validation only stops the note from being locked, and the command underneath it, such as a questionnaire, is still committed. Command validation blocks the commit itself and shows the error to the user. The [`command-validation` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/command-validation/command_validation) can be tailored to require every question on a questionnaire to be answered, or to check only specific questions or questionnaires.
+
 Where these errors are enforced differs by event: `__POST_VALIDATION` errors block a commit **only in the Canvas UI**, while `__PRE_DELETE` errors block a deletion through **both** the Canvas UI and the SDK [commands module](/sdk/commands/). Each section below covers the specifics.
 
 ## The effect
@@ -171,10 +175,6 @@ class MyHandler(BaseHandler):
 When validation errors are returned, the Canvas UI shows them to the user — the command's action buttons are disabled and the messages appear as a tooltip — so the command can't be committed there. Multiple errors can be returned at once, and all are displayed.
 
 > **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
-
-<!-- source: discussion #1513 -->
-<!-- source: discussion #822 -->
-{% include alert.html type="info" content="This effect is the supported way to require fields — or run any custom validation, such as validating a free-text date entered in a questionnaire — <b>before a command is committed</b>. It is distinct from pre-lock note validation: pre-lock validation only prevents the note from being locked, and the underlying command (for example, a questionnaire) is still committed. Command validation blocks the commit itself and surfaces the error to the user. See the <a href='https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/command-validation/command_validation'><code>command-validation</code> example plugin</a>, which can be tailored to require all questions on a questionnaire to be answered, or to look only at specific questions or questionnaires." %}
 
 ## Block a deletion
 

@@ -61,7 +61,33 @@ class MyHandler(BaseHandler):
 ```
 
 <!-- source: discussion #742 -->
-{% include alert.html type="info" content="Commands require a note id, so creating a note and populating it with commands in a single <code>compute()</code> is not supported. The recommended pattern is two handlers: the first creates the note with the <code>Note</code> effect; the second listens for the note creation event and returns <a href='/sdk/effects/#effect-types'>command effects</a> against the new note. (If you assign the note a user-set UUID as its <code>instance_id</code>, you can reuse that id when <a href='/sdk/commands/#chaining-methods-with-a-user-set-uuid'>assigning commands</a> in the same plugin action.)" %}
+To create a note and add commands to it in the same `compute()`, give the note an `instance_id` you generate, use that same value as each command's `note_uuid`, and return the note's `create()` effect before the command effects. Canvas applies a handler's effects in the order they are returned, so the note exists by the time the commands are originated:
+
+```python
+import datetime
+import uuid
+
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects.note.note import Note
+from canvas_sdk.handlers.base import BaseHandler
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        note_id = str(uuid.uuid4())
+
+        note_effect = Note(
+            instance_id=note_id,
+            note_type_id="note-type-uuid",
+            datetime_of_service=datetime.datetime.now(),
+            patient_id="patient-uuid",
+            practice_location_id="practice-location-uuid",
+            provider_id="provider-uuid",
+        )
+        plan = PlanCommand(note_uuid=note_id, narrative="Follow up in two weeks")
+
+        return [note_effect.create(), plan.originate()]
+```
 
 ### Update Note
 
@@ -166,6 +192,24 @@ class MyHandler(BaseHandler):
         return [fax_effect.apply()]
 ```
 
+### Note state transitions
+
+The state change effects below (push charges, lock, sign, unlock, check in, no show, delete, undelete, and discharge) each move a note to a new [state](/sdk/data-note/#notestates), and each is accepted only from certain current states. Which transitions a note allows depends on its note type's category, and on whether the type is billable or requires a signature. An effect applied from any other state raises `ValueError: Invalid state transition`.
+
+| Effect | Moves the note to | Allowed from |
+| --- | --- | --- |
+| `push_charges()` | `PSH` | `NEW`, `CVD`, `PSH`, `ULK`, `UND`. Billable encounter note types only, and only when the Push charges button is enabled. |
+| `lock()` | `LKD` | `NEW`, `CVD`, `ULK`, `UND`, and also `PSH` for encounter notes. Appointment notes lock only from `NSW`. |
+| `sign()` | `SGN` | `LKD`, or `SGN` to sign again. Note types with `is_sig_required` only. |
+| `unlock()` | `ULK` | `LKD`, and also `SGN` for note types with `is_sig_required`. On appointment notes, unlocking moves `LKD` back to `NSW`. |
+| `check_in()` | `CVD` | `BKD`, `RVT`, `NSW`. Appointment notes only. |
+| `no_show()` | `NSW` | `BKD`, `RVT`. Appointment notes only. |
+| `delete()` | `DLT` | `NEW`, `CVD`, `ULK`, `UND`, and also `PSH` for encounter notes. Appointment notes delete only from `SCH`. |
+| `undelete()` | `UND` | `DLT`. Not available for appointment notes. |
+| `discharge()` | `DSC` | `NEW`, `CVD`, `ULK`, `UND`. Inpatient notes only. |
+
+Notes in the remaining categories, such as message, letter, data, and search notes, accept none of these effects.
+
 ### Push Charges
 
 Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
@@ -194,9 +238,6 @@ class MyHandler(BaseHandler):
 ```
 
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
-
-<!-- source: discussion #1484 -->
-{% include alert.html type="warning" content="<b>Billing line item updates must happen before the note is locked.</b> Locking a note is the trigger that pushes its charges to the claim, so once a note is locked you can no longer change its billing details. Do not wait for a <code>NOTE_STATE_CHANGE</code> / locked event to add or update billing line items — by then the claim has already been created. Instead, respond to an earlier event such as <code>QUESTIONNAIRE_COMMAND__POST_COMMIT</code> (fired when the questionnaire's record button is clicked) to make your billing changes. To make the changes reach the claim immediately rather than at lock time, follow the billing line item update with a <code>push_charges()</code> effect on the same note in the same plugin action." %}
 
 <!-- source: discussion #1107 -->
 To change the charge amount on a claim that already exists, use the [`UpdateClaimLineItem`](/sdk/effect-claims/#updateclaimlineitem) effect. Alternatively, add [BillingLineItems](/sdk/effect-billing-line-items/) to the patient's note and then push charges so the claim is updated appropriately. The FHIR Claim API only supports changing the queue or adding a comment, so charge amounts cannot be edited there.
@@ -239,7 +280,34 @@ class MyHandler(BaseHandler):
 To conditionally allow or block a note from being locked or signed — for example, requiring that a specific command or CPT code is present, that the signer is on the patient's care team, or that the signer holds a matching state license — use the [`NOTE_STATE_CHANGE_EVENT_PRE_CREATE`](/sdk/effect-event-validation-error/) validation-error effect. When the validation fails, the effect prevents the state change and surfaces an error to the user. See the [`pre-lock-validation` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/pre-lock-validation/pre_lock_validation).
 
 <!-- source: discussion #1299 -->
-{% include alert.html type="info" content="If you need to validate billing line items (for example, ensuring a CPT code is present) and the <code>NOTE_STATE_CHANGE_EVENT_PRE_CREATE</code> effect does not fit your need, you can use a post-lock workaround: respond to <code>NOTE_STATE_CHANGE_EVENT_CREATED</code>, check that the note was just locked (<code>NoteStates.LOCKED</code>), and validate that the expected <a href='/sdk/data-billing-line-item/#billinglineitem'>BillingLineItems</a> exist on the note. This does not prevent the lock, but it lets you flag missing data immediately — for example by raising a <a href='/sdk/effect-banner-alerts/'>banner alert</a> or creating a <a href='/sdk/effect-tasks/#adding-a-task'>task</a> for the provider or billing team." %}
+For example, to block a lock until the note has a billing line item:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.validation import EventValidationError
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.billing import BillingLineItem, BillingLineItemStatus
+
+
+class RequireCptBeforeLock(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_PRE_CREATE)
+
+    def compute(self) -> list[Effect]:
+        if self.event.context.get("state") != "LKD":
+            return []
+
+        has_line_item = BillingLineItem.objects.filter(
+            note__id=self.event.context["note_id"],
+            status=BillingLineItemStatus.ACTIVE,
+        ).exists()
+        if has_line_item:
+            return []
+
+        error = EventValidationError()
+        error.add_error("Add a CPT code before locking this note.")
+        return [error.apply()]
+```
 
 ### Sign
 
@@ -680,9 +748,6 @@ Updates an existing appointment in place.
 | `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
 
 **Note**: `patient_id` cannot be updated after creation.
-
-<!-- source: discussion #958 -->
-{% include alert.html type="warning" content="Appointment <a href='/sdk/data-appointment/'>data records</a> are read-only. Calling <code>.save()</code> on an <code>Appointment</code> data object raises <code>permission denied for view ...</code>. To change an appointment, read its current data, then build and return an <code>Appointment</code> update effect (imported as <code>from canvas_sdk.effects.note.appointment import Appointment</code>) instead." %}
 
 #### Example Usage
 

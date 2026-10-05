@@ -66,21 +66,57 @@ You don't set the line item's description in your plugin. When the line item is 
 <!-- source: discussion #1376 -->
 ### Adding billing codes from an external system
 
-To populate diagnosis and CPT codes in a note footer from an external billing system, expose a [Simple API](/sdk/handlers-simple-api-http/) endpoint that accepts a payload (for example, a note id, a CPT code, units, and a list of ICD-10 codes), resolves the relevant note and assessments, and returns an `AddBillingLineItem` effect. The `assessment_ids` map to the note's assessments and act as the diagnosis pointers for the line item. A complete reference implementation is available in the [`cpt-billing-api` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/cpt-billing-api/cpt_billing_api).
+To populate diagnosis and CPT codes in a note footer from an external billing system, expose a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint that the system can call. The endpoint receives the note, CPT code, units, and ICD-10 codes, matches the ICD-10 codes to the note's assessments, and returns an `AddBillingLineItem` effect whose `assessment_ids` act as the line item's diagnosis pointers. This example authenticates with [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), which checks requests against a plugin secret named `simpleapi-api-key`:
 
-```python?partial=true
+```python
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
 from canvas_sdk.effects.billing_line_item import AddBillingLineItem
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPIRoute
+from canvas_sdk.v1.data.assessment import Assessment
 
-effect = AddBillingLineItem(
-    note_id=note_id,
-    cpt=cpt_code,
-    units=units,
-    assessment_ids=assessment_ids,
-)
-return [effect.apply(), json_response]
+
+class BillingAPI(APIKeyAuthMixin, SimpleAPIRoute):
+    PATH = "/billing/add-line-item"
+
+    def post(self) -> list[Response | Effect]:
+        # {"note_id": "...", "cpt_code": "99213", "units": 1, "icd10_codes": ["E119", "I10"]}
+        body = self.request.json()
+        note_id = body["note_id"]
+        icd10_codes = {code.upper().replace(".", "") for code in body.get("icd10_codes", [])}
+
+        # Use each of the note's assessments whose condition carries a requested ICD-10 code
+        assessment_ids = [
+            str(assessment.id)
+            for assessment in Assessment.objects.filter(note__id=note_id).select_related("condition")
+            if assessment.condition
+            and any(
+                coding.system == "ICD-10" and coding.code.upper().replace(".", "") in icd10_codes
+                for coding in assessment.condition.codings.all()
+            )
+        ]
+
+        effect = AddBillingLineItem(
+            note_id=note_id,
+            cpt=body["cpt_code"],
+            units=body.get("units", 1),
+            assessment_ids=assessment_ids,
+        )
+
+        return [
+            effect.apply(),
+            JSONResponse(
+                {"message": "Billing line item sent to Canvas", "assessment_ids": assessment_ids},
+                status_code=HTTPStatus.CREATED,
+            ),
+        ]
 ```
 
-{% include alert.html type="warning" content="The billing line item is added to the note footer, not directly to a claim. As with any billing change, it must be applied before the note is locked (locking pushes charges to the claim). If the API call succeeds but nothing appears on the note, confirm the note is unlocked and that the <code>note_id</code> resolves to the intended note." %}
+The [`cpt-billing-api` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/cpt-billing-api/cpt_billing_api) builds on this with request validation, a check that the CPT code is active in the charge description master, and a response listing which ICD-10 codes matched.
+
+{% include alert.html type="warning" content="The billing line item is added to the note footer, not directly to a claim. As with any billing change, it must be applied before the note is locked, because locking pushes the note's charges to the claim. To apply it to the claim right away instead of at lock time, follow it with the Note effect's <a href='/sdk/effect-notes/#push-charges'><code>push_charges()</code></a> on the same note. If the API call succeeds but nothing appears on the note, confirm the note is unlocked and that the <code>note_id</code> resolves to the intended note." %}
 
 ## Updating a Billing Line Item
 

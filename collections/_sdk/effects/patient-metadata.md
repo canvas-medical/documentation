@@ -19,10 +19,7 @@ Patient metadata serves as a powerful extension mechanism for storing custom pat
 | Attribute    | Type  | Description                                                         | Required |
 |--------------|-------|---------------------------------------------------------------------|----------|
 | `patient_id` | `str` | Id of the [Patient(/sdk/data-patient/)] record to associate metadata with                 | Yes      |
-| `key`        | `str` | Unique identifier for the metadata entry within the patient context. Maximum 32 characters. | Yes      |
-
-<!-- source: discussion #1553 -->
-{% include alert.html type="warning" content="The patient metadata <code>key</code> has a maximum length of <b>32 characters</b>. Supplying a longer key causes patient demographics updates to fail at submit time, including updates to fields unrelated to the metadata. Keep keys within this limit." %}
+| `key`        | `str` | Unique identifier for the metadata entry within the patient context. Maximum 256 characters. | Yes      |
 
 ## Methods
 
