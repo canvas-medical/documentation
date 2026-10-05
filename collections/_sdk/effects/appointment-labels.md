@@ -17,22 +17,17 @@ Labels are a powerful way to categorize and track appointments. Canvas supports 
 
 The `AddAppointmentLabel` effect adds one or more labels to an existing appointment.
 
-### Attributes
+### Methods
 
-| Attribute        | Type      | Description                                                             | Required |
-|------------------|-----------|-------------------------------------------------------------------------|----------|
-| `appointment_id` | `str`     | ID of the appointment to add labels to                                  | Yes      |
-| `labels`         | `set[str]`| Set of label names to add (1-3 labels total per appointment)            | Yes      |
-
-### apply() → Effect
+#### apply() → Effect
 
 Adds the specified labels to the appointment.
 
-#### Returns
+##### Returns
 
 An `Effect` object configured for adding appointment labels.
 
-#### Behavior
+##### Behavior
 
 - Labels are added to the appointment if the total count doesn't exceed 3
 - Labels are automatically sorted for consistency
@@ -41,7 +36,14 @@ An `Effect` object configured for adding appointment labels.
 - Validates label names are non-empty strings
 - Returns an error if adding labels would exceed the 3-label limit
 
-#### Example Usage
+### Attributes
+
+| Attribute        | Type      | Description                                                             | Required |
+|------------------|-----------|-------------------------------------------------------------------------|----------|
+| `appointment_id` | `str`     | ID of the appointment to add labels to                                  | Yes      |
+| `labels`         | `set[str]`| Set of label names to add (1-3 labels total per appointment)            | Yes      |
+
+### Example
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import AddAppointmentLabel
@@ -87,6 +89,22 @@ def handle_validation_errors():
 
 The `RemoveAppointmentLabel` effect removes one or more labels from an existing appointment.
 
+### Methods
+
+#### apply() → Effect
+
+Removes the specified labels from the appointment.
+
+##### Returns
+
+An `Effect` object configured for removing appointment labels.
+
+##### Behavior
+
+- Removes the specified labels from the appointment
+- Non-existent labels are ignored (no error thrown)
+- Validates the appointment exists before removing labels
+
 ### Attributes
 
 | Attribute        | Type      | Description                                                             | Required |
@@ -94,21 +112,7 @@ The `RemoveAppointmentLabel` effect removes one or more labels from an existing 
 | `appointment_id` | `str`     | ID of the appointment to remove labels from                             | Yes      |
 | `labels`         | `set[str]`| Set of label names to remove                                            | Yes      |
 
-### apply() → Effect
-
-Removes the specified labels from the appointment.
-
-#### Returns
-
-An `Effect` object configured for removing appointment labels.
-
-#### Behavior
-
-- Removes the specified labels from the appointment
-- Non-existent labels are ignored (no error thrown)
-- Validates the appointment exists before removing labels
-
-#### Example Usage
+### Example
 
 ```python?partial=true
 from canvas_sdk.effects.note.appointment import RemoveAppointmentLabel

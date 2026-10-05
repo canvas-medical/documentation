@@ -9,18 +9,28 @@ The Canvas SDK allows you to create, update, and remove Billing Line Items from 
 
 ## Adding a Billing Line Item
 
-To add a billing line item to a note, import the `AddBillingLineItem` class, create an
-instance of it, and return the `.apply()` method from compute.
+To add a billing line item to a note, build an `AddBillingLineItem` and return its `apply()` from your handler.
 
-| Attribute      |          | Type         | Description                                                                                                   |
-| -------------- | -------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| note_id        | required | String       | The id of the [Note](/sdk/data-note/) where the line item should be associated.                               |
-| cpt            | required | String       | The billing code to use for the line item.                                                                    |
-| units          | optional | Integer      | The number of units to bill for the code. Defaults to `1` if not provided.                                    |
-| assessment_ids | optional | list[String] | List of Assessment ids from the note that are relevant to the code, also referred to as "diagnosis pointers". |
-| modifiers      | optional | list[Coding] | The modifiers to create with the billing code.                                                                |
+### Methods
 
-**Example:**
+#### apply() → Effect
+
+Adds the billing line item to the note's footer.
+
+- `note_id` and `cpt` are required.
+- `units` defaults to `1`.
+
+### Attributes
+
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| note_id | String | The id of the [Note](/sdk/data-note/) where the line item should be associated. | Yes |
+| cpt | String | The billing code to use for the line item. | Yes |
+| units | Integer | The number of units to bill for the code. Defaults to `1` if not provided. | No |
+| assessment_ids | list[String] | List of Assessment ids from the note that are relevant to the code, also referred to as "diagnosis pointers". | No |
+| modifiers | list[Coding] | The modifiers to create with the billing code. | No |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -120,18 +130,28 @@ The [`cpt-billing-api` example plugin](https://github.com/Medical-Software-Found
 
 ## Updating a Billing Line Item
 
-To update a billing line item to a note, import the `UpdateBillingLineItem` class, create an
-instance of it, and return the `.apply()` method from compute.
+To update a billing line item, build an `UpdateBillingLineItem` and return its `apply()` from your handler.
 
-| Attribute            |          | Type         | Description                                                                                                   |
-| -------------------- | -------- | ------------ | ------------------------------------------------------------------------------------------------------------- |
-| billing_line_item_id | required | String       | The id of the [BillingLineItem](/sdk/data-billing-line-item/) to update.                                      |
-| cpt                  | optional | String       | The billing code to use for the line item.                                                                    |
-| units                | optional | Integer      | The number of units to bill for the code.                                                                     |
-| assessment_ids       | optional | list[String] | List of Assessment ids from the note that are relevant to the code, also referred to as "diagnosis pointers". |
-| modifiers            | optional | list[Coding] | The modifiers to create with the billing code.                                                                |
+### Methods
 
-**Example:**
+#### apply() → Effect
+
+Updates the billing line item.
+
+- `billing_line_item_id` is required.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
+### Attributes
+
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| billing_line_item_id | String | The id of the [BillingLineItem](/sdk/data-billing-line-item/) to update. | Yes |
+| cpt | String | The billing code to use for the line item. | No |
+| units | Integer | The number of units to bill for the code. | No |
+| assessment_ids | list[String] | List of Assessment ids from the note that are relevant to the code, also referred to as "diagnosis pointers". | No |
+| modifiers | list[Coding] | The modifiers to create with the billing code. | No |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -173,15 +193,23 @@ class MyHandler(BaseHandler):
 
 ## Removing a Billing Line Item
 
-To remove a billing line item to a note, import the `RemoveBillingLineItem` class, create an
-instance of it, and return the `.apply()` method from compute.
+To remove a billing line item, build a `RemoveBillingLineItem` and return its `apply()` from your handler.
 
-| Attribute            |          | Type   | Description                                                              |
-| -------------------- | -------- | ------ | ------------------------------------------------------------------------ |
-| billing_line_item_id | required | String | The id of the [BillingLineItem](/sdk/data-billing-line-item/) to update. |
-|                      |
+### Methods
 
-**Example:**
+#### apply() → Effect
+
+Removes the billing line item from the note's footer.
+
+- `billing_line_item_id` is required.
+
+### Attributes
+
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| billing_line_item_id | String | The id of the [BillingLineItem](/sdk/data-billing-line-item/) to remove. | Yes |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
