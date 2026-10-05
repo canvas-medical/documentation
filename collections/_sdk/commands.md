@@ -447,7 +447,7 @@ Four more commands act on a condition that is already on the chart.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [Assess](#assess) | You are recording an assessment against a condition on the chart, named by `condition_id` or `icd10_code`. Assessing a resolved condition makes it active again. |
 | [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
 | [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
 | [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
@@ -685,7 +685,7 @@ assess = AssessCommand(
 
 **Validation**:
 
-Setting both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command.
+Setting both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command, with the error `Name the condition with either condition_id or icd10_code, not both`.
 
 `condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
 

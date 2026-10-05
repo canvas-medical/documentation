@@ -5522,7 +5522,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is picked in an Assess command. <code>data.condition</code> describes the pick. When the pick is an ICD-10 code the patient doesn't have charted yet, <code>id</code> is <code>null</code> and <code>codings</code> holds the picked code, because the condition isn't recorded until the command is committed.</td></tr>
+    <tr><td colspan="2">Occurs when a condition is picked in an Assess command. <code>data.condition</code> describes the pick. When the pick is an ICD-10 code the patient doesn't have charted yet, <code>id</code> is <code>null</code> and <code>codings</code> holds the picked code. The condition isn't recorded until the command is committed.</td></tr>
   </thead>
   <tbody>
     <tr>
