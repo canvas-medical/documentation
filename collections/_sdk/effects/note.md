@@ -601,6 +601,7 @@ The `Appointment` effect facilitates creating, updating, and cancelling patient 
 - Validates that the appointment note type exists, is of category `ENCOUNTER`, and is scheduleable
 - Ensures the patient exists in the system
 - Verifies that the practice location and provider exist
+- Records one `SCH` (Scheduling) and one `BKD` (Booked) entry in the appointment note's [state history](/sdk/data-note/#notestatechangeevent). Both entries have the user who triggered the effect as their `originator`, or Canvas Bot if no user triggered it. The note's own `originator` is the appointment's provider.
 
 ### Example Usage
 
@@ -681,6 +682,8 @@ Reschedules an existing appointment by creating a new appointment and cancelling
 | `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
 
 **Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
+
+Rescheduling adds a `BKD` (Booked) entry to the appointment note's [state history](/sdk/data-note/#notestatechangeevent). The entry has the user who triggered the effect as its `originator`, or Canvas Bot if no user triggered it.
 
 #### Example Usage
 
