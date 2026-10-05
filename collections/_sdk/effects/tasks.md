@@ -9,23 +9,33 @@ The Canvas SDK includes functionality to create, update and add comments to task
 
 ## Adding a Task
 
-To add a task, import the `AddTask` class and create an instance of it.
+To add a task, build an `AddTask` and return its `apply()` from your handler.
 
-| Attribute          |          | Type               | Description                                                                          |
-|--------------------|----------|--------------------|--------------------------------------------------------------------------------------|
-| id                 | optional | string or UUID     | Task unique UUID. If none one will be generated automatically.                       |
-| assignee_id        | optional | string             | The id of the [staff](/sdk/data-staff/) the task should be assigned to.              |
-| team_id            | optional | string             | The id of the [team](/sdk/data-team/) the task should be assigned to.                |
-| patient_id         | optional | string             | The id of the [patient](/sdk/data-patient/) the task is associated with.             |
-| title              | required | string             | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
-| due                | optional | datetime           | A date/time when the task is due.                                                    |
-| status             | optional | TaskStatus         | A status of OPEN, CLOSED or COMPLETED. Defaults to OPEN if not supplied.             |
-| priority           | optional | TaskPriority       | A priority of `STAT`, `URGENT`, or `ROUTINE`. Defaults to no priority if not supplied. |
-| labels             | optional | list[string]       | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
-| author_id          | optional | string or UUID     | Author's id to set task creator, defaults to CanvasBot.                              |
-| linked_object_id   | optional | string or UUID     | Linked object id of linked object.                                                   |
-| linked_object_type | optional | LinkableObjectType | Type of the [LinkedObject](#linked-object-type)                                      |
+### Methods
 
+#### apply() → Effect
+
+Creates the task.
+
+- `title` is required.
+- `id` is optional. Canvas generates one when it is omitted; set it yourself to reference the new task from another effect in the same handler, as in [Creating a task and a comment together](#creating-a-task-and-a-comment-together).
+
+### Attributes
+
+| Attribute          | Type               | Description                                                                          | Required |
+|--------------------|--------------------|--------------------------------------------------------------------------------------|----------|
+| id                 | string or UUID     | Task unique UUID. If none is supplied, one is generated automatically.               | No       |
+| assignee_id        | string             | The id of the [staff](/sdk/data-staff/) the task should be assigned to.              | No       |
+| team_id            | string             | The id of the [team](/sdk/data-team/) the task should be assigned to.                | No       |
+| patient_id         | string             | The id of the [patient](/sdk/data-patient/) the task is associated with.             | No       |
+| title              | string             | The title of the task. This is displayed at the top of a task card in the Canvas UI. | Yes      |
+| due                | datetime           | A date/time when the task is due.                                                    | No       |
+| status             | TaskStatus         | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     | No       |
+| priority           | TaskPriority       | A priority of `STAT`, `URGENT`, or `ROUTINE`. Defaults to no priority if not supplied. | No       |
+| labels             | list[string]       | A list of labels that will be added at the bottom of a task card in the Canvas UI.   | No       |
+| author_id          | string or UUID     | Author's id to set task creator, defaults to CanvasBot.                              | No       |
+| linked_object_id   | string or UUID     | Linked object id of linked object.                                                   | No       |
+| linked_object_type | LinkableObjectType | Type of the [LinkedObject](#linked-object-type)                                      | No       |
 
 ### Enumeration Types
 
@@ -44,6 +54,7 @@ To add a task, import the `AddTask` class and create an instance of it.
 | URGENT  | The request should be actioned promptly — higher priority than routine.                |
 | ROUTINE | The request has normal priority.                                                       |
 
+### Example
 
 An example of adding a task:
 
@@ -96,19 +107,32 @@ class MyHandler(BaseHandler):
 
 ## Updating a Task
 
-To update an existing task, import the `UpdateTask` class and create an instance of it.
+To update an existing task, build an `UpdateTask` and return its `apply()` from your handler.
 
-| Attribute   |          | Type           | Description                                                                          |
-|-------------|----------|----------------|--------------------------------------------------------------------------------------|
-| id          | required | string         | The id of the task being updated.                                                    |
-| assignee_id | optional | string         | The id of the [staff](/sdk/data-staff/) the task should be assigned to.              |
-| team_id     | optional | string         | The id of the [team](/sdk/data-team/) the task should be assigned to.                |
-| patient_id  | optional | string         | The id of the [patient](/sdk/data-patient/) the task is associated with.             |
-| title       | optional | string         | The title of the task. This is displayed at the top of a task card in the Canvas UI. |
-| due         | optional | datetime       | A date/time when the task is due.                                                    |
-| status      | optional | TaskStatus     | A status of `OPEN`, `CLOSED` or `COMPLETED`. Defaults to `OPEN` if not supplied.     |
-| priority    | optional | TaskPriority   | A priority of `STAT`, `URGENT`, or `ROUTINE`. See [TaskPriority](#taskpriority).      |
-| labels      | optional | list[string]   | A list of labels that will be added at the bottom of a task card in the Canvas UI.   |
+### Methods
+
+#### apply() → Effect
+
+Updates the task.
+
+- `id` is required, and must be the id of an existing task.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
+### Attributes
+
+| Attribute   | Type           | Description                                                                          | Required |
+|-------------|----------------|--------------------------------------------------------------------------------------|----------|
+| id          | string         | The id of the task being updated.                                                    | Yes      |
+| assignee_id | string         | The id of the [staff](/sdk/data-staff/) the task should be assigned to.              | No       |
+| team_id     | string         | The id of the [team](/sdk/data-team/) the task should be assigned to.                | No       |
+| patient_id  | string         | The id of the [patient](/sdk/data-patient/) the task is associated with.             | No       |
+| title       | string         | The title of the task. This is displayed at the top of a task card in the Canvas UI. | No       |
+| due         | datetime       | A date/time when the task is due.                                                    | No       |
+| status      | TaskStatus     | A status of `OPEN`, `CLOSED` or `COMPLETED`.                                          | No       |
+| priority    | TaskPriority   | A priority of `STAT`, `URGENT`, or `ROUTINE`. See [TaskPriority](#taskpriority).      | No       |
+| labels      | list[string]   | A list of labels that will be added at the bottom of a task card in the Canvas UI.   | No       |
+
+### Example
 
 An example of updating a task to a status of `COMPLETED`:
 
@@ -129,17 +153,25 @@ class MyHandler(BaseHandler):
 
 ## Adding a comment to a task
 
-To add a comment to a task, import the `AddTaskComment` class and create an instance of it.
+To add a comment to a task, build an `AddTaskComment` and return its `apply()` from your handler.
 
-<!-- source: discussion #787 -->
-{% include alert.html type="warning" content="Task creation is asynchronous, so the task's id is not available within the same <code>compute()</code> that returns the <code>AddTask</code> effect — reading <code>add_task.task.id</code> there returns <code>None</code>, and an <code>AddTaskComment</code> built from it fails because <code>task_id</code> is required. To comment on a newly created task, split the work across two handlers: the first returns <code>[add_task.apply()]</code> to create the task; the second listens for the <a href='/sdk/events/#tasks'>TASK_CREATED event</a> and then returns the <code>AddTaskComment</code> effect. If you need to carry data between the two steps, use the <a href='/sdk/caching/'>caching function</a>." %}
+### Methods
 
-| Attribute |          | Type           | Description                                                     |
-|-----------|----------|----------------|-----------------------------------------------------------------|
-| task_id   | required | string         | The id of the task being updated.                               |
-| body      | required | string         | The comment body.                                               |
-| author_id | optional | string or UUID | Author's id to set task comment creator, defaults to CanvasBot. |
+#### apply() → Effect
 
+Adds the comment to the task.
+
+- `task_id` and `body` are required. To comment on a task created in the same handler, see [Creating a task and a comment together](#creating-a-task-and-a-comment-together).
+
+### Attributes
+
+| Attribute | Type           | Description                                                     | Required |
+|-----------|----------------|-----------------------------------------------------------------|----------|
+| task_id   | string         | The id of the task the comment is added to.                     | Yes      |
+| body      | string         | The comment body.                                               | Yes      |
+| author_id | string or UUID | Author's id to set task comment creator, defaults to CanvasBot. | No       |
+
+### Example
 
 ```python
 from canvas_sdk.effects.task import AddTaskComment
