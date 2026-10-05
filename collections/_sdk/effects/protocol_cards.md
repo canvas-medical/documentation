@@ -29,6 +29,8 @@ Creates the protocol card, or updates the existing card with the same patient an
 
 - `key` is required.
 - Exactly one of `patient_id` or `patient_filter` is required.
+- The existing card is matched on patient, `key`, and the plugin that sends it, so two plugins using the same `key` each get their own card.
+- Re-applying replaces every field on the card. To change a card's `status`, for example from `DUE` to `SATISFIED`, send the whole card again with the new status.
 
 ### add_recommendation(title: str = "", button: str = "", href: str | None = None, commands: list | None = None) → None
 
