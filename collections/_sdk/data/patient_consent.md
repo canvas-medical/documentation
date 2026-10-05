@@ -129,7 +129,7 @@ for reference in consent.document_references:
 | is_proof_required      | Boolean                                                       |                  |
 | show_in_patient_portal | Boolean                                                       |                  |
 | summary                | String                                                        |                  |
-| document               | String                                                        |                  |
+| document               | File                                                          |                  |
 | document_url           | String (computed)                                             | Presigned S3 URL |
 | patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |                  |
 

@@ -417,7 +417,7 @@ Represents a patient's uploaded avatar photo.
 | created    | DateTime            |
 | modified   | DateTime            |
 | patient    | [Patient](#patient) |
-| url        | String              |
+| url        | File                |
 | title      | String              |
 
 ```python
@@ -440,7 +440,7 @@ Represents a patient identification card image (e.g., driver's license, insuranc
 | created    | DateTime            |                  |
 | modified   | DateTime            |                  |
 | patient    | [Patient](#patient) |                  |
-| image      | String              |                  |
+| image      | File                |                  |
 | title      | String              |                  |
 | active     | Boolean             |                  |
 | image_url  | String (computed)   | Presigned S3 URL |

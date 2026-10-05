@@ -55,6 +55,19 @@ The `filter` method can be used to filter by desired attributes. The following e
 ['Foo', 'Bar']
 ```
 
+## Accessing the logo
+
+The `logo_url` property returns a presigned S3 URL for the business line's logo image, or `None` when no logo is set. The URL is valid for one hour.
+
+```python
+from canvas_sdk.v1.data import BusinessLine
+
+business_line = BusinessLine.objects.filter(active=True).first()
+
+# Returns a presigned S3 URL (valid for 1 hour), or None
+url = business_line.logo_url if business_line else None
+```
+
 ## Attributes
 
 ### BusinessLine
@@ -72,7 +85,9 @@ The `filter` method can be used to filter by desired attributes. The following e
 | active       | Boolean                                 |
 | state        | [BusinessLineState](#businesslinestate) |
 | organization | [Organization](/sdk/data-organization)  |
+| logo         | File                                    |
 | patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
+| logo_url     | String (computed)                       |
 
 ## Enumeration types
 

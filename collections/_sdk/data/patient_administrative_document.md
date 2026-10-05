@@ -129,7 +129,7 @@ Clinical document types are stored as [UncategorizedClinicalDocument](/sdk/data-
 | original_date           | Date                                                                       |                                                |
 | comment                 | String                                                                     |                                                |
 | priority                | Boolean                                                                    |                                                |
-| document                | String                                                                     |                                                |
+| document                | File                                                                       |                                                |
 | document_url            | String (computed)                                                          | Presigned S3 URL or None                       |
 | patient_consents        | QuerySet[[PatientConsent](/sdk/data-patient-consent/#patientconsent)]      | The consents this document is a signed copy of |
 

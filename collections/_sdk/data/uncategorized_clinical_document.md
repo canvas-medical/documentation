@@ -89,9 +89,24 @@ The `code` field comes from the document's type, which is drawn from a fixed lis
 
 Administrative document types are stored as [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) instead. Lab reports, imaging reports and specialist consult reports have their own models, so their codings never appear here.
 
+## Accessing the document file
+
+The `document_url` property returns a presigned S3 URL for the document file, or `None` when no file is present. The URL is valid for one hour.
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument
+
+record = UncategorizedClinicalDocument.objects.get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+# Returns a presigned S3 URL (valid for 1 hour), or None
+url = record.document_url
+```
+
 ## The document reference
 
-`UncategorizedClinicalDocument` carries the document's type, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the record, which is also how the document appears in the FHIR API.
+Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the document's coding, category and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
 
 To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
 
@@ -140,6 +155,8 @@ url = document.document_url if document else None
 | original_date      | Date                                                                        |
 | comment            | String                                                                      |
 | priority           | Boolean                                                                     |
+| document           | File                                                                        |
+| document_url       | String (computed)                                                           |
 
 ### UncategorizedClinicalDocumentReview
 
