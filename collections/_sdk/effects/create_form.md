@@ -16,6 +16,7 @@ Build a `PatientMetadataCreateFormEffect` with the [form fields](#formfield) to 
 Displays the form fields in the patient profile.
 
 - `form_fields` is required.
+- `options` may only be set on fields whose `type` is `InputType.SELECT`.
 
 ## Attributes
 
@@ -32,7 +33,7 @@ Displays the form fields in the patient profile.
 | `type`     | `InputType` | The type of the input: `TEXT`, `SELECT`, or `DATE`. Defaults to `TEXT`. |
 | `required` | `bool`      | Whether the input is required. Defaults to `False`.          |
 | `editable` | `bool`      | Whether the input can be edited. Defaults to `True`.         |
-| `options`  | `list[str]` | Possible options when the input type is `SELECT`.            |
+| `options`  | `list[str]` | Possible options when the input type is `SELECT`. Only allowed on `SELECT` fields. |
 
 ## Example
 
