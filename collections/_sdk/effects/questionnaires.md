@@ -406,17 +406,25 @@ Creates a questionnaire while your plugin runs.
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 ```
 
-#### Attributes
-
-| Attribute     | Required | Type                                        | Description                             |
-|---------------|----------|---------------------------------------------|-----------------------------------------|
-| questionnaire | Yes      | [QuestionnaireConfig](#field-reference) | The questionnaire definition to create. |
-
-`.apply()` takes no arguments and returns an `Effect` for your handler to return:
+Build a `CreateQuestionnaire` with the questionnaire definition, then return its `apply()` from your handler:
 
 ```python?partial=true
 CreateQuestionnaire(questionnaire=config).apply()
 ```
+
+#### Methods
+
+##### apply() → Effect
+
+Creates the questionnaire, superseding any questionnaire with the same name (see [Versioning](#versioning)).
+
+- `questionnaire` is required, and must pass the checks under [Validation](#validation).
+
+#### Attributes
+
+| Attribute       | Type                                    | Description                             | Required |
+|-----------------|-----------------------------------------|-----------------------------------------|----------|
+| `questionnaire` | [QuestionnaireConfig](#field-reference) | The questionnaire definition to create. | Yes      |
 
 #### Validation
 
@@ -593,18 +601,27 @@ The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medica
 <!-- source: discussion #1404 -->
 {% include alert.html type="info" content="The <code>narrative</code> property is the customer-facing string shown alongside the result — it is separate from the numeric <code>score</code>. Use <code>score</code> to store the calculated numeric value and <code>narrative</code> to provide a more user-friendly description, for example <code>'Score: {score}'</code> or <code>'A score of {score} indicates {result}'</code>, giving providers context for how to react to the score. Note that whether a result appears in the Social Determinants section depends on how the questionnaire itself was configured to display there (via the SDK YAML <code>display_results_in_social_history_section</code> / <code>display_result_in_social_history_section</code> attributes, the <b>Display in Social Determinants</b> checkbox in the Questionnaire Builder, or the <code>use_in_shx</code> column when uploading via Google Sheets) — not on the effect alone." %}
 
+Build a `CreateQuestionnaireResult` with the attributes below, then return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Records the result against the interview.
+
+- `interview_id`, `score`, `code_system`, and `code` are required, and `interview_id` must be the id of an existing interview.
+- `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
+
 ### Attributes
 
-| Attribute    | Required | Type   | Description                                                                                          |
-|--------------|----------|--------|------------------------------------------------------------------------------------------------------|
-| interview_id | Yes      | string | The id of the interview to associate the result with.                                                |
-| score        | Yes      | float  | The numerical score of the questionnaire result.                                                     |
-| abnormal     | No       | bool   | Whether the result is considered abnormal. Defaults to `False`.                                      |
-| narrative    | No       | string | A text description of the result and any recommended follow-up actions. Defaults to an empty string. |
-| code_system  | Yes*     | string | The code system used to identify the questionnaire, for example `"INTERNAL"`.                        |
-| code         | Yes*     | string | The code identifying the questionnaire within the code system, for example `"mchat_scoring"`.        |
-
-\* `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
+| Attribute      | Type    | Description                                                                                          | Required |
+|----------------|---------|------------------------------------------------------------------------------------------------------|----------|
+| `interview_id` | `str`   | The id of the interview to associate the result with.                                                | Yes      |
+| `score`        | `float` | The numerical score of the questionnaire result.                                                     | Yes      |
+| `abnormal`     | `bool`  | Whether the result is considered abnormal. Defaults to `False`.                                      | No       |
+| `narrative`    | `str`   | A text description of the result and any recommended follow-up actions. Defaults to an empty string. | No       |
+| `code_system`  | `str`   | The code system used to identify the questionnaire, for example `"INTERNAL"`.                        | Yes      |
+| `code`         | `str`   | The code identifying the questionnaire within the code system, for example `"mchat_scoring"`.        | Yes      |
 
 ### Examples
 
