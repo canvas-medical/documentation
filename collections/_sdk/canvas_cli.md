@@ -167,7 +167,7 @@ test_*.py
 ```
 
 <!-- source: discussion #608 -->
-If a `canvas install` reports success but the runtime keeps executing the previous version of the plugin, first run `canvas logs` in a second terminal while reinstalling — load-time errors (syntax errors, disallowed/sandbox-violating imports) prevent the new version from being loaded and show up there. Note that the plugin-reload signaling now relies on the Redis client's built-in reconnect/backoff handling, which makes reinstalled plugin code picked up reliably; earlier versions could occasionally keep running stale code after a reconnect.
+If a `canvas install` reports success but the runtime keeps executing the previous version of the plugin, first run `canvas logs` in a second terminal while reinstalling — load-time errors (syntax errors, disallowed/sandbox-violating imports) prevent the new version from being loaded and show up there.
 
 <!-- source: discussion #795 -->
 Plugin install can fail with an HTTP 500 when too many files are included in the packaged tarball — most often because a Python virtual environment directory was created inside the plugin directory. Files and directories whose names begin with a `.` are excluded from the tarball, so prefixing the virtualenv folder with a dot (for example renaming `canvas-env` to `.canvas-env`) excludes it and resolves the error.

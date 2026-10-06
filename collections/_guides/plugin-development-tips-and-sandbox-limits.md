@@ -30,8 +30,6 @@ If a handler fails to load (for example, an import error at install time), only 
 
 Deploying plugins does **not** require any IP allowlisting. You only need the correct OAuth authentication, as described in [Your First Plugin](/guides/your-first-plugin/#2-configure-the-canvas-cli-for-your-instances) and [customer authentication](/api/customer-authentication/).
 
-IP allowlisting is only relevant for **read-replica database access**. If your team needs that, [file a support ticket](https://portal.usepylon.com/canvas-medical/forms/standard) and the Canvas team will set it up.
-
 ## Sharing code between modules in a plugin
 
 A plugin can import its own modules. If you have several handlers that do nearly the same thing, factor the shared logic into a base class and import it by its full path from the plugin package (here the plugin package is `my_plugin`):

@@ -17,25 +17,7 @@ this page, validates it, and emits the effects. The
 <!-- source: discussion #1470 -->
 Note content such as HPI, Review of Systems, Physical Exam, Assessment, and Plan is populated programmatically through this commands module. A common pattern for external integrations is to expose a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint that uses the [Create Note](/sdk/effect-notes/#create-note) effect to create the note and then originates commands into it. See the [charting API examples](/sdk/example-charting_api_examples/) plugin for a worked example.
 
-<!-- source: discussion #491 -->
-<!-- source: discussion #490 -->
-If you are using the beta Commands API, every field value must be nested under a `values` key alongside `schemaKey` and `noteKey` — values placed at the top level are ignored and the command is created empty. For the `assess` command, `condition.value` must be the condition's dbid. For example:
-
-```json
-{
-    "schemaKey": "assess",
-    "noteKey": "<note uuid>",
-    "values": {
-        "condition": {
-            "text": "Bitten by orca, initial encounter (W56.21XA)",
-            "value": "<condition dbid>"
-        },
-        "background": "background for condition",
-        "status": "stable",
-        "narrative": "today's assessment"
-    }
-}
-```
+To write commands from an outside system over HTTP, use [`CommandAPI`](/sdk/handlers-simple-api-commands/), which turns a command into an endpoint and validates each request against the command.
 
 <!-- source: discussion #1375 -->
 "Commands" is an umbrella term for all the structured data within a patient's note. Questionnaire is one specific command type. When a questionnaire is built, its use case in charting can be set to Physical Exam, Structured Assessment, Review of Systems, or Questionnaire; these all share the same underlying database structure but appear in the note as their own distinct command. The `.originate()` method works on all command types.
@@ -355,7 +337,7 @@ This handles the origination and commit in a single effect, without needing to m
 
 ### Chaining Methods with a User-set UUID
 
-If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see [Usage Example](#usage-example)). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This chaining is necessary because a handler returns all of its effects at once, so it cannot read back an id that Canvas assigns during origination.
 
 ```python
 from uuid import uuid4
@@ -2082,7 +2064,7 @@ The questionnaire referenced by `questionnaire_id` must have been built with a u
 
 <!-- source: discussion #1218 -->
 <!-- source: discussion #1381 -->
-**Order matters when populating responses.** When you return both `originate()` and `edit()`, list `originate()` **first** so the command is inserted with the correct `command_uuid` before its questions are edited. Returning `edit()` before `originate()` causes the responses not to populate. Iterate over `exam.questions`, check each question's type, and call `question.add_response(...)` with the appropriate keyword argument for that type (see the [Questionnaire usage example](#usage-example)):
+**Populating responses.** Responses you record on the command, with `answers` or with `question.add_response(...)`, are applied when the command is originated, so a single `originate()` inserts the exam with its responses filled in. To record responses with `add_response()`, iterate over `exam.questions` and call it with the keyword argument for each question's type (see the [Questionnaire usage example](#usage-example)):
 
 ```python?partial=true
 from uuid import uuid4
@@ -2101,11 +2083,10 @@ for question in exam.questions:
     elif question.label == "Notes":
         question.add_response(text="Self-applied gauze with cohesive wrap.")
 
-# originate() must come before edit() so responses populate
-return [exam.originate(line_number=1), exam.edit()]
+return [exam.originate(line_number=1)]
 ```
 
-If you want the exam committed as well, return three effects in order: `originate()`, `edit()`, then `commit()`.
+To commit the exam as well, call `exam.originate(line_number=1, commit=True)`. To change the responses of an exam that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
 
 <a id="toggle-questions"></a>
 #### Toggle Questions Feature
@@ -2429,8 +2410,7 @@ class MyHandler(BaseHandler):
 
  - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
 
-<!-- source: discussion #528 -->
-- **Responses cannot be prefilled on origination.** A questionnaire command cannot be originated with its responses already filled in. Populating responses is a two-step process: first `.originate()` to insert the command with the questionnaire selected, then `.edit()` to set the response values. To chain these reliably, assign your own `command_uuid` (e.g. `str(uuid4())`) when you create the command so both effects reference the same command, and return `[command.originate(), command.edit()]`.
+- **Responses are applied on origination.** Responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in. Use `edit()` to change the responses of a questionnaire command that is already in the note.
 
  - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
    - An `.originate()` to insert the command and select the questionnaire
@@ -2893,9 +2873,6 @@ stop_medication = StopMedicationCommand(
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
 | `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
-
-<!-- source: discussion #769 -->
-**Note:** Structured Assessment is part of a [commands beta](/product-updates/commands-module/) and, along with other beta commands, must be enabled per-instance. Until it is enabled, a Structured Assessment will not appear in `Note.commands.all()`. Reach out to your Canvas support contact to have beta commands enabled on your instance.
 
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 

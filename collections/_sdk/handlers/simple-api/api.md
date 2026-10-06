@@ -832,17 +832,9 @@ Protocol Card creation are available and can often accomplish the same goal.
 To process a third-party webhook (for example a form-submission webhook), point
 the webhook at a SimpleAPI `POST` endpoint rather than at the FHIR API. This is
 the recommended approach when you need to set custom patient metadata, which is
-not settable via FHIR. In your handler:
-
-1. Construct a [Patient effect](/sdk/effect-patient/) from the request body.
-2. Listen for the resulting [`PatientCreated` or `PatientUpdated` event](/sdk/events/#patients)
-   to obtain the new patient's ID.
-3. Call a [Patient Metadata effect](/sdk/effect-patient-metadata/) to set your
-   custom metadata.
-
-To carry the metadata across from the POST request to the event handler, use the
-[cache](/sdk/caching/): set the value when handling the POST and retrieve it when
-the event fires.
+not settable via FHIR. In your handler, build a [Patient effect](/sdk/effect-patient/)
+from the request body, including your custom values in its `metadata`, and return
+its `create()` or `update()`. The patient and their metadata are saved together.
 
 <!-- source: discussion #1242 -->
 ### Serving plugin frontends without leaking secrets
@@ -893,27 +885,20 @@ the app appears:
 > shortener and update it when those names change.
 
 <!-- source: discussion #556 -->
-> **Note:** Today all installed applications are visible to all users. Per-user
-> visibility control exists for [action buttons](/sdk/handlers-action-buttons/#optional-implement-the-visible-method)
-> via the `visible()` method, but not yet for applications.
+> **Note:** Applications in the `global`, `patient_specific`, `provider_menu_item`,
+> and `portal_menu_item` scopes are shown to every user. To decide per user, use an
+> [embedded application](/sdk/handlers-embedded-applications/#controlling-visibility)
+> or an [action button](/sdk/handlers-action-buttons/#visibility), both of which
+> implement `visible()`.
 
 <!-- source: discussion #1310 -->
-> **Note:** There is no way to add a custom button to the panel-button list at
-> the top of the patient profile. You can only [reorder the existing panel buttons](/guides/customize-panel-buttons/).
-> The equivalent UX is a custom [Application](/sdk/handlers-applications/), which
-> is accessed from that same panel-button list.
+> **Note:** To add your own button to the panel, set `show_in_panel` on a
+> `patient_specific` [Application](/sdk/handlers-applications/#panel-display). You
+> can also [reorder the existing panel buttons](/guides/customize-panel-buttons/).
 
 <!-- source: discussion #1411 -->
-> **Note:** Custom visual indicators on calendar/schedule appointments are not
-> currently supported. As a workaround, a `global`-scope Application can be shown
-> as a right-hand modal side by side with the schedule view to display
-> appointment groups, labels, tables, or links into the chart.
-
-<!-- source: discussion #1429 -->
-> **Note:** Action buttons do not currently show a loading or spinner state while
-> processing. For actions that take a few seconds (for example committing all
-> commands in a note), the button gives no visual feedback that work is in
-> progress, so users may click it repeatedly.
+> **Note:** To mark appointments on the schedule, add
+> [appointment labels](/sdk/effect-appointment-labels/) from your plugin.
 
 <!-- source: discussion #1724 -->
 ## Iframe sandbox and top-frame navigation
@@ -960,21 +945,16 @@ underscores in both the plugin name and the class path, or routing will 404.
 If you receive intermittent **503 No server is available** responses while issuing
 many command requests, have your client retry with
 [exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff#Rate_limiting).
-To reduce the number of round trips, expose a SimpleAPI endpoint that batches
-originate-and-commit in a single call. Normally a command's UUID is generated for
-you on originate, but to commit in the same call you must self-assign it first so
-both operations reference the same command:
+To reduce the number of round trips, expose a SimpleAPI endpoint that originates
+and commits each command in one effect with `originate(commit=True)`:
 
 ```python?partial=true
-import uuid
-
 from canvas_sdk.commands import PlanCommand
 
 # inside a SimpleAPI route; note_uuid identifies the target note
 command = PlanCommand(note_uuid=note_uuid)
-command.command_uuid = str(uuid.uuid4())
 
-return [command.originate(), command.commit()]
+return [command.originate(commit=True)]
 ```
 
 <!-- source: discussion #498 -->
@@ -987,12 +967,6 @@ construct the `Effect` yourself, set:
 ```python?partial=true
 payload=json.dumps({"command": str(command.id)}),
 ```
-
-Only commands enabled on your instance (non-beta) appear in a note and are
-therefore available to commit. Some commands are still in
-[beta](/product-updates/commands-module/); support can confirm which are enabled
-or turn beta commands on. In the UI, an enabled command shows the three-dot action
-menu before it is committed.
 
 <!-- source: discussion #458 -->
 ### `note_id` in action button context is a numeric dbid
@@ -1007,10 +981,9 @@ Plugin code runs in a `RestrictedPython` sandbox with an allowlist of imports an
 language features.
 
 <!-- source: discussion #844 -->
-- `match` statements are now allowed in plugin code (they were previously blocked
-  with a `Match statements are not allowed` error).
+- `match` statements are allowed in plugin code.
 
 <!-- source: discussion #796 -->
-- The `cryptography` package is available, so the `jwt` package can sign tokens
-  using RS256. This is required to sign JWTs for external APIs that mandate RS256
-  (for example, Google APIs).
+- `jwt.encode` can sign tokens with RS256, which external APIs such as Google's
+  require. The `cryptography` package that RS256 depends on is installed, but plugins
+  cannot import it directly.

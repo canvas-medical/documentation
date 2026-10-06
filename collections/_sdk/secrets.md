@@ -149,9 +149,9 @@ A SimpleAPI plugin that uses API-key authentication reads its key from a declare
 When a plugin calls an external API that uses an OAuth access-token flow, store the acquired token in the [SDK cache](/sdk/caching/) rather than requesting a new token on every call. Set the cache entry to expire at the end of the token's lifetime so the plugin requests a fresh token only after the previous one expires.
 
 <!-- source: discussion #285 -->
-### Storing the Canvas instance identifier
+### Reading the Canvas instance identifier
 
-The Canvas instance/customer identifier (the subdomain, e.g. `xpc-dev` in `xpc-dev.canvasmedical.com`) is not currently exposed through the SDK, and Canvas instances cannot be CNAMEd to a custom domain. If you need the identifier — for example to construct links back to a patient in Canvas (`https://<identifier>.canvasmedical.com/patient/<patient_id>`) — store it as a plugin secret and read it from `self.secrets` at runtime.
+The instance identifier does not need a secret. Every handler can read it from `self.environment['CUSTOMER_IDENTIFIER']` (see [Handlers](/sdk/handlers/)). It is the instance's subdomain, so you can use it to build links back to Canvas, such as `https://<identifier>.canvasmedical.com/patient/<patient_id>`.
 
 <!-- source: discussion #1505 -->
 ### Third-party imports and error monitoring

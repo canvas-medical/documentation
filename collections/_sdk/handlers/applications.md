@@ -451,12 +451,12 @@ Segment or Sentry snippets) into the Canvas front end. Third-party scripts can
 only run inside the iframe of a plugin's own application.
 
 <!-- source: discussion #389 -->
-### Application iframes cannot access cookies
+### Application iframes and cookies
 
-Application iframes currently cannot access cookies, so each launch behaves like
-an incognito session. This affects auth and session persistence — a user may have
-to authenticate every time the iframe is launched, because the session is not
-remembered between launches.
+An application iframe can use cookies for its own domain only when its URL's entry
+in [`url_permissions`](/sdk/canvas_manifest/#url-permissions) includes
+`ALLOW_SAME_ORIGIN`. Without it, each launch behaves like an incognito session, so a
+user may have to sign in to your application every time it opens.
 
 <!-- source: discussion #571 -->
 ### Custom Task views backed by the Task API
