@@ -187,6 +187,8 @@ class ConditionalIntakeApp(NoteApplication):
 
 You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
 
+When a user opens a note from a command permalink, the note starts on the built-in Note tab instead, so the linked command is visible. Opening the note any other way still opens the default application.
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect

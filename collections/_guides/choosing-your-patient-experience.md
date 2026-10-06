@@ -192,7 +192,17 @@ The event tells you how the patient signed in: with their username and password,
 
 Modals aren't limited to sign-in. Any handler that runs because of something the patient did can open one in the portal, for example a [SimpleAPI](/sdk/handlers-simple-api-http/) route your portal page calls. The modal appears if the patient still has the portal open.
 
-See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login) and [Modals](/sdk/layout-effect/#modals) for the technical reference.
+When the patient has to finish the step before going further, such as signing a consent, make the modal **blocking**. The patient can't close it or navigate away, and it closes only when your page says the step is done.
+
+See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login), [Modals](/sdk/layout-effect/#modals), and [Blocking Modals](/sdk/layout-effect/#blocking-modals) for the technical reference.
+
+### Share after-visit summaries
+
+Patients can download the after-visit summary of their own locked visit notes from the portal, as the same PDF a clinician prints from the note. The portal doesn't link to it on its own, so you decide where patients find it: a "your visit summary is ready" widget on the landing page, a visit history page of your own, or a link in a follow-up message.
+
+Each download fires an event your plugin can respond to, so you can keep track of which patients have received their summary and follow up with the ones who haven't.
+
+See [Link to After-Visit Summaries](/sdk/patient-portal/#link-to-after-visit-summaries) for the technical reference.
 
 ### Control the navigation layout
 

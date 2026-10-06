@@ -5,11 +5,23 @@ excerpt: "Send an email or SMS verification to a patient contact point"
 hidden: false
 ---
 
-The `SendContactVerification` effect instructs Canvas to send a verification (for example, an email or SMS code) to a specific Patient Contact Point. Use it to verify a patient's email address or phone number — for example, before relying on that channel for outbound communications, or before enabling patient-portal features that require a verified contact channel. It applies to any patient contact point; it isn't tied to the patient portal.
+The `SendContactVerificationEffect` instructs Canvas to send a verification (for example, an email or SMS code) to a specific Patient Contact Point. Use it to verify a patient's email address or phone number — for example, before relying on that channel for outbound communications, or before enabling patient-portal features that require a verified contact channel. It applies to any patient contact point; it isn't tied to the patient portal.
 
-| Attribute          | Type            | Description                                    |
-|--------------------|-----------------|------------------------------------------------|
-| `contact_point_id` | `str` or `UUID` | The id of the [`PatientContactPoint`](/sdk/effect-patient/#patientcontactpoint) to verify. |
+Build a `SendContactVerificationEffect` and return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Sends a verification to the contact point.
+
+- `contact_point_id` is required, and must be the id of an existing patient contact point.
+
+## Attributes
+
+| Attribute          | Type            | Description                                    | Required |
+|--------------------|-----------------|------------------------------------------------|----------|
+| `contact_point_id` | `str` or `UUID` | The id of the [`PatientContactPoint`](/sdk/effect-patient/#patientcontactpoint) to verify. | Yes      |
 
 ## Validation & Errors
 
