@@ -54,7 +54,7 @@ A Protocol card consists of three main parts:
 |                  |                |
 
 To include a command recommendation you can:
-- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Any command can be inserted; see [Supported Commands](#supported-commands).
 - instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 
 </br>
@@ -164,29 +164,7 @@ class MyHandler(BaseHandler):
 
 ### Supported Commands
 
+Any command in the [commands module](/sdk/commands/) can be inserted from a protocol card recommendation.
+
 <!-- source: discussion #758 -->
 {% include alert.html type="info" content="Commands inserted from a protocol card recommendation populate their fields the same way as a command originated directly from a plugin — the values you set when instantiating the command (for example <code>image_code</code>, <code>diagnosis_codes</code>, <code>comment</code>) carry through to the inserted command." %}
-
-The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
-
-- Allergy
-- Assess
-- Diagnose
-- FollowUp
-- Goal
-- HistoryOfPresentIllness
-- Image
-- Immunize
-- Instruct
-- LabOrder
-- MedicationStatement
-- Perform
-- Plan
-- Prescribe
-- Questionnaire
-- ReasonForVisit
-- Refer
-- StructuredAssessment
-- Task
-- ValidateCodingGap
-- Vitals
