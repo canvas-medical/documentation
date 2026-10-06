@@ -11,47 +11,7 @@ lab results, and other clinical measurements. The effect supports structured cod
 terminologies (LOINC, SNOMED), components for multi-part measurements, and value codings for
 interpretation.
 
-## Attributes
-
-| Name                  | Type                               | Description                                                                                       |
-|-----------------------|------------------------------------|---------------------------------------------------------------------------------------------------|
-| `observation_id`      | `str` or `UUID` or `None`          | Unique identifier of an existing observation. Must be unset when creating; required when updating. |
-| `patient_id`          | `str` or `None`                    | ID of the patient for this observation. Required when creating.                                    |
-| `is_member_of_id`     | `str` or `UUID` or `None`          | Reference to a parent observation (for grouping related observations).                             |
-| `category`            | `str` or `list[str]` or `None`     | Category of observation (e.g., "vital-signs", "laboratory", "imaging"). Can be a single category or a list of categories. |
-| `units`               | `str` or `None`                    | Unit of measure for the observation value (e.g., "mmHg", "mg/dL").                                |
-| `value`               | `str` or `None`                    | The observation value as a string.                                                                 |
-| `note_id`             | `int` or `None`                    | ID of the note associated with this observation.                                                   |
-| `name`                | `str` or `None`                    | Human-readable name for the observation. Required when creating.                                   |
-| `effective_datetime`  | `datetime` or `None`               | Date and time when the observation was taken. Required when creating.                              |
-| `codings`             | `list[CodingData]` or `None`       | List of standardized codes identifying this observation (e.g., LOINC codes).                       |
-| `components`          | `list[ObservationComponentData]` or `None` | List of components for multi-part observations (e.g., systolic and diastolic BP).         |
-| `value_codings`       | `list[CodingData]` or `None`       | List of coded values for interpretation (e.g., "normal", "abnormal").                              |
-
-## Helper Classes
-
-### `CodingData`
-
-Represents a standardized code from a terminology system (LOINC, SNOMED, etc.).
-
-| Name            | Type   | Description                                                          |
-|-----------------|--------|----------------------------------------------------------------------|
-| `code`          | `str`  | The code value from the terminology system.                          |
-| `display`       | `str`  | Human-readable display text for the code.                            |
-| `system`        | `str`  | URI identifying the terminology system (e.g., "http://loinc.org").   |
-| `version`       | `str`  | Version of the terminology system. Defaults to empty string.         |
-| `user_selected` | `bool` | Whether this code was explicitly selected by the user. Defaults to False. |
-
-### `ObservationComponentData`
-
-Represents a component of a multi-part observation (e.g., systolic and diastolic blood pressure).
-
-| Name                   | Type                      | Description                                              |
-|------------------------|---------------------------|----------------------------------------------------------|
-| `value_quantity`       | `str`                     | The numeric value of this component.                     |
-| `value_quantity_unit`  | `str`                     | Unit of measure for this component value.                |
-| `name`                 | `str`                     | Name of this component.                                  |
-| `codings`              | `list[CodingData]` or `None` | Standardized codes identifying this component.       |
+Build an `Observation` with the [attributes](#attributes) you want to set, then return one of its methods from your handler: `create()`, `update()`, or `enter_in_error()`.
 
 ## Methods
 
@@ -70,9 +30,6 @@ patient = Patient.objects.first()
 ### create() → Effect
 
 Create a new observation record.
-
-- **Effect Type:** `CREATE_OBSERVATION`
-- **Payload:** `{ "data": { patient_id, name, effective_datetime, ... } }`
 
 #### Validation
 
@@ -189,8 +146,6 @@ effect_create_multi = comprehensive_assessment.create()
 
 Update an existing observation.
 
-- **Effect Type:** `UPDATE_OBSERVATION`
-- **Payload:** `{ "data": { observation_id, <dirty_fields> } }`
 - Only fields marked dirty (modified on the model) are included in the update.
 
 #### Validation
@@ -245,8 +200,6 @@ effect_update = updated_bp.update()
 
 Marks an existing observation as entered in error. Use this when an observation was recorded incorrectly and should be flagged rather than deleted.
 
-- **Effect Type:** `ENTER_IN_ERROR_OBSERVATION`
-- **Payload:** `{ "data": { observation_id } }`
 - Only `observation_id` is allowed; setting any other field will raise a validation error.
 
 #### Validation
@@ -271,3 +224,46 @@ effect_error = error_observation.enter_in_error()
 <br/>
 <br/>
 <br/>
+
+## Attributes
+
+| Name                  | Type                               | Description                                                                                       | Required |
+|-----------------------|------------------------------------|---------------------------------------------------------------------------------------------------|----------|
+| `observation_id`      | `str` or `UUID` or `None`          | Unique identifier of an existing observation. Must be unset when creating; required when updating. | For `update()` and `enter_in_error()` |
+| `patient_id`          | `str` or `None`                    | ID of the patient for this observation. Required when creating.                                    | For `create()` |
+| `is_member_of_id`     | `str` or `UUID` or `None`          | Reference to a parent observation (for grouping related observations).                             | No |
+| `category`            | `str` or `list[str]` or `None`     | Category of observation (e.g., "vital-signs", "laboratory", "imaging"). Can be a single category or a list of categories. | No |
+| `units`               | `str` or `None`                    | Unit of measure for the observation value (e.g., "mmHg", "mg/dL").                                | No |
+| `value`               | `str` or `None`                    | The observation value as a string.                                                                 | No |
+| `note_id`             | `int` or `None`                    | ID of the note associated with this observation.                                                   | No |
+| `name`                | `str` or `None`                    | Human-readable name for the observation. Required when creating.                                   | For `create()` |
+| `effective_datetime`  | `datetime` or `None`               | Date and time when the observation was taken. Required when creating.                              | For `create()` |
+| `codings`             | `list[CodingData]` or `None`       | List of standardized codes identifying this observation (e.g., LOINC codes).                       | No |
+| `components`          | `list[ObservationComponentData]` or `None` | List of components for multi-part observations (e.g., systolic and diastolic BP).         | No |
+| `value_codings`       | `list[CodingData]` or `None`       | List of coded values for interpretation (e.g., "normal", "abnormal").                              | No |
+
+## Helper Classes
+
+### `CodingData`
+
+Represents a standardized code from a terminology system (LOINC, SNOMED, etc.).
+
+| Name            | Type   | Description                                                          |
+|-----------------|--------|----------------------------------------------------------------------|
+| `code`          | `str`  | The code value from the terminology system.                          |
+| `display`       | `str`  | Human-readable display text for the code.                            |
+| `system`        | `str`  | URI identifying the terminology system (e.g., "http://loinc.org").   |
+| `version`       | `str`  | Version of the terminology system. Defaults to empty string.         |
+| `user_selected` | `bool` | Whether this code was explicitly selected by the user. Defaults to False. |
+
+### `ObservationComponentData`
+
+Represents a component of a multi-part observation (e.g., systolic and diastolic blood pressure).
+
+| Name                   | Type                      | Description                                              |
+|------------------------|---------------------------|----------------------------------------------------------|
+| `value_quantity`       | `str`                     | The numeric value of this component.                     |
+| `value_quantity_unit`  | `str`                     | Unit of measure for this component value.                |
+| `name`                 | `str`                     | Name of this component.                                  |
+| `codings`              | `list[CodingData]` or `None` | Standardized codes identifying this component.       |
+

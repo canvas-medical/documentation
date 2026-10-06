@@ -9,23 +9,42 @@ The Compound Medication effects enable the creation and management of compound m
 system. These effects support the customization of medications prepared by compounding pharmacies according to
 prescriptions.
 
-## Create Compound Medication
+Build a `CompoundMedication` with the [attributes](#attributes) you want to set, then return one of its two methods from your handler: `create()` for a new compound medication, or `update()` for an existing one.
 
-The `CreateCompoundMedication` effect creates a new compound medication formulation in the system.
+## Methods
 
-### Attributes
+### create() → Effect
 
-| Attribute                  | Type            | Description                                              | Required |
-|----------------------------|-----------------|----------------------------------------------------------|----------|
-| `formulation`              | `str`           | The compound medication formulation (max 105 characters) | Yes      |
-| `potency_unit_code`        | `str`           | The unit of measurement for the medication               | Yes      |
-| `controlled_substance`     | `str`           | The controlled substance schedule                        | Yes      |
-| `controlled_substance_ndc` | `str` or `None` | NDC code for controlled substances (dashes removed)      | No*      |
-| `active`                   | `bool`          | Whether the compound medication is active                | No       |
+Creates a compound medication.
 
-*Required when `controlled_substance` is not "N" (None)
+- `formulation`, `potency_unit_code`, and `controlled_substance` are required.
+- `controlled_substance_ndc` is also required when `controlled_substance` is anything other than `"N"`.
 
-### Example Usage
+See [Creating a compound medication](#creating-a-compound-medication) for an example.
+
+### update() → Effect
+
+Updates an existing compound medication.
+
+- `instance_id` is required, and must be the id of an existing compound medication.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
+See [Updating a compound medication](#updating-a-compound-medication) for an example.
+
+## Attributes
+
+| Attribute                  | Type             | Description                                                    | Required |
+|----------------------------|------------------|----------------------------------------------------------------|----------|
+| `instance_id`              | `str` or `None`  | The id of the compound medication to update                    | For `update()` |
+| `formulation`              | `str` or `None`  | The compound medication formulation (max 105 characters)       | For `create()` |
+| `potency_unit_code`        | `str` or `None`  | The unit of measurement for the medication                     | For `create()` |
+| `controlled_substance`     | `str` or `None`  | The controlled substance schedule                              | For `create()` |
+| `controlled_substance_ndc` | `str` or `None`  | NDC code for controlled substances (dashes removed)            | When `controlled_substance` is not `"N"` |
+| `active`                   | `bool` or `None` | Whether the compound medication is active. Defaults to `True` on creation. | No       |
+
+## Example Usage
+
+### Creating a compound medication
 
 ```python
 from canvas_sdk.effects.compound_medications import CompoundMedication as CompoundMedicationEffect
@@ -59,22 +78,7 @@ class CompoundMedicationCreator(BaseHandler):
     return [compound_med.create(), controlled_compound.create()]
 ```
 
-## Update Compound Medication
-
-The `UpdateCompoundMedication` effect modifies an existing compound medication formulation.
-
-### Attributes
-
-| Attribute                  | Type             | Description                                              | Required |
-|----------------------------|------------------|----------------------------------------------------------|----------|
-| `compound_medication_id`   | `str`            | The ID of the compound medication to update              | Yes      |
-| `formulation`              | `str` or `None`  | The compound medication formulation (max 105 characters) | No       |
-| `potency_unit_code`        | `str` or `None`  | The unit of measurement for the medication               | No       |
-| `controlled_substance`     | `str` or `None`  | The controlled substance schedule                        | No       |
-| `controlled_substance_ndc` | `str` or `None`  | NDC code for controlled substances (dashes removed)      | No       |
-| `active`                   | `bool` or `None` | Whether the compound medication is active                | No       |
-
-### Example Usage
+### Updating a compound medication
 
 ```python
 from canvas_sdk.effects.compound_medications import CompoundMedication as CompoundMedicationEffect
@@ -95,7 +99,7 @@ class CompoundMedicationUpdater(BaseHandler):
     if compound_med:
         # Update to make it a controlled substance
         update_effect = CompoundMedicationEffect(
-            compound_medication_id=str(compound_med.id),
+            instance_id=str(compound_med.id),
             controlled_substance="III",
             controlled_substance_ndc="98765432101"
         )
@@ -119,7 +123,7 @@ class CompoundMedicationUpdater(BaseHandler):
 
 ## Validation
 
-Both effects perform validation before execution:
+Both methods perform validation before execution:
 
 ### Create Effect Validation:
 

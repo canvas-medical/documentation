@@ -15,7 +15,7 @@ extensible note information storage beyond standard note fields.
 Note metadata serves as a powerful extension mechanism for storing custom note-related information that doesn't
 fit within the standard note data model. Metadata is managed through the `upsert_metadata` method on the `Note` effect class.
 
-## Method
+## Methods
 
 ### upsert_metadata(key: str, value: str) → Effect
 

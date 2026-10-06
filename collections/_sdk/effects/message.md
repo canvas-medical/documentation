@@ -9,15 +9,46 @@ The `Message` effect provides a unified way to create, edit, and transmit messag
 within the Canvas platform.
 It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
 
+Build a `Message` with the [attributes](#attributes) you want to set, then return one of its methods from your handler: `create()`, `create_and_send()`, `edit()`, or `send()`.
+
+## Methods
+
+### create() → Effect
+
+Creates a message without sending it.
+
+- `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- `message_id` must not be set.
+
+### create_and_send() → Effect
+
+Creates the message and sends it in one operation.
+
+- `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- `message_id` must not be set.
+
+### edit() → Effect
+
+Changes an existing message.
+
+- `message_id` is required, and must be the id of an existing message.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
+### send() → Effect
+
+Sends a message that was already created, if you separated creating it from sending it.
+
+- Set `message_id` to the message to send.
+
 ## Attributes
 
-| Name           | Type                      | Description                                                                                                 |
-|----------------|---------------------------|-------------------------------------------------------------------------------------------------------------|
-| `message_id`   | `str` or `UUID` or `None` | Unique identifier of an existing message. Must be unset when creating a new message; required when editing. |
-| `content`      | `str` or `None`           | The text body of the message. Required when creating; cannot be empty.                                      |
-| `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                               |
-| `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                                             |
-| `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread).               |
+| Attribute      | Type                      | Description                                                                                   | Required |
+|----------------|---------------------------|-----------------------------------------------------------------------------------------------|----------|
+| `message_id`   | `str` or `UUID` or `None` | Unique identifier of an existing message. Must be unset when creating a new message.          | For `edit()` and `send()` |
+| `content`      | `str` or `None`           | The text body of the message. Cannot be empty.                                                | For `create()` and `create_and_send()` |
+| `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                 | Yes      |
+| `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                               | Yes      |
+| `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No       |
 
 ## Validation & Errors
 
@@ -37,37 +68,6 @@ Before any effect is emitted, the model runs these checks:
 - **No Attachments Supported:** The Message effect does not yet support attachments.
 - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
 
-
-## Effect Methods
-
-### `create()`
-
-Originate a new message record without sending.
-
-- **Effect Type:** `CREATE_MESSAGE`
-- **Payload:** `{ "data": { content, sender_id, recipient_id } }`
-
-### `create_and_send()`
-
-Create the message and immediately send it in one operation.
-
-- **Effect Type:** `CREATE_AND_SEND_MESSAGE`
-- **Payload:** `{ "data": { content, sender_id, recipient_id } }`
-
-### `edit()`
-
-Modify an existing message’s content.
-
-- **Effect Type:** `EDIT_MESSAGE`
-- **Payload:** `{ "data": { message_id, content?, sender_id?, recipient_id? } }`
-- Only fields marked dirty (modified on the model) are included; unchanged fields remain intact in the system.
-
-### `send()`
-
-Send an already-created message. Useful if you separated creation from transmission.
-
-- **Effect Type:** `SEND_MESSAGE`
-- **Payload:** `{ "data": { message_id } }`
 
 ## Example Usage
 
