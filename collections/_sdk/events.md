@@ -27931,6 +27931,26 @@ shape only; dynamic per-field entries appear alongside.
 
 <table>
   <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"document": str["after_visit_summary"]
+"note_id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="3">PATIENT_PORTAL__POST_LOGIN</th></tr>
     <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a <code>LaunchModalEffect</code> with the <code>DEFAULT_MODAL</code> target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
   </thead>
