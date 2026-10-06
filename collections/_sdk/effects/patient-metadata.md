@@ -14,13 +14,6 @@ Patient metadata serves as a powerful extension mechanism for storing custom pat
 <!-- source: discussion #612 -->
 {% include alert.html type="info" content="For storing mutable custom patient fields — such as a status or risk score that is not part of the standard Patient data model — the patient metadata key-value effect is the recommended approach rather than questionnaires (a questionnaire creates a new record on each update). You can also surface these values to end users by building a custom form in the demographics section of the profile with the <a href='/sdk/patient-metadata-create-form-effect/'>Patient Metadata Create form effect</a>, though displaying the fields is optional — a plugin can set the data without exposing a form." %}
 
-## Attributes
-
-| Attribute    | Type  | Description                                                         | Required |
-|--------------|-------|---------------------------------------------------------------------|----------|
-| `patient_id` | `str` | Id of the [Patient(/sdk/data-patient/)] record to associate metadata with                 | Yes      |
-| `key`        | `str` | Unique identifier for the metadata entry within the patient context. Maximum 256 characters. | Yes      |
-
 ## Methods
 
 ### upsert(value: str) → Effect
@@ -37,6 +30,13 @@ Creates or updates a metadata entry for the specified patient and key combinatio
 
 - If a metadata entry with the specified key already exists for the patient, it will be updated with the new value
 - If no entry exists, a new metadata entry will be created
+
+## Attributes
+
+| Attribute    | Type  | Description                                                         | Required |
+|--------------|-------|---------------------------------------------------------------------|----------|
+| `patient_id` | `str` | Id of the [Patient](/sdk/data-patient/) record to associate metadata with                 | Yes      |
+| `key`        | `str` | Unique identifier for the metadata entry within the patient context. Maximum 256 characters. | Yes      |
 
 ## Implementation Details
 

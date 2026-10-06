@@ -11,7 +11,11 @@ The Canvas SDK provides effects to facilitate creating, updating, and managing *
 
 The `Note` effect facilitates the creation and updating of visit notes for patients.
 
+Build a `Note` with the attributes the operation needs, then return one of its methods from your handler. Each section below covers one method and lists its attributes: [`create()`](#create-note), [`update()`](#update-note), [`push_charges()`](#push-charges), [`lock()`](#lock), [`sign()`](#sign), [`unlock()`](#unlock), [`check_in()`](#check-in), [`no_show()`](#no-show), [`delete()`](#delete), [`undelete()`](#undelete), [`discharge()`](#discharge), and [`upsert_metadata()`](#upsert-metadata). Faxing a note uses a separate `FaxNoteEffect`, covered under [Fax Note](#fax-note).
+
 ### Create Note
+
+`create() → Effect`
 
 Creates a new note. Can be passed an optional UUID as `instance_id` from the `uuid.uuid4` library, or will be assigned one if not present. Passing a user-set UUID as the `instance_id` allows for [assigning commands to the note](/sdk/commands/#chaining-methods-with-a-user-set-uuid) in the same plugin action.
 
@@ -91,6 +95,8 @@ class MyHandler(BaseHandler):
 
 ### Update Note
 
+`update() → Effect`
+
 Updates an existing note. Only certain fields can be modified after creation.
 
 #### Attributes
@@ -125,6 +131,8 @@ class MyHandler(BaseHandler):
 ```
 
 ### Fax Note
+
+`FaxNoteEffect.apply() → Effect`
 
 Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
 
@@ -212,6 +220,8 @@ Notes in the remaining categories, such as message, letter, data, and search not
 
 ### Push Charges
 
+`push_charges() → Effect`
+
 Pushes the charges from the Note to its associated Claim in the Revenue module. Has the exact same effect as clicking on the `Push charges` button in the Note footer.
 
 #### Attributes
@@ -247,6 +257,8 @@ To change the charge amount on a claim that already exists, use the [`UpdateClai
 To move a claim into a specific revenue queue from a plugin — for example, to route contract-based claims that do not go through a clearinghouse into a queue your team works manually — use [`ClaimEffect.move_to_queue()`](/sdk/effect-claims/#move-to-queue).
 
 ### Lock
+
+`lock() → Effect`
 
 Locks an existing note, preventing further modifications. Has the exact same effect as clicking on the `Lock` button in the Note footer.
 
@@ -311,6 +323,8 @@ class RequireCptBeforeLock(BaseHandler):
 
 ### Sign
 
+`sign() → Effect`
+
 Signs an existing note, marking it as reviewed and approved by the provider. Has the exact same effect as clicking on the `Sign` button in the Note footer.
 
 #### Attributes
@@ -350,6 +364,8 @@ return [note.lock(), note.sign()]
 
 ### Unlock
 
+`unlock() → Effect`
+
 Unlocks a previously locked/signed note, allowing modifications again. Has the exact same effect as clicking on the `Unlock/Amend` button in the Note footer.
 
 #### Attributes
@@ -376,6 +392,8 @@ class MyHandler(BaseHandler):
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 ### Check In
+
+`check_in() → Effect`
 
 Marks a patient as checked in for their appointment. Has the exact same effect as clicking on the `Check In` button in the Appointment note.
 
@@ -404,6 +422,8 @@ class MyHandler(BaseHandler):
 
 ### No Show
 
+`no_show() → Effect`
+
 Marks an appointment as a no-show when the patient does not arrive. Has the exact same effect as marking an appointment as `No Show` in the Appointment note.
 
 #### Attributes
@@ -430,6 +450,8 @@ class MyHandler(BaseHandler):
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 ### Delete
+
+`delete() → Effect`
 
 Deletes an existing note. Has the exact same effect as clicking on the `Delete` button in the Note footer.
 
@@ -458,6 +480,8 @@ class MyHandler(BaseHandler):
 
 ### Undelete
 
+`undelete() → Effect`
+
 Restores a previously deleted note. Has the exact same effect as clicking on the `Restore` button on a deleted note.
 
 #### Attributes
@@ -484,6 +508,8 @@ class MyHandler(BaseHandler):
 {% include alert.html type="info" content="This effect will be originated by the current actor that triggered the event, with a fallback to Canvas Bot if no actor is found." %}
 
 ### Discharge
+
+`discharge() → Effect`
 
 Locks and discharges an inpatient note. Has the exact same effect as clicking on the `Lock and discharge` button in the Inpatient note footer.
 
@@ -512,6 +538,8 @@ class MyHandler(BaseHandler):
 
 ### Upsert Metadata
 
+`upsert_metadata(key: str, value: str) → Effect`
+
 Creates or updates a metadata entry for the specified note. For detailed documentation on note metadata management, see [NoteMetadata Effect](/sdk/effect-note-metadata/).
 
 #### Parameters
@@ -538,6 +566,10 @@ class MyHandler(BaseHandler):
 ## ScheduleEvent Effect
 
 The `ScheduleEvent` effect enables creating, updating, and deleting schedule events for providers, with optional patient association.
+
+Build a `ScheduleEvent` with the attributes the operation needs, then return one of its methods from your handler: `create()`, covered here, or [`update()`](#update-schedule-event), [`reschedule()`](#reschedule-schedule-event), or [`delete()`](#delete-schedule-event).
+
+`create() → Effect` creates a schedule event with the attributes below.
 
 ### Attributes
 
@@ -586,6 +618,8 @@ class MyHandler(BaseHandler):
 
 ### Update Schedule Event
 
+`update() → Effect`
+
 Updates an existing schedule event in place.
 
 #### Attributes
@@ -626,6 +660,8 @@ class MyHandler(BaseHandler):
 
 ### Reschedule Schedule Event
 
+`reschedule() → Effect`
+
 Reschedules an existing schedule event by creating a new event and cancelling the original. This maintains the event history and ensures proper tracking of rescheduled events.
 
 #### Attributes
@@ -663,6 +699,8 @@ class MyHandler(BaseHandler):
 
 ### Delete Schedule Event
 
+`delete() → Effect`
+
 Marks a schedule event as cancelled.
 
 #### Example Usage
@@ -686,6 +724,10 @@ class MyHandler(BaseHandler):
 ## Appointment Effect
 
 The `Appointment` effect facilitates creating, updating, and cancelling patient appointments with providers.
+
+Build an `Appointment` with the attributes the operation needs, then return one of its methods from your handler: `create()`, covered here, or [`update()`](#update-appointment), [`reschedule()`](#reschedule-appointment), [`cancel()`](#cancel-appointment), or [`revert()`](#revert-appointment).
+
+`create() → Effect` creates an appointment with the attributes below.
 
 ### Attributes
 
@@ -732,6 +774,8 @@ class MyHandler(BaseHandler):
 
 ### Update Appointment
 
+`update() → Effect`
+
 Updates an existing appointment in place.
 
 #### Attributes
@@ -775,6 +819,8 @@ class MyHandler(BaseHandler):
 
 ### Reschedule Appointment
 
+`reschedule() → Effect`
+
 Reschedules an existing appointment by creating a new appointment and cancelling the original. This maintains the appointment history and ensures proper tracking of rescheduled appointments.
 
 #### Attributes
@@ -812,6 +858,8 @@ class MyHandler(BaseHandler):
 
 ### Cancel Appointment
 
+`cancel() → Effect`
+
 Cancels an existing appointment and updates its status.
 
 #### Attributes
@@ -837,6 +885,8 @@ class MyHandler(BaseHandler):
 ```
 
 ### Revert Appointment
+
+`revert() → Effect`
 
 Reverts a booked or checked-in appointment back to a state where it can be checked in, cancelled, rescheduled, or marked as no-show.
 

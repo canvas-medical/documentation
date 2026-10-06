@@ -22,19 +22,31 @@ Where these errors are enforced differs by event: `__POST_VALIDATION` errors blo
 
 ### CommandValidationErrorEffect
 
-The `CommandValidationErrorEffect` class accepts an optional list of `ValidationError` objects during initialization:
+Build a `CommandValidationErrorEffect`, add one or more errors, then return its `apply()` from your handler.
 
-| Attribute | Type                     | Required | Description                                            |
-| --------- | ------------------------ | -------- | ------------------------------------------------------ |
-| `errors`  | list[ValidationError]    | optional | List of validation errors to be displayed to the user. |
+#### Methods
+
+##### add_error(message: str | ValidationError) → CommandValidationErrorEffect
+
+Appends an error, given as a message or a [`ValidationError`](#validationerror), and returns the effect, so calls can be chained.
+
+##### apply() → Effect
+
+Shows the errors to the user. See [Validate a command](#validate-a-command) and [Block a deletion](#block-a-deletion) for what the errors block in each case.
+
+#### Attributes
+
+| Attribute | Type                                          | Description                                            | Required |
+| --------- | --------------------------------------------- | ------------------------------------------------------ | -------- |
+| `errors`  | `list[`[`ValidationError`](#validationerror)`]` | List of validation errors to be displayed to the user. | No       |
 
 ### ValidationError
 
 Each `ValidationError` object represents a single validation error message:
 
-| Attribute | Type   | Required | Description                         |
-| --------- | ------ | -------- | ----------------------------------- |
-| `message` | String | required | The validation error message to display. Must not be empty. |
+| Attribute | Type  | Description                                                 | Required |
+| --------- | ----- | ----------------------------------------------------------- | -------- |
+| `message` | `str` | The validation error message to display. Must not be empty. | Yes      |
 
 ### Building the errors
 
