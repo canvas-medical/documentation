@@ -96,7 +96,7 @@ The patient portal receives an update only when you set `patient_ids` and leave
 `staff_ids` empty. Each listed patient sees the new count on the matching
 `portal_menu_item` application while they're logged in to the portal. Updates
 that name staff, and system-wide updates, never reach the portal. A patient
-only ever receives updates for their own key.
+only ever receives updates sent for their own id.
 
 Because `patient_ids` reaches both audiences, the application's scope decides
 where the badge appears. A `patient_specific` application shows it to staff on
