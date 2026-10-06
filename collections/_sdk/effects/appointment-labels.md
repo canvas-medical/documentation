@@ -161,4 +161,4 @@ For more information on these events, see [Appointment Events](/sdk/events/#appo
 ## Related Documentation
 
 - [Appointment Events](/sdk/events/#appointments) - Event documentation
-- [Appointment Coverage Label Example](/sdk/examples/appointment_coverage_label/) - Real-world example plugin
+- [Appointment Coverage Label Example](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/appointment_coverage_label) - Real-world example plugin
