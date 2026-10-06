@@ -633,6 +633,8 @@ Records an assessment of a patient's condition. Name the condition in one of two
 
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
+Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
+
 **Command-specific parameters**:
 
 | Name                        | Type          | Required to commit | Description                                                                |
