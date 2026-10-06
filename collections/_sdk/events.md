@@ -30,7 +30,7 @@ The plugin author can enter custom workflow code into the `compute` method that 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
 <!-- source: discussion #1420 -->
-A handler's `compute` method only runs for the events listed in its `RESPONDS_TO` attribute. A handler with no `RESPONDS_TO` (or one that does not list the event you expect) will load and install successfully but never fire — so it does nothing. If your handler installs and enables but `compute` never runs, confirm that `RESPONDS_TO` names the correct event. `RESPONDS_TO` may be a single event name or a list of event names.
+{% include alert.html type="info" content="A handler's <code>compute</code> method runs only for the events listed in its <code>RESPONDS_TO</code>, which can be a single event name or a list. A handler with no <code>RESPONDS_TO</code>, or one that leaves out the event you expect, installs and enables without error but never runs. If <code>compute</code> never fires, check that <code>RESPONDS_TO</code> names the right event." %}
 
 <!-- source: discussion #433 -->
 ### Sending outbound webhooks
@@ -143,7 +143,7 @@ These events fire as a result of records being created, updated, or deleted.
 </table>
 
 <!-- source: discussion #947 -->
-When a patient is created through the FHIR API, the events fire in this order: the patient is saved and `PATIENT_CREATED` fires (and its handlers run) **before** any external identifiers are saved, after which `PATIENT_EXTERNAL_IDENTIFIER_CREATED` fires and its handlers run, and only then does the FHIR create complete. As a result, a patient's external identifiers (the same values as the patient's FHIR identifiers) are **not yet available** when `PATIENT_CREATED` fires. If you need to act on a patient's external identifiers — for example, to detect a patient that originated from your own FHIR POST — listen for `PATIENT_EXTERNAL_IDENTIFIER_CREATED` instead.
+{% include alert.html type="info" content="When a patient is created through the FHIR API, Canvas saves the patient and fires <code>PATIENT_CREATED</code> before it saves the patient's external identifiers. It then fires <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> for each identifier, and only then does the FHIR create finish. So a <code>PATIENT_CREATED</code> handler can't see the identifiers yet. To act on them, for example to recognize a patient your own FHIR POST created, listen for <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> instead." %}
 
 <table>
   <thead>
@@ -238,9 +238,6 @@ When a patient is created through the FHIR API, the events fire in this order: t
   </tr>
   </tbody>
 </table>
-
-<!-- source: discussion #259 -->
-For the `PATIENT_ADDRESS_*` and `PATIENT_CONTACT_POINT_*` events, the `target` is the address or contact-point entity itself, not the patient. To identify the patient these belong to, read the patient identifier from the context: `self.event.context["patient"]["id"]`.
 
 <table>
   <thead>
@@ -530,9 +527,7 @@ For the `PATIENT_ADDRESS_*` and `PATIENT_CONTACT_POINT_*` events, the `target` i
 </table>
 
 <!-- source: discussion #1627 -->
-Facility addresses are modeled separately from regular patient addresses, so they have their own `PATIENT_FACILITY_ADDRESS_*` events. Assigning a facility to a patient fires `PATIENT_FACILITY_ADDRESS_CREATED` — it does **not** fire `PATIENT_ADDRESS_CREATED`. To be notified when a facility is assigned, listen for `PATIENT_FACILITY_ADDRESS_CREATED`.
-
-There is an asymmetry on deletion. Facility addresses are stored using Django multi-table inheritance: a facility address is backed by both a parent address row and a child facility-specific row. On deletion both rows are removed and a `post_delete` signal fires for each, so you receive **both** `PATIENT_FACILITY_ADDRESS_DELETED` and `PATIENT_ADDRESS_DELETED`. On creation, only the child model's `post_save` fires (the parent row is saved internally without its own signal), so only `PATIENT_FACILITY_ADDRESS_CREATED` fires. For consistency, listen for the `PATIENT_FACILITY_ADDRESS_*` events for all facility address operations.
+{% include alert.html type="info" content="Facility addresses have their own <code>PATIENT_FACILITY_ADDRESS_*</code> events. Assigning a facility to a patient fires <code>PATIENT_FACILITY_ADDRESS_CREATED</code> only, not <code>PATIENT_ADDRESS_CREATED</code>. Deleting one fires both <code>PATIENT_FACILITY_ADDRESS_DELETED</code> and <code>PATIENT_ADDRESS_DELETED</code>. Listen for the <code>PATIENT_FACILITY_ADDRESS_*</code> events for every facility address change." %}
 
 #### Patient Metadata
 
@@ -1442,7 +1437,11 @@ To keep an external system in sync with appointment changes made in the Canvas U
 These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
 
 <!-- source: discussion #1662 -->
-`DOCUMENT_RECEIVED` is the recommended way to automate inbound-document intake (for example, inbound faxes). It fires the moment a new `IntegrationTask` is created, regardless of channel (fax, document upload, lab, etc.), and the event context includes the file URL directly as `document["content_url"]`. The `IntegrationTask` data class itself does not carry the file, so listening to this event is how you obtain the URL. To fetch the file, branch on `document["channel"]` if you only care about a specific channel and then `requests.get(document["content_url"])`. Each event in this family uses the same `IntegrationTask` UUID as its `target`/`document["id"]`, so you can correlate one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`. For a document that has already been triaged and attached to a patient's chart, use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class instead, which exposes a presigned `document_url`.
+Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
+
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
+- **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 
 <table>
   <thead>
@@ -3008,7 +3007,7 @@ Surescripts response events fire when the platform receives a response from Sure
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
     <!-- source: discussion #1233 -->
-    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously. As a result this event fires <b>twice</b> for a single lock or unlock action — once for the state change itself and once when the archived PDF finishes generating — which is expected behavior.</td></tr>
+    <tr><td colspan="2">Occurs when a note state change event is updated. After a note is locked, or signed for note types that require a signature, Canvas generates an archived PDF of the note in the background and saves it on that lock or sign event. That fires this event <b>twice</b>: once when the note's snapshot is saved and once when the PDF is saved.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3883,7 +3882,7 @@ These events fire during the command lifecycle.
     </tr>
     <tr>
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
-      <td>After a command is added to a note in the UI.</td>
+      <td>After a user adds a command to a note in the Canvas UI. Commands added by a plugin effect or through the FHIR API do not fire this event.</td>
     </tr>
     <tr>
       <td>AVAILABLE_ACTIONS</td>
@@ -3934,20 +3933,77 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 <!-- source: discussion #966 -->
 ##### Accessing structured plan / treatment plan data
 
-If you want the structured contents of a finished note (for example a treatment plan or care plan) rather than parsing the rendered <a href="/sdk/data-document-reference/">DocumentReference</a> PDF, use the command lifecycle events above together with the <a href="/sdk/commands/">Commands</a> data module. For example, iterate `Command.objects.filter(note_id=given_note_id)` and branch on command type. Many "plan-type" commands carry the data you need — including <a href="/sdk/commands/#plan">Plan</a>, <a href="/sdk/commands/#prescribe">Prescribe</a>, <a href="/sdk/commands/#followup">Follow-up</a>, <a href="/sdk/commands/#task">Task</a>, and Instruct — in the spirit of the classic SOAP categories. `POST_COMMAND_EXECUTE_ACTION` is also available for some commands.
+If you want the structured contents of a finished note, such as a treatment plan or care plan, read its commands rather than parsing the rendered <a href="/sdk/data-document-reference/">DocumentReference</a> PDF. Use the command lifecycle events above with the <a href="/sdk/data-command/">Command</a> data model: read a note's commands with `note.commands.all()` and branch on each command's type. <a href="/sdk/commands/#plan">Plan</a>, <a href="/sdk/commands/#prescribe">Prescribe</a>, <a href="/sdk/commands/#followup">Follow-up</a>, <a href="/sdk/commands/#task">Task</a>, and Instruct commands carry most plan data.
 
 <!-- source: discussion #501 -->
-##### `POST_ORIGINATE` vs `POST_INSERTED_INTO_NOTE`
+##### Post-originate versus inserted-into-note events
 
-`POST_COMMAND_INSERTED_INTO_NOTE` (and the per-command `*__POST_INSERTED_INTO_NOTE` events) fire only for commands inserted **through the UI** — they do **not** fire for commands inserted by a plugin effect. General guidance:
+The two event families catch different writes:
 
-- Use `POST_ORIGINATE` when you want to **edit** the command that triggered the event. Do not insert a new command here: `POST_ORIGINATE` happens before the command is inserted into the note, so the note state does not yet include it.
-- Use `POST_INSERTED_INTO_NOTE` to react to a command being inserted **via the UI**.
+- **`POST_ORIGINATE`** fires whenever a command is created, however it was written: in the Canvas UI, through the FHIR API, or by a plugin effect. Use it to react to every new command, or to **edit** the command that triggered it.
+- **`POST_INSERTED_INTO_NOTE`** (the per-command `*__POST_INSERTED_INTO_NOTE` events and `POST_COMMAND_INSERTED_INTO_NOTE`) fires only when a user inserts a command into the note body in the Canvas UI. Use it to respond to a clinician's action in the note, such as adding related commands next to the one they inserted.
 
 <!-- source: discussion #669 -->
-##### Avoiding recursion in `POST_UPDATE` handlers
+##### Avoiding recursion in post-update handlers
 
-If a handler responds to a command's `*__POST_UPDATE` event and returns an effect that edits the same command (for example `PrescribeCommand.edit()` in a `PRESCRIBE_COMMAND__POST_UPDATE` handler), that edit re-triggers `POST_UPDATE`, which can cause an infinite loop. Guard against this by checking whether the field you intend to set already holds the correct value and returning early (no effect) when it does. For a more robust guard, use the <a href="/sdk/caching/">caching</a> capability: store a key such as `f"DEA_NOTE:{command_id}"` whose value records the inputs you derived the update from; on each event, return early if the cached value already matches the current event context, and only return an edit effect (updating the cache) when the inputs have changed.
+{% include alert.html type="warning" content="A handler that responds to a command's <code>*__POST_UPDATE</code> event and edits that same command can loop forever. The edit updates the command, which fires <code>POST_UPDATE</code> again, which edits it again." %}
+
+Every `POST_UPDATE` handler that edits its own command needs a guard that returns no effects once the command already holds what you would set:
+
+1. **Compare before you edit.** Read the field from the event's `fields` context. If it already has the value you would write, return `[]`.
+2. **For values you compute from other inputs, cache what you used.** Store the inputs under a key such as `f"plan-update:{command_id}"` with the [cache](/sdk/caching/). On each event, return `[]` if the cached inputs match the current event. Only when they differ, update the cache and return the edit.
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+STANDARD_NARRATIVE = "Follow up in two weeks."
+
+
+class StandardizePlanNarrative(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        narrative = self.context["fields"].get("narrative")
+        # The guard: the edit below fires POST_UPDATE again, so stop once it is applied.
+        if not narrative or narrative == STANDARD_NARRATIVE:
+            return []
+        return [PlanCommand(command_uuid=self.target, narrative=STANDARD_NARRATIVE).edit()]
+```
+
+When the value comes from other data, cache the inputs instead. This handler writes a follow-up date into the plan, computed from the note's date of service. Its own edit fires `POST_UPDATE` again, finds the same inputs in the cache, and stops. A clinician's later edit to the narrative also leaves it alone, until the date of service changes:
+
+```python?partial=true
+from datetime import timedelta
+
+from canvas_sdk.caching.plugins import get_cache
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Command
+
+
+class FollowUpDateInPlan(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        note = Command.objects.get(id=self.target).note
+        inputs = note.datetime_of_service.isoformat()
+
+        cache = get_cache()
+        key = f"plan-update:{self.target}"
+        # The guard: stop when this command was already updated from these inputs.
+        if cache.get(key) == inputs:
+            return []
+        cache.set(key, inputs)
+
+        follow_up = (note.datetime_of_service + timedelta(days=14)).date()
+        narrative = f"Follow up on {follow_up.isoformat()}."
+        return [PlanCommand(command_uuid=self.target, narrative=narrative).edit()]
+```
 
 ---
 
@@ -14308,7 +14364,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
 #### Lab Order Command
 
 <!-- source: discussion #291 -->
-`LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered — for example, creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The <a href="https://www.canvasmedical.com/extensions/lab-order-automated-task">lab-order-automated-task</a> extension is a reference implementation. Note that tasks created from a plugin can only be assigned to individuals, not to teams.
+`LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered, for example creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The <a href="https://www.canvasmedical.com/extensions/lab-order-automated-task">lab-order-automated-task</a> extension is a reference implementation.
 
 <table>
   <thead>
@@ -18809,12 +18865,10 @@ shape only; dynamic per-field entries appear alongside.
 
 #### Reason for Visit Command
 
-<!-- source: discussion #802 -->
-When reacting to a Reason for Visit command, prefer `REASON_FOR_VISIT_COMMAND__POST_INSERTED_INTO_NOTE` over `REASON_FOR_VISIT_COMMAND__POST_ORIGINATE`. Returning a command effect (for example originating or editing another command) from a `POST_ORIGINATE` handler can cause the Reason for Visit command that triggered the event to be removed from the note. See the [general guidance on `POST_ORIGINATE` vs `POST_INSERTED_INTO_NOTE`](#post_originate-vs-post_inserted_into_note) above.
-
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -19020,6 +19074,7 @@ When reacting to a Reason for Visit command, prefer `REASON_FOR_VISIT_COMMAND__P
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27969,7 +28024,7 @@ When reacting to a Reason for Visit command, prefer `REASON_FOR_VISIT_COMMAND__P
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <code>PATIENT_PORTAL__FORM_RESULT</code> effect as a return value</td></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <a href="/sdk/patient-portal/#forms"><code>PATIENT_PORTAL__FORM_RESULT</code></a> effect as a return value</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27992,7 +28047,7 @@ When reacting to a Reason for Visit command, prefer `REASON_FOR_VISIT_COMMAND__P
 </table>
 
 <!-- source: discussion #1511 -->
-`PATIENT_PORTAL__GET_FORMS` is the built-in mechanism for presenting patient forms: respond to it with one or more `PATIENT_PORTAL__FORM_RESULT` effects and the questionnaires are shown to the patient in a modal after they log in. If you need a different presentation — for example, a standalone page where a patient sees and chooses from a list of forms to complete before an upcoming appointment — build a custom <a href="/sdk/handlers-applications/">Application</a> in the patient portal (a `portal_menu_item`-scoped Application that launches your own UI via `LaunchModalEffect`) rather than relying on the built-in forms modal.
+`PATIENT_PORTAL__GET_FORMS` is the built-in mechanism for presenting patient forms: respond to it with one or more [`PATIENT_PORTAL__FORM_RESULT`](/sdk/patient-portal/#forms) effects (`FormResult`) and the questionnaires are shown to the patient in a modal after they log in. If you need a different presentation, such as a standalone page where a patient picks from a list of forms to complete before an upcoming appointment, build a custom <a href="/sdk/handlers-applications/">Application</a> in the patient portal (a `portal_menu_item`-scoped Application that launches your own UI via `LaunchModalEffect`) rather than relying on the built-in forms modal.
 
 <table>
   <thead>
