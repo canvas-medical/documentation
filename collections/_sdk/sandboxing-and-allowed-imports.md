@@ -538,6 +538,11 @@ If there is a library or function not on this list that you wish to import in yo
 
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
 
+<!-- source: discussion #1505 -->
+### Error monitoring
+
+Error-monitoring SDKs such as `sentry_sdk` are not available in the sandbox. Record errors and diagnostics with [plugin logging](/sdk/plugin-logs/) instead.
+
 ## Policy on Vendor-Specific Libraries:
 
 The current policy strongly discourages the inclusion of vendor-specific libraries. Introducing such libraries presents several challenges:

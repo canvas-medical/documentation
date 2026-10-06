@@ -136,24 +136,14 @@ class MyHandler(BaseHandler):
 This access pattern is unchanged from earlier Canvas versions, so migrating a plugin from the legacy `secrets:` array to the new `variables:` schema requires no handler code changes.
 
 <!-- source: discussion #618 -->
-> **Both steps are required.** `self.secrets["KEY"]` returns a value only after you have (1) declared the key in `CANVAS_MANIFEST.json` and (2) set a value for it — via the CLI or on the plugin configuration page in the Admin UI (`/admin/plugin_io/plugin/`). If either step is missing, the lookup returns no value.
+> **Both steps are required.** `self.secrets["KEY"]` returns a value only after you have:
+>
+> 1. Declared the key in `CANVAS_MANIFEST.json`.
+> 2. Set a value for it, with the CLI or on the plugin configuration page in the Admin UI (`/admin/plugin_io/plugin/`).
+>
+> If either step is missing, the lookup returns no value.
 
 <!-- source: discussion #1415 -->
 ### Configuring SimpleAPI credentials
 
-A SimpleAPI plugin that uses API-key authentication reads its key from a declared secret (commonly `simpleapi-api-key`). Set that secret's value in the secrets Admin UI, then send the **same** value in the `Authorization` header of each request to the route. If the configured secret and the header value do not match — or the secret has no value set — the endpoint responds with `401 Unauthorized` ("Provided credentials are invalid").
-
-<!-- source: discussion #1205 -->
-### Caching external OAuth access tokens
-
-When a plugin calls an external API that uses an OAuth access-token flow, store the acquired token in the [SDK cache](/sdk/caching/) rather than requesting a new token on every call. Set the cache entry to expire at the end of the token's lifetime so the plugin requests a fresh token only after the previous one expires.
-
-<!-- source: discussion #285 -->
-### Reading the Canvas instance identifier
-
-The instance identifier does not need a secret. Every handler can read it from `self.environment['CUSTOMER_IDENTIFIER']` (see [Handlers](/sdk/handlers/)). It is the instance's subdomain, so you can use it to build links back to Canvas, such as `https://<identifier>.canvasmedical.com/patient/<patient_id>`.
-
-<!-- source: discussion #1505 -->
-### Third-party imports and error monitoring
-
-Importing arbitrary third-party packages such as `sentry_sdk` is not supported out of the box; that kind of request must go through the Canvas Security team for approval (see [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#third-party-modules)). For application error monitoring and logging, use the built-in [plugin logging](/sdk/plugin-logs/) instead, which is viewable in the Settings UI and via `canvas logs`.
+A SimpleAPI route that authenticates with [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins) reads its key from the `simpleapi-api-key` secret, unless the route sets a different name in `API_KEY_SECRET_NAME`. Declare that secret, set its value in the secrets Admin UI, then send the **same** value in the `Authorization` header of each request to the route. If the configured secret and the header value do not match, or the secret has no value set, the endpoint responds with `401 Unauthorized` ("Provided credentials are invalid").
