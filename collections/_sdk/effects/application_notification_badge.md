@@ -29,16 +29,29 @@ There are two ways a badge is set:
 
 ## Setting a badge
 
-`ApplicationNotificationBadge` is a fluent builder. Construct it with the target
-application's identifier, optionally `.filter(...)` to target patients, then call
-`.broadcast(...)` to produce the effect.
+`ApplicationNotificationBadge` is a fluent builder. Construct it with the target application's identifier, optionally call `.filter(...)` to target patients, then return `.broadcast(...)` from your handler.
 
-| Method / Attribute       |          | Type        | Description                                                                                                                                                |
-| ------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
-| `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
-| `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
-| `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys whose chart context the update applies to.                                                       |
+### Methods
+
+#### filter(*, patient_ids: list[str] | None = None) → ApplicationNotificationBadge
+
+Scopes the update to the charts of the listed patients. Returns the builder, so the call chains into `.broadcast(...)`.
+
+#### broadcast(count: int, staff_ids: list[str] | None = None) → Effect
+
+Sets the badge to `count` for the staff and patients you target. See [Targeting](#targeting).
+
+- `count` is required and must be `>= 0`; a count of `0` clears the badge.
+- The `application_identifier` passed to the constructor must match an installed application, or the effect raises a validation error.
+
+### Attributes
+
+| Attribute                | Type        | Description                                                                                                                                                | Required |
+| ------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `application_identifier` | `str`       | Passed to the constructor. Must match the application's `class` string declared in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications), the `<module path>:<ClassName>` value (identical to the handler's `identifier`). | Yes      |
+| `count`                  | `int`       | Passed to `.broadcast()`. The badge value to display.                                                                                                      | Yes      |
+| `staff_ids`              | `list[str]` | Passed to `.broadcast()`. Ids of the [staff](/sdk/data-staff/) who should see the update.                                                                  | No       |
+| `patient_ids`            | `list[str]` | Passed to `.filter()`. Ids of the [patients](/sdk/data-patient/) whose chart context the update applies to.                                                | No       |
 
 The `application_identifier` is the application's `class` string from
 `CANVAS_MANIFEST.json` (`<module path>:<ClassName>`). For example, an `InboxApp`

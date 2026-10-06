@@ -16,11 +16,22 @@ forwards it.
 Typical use is from a SimpleAPI route the partner POSTs to when they place
 a standing or recurring order on their side.
 
+Build a `HealthGorillaLabOrderIngest` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Creates the lab order and its tests, as described under [Behavior](#behavior).
+
+- `patient_id`, `ordering_provider_npi`, `note_id`, `ontology_lab_partner`, `date_ordered`, `hg_request_result`, and at least one entry in `test_codes` are required.
+- The patient and note must exist, and a staff member must have the NPI `ordering_provider_npi`.
+
 ## Behavior
 
 Canvas processes the effect in a single transaction:
 
-1. Resolves `Patient` (by `key`), `Staff` (by NPI), and `Note` (by external id).
+1. Resolves `Patient` (by id), `Staff` (by NPI), and `Note` (by external id).
 2. Creates a `LabOrder` with `hg_request_result` set non-empty so the
    send-to-HG worker leaves it alone.
 3. Creates one `LabTest` row per HG order code in `test_codes`. Test names
@@ -31,18 +42,17 @@ orders are past the Canvas send pipeline.
 
 ## Attributes
 
-| Attribute                | Type        | Required | Description                                                                                          |
-| ------------------------ | ----------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| patient_id               | str         | yes      | Canvas Patient `key` (uuid).                                                                         |
-| ordering_provider_npi    | str         | yes      | NPI used to look up the Staff record.                                                                |
-| note_id                  | str         | yes      | Canvas Note `externally_exposable_id` (uuid). LabOrders require an associated Note.                  |
-| ontology_lab_partner     | str         | yes      | Ontology lab partner name (e.g. `"Quest Diagnostics"`, `"LabCorp"`).                                 |
-| date_ordered             | datetime    | yes      | When the order was authored on the partner side.                                                     |
-| hg_request_result        | str         | yes      | Skip-send marker. Convention is the partner's HG `RequestGroup` URL or id so Canvas can correlate later. Any non-empty value works. |
-| test_codes               | list[str]   | yes      | One or more HG order codes. One `LabTest` row is created per entry.                                  |
-| external_id              | str         | no       | Stored on `LabOrder.healthgorilla_id`; useful for partner-side dedup.                                |
-| comment                  | str         | no       | Stored on `LabOrder.comment`.                                                                        |
-
+| Attribute               | Type        | Description                                                                                          | Required |
+| ----------------------- | ----------- | ---------------------------------------------------------------------------------------------------- | -------- |
+| `patient_id`            | `str`       | The id of the [patient](/sdk/data-patient/).                                                         | Yes      |
+| `ordering_provider_npi` | `str`       | NPI used to look up the [staff](/sdk/data-staff/) record.                                            | Yes      |
+| `note_id`               | `str`       | The id of the [note](/sdk/data-note/). Lab orders require an associated note.                        | Yes      |
+| `ontology_lab_partner`  | `str`       | Ontology lab partner name (for example `"Quest Diagnostics"` or `"LabCorp"`).                        | Yes      |
+| `date_ordered`          | `datetime`  | When the order was authored on the partner side.                                                     | Yes      |
+| `hg_request_result`     | `str`       | Skip-send marker. Convention is the partner's HG `RequestGroup` URL or id so Canvas can correlate later. Any non-empty value works. | Yes      |
+| `test_codes`            | `list[str]` | One or more HG order codes. One `LabTest` row is created per entry.                                  | Yes      |
+| `external_id`           | `str`       | Stored on `LabOrder.healthgorilla_id`; useful for partner-side dedup.                                | No       |
+| `comment`               | `str`       | Stored on `LabOrder.comment`.                                                                        | No       |
 ## Example
 
 ```python

@@ -16,6 +16,14 @@ This is the supported way to drive lab-order routing from plugin-owned
 state (for example, a partner-specific lab account selected in a custom
 chart UI) without putting any partner/tenant concept into Canvas core.
 
+Build a `HealthGorillaLabOrderOverride` with the [attributes](#attributes) you want to override, then return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Overrides the outbound lab-order payload with every attribute you set. No attribute is required.
+
 ## Behavior
 
 Each field on the effect is independently optional. A field set to a
@@ -28,15 +36,15 @@ set the same field, the later one wins.
 
 ## Attributes
 
-| Attribute                       | Type   | Description                                                                                                              |
-| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ |
-| practitioner_account_number     | str    | Stamped on the contained `Practitioner.identifier` (Account Number).                                                     |
-| organizational_account_number   | str    | Stamped on the contained authorizing `Organization.identifier` (Account Number).                                         |
-| hg_organization_id              | str    | Health Gorilla facility id (`f-...`) used for the `requestgroup-performer` reference. Skips the lab-name catalog lookup. |
-| hg_tenant_id                    | str    | Health Gorilla sub-tenant Organization id. With `hg_tenant_id` alone, adds a `requestgroup-authorizedBy` reference to `Organization/t-{tenant_id}`. With both `hg_tenant_id` and `hg_location_id` set, the reference is `Organization/tl-{tenant_id}-{location_id}` (the HG sub-tenant location form). |
-| hg_location_id                  | str    | Health Gorilla tenant-location id. Combined with `hg_tenant_id` to produce a `tl-` `requestgroup-authorizedBy` reference. Has no effect on its own. |
-| hg_practitioner_id              | str    | Health Gorilla Practitioner id, appended as an additional identifier on the contained Practitioner with system `https://www.healthgorilla.com`. Use when the ordering provider is registered with HG and you want to surface that registration on the outbound order alongside the NPI. |
-| bill_to_code                    | [BillToCode](#billtocode) | Explicit `Account.type` coding. Overrides the existing coverage-derived inference.                  |
+| Attribute                       | Type   | Description                                                                                                              | Required |
+| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------ | -------- |
+| practitioner_account_number     | str    | Stamped on the contained `Practitioner.identifier` (Account Number).                                                     | No       |
+| organizational_account_number   | str    | Stamped on the contained authorizing `Organization.identifier` (Account Number).                                         | No       |
+| hg_organization_id              | str    | Health Gorilla facility id (`f-...`) used for the `requestgroup-performer` reference. Skips the lab-name catalog lookup. | No       |
+| hg_tenant_id                    | str    | Health Gorilla sub-tenant Organization id. With `hg_tenant_id` alone, adds a `requestgroup-authorizedBy` reference to `Organization/t-{tenant_id}`. With both `hg_tenant_id` and `hg_location_id` set, the reference is `Organization/tl-{tenant_id}-{location_id}` (the HG sub-tenant location form). | No       |
+| hg_location_id                  | str    | Health Gorilla tenant-location id. Combined with `hg_tenant_id` to produce a `tl-` `requestgroup-authorizedBy` reference. Has no effect on its own. | No       |
+| hg_practitioner_id              | str    | Health Gorilla Practitioner id, appended as an additional identifier on the contained Practitioner with system `https://www.healthgorilla.com`. Use when the ordering provider is registered with HG and you want to surface that registration on the outbound order alongside the NPI. | No       |
+| bill_to_code                    | [BillToCode](#billtocode) | Explicit `Account.type` coding. Overrides the existing coverage-derived inference.                  | No       |
 
 ### BillToCode
 
