@@ -292,7 +292,8 @@ sections:
                 required_in: create,update
                 description_for_all_endpoints: Coverage to be used for adjudication. 
                 read_and_search_description: Only insurance objects with `focal` as True will be returned in a Search/Read. 
-                create_and_update_description: Canvas will ignore any elements that are set to False. 
+                # source: discussion #1138
+                create_and_update_description: Canvas will ignore any elements that are set to False. For a self-pay claim, send a single `"No Coverage"` entry with no `coverage.reference` and `focal` set to `false`. If that entry has `focal` set to `true`, the claim is not created.
               - name: sequence
                 required_in: create,update
                 type: positive integer

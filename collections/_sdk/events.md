@@ -707,7 +707,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_RESCHEDULED</th></tr>
-    <tr><td colspan="2">Occurs when an appointment is moved to a different time.</td></tr>
+    <tr><td colspan="2">Occurs when an appointment is rescheduled by cancelling it and creating a replacement, which is what the provider UI, the patient portal, and the Appointment effect's <code>reschedule()</code> all do. The target is the new appointment, and <code>APPOINTMENT_CREATED</code> fires for it as well. Moving an appointment by updating it in place instead, through the Appointment effect's <code>update()</code> or the FHIR API, fires only <code>APPOINTMENT_UPDATED</code>. See <a href='/sdk/data-appointment/#detecting-rescheduled-appointments'>Detecting rescheduled appointments</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27925,6 +27925,26 @@ shape only; dynamic per-field entries appear alongside.
                       "my-health" |
                       "payment" |
                       "search-appointment"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"document": str["after_visit_summary"]
+"note_id": str</pre></td>
     </tr>
   </tbody>
 </table>
