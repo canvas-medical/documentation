@@ -377,13 +377,6 @@ In this example:
 <!-- source: discussion #1602 -->
 Only the comparison operators `=`, `!=`, `exists`, and `not_exists` are supported. Numeric comparison operators (`<`, `>`, `<=`, `>=`) are not supported because question responses are stored as strings (free text, single select, and multi select), so there are no numeric values to compare.
 
-#### Editing branching in the Questionnaire Builder
-
-<!-- source: discussion #1602 -->
-The Questionnaire Builder UI can create, update, and delete this branching logic. To edit it: choose **Edit Existing Form**, select the question that needs conditional logic, and open the **Field Rules** tab to view or edit the conditions. The **YAML** tab reflects the resulting `enabled_behavior` and `enabled_conditions`, and the **Preview** tab lets you test the logic as you answer questions. (Access to the Questionnaire Builder is permissioned; contact Canvas support if it is not available to your users.)
-
-Note that editing a questionnaire — whether through YAML or the Questionnaire Builder — versions it: a new questionnaire is created and the previous version is marked inactive.
-
 #### Loading a definition from YAML
 
 `questionnaire_from_yaml` reads a template out of your plugin package and returns it as a `QuestionnaireConfig`, validated against the schema on the way:
