@@ -166,5 +166,16 @@ class MyHandler(BaseHandler):
 
 Any command in the [commands module](/sdk/commands/) can be inserted from a protocol card recommendation.
 
+Validate Coding Gap has no class in the commands module. Recommend it with `add_recommendation(command="validateCodingGap", context={"detected_issue_id": ...})`, passing the coding gap's [DetectedIssue](/sdk/data-detected-issue/#detectedissue) `dbid`. The inserted command opens with that detected issue selected. See [Improve HCC Coding Accuracy](/guides/improve-hcc-coding-accuracy/) for a full plugin.
+
+```python?partial=true
+card.add_recommendation(
+    title="E11.9 (Type 2 diabetes)",
+    button="Validate",
+    command="validateCodingGap",
+    context={"detected_issue_id": coding_gap.dbid},
+)
+```
+
 <!-- source: discussion #758 -->
 {% include alert.html type="info" content="Commands inserted from a protocol card recommendation populate their fields the same way as a command originated directly from a plugin — the values you set when instantiating the command (for example <code>image_code</code>, <code>diagnosis_codes</code>, <code>comment</code>) carry through to the inserted command." %}
