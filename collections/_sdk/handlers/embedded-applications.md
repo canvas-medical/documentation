@@ -5,10 +5,9 @@ excerpt: "Handler-based applications that render inside a note, replace the sche
 hidden: false
 ---
 
-Embedded applications render **inside a specific Canvas surface** instead of
-appearing as an icon in the app drawer: a tab within a note, the scheduling
-modal, a pane pinned to a window edge, an entry in the provider side menu, or an
-icon in the panel bar. They are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
+Each embedded application belongs to **a specific Canvas surface**, such as a
+note, the scheduling modal, or the provider side menu. Embedded applications are
+ordinary [handlers](/sdk/handlers-basehandler/). You subclass a base class,
 register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
@@ -38,9 +37,10 @@ Because the parent class defines the behavior, there's very little to configure:
   installed for that surface, then renders what your handler returns. A Docked
   Application is the exception: it stays mounted at all times instead of rendering
   on demand. Provider menu and panel entries are fetched when their menu loads and
-  refreshed as the user navigates. None of these are persisted as drawer
-  applications, so they don't appear in the app drawer or under
-  Plugins_IO > Applications.
+  refreshed as the user navigates. None of these create an application record,
+  so they don't appear under Plugins_IO > Applications. Only a Panel Application
+  can appear in the app drawer, as described in
+  [Panel Applications](#panel-applications).
 - If no embedded application is installed for a surface, Canvas falls back to its
   built-in behavior — an unmodified note, or the built-in scheduling modal.
 
@@ -681,10 +681,10 @@ Configure the entry with these class attributes:
 | `NAME`          | Required | The label shown for the menu entry. |
 | `IDENTIFIER`    | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
 | `MENU_POSITION` | Optional | The group the entry joins, as a [`MenuPosition`](#menuposition) value. Defaults to `MenuPosition.TOP`. |
-| `ICON_URL`      | Optional | The URL of an icon to show beside the label. The menu renders `NAME` as text, so an icon isn't required. |
-| `PRIORITY`      | Optional | An integer that orders entries within a group. Lower values appear first. Defaults to `0`. |
+| `ICON_URL`      | Optional | The URL of an icon for the entry. The provider menu shows only the `NAME` label, so it doesn't display this icon. |
+| `PRIORITY`      | Optional | An integer that orders entries within a group. Lower values appear first. Entries sort together with `provider_menu_item` drawer applications, which are ordered by their `menu_order` manifest field. Defaults to `0`. |
 
-{% include alert.html type="info" content="<b>Don't confuse <code>ProviderMenuApplication</code> with the <code>provider_menu_item</code> drawer scope.</b> A <code>ProviderMenuApplication</code> is a handler registered under <code>handlers</code>, configured with Python class attributes such as <code>ICON_URL</code>. <code>provider_menu_item</code> is a manifest scope for a drawer application in the <code>applications</code> array, configured with manifest fields such as <code>icon</code> (see <a href='/sdk/handlers-applications/#application-scopes'>Application Scopes</a>). Both place an entry in the provider menu, and they can coexist." %}
+{% include alert.html type="info" content="<b>Don't confuse <code>ProviderMenuApplication</code> with the <code>provider_menu_item</code> drawer scope.</b> A <code>ProviderMenuApplication</code> is a handler registered under <code>handlers</code>, configured with Python class attributes such as <code>MENU_POSITION</code>. <code>provider_menu_item</code> is a manifest scope for a drawer application in the <code>applications</code> array, configured with manifest fields such as <code>icon</code> (see <a href='/sdk/handlers-applications/#application-scopes'>Application Scopes</a>). Both place an entry in the provider menu, and they can coexist." %}
 
 ### MenuPosition
 
@@ -697,7 +697,7 @@ Configure the entry with these class attributes:
 
 Any other `MENU_POSITION` value raises a `ValueError` when Canvas loads the menu.
 
-### Visibility, Badges, and Opening by Default
+### Visibility and Badges
 
 Provider menu and panel applications share these behaviors.
 
@@ -717,15 +717,14 @@ def visible(self) -> bool:
 `Application` and described under
 [Notification Badges](/sdk/handlers-applications/#notification-badges), to show a
 count on the entry. Return a non-negative integer, or `None` (the default) for no
-badge. Canvas computes the count only when the menu loads, not on each
-navigation, and the [Live updates](/sdk/handlers-applications/#live-updates)
-broadcast path doesn't apply to these entries.
+badge. A count of `0` shows no badge. Canvas computes the count when the menu
+loads, not on each navigation. To change the count after load, emit an
+[`ApplicationNotificationBadge`](/sdk/effect-application-notification-badge/)
+effect for the application's `identifier`, as described under
+[Live updates](/sdk/handlers-applications/#live-updates).
 
 **Navigation.** `on_context_change()` runs only while your application is open,
 not each time the menu refreshes its entries.
-
-**Opening by default.** Override `open_by_default()` to open the application
-automatically. It defaults to `False`.
 
 ### Manifest Configuration
 
@@ -747,10 +746,11 @@ Register your provider menu application under the `handlers` section of your
 
 ## Panel Applications
 
-A panel application adds an entry to the **panel bar**. The panel bar shows only
-an icon, with no label, so every panel application sets an `ICON_URL`. By
-default the entry sits in the panel bar's drawer, behind the drawer button; set
-`SHOW_IN_DRAWER = False` to show the icon directly in the bar.
+A panel application adds an entry beside the panel buttons, both inside and
+outside patient charts. By default, the entry appears in the app drawer with its
+icon and name, alongside drawer applications. Set `SHOW_IN_DRAWER = False` to
+show the icon directly in the panel bar instead. The panel bar shows only the
+icon, with no label, so every panel application sets an `ICON_URL`.
 
 ### Implementing a Panel Application
 
@@ -783,11 +783,11 @@ Configure the entry with these class attributes:
 
 | Attribute        | Required | Description |
 |------------------|----------|-------------|
-| `NAME`           | Required | The entry's name. The panel bar shows the icon, not this text. |
+| `NAME`           | Required | The entry's name, shown under the icon in the app drawer. The panel bar shows only the icon. |
 | `ICON_URL`       | Required | The URL of the icon shown for the entry. |
 | `IDENTIFIER`     | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
-| `SHOW_IN_DRAWER` | Optional | When `True` (the default), the entry sits in the panel bar's drawer. When `False`, the icon shows directly in the panel bar. |
-| `PRIORITY`       | Optional | An integer that orders entries. Lower values appear first. Defaults to `0`. |
+| `SHOW_IN_DRAWER` | Optional | When `True` (the default), the entry appears in the app drawer. When `False`, the icon shows directly in the panel bar. |
+| `PRIORITY`       | Optional | An integer that orders entries. Lower values appear first. Entries sort together with drawer applications, which are ordered by their `panel_priority` manifest field. Defaults to `0`. |
 
 A `PanelApplication` subclass without an `ICON_URL` raises `ImproperlyConfigured`
 when the class is defined, so the plugin fails to load rather than showing an
@@ -808,9 +808,8 @@ class TeamInbox(InboxBase):
     ICON_URL = "https://assets.example.com/team-inbox-icon.png"
 ```
 
-Panel applications support `visible()`, notification badges, and
-`open_by_default()` as described under
-[Visibility, Badges, and Opening by Default](#visibility-badges-and-opening-by-default).
+Panel applications support `visible()` and notification badges as described
+under [Visibility and Badges](#visibility-and-badges).
 
 {% include alert.html type="info" content="<b>A drawer application can also appear in the panel bar.</b> The <code>show_in_panel</code> and <code>panel_priority</code> manifest fields on an entry in the <code>applications</code> array place a drawer application in the panel bar (see <a href='/sdk/handlers-applications/#panel-display'>Panel Display</a>). A <code>PanelApplication</code> is a separate, handler-based registration configured with class attributes, and the two can coexist." %}
 
