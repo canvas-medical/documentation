@@ -19,7 +19,7 @@ There are five kinds:
 | `SchedulingApplication`   | Replaces the built-in scheduling modal at every entry point |
 | `DockedApplication`       | A persistent pane pinned to a window edge, always visible |
 | `ProviderMenuApplication` | An entry in the provider side menu (the navigation sidebar, also called the hamburger menu) |
-| `PanelApplication`        | An icon in the panel bar                                 |
+| `PanelApplication`        | An entry in the panel bar or the app drawer              |
 
 ## How embedded applications work
 
