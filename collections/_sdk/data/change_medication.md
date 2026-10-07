@@ -46,6 +46,17 @@ medication = Medication.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 change_medications = medication.change_medications.all()
 ```
 
+## Latest sig
+
+A change medication's sig is one of the sources a medication's [`latest_sig`](/sdk/data-medication/#latest-sig) draws on, alongside its active prescriptions and medication statements. To get the most recent sig for the medication, read `latest_sig` from the referenced medication:
+
+```python
+from canvas_sdk.v1.data import ChangeMedication
+
+change_medication = ChangeMedication.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
+sig = change_medication.medication.latest_sig
+```
+
 ## Committed records
 
 The `committed` method returns change medications that have been committed and not entered in error:

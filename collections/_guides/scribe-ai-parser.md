@@ -228,7 +228,54 @@ class ScribeParser:
     }
 ```
 
-### 2. Customizing the Entire Parser
+### 2. Pre-filling a Questionnaire
+
+<!-- source: discussion #992 -->
+A section parser can also return a [Questionnaire](/sdk/commands/#questionnaire) command with its answers already filled in. Responses you record on the command, with `question.add_response(...)` or the `answers` parameter, go in with its `originate()` effect, so the handler above needs no change. This parser looks up a "Wound Assessment" questionnaire and answers each question from the transcript, matching questions by label:
+
+```python?partial=true
+from typing import Any, Sequence
+
+from ai_scribe.parsers.base import CommandParser, ParsedContent
+from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
+from canvas_sdk.v1.data.questionnaire import Questionnaire
+
+
+class WoundAssessmentParser(CommandParser):
+    """Parses the wound assessment section of a transcript."""
+
+    def parse(
+        self, content: ParsedContent, context: dict[str, Any] | None = None
+    ) -> Sequence[QuestionnaireCommand]:
+        """Parse the section and create a QuestionnaireCommand with populated responses."""
+
+        wound_data = self.parse_wound_data(content.get("arguments", []))
+
+        wound_questionnaire = Questionnaire.objects.get(name="Wound Assessment")
+        questionnaire_command = QuestionnaireCommand(
+            questionnaire_id=str(wound_questionnaire.id),
+        )
+
+        for question in questionnaire_command.questions:
+            question.add_response(
+                text=str(wound_data.get(question.label.lower().replace(" ", "_"), ""))
+            )
+
+        # The handler sets note_uuid and originates the command, responses included.
+        return [questionnaire_command]
+
+    def parse_wound_data(self, lines: list) -> dict:
+        wound_data = {}
+        for line in lines:
+            label, value = line.split(": ")
+            label = label.strip("- ").lower().replace(" ", "_")
+            wound_data[label] = value
+        return wound_data
+```
+
+The keys `parse_wound_data` produces must match the questionnaire's labels after the same normalization: lowercase, with spaces as underscores. Register the parser in `section_parsers` the same way as above.
+
+### 3. Customizing the Entire Parser
 
 To replace `ScribeParser`, define your custom parser.
 

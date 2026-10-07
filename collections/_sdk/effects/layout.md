@@ -39,14 +39,19 @@ class SummarySectionLayout(BaseHandler):
         return [layout.apply()]
 ```
 
-The `PatientChartSummaryConfiguration` takes a single argument, `sections`,
-which is expected to be a list at least one element long, filled with choices
-from the `PatientChartSummaryConfiguration.Section` enum. The `.apply()`
-method returns a well-formed `Effect` object.
+### Methods
 
-This effect is only used in response to the
-`PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` event. It does nothing in any
-other context.
+#### apply() → Effect
+
+Sets the order and visibility of the chart summary sections. It is only used in response to the `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` event, and does nothing in any other context.
+
+- `sections` is required, with at least one section.
+
+### Attributes
+
+| Attribute  | Type                                     | Description                                                                                                                               | Required |
+| ---------- | ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `sections` | `list[Section \| CustomSection]`         | The sections to show, in order. Each is a `PatientChartSummaryConfiguration.Section` or a `PatientChartSummaryConfiguration.CustomSection(name=...)` for a [custom section](#custom-sections). Sections you leave out are hidden. | Yes      |
 
 Values in the `PatientChartSummaryConfiguration.Section` enum are:
 
@@ -127,13 +132,19 @@ class MyHandler(BaseHandler):
         return [effect]
 ```
 
-The `PatientProfileConfiguration` takes a single argument, `sections`,
-which is expected to be a list at least one element long, filled with `PatientProfileConfiguration.Payload` objects. These are python typed dictionaries that expect a `PatientProfileConfiguration.Section` choice, which describes a section of the patient profile, and a `start_expanded` boolean, which determines if the fields in that section should be exposed by default. The `.apply()`
-method returns a well-formed `Effect` object.
+### Methods
 
-This effect is only used in response to the
-`PATIENT_PROFILE__SECTION_CONFIGURATION` event. It does nothing in any
-other context.
+#### apply() → Effect
+
+Sets the order, visibility, and expansion of the patient profile sections. It is only used in response to the `PATIENT_PROFILE__SECTION_CONFIGURATION` event, and does nothing in any other context.
+
+- `sections` is required, with at least one section.
+
+### Attributes
+
+| Attribute  | Type            | Description                                                                                                                                                                                         | Required |
+| ---------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `sections` | `list[Payload]` | The sections to show, in order. Each `PatientProfileConfiguration.Payload` is a typed dictionary with a `type` (a `PatientProfileConfiguration.Section`) and a `start_expanded` boolean, which determines if the fields in that section are exposed by default. | Yes      |
 
 Values in the `PatientProfileConfiguration.Section` enum are:
 
@@ -174,14 +185,21 @@ PanelConfiguration(
 
 ```
 
-A PanelConfiguration effect consists of the following properties:
+### Methods
+
+#### apply() → Effect
+
+Sets the panel buttons for the page.
+
+- `sections` and `page` are required.
+- Every section must match the page: `PanelGlobalSection` values for `GLOBAL`, `PanelPatientSection` values for `PATIENT`.
 
 ### Attributes
 
-| Attribute  | Type                                                    | Description            |
-| ---------- | ------------------------------------------------------- | ---------------------- |
-| `sections` | `list[PanelPatientSection] or list[PanelGlobalSection]` | list of section items. |
-| `page`     | `Page`                                                  | PATIENT or GLOBAL.     |
+| Attribute  | Type                                                    | Description                         | Required |
+| ---------- | ------------------------------------------------------- | ----------------------------------- | -------- |
+| `sections` | `list[PanelPatientSection] or list[PanelGlobalSection]` | List of section items, in order.    | Yes      |
+| `page`     | `Page`                                                  | `PATIENT` or `GLOBAL`.              | Yes      |
 
 Values in the `PanelGlobalSection` enum are:
 
@@ -242,11 +260,19 @@ class NoteHeaderDropdownHandler(BaseHandler):
         ]).apply()]
 ```
 
+### Methods
+
+#### apply() → Effect
+
+Sets the items in the note header dropdown.
+
+- `items` is required, with at least one item.
+
 ### Attributes
 
-| Attribute | Type         | Description                            |
-| --------- | ------------ | -------------------------------------- |
-| `items`   | `list[Items]` | List of dropdown items to display.    |
+| Attribute | Type          | Description                        | Required |
+| --------- | ------------- | ---------------------------------- | -------- |
+| `items`   | `list[Items]` | List of dropdown items to display. | Yes      |
 
 Values in the `PatientNoteHeaderDropdownConfiguration.Items` enum are:
 
@@ -318,11 +344,19 @@ Passing something that is not an `Items` member raises a validation error when y
 
 If more than one installed plugin responds with a `ProviderMenuConfiguration`, the last effect Canvas receives wins — its allow-list replaces the earlier ones rather than merging with them.
 
+### Methods
+
+#### apply() → Effect
+
+Sets the native items shown in the provider menu.
+
+- `items` is required; an empty list hides every native item.
+
 ### Attributes
 
-| Attribute | Type          | Description                        |
-| --------- | ------------- | ---------------------------------- |
-| `items`   | `list[Items]` | List of menu items to display.     |
+| Attribute | Type          | Description                    | Required |
+| --------- | ------------- | ------------------------------ | -------- |
+| `items`   | `list[Items]` | List of menu items to display. | Yes      |
 
 Values in the `ProviderMenuConfiguration.Items` enum are:
 
@@ -369,7 +403,37 @@ Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admi
 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
 
-### Example Usage
+### Methods
+
+#### apply() → Effect
+
+Launches the modal for the user whose action triggered the handler. See [Where Modals Open](#where-modals-open).
+
+- Set at most one of `url` or `content`; setting both raises an error.
+
+### Attributes
+
+| Attribute | Type         | Description                                                                                          | Required |
+| --------- | ------------ | ---------------------------------------------------------------------------------------------------- | -------- |
+| `url`     | `str`        | The URL to load within the modal.                                                                    | No       |
+| `content` | `str`        | Content to display directly within the modal.                                                        | No       |
+| `target`  | `TargetType` | Where the modal is launched; see [targets](#targets). Defaults to `DEFAULT_MODAL`.                  | No       |
+| `dismissible` | `bool`   | Whether the user can close a `DEFAULT_MODAL` themselves. Defaults to `True`. Set it to `False` for a [blocking modal](#blocking-modals) that only your application can close. | No       |
+| `title`   | `str`        | The title of the modal, displayed when minimized. Defaults to `Untitled`.                            | No       |
+
+#### Targets
+
+`LaunchModalEffect.TargetType` values:
+
+- `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
+- `NEW_WINDOW`: Opens the content in a new browser window.
+- `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
+- `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
+- `PAGE`: Opens the content as a full page.
+- `NOTE`: Opens the content within a note tab (used with Note Applications).
+- `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
+
+### Example
 
 ```python
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -385,18 +449,13 @@ class ModalEffectHandler:
         return [modal_effect.apply()]
 ```
 
-The `LaunchModalEffect` class has the following properties:
+### Where Modals Open
 
-- **url**: A string containing the URL to load within the modal. If `content` is also specified, an error will be raised.
-- **content**: A string containing the content to be displayed directly within the modal. If `url` is also provided, an error will be raised.
-- **target**: Defines where the modal should be launched. Options include:
-  - `DEFAULT_MODAL`: Opens the URL in a modal centered on the screen.
-  - `NEW_WINDOW`: Opens the content in a new browser window.
-  - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
-  - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider.
-  - `PAGE`: Opens the content as a full page.
-  - `NOTE`: Opens the content within a note tab (used with Note Applications).
-- **title**: A string containing the title of the modal and will be displayed when minimized. Defaults to `Untitled`
+A modal opens for the user whose action triggered the handler, in the app they're using: Canvas or the patient portal.
+
+An application's `on_open`, an action button click, and the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/patient-portal/#show-a-modal-after-login) event return the modal in their own response, so it opens right away. Canvas pushes a modal from any other handler, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route, to that user's browser. The modal opens only if the user has Canvas or the portal open at that moment. If the event has no acting user, the modal doesn't open.
+
+In the patient portal, use the `DEFAULT_MODAL` target. The exception is a portal application's `on_open`. It can return the `PAGE` target to show content as the application's page, as in the [patient portal application example](/sdk/example-portal-customization-launch_application/). The portal ignores a pushed modal with the `PAGE` target.
 
 ### Closing Modals from Applications
 
@@ -427,6 +486,30 @@ And that's it! This script establishes a communication channel with the Canvas A
 While developers might find odd to be sending a message to themselves, this is the current method supported by the Canvas SDK for dismissing modals, in order to avoid potential security issues with cross-origin messaging and flooding the main application with messages.
 
 This twist on the _Holywood Principle_ ensures that your application remains secure while still providing the functionality needed to manage modals effectively.
+
+### Blocking Modals
+
+Use a blocking modal when the user has to finish a step before moving on, such as signing a consent form. Set `dismissible=False`:
+
+```python
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+
+modal_effect = LaunchModalEffect(
+    url="https://example.com/consent",
+    target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+    title="Consent",
+    dismissible=False,
+)
+```
+
+A blocking modal stays open when the user:
+
+- Presses Escape or selects the backdrop.
+- Navigates to another page or selects the browser's Back button.
+
+On small screens, a blocking modal doesn't show the back arrow. Signing out of Canvas or the patient portal closes it.
+
+{% include alert.html type="warning" content="Only the modal's own frame can close a blocking modal. It closes when the frame posts <code>CLOSE_MODAL</code>, as shown in <a href='#closing-modals-from-applications'>Closing Modals from Applications</a>. If your application never posts <code>CLOSE_MODAL</code>, the user can't close the modal." %}
 
 <br/>
 <br/>
@@ -461,6 +544,9 @@ Modal overlays can now be dynamically resized by embedded applications using the
 This enables embedded applications to optimize their display area based on content requirements, improving the user experience for dynamic or responsive plugin interfaces.
 
 ## Custom HTML and Django Templates
+
+<!-- source: discussion #461 -->
+Every `LaunchModalEffect` target, from a modal or side pane to a full page, and every application that opens one, renders its content in one of two ways: load a page in an iframe by setting the effect's `url` (see [Implementing an Application](/sdk/handlers-applications/#implementing-an-application)), or pass HTML in `content`, for example rendered from a Django template with `render_to_string`. Either can be a single-page application such as React: serve the page from your plugin and point `url` at it, or include the app's scripts in the HTML you pass as `content`.
 
 To facilitate the use of custom HTML, you can utilize the `render_to_string` utility from `canvas_sdk.templates` to render Django templates with a specified context. This allows for dynamic rendering of HTML that can be passed to a `LaunchModalEffect` or `PortalWidget`.
 
@@ -560,9 +646,9 @@ class PortalWidgetHandler:
 
 ## Additional Configuration
 
-To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the `CANVAS_MANIFEST.json` file of your plugin.
+To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#url-permissions) file of your plugin.
 
-- **Allowing URLs**: URLs specified in the **url** property must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
+- **Allowing URLs**: URLs specified in the **url** property must be added to the [`url_permissions`](/sdk/canvas_manifest/#url-permissions) section of the `CANVAS_MANIFEST.json` in order for the URL to load properly.
 - **Allowing custom scripts**: If you need to load scripts from an external source, the URL for the script must be added to the `url_permissions` section of the `CANVAS_MANIFEST.json` and `'SCRIPTS'` must be in the permissions list.
 - **Requesting microphone access**: If the site in your modal or widget needs microphone access, `'MICROPHONE'` must be in the URL's permissions list.
 - **Requesting camera access**: If the site in your modal or widget needs camera access, `'CAMERA'` must be in the URL's permissions list.
@@ -590,3 +676,14 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
   ]
 }
 ```
+
+<!-- source: discussion #1724 -->
+<!-- source: discussion #525 -->
+### The iframe sandbox and `ALLOW_SAME_ORIGIN`
+
+Whether an application's iframe gets a `sandbox` attribute depends on the `url_permissions` entry its URL matches:
+
+- **With `ALLOW_SAME_ORIGIN`**, the iframe is sandboxed as `allow-same-origin allow-forms allow-popups allow-scripts`. Popups work, so `window.open(url, '_blank')` and popup-based sign-in flows are fine. Navigating the top window from inside the iframe is blocked.
+- **Without a matching entry that grants it**, the iframe has no `sandbox` attribute, and top-window navigation works.
+
+URLs match by case-insensitive prefix, and every character counts, including the scheme, port, and trailing slash. An entry of `https://example.com/` does not match a page at `https://example.com`. If top-window navigation works in one environment but not another, the URLs are matching `url_permissions` differently. To navigate away while keeping `ALLOW_SAME_ORIGIN`, open the page with `window.open(url, '_blank')`, or remove `ALLOW_SAME_ORIGIN` if your application doesn't need it.

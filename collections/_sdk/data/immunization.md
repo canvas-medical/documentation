@@ -82,6 +82,15 @@ from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
 immunizations = Immunization.objects.find(InfluenzaVaccine)
 ```
 
+`find` also works on the `ImmunizationStatement` model manager, matching against the statement's own coding records, which it exposes through the singular `coding` accessor (unlike `Immunization.codings`):
+
+```python
+from canvas_sdk.v1.data.immunization import ImmunizationStatement
+from canvas_sdk.value_set.v2022.immunization import InfluenzaVaccine
+
+immunization_statements = ImmunizationStatement.objects.find(InfluenzaVaccine)
+```
+
 ### Committed and active records
 
 The `committed` method returns immunizations that have been committed and not entered in error. The `active` method is an alias for `committed` and returns the same records:
@@ -123,6 +132,7 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | dbid                          | Integer                                         |
 | patient                       | [Patient](/sdk/data-patient/#patient)          |
 | note                          | [Note](/sdk/data-note/#note)                   |
+| assessment                    | [Assessment](/sdk/data-assessment/#assessment) |
 | status                        | [ImmunizationStatus](#immunizationstatus)      |
 | lot_number                    | String                                          |
 | manufacturer                  | String                                          |
@@ -148,6 +158,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | system        | String                            |
 | version       | String                            |
 | code          | String                            |
@@ -180,6 +192,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name             | Type                                              |
 |------------------------|---------------------------------------------------|
 | dbid                   | Integer                                           |
+| created                | DateTime                                          |
+| modified               | DateTime                                          |
 | system                 | String                                            |
 | version                | String                                            |
 | code                   | String                                            |

@@ -3,12 +3,15 @@ title: Note
 layout: apipage
 ---
 
+{% include alert.html type="warning" content="This API will be deprecated in favor of the Canvas SDK's <a href='/sdk/effect-notes/'>Note Effects</a>, which create, update, sign, lock, and unlock notes from a plugin. Build new integrations against Note Effects." %}
+
 This API allows customers to create and update notes. The effect of creating a note is the same as creating a note in the user interface (for example for a note with category “encounter” will create an encounter, a note that is billable will create a claim). Not all note attributes can be modified on update. For example, note type cannot be changed after note creation.
 
 ## Authentication
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
 
-New scopes are introduced: user/Note.read and user/Note.write. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
+<!-- source: discussion #1294 -->
+The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
 
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 

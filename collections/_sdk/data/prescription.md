@@ -79,61 +79,84 @@ from canvas_sdk.v1.data.prescription import Prescription
 committed_prescriptions = Prescription.objects.committed()
 ```
 
+## Combined sig
+
+The `combined_sig` property returns a prescription's sig — its directions for use — as a string. It returns `sig_original_input`, and when `maximum_daily_dose` is set, `combined_sig` appends `. Maximum Daily Dose: {maximum_daily_dose}` to the sig. For example, a prescription with the sig `1 tab bid` and a maximum daily dose of `2 tabs` returns `1 tab bid. Maximum Daily Dose: 2 tabs`. When `maximum_daily_dose` is not set, `combined_sig` returns `sig_original_input` unchanged. When the prescription has no sig, `combined_sig` returns an empty string. Because `combined_sig` is a property computed in Python, it is read from each `Prescription` object and is not available to a queryset `.filter()` or `.order_by()`.
+
+```python
+from canvas_sdk.v1.data.prescription import Prescription
+
+prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+sig = prescription.combined_sig  # "" when the prescription has no sig
+```
+
+An active prescription's `combined_sig` is one of the sources a medication's [`latest_sig`](/sdk/data-medication/#latest-sig) draws on, alongside its change medications and medication statements. To get the most recent sig for the medication, read `latest_sig` from the referenced medication:
+
+```python
+from canvas_sdk.v1.data.prescription import Prescription
+
+prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+sig = prescription.medication.latest_sig
+```
+
 ## Attributes
 
 ### Prescription
 
-| Field Name                    | Type                                                 |
-| ----------------------------- | ---------------------------------------------------- |
-| id                            | UUID                                                 |
-| dbid                          | Integer                                              |
-| patient                       | [Patient](/sdk/data-patient/)                        |
-| note                          | [Note](/sdk/data-note/)                              |
-| prescriber                    | [Staff](/sdk/data-staff/)                            |
-| supervising_provider          | [Staff](/sdk/data-staff/)                            |
-| medication                    | [Medication](/sdk/data-medication/)                  |
-| compound_medication           | [CompoundMedication](/sdk/data-compound-medication/) |
-| previous_medication           | [Medication](/sdk/data-medication/)                  |
-| indications                   | [Assessment](/sdk/data-assessment/)[]                |
-| related_refill                | [Prescription](#prescription)                        |
-| refill_request                | [RefillRequest](/sdk/data-refill-request/)           |
-| status                        | [PrescriptionStatus](#prescriptionstatus)            |
-| response_type                 | [PrescriptionResponse](#prescriptionresponse)        |
-| is_refill                     | Boolean                                              |
-| is_adjustment                 | Boolean                                              |
-| is_epcs                       | Boolean                                              |
-| generic_substitutions_allowed | Boolean                                              |
-| written_date                  | DateTime                                             |
-| dispensed_date                | DateTime                                             |
-| end_date                      | Date                                                 |
-| end_date_original_input       | String                                               |
-| sig_original_input            | String                                               |
-| dose_form                     | String                                               |
-| dose_route                    | String                                               |
-| dose_quantity                 | Float                                                |
-| dose_frequency                | Float                                                |
-| dose_frequency_interval       | String                                               |
-| maximum_daily_dose            | String                                               |
-| potency_quantity              | Float                                                |
-| dispense_quantity             | Float                                                |
-| duration_in_days              | Integer                                              |
-| count_of_refills_allowed      | Integer                                              |
-| note_to_pharmacist            | String                                               |
-| pharmacy_name                 | String                                               |
-| pharmacy_ncpdp_id             | String                                               |
-| pharmacy_address              | String                                               |
-| pharmacy_phone_number         | String                                               |
-| pharmacy_fax_number           | String                                               |
-| pharmacy_is_read_only         | Boolean                                              |
-| message_id                    | String                                               |
-| prescription_order_number     | String                                               |
-| reason_code                   | String                                               |
-| error_message                 | String                                               |
-| entered_in_error              | [CanvasUser](/sdk/data-canvasuser)                   |
-| committer                     | [CanvasUser](/sdk/data-canvasuser)                   |
-| originator                    | [CanvasUser](/sdk/data-canvasuser)                   |
-| created                       | DateTime                                             |
-| modified                      | DateTime                                             |
+| Field Name                    | Type                                                                                            | Description                       |
+|-------------------------------|-------------------------------------------------------------------------------------------------|-----------------------------------|
+| id                            | UUID                                                                                            |                                   |
+| dbid                          | Integer                                                                                         |                                   |
+| patient                       | [Patient](/sdk/data-patient/)                                                                   |                                   |
+| note                          | [Note](/sdk/data-note/)                                                                         |                                   |
+| prescriber                    | [Staff](/sdk/data-staff/)                                                                       |                                   |
+| supervising_provider          | [Staff](/sdk/data-staff/)                                                                       |                                   |
+| medication                    | [Medication](/sdk/data-medication/)                                                             |                                   |
+| compound_medication           | [CompoundMedication](/sdk/data-compound-medication/)                                            |                                   |
+| previous_medication           | [Medication](/sdk/data-medication/)                                                             |                                   |
+| indications                   | [Assessment](/sdk/data-assessment/)[]                                                           |                                   |
+| related_refill                | [Prescription](#prescription)                                                                   |                                   |
+| refill_request                | [RefillRequest](/sdk/data-refill-request/)                                                      |                                   |
+| status                        | [PrescriptionStatus](#prescriptionstatus)                                                       |                                   |
+| response_type                 | [PrescriptionResponse](#prescriptionresponse)                                                   |                                   |
+| is_refill                     | Boolean                                                                                         |                                   |
+| is_adjustment                 | Boolean                                                                                         |                                   |
+| is_epcs                       | Boolean                                                                                         |                                   |
+| generic_substitutions_allowed | Boolean                                                                                         |                                   |
+| written_date                  | DateTime                                                                                        |                                   |
+| dispensed_date                | DateTime                                                                                        |                                   |
+| end_date                      | Date                                                                                            |                                   |
+| end_date_original_input       | String                                                                                          |                                   |
+| sig_original_input            | String                                                                                          |                                   |
+| dose_form                     | String                                                                                          |                                   |
+| dose_route                    | String                                                                                          |                                   |
+| dose_quantity                 | Float                                                                                           |                                   |
+| dose_frequency                | Float                                                                                           |                                   |
+| dose_frequency_interval       | String                                                                                          |                                   |
+| maximum_daily_dose            | String                                                                                          |                                   |
+| combined_sig                  | String (computed)                                                                               | See [Combined sig](#combined-sig) |
+| potency_quantity              | Float                                                                                           |                                   |
+| dispense_quantity             | Float                                                                                           |                                   |
+| duration_in_days              | Integer                                                                                         |                                   |
+| count_of_refills_allowed      | Integer                                                                                         |                                   |
+| note_to_pharmacist            | String                                                                                          |                                   |
+| pharmacy_name                 | String                                                                                          |                                   |
+| pharmacy_ncpdp_id             | String                                                                                          |                                   |
+| pharmacy_address              | String                                                                                          |                                   |
+| pharmacy_phone_number         | String                                                                                          |                                   |
+| pharmacy_fax_number           | String                                                                                          |                                   |
+| pharmacy_is_read_only         | Boolean                                                                                         |                                   |
+| message_id                    | String                                                                                          |                                   |
+| prescription_order_number     | String                                                                                          |                                   |
+| reason_code                   | String                                                                                          |                                   |
+| error_message                 | String                                                                                          |                                   |
+| entered_in_error              | [CanvasUser](/sdk/data-canvasuser)                                                              |                                   |
+| committer                     | [CanvasUser](/sdk/data-canvasuser)                                                              |                                   |
+| originator                    | [CanvasUser](/sdk/data-canvasuser)                                                              |                                   |
+| created                       | DateTime                                                                                        |                                   |
+| modified                      | DateTime                                                                                        |                                   |
+| cancel_prescriptions          | [CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)[]                       |                                   |
+| change_requests               | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |                                   |
 
 ## Enumeration types
 

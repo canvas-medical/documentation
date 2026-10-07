@@ -6,7 +6,26 @@ The commands module lets you create and update commands within a specific note i
 
 Common objectives that can be met by using Command classes include dynamic note templates, clinical decision support, order set composition, care gap closure, and care coordination automation.
 
+Commands are written from an event handler by default. To let something outside Canvas write them —
+a patient-facing form, a device, an internal tool — expose them over HTTP with
+[`CommandAPI`](/sdk/handlers-simple-api-commands/), which reads a request body onto any command on
+this page, validates it, and emits the effects. The
+[Writing Commands Over HTTP](/guides/writing-commands-over-http/) guide walks through building one.
+
 {% include alert.html type="info" content="New to command fields? Fields that are autocompletes, dropdowns, or enums in the Canvas UI take a raw code, id, or enum value in the SDK — you have to look the value up first. See <a href='/guides/populating-command-fields/'>Populating Command Fields</a> for where each value comes from." %}
+
+<!-- source: discussion #1470 -->
+Note content such as HPI, Review of Systems, Physical Exam, Assessment, and Plan is populated programmatically through this commands module. A common pattern for external integrations is to expose a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint that uses the [Create Note](/sdk/effect-notes/#create-note) effect to create the note and then originates commands into it. See the [charting API examples](/sdk/example-charting_api_examples/) plugin for a worked example.
+
+To write commands from an outside system over HTTP, use [`CommandAPI`](/sdk/handlers-simple-api-commands/), which turns a command into an endpoint and validates each request against the command.
+
+To go beyond the built-in commands, by adding fields, showing your own content, or adding commands of your own, see [Customizing Commands Beyond the Built-ins](/guides/customizing-commands/).
+
+<!-- source: discussion #1375 -->
+"Commands" is an umbrella term for all the structured data within a patient's note. Questionnaire is one specific command type. When a questionnaire is built, its use case in charting can be set to Physical Exam, Structured Assessment, Review of Systems, or Questionnaire; these all share the same underlying database structure but appear in the note as their own distinct command. The `.originate()` method works on all command types.
+
+<!-- source: discussion #1396 -->
+You can use the SDK to auto-populate questionnaire commands (and other commands) in response to an event rather than building many separate per-situation automations. Listen for an appropriate [event](/sdk/events/) — such as a note state change, another command being committed, or metadata being added — and originate the commands you need. You can also insert commands when an [action button](/sdk/handlers-action-buttons/) is clicked if a manual trigger is preferred.
 
 ## Common Attributes
 
@@ -21,9 +40,34 @@ All commands share the following init kwarg parameters:
 
 All parameters can be set upon initialization, and also updated on the class instance.
 
+Field values are read leniently, so a value does not have to arrive already in the field's own type: a number can be given as `"3"`, a date as `"2026-08-04"`, and an enum as its value (`"mild"`) rather than the member. This matters most when the values come from somewhere that only has strings, such as a JSON request body.
+
+The **Required to** column (depending on the command's terminal action) in each command's parameter table below indicates whether a field must be set in order for the server to accept that terminal action. It does **not** mean the field is required to instantiate the class or to call `.originate()` or `.edit()`. You can create a command with every other field empty and the command appears in the note as fresh command, mirroring how a clinician picks a command from the menu in the UI and leaves it unfilled until they're ready to finalize it.
+
+<!-- source: discussion #1693 -->
+The only field required to **originate** any command is `note_uuid`. Skip `.commit()` and the command persists in the note in its empty/staged state until the user (or a later plugin call) fills it in and commits it:
+
+```python?partial=true
+from canvas_sdk.commands import PrescribeCommand
+
+# inside a handler's compute(), on an event whose context carries the note
+p = PrescribeCommand()
+p.note_uuid = self.event.context["note"]["uuid"]
+return [p.originate()]
+```
+
+The same pattern works with any command class — `PlanCommand(note_uuid=...)`, `DiagnoseCommand(note_uuid=...)`, `MedicalHistoryCommand(note_uuid=...)`, etc.
+
 ### Methods
 
-All commands have the following methods:
+**Not every command supports every method.** `originate` is the only one they all have; `edit`,
+`delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
+command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
+check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
+to [custom commands](/sdk/commands-custom-command/) alone.
+
+To call these over HTTP rather than from a handler, see
+[`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
 
 #### originate
 
@@ -99,6 +143,9 @@ def compute():
     return [existing_plan.delete()]
 ```
 
+<!-- source: discussion #531 -->
+To delete the command that triggered your handler, instantiate the matching command class with `command_uuid=self.target` and return its `delete()` effect — for example, `PlanCommand(command_uuid=self.target).delete()` from a handler responding to `PLAN_COMMAND__POST_ORIGINATE`. If you instead want to mark a committed command as entered in error, use [`enter_in_error`](#enter_in_error). Note that `delete()` only removes non-committed (staged) commands.
+
 #### commit
 
 Returns an Effect that commits an existing, non-committed command to the note body.
@@ -137,7 +184,7 @@ def compute():
 
 Returns an Effect that sends a signed command.
 
-**Limited availability** The `send()` method can only be called on [LabOrder](#laborder) and [Prescribe](#prescribe) command objects. Other command types do not support this operation.
+**Limited availability** The `send()` method can only be called on [LabOrder](#laborder), [Prescribe](#prescribe), [Refill](#refill) and [AdjustPrescription](#adjustprescription) command objects. Other command types do not support this operation. The three prescribing commands share one set of [electronic prescribing validations](#prescribe).
 
 **Parameters:**
 
@@ -169,7 +216,7 @@ def compute():
 
 #### enter_in_error
 
-Returns an effect that enter-in-errors an existing, committed command in the note body.
+Returns an effect that enter-in-errors an existing, committed command in the note body. The command referenced by `command_uuid` must already be committed; returning this effect transitions it to entered-in-error status.
 
 **Example**:
 
@@ -292,7 +339,7 @@ This handles the origination and commit in a single effect, without needing to m
 
 ### Chaining Methods with a User-set UUID
 
-If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This is also required for questionnaire-based commands, where `originate()` creates the command but does not add the answers — you must chain an `edit()` to populate the responses (see [Usage Example](#usage-example)). This chaining is necessary because the `originate` method executes asynchronously, so there is no way to get the `command_uuid` back from the originate action and use it for subsequent actions in the same operation.
+If you need more control over the process — for example, to edit a command between origination and commit — you can chain separate effects by setting the `command_uuid` manually. This chaining is necessary because a handler returns all of its effects at once, so it cannot read back an id that Canvas assigns during origination.
 
 ```python
 from uuid import uuid4
@@ -334,7 +381,10 @@ Commands have two types of actions:
 | `audit_history` | Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time. |
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
-{% include alert.html type="info" content="The send action is the only command action available through the SDK and is limited to LabOrder and Prescribe commands only." %}
+<!-- source: discussion #1046 -->
+When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
+
+{% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
 ### Customizing Action Availability
 
@@ -390,25 +440,114 @@ Beyond the built-in validation each command performs on its own fields, you can 
 
 See the [Command Validation effect](/sdk/effect-command-validation/) documentation for the full API and examples.
 
+## Choosing Between Similar Commands
+
+Some commands write to the same part of the chart and differ only in intent. The tables below cover
+the cases where more than one command could plausibly apply.
+
+### Recording a condition
+
+Four commands create a condition. Which one fits depends on whether the condition is active now,
+whether you are assessing it, and whether it is surgical.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
+| [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+| [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
+
+All four write a [Condition](/sdk/data-condition/#condition). They differ in what they set on it,
+which is what decides where it shows up and which commands can act on it later:
+
+| Command | `clinical_status` | `surgical` | Opens an assessment |
+|:--------|:------------------|:-----------|:--------------------|
+| [Diagnose](#diagnose) | `active` | `false` | Yes |
+| [MedicalHistory](#medicalhistory) | `resolved` | `false` | No |
+| [AddCondition](#addcondition) | `active` | `false` | No |
+| [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
+
+Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
+from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
+surgical entry, and [AddCondition](#addcondition) ignores one when checking whether a condition is
+already on the list.
+
+### Updating or removing a condition
+
+Four more commands act on a condition that is already on the chart.
+
+| Command | Use it when |
+|:--------|:------------|
+| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
+| [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
+| [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
+
+The last two are easy to confuse. Resolve Condition closes a condition that was genuinely present
+and leaves it on the record as resolved. Remove Past Medical History withdraws an entry that should
+not have been recorded, taking it off the conditions list entirely.
+
+### Recording a medication
+
+Six commands touch a patient's medication list. Three of them produce a prescription that can be
+sent to a pharmacy with [`send()`](#send), and three only change what the chart says.
+
+| Command | Use it when | Produces a prescription |
+|:--------|:------------|:------------------------|
+| [Prescribe](#prescribe) | You are prescribing a medication the patient is not already on. | Yes |
+| [Refill](#refill) | You are renewing a medication the patient is already on. The `fdb_code` must match one of that patient's active medications. | Yes |
+| [AdjustPrescription](#adjustprescription) | You are replacing a prescribed medication with a different one, given as `new_fdb_code`. A different strength or formulation is a different FDB code, so it goes here too. | Yes |
+| [ChangeMedication](#changemedication) | You are changing the `sig` on an active medication without issuing a new prescription. | No |
+| [StopMedication](#stopmedication) | The patient is stopping a medication, and you want the reason on the chart. | No |
+| [MedicationStatement](#medicationstatement) | You are recording a medication the patient reports taking, without prescribing it. | No |
+
+Canceling a prescription that has already gone to a pharmacy is a Cancel Prescription command in
+the note. There is no SDK command class for it, so a plugin cannot originate one, though the
+resulting records are readable through the
+[CancelPrescription](/sdk/data-cancel-prescription/) data module.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
 
-### Custom Commands
+### AddCondition
 
-For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
+Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in
+the note's History section, without opening an assessment for it. Reach for it when the condition was
+diagnosed previously and is still active. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and MedicalHistory.
 
-Custom commands are different from standard commands:
-- They allow you to display read-only HTML content in the patient chart
-- They must be configured in your plugin's manifest before use
-- They support both display and print versions of content
-- They are designed for displaying formatted data, not for capturing user input
+**Command-specific parameters**:
 
-Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
+| Name                        | Type     | Required to commit | Description                                                |
+|:----------------------------|:---------|:---------|:-----------------------------------------------------------|
+| `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `background`                | _string_ | `false`  | Background information about the condition.                |
+| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
+
+**Example**:
+
+```python?partial=true
+from canvas_sdk.commands import AddConditionCommand
+from datetime import date
+
+add_condition = AddConditionCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='N183',
+    background='Diagnosed at outside nephrology practice.',
+    approximate_date_of_onset=date(2023, 4, 1),
+    comments='Stable on last three panels.'
+)
+```
+
+{% include alert.html type="info" content="Once the condition this command recorded carries an assessment, the command can no longer be entered in error, because reverting it would take the condition out from under that assessment. This holds for plugins as well as for the note: an <code>ENTER_IN_ERROR</code> effect against such a command is rejected with <em>Command could not be entered in error due to command-specific business logic</em>. Resolve the condition instead." %}
 
 ---
 
 ### AdjustPrescription
+
+Replaces a prescribed medication with a different one, and can send the new prescription to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -416,7 +555,7 @@ Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
 |:---------------|:---------|:---------|:-------------------------------------|
 | `new_fdb_code` | _string_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the new medication. |
 
-Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command.
+Check the [Prescribe](#prescribe) command for the other parameters used in the Adjust Prescription command. Adjust Prescription supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 ```python
 from canvas_sdk.commands import AdjustPrescriptionCommand, PrescribeCommand
@@ -452,7 +591,7 @@ AdjustPrescriptionCommand(
 |:-------------------|:----------------|:---------|:---------------------------------------------------------------------------------|
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
-| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy.                             |
+| `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
 | `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
 
 **Enums and Types**:
@@ -504,6 +643,8 @@ allergy = AllergyCommand(
 
 ### Assess
 
+Records an assessment against a condition already on the patient's chart. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
 **Command-specific parameters**:
 
 | Name           | Type          | Required to commit | Description                                                                |
@@ -511,7 +652,7 @@ allergy = AllergyCommand(
 | `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
 | `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment.                                  |
+| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
@@ -535,15 +676,23 @@ assess = AssessCommand(
 )
 ```
 
+**Validation**:
+
+`condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
+
+The check needs that note or command to exist, so it is skipped when you create the note and originate the command in the same batch of effects. Nothing is rejected in that case, since there is not yet a chart to compare the condition against.
+
 ---
 
 ### ChangeMedication
+
+Changes the sig on an active medication without issuing a new prescription. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
 | Name            | Type     | Required to commit | Description                                                        |
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
-| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be a medication on that patient's chart. |
+| `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
 
 **Example**:
@@ -558,6 +707,57 @@ change_medication = ChangeMedicationCommand(
 )
 ```
 
+**Validation**:
+
+`medication_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. The medication must also be active. A medication on another patient's chart, an id that matches no medication, or an inactive medication fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates the command in the same batch of handler effects. In that case the command's patient cannot be resolved yet, so `medication_id` passes this validation; the check then runs once the command is applied.
+
+A malformed `medication_id` fails at command construction, before any patient lookup, while a well-formed UUID passed as a string is accepted.
+
+---
+
+### ChartSectionReview
+
+Records that a section of the patient's chart was reviewed during a visit. Originating the command snapshots the patient's active records in that section onto the note, along with the rendered text of those records as they read at the time of review — the same thing that happens when a user clicks **Review** on a chart section in the Canvas UI. Use it to attest to a review your plugin has already performed, such as reconciling medications from an external source.
+
+The command is always committed on origination, so there is no staged state to fill in and no need to pass `commit=True`.
+
+Read the resulting snapshot back with the [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview) data model.
+
+{% include alert.html type="info" content="This command supports <code>originate()</code> only since it is a read only command." %}
+
+**Command-specific parameters**:
+
+| Name      | Type                                        | Required to commit | Description                                                                                                                          |
+|:----------|:--------------------------------------------|:-------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+| `section` | _[ChartSectionReviewCommand.Sections](#chartsectionreviewcommandsections) enum_ | `true` | The chart section being reviewed. Required when instantiating the command. Must be one of [`ChartSectionReviewCommand.Sections`](#chartsectionreviewcommandsections). |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ChartSectionReviewCommand
+
+def compute():
+    medication_review = ChartSectionReviewCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        section=ChartSectionReviewCommand.Sections.MEDICATIONS,
+    )
+
+    return [medication_review.originate()]
+```
+
+#### ChartSectionReviewCommand.Sections
+
+| Member             | Value              | Chart section    |
+|:-------------------|:-------------------|:-----------------|
+| `CONDITIONS`       | `conditions`       | Conditions       |
+| `SURGICAL_HISTORY` | `surgical_history` | Surgical History |
+| `MEDICATIONS`      | `medications`      | Medications      |
+| `FAMILY_HISTORY`   | `family_histories` | Family Histories |
+| `ALLERGIES`        | `allergies`        | Allergies        |
+| `IMMUNIZATIONS`    | `immunizations`    | Immunizations    |
+
+{% include alert.html type="warning" content="The member name for family history differs between the command and the data model: the command uses <code>ChartSectionReviewCommand.Sections.FAMILY_HISTORY</code>, while the data model uses <code>ChartSectionReviewSection.FAMILY_HISTORIES</code>. Both carry the same value, <code>family_histories</code>." %}
+
 ---
 
 ### CloseGoal
@@ -569,6 +769,7 @@ change_medication = ChangeMedicationCommand(
 | `goal_id`            | _int_                    | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.                                     |
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The final achievement status of the goal. Must be one of [`GoalCommand.AchievementStatus`](#goal-achievementstatus). |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -585,6 +786,10 @@ close_goal = CloseGoalCommand(
 
 ### Diagnose
 
+Records an active condition and assesses it for the first time. See
+[Recording a condition](#recording-a-condition) for how it compares to MedicalHistory and
+AddCondition.
+
 **Command-specific parameters**:
 
 | Name                        | Type       | Required to commit | Description                                                |
@@ -592,7 +797,7 @@ close_goal = CloseGoalCommand(
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
 | `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
-| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition. |
+| `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
 
@@ -619,7 +824,7 @@ diagnose = DiagnoseCommand(
 |:-----------------|:---------------------|:---------|:------------------------------------------------------|
 | `family_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the family history being documented. Search with the [family-history endpoint](/sdk/utils/#get-snomedfamily-history--family-history-conditions). |
 | `relative`       | _string_             | `false`  | A description of the relative (e.g., mother, uncle). Search with the [family-relation endpoint](/sdk/utils/#get-snomedfamily-relation--family-relationships).  |
-| `note`           | _string_             | `false`  | Additional notes or context about the family history. |
+| `note`           | _string_             | `false`  | Additional notes or context about the family history (max length: 512 characters). |
 
 **Coding Support**:
 
@@ -682,6 +887,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
+| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -731,6 +937,7 @@ unstructured = FollowUpCommand(
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#goal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 
 <a id="goal-achievementstatus"></a>
@@ -805,9 +1012,9 @@ hpi = HistoryOfPresentIllnessCommand(
 | `image_code`            | _string_          | `true`   | Code identifier of the imaging order. Search with the [imaging-codes endpoint](/sdk/utils/#searching-for-imaging-codes).                                         |
 | `diagnosis_codes`       | _list[string]_    | `true`   | ICD-10 Diagnosis codes justifying the imaging order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                          |
 | `priority`              | _[Priority](#imagingorder-priority) enum_   | `false`  | Priority of the imaging order. Must be one of [`ImagingOrderCommand.Priority`](#imagingorder-priority). |
-| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order.              |
+| `additional_details`    | _string_          | `false`  | Additional details or instructions related to the imaging order (max length: 1024 characters). |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `true`   | Service provider of the imaging order. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).                                        |
-| `comment`               | _string_          | `false`  | Additional comments.                                                          |
+| `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
 
@@ -968,6 +1175,78 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 
 ---
 
+### Immunize
+
+Records a vaccine **administered** during the visit, including the lot it came from.
+
+**Command-specific parameters**:
+
+| Name              | Type      | Required to commit | Description                                                                                                |
+|-------------------|-----------|--------------------|------------------------------------------------------------------------------------------------------------|
+| `vaccine_id`      | _UUID_    | `true`             | The `id` of a [Vaccine](/sdk/data-vaccine/#vaccine) in this instance's catalog. Must be active.            |
+| `lot_id`          | _UUID_    | `false`*           | The `id` of a [VaccineLot](/sdk/data-vaccine/#vaccinelot) with doses on hand.                              |
+| `lot_number`      | _string_  | `false`*           | A lot number this instance does not stock, recorded as free text (max 20 characters).                      |
+| `manufacturer`    | _string_  | `false`            | The vaccine's manufacturer (max 100 characters).                                                           |
+| `expiration_date` | _date_    | `false`            | The lot's expiration date.                                                                                 |
+| `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
+| `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
+| `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
+| `assessment_id`   | _string_  | `false`            | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+
+*`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
+be omitted.
+
+**Choosing a vaccine and lot**:
+
+Both are instance-specific data, so look them up rather than hard-coding identifiers. A
+vaccine is only selectable on a note if it is active and carries an active CPT charge. See
+[Vaccine](/sdk/data-vaccine/) for the query.
+
+**Manufacturer and expiration**:
+
+When you supply a `lot_id` and leave `manufacturer` or `expiration_date` unset, the
+command fills them in from the lot. Anything you set explicitly is used as-is - including an explicit `None`, which is
+treated as a deliberate choice to leave the field empty rather than as an omission.
+
+A `lot_number` is free text with no inventory record behind it, so nothing is derived
+from it; set `manufacturer` and `expiration_date` yourself if you want them recorded.
+
+**Example**:
+
+```python?partial=true
+from datetime import date
+
+from canvas_sdk.commands.commands.immunize import ImmunizeCommand
+from canvas_sdk.v1.data import Vaccine, VaccineLot
+
+vaccine = Vaccine.objects.filter(active=True, cvx_code="135").first()
+lot = VaccineLot.objects.filter(vaccine__id=vaccine.id, on_hand_inventory__gt=0).first()
+
+# manufacturer and expiration_date are taken from the lot
+immunize = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_id=lot.id,
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+
+# A lot the instance does not stock: supply the details yourself
+immunize_unstocked = ImmunizeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    vaccine_id=vaccine.id,
+    lot_number="ABC-12345",
+    manufacturer="Acme Vaccines",
+    expiration_date=date(2028, 1, 31),
+    sig="0.5 mL IM, left deltoid",
+    consent_given=True,
+    given_by_id="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+```
+
+---
+
 ### Instruct
 
 **Command-specific parameters**:
@@ -976,6 +1255,10 @@ immunization_statement_unstructured = ImmunizationStatementCommand(
 |-----------|------------|----------|-----------------------------------------------------------------------|
 | `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#get-snomedinstruction--instructions). |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+
+<!-- source: discussion #1047 -->
+The Educational Material command only supports a fixed set of selectable values and is not available in this commands module. For free-text patient education, use `InstructCommand` instead — its `UNSTRUCTURED` coding accepts arbitrary instruction text.
 
 **Example**:
 
@@ -1004,6 +1287,10 @@ InstructCommand(
 The `LabOrderCommand` is used to initiate a lab order through the Canvas system.
 This command requires detailed information about the lab partner, the tests being ordered, and the provider placing the
 order.
+
+<!-- source: discussion #574 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+There is no dedicated endpoint for ordering labs or medications. Labs and prescriptions are ordered by creating `LabOrderCommand` and [Prescribe](#prescribe) commands in a note via the SDK, typically in response to an [event](/sdk/events/).
 Built-in validations ensure that:
 
 - The specified lab partner exists (whether provided by name or ID).
@@ -1025,7 +1312,7 @@ Built-in validations ensure that:
 | `ordering_provider_key` | _string_       | `false`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the tests.                                                                                                                     |
 | `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
-| `comment`               | _string_       | `false`  | Additional comments related to the lab order.                                                                                                                    |
+| `comment`               | _string_       | `false`  | Additional comments related to the lab order (max length: 128 characters).                                                                                        |
 
 **Command-specific actions**:
 
@@ -1115,6 +1402,9 @@ lab_review = LabReviewCommand(
 
 ### MedicalHistory
 
+Backfills a condition the patient had in the past that is not active now. See
+[Recording a condition](#recording-a-condition) for how it compares to Diagnose and AddCondition.
+
 **Command-specific parameters**:
 
 | Name                     | Type      | Required to commit | Description                                                |
@@ -1154,12 +1444,14 @@ MedicalHistoryCommand(
 
 ### MedicationStatement
 
+Records a medication the patient reports taking, without prescribing it. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Command-specific parameters**:
 
 | Name       | Type                 | Required to commit | Description                                            |
 |:-----------|:---------------------|:---------|:-------------------------------------------------------|
 | `fdb_code` | _string_ or _[Coding](#coding)_ | `true`   | The [FDB code](/sdk/utils/#fdb_code) of the medication |
-| `sig`      | _string_             | `false`  | Administration details of the medication.              |
+| `sig`      | _string_             | `false`  | Administration details of the medication (max length: 1000 characters). |
 
 **Coding Support**:
 
@@ -1169,6 +1461,19 @@ The `fdb_code` parameter accepts either:
   - Supported systems: `FDB`, `UNSTRUCTURED`
   - Required fields: `system`, `code`
   - Optional field: `display`
+
+<!-- source: discussion #807 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+**Converting an RxNorm code to an FDB code:** MedicationStatement requires an FDB code; it cannot be originated directly from an RxNorm RXCUI. If you have an RxNorm code, use the [ontologies service](/sdk/utils/#searching-for-medications) grouped-medication lookup, which returns a `med_medication_id` — that value is the FDB code:
+
+```python
+from urllib.parse import urlencode
+
+from canvas_sdk.utils.http import ontologies_http
+
+# search for a specific RxNorm RXCUI
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/?{urlencode({'rxnorm_rxcui': 313782})}").json()
+```
 
 **Example**:
 
@@ -1207,6 +1512,8 @@ medication_statement_unstructured = MedicationStatementCommand(
 ---
 
 ### SurgicalHistory
+
+Records a past surgical procedure, coded in SNOMED. See [Recording a condition](#recording-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
@@ -1270,6 +1577,7 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 |------------|----------------------|----------|------------------------------------------------------|
 | `cpt_code` | _string_ or _[Coding](#coding)_ | `true`   | The CPT code of the procedure or action performed. Look it up in the [Charge Description Master](/sdk/data-charge-description-master/#chargedescriptionmaster).   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
+| `assessment_id` | _string_        | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Coding Support**:
 
@@ -1321,6 +1629,7 @@ perform_unstructured = PerformCommand(
 | Name        | Type     | Required to commit | Description                          |
 |:------------|:---------|:---------|:-------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's plan. |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -1421,10 +1730,17 @@ command.set_test_value("pH", "6.8")
 
 ### Prescribe
 
+Writes a new prescription for a medication the patient is not already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Electronic prescribing:** Prescribe commands support the `send()` method for electronic transmission of signed prescriptions. However, electronic prescribing has additional validations:
 
 - A pharmacy must be specified on the command before it can be sent.
 - The command must be committed/signed before it can be sent electronically.
+- The prescriber must have an SPI (Surescripts Prescriber Identifier) number on file, or the send is restricted with `eRx unavailable, prescriber missing SPI number`. SPI is a send requirement only: a prescriber without one can still review and sign the prescription.
+- For a controlled substance, the prescriber must be enrolled in EPCS, or the send is restricted with `eRx unavailable, prescriber not enrolled in EPCS`.
+- For a controlled substance (a medication with a DEA schedule), the patient's [sex at birth](/sdk/data-patient/#sexatbirth) must be male or female, or the send is restricted with `eRx unavailable, patient sex at birth must be male or female`.
+
+These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
 
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
@@ -1441,6 +1757,10 @@ def compute():
 - If the id does not correspond to an existing practice location, the send raises an error rather than falling back to the default address.
 - The override applies only to `send()`-initiated (plugin-driven) prescriptions. It does not affect prescriptions a clinician sends from the charting UI.
 
+<!-- source: discussion #1493 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+**Signing is not supported programmatically.** A Prescribe command cannot be committed (signed) via the SDK. Surescripts requires certain elements to be present in the UI when prescribing in order to remain certified, so the prescriber must physically sign the prescription in the UI. The sign and send actions were separated into distinct steps so that the **send** step can be performed programmatically, but only after the prescription has been manually signed in the UI. The [send all prescriptions](/sdk/example-send_all_prescriptions/) example plugin demonstrates the supported programmatic-send flow.
+
 
 **Command-specific parameters**:
 
@@ -1450,20 +1770,25 @@ def compute():
 | `compound_medication_id`    | _string_                      | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.             |
 | `compound_medication_data`  | [`CompoundMedicationData`](#prescribe-compoundmedicationdata)      | `false`* | Data for creating a new compound medication inline.                 |
 | `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
-| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication.              |
+| `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication. Up to 1000 characters — see [Limits](#prescribe-limits). |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
-| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense.                               |
+| `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense. Must be greater than zero — see [Limits](#prescribe-limits). |
 | `type_to_dispense`          | _[ClinicalQuantity](#clinicalquantity)_            | `true`** | Information about the form or unit of the medication to dispense. Get the available quantities from the [medication search](/sdk/utils/#searching-for-medications)'s `clinical_quantities`.   |
-| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription.                     |
+| `refills`                   | _integer_                     | `true`   | Number of refills allowed for the prescription. From 0 to 99 — see [Limits](#prescribe-limits). |
 | `substitutions`             | _[Substitutions](#prescribe-substitutions) enum_          | `true`   | Specifies whether substitutions (e.g., generic drugs) are allowed.  |
 | `pharmacy`                  | _string_                      | `false`  | The NCPDP ID of the pharmacy where the prescription should be sent. [Look it up via the pharmacy search](/sdk/utils/#searching-for-pharmacies). |
 | `prescriber_id`             | _string_                      | `true`   | The [Staff](/sdk/data-staff/#staff) id of the prescriber.                                          |
 | `supervising_provider_id`   | _string_                      | `false`   | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.               |
-| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist.                |
+| `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist. Up to 210 characters — see [Limits](#prescribe-limits). |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
 **[ClinicalQuantity](#clinicalquantity) is only required when `fdb_code` is provided. It is optional for compound medications.
+
+<!-- source: discussion #731 -->
+<!-- source: discussion #1026 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+**Compound medications:** Compound medications have no FDB code, so they are referenced with `compound_medication_id` or `compound_medication_data` rather than `fdb_code`. Because a compound medication has no FDB code, the quantity-to-dispense format is not preselected — the same as the UI behavior — and must be chosen manually in the UI after the command is inserted. Do not supply `type_to_dispense` for compound medications.
 
 **Command-specific actions**:
 
@@ -1600,17 +1925,47 @@ prescription = PrescribeCommand(
   * Before creating a new compound medication, the system checks if a compound with the same formulation and potency unit code already exists. If it does, it reuses the existing compound medication instead of creating a new one.
 * Potency Unit and Controlled Substance Values: Must use valid enum values from PotencyUnit and ControlledSubstanceSchedule
 
+<a id="prescribe-limits"></a>
+
+**Limits**
+
+A prescription has to fit what can be transmitted to the pharmacy, so four fields are bounded. These apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, which share the fields.
+
+| Field                  | Limit           |
+|------------------------|-----------------|
+| `sig`                  | 1000 characters |
+| `note_to_pharmacist`   | 210 characters  |
+| `refills`              | 0 to 99         |
+| `quantity_to_dispense` | greater than 0  |
+
+All four are checked when the command is turned into an effect, not when the field is set. Building a command up field by field therefore never fails part-way through, and `originate()` or `edit()` reports every value that is out of bounds at once:
+
+```python
+from canvas_sdk.commands import PrescribeCommand
+
+def compute():
+    prescribe = PrescribeCommand(note_uuid='c4d1e4b8-6a5f-4b3a-9e2d-7f8a9b0c1d2e')
+
+    # Neither assignment raises.
+    prescribe.refills = 100
+    prescribe.quantity_to_dispense = 0
+
+    # This raises a validation error naming both values.
+    return [prescribe.originate()]
+```
+
 ---
 
 ### PhysicalExam
 
-**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The PhysicalExamCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Command-specific parameters**:
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Physical Exam**, and it must be set to originate in charting. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 <a id="toggle-questions"></a>
 #### Toggle Questions Feature
@@ -1749,12 +2104,52 @@ The `QuestionnaireCommand` is used to present a questionnaire to a patient and c
 
 **Automatic Questionnaire ID Loading**: When instantiating a QuestionnaireCommand with an existing `command_uuid`, the questionnaire_id will be automatically loaded from the database if not explicitly provided. This means you don't need to specify the questionnaire_id when working with existing commands.
 
-In addition to the basic parameters, this command supports a dynamic response interface. Once instantiated, you can retrieve the list of questions via the `questions` property, and then record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
+<!-- source: discussion #1545 -->
+**Note on the scoring narrative:** Setting a `result` value on the command instance has no effect — it is ignored by the command methods (`originate`, `edit`, `commit`). The questionnaire scoring narrative is instead set through the [Create a Questionnaire Result](/sdk/effect-questionnaires/#creating-a-questionnaire-result) effect. Once set, the narrative can be read from the command's `data` attribute, displays in the UI command, and (if the questionnaire is configured to show in the Social Determinants section) displays there too.
+
+In addition to the basic parameters, this command records responses in either of two ways:
+
+- **The `answers` parameter** — you pass the responses in, one per question, and the command works out how to apply each one. Nothing in your code branches on a question's type. Use this when you already have the question and option ids.
+- **The `questions` property with `add_response()`** — you read the questionnaire's questions off the command and record a response on each question object. The keyword you pass differs by question type, so your code branches on it. Use this when you need to inspect the questions or their options at runtime to decide what to answer.
+
+Both arrive at the same result, and they can be combined. `answers` is applied when the command's effect is built: it replaces whatever was recorded on the questions it names, and leaves a response recorded with `add_response()` on any other question alone. `answers` is not itself carried in the effect.
+
+**Recording responses with `answers`**
+
+The `answers` parameter takes a list of `Answer` objects, one per question. Each names a question and the response it takes; the command looks up the question, dispatches on its type, and resolves an option id to the option itself. A question id that is not in the questionnaire, an option id the question does not offer, or a response the question's type does not allow raises a `ValueError` when the effect is built.
+
+<a id="questionnaire-answer"></a>
+
+**`Answer` fields**:
+
+| Name          | Type                                      | Required | Description                                                                                     |
+|:--------------|:------------------------------------------|:---------|:------------------------------------------------------------------------------------------------|
+| `question_id` | _integer_                                  | `true`   | The [Question](/sdk/data-questionnaire/#question) `dbid`.                                        |
+| `response`    | _string_, _integer_, or _list of [Selection](#questionnaire-selection)_ | `true`   | Text for a text question, a number for an integer question, a [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` for a radio question, an ISO 8601 `YYYY-MM-DD` string for a date question, or a list of [`Selection`](#questionnaire-selection) objects for a checkbox question. |
+
+A checkbox question is the only kind whose responses carry comments, and each of its selections carries its own — so a comment belongs to a [`Selection`](#questionnaire-selection) rather than to the answer as a whole.
+
+{% include alert.html type="warning" content="A date answer given through <code>answers</code> must be a string. <code>response</code> accepts a string, an integer or a list of <code>Selection</code>, so a <code>datetime.date</code> is refused. The question's own <code>add_response(date=...)</code> is the path that takes a <code>datetime.date</code> or a <code>datetime.datetime</code>." %}
+
+<a id="questionnaire-selection"></a>
+
+**`Selection` fields**:
+
+| Name        | Type      | Required | Description                                                                                    |
+|:------------|:----------|:---------|:-------------------------------------------------------------------------------------------------|
+| `option_id` | _integer_ | `true`   | The [ResponseOption](/sdk/data-questionnaire/#responseoption) `dbid` to tick.                    |
+| `comment`   | _string_  | `false`  | What this selection is qualified with.                                                           |
+| `selected`  | _boolean_ | `false`  | Defaults to `true`. Set it to `false` to untick the option — one a payload says nothing about keeps the state it already had. |
+
+**Recording responses with `questions` and `add_response()`**
+
+Retrieve the list of questions via the `questions` property and record responses for each question using the question object's `add_response()` method. Each question type enforces its expected response format:
 
 - **Text questions (TYPE_TEXT):** Accept a keyword argument `text` (a string).
 - **Integer questions (TYPE_INTEGER):** Accept a keyword argument `integer` (a value convertible to an integer; a non-convertible value raises an error).
 - **Radio questions (TYPE_RADIO):** Accept a keyword argument `option` (a `ResponseOption` instance); only one option may be selected.
 - **Checkbox questions (TYPE_CHECKBOX):** Accept a keyword argument `option` (a `ResponseOption` instance) along with an optional boolean `selected` (defaulting to True) and an optional string `comment`. Multiple responses can be recorded.
+- **Date questions (TYPE_DATE):** Accept a keyword argument `date` (a `datetime.date`, a `datetime.datetime` normalized to its date, or an ISO 8601 date string `YYYY-MM-DD`). The value is stored as a normalized `YYYY-MM-DD` string; a string carrying a time component, an unparseable string, or a wrong type raises an error.
 
 
 **Command-specific parameters**:
@@ -1762,6 +2157,7 @@ In addition to the basic parameters, this command supports a dynamic response in
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
 | `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 **Example** — instantiating an empty questionnaire:
 
@@ -1776,10 +2172,52 @@ questionnaire = QuestionnaireCommand(
 
 #### Usage Example
 
-Below is an example that demonstrates how to instantiate a `QuestionnaireCommand`, retrieve the questions, and add responses to them based on their type:
+Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
+
+```python?partial=true
+from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note, Questionnaire
+
+class MyHandler(BaseHandler):
+
+    def compute(self) -> list[Effect]:
+      questionnaire = Questionnaire.objects.filter(name="Exercise").first()
+      note = Note.objects.last()
+
+      command = QuestionnaireCommand(
+          note_uuid=str(note.id),
+          questionnaire_id=str(questionnaire.id),
+          answers=[
+              # A text question.
+              Answer(question_id=12, response="Thanks for all the fish"),
+              # An integer question.
+              Answer(question_id=13, response=42),
+              # A radio question, answered with the id of one of its options.
+              Answer(question_id=14, response=101),
+              # A date question. Give the date as a string, not a datetime.date.
+              Answer(question_id=15, response="2026-07-14"),
+              # A checkbox question, answered with one Selection per option ticked.
+              Answer(
+                  question_id=16,
+                  response=[
+                      Selection(option_id=201),
+                      Selection(option_id=202, comment="Don't panic"),
+                  ],
+              ),
+          ],
+      )
+
+      # The responses are included when the command is originated.
+      return [command.originate()]
+```
+
+An option id that the question does not offer, or a question id that is not in the questionnaire, raises a `ValueError` rather than recording something the questionnaire does not define.
+
+Below is the same thing written the other way, retrieving the questions and adding responses to them based on their type:
 
 ```python
-import uuid
 from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
 from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
 from canvas_sdk.effects import Effect
@@ -1794,7 +2232,6 @@ class MyHandler(BaseHandler):
       # Create a QuestionnaireCommand instance.
       command = QuestionnaireCommand(questionnaire_id=str(q.id))
       command.note_uuid = str(note.id)
-      command.command_uuid = str(uuid.uuid4())
 
       # Alternatively you can just retrieve an existing questionnaire command, and only return an `edit` effect.
 
@@ -1819,9 +2256,12 @@ class MyHandler(BaseHandler):
               last_option = question.options[-1]
               question.add_response(option=first_option, selected=True, comment="Don't panic")
               question.add_response(option=last_option, selected=True)
+          elif question.type == ResponseOption.TYPE_DATE:
+              # For date questions, pass a 'date' keyword argument.
+              question.add_response(date="2026-01-15")
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit.
-      return [command.originate(), command.edit()]
+      # The responses are included when the command is originated.
+      return [command.originate()]
 ```
 
 #### Explanation
@@ -1831,22 +2271,16 @@ class MyHandler(BaseHandler):
 
 
 - **Recording Responses:**
-  Each question object provides an `add_response()` method that enforces the correct response format:
+  Either set `answers` and let the command resolve each response against its question, or record them one at a time. Each question object provides an `add_response()` method that enforces the correct response format:
   - For **TextQuestion**, you must pass a `text` parameter.
   - For **IntegerQuestion**, you must pass an `integer` parameter.
   - For **RadioQuestion**, you must pass an `option` parameter (a `ResponseOption` instance) that corresponds to one of the allowed options.
   - For **CheckboxQuestion**, you must pass an `option` parameter along with an optional `selected` flag (defaulting to True) and an optional `comment`. Multiple responses can be recorded for checkbox questions.
   - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
+  - For **DateQuestion**, you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
 
 
- - **Creating and Editing:**
-   When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
-
- - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
- - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
-   - An `.originate()` to insert the command and select the questionnaire
-   - An `.edit()` to populate the responses
-   - A `.commit()` to commit the command
+ - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
 
 ---
 
@@ -1963,6 +2397,45 @@ refer_command = ReferCommand(
 
 ---
 
+### Reference
+
+Embeds a diagnostic view in the note. A diagnostic view is a saved combination of lab tests and questionnaire codes configured on your instance; referencing one renders that patient's results for those codes as a timeseries inside the note, so a reviewer sees the trend without leaving the chart.
+
+The command renders as a read-only table. There are no fields for a user to fill in, so the diagnostic view has to be chosen by whatever inserts the command — a user can only commit or delete it, and enter it in error once committed.
+
+Unlike [ChartSectionReview](#chartsectionreview), it is not committed on origination: it stays staged until you pass `commit=True` to `originate()` or send a separate `commit()`.
+
+Read the committed reference back with the [Reference](/sdk/data-reference/#reference) data model.
+
+{% include alert.html type="warning" content="The rendered name and table are derived from the diagnostic view when the command is originated, and are not recalculated afterwards. Pointing an existing command at a different diagnostic view with <code>edit()</code> leaves the previous view's name and table on display. To change the view, delete the command and originate a new one." %}
+
+**Command-specific parameters**:
+
+| Name                  | Type                | Required to commit | Description                                                                                                                                   |
+|:----------------------|:--------------------|:-------------------|:----------------------------------------------------------------------------------------------------------------------------------------------|
+| `diagnostic_view_id`  | _UUID_ or _string_  | `true`             | The id of the [DiagnosticView](/sdk/data-diagnostic-view/#diagnosticview) to embed. An id that does not match a diagnostic view on the instance is discarded, leaving the command with no view to render. |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ReferenceCommand
+from canvas_sdk.v1.data import DiagnosticView
+
+def compute():
+    a1c_view = DiagnosticView.objects.filter(name="Hemoglobin A1c").first()
+    if not a1c_view:
+        return []
+
+    reference = ReferenceCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        diagnostic_view_id=a1c_view.id,
+    )
+
+    return [reference.originate(commit=True)]
+```
+
+---
+
 ### ReferralReview
 
 **Command-specific parameters**:
@@ -2000,9 +2473,11 @@ referral_review = ReferralReviewCommand(
 
 ### Refill
 
+Renews a prescription for a medication the patient is already on, and can send it to a pharmacy. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
+
 **Command-specific parameters**:
 
-Check the [Prescribe](#prescribe) command for the parameters used in the Refill command.
+Check the [Prescribe](#prescribe) command for the parameters used in the Refill command. Refill supports [`send()`](#send) under the same [electronic prescribing validations](#prescribe).
 
 **Example**:
 
@@ -2038,7 +2513,7 @@ RefillCommand(
 | Name         | Type     | Required to commit | Description                                      |
 |--------------|----------|----------|--------------------------------------------------|
 | `allergy_id` | _string_ | `true`   | The id of the [AllergyIntolerance](/sdk/data-allergy-intolerance/#allergyintolerance) to remove. Must be an allergy already recorded on that patient's chart.        |
-| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal. |
+| `narrative`  | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
 
 **Example**:
 
@@ -2053,13 +2528,54 @@ RemoveAllergyCommand(
 
 ---
 
+### Remove Past Medical History
+
+**Command-specific parameters**:
+
+| Name           | Type     | Required to commit | Description                                      |
+|----------------|----------|----------|--------------------------------------------------|
+| `condition_id` | _string_ | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being removed from the patient's past medical history. Must be a committed, resolved, non-surgical condition already recorded on that patient's chart, with no committed assessment against it. An assessment that was entered in error, or is not committed yet, does not block removal. |
+| `rationale`    | _string_ | `false`  | Additional context or narrative for the removal (max length: 512 characters). |
+
+Committing this command enters the target condition in error, removing it from the patient's conditions list. The Past Medical History command that originally recorded the entry stays committed and visible in the note. Entering this command in error reverses the removal, returning the entry to the patient's chart. Each removal is recorded as a [RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/), which you can query from the data module.
+
+{% include alert.html type="info" content="An entry with a committed assessment cannot be removed, because the assessment would be left describing nothing. The in-note picker leaves these entries out, and a plugin that names one gets a validation error: <code>Condition {id} has assessments recorded against it, so this command cannot remove it</code>. The rule also applies at commit, so an assessment committed after the removal was originated still blocks the commit." %}
+
+**Example**:
+
+```python
+from canvas_sdk.commands import RemovePastMedicalHistoryCommand
+from canvas_sdk.v1.data import Condition
+
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
+
+# Leave out entries with a committed assessment, which this command refuses.
+past_medical_history_entry = (
+    Condition.objects.for_patient(patient_id)
+    .committed()
+    .filter(clinical_status="resolved", surgical=False)
+    .exclude(assessments__committer__isnull=False, assessments__entered_in_error__isnull=True)
+    .first()
+)
+
+RemovePastMedicalHistoryCommand(
+    condition_id=past_medical_history_entry.id,
+    rationale="Imported in error from the HIE feed.",
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+)
+```
+
+---
+
 ### Resolve Condition
+
+Closes an active condition that is no longer relevant to track. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
 | Name                     | Type      | Required to commit | Description                                                                |
 |--------------------------|-----------|----------|----------------------------------------------------------------------------|
-| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be a condition already recorded on that patient's chart.               |
+| `condition_id`           | _string_  | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being resolved. Must be an **active** condition on that patient's chart — committed, not entered in error, and not already resolved. |
 | `show_in_condition_list` | _boolean_ | `false`  | Determines whether the condition remains visible in patient chart summary. |
 | `rationale`              | _string_  | `false`  | Additional context.                                                        |
 
@@ -2067,7 +2583,7 @@ RemoveAllergyCommand(
 from canvas_sdk.commands.commands.resolve_condition import ResolveConditionCommand
 from canvas_sdk.v1.data import Condition
 
-patient_id = '<a patient ID from your instance>'
+patient_id = "1eed3ea2a8d546a1b681a2a45de1d790"
 
 patient_condition = Condition.objects.for_patient(patient_id).committed().active().first()
 
@@ -2087,7 +2603,8 @@ ResolveConditionCommand(
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Review of Systems**, and it must be set to originate in charting. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 
 #### Toggle Questions Feature
@@ -2137,12 +2654,14 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 # All previously set toggle states are automatically loaded
 ```
 
-**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 ---
 
 
 ### StopMedication
+
+Records that a patient is stopping a medication, along with the reason. See [Recording a medication](#recording-a-medication) for how it compares to the other medication commands.
 
 **Command-specific parameters**:
 
@@ -2150,6 +2669,7 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
 | `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Example**:
 
@@ -2171,9 +2691,10 @@ stop_medication = StopMedicationCommand(
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Structured Assessment**, and it must be set to originate in charting. |
+| `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
-**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features (including response recording, question mapping, etc.). For detailed information on these features, please refer to the [Questionnaire Command Documentation](#questionnaire).
+**Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 **Example**:
 
@@ -2201,6 +2722,7 @@ questionnaire = StructuredAssessmentCommand(
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
+| `assessment_id`     | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 **Enums and Types**:
 
@@ -2290,14 +2812,16 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 
 ### UpdateDiagnosis
 
+Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
 **Command-specific parameters**:
 
 | Name                 | Type     | Required to commit | Description                                                       |
 |----------------------|----------|----------|-------------------------------------------------------------------|
 | `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
-| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis. |
-| `narrative`          | _string_ | `false`  | A narrative or explanation about the update.                      |
+| `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
+| `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
 
 ---
 
@@ -2322,11 +2846,12 @@ UpdateDiagnosisCommand(
 
 | Name                 | Type                     | Required to commit | Description                                               |
 |:---------------------|:-------------------------|:---------|:----------------------------------------------------------|
-| `goal_id`            | _string_                 | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
+| `goal_id`            | _string_                 | `true`   | The `id` of the [Goal](/sdk/data-goal/#goal) being updated. Must be a goal on that patient's chart.        |
 | `due_date`           | _datetime_               | `false`  | The date the goal is due.                                 |
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
 
 <a id="updategoal-achievementstatus"></a>
 
@@ -2389,6 +2914,10 @@ update_goal = UpdateGoalCommand(
 | `oxygen_saturation`                | _integer_ | `false`  | Oxygen saturation in percentage.                 |
 | `supplemental_oxygen`              | _[SupplementalOxygen](#supplementaloxygen)_    | `false`  | Type of supplemental oxygen the patient is receiving. |
 | `note`                             | _string_  | `false`  | Additional notes (max length: 150 characters).   |
+
+<!-- source: discussion #709 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+For an example of how weight (`weight_lbs` / `weight_oz`) and other vitals values are stored and read back via the SDK, see the [vitals visualizer](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/vitals_visualizer_plugin) example plugin, which retrieves a patient's weight and displays it in a side modal.
 
 **Enums and Types**:
 
@@ -2498,6 +3027,19 @@ prescribe = PrescribeCommand(
     substitutions=PrescribeCommand.Substitutions.ALLOWED
 )
 ```
+
+<!-- source: discussion #920 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+**Looking up `representative_ndc` and `ncpdp_quantity_qualifier_code`:** When a Prescribe command uses an `fdb_code`, `type_to_dispense` requires a `ClinicalQuantity` with both `representative_ndc` and `ncpdp_quantity_qualifier_code`. You can obtain these values from the [ontologies service](/sdk/utils/#making-requests-to-the-ontologies-service). The FDB code is the `med_medication_id` returned by a medication search; query the grouped-medication endpoint directly by that ID to read its clinical quantities:
+
+```python
+from canvas_sdk.utils.http import ontologies_http
+
+med_medication_id = 436095  # this is the fdb_code
+response_json = ontologies_http.get_json(f"/fdb/grouped-medication/{med_medication_id}/").json()
+```
+
+A single FDB code can contain multiple `clinical_quantities`, so filter to the correct one by matching its `clinical_quantity_description` to your medication's form. The fields map to `ClinicalQuantity` as follows: `representative_ndc` → `representative_ndc`, and `erx_ncpdp_script_quantity_qualifier_code` → `ncpdp_quantity_qualifier_code`.
 
 ### ServiceProvider
 

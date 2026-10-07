@@ -92,7 +92,7 @@ educational_materials = note.education_material.all()
 
 ### Understanding the note body structure
 
-The `body` field of a note contains a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
+The `body` of a note is a JSON array that represents the structure and layout of the note. It intermixes text content with references to commands:
 
 ```python
 import json
@@ -117,28 +117,114 @@ The body array contains objects of two types:
      "type": "command",
      "value": "reasonForVisit",
      "data": {
-       "id": 1095,
        "command_uuid": "691123c4-6c7d-415b-880b-2beefab9f64a"
      }
    }
    ```
 
-The `command_uuid` in a command object corresponds to the `id` field of the [Command](/sdk/data-command/) model, allowing you to retrieve the full command data:
+   `command_uuid` identifies the command and is present on every command object.
+   It matches the `id` of the [Command](/sdk/data-command/) model. A command
+   object on a note that has not yet moved to the [refactored body
+   structure](/release-notes/note-v2-2026-09-15/) can also carry an `id`, holding
+   the integer identifier of the record the command created. A note on the
+   refactored structure never carries one, so read the
+   [Command](/sdk/data-command/) through `command_uuid` and take
+   `anchor_object` from it instead.
+
+#### Querying on the body
+
+`body` is computed on each access rather than stored in a column, because Canvas
+assembles it from more than one column. That does not change the value you read,
+but it does limit which query operations can name it:
+
+| Operation                                              | Supported | Notes                                                                                              |
+|--------------------------------------------------------|-----------|----------------------------------------------------------------------------------------------------|
+| `Note.objects.filter(body=...)`                        | Yes       | Also `exclude()` and `get()`, and lookups nested inside a `Q` object                               |
+| `Note.objects.only("body")`                            | Yes       | Loads every column the property reads, so building a body costs no further queries                 |
+| `Note.objects.defer("body")`                           | Yes       | Defers all of them                                                                                 |
+| `Note.objects.values("body")`, `values_list("body")`   | No        | Raises a `FieldError` telling you to use `only("body")`. No single column holds the value to return |
+| `Note.objects.order_by("body")`                        | No        | Raises a `FieldError`                                                                              |
+| `body` named through a relation                        | No        | For example `Appointment.objects.defer("note__body")` or `filter(note__body=...)`. Query `Note` itself instead |
+
+{% include alert.html type="warning" content="Naming <code>body</code> through a relation stopped working in the <a href=\"/release-notes/1-348-0/\">September 8, 2026 release</a>. A queryset on another model that defers or filters <code>note__body</code> now raises an error. If you were deferring it to keep a large body out of a joined scan, query the notes you need separately with <code>Note.objects.defer(\"body\")</code>." %}
+
+A `body` filter reads the column holding that note's body, and the two columns hold
+different shapes: a legacy note holds an ordered list of lines, while a note on the
+refactored structure holds an object keyed by line identifier. A filter written against one
+shape matches no notes on the other, and returns no rows instead of raising.
+
+So read the body from a note you already have, or filter notes by it, rather than trying
+to select it as a value:
 
 ```python
 from canvas_sdk.v1.data.note import Note
-from canvas_sdk.v1.data.command import Command
+
+# Load only the columns the body needs.
+notes = Note.objects.only("body").filter(patient__id="b80b1cdc2e6a4aca90ccebc02e683f35")
+for note in notes:
+    print(note.body)
+```
+
+#### Reading a note's commands
+
+To work with the commands in a note, use the note's `commands` relation rather than walking `body`. It returns the note's [Command](/sdk/data-command/) records in a single query, the same way for every note:
+
+```python
+from canvas_sdk.v1.data.note import Note
 
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 
-# Find all command references in the note body
-for item in note.body:
-    if item.get("type") == "command":
-        command_uuid = item["data"]["command_uuid"]
-        command = Command.objects.get(id=command_uuid)
-        print(f"Command type: {command.schema_key}")
-        print(f"Command data: {command.data}")
+for command in note.commands.all():
+    print(f"Command type: {command.schema_key}")
+    print(f"Command data: {command.data}")
 ```
+
+`commands` includes commands that were entered in error; leave them out with `note.commands.exclude(state="entered_in_error")`. Its results are not in the order the commands appear in the note. When order matters, take the order from `body`, whose command lines carry a `command_uuid` matching each command's `id`, and still load the commands in one query:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+commands = {str(command.id): command for command in note.commands.all()}
+commands_in_order = [
+    commands[line["data"]["command_uuid"]]
+    for line in note.body
+    if line.get("type") == "command" and line["data"]["command_uuid"] in commands
+]
+```
+
+<!-- source: discussion #1022 -->
+### Fetch command details from a command lifecycle event
+
+When a command lifecycle event such as `LAB_ORDER_COMMAND__POST_COMMIT` fires, `self.target` contains the command's `id`. Use that ID to load the [`Command`](/sdk/data-command/) data record and read its `data` JSON — either to act on it inside the listener, or to expose it through a [`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute) endpoint your application can query later by command ID:
+
+```python
+import json
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.v1.data.command import Command
+
+
+class CommandAPI(SimpleAPIRoute):
+    PATH = "/routes/commands/<id>"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def get(self) -> list[Response | Effect]:
+        command_id = self.request.path_params["id"]
+        command = Command.objects.get(id=command_id)
+
+        return [
+            JSONResponse(json.dumps(command.data), status_code=HTTPStatus.OK)
+        ]
+```
+
+Your application would then GET `https://<your-instance>.canvasmedical.com/plugin-io/api/<plugin_name>/routes/commands/<id>`.
 
 ### Retrieve the audit history for a note
 
@@ -192,6 +278,94 @@ if CurrentNoteStateEvent.objects.get(note=note).state == NoteStates.LOCKED:
 if CurrentNoteStateEvent.objects.filter(note=note, state=NoteStates.LOCKED).exists():
     # This note is locked!
     pass
+```
+
+<!-- source: discussion #1021 -->
+### Retrieve the PDF of a locked or signed note
+
+Finalizing a note captures it as a PDF showing the note at that moment. A note type that does not require a signature is captured when the note is locked, and a note type with `is_sig_required` set is captured when the note is signed. The file is stored on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent) that recorded the lock or signature, so you reach it through the note's state history rather than from the note itself.
+
+{% include alert.html type="info" content="Only notes whose note type has a <a href='/sdk/data-note/#notetypecategories'>category</a> of <code>ENCOUNTER</code>, <code>INPATIENT</code>, or <code>REVIEW</code> are captured this way; notes in any other category have no PDF. A note can be finalized more than once. Each time captures its own PDF and Canvas supersedes the earlier ones, so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version." %}
+
+#### Look up a note's PDF
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` rather than hardcoding the per-environment `dbid`, and match `object_id` against the `dbid` of the note's lock and signature events:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, DocumentReferenceStatus
+from canvas_sdk.v1.data.note import Note, NoteStates
+
+note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+finalized_events = note.state_history.filter(state__in=[NoteStates.LOCKED, NoteStates.SIGNED])
+
+content_type = ContentType.objects.filter(
+    app_label="api", model="notestatechangeevent"
+).first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type,
+    object_id__in=[event.dbid for event in finalized_events],
+    status=DocumentReferenceStatus.CURRENT,
+).first()
+
+url = document.document_url if document else None
+```
+
+#### React when a PDF is captured
+
+The PDF is generated in the background after the note is locked or signed, so it does not exist yet when the state change itself fires. Listen for [`DOCUMENT_REFERENCE_CREATED`](/sdk/events/#document-references) instead. Canvas creates the note's DocumentReference once the PDF is ready, with `related_object` already pointing at the lock or signature event, so `document_url` can be read straight away:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import DocumentReference
+from canvas_sdk.v1.data.note import NoteStateChangeEvent
+from logger import log
+
+
+class NotePdfCaptured(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.DOCUMENT_REFERENCE_CREATED)
+
+    def compute(self):
+        document = DocumentReference.objects.get(id=self.event.target.id)
+        state_change = document.related_object
+        if not isinstance(state_change, NoteStateChangeEvent):
+            return []  # a document reference that is not a note PDF
+
+        log.info(f"Note {state_change.note.id} PDF: {document.document_url}")
+        return []
+```
+
+`document_url` is a presigned link that expires after an hour. To export the PDF to an external system, either fetch the file within that window, or send only the note ID and let your application request a fresh link later through a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint you stand up in Canvas.
+
+<!-- source: discussion #1533 -->
+### Determine if a note is signed
+
+For note types where `is_sig_required` is `True`, the terminal state is `SGN` (Signed) rather than `LKD` (Locked). To check whether a note is currently signed, retrieve its [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent) and compare against `NoteStates.SIGNED`:
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+current_state = CurrentNoteStateEvent.objects.filter(note=note).first()
+is_signed = current_state is not None and current_state.state == NoteStates.SIGNED
+```
+
+Because a note can be signed, amended, and re-signed, the full state history lives in [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent). To get the signer and the timestamp of the most recent signature, query for the latest `SGN` event and read its `originator` (the [`CanvasUser`](/sdk/data-canvasuser) who signed) and `created` timestamp:
+
+```python?partial=true
+from canvas_sdk.v1.data.note import NoteStateChangeEvent, NoteStates
+
+# `note` is the Note from the previous example
+sign_event = NoteStateChangeEvent.objects.filter(
+    note=note,
+    state=NoteStates.SIGNED,
+).order_by("-created").first()
+
+if sign_event:
+    signed_at = sign_event.created
+    signed_by = sign_event.originator  # CanvasUser who signed
 ```
 
 ### Find all open notes
@@ -252,7 +426,8 @@ claim = note.get_claim()
 
 ### Get the NoteType of a given note
 
-To get the note type for a specific note, use the `note_type_version` attribute which provides access to the related `NoteType` object:
+<!-- source: discussion #1150 -->
+A note's type is available through its `note_type_version` attribute, which returns the related [NoteType](#notetype) object:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -312,7 +487,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | patient             | [Patient](/sdk/data-patient/#patient)  |                                                                                                                                                                                                      |
 | note_type_version   | [NoteType](#notetype)                  |                                                                                                                                                                                                      |
 | title               | String                                 |                                                                                                                                                                                                      |
-| body                | JSON                                   | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also include a `data` field with `id` and `command_uuid`. |
+| body                | JSON (computed)                        | Array of objects representing the note structure. Each object has a `type` (either `"text"` or `"command"`) and a `value`. Command objects also carry a `data` field holding `command_uuid` (matching the Command `id`); older notes may additionally include an integer `id`. See [Understanding the note body structure](#understanding-the-note-body-structure). |
 | originator          | [CanvasUser](/sdk/data-canvasuser)     |                                                                                                                                                                                                      |
 | provider            | [Staff](/sdk/data-staff/#staff)        |                                                                                                                                                                                                      |
 | supervising_provider | [Staff](/sdk/data-staff/#staff)       | The note's supervising provider, if one has been set                                                                                                                                                 |
@@ -325,6 +500,8 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | encounter           | [Encounter](/sdk/data-encounter)       |                                                                                                                                                                                                      |
 | location            | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) | The practice location associated with the note                                                                                                                             |
 | commands            | QuerySet[[Command](/sdk/data-command)] | All commands associated with this note                                                                                                                                                               |
+| clipboards          | QuerySet[[Clipboard](/sdk/data-clipboard/#clipboard)] | All clipboard commands recorded on this note                                                                                                                                          |
+| custom_commands     | QuerySet[[CustomCommand](/sdk/data-custom-command/#customcommand)] | All custom commands recorded on this note                                                                                                                  |
 | note_tasks          | QuerySet[[NoteTask](/sdk/data-task)]   | All tasks associated with this note                                                                                                                                                                  |
 | metadata            | QuerySet[[NoteMetadata](#notemetadata)] | All metadata key-value pairs associated with this note                                                                                                                                              |
 | lab_reviews            | QuerySet[[LabReview](/sdk/data-labs/#labreview)] | All lab reviews associated with this note                                                                                                                                              |
@@ -333,9 +510,11 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
 | visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
 | state_history       | QuerySet[[NoteStateChangeEvent](#notestatechangeevent)] | The note's state-change audit history                                                                                                                                       |
+| action_events       | QuerySet[[NoteActionEvent](/sdk/data-fax/#noteactionevent)] | Faxes of this note, with their [delivery status](/sdk/data-fax/#delivery-status) |
 | current_state       | [CurrentNoteStateEvent](#currentnotestateevent) | The note's current state event                                                                                                                                                      |
 | assessments         | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note                                                                                                                                  |
 | goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |
+| updategoals         | QuerySet[[UpdateGoal](/sdk/data-goal/#updategoal)] | All goal updates and closures recorded on this note                                                                                                                          |
 | instructions        | QuerySet[[Instruction](/sdk/data-instruction/#instruction)] | All instructions associated with this note                                                                                                                              |
 | immunizations       | QuerySet[[Immunization](/sdk/data-immunization/#immunization)] | All immunizations associated with this note                                                                                                                           |
 | claims              | QuerySet[[Claim](/sdk/data-claim/#claim)] | All claims associated with this note (see the `get_claim()` method)                                                                                                                       |
@@ -344,6 +523,23 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | laborder_set        | QuerySet[[LabOrder](/sdk/data-labs/#laborder)] | All lab orders associated with this note                                                                                                                                                |
 | appointment_set     | QuerySet[[Appointment](/sdk/data-appointment/#appointment)] | All appointments associated with this note                                                                                                                              |
 | education_material  | QuerySet[[EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)] | All educational materials recorded on this note                                                                                                                        |
+| procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
+| family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
+| plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
+| follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
+| reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
+| assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
+| assessed_detected_issues | QuerySet[[ValidateCodingGapEvent](/sdk/data-coding-gap-event/#validatecodinggapevent)] | All coding gaps validated on this note |
+| created_detected_issues | QuerySet[[CreateCodingGapEvent](/sdk/data-coding-gap-event/#createcodinggapevent)] | All coding gaps created on this note |
+| deferred_detected_issues | QuerySet[[DeferCodingGapEvent](/sdk/data-coding-gap-event/#defercodinggapevent)] | All coding gaps deferred on this note |
+| removed_allergies   | QuerySet[[RemoveAllergyEvent](/sdk/data-remove-allergy-event/#removeallergyevent)] | All allergies removed on this note |
+| removed_past_medical_history | QuerySet[[RemovePastMedicalHistoryEvent](/sdk/data-remove-past-medical-history-event/#removepastmedicalhistoryevent)] | All past medical history entries removed on this note |
+| resolved_conditions | QuerySet[[ResolveConditionEvent](/sdk/data-resolve-condition-event/#resolveconditionevent)] | All conditions resolved on this note |
+| histories_of_present_illness | QuerySet[[HistoryOfPresentIllness](/sdk/data-history-present-illness/#historyofpresentillness)] | All histories of present illness recorded on this note                                                        |
+| vital_sign_readings | QuerySet[[VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)] | All vital sign readings recorded on this note                                                                                             |
+| cancel_prescriptions | QuerySet[[CancelPrescription](/sdk/data-cancel-prescription/#cancelprescription)] | All prescription cancellations recorded on this note |
+| prescription_change_requests | QuerySet[[PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)] | All pharmacy change requests recorded on this note |
+| prescription_change_responses | QuerySet[[PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)] | All responses to change requests recorded on this note |
 
 ### NoteType
 

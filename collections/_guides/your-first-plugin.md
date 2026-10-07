@@ -101,7 +101,8 @@ paperwork-eviscerator/
 ### CANVAS_MANIFEST.json
 
 The CANVAS_MANIFEST.json is particularly important. It is used during the
-installation of the plugin.
+installation of the plugin. See the [Canvas Manifest](/sdk/canvas_manifest/)
+reference for every field it can contain.
 
 ```json
 {
@@ -216,7 +217,7 @@ class Handler(BaseHandler):
 
 ## 5. Listen for an Event
 
-Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types) you're interested in.
+Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types-and-context) you're interested in.
 
 ## 6. Return an Effect
 

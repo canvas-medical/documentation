@@ -7,16 +7,32 @@ hidden: false
 
 Creates preferred pharmacies for a patient.
 
-### Parameters
+## Methods
 
-| Name       | Type                             | Description                           |
-|------------|----------------------------------|---------------------------------------|
-| patient_id | `str` or `UUID`                  | The unique identifier of the patient. |
-| pharmacies | `list[PatientPreferredPharmacy]` | List of pharmacies to create.         |
+### create() → Effect
 
-### PatientPreferredPharmacy
+Sets the patient's preferred pharmacies.
+
+- `patient_id` and `pharmacies` are required, and `patient_id` must be the id of an existing patient.
+- At most one pharmacy in `pharmacies` can be marked as the default.
+
+## Attributes
+
+| Attribute    | Type                                                       | Description                           | Required |
+|--------------|------------------------------------------------------------|---------------------------------------|----------|
+| `patient_id` | `str` or `UUID`                                            | The id of the [patient](/sdk/data-patient/). | Yes      |
+| `pharmacies` | list[[PatientPreferredPharmacy](#patientpreferredpharmacy)] | List of pharmacies to create.         | Yes      |
+
+## PatientPreferredPharmacy
 
 The `PatientPreferredPharmacy` dataclass represents a patient's preferred pharmacy, and if it's their default pharmacy.
+
+### Attributes
+
+| Attribute  | Type   | Description                                          | Required                |
+|------------|--------|------------------------------------------------------|-------------------------|
+| `ncpdp_id` | `str`  | The NCPDC identifier of the pharmacy.                | Yes                     |
+| `default`  | `bool` | Indicates if this is the patient's default pharmacy. Defaults to `False`. | No |
 
 ### Validation
 
@@ -24,15 +40,7 @@ When this effect is interpreted, Canvas validates the `ncpdp_id` before setting 
 
 To ensure the `ncpdp_id` exists before using this effect, you can verify it using Canvas's [pharmacy HTTP utility](/sdk/utils/#making-requests-to-the-pharmacy-service) to check the pharmacy beforehand.
 
-#### Attributes
-
-| Attribute  | Type   | Description                                          | Required                |
-|------------|--------|------------------------------------------------------|-------------------------|
-| `ncpdp_id` | `str`  | The NCPDC identifier of the pharmacy.                | Yes                     |
-| `default`  | `bool` | Indicates if this is the patient's default pharmacy. | No, defaults to `False` |
-
-
-### Example
+## Example
 
 ```python
 from canvas_sdk.effects.patient import CreatePatientPreferredPharmacies, PatientPreferredPharmacy

@@ -16,6 +16,33 @@
     font-size: 0.75rem;
   }
 
+  &__content {
+    // Lists ship with no item spacing, so multi-line bullets run together.
+    // Top-level items get a gap wider than the 1.5 line-height inside them, so
+    // a bullet that wraps still reads as one block rather than merging with the
+    // next. Nested items stay tighter, which groups them under their parent.
+    ul,
+    ol {
+      >li {
+        margin-bottom: 1rem;
+      }
+
+      ul,
+      ol {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        >li {
+          margin-bottom: 0.25rem;
+        }
+
+        >li:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
   &__title {
     font-size: 2rem;
     @media (min-width: $breakpoint-lg) {

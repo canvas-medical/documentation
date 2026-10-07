@@ -22,7 +22,7 @@ To create a new application, run the following command:
 canvas init application
 ```
 
-This will generate a boilerplate application along with a `CANVAS_MANIFEST.json` file.
+This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file.
 
 ## Step 3: Understanding the `CANVAS_MANIFEST.json` File
 
@@ -123,6 +123,8 @@ class MyApplication(Application):
 - `PAGE`: Opens the URL as a page in the app
 - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
 - `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
+
+When opened in a patient's chart, both right chart pane targets stay open while the user moves around the same patient's chart. They close when the user opens a different patient or leaves the chart.
 
 ## Step 5: Installing the Application
 

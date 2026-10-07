@@ -5,37 +5,65 @@ excerpt: "Launch external content within the EHR from the app drawer."
 hidden: false
 ---
 
-Applications are accessible in the app drawer and launch your content when
-clicked. Applications can be patient specific, or global.
+Applications put your own tools inside Canvas, so staff and patients can use them without leaving the workflow they're in. An application can be a dashboard, a form, a third-party tool loaded in an iframe, or a full page you build in your plugin.
+
+Applications can show up wherever they fit the work:
+
+- In the app drawer, on a patient's chart or across Canvas
+- As a tab in the patient chart, next to Chart and Profile
+- In the provider menu
+- In the patient portal menu, for patients
+- In the [Provider Companion](/sdk/companion/)
+
+An application opens your content when a user selects it, and it can show a [notification badge](#notification-badges) to flag what's waiting. Its [scope](#application-scopes) decides where it appears.
 
 ## Implementing an Application
 
-To add an application, your handler class should inherit from the
-`Application` class.
+To add an application, create a handler class that inherits from `Application`, then register it in your manifest.
 
-Your class must implement the `on_open()` method. In most cases, you will
-return a `LaunchModalEffect`, with either a URL you wish to iframe into the
-Canvas UI or HTML to be rendered in that iframe directly, make sure to set a `title` so users can easily recognize the application when it's minimized. You can return a single `Effect` or a list of `Effect`s from the `on_open()` method.
+### Methods
 
-You can also optionally implement the `on_context_change()` method to handle
-context changes within the application. This method is automatically triggered when
-users navigate to different URLs within Canvas, allowing your application to react
-to contextual changes with rich information about the current page.
+- **`on_open()`** (required) runs when a user opens the application. It usually returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with a `url` to load in an iframe or `content` to render directly. Set a `title` so users can recognize the application when it's minimized. Return one `Effect` or a list of them.
+- **`on_context_change()`** (optional) runs when the user moves to another page while the application is open. Return an `Effect`, a list of them, or `None` to do nothing. See [Context Change Events](#context-change-events) for when it fires and what it receives.
 
-Context change events are currently supported for revenue workflows and include:
+### Opening for the current patient
 
-- **URL information**: The current page URL that triggered the context change
-- **Patient data**: Patient information when applicable
-- **Resource-specific context**: Additional context based on the specific page:
-  - `/revenue/claims/<id>` - Includes claim data with externally exposable ID
-  - `/revenue/queues/<id>` - Includes queue data with database ID
-  - `/revenue` - Base revenue page with no additional context
+<!-- source: discussion #307 -->
+When an application opens on a patient chart, `on_open()` can read the current patient from `self.context`, which looks like `{'patient': {'id': '24cfe22ecf74420fb82dc40e44ca6166'}}`. Use it to open your application for that patient:
 
-This method can return an `Effect` or list of `Effect`s to perform actions when the application's context
-changes, or `None` if no action is needed. When `None` is returned, no effect will
-be added to the execution queue.
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
 
-Here is an example of an implemented application class:
+
+class MyApplication(Application):
+    """An embeddable application that can be registered to Canvas."""
+
+    def on_open(self) -> Effect:
+        """Handle the on_open event."""
+        patient_id = self.context['patient']['id']
+        patient_specific_url = f"https://example.com/patient-specific-application?patient={patient_id}"
+
+        return LaunchModalEffect(
+            url=patient_specific_url,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+        ).apply()
+```
+
+### Registering the application
+
+Your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) must also describe the application. Reference your class in the "applications"
+section of the components so your application is registered in the app drawer
+on plugin installation.
+
+This is also where you can define the title and icon that displays your
+app in the app drawer. The icon will be rendered at 48px by 48px, so should be
+square and simple enough to not lose detail at that size.
+
+### Example
+
+This application opens in the right chart pane and reloads with claim or queue details as the user moves through revenue pages:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -179,15 +207,6 @@ class AdvancedRevenueApp(Application):
         ).apply()
 ```
 
-In addition, your `CANVAS_MANIFEST.json` file must provide some information
-about your application. You reference your class in the "applications"
-section of the components so your application is registered in the app drawer
-on plugin installation.
-
-This is also where you can define the title and icon that displays your
-app in the app drawer. The icon will be rendered at 48px by 48px, so should be
-square and simple enough to not lose detail at that size.
-
 ## Application Scopes
 
 The `scope` attribute determines where your application is visible within Canvas. The following scopes are available:
@@ -204,6 +223,16 @@ The `scope` attribute determines where your application is visible within Canvas
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
 
+<!-- source: discussion #556 -->
+### Who sees an application
+
+Applications in the `global`, `patient_specific`, `provider_menu_item`, and `portal_menu_item` scopes are shown to every user. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
+
+<!-- source: discussion #1204 -->
+### Linking to a portal application
+
+A `portal_menu_item` application's URL ends in its identifier, base64-encoded. For example, `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==` decodes to `plugin_name.module.path:ClassName`. Because the identifier is made of the plugin name, module path, and class name, renaming any of them changes the URL and breaks links to it. The browser's address bar also stays the same as the patient moves between applications.
+
 ### Full Chart Scope
 
 Applications with the `full_chart` scope appear as navigation tabs at the top of the patient chart, alongside the default "Chart" and "Profile" tabs. This is ideal for building comprehensive patient-level views or dashboards.
@@ -218,6 +247,9 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
 }
 ```
 
+<!-- source: discussion #1547 -->
+A `full_chart` application is also the way to give custom patient data its own layout. The [patient metadata form](/sdk/patient-metadata-create-form-effect/) shows fields as one flat list in the profile, with no sections or headings. To group fields your own way, build the form in a `full_chart` application and save the values with the [patient metadata effect](/sdk/effect-patient-metadata/) from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint, so they're stored the same way.
+
 ## Provider Companion Applications
 
 Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
@@ -226,7 +258,7 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-Note Applications (tabs inside a note) and Scheduling Applications (which replace the built-in scheduling modal) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
@@ -281,6 +313,36 @@ Here's what your `CANVAS_MANIFEST.json` might look like:
 }
 ```
 
+## Installing and updating applications
+
+When you install or upgrade a plugin, Canvas reconciles its applications to match
+`CANVAS_MANIFEST.json`. Canvas creates each application declared under
+`components.applications` that is new and updates each one that already exists.
+Canvas removes any registered application that the manifest no longer declares.
+The removed application's entry disappears from the app drawer and from any menu
+it appeared in, such as the provider menu, and its stored icon is deleted.
+
+Reconciliation affects only the plugin being installed. Applications that belong
+to other plugins are left unchanged.
+
+An application's identity is its `class` value, the `module:ClassName` string,
+and Canvas matches applications by `class` during reconciliation:
+
+- Editing only display fields (`name`, `description`, `icon`, `scope`, and so on)
+  while keeping the same `class` updates the existing application in place.
+- Changing the `class` value, by editing either the module path or the class
+  name, removes the old application and adds a new one rather than updating the
+  existing application in place.
+
+> **Note:** Per-application instance settings such as
+> [Open on load](#opening-an-application-on-load) attach to a specific
+> application. Because changing an application's `class` creates a new
+> application, those settings do not carry over to the new application.
+
+Application changes apply together with the plugin's other install or upgrade
+changes, such as commands and questionnaires, as a single all-or-nothing
+operation, so if an install fails, the plugin's applications are left unchanged.
+
 ## Opening an Application on Load
 
 You can configure an application to open **automatically**, without the user
@@ -312,14 +374,17 @@ preserved when the plugin is reinstalled or updated.
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on a `global`,
-`patient_specific`, or `provider_menu_item` application: on the icon in the app
-drawer or panel (`global` / `patient_specific`, the latter when the application
-sets `show_in_panel`), or next to the label in the provider menu
-(`provider_menu_item`). A badge is useful for surfacing how many items are waiting
+You can display a notification badge — a small count — on an application in
+these scopes:
+
+- `global` and `patient_specific`: on the icon in the app drawer, or on the panel
+  when a `patient_specific` application sets `show_in_panel`.
+- `provider_menu_item`: next to the label in the provider menu.
+- `portal_menu_item`: next to the label in the patient portal menu.
+
+A badge is useful for surfacing how many items are waiting
 for attention, such as unread messages or open tasks. Applications in other scopes
-(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
-display badges.
+(`full_chart` and the Provider Companion scopes) do not display badges.
 
 ### Initial count on load
 
@@ -366,12 +431,26 @@ def compute_notification_badge(self) -> int | None:
     ).count()
 ```
 
+For a `portal_menu_item` application, the count is computed for the patient
+logged in to the portal. The event context carries that patient and no staff
+member:
+
+```python
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+def compute_notification_badge(self) -> int | None:
+    patient_id = self.event.context.get("patient", {}).get("id")
+    if not patient_id:
+        return None
+    return Task.objects.filter(patient__id=patient_id, status=TaskStatus.OPEN).count()
+```
+
 The badge event context contains:
 
 | Key       | Description                                                          |
 | --------- | -------------------------------------------------------------------- |
 | `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
-| `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
+| `patient` | A dict with the patient `id` and `type` (present on a patient chart, and in the patient portal for the logged-in patient). |
 
 > **Note:** Note Applications (`NoteApplication`) do not
 > support notification badges.
@@ -384,6 +463,30 @@ The badge updates in real time without the user reloading the page. See the
 [Application Notification Badge](/sdk/effect-application-notification-badge/)
 effect for details.
 
+
+## Limitations and patterns
+
+<!-- source: discussion #595 -->
+### Third-party scripts only run inside a plugin iframe
+
+Canvas does not provide a way to inject application-wide JavaScript (for example,
+Segment or Sentry snippets) into the Canvas front end. Third-party scripts can
+only run inside the iframe of a plugin's own application.
+
+<!-- source: discussion #389 -->
+### Application iframes and cookies
+
+An application iframe can use cookies for its own domain only when its URL's entry
+in [`url_permissions`](/sdk/canvas_manifest/#url-permissions) includes
+`ALLOW_SAME_ORIGIN`. Without it, each launch behaves like an incognito session, so a
+user may have to sign in to your application every time it opens.
+
+<!-- source: discussion #571 -->
+### Replacing a built-in view
+
+When a built-in Canvas view doesn't fit a workflow, an application can replace it with your own, built from the same data and actions the SDK exposes. Read what you need with the [data module](/sdk/data/), make changes with [effects](/sdk/effects/) returned from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint in the same plugin, and lay out the page however the workflow needs.
+
+For example, to present tasks with locked fields, predefined dropdowns, or custom labels beyond what the built-in Task command offers, build an application that opens on the right side of a note. Read tasks with the [Task](/sdk/data-task/) data model, and create or update them with the [task effects](/sdk/effect-tasks/). Give these tasks a label of their own so your application can find them and staff can filter them out of the general Tasks list.
 
 <br/>
 <br/>
