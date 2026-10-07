@@ -5,28 +5,31 @@ excerpt: "Launch external content within the EHR from the app drawer."
 hidden: false
 ---
 
-Applications are accessible in the app drawer and launch your content when
-clicked. Applications can be patient specific, or global.
+Applications put your own tools inside Canvas, so staff and patients can use them without leaving the workflow they're in. An application can be a dashboard, a form, a third-party tool loaded in an iframe, or a full page you build in your plugin.
+
+Applications can show up wherever they fit the work:
+
+- In the app drawer, on a patient's chart or across Canvas
+- As a tab in the patient chart, next to Chart and Profile
+- In the provider menu
+- In the patient portal menu, for patients
+- In the [Provider Companion](/sdk/companion/)
+
+An application opens your content when a user selects it, and it can show a [notification badge](#notification-badges) to flag what's waiting. Its [scope](#application-scopes) decides where it appears.
 
 ## Implementing an Application
 
-To add an application, your handler class should inherit from the
-`Application` class.
+To add an application, create a handler class that inherits from `Application`, then register it in your manifest.
 
-Your class must implement the `on_open()` method. In most cases, you will
-return a `LaunchModalEffect`, with either a URL you wish to iframe into the
-Canvas UI or HTML to be rendered in that iframe directly, make sure to set a `title` so users can easily recognize the application when it's minimized. You can return a single `Effect` or a list of `Effect`s from the `on_open()` method.
+### Methods
 
-You can also optionally implement the `on_context_change()` method to handle
-context changes within the application. This method is automatically triggered when
-users navigate to different URLs within Canvas, allowing your application to react
-to contextual changes with rich information about the current page.
+- **`on_open()`** (required) runs when a user opens the application. It usually returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with a `url` to load in an iframe or `content` to render directly. Set a `title` so users can recognize the application when it's minimized. Return one `Effect` or a list of them.
+- **`on_context_change()`** (optional) runs when the user moves to another page while the application is open. Return an `Effect`, a list of them, or `None` to do nothing. See [Context Change Events](#context-change-events) for when it fires and what it receives.
+
+### Opening for the current patient
 
 <!-- source: discussion #307 -->
-When an application is opened on a patient chart, `on_open()` has access to the
-current patient through `self.context`. The structure looks like
-`{'patient': {'id': '24cfe22ecf74420fb82dc40e44ca6166'}}`, so you can launch your
-application in the current patient context like this:
+When an application opens on a patient chart, `on_open()` can read the current patient from `self.context`, which looks like `{'patient': {'id': '24cfe22ecf74420fb82dc40e44ca6166'}}`. Use it to open your application for that patient:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -48,20 +51,19 @@ class MyApplication(Application):
         ).apply()
 ```
 
-Context change events are currently supported for revenue workflows and include:
+### Registering the application
 
-- **URL information**: The current page URL that triggered the context change
-- **Patient data**: Patient information when applicable
-- **Resource-specific context**: Additional context based on the specific page:
-  - `/revenue/claims/<id>` - Includes claim data with externally exposable ID
-  - `/revenue/queues/<id>` - Includes queue data with database ID
-  - `/revenue` - Base revenue page with no additional context
+Your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) must also describe the application. Reference your class in the "applications"
+section of the components so your application is registered in the app drawer
+on plugin installation.
 
-This method can return an `Effect` or list of `Effect`s to perform actions when the application's context
-changes, or `None` if no action is needed. When `None` is returned, no effect will
-be added to the execution queue.
+This is also where you can define the title and icon that displays your
+app in the app drawer. The icon will be rendered at 48px by 48px, so should be
+square and simple enough to not lose detail at that size.
 
-Here is an example of an implemented application class:
+### Example
+
+This application opens in the right chart pane and reloads with claim or queue details as the user moves through revenue pages:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -204,15 +206,6 @@ class AdvancedRevenueApp(Application):
             title=title
         ).apply()
 ```
-
-In addition, your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file must provide some information
-about your application. You reference your class in the "applications"
-section of the components so your application is registered in the app drawer
-on plugin installation.
-
-This is also where you can define the title and icon that displays your
-app in the app drawer. The icon will be rendered at 48px by 48px, so should be
-square and simple enough to not lose detail at that size.
 
 ## Application Scopes
 
@@ -476,15 +469,9 @@ in [`url_permissions`](/sdk/canvas_manifest/#url-permissions) includes
 user may have to sign in to your application every time it opens.
 
 <!-- source: discussion #571 -->
-### Custom Task views backed by the Task API
+### Custom task views
 
-To present Tasks with locked fields, predefined dropdowns, or custom labels —
-beyond what the built-in Task command offers — build a custom web Application
-(for example one that launches on the right-hand side of a note) that reads and
-writes Tasks through the [Task API](/api/task/). Give these Tasks a custom label
-so you can filter for them in your application and filter them out of the general
-Tasks section. This requires building and maintaining the custom web app, but
-gives full control over the presentation and behavior of the Task-like objects.
+To present tasks with locked fields, predefined dropdowns, or custom labels beyond what the built-in Task command offers, build an application, for example one that opens on the right side of a note. Read tasks with the [Task](/sdk/data-task/) data model, and create or update them with the [task effects](/sdk/effect-tasks/) from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint in the same plugin. Give these tasks a label of their own so your application can find them and staff can filter them out of the general Tasks list.
 
 <br/>
 <br/>
