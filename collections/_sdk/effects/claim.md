@@ -264,6 +264,7 @@ Posts a payment to a claim, specifying payment details and line item transaction
 - `claim_coverage_id` must be either the string `"patient"` or correspond to a valid and **active** [ClaimCoverage](/sdk/data-claim/#claimcoverage) for the Claim.
   - A helpful way to identify the correct claim coverage is to use the method `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)` on the [Claim](/sdk/data-claim/#claim) data model, where `payer_id` is the standard id for the insurance company. You can optionally provide `subscriber_number` if it's possible that the patient has multiple coverages from the same payer and you want to identify the correct coverage.
 - `move_to_queue_name` must be a valid label from [ClaimQueue](/sdk/data-claim/#claimqueues), but is not required. If provided, the claim will move to this queue after payment is applied.
+- The payment and its line item transactions are recorded together. If any part of the posting fails, none of it is saved. After the posting is saved, Canvas sends one [CLAIM_BALANCE_CHANGED](/sdk/events/#claims) event for the claim with its final balances.
 
 #### LineItemTransaction
 
