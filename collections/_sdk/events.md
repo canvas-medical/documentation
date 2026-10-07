@@ -1247,12 +1247,12 @@ The event fires once per claim after the transaction commits, so the context hol
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": claim_id
+      <td><pre>"id": <a href='/sdk/data-claim/#claim'>claim_id</a>
 "type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"patient":  # present only when the claim's note has a patient
-  "id": pt_id
+  "id": <a href='/sdk/data-patient/#patient'>pt_id</a>
 "note":  # present only when the claim has a note
-  "id": note_id
+  "id": <a href='/sdk/data-note/#note'>note_id</a>
 "previous":
   "patient_balance": str
   "aggregate_coverage_balance": str
