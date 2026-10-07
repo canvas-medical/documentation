@@ -1230,7 +1230,16 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
-    <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes, for example after a payment posting or a charge edit. The event fires once per claim after the transaction commits, so the context holds the final balances. If a claim's balances end the transaction where they started, the event doesn't fire. <code>previous</code> holds the balances from before the transaction's first change, so <code>previous</code> and <code>current</code> show the net change. Balances are strings with two decimal places, such as <code>"150.00"</code> or <code>"-12.50"</code>. To react to balance changes, use this event instead of <code>CLAIM_UPDATED</code>, which fires on every claim save and doesn't include balances.</td></tr>
+    <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes. Use it to follow payments as they post and to see when the amount the patient or their insurance owes changes. A balance can change from:
+<ul>
+<li>Payments collected in Canvas, from the claim, from the patient's billing, or by the patient in the patient portal</li>
+<li>Insurance payments and adjustments from remittances (ERAs) and manual remits</li>
+<li>Payments recorded through the FHIR <a href="/api/paymentnotice/">PaymentNotice</a> API, including copays</li>
+<li>Payments posted by plugins, with <a href="/sdk/effect-claims/#post-payment"><code>ClaimEffect.post_payment</code></a> or a <a href="/sdk/effect-charge-stored-card/">stored card charge</a></li>
+<li>Adjustments, write-offs, and transfers of a balance between payers or to the patient</li>
+<li>Changes to the claim's charges or coverages</li>
+</ul>
+The event fires once per claim after the transaction commits, so the context holds the final balances. If a claim's balances end the transaction where they started, the event doesn't fire. <code>previous</code> holds the balances from before the transaction's first change, so <code>previous</code> and <code>current</code> show the net change. Balances are strings with two decimal places, such as <code>"150.00"</code> or <code>"-12.50"</code>. To react to balance changes, use this event instead of <code>CLAIM_UPDATED</code>, which fires on every claim save and doesn't include balances.</td></tr>
   </thead>
   <tbody>
     <tr>
