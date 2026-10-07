@@ -1,6 +1,6 @@
 ---
 title: "Customize Search Results"
-last_modified_at: "2024-05-17"
+last_modified_at: "2026-05-30"
 guide_for:
 - /sdk/events/
 - /sdk/effects/
@@ -322,6 +322,17 @@ This can be useful for customizing search results based on:
 - Role-based filtering (e.g., showing different prescriber options based on the user's specialty)
 - Permission-based access control
 - User's organization or practice location
+
+## Mapping Lay Terms to Medical Terms
+
+<!-- sources: discussion #935 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+
+A common question is whether custom search results can map an over-general lay term to a proper medical term and coding — for example, surfacing *Essential hypertension (I10)* when a clinician searches for "high blood pressure."
+
+What these events give you is the ability to **modify the result set that Canvas returns for a search**. In a `POST_SEARCH` handler you receive the results Canvas found for the user's query in `self.context["results"]`, and you can reorder them, annotate them, filter them, or add to them before they are shown — exactly as the example above floats a preferred medication to the top. So if a search for a lay term already returns the medical concept you want among its results, you can promote and annotate that result so the clinician sees it first.
+
+The search events are not a free-text translation layer, however: the events carry the structured search results rather than an arbitrary mapping from any phrase to any coding. If you need to act on the exact text the user typed (to recognize specific lay phrases), inspect the search context the event provides rather than relying on the rendered UI. Because terminology mapping touches clinical coding accuracy, validate any term-to-code associations with your clinical team before deploying.
 
 ## Watch Me Build It
 

@@ -29,6 +29,21 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
+<!-- source: discussion #1420 -->
+{% include alert.html type="info" content="A handler's <code>compute</code> method runs only for the events listed in its <code>RESPONDS_TO</code>, which can be a single event name or a list. A handler with no <code>RESPONDS_TO</code>, or one that leaves out the event you expect, installs and enables without error but never runs. If <code>compute</code> never fires, check that <code>RESPONDS_TO</code> names the right event." %}
+
+<!-- source: discussion #433 -->
+### Sending outbound webhooks
+
+A common pattern is to send an outbound webhook to a third-party system when something changes in Canvas. To do this, write a handler that responds to the relevant events, builds a custom payload, and sends it to your external URL (see [making HTTP requests](/sdk/utils/#post)). You have full control over the payload shape. The event itself typically gives you the entity id and patient id; use the [data modules](/sdk/data/) to enrich the payload with additional details — for example, retrieve a patient's email address from a [`PatientContactPoint`](/sdk/data-patient/#patientcontactpoint). Store the destination URL as a plugin [secret](/sdk/secrets/) rather than hard-coding it.
+
+<!-- source: discussion #1561 -->
+For firewall allowlisting, outbound events (such as note state change webhooks) are sent from one of three static source IP addresses:
+
+- `52.70.89.15`
+- `54.86.133.235`
+- `34.197.78.70`
+
 ## Event Actor
 
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
@@ -126,6 +141,9 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #947 -->
+{% include alert.html type="info" content="When a patient is created through the FHIR API, Canvas saves the patient and fires <code>PATIENT_CREATED</code> before it saves the patient's external identifiers. It then fires <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> for each identifier, and only then does the FHIR create finish. So a <code>PATIENT_CREATED</code> handler can't see the identifiers yet. To act on them, for example to recognize a patient your own FHIR POST created, listen for <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> instead." %}
 
 <table>
   <thead>
@@ -492,7 +510,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a patient facility address is deleted.</td></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is deleted. Deleting a facility address also fires <code>PATIENT_ADDRESS_DELETED</code> (see note below).</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -507,6 +525,9 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #1627 -->
+{% include alert.html type="info" content="Facility addresses have their own <code>PATIENT_FACILITY_ADDRESS_*</code> events. Assigning a facility to a patient fires <code>PATIENT_FACILITY_ADDRESS_CREATED</code> only, not <code>PATIENT_ADDRESS_CREATED</code>. Deleting one fires both <code>PATIENT_FACILITY_ADDRESS_DELETED</code> and <code>PATIENT_ADDRESS_DELETED</code>. Listen for the <code>PATIENT_FACILITY_ADDRESS_*</code> events for every facility address change." %}
 
 #### Patient Metadata
 
@@ -589,6 +610,9 @@ These events fire as a result of records being created, updated, or deleted.
 </table>
 
 #### Appointments
+
+<!-- source: discussion #1290 -->
+To keep an external system in sync with appointment changes made in the Canvas UI (for example, an onboarding flow that tracks whether a patient has scheduled their intake), listen for the appointment lifecycle events and post a webhook to your system. The <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/appointment-sync-webhook">appointment-sync-webhook</a> reference plugin demonstrates this: it responds to `APPOINTMENT_CREATED`, `APPOINTMENT_CANCELED`, and `APPOINTMENT_NO_SHOWED`, fetches the full appointment details, builds a payload with appointment and patient information, and sends an HTTP POST to a webhook URL configured as a plugin <a href="/sdk/secrets/">secret</a>.
 
 <table>
   <thead>
@@ -1411,6 +1435,13 @@ These events fire as a result of records being created, updated, or deleted.
 #### Clinical Documents
 
 These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
+
+<!-- source: discussion #1662 -->
+Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
+
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
+- **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 
 <table>
   <thead>
@@ -2438,6 +2469,10 @@ A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDA
 
 #### Labs
 
+<!-- source: discussion #607 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+To be notified when lab results (documents and individual records) are added to Canvas, use the lab order and report events in this section. Pair them with the <a href="/sdk/data-labs/">LabReport</a> data module to read the result details.
+
 <table>
   <thead>
     <tr><th colspan="2">LAB_ORDER_CREATED</th></tr>
@@ -2971,7 +3006,8 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
+    <!-- source: discussion #1233 -->
+    <tr><td colspan="2">Occurs when a note state change event is updated. After a note is locked, or signed for note types that require a signature, Canvas generates an archived PDF of the note in the background and saves it on that lock or sign event. That fires this event <b>twice</b>: once when the note's snapshot is saved and once when the PDF is saved.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3457,7 +3493,8 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">TASK_LABELS_ADJUSTED</th></tr>
-    <tr><td colspan="2">Occurs when a label is added to or removed from a task. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
+    <!-- source: discussion #640 -->
+    <tr><td colspan="2">Occurs when a label is added to or removed from a task, including from the task panel. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3845,7 +3882,7 @@ These events fire during the command lifecycle.
     </tr>
     <tr>
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
-      <td>After a command is added to a note in the UI.</td>
+      <td>After a user adds a command to a note in the Canvas UI. Commands added by a plugin effect or through the FHIR API do not fire this event.</td>
     </tr>
     <tr>
       <td>AVAILABLE_ACTIONS</td>
@@ -3892,6 +3929,81 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 ```
 
 - `fields`: Contains details specific to the command being originated.
+
+<!-- source: discussion #966 -->
+##### Accessing structured plan / treatment plan data
+
+If you want the structured contents of a finished note, such as a treatment plan or care plan, read its commands rather than parsing the rendered <a href="/sdk/data-document-reference/">DocumentReference</a> PDF. Use the command lifecycle events above with the <a href="/sdk/data-command/">Command</a> data model: read a note's commands with `note.commands.all()` and branch on each command's type. <a href="/sdk/commands/#plan">Plan</a>, <a href="/sdk/commands/#prescribe">Prescribe</a>, <a href="/sdk/commands/#followup">Follow-up</a>, <a href="/sdk/commands/#task">Task</a>, and Instruct commands carry most plan data.
+
+<!-- source: discussion #501 -->
+##### Post-originate versus inserted-into-note events
+
+The two event families catch different writes:
+
+- **`POST_ORIGINATE`** fires whenever a command is created, however it was written: in the Canvas UI, through the FHIR API, or by a plugin effect. Use it to react to every new command, or to **edit** the command that triggered it.
+- **`POST_INSERTED_INTO_NOTE`** (the per-command `*__POST_INSERTED_INTO_NOTE` events and `POST_COMMAND_INSERTED_INTO_NOTE`) fires only when a user inserts a command into the note body in the Canvas UI. Use it to respond to a clinician's action in the note, such as adding related commands next to the one they inserted.
+
+<!-- source: discussion #669 -->
+##### Avoiding recursion in post-update handlers
+
+{% include alert.html type="warning" content="A handler that responds to a command's <code>*__POST_UPDATE</code> event and edits that same command can loop forever. The edit updates the command, which fires <code>POST_UPDATE</code> again, which edits it again." %}
+
+Every `POST_UPDATE` handler that edits its own command needs a guard that returns no effects once the command already holds what you would set:
+
+1. **Compare before you edit.** Read the field from the event's `fields` context. If it already has the value you would write, return `[]`.
+2. **For values you compute from other inputs, cache what you used.** Store the inputs under a key such as `f"plan-update:{command_id}"` with the [cache](/sdk/caching/). On each event, return `[]` if the cached inputs match the current event. Only when they differ, update the cache and return the edit.
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+STANDARD_NARRATIVE = "Follow up in two weeks."
+
+
+class StandardizePlanNarrative(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        narrative = self.context["fields"].get("narrative")
+        # The guard: the edit below fires POST_UPDATE again, so stop once it is applied.
+        if not narrative or narrative == STANDARD_NARRATIVE:
+            return []
+        return [PlanCommand(command_uuid=self.target, narrative=STANDARD_NARRATIVE).edit()]
+```
+
+When the value comes from other data, cache the inputs instead. This handler writes a follow-up date into the plan, computed from the note's date of service. Its own edit fires `POST_UPDATE` again, finds the same inputs in the cache, and stops. A clinician's later edit to the narrative also leaves it alone, until the date of service changes:
+
+```python?partial=true
+from datetime import timedelta
+
+from canvas_sdk.caching.plugins import get_cache
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Command
+
+
+class FollowUpDateInPlan(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        note = Command.objects.get(id=self.target).note
+        inputs = note.datetime_of_service.isoformat()
+
+        cache = get_cache()
+        key = f"plan-update:{self.target}"
+        # The guard: stop when this command was already updated from these inputs.
+        if cache.get(key) == inputs:
+            return []
+        cache.set(key, inputs)
+
+        follow_up = (note.datetime_of_service + timedelta(days=14)).date()
+        narrative = f"Follow up on {follow_up.isoformat()}."
+        return [PlanCommand(command_uuid=self.target, narrative=narrative).edit()]
+```
 
 ---
 
@@ -14251,6 +14363,9 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 #### Lab Order Command
 
+<!-- source: discussion #291 -->
+`LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered, for example creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The <a href="https://www.canvasmedical.com/extensions/lab-order-automated-task">lab-order-automated-task</a> extension is a reference implementation.
+
 <table>
   <thead>
     <tr><th colspan="2">LAB_ORDER_COMMAND__POST_COMMIT</th></tr>
@@ -18753,6 +18868,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -18958,6 +19074,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27907,7 +28024,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <code>PATIENT_PORTAL__FORM_RESULT</code> effect as a return value</td></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <a href="/sdk/patient-portal/#forms"><code>PATIENT_PORTAL__FORM_RESULT</code></a> effect as a return value</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -27928,6 +28045,9 @@ shape only; dynamic per-field entries appear alongside.
     </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #1511 -->
+`PATIENT_PORTAL__GET_FORMS` is the built-in mechanism for presenting patient forms: respond to it with one or more [`PATIENT_PORTAL__FORM_RESULT`](/sdk/patient-portal/#forms) effects (`FormResult`) and the questionnaires are shown to the patient in a modal after they log in. If you need a different presentation, such as a standalone page where a patient picks from a list of forms to complete before an upcoming appointment, build a custom <a href="/sdk/handlers-applications/">Application</a> in the patient portal (a `portal_menu_item`-scoped Application that launches your own UI via `LaunchModalEffect`) rather than relying on the built-in forms modal.
 
 <table>
   <thead>
@@ -27973,6 +28093,20 @@ shape only; dynamic per-field entries appear alongside.
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
+
+<!-- source: discussion #493 -->
+Action button and application events include context about the user who triggered them, so you can tailor behavior to the current user (for example, only showing a button to a specific staff member):
+
+```python
+{
+  "user": {
+    "id": "<either staff or patient id>",
+    "type": "Staff" | "Patient"
+  }
+}
+```
+
+This `user` context is available in an `ActionButton`'s `visible()` and `handle()` methods and in an `Application`'s `on_open()` method.
 
 <table>
   <thead>
@@ -28919,7 +29053,8 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
-      <td>A patient chart's summary section is loading.</td>
+      <!-- source: discussion #650 -->
+      <td>A patient chart's summary section is loading. This event fires very frequently — potentially tens of times per page load — so it should <b>not</b> be used to trigger database writes such as creating banner alerts or making API requests; doing so will slow page loads considerably. Create banner alerts at the time the underlying data is written (for example, on a patient external identifier event) rather than at display time.</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION</td>
@@ -29014,6 +29149,11 @@ Context object:
     </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #1156 -->
+#### One-time backfill with `PLUGIN_UPDATED`
+
+Event-driven plugins only react to changes that happen after they are installed, so existing records (for example, patients who already have a qualifying external identifier) will not trigger them. To apply an effect to existing records when a plugin is published, write a separate handler that responds to `PLUGIN_UPDATED`, queries for the records that need the effect, and returns the effects for any that do not already have it. For example, a backfill handler can find every patient with a matching external identifier and no existing <a href="/sdk/effect-banner-alerts/">Banner Alert</a>, and return an `AddBannerAlert` effect for each. Because the handler checks for the alert before creating it (keyed by the banner's `key`), it is idempotent — you can upload it once, remove it, or re-upload it later without creating duplicates.
 
 ### Search Result Data Structures
 

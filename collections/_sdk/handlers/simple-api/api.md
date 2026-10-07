@@ -789,3 +789,87 @@ curl --request POST \
 
 In this example the note is signed and recorded in Canvas as signed by the staff
 member who authorized the access token, not by Canvas Bot.
+
+## Common use cases
+
+SimpleAPI is the supported way to react to external (non-Canvas) events and to
+expose functionality that the FHIR API does not cover. A few recurring patterns:
+
+<!-- source: discussion #536 -->
+### Reacting to external events
+
+Effects such as Protocol Cards can normally only be created in response to
+internal Canvas events. To create one from an outside trigger, expose a
+SimpleAPI endpoint that accepts the external request and returns the
+corresponding effect. This makes SimpleAPI the supported entry point for any
+workflow that needs to be initiated from outside of Canvas.
+
+<!-- source: discussion #1164 -->
+### Originating commands that have no FHIR resource
+
+Many commands, such as HPI, Assessment, and Plan, have no FHIR resource, because
+the standard has nothing at that level of detail. To write them from outside
+Canvas, expose a SimpleAPI endpoint that originates the commands with the classes
+in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/)
+builds such an endpoint for you: it reads the request body onto a command,
+validates it, and writes the command to the note. Use `Command.objects` from the
+data module to check for an existing command or to find one to edit.
+
+<!-- source: discussion #708 -->
+### Calling SimpleAPI from an external application
+
+External applications, such as a Node.js service, integrate with Canvas by
+calling the SimpleAPI endpoints you define in your plugin. Each endpoint returns
+[effects](/sdk/effects/) that make the change in Canvas.
+
+<!-- source: discussion #735 -->
+### Creating or updating patients from a third-party webhook
+
+To process a third-party webhook, such as a form submission, point it at a
+SimpleAPI `POST` endpoint. Your handler controls how the incoming data maps onto
+the patient, so it can transform fields, check them, and save values the FHIR API
+can't, such as custom patient metadata. Build a [Patient effect](/sdk/effect-patient/)
+from the request body, including any custom values in its `metadata`, and return
+its `create()` or `update()`. The patient and their metadata are saved together.
+
+<!-- source: discussion #1242 -->
+### Serving plugin frontends without leaking secrets
+
+If your plugin serves an HTML/JS UI (for example a vitals chart), do **not**
+embed secrets or credentials in client-side JavaScript to call third-party APIs
+directly. Instead, have your JavaScript call a SimpleAPI endpoint provided by the
+same plugin and protected with the [staff session authentication mixin](#staff-session).
+The plugin's Python code holds the secrets and makes the authenticated outbound
+request. This works as long as the HTML/JS is served from the plugin. See the
+[vitals visualizer example plugin](/sdk/example-vitals_visualizer_plugin/#vitals_visualizationhtml)
+for a working implementation.
+
+## Troubleshooting
+
+<!-- source: discussion #858 -->
+### A SimpleAPI endpoint returns 404
+
+A 404 from an endpoint you believe is deployed usually means the plugin failed to
+load at reload time even though the deploy appeared to succeed — a runtime error
+when the plugins reload on the server. Keep two shells open: deploy in one and run
+`canvas logs` in the other to catch the load failure (and the line number) as it
+happens. Note also that the **plugin name cannot contain a hyphen** (`-`); use
+underscores in both the plugin name and the class path, or routing will 404.
+
+<!-- source: discussion #551 -->
+### 503 responses when originating many commands
+
+If you receive intermittent **503 No server is available** responses while issuing
+many command requests, have your client retry with
+[exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff#Rate_limiting).
+To reduce the number of round trips, expose a SimpleAPI endpoint that originates
+and commits each command in one effect with `originate(commit=True)`:
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+
+# inside a SimpleAPI route; note_uuid identifies the target note
+command = PlanCommand(note_uuid=note_uuid)
+
+return [command.originate(commit=True)]
+```

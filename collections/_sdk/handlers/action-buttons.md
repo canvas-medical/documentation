@@ -319,41 +319,30 @@ class MyButton(ActionButton):
 
 ### Commit every command in a note
 
-This example demonstrates an action button in the note footer that commits all commands within a note. The button is always visible since the `visible()` method is not overridden.
+This example adds a button to the note footer that commits every staged command in the note. The button is always visible, since it doesn't override `visible()`.
+
+Rather than listing commands by hand, it builds each commit effect's name from the command's schema key, so it covers every command that has one. A few commands can't be committed this way and are skipped:
+
+- Prescribe, Refill, and Adjust Prescription, which a prescriber signs in Canvas
+- Imaging Order and Refer, which are signed with `sign()`
+- Reason for Visit, which is never committed
+
+Commands that have no commit effect at all, such as custom commands and Chart Section Review, are skipped too.
 
 ```python
 import json
+import re
 
 from canvas_sdk.effects import Effect
+from canvas_sdk.effects.base import EffectType
 from canvas_sdk.handlers.action_button import ActionButton
 from canvas_sdk.v1.data.command import Command
-from canvas_sdk.effects.base import EffectType
 
-# Define a mapping of schema_key to EffectType
-schema_key_to_effect_type = {
-    "allergy": EffectType.COMMIT_ALLERGY_COMMAND,
-    "assess": EffectType.COMMIT_ASSESS_COMMAND,
-    "changeMedication": EffectType.COMMIT_CHANGE_MEDICATION_COMMAND,
-    "closeGoal": EffectType.COMMIT_CLOSE_GOAL_COMMAND,
-    "diagnose": EffectType.COMMIT_DIAGNOSE_COMMAND,
-    "familyHistory": EffectType.COMMIT_FAMILY_HISTORY_COMMAND,
-    "goal": EffectType.COMMIT_GOAL_COMMAND,
-    "instruct": EffectType.COMMIT_INSTRUCT_COMMAND,
-    "hpi": EffectType.COMMIT_HPI_COMMAND,
-    "medicalHistory": EffectType.COMMIT_MEDICAL_HISTORY_COMMAND,
-    "medicationStatement": EffectType.COMMIT_MEDICATION_STATEMENT_COMMAND,
-    "perform": EffectType.COMMIT_PERFORM_COMMAND,
-    "plan": EffectType.COMMIT_PLAN_COMMAND,
-    "questionnaire": EffectType.COMMIT_QUESTIONNAIRE_COMMAND,
-    "reasonForVisit": EffectType.COMMIT_REASON_FOR_VISIT_COMMAND,
-    "removeAllergy": EffectType.COMMIT_REMOVE_ALLERGY_COMMAND,
-    "stopMedication": EffectType.COMMIT_STOP_MEDICATION_COMMAND,
-    "surgicalHistory": EffectType.COMMIT_SURGICAL_HISTORY_COMMAND,
-    "task": EffectType.COMMIT_TASK_COMMAND,
-    "updateDiagnosis": EffectType.COMMIT_UPDATE_DIAGNOSIS_COMMAND,
-    "updateGoal": EffectType.COMMIT_UPDATE_GOAL_COMMAND,
-    "vitals": EffectType.COMMIT_VITALS_COMMAND,
+COMMIT_EFFECT_TYPES = {name for name in EffectType.keys() if name.startswith("COMMIT_")}
+NOT_COMMITTABLE = {
+    "prescribe", "refill", "adjustPrescription", "imagingOrder", "refer", "reasonForVisit",
 }
+
 
 class CommitButtonHandler(ActionButton):
     BUTTON_TITLE = "Commit all commands"
@@ -364,20 +353,27 @@ class CommitButtonHandler(ActionButton):
         note_id = self.context.get("note_id")
 
         effects = []
-        for command in Command.objects.filter(note_id=note_id):
-            effect_type = schema_key_to_effect_type.get(command.schema_key)
-            if not effect_type:
-                raise ValueError(f"No EffectType defined for schema key '{command.schema_key}'.")
+        for command in Command.objects.filter(note__dbid=note_id, state="staged"):
+            if command.schema_key in NOT_COMMITTABLE:
+                continue
+            # "changeMedication" becomes "COMMIT_CHANGE_MEDICATION_COMMAND"
+            key = re.sub(r"(?<!^)(?=[A-Z])", "_", command.schema_key).upper()
+            effect_name = f"COMMIT_{key}_COMMAND"
+            if effect_name not in COMMIT_EFFECT_TYPES:
+                continue
 
             effects.append(
                 Effect(
-                    type=effect_type,
+                    type=EffectType.Value(effect_name),
                     payload=json.dumps({"command": str(command.id)}),
                 )
             )
 
         return effects
 ```
+
+<!-- source: discussion #498 -->
+{% include alert.html type="info" content="If you build a commit <code>Effect</code> yourself, as this example does, its payload key is <code>command</code>, not <code>command_uuid</code>. A command class's <code>.commit()</code> builds this payload for you." %}
 
 ### Render HTML from a chart summary section
 
