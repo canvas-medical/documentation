@@ -565,6 +565,14 @@ class Handler(BaseHandler):
 
 Real-world example: the MSF [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) extension assigns questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, posting responses back to the chart.
 
+<!-- sources: discussions #785, #696 -->
+### Writing answers back to the chart
+
+A submitted form is stored as an [Interview](/sdk/data-questionnaire/#interview), which links the patient to the questionnaire. To use the answers elsewhere in the chart, such as updating the patient's demographics, respond to the [`INTERVIEW_CREATED`](/sdk/events/#interviews) event, and to `INTERVIEW_UPDATED` as well, since answers can arrive after the Interview is created. The event targets the Interview and carries the patient's id. Read the answers from the Interview, then:
+
+- Update demographics, contact details, and other patient fields with the [patient effects](/sdk/effect-patient/).
+- Record insurance coverage through the FHIR [Coverage](/api/coverage/) API, using the [Canvas FHIR client](/sdk/clients-canvas-fhir/), since no SDK effect writes coverage.
+
 ## User Login
 
 These effects manage a patient's portal **user account** — the login they use to access the portal. Invites and password resets are sent to the email or phone linked on the user, so make sure those contact points are actually **verified** before you invite a patient or rely on an updated value. Trigger a verification with the [Send Contact Verification](/sdk/effect-send-contact-verification/) effect.

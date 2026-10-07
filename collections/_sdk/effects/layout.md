@@ -656,9 +656,6 @@ To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, 
 - **Requesting clipboard write access**: If the site in your modal or widget needs to write to the user's clipboard, `'CLIPBOARD_WRITE'` must be in the URL's permissions list.
 - **Allowing browser access to cookies from the iframe's origin**: If you want the loaded URL to access cookies for its domain, `'ALLOW_SAME_ORIGIN'` must be in the URL's permissions list. If the URL you're loading requires authentication, this will prevent your user from having to log in each time the modal is launched.
 
-<!-- source: discussion #525 -->
-{% include alert.html type="info" content="Adding <code>'ALLOW_SAME_ORIGIN'</code> triggers the iframe sandbox, which currently disables popups (the <code>allow-popups</code> sandbox permission). If your embedded content relies on opening a popup window — for example, a popup-based authentication flow with an external identity provider — be aware that <code>allow-same-origin</code> and <code>allow-popups</code> cannot both be enabled at this time." %}
-
 The URLs must match the format available [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy#host-source).
 
 ```json
@@ -679,3 +676,14 @@ The URLs must match the format available [here](https://developer.mozilla.org/en
   ]
 }
 ```
+
+<!-- source: discussion #1724 -->
+<!-- source: discussion #525 -->
+### The iframe sandbox and `ALLOW_SAME_ORIGIN`
+
+Whether an application's iframe gets a `sandbox` attribute depends on the `url_permissions` entry its URL matches:
+
+- **With `ALLOW_SAME_ORIGIN`**, the iframe is sandboxed as `allow-same-origin allow-forms allow-popups allow-scripts`. Popups work, so `window.open(url, '_blank')` and popup-based sign-in flows are fine. Navigating the top window from inside the iframe is blocked.
+- **Without a matching entry that grants it**, the iframe has no `sandbox` attribute, and top-window navigation works.
+
+URLs match by case-insensitive prefix, and every character counts, including the scheme, port, and trailing slash. An entry of `https://example.com/` does not match a page at `https://example.com`. If top-window navigation works in one environment but not another, the URLs are matching `url_permissions` differently. To navigate away while keeping `ALLOW_SAME_ORIGIN`, open the page with `window.open(url, '_blank')`, or remove `ALLOW_SAME_ORIGIN` if your application doesn't need it.
