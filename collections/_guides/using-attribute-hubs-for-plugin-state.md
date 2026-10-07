@@ -19,7 +19,8 @@ vendor and uses one AttributeHub to manage its sync cursor, run lock,
 configuration, and operational statistics.
 
 {% include alert.html type="info" content="This guide assumes you have the
-Canvas CLI installed and configured, and that you're familiar with plugin
+Canvas CLI installed and signed in to Canvas Platform with <code>canvas login</code>, that your
+organization's plugin prefix is <code>my_org</code> (substitute your own), and that you're familiar with plugin
 basics. If you're starting from scratch, work through
 <a href='/guides/your-first-plugin/'>Your First Plugin</a> first." %}
 
@@ -53,6 +54,7 @@ The hub demonstrates several AttributeHub value types working together:
 $ canvas init
   [1/1] project_name (My Cool Plugin): Lab Sync
 Project created in /Users/you/lab-sync
+Registered my_org__lab_sync with Canvas Platform.
 ```
 
 ```sh
@@ -62,23 +64,23 @@ cd lab-sync
 Remove the placeholder handler since we'll create our own:
 
 ```sh
-rm lab_sync/handlers/event_handlers.py
+rm my_org__lab_sync/handlers/event_handlers.py
 ```
 
 ## Configure the manifest
 
-Replace the contents of `lab_sync/CANVAS_MANIFEST.json`:
+Replace the contents of `my_org__lab_sync/CANVAS_MANIFEST.json`:
 
 ```json
 {
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
-    "name": "lab_sync",
+    "name": "my_org__lab_sync",
     "description": "Syncs lab results from an external vendor on a schedule",
     "components": {
         "handlers": [
             {
-                "class": "lab_sync.handlers.sync_labs:SyncLabs",
+                "class": "my_org__lab_sync.handlers.sync_labs:SyncLabs",
                 "description": "Cron job that pulls lab results from an external vendor"
             }
         ]
@@ -98,7 +100,7 @@ Replace `my_org` in the namespace with your organization's name.
 
 ## Build the sync handler
 
-Create `lab_sync/handlers/sync_labs.py`. This version uses generated demo data
+Create `my_org__lab_sync/handlers/sync_labs.py`. This version uses generated demo data
 so you can install it and see every code path exercised immediately. The
 `fetch_results` method is the only part you'd replace with a real API call in
 production — everything else stays the same.
@@ -356,12 +358,12 @@ hub.set_attribute("failed_accessions", failed)
 In a production plugin you might periodically clear this list after the
 failures have been investigated, or cap its length to prevent unbounded growth.
 
-## Install and test
+## Deploy and test
 
-Install the plugin:
+Deploy the plugin:
 
 ```sh
-canvas install lab-sync --host YOUR_INSTANCE
+canvas deploy my_org__lab_sync --instance YOUR_INSTANCE
 ```
 
 Stream the logs to watch the sync run:
@@ -461,10 +463,11 @@ install time:
 ```
 
 ```sh
-canvas install lab-sync \
-    --host YOUR_INSTANCE \
-    --secret LAB_VENDOR_API_KEY=your-api-key \
-    --secret LAB_VENDOR_BASE_URL=https://api.labvendor.example.com/v1
+canvas deploy my_org__lab_sync --instance YOUR_INSTANCE
+canvas config set my_org__lab_sync \
+    LAB_VENDOR_API_KEY=your-api-key \
+    LAB_VENDOR_BASE_URL=https://api.labvendor.example.com/v1 \
+    --instance YOUR_INSTANCE
 ```
 
 The vendor's response must include a `results` array of objects with at minimum
