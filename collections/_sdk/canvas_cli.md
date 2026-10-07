@@ -130,47 +130,56 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
+**Where to run it**
+
 <!-- source: discussion #1159 -->
-The install command takes the plugin folder name and must be run from one directory **above** the folder that contains `CANVAS_MANIFEST.json` — there is no `plugin` subcommand (`canvas plugin install ...` is incorrect). For example, if the manifest lives in `extensions/encounter_list/CANVAS_MANIFEST.json`, run the command from `extensions`:
+- Run it from one directory **above** the plugin folder, the one that holds `CANVAS_MANIFEST.json`, and pass the folder name. If the manifest is at `extensions/encounter_list/CANVAS_MANIFEST.json`, run this from `extensions`:
 
-```console
-$ canvas install encounter_list --host your-host
-```
+  ```console
+  $ canvas install encounter_list --host your-host
+  ```
+- Or run `canvas install .` from inside the plugin folder.
+- The command is `canvas install`. There is no `canvas plugin install`.
 
-`canvas install .` works as well when you are inside the directory that contains the manifest.
+**Plugin folder layout**
 
 <!-- source: discussion #1527 -->
-The handler/route class paths declared in `CANVAS_MANIFEST.json` are resolved relative to the plugin's root module — the manifest, the package `__init__.py`, and the subdirectories it references (e.g. `routes/`, `protocols/`) must all live in the same directory. A common mistake is an extra nesting level (manifest outside an inner package directory), which makes the sandbox resolve `my_plugin.routes.charting` to a path one level too deep. Import errors and bad class paths are not always surfaced in `canvas logs`; the symptom is that the plugin loads but its SimpleAPI endpoints return an empty HTTP 404. If an endpoint 404s with no plugin log activity, verify the directory structure and that every import in the referenced module resolves.
+- Keep the manifest, the package's `__init__.py`, and the folders it references (such as `routes/` and `protocols/`) in the same directory. Class paths in the manifest, such as `my_plugin.routes.charting`, resolve from there.
+- An extra level of nesting, with the manifest outside the inner package folder, makes those paths resolve one level too deep. The plugin loads, but its SimpleAPI endpoints return an empty 404, often with nothing in `canvas logs`. If that happens, check the folder structure and that every import in the referenced modules resolves.
 
-Before uploading, `canvas install` runs the same pre-flight validation as [`canvas validate`](#canvas-validate):
+**Validation before upload**
+
+`canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
 - [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
 - Sandbox-load validation (imports every handler in the sandbox)
 
-If the static lint reports an error, or any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin is built or uploaded, so it never reaches your instance. Run `canvas validate` first for detailed per-handler results.
+If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
 
-The CLI packages every file in the plugin directory except:
+**What gets packaged**
+
+The CLI packages every file in the plugin folder except:
 - `__pycache__` directories
 - `*.pyc` and `*.pyo` files
 - `node_modules` directories
-- Hidden files and directories (e.g., `.git`, `.env`)
+- Hidden files and directories (for example, `.git` and `.env`)
 - Symlinks
 
-To exclude additional files, create a `.canvasignore` file in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin directory, so run the command from the directory that holds your `.canvasignore`. The file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore), and its patterns match paths relative to the plugin directory.
+To exclude more files, add a `.canvasignore` file:
+- Put it in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin folder.
+- It uses [.gitignore](https://git-scm.com/docs/gitignore) syntax, and its patterns match paths relative to the plugin folder.
 
-The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
-
-Example
 ```md
 # Exclude test files
 test_*.py
 ```
 
-<!-- source: discussion #608 -->
-If a `canvas install` reports success but the runtime keeps executing the previous version of the plugin, first run `canvas logs` in a second terminal while reinstalling — load-time errors (syntax errors, disallowed/sandbox-violating imports) prevent the new version from being loaded and show up there.
+The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
+
+**Troubleshooting**
 
 <!-- source: discussion #795 -->
-Plugin install can fail with an HTTP 500 when too many files are included in the packaged tarball — most often because a Python virtual environment directory was created inside the plugin directory. Files and directories whose names begin with a `.` are excluded from the tarball, so prefixing the virtualenv folder with a dot (for example renaming `canvas-env` to `.canvas-env`) excludes it and resolves the error.
+- **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 
 ### `canvas uninstall`
 
@@ -429,9 +438,6 @@ $ canvas logs [OPTIONS]
 ### `canvas config list`
 
 List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
-
-<!-- source: discussion #998 -->
-> By design, `canvas config list` returns only the variable/secret **names** so you can see what can be set via the CLI — it never returns values. Values are not retrievable through the CLI at all.
 
 **Usage**:
 
