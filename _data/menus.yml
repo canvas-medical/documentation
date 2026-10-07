@@ -666,6 +666,30 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Building Custom Plugin UI with Action Buttons and SimpleAPI"
+    url: /guides/build-custom-ui-with-action-buttons/
+    description: Open your own screen from a button and act on what the user does there
+    uses:
+      - sdk
+
+  - title: "Automating Note and Billing Workflows"
+    url: /guides/automating-note-and-billing-workflows/
+    description: Carry commands forward, reassign notes by payer, link billing to diagnoses, and act on note lock
+    uses:
+      - sdk
+
+  - title: "Customizing Commands Beyond the Built-ins"
+    url: /guides/customizing-commands/
+    description: Add fields and content to built-in commands, add your own, or write commands over HTTP
+    uses:
+      - sdk
+
+  - title: "Plugin Development Tips and Sandbox Limits"
+    url: /guides/plugin-development-tips-and-sandbox-limits/
+    description: Deploying, debugging, and working within the plugin sandbox
+    uses:
+      - sdk
+
   - title: "Platform Security Overview"
     url: /guides/platform-security-overview/
     description: Tenancy model, trust boundaries, platform controls, and shared responsibility
