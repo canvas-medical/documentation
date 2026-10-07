@@ -18,6 +18,8 @@ To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade 
 
 ### Configuration and Authenticating to Your Canvas Instance
 
+{% include alert.html type="warning" content="<b>Deprecated:</b> Installing plugins directly on an instance with <code>credentials.ini</code> and <code>canvas install</code> is deprecated in favor of deploying through <a href='#canvas-platform'>Canvas Platform</a>. It isn't supported as of December 14, 2026. See <a href='#moving-from-credentialsini-to-canvas-platform'>Moving from credentials.ini to Canvas Platform</a>."  %}
+
 Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
 
 {% include alert.html type="info" content= "<b>Getting Credentials: </b>Learn how to get register a client_id and client_secret <a href='/api/customer-authentication/#registering-a-third-party-application-on-canvas'>here</a>.<br/>The Canvas CLI uses OAuth, just like the FHIR API."  %}
@@ -78,6 +80,23 @@ $ canvas init                                   # scaffolds acme__my_cool_plugin
 $ canvas deploy my-cool-plugin/acme__my_cool_plugin --instance acme-staging
 $ canvas config set acme__my_cool_plugin API_URL=https://api.example.com --instance acme-staging
 ```
+
+### Moving from `credentials.ini` to Canvas Platform
+
+Installing plugins directly on an instance with `credentials.ini` and `canvas install` is deprecated in favor of deploying through Canvas Platform. It isn't supported as of December 14, 2026. Until then, both ways work side by side on the same machine. `canvas install` prints a deprecation warning each time it runs, and other commands print a notice about the change to standard error at most once a day.
+
+To move a plugin to Canvas Platform:
+
+1. Run `canvas login`. It lists the prefix of each organization you belong to.
+2. Rename the plugin to `<org prefix>__<package>`. Update the manifest `name`, the package folder, and the package's own imports. See [Plugin names](#plugin-names).
+3. Deploy the renamed plugin with `canvas deploy <plugin dir> --instance <instance>`.
+4. Set its variables with `canvas config set <name> KEY=VALUE --instance <instance>`.
+5. Remove the plugin installed under the old name. The renamed plugin is a separate plugin, so the old one keeps running until you remove it:
+
+   ```console
+   $ canvas disable <old name> --host <instance>
+   $ canvas uninstall <old name> --host <instance>
+   ```
 
 ### Using a service account in CI
 
@@ -218,6 +237,8 @@ The manifest `name` must be [publisher-prefixed](#plugin-names). By default, dep
 4. Pushes `HEAD` to `main` and deploys that commit.
 5. Waits for the result on each instance and exits with a non-zero status unless the deployment succeeds on every one.
 
+To update the plugin's code and its catalog listing on Canvas Platform without deploying it to any instance, pass `--push-only`. Deploy registers the plugin and pushes `HEAD` to `main` the same way, then stops and prints the `canvas deploy --ref` command that deploys the pushed commit. A publisher with no instance of its own, or a CI job, can use it to keep a plugin's listing current.
+
 The repository must be rooted at the directory that contains the plugin package. If the package is nested deeper in a larger repository, move it into its own repository or check it out with [`canvas clone`](#canvas-clone).
 
 If the deployment needs consent for cross-plugin custom data access, deploy shows each request and asks you to answer it. Under `--yes`, or without a terminal, deploy lists the requests and exits with a non-zero status without answering them.
@@ -237,6 +258,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--instance TEXT`: Instance to deploy to. Repeat it to deploy to several instances. Without it, deploy targets the only instance you can deploy to, or lists the choices when there are several.
 - `--ref TEXT`: Deploy a branch, tag, or commit that's already pushed, without pushing.
 - `--no-push`: Deploy the pushed `main` branch as-is, without pushing `HEAD` first.
+- `--push-only`: Push `HEAD` to `main` without deploying it to any instance. Can't be combined with `--instance`, `--ref`, or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, using a default commit message. This doesn't approve consent requests.
 - `--help`: Show this message and exit.
 
@@ -283,7 +305,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
-`canvas install` uploads the plugin to the instance directly. To publish a plugin that Canvas Platform manages, use [`canvas deploy`](#canvas-deploy) instead.
+`canvas install` uploads the plugin to the instance directly. This is deprecated and isn't supported as of December 14, 2026, so the command prints a deprecation warning each time it runs. Use [`canvas deploy`](#canvas-deploy) to publish plugins through Canvas Platform instead. See [Moving from `credentials.ini` to Canvas Platform](#moving-from-credentialsini-to-canvas-platform).
 
 **Where to run it**
 

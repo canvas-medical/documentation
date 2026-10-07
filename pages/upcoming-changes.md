@@ -33,6 +33,13 @@ Stay up to date on the latest important dates for the Canvas platform.
       <td>TBD<br/>(Not Soon)</td>
     </tr>
     <tr>
+      <td>Canvas CLI: Installing plugins with <code>credentials.ini</code></td>
+      <td style="color: red;">Breaking Change</td>
+      <td>Installing plugins directly on an instance with <code>canvas install</code> and the instance credentials in <code>~/.canvas/credentials.ini</code> is deprecated. Deploy plugins through Canvas Platform with <code>canvas login</code> and <code>canvas deploy</code> instead. Installing directly isn't supported as of 12/14/2026. Moving a plugin to Canvas Platform includes renaming it with your organization's prefix. <a href="/sdk/canvas_cli/#moving-from-credentialsini-to-canvas-platform">Read more.</a></td>
+      <td></td>
+      <td>12/14/2026</td>
+    </tr>
+    <tr>
       <td>Read-only replica: Clinical note body structure</td>
       <td style="color: red;">Breaking Change</td>
       <td>Canvas is changing how a clinical note stores its body, with every existing note migrated onto the new structure. Instances without a read-only replica are turned on first, on 09/21/2026, and instances with one a week later, on 09/28/2026. Nothing looks different in the chart, and the Note API, FHIR, and the plugin SDK need no change. An integration reading note bodies from the read-only replica needs a query change: on a migrated note the <code>body</code> column is empty and the lines move to <code>body_content</code> and <code>body_order</code>, with <code>checksum</code> no longer maintained. <a href="/release-notes/note-v2-2026-09-15/">Read more.</a></td>
