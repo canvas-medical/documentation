@@ -115,6 +115,8 @@ sections:
               The status of the document reference. <br><br>
 
               - Letters and POC Lab Reports will always have a status of `current`.
+
+              - For Lab Reports received electronically from a lab, the status will be `current` for the newest version of the report and `superseded` for earlier versions. Labs send an updated copy of a report each time more results are released, and each copy has its own DocumentReference. If the report is removed from the patient's chart, the status will be `entered-in-error`.
               
               - Documents uploaded in Data Integration will have a status of `current` when created. If a document is removed from the patient's chart, it will have a status of `entered-in-error`.
               
