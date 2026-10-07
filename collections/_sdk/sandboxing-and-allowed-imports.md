@@ -285,6 +285,9 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 - `InvalidTokenError`
 - `PyJWKClient`
 
+<!-- source: discussion #796 -->
+`encode` can sign tokens with RS256, which some external APIs, such as Google's, require. The `cryptography` package that RS256 relies on is installed, but plugins can't import it directly.
+
 ##### `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
 - `BaseModel`
@@ -395,6 +398,9 @@ Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`,
 {% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
 
 {% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
+
+<!-- source: discussion #844 -->
+{% include alert.html type="info" content="<code>match</code> statements are allowed in plugin code." %}
 
 ### `extract_exc_frames()`
 

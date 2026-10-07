@@ -223,6 +223,16 @@ The `scope` attribute determines where your application is visible within Canvas
 | `provider_companion_patient_specific` | As a tab on a patient's page in the [Provider Companion](/sdk/companion/) |
 | `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/) |
 
+<!-- source: discussion #556 -->
+### Who sees an application
+
+Applications in the `global`, `patient_specific`, `provider_menu_item`, and `portal_menu_item` scopes are shown to every user. To decide per user, use an [embedded application](/sdk/handlers-embedded-applications/#controlling-visibility) or an [action button](/sdk/handlers-action-buttons/#visibility), both of which implement `visible()`.
+
+<!-- source: discussion #1204 -->
+### Linking to a portal application
+
+A `portal_menu_item` application's URL ends in its identifier, base64-encoded. For example, `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==` decodes to `plugin_name.module.path:ClassName`. Because the identifier is made of the plugin name, module path, and class name, renaming any of them changes the URL and breaks links to it. The browser's address bar also stays the same as the patient moves between applications.
+
 ### Full Chart Scope
 
 Applications with the `full_chart` scope appear as navigation tabs at the top of the patient chart, alongside the default "Chart" and "Profile" tabs. This is ideal for building comprehensive patient-level views or dashboards.
@@ -236,6 +246,9 @@ Applications with the `full_chart` scope appear as navigation tabs at the top of
   "scope": "full_chart"
 }
 ```
+
+<!-- source: discussion #1547 -->
+A `full_chart` application is also the way to give custom patient data its own layout. The [patient metadata form](/sdk/patient-metadata-create-form-effect/) shows fields as one flat list in the profile, with no sections or headings. To group fields your own way, build the form in a `full_chart` application and save the values with the [patient metadata effect](/sdk/effect-patient-metadata/) from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint, so they're stored the same way.
 
 ## Provider Companion Applications
 

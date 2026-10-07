@@ -811,7 +811,7 @@ There are no FHIR API endpoints for HPI, Assessment, Plan, or Reason for Visit �
 these levels of granularity have no standard FHIR resource, and a custom FHIR
 extension would defeat the purpose of the standard. Instead, expose a SimpleAPI
 endpoint and originate the corresponding commands from your handler using the
-classes in the [command module](/sdk/commands/). You may also use
+classes in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/) builds such an endpoint for you: it reads the request body onto a command, validates it, and writes the command to the note. You may also use
 `Command.objects` from the data module to check for uniqueness or to edit
 existing commands. This SDK-based approach gives you maximal control and
 correctness.
@@ -848,85 +848,6 @@ request. This works as long as the HTML/JS is served from the plugin. See the
 [vitals visualizer example plugin](/sdk/example-vitals_visualizer_plugin/#vitals_visualizationhtml)
 for a working implementation.
 
-<!-- source: discussion #1547 -->
-### Grouping custom patient metadata fields
-
-A flat list of `PatientMetadataCreateFormEffect` fields cannot be divided into
-sections or headers. To present custom-grouped metadata UIs, build an
-[Application](/sdk/handlers-applications/) with the
-[`full_chart` scope](/sdk/handlers-applications/#full-chart-scope) — it appears
-as a tab alongside Chart and Profile. Build your own HTML forms, group them as
-you like, and write the values back as `PatientMetadata` through a SimpleAPI
-endpoint so they are stored the same way in the backend.
-
-## Building custom UIs
-
-<!-- source: discussion #1408 -->
-The recommended way to build a custom-styled UI — for either the provider UI or
-the patient portal — is to use `LaunchModalEffect` within a plugin. These are
-surfaced as either [action buttons](/sdk/handlers-action-buttons/) or
-[applications](/sdk/handlers-applications/). A `LaunchModalEffect` can be passed a
-URL, HTML directly, or be paired with a SimpleAPI request to back a custom
-frontend. For applications, the `scope` in `CANVAS_MANIFEST.json` controls where
-the app appears:
-
-- `global` — appears across all contexts in the provider UI except the patient chart.
-- `patient_specific` — appears only on the patient chart page in the provider UI.
-- `provider_menu_item` — appears in the provider UI hamburger menu.
-- `portal_menu_item` — appears in the patient portal sidebar.
-
-<!-- source: discussion #1204 -->
-> **Note:** Patient portal application URLs use the base64-encoded app identifier
-> (for example `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==`,
-> which decodes to `plugin_name.module.path:ClassName`). The browser address bar
-> does not change as the user navigates between apps. Because the identifier is
-> the plugin name, module path, and class name, renaming any of those files or
-> classes invalidates the link. If you need a direct, stable link, consider a URL
-> shortener and update it when those names change.
-
-<!-- source: discussion #556 -->
-> **Note:** Applications in the `global`, `patient_specific`, `provider_menu_item`,
-> and `portal_menu_item` scopes are shown to every user. To decide per user, use an
-> [embedded application](/sdk/handlers-embedded-applications/#controlling-visibility)
-> or an [action button](/sdk/handlers-action-buttons/#visibility), both of which
-> implement `visible()`.
-
-<!-- source: discussion #1310 -->
-> **Note:** To add your own button to the panel, set `show_in_panel` on a
-> `patient_specific` [Application](/sdk/handlers-applications/#panel-display). You
-> can also [reorder the existing panel buttons](/guides/customize-panel-buttons/).
-
-<!-- source: discussion #1411 -->
-> **Note:** To mark appointments on the schedule, add
-> [appointment labels](/sdk/effect-appointment-labels/) from your plugin.
-
-<!-- source: discussion #1724 -->
-## Iframe sandbox and top-frame navigation
-
-There is no environment-specific iframe sandbox configuration in Canvas — dev and
-prod run identical code paths. Whether the application iframe gets a `sandbox`
-attribute is decided by matching the loaded URL against your manifest's
-`url_permissions` entries:
-
-- Matching is a **case-insensitive prefix match** of the loaded URL against each
-  `url_permissions[].url`. Every character counts, including scheme, port, and
-  trailing slash. The most common silent mismatch is a trailing-slash difference
-  (`https://example.com/` will not match a runtime URL of `https://example.com`).
-- If a matching entry grants `ALLOW_SAME_ORIGIN`, the iframe is rendered as
-  `sandbox="allow-same-origin allow-forms allow-popups allow-scripts"`. This does
-  **not** include `allow-top-navigation` or `allow-top-navigation-by-user-activation`,
-  so navigating the top frame from inside the iframe is blocked.
-- If no entry matches, no `sandbox` attribute is rendered and top-frame
-  navigation works normally.
-
-If you see top-navigation work in one environment but not another, the URLs are
-matching `url_permissions` differently between them (usually a character-level
-difference such as a missing trailing slash). To navigate while keeping
-`ALLOW_SAME_ORIGIN`, use `window.open(url, '_blank')` — the sandbox already
-includes `allow-popups`. Alternatively, remove `ALLOW_SAME_ORIGIN` from the
-manifest entry if your app does not need same-origin access from inside the
-iframe.
-
 ## Troubleshooting
 
 <!-- source: discussion #858 -->
@@ -956,34 +877,3 @@ command = PlanCommand(note_uuid=note_uuid)
 
 return [command.originate(commit=True)]
 ```
-
-<!-- source: discussion #498 -->
-### Action button "commit all commands" payload key
-
-In a commit-all-commands action button, the effect payload key must be `command`,
-not `command_uuid`. A command class's `.commit()` builds this payload for you; if you
-construct the `Effect` yourself, set:
-
-```python?partial=true
-payload=json.dumps({"command": str(command.id)}),
-```
-
-<!-- source: discussion #458 -->
-### `note_id` in action button context is a numeric dbid
-
-The `note_id` provided in an action button's event context is a numeric database
-ID, not a UUID. Look the note up with `Note.objects.get(dbid=note_id)` — using
-`get(id=...)` will raise `Note matching query does not exist`.
-
-## Plugin sandbox
-
-Plugin code runs in a `RestrictedPython` sandbox with an allowlist of imports and
-language features.
-
-<!-- source: discussion #844 -->
-- `match` statements are allowed in plugin code.
-
-<!-- source: discussion #796 -->
-- `jwt.encode` can sign tokens with RS256, which external APIs such as Google's
-  require. The `cryptography` package that RS256 depends on is installed, but plugins
-  cannot import it directly.

@@ -379,6 +379,9 @@ class CommitButtonHandler(ActionButton):
         return effects
 ```
 
+<!-- source: discussion #498 -->
+{% include alert.html type="info" content="If you build a commit <code>Effect</code> yourself, as this example does, its payload key is <code>command</code>, not <code>command_uuid</code>. A command class's <code>.commit()</code> builds this payload for you." %}
+
 ### Render HTML from a chart summary section
 
 In this example, we place a button in the Vitals section and define an action where the button, when clicked,  displays custom HTML content to the user. 
