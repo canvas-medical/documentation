@@ -19,6 +19,8 @@ Note content such as HPI, Review of Systems, Physical Exam, Assessment, and Plan
 
 To write commands from an outside system over HTTP, use [`CommandAPI`](/sdk/handlers-simple-api-commands/), which turns a command into an endpoint and validates each request against the command.
 
+To go beyond the built-in commands, by adding fields, showing your own content, or adding commands of your own, see [Customizing Commands Beyond the Built-ins](/guides/customizing-commands/).
+
 <!-- source: discussion #1375 -->
 "Commands" is an umbrella term for all the structured data within a patient's note. Questionnaire is one specific command type. When a questionnaire is built, its use case in charting can be set to Physical Exam, Structured Assessment, Review of Systems, or Questionnaire; these all share the same underlying database structure but appear in the note as their own distinct command. The `.originate()` method works on all command types.
 
@@ -380,7 +382,7 @@ Commands have two types of actions:
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
 <!-- source: discussion #1046 -->
-When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template — see the [vitals visualizer](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/vitals_visualizer_plugin) example plugin for the same architectural pattern.
+When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 
 {% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
@@ -507,29 +509,6 @@ resulting records are readable through the
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
-
-### Custom Commands
-
-<!-- source: discussion #936 -->
-The built-in command classes cannot be customized per-instance: all Canvas instances run the same SDK version, so you cannot add fields to an existing command (for example, adding fields to `PlanCommand`) for just your instance. To request a change to a built-in command, submit a feature request, which Canvas uses to prioritize SDK changes.
-
-<!-- source: discussion #923 -->
-There is no way to define an entirely new named command (such as a "Wound assessment" command). To build a custom assessment, the supported approaches are:
-- **[Custom Commands](/sdk/commands-custom-command/)** — define a read-only command that renders an HTML template in the patient chart.
-- **[Create Observation](/sdk/effect-observation/)** effect — store assessment values in a structured way.
-- **[Questionnaire](/sdk/effect-questionnaires/)**, Review of Systems, Physical Exam, and Structured Assessment commands — the most customizable built-in commands for collecting structured responses.
-
-For creating custom commands with HTML-rendered content that can be inserted into patient charts, see the [CustomCommand](/sdk/commands-custom-command/) documentation.
-
-Custom commands are different from standard commands:
-- They allow you to display read-only HTML content in the patient chart
-- They must be configured in your plugin's [manifest](/sdk/canvas_manifest/#commands) before use
-- They support both display and print versions of content
-- They are designed for displaying formatted data, not for capturing user input
-
-Learn more: [CustomCommand Reference](/sdk/commands-custom-command/)
-
----
 
 ### AddCondition
 
@@ -658,77 +637,6 @@ allergy = AllergyCommand(
     narrative="Severe rash and difficulty breathing after penicillin.",
     approximate_date=date(2023, 6, 15)
 )
-```
-
-<!-- source: discussion #1394 -->
-<!-- REVIEW: clinical-accuracy sign-off required -->
-**Prepopulating a note from existing allergies:** To insert a patient's existing allergies into a note, build an `AllergyCommand` for each one and originate it. There is no single-argument constructor that accepts an `AllergyIntolerance` object, so map the fields yourself: read the allergen coding from the `AllergyIntolerance` (FDB codings are used to build the `Allergen`), map the category to an `AllergenType`, and map the severity to `AllergyCommand.Severity`. The example below adds an action button to the note header that originates a command for each of the patient's active allergies:
-
-```python
-from canvas_sdk.commands import AllergyCommand
-from canvas_sdk.commands.commands.allergy import Allergen, AllergenType
-from canvas_sdk.commands.constants import CodeSystems
-from canvas_sdk.effects import Effect
-from canvas_sdk.handlers.action_button import ActionButton
-from canvas_sdk.v1.data.allergy_intolerance import AllergyIntolerance
-from canvas_sdk.v1.data.note import Note
-
-concept_map = {
-    "1": AllergenType.ALLERGEN_GROUP,
-    "2": AllergenType.MEDICATION,
-    "6": AllergenType.INGREDIENT,
-}
-
-severity_map = {
-    "mild": AllergyCommand.Severity.MILD,
-    "moderate": AllergyCommand.Severity.MODERATE,
-    "severe": AllergyCommand.Severity.SEVERE,
-}
-
-
-def create_allergy_command_from_intolerance(
-    allergy_intolerance: AllergyIntolerance,
-    note_uuid: str,
-) -> AllergyCommand:
-    coding = allergy_intolerance.codings.filter(system=CodeSystems.FDB).first()
-
-    allergen = None
-    if coding:
-        allergen = Allergen(
-            concept_id=int(coding.code),
-            concept_type=concept_map.get(str(allergy_intolerance.category)),
-        )
-
-    severity = None
-    if allergy_intolerance.severity:
-        severity = severity_map.get(allergy_intolerance.severity.lower())
-
-    return AllergyCommand(
-        note_uuid=note_uuid,
-        allergy=allergen,
-        severity=severity,
-        narrative=allergy_intolerance.narrative or "",
-        approximate_date=allergy_intolerance.onset_date,
-    )
-
-
-class AddAllergiesToNoteButton(ActionButton):
-    BUTTON_TITLE = "Add Allergies to Note"
-    BUTTON_KEY = "ADD_ALLERGIES_TO_NOTE"
-    BUTTON_LOCATION = ActionButton.ButtonLocation.NOTE_HEADER
-
-    def visible(self) -> bool:
-        return AllergyIntolerance.objects.for_patient(self.target).filter(status="active").exists()
-
-    def handle(self) -> list[Effect]:
-        note_dbid = self.context["note_id"]
-        note_uuid = str(Note.objects.filter(dbid=note_dbid).values_list("id", flat=True).first())
-
-        allergies = AllergyIntolerance.objects.for_patient(self.target).filter(status="active")
-        return [
-            create_allergy_command_from_intolerance(allergy, note_uuid).originate()
-            for allergy in allergies
-        ]
 ```
 
 ---
@@ -1382,7 +1290,7 @@ order.
 
 <!-- source: discussion #574 -->
 <!-- REVIEW: clinical-accuracy sign-off required -->
-There is no dedicated REST endpoint for ordering labs or medications. Labs and prescriptions are ordered by creating `LabOrderCommand` and [Prescribe](#prescribe) commands in a note via the SDK, typically in response to an [event](/sdk/events/).
+There is no dedicated endpoint for ordering labs or medications. Labs and prescriptions are ordered by creating `LabOrderCommand` and [Prescribe](#prescribe) commands in a note via the SDK, typically in response to an [event](/sdk/events/).
 Built-in validations ensure that:
 
 - The specified lab partner exists (whether provided by name or ID).
@@ -2056,37 +1964,8 @@ def compute():
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Physical Exam**, and it must be set to originate in charting. |
 | `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
-
-<!-- source: discussion #1381 -->
-The questionnaire referenced by `questionnaire_id` must have been built with a use case in charting (form type) of **exam** in order to be used with `PhysicalExamCommand`. Both built-in and custom questionnaires work as long as their form type is exam. To pass free-text data into the exam, include a free-text question on the questionnaire and set its response (for multi-select questions you can add a comment to each chosen option).
-
-<!-- source: discussion #1218 -->
-<!-- source: discussion #1381 -->
-**Populating responses.** Responses you record on the command, with `answers` or with `question.add_response(...)`, are applied when the command is originated, so a single `originate()` inserts the exam with its responses filled in. To record responses with `add_response()`, iterate over `exam.questions` and call it with the keyword argument for each question's type (see the [Questionnaire usage example](#usage-example)):
-
-```python?partial=true
-from uuid import uuid4
-from canvas_sdk.commands import PhysicalExamCommand
-
-# inside a handler's compute(); note_uuid and questionnaire_id come from your own lookup
-exam = PhysicalExamCommand(
-    note_uuid=note_uuid,
-    questionnaire_id=questionnaire_id,
-    command_uuid=str(uuid4()),
-)
-
-for question in exam.questions:
-    if question.label == "Exam Name":
-        question.add_response(text="Current Dressings")
-    elif question.label == "Notes":
-        question.add_response(text="Self-applied gauze with cohesive wrap.")
-
-return [exam.originate(line_number=1)]
-```
-
-To commit the exam as well, call `exam.originate(line_number=1, commit=True)`. To change the responses of an exam that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
 
 <a id="toggle-questions"></a>
 #### Toggle Questions Feature
@@ -2296,7 +2175,6 @@ questionnaire = QuestionnaireCommand(
 Below is an example that answers a questionnaire with `answers`. Each `Answer` names a question by its `dbid` and gives the response in the form that question takes, so nothing branches on the question's type:
 
 ```python?partial=true
-import uuid
 from canvas_sdk.commands.commands.questionnaire import Answer, QuestionnaireCommand, Selection
 from canvas_sdk.effects import Effect
 from canvas_sdk.handlers import BaseHandler
@@ -2311,7 +2189,6 @@ class MyHandler(BaseHandler):
       command = QuestionnaireCommand(
           note_uuid=str(note.id),
           questionnaire_id=str(questionnaire.id),
-          command_uuid=str(uuid.uuid4()),
           answers=[
               # A text question.
               Answer(question_id=12, response="Thanks for all the fish"),
@@ -2332,8 +2209,8 @@ class MyHandler(BaseHandler):
           ],
       )
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit.
-      return [command.originate(), command.edit()]
+      # The responses are included when the command is originated.
+      return [command.originate()]
 ```
 
 An option id that the question does not offer, or a question id that is not in the questionnaire, raises a `ValueError` rather than recording something the questionnaire does not define.
@@ -2341,7 +2218,6 @@ An option id that the question does not offer, or a question id that is not in t
 Below is the same thing written the other way, retrieving the questions and adding responses to them based on their type:
 
 ```python
-import uuid
 from canvas_sdk.commands.commands.questionnaire import QuestionnaireCommand
 from canvas_sdk.commands.commands.questionnaire.question import ResponseOption
 from canvas_sdk.effects import Effect
@@ -2356,7 +2232,6 @@ class MyHandler(BaseHandler):
       # Create a QuestionnaireCommand instance.
       command = QuestionnaireCommand(questionnaire_id=str(q.id))
       command.note_uuid = str(note.id)
-      command.command_uuid = str(uuid.uuid4())
 
       # Alternatively you can just retrieve an existing questionnaire command, and only return an `edit` effect.
 
@@ -2385,8 +2260,8 @@ class MyHandler(BaseHandler):
               # For date questions, pass a 'date' keyword argument.
               question.add_response(date="2026-01-15")
 
-      # Because we're directly setting a command_uuid, we can return both originate and edit.
-      return [command.originate(), command.edit()]
+      # The responses are included when the command is originated.
+      return [command.originate()]
 ```
 
 #### Explanation
@@ -2405,62 +2280,7 @@ class MyHandler(BaseHandler):
   - For **DateQuestion**, you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
 
 
- - **Creating and Editing:**
-   When creating a new questionnaire command, you must explicitly set a unique `command_uuid`. Providing this UUID enables you to originate the command within the note and then subsequently edit it with detailed responses in the same protocol execution.
-
- - This approach is necessary because given the dynamic nature of the questionnaire command, the initial creation (origination) only includes the questionnaire ID. Once the command has been originated, you can immediately follow up with an edit to populate it with the patient's responses.
-
-- **Responses are applied on origination.** Responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in. Use `edit()` to change the responses of a questionnaire command that is already in the note.
-
- - If you are looking to insert a committed questionnaire command, you'll need to return three effects:
-   - An `.originate()` to insert the command and select the questionnaire
-   - An `.edit()` to populate the responses
-   - A `.commit()` to commit the command
-
-#### Originating a follow-up questionnaire in the same note
-
-<!-- source: discussion #523 -->
-To add a follow-up questionnaire (for example, originating a PHQ-9 when a PHQ-2 is committed with a qualifying score), write a handler that listens for `QUESTIONNAIRE_COMMAND__POST_COMMIT`, inspects the committed questionnaire command to see whether it meets your condition, and — if so — originates a new questionnaire command in the same note (`event_command.note.id`). The committed command and its responses can be read through the [`Command`](/sdk/data-command/) and [`Interview`](/sdk/data-questionnaire/#interview) data models. You can also pull overlapping responses forward into the new command before returning `[new_command.originate(), new_command.edit()]`.
-
-```python
-from uuid import uuid4
-
-from canvas_sdk.commands import QuestionnaireCommand
-from canvas_sdk.effects import Effect
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers import BaseHandler
-from canvas_sdk.v1.data.command import Command
-from canvas_sdk.v1.data.questionnaire import Questionnaire
-
-PHQ_CODE_SYSTEM = "LOINC"
-PHQ9_CODE = "44249-1"
-PHQ2_CODE = "58120-7"
-
-
-class PHQ9Followup(BaseHandler):
-    RESPONDS_TO = [EventType.Name(EventType.QUESTIONNAIRE_COMMAND__POST_COMMIT)]
-
-    def compute(self) -> list[Effect]:
-        event_command = Command.objects.get(id=self.event.target.id)
-
-        # Only react when the committed questionnaire is the PHQ-2
-        committed_is_phq2 = Questionnaire.objects.filter(
-            dbid=event_command.data["questionnaire"]["value"],
-            code_system=PHQ_CODE_SYSTEM,
-            code=PHQ2_CODE,
-        ).exists()
-        if not committed_is_phq2:
-            return []
-
-        # Originate a PHQ-9 in the same note
-        phq_9 = Questionnaire.objects.filter(code_system=PHQ_CODE_SYSTEM, code=PHQ9_CODE).first()
-        new_command = QuestionnaireCommand(
-            note_uuid=str(event_command.note.id),
-            questionnaire_id=str(phq_9.id),
-            command_uuid=str(uuid4()),
-        )
-        return [new_command.originate(), new_command.edit()]
-```
+ - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
 
 ---
 
@@ -2783,7 +2603,7 @@ ResolveConditionCommand(
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Review of Systems**, and it must be set to originate in charting. |
 | `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 
@@ -2871,7 +2691,7 @@ stop_medication = StopMedicationCommand(
 
 | Name               | Type     | Required to commit | Description                                                                     |
 |:-------------------|:---------|:---------|:--------------------------------------------------------------------------------|
-| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. |
+| `questionnaire_id` | _string_ | `true`   | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Structured Assessment**, and it must be set to originate in charting. |
 | `answers`          | _list of [Answer](#questionnaire-answer)_ | `false`  | The responses to record, one per question. Defaults to an empty list. |
 
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
