@@ -31,6 +31,7 @@ You can supply multiple date search parameters to search in a range. For example
 
 The API endpoints that support date search parameters include:
 * [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
+* [Claim](/api/claim/) (/Claim) - Filter by created date (the date of service of the claim's note)
 * [Consent](/api/consent/) (/Consent) - Filter by consent date
 * [DetectedIssue](/api/detectedissue/) (/DetectedIssue) - Filter by identified date
 * [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
