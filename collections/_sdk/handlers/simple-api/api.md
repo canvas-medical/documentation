@@ -807,33 +807,29 @@ workflow that needs to be initiated from outside of Canvas.
 <!-- source: discussion #1164 -->
 ### Originating commands that have no FHIR resource
 
-There are no FHIR API endpoints for HPI, Assessment, Plan, or Reason for Visit —
-these levels of granularity have no standard FHIR resource, and a custom FHIR
-extension would defeat the purpose of the standard. Instead, expose a SimpleAPI
-endpoint and originate the corresponding commands from your handler using the
-classes in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/) builds such an endpoint for you: it reads the request body onto a command, validates it, and writes the command to the note. You may also use
-`Command.objects` from the data module to check for uniqueness or to edit
-existing commands. This SDK-based approach gives you maximal control and
-correctness.
+Many commands, such as HPI, Assessment, and Plan, have no FHIR resource, because
+the standard has nothing at that level of detail. To write them from outside
+Canvas, expose a SimpleAPI endpoint that originates the commands with the classes
+in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/)
+builds such an endpoint for you: it reads the request body onto a command,
+validates it, and writes the command to the note. Use `Command.objects` from the
+data module to check for an existing command or to find one to edit.
 
 <!-- source: discussion #708 -->
 ### Calling SimpleAPI from an external application
 
-External applications (for example a Node.js service) integrate with Canvas by
-making POST/GET calls to the SimpleAPI endpoints you define in your plugin,
-which in turn trigger effects. Note that not every workflow has a dedicated
-effect — there is, for example, an effect for creating a [note](/sdk/effect-notes/),
-but Care Plan and Next Steps creation may not be directly supported. Task and
-Protocol Card creation are available and can often accomplish the same goal.
+External applications, such as a Node.js service, integrate with Canvas by
+calling the SimpleAPI endpoints you define in your plugin. Each endpoint returns
+[effects](/sdk/effects/) that make the change in Canvas.
 
 <!-- source: discussion #735 -->
 ### Creating or updating patients from a third-party webhook
 
-To process a third-party webhook (for example a form-submission webhook), point
-the webhook at a SimpleAPI `POST` endpoint rather than at the FHIR API. This is
-the recommended approach when you need to set custom patient metadata, which is
-not settable via FHIR. In your handler, build a [Patient effect](/sdk/effect-patient/)
-from the request body, including your custom values in its `metadata`, and return
+To process a third-party webhook, such as a form submission, point it at a
+SimpleAPI `POST` endpoint. Your handler controls how the incoming data maps onto
+the patient, so it can transform fields, check them, and save values the FHIR API
+can't, such as custom patient metadata. Build a [Patient effect](/sdk/effect-patient/)
+from the request body, including any custom values in its `metadata`, and return
 its `create()` or `update()`. The patient and their metadata are saved together.
 
 <!-- source: discussion #1242 -->

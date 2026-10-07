@@ -216,7 +216,7 @@ In this example the ICD-10 code `Z13.41` and CPT `AUTISM_DX` are placeholders fr
 
 To push data to an external system when a provider locks a note, build a [webhook plugin](/guides/creating-webhooks-with-the-canvas-sdk/) that listens for `NOTE_STATE_CHANGE_EVENT_CREATED` and checks for the lock state. A note lock is the state `'LKD'`; ignore other states (see the full list of [note states](/sdk/data-note/#notestates)).
 
-Read `note_id` and `patient_id` from the context, fetch the data you want to send from the FHIR API (which returns FHIR-shaped JSON), and forward it to your endpoint. Use the [`Http`](/sdk/utils/) util for the requests and store credentials in [secrets](/sdk/secrets/) rather than in plaintext.
+Read `note_id` and `patient_id` from the context, look up the note's [Encounter](/sdk/data-encounter/#encounter), fetch the data you want to send from the FHIR API (which returns FHIR-shaped JSON), and forward it to your endpoint. Use the [`Http`](/sdk/utils/) util for the requests and store credentials in [secrets](/sdk/secrets/) rather than in plaintext.
 
 ```python
 from urllib.parse import urlencode
@@ -224,6 +224,7 @@ from urllib.parse import urlencode
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
 from canvas_sdk.utils import Http
+from canvas_sdk.v1.data import Encounter
 from logger import log
 
 
@@ -239,6 +240,11 @@ class Protocol(BaseProtocol):
 
         note_id = str(self.event.context["note_id"])
         patient_id = str(self.event.context["patient_id"])
+
+        # The FHIR Encounter is identified by the encounter's id, not the note's.
+        encounter = Encounter.objects.filter(note__id=note_id).first()
+        if encounter is None:
+            return []
 
         http = Http()
 
@@ -262,7 +268,7 @@ class Protocol(BaseProtocol):
             f"https://fumage-example.canvasmedical.com/Patient/{patient_id}", headers=headers
         )
         encounter_fhir_data = http.get(
-            f"https://fumage-example.canvasmedical.com/Encounter/{note_id}", headers=headers
+            f"https://fumage-example.canvasmedical.com/Encounter/{encounter.id}", headers=headers
         )
 
         # Forward the payload to your secure endpoint.
@@ -280,4 +286,4 @@ class Protocol(BaseProtocol):
         return []
 ```
 
-This pattern runs entirely inside the Canvas environment — there is no need to host a separate EC2 service to react to the lock. See the [Patient read](/api/patient/#read) and [Encounter read](/api/encounter/#read) API references for the resources you can pull. Note that the `note_id` in the plugin context is not necessarily the identifier the Encounter endpoint expects; confirm the right Encounter identifier for your instance before relying on it.
+This pattern runs entirely inside the Canvas environment — there is no need to host a separate EC2 service to react to the lock. See the [Patient read](/api/patient/#read) and [Encounter read](/api/encounter/#read) API references for the resources you can pull.

@@ -28,6 +28,8 @@ This guide shows two variations of the pattern: a read-only custom print templat
 
 The default "Print note" button gives you no control over layout. By serving your own HTML template from a `SimpleAPI` endpoint, you fully control the printed output. The plugin registers two components: an `ActionButton` in the note header and a `SimpleAPI` that renders the page.
 
+For a complete, ready-to-install version, see the [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension. It adds a patient-friendly visit summary to the note, plus a panel where staff choose and reorder the note's sections, preview the result, and print it or save it as a PDF to the patient's chart. The sections below build a simpler version of the same pattern.
+
 ### Manifest
 
 Register both components in `CANVAS_MANIFEST.json`:
@@ -49,7 +51,9 @@ Register both components in `CANVAS_MANIFEST.json`:
             }
         ]
     },
-    "secrets": ["simple-api-key"]
+    "variables": [
+        {"name": "simpleapi-api-key", "sensitive": true}
+    ]
 }
 ```
 
@@ -94,29 +98,31 @@ from http import HTTPStatus
 
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import HTMLResponse, Response
-from canvas_sdk.handlers.simple_api import Credentials, SessionCredentials, SimpleAPI, api
-from canvas_sdk.handlers.simple_api.exceptions import InvalidCredentialsError
+from canvas_sdk.handlers.simple_api import (
+    APIKeyAuthMixin,
+    APIKeyCredentials,
+    Credentials,
+    SessionCredentials,
+    SimpleAPI,
+    StaffSessionAuthMixin,
+    api,
+)
+from canvas_sdk.handlers.simple_api.exceptions import AuthenticationError
 from canvas_sdk.templates import render_to_string
 from canvas_sdk.v1.data.note import Note
 from canvas_sdk.v1.data.patient import Patient
 
 
-class CustomerHTMLApi(SimpleAPI):
+class CustomerHTMLApi(StaffSessionAuthMixin, APIKeyAuthMixin, SimpleAPI):
     def authenticate(self, credentials: Credentials) -> bool:
-        # First try session auth (a staff user clicking from the Canvas UI).
+        # A staff member clicking through from the Canvas UI.
         try:
-            logged_in_user = SessionCredentials(self.request).logged_in_user
-            if logged_in_user["type"] == "Staff":
-                return True
-        except InvalidCredentialsError:
+            return StaffSessionAuthMixin.authenticate(self, SessionCredentials(self.request))
+        except AuthenticationError:
             pass
 
-        # Fallback to an API key for external access.
-        api_key_secret = self.secrets.get("simple-api-key")
-        request_auth_key = self.request.headers.get("Authorization")
-        if api_key_secret and request_auth_key and api_key_secret.encode() == request_auth_key.encode():
-            return True
-        return False
+        # Otherwise, a request from outside Canvas with the API key.
+        return APIKeyAuthMixin.authenticate(self, APIKeyCredentials(self.request))
 
     @api.get("/")
     def index(self) -> list[Response | Effect]:

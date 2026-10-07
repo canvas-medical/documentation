@@ -678,19 +678,6 @@ guides_list:
     uses:
       - sdk
 
-  - title: "Syncing Patient Portal Form Data to the Chart"
-    url: /guides/syncing-patient-portal-form-data/
-    description: Find completed portal forms and write their answers back to the chart
-    uses:
-      - sdk
-      - fhir_api
-
-  - title: "Pre-filling Questionnaires with an AI Scribe Parser"
-    url: /guides/prefill-questionnaires-with-an-ai-scribe-parser/
-    description: Originate a questionnaire and fill its answers from parsed scribe output
-    uses:
-      - sdk
-
   - title: "Customizing Commands Beyond the Built-ins"
     url: /guides/customizing-commands/
     description: Add fields and content to built-in commands, add your own, or write commands over HTTP
@@ -700,12 +687,6 @@ guides_list:
   - title: "Plugin Development Tips and Sandbox Limits"
     url: /guides/plugin-development-tips-and-sandbox-limits/
     description: Deploying, debugging, and working within the plugin sandbox
-    uses:
-      - sdk
-
-  - title: "Using Canvas Docs with AI Code Editors"
-    url: /guides/using-canvas-docs-with-ai-code-editors/
-    description: Give an AI coding assistant the Canvas docs through Context7
     uses:
       - sdk
 

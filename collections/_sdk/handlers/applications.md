@@ -226,7 +226,7 @@ The `scope` attribute determines where your application is visible within Canvas
 <!-- source: discussion #556 -->
 ### Who sees an application
 
-Applications in the `global`, `patient_specific`, `provider_menu_item`, and `portal_menu_item` scopes are shown to every user. To decide per user, use an [embedded application](/sdk/handlers-embedded-applications/#controlling-visibility) or an [action button](/sdk/handlers-action-buttons/#visibility), both of which implement `visible()`.
+Applications in the `global`, `patient_specific`, `provider_menu_item`, and `portal_menu_item` scopes are shown to every user. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
 
 <!-- source: discussion #1204 -->
 ### Linking to a portal application
@@ -482,9 +482,11 @@ in [`url_permissions`](/sdk/canvas_manifest/#url-permissions) includes
 user may have to sign in to your application every time it opens.
 
 <!-- source: discussion #571 -->
-### Custom task views
+### Replacing a built-in view
 
-To present tasks with locked fields, predefined dropdowns, or custom labels beyond what the built-in Task command offers, build an application, for example one that opens on the right side of a note. Read tasks with the [Task](/sdk/data-task/) data model, and create or update them with the [task effects](/sdk/effect-tasks/) from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint in the same plugin. Give these tasks a label of their own so your application can find them and staff can filter them out of the general Tasks list.
+When a built-in Canvas view doesn't fit a workflow, an application can replace it with your own, built from the same data and actions the SDK exposes. Read what you need with the [data module](/sdk/data/), make changes with [effects](/sdk/effects/) returned from a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint in the same plugin, and lay out the page however the workflow needs.
+
+For example, to present tasks with locked fields, predefined dropdowns, or custom labels beyond what the built-in Task command offers, build an application that opens on the right side of a note. Read tasks with the [Task](/sdk/data-task/) data model, and create or update them with the [task effects](/sdk/effect-tasks/). Give these tasks a label of their own so your application can find them and staff can filter them out of the general Tasks list.
 
 <br/>
 <br/>
