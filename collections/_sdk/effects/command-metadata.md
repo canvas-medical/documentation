@@ -19,7 +19,7 @@ Metadata can be written two ways, and they store to the same place:
 
 Either way, the entries are readable as [CommandMetadata](/sdk/data-command/#commandmetadata) in the data module.
 
-## Method
+## Methods
 
 ### upsert_metadata(key: str, value: str) → Effect
 

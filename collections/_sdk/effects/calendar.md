@@ -5,9 +5,38 @@ excerpt: "Effect for creating a calendar for a provider"
 hidden: false
 ---
 
-## Overview
-
 This allows developers to create calendars for providers in Canvas. Calendars can be either Clinic or Administrative type and can optionally be associated with a location.
+
+Build a `Calendar` with the [attributes](#attributes) you want to set, then return its `create()` from your handler.
+
+## Methods
+
+### create() → Effect
+
+Creates the calendar.
+
+- `provider` and `type` are required.
+
+## Attributes
+
+| Attribute     | Type                         | Description                                                                          | Required |
+|---------------|------------------------------|--------------------------------------------------------------------------------------|----------|
+| `id`          | `str \| UUID \| None`        | Optional unique identifier for the calendar.                                         | No       |
+| `provider`    | `str \| UUID`                | The id of the [provider](/sdk/data-staff/).                                          | Yes      |
+| `type`        | [`CalendarType`](#calendartype) | The type of calendar: `CalendarType.Clinic` or `CalendarType.Administrative`.      | Yes      |
+| `location`    | `str \| UUID \| None`        | The id of the [location](/sdk/data-practicelocation/) to associate with the calendar. | No       |
+| `description` | `str \| None`                | Description of the calendar's purpose.                                               | No       |
+
+## CalendarType
+
+An enumeration of calendar types:
+
+| Value             | Description                                    |
+|-------------------|------------------------------------------------|
+| `Clinic`          | Calendar for clinical appointments             |
+| `Administrative`  | Calendar for administrative tasks              |
+
+## Example
 
 ```python
 from canvas_sdk.effects.calendar import Calendar, CalendarType
@@ -19,29 +48,3 @@ Calendar(
    description="Primary clinic calendar"
 ).create()
 ```
-
-## Structure
-
-### **CalendarType**
-
-An enumeration of calendar types:
-
-| Value             | Description                                    |
-|-------------------|------------------------------------------------|
-| `Clinic`          | Calendar for clinical appointments             |
-| `Administrative`  | Calendar for administrative tasks              |
-
-
-### **Calendar**
-
-A Calendar effect consists of the following properties:
-
-#### Attributes
-
-| Attribute     | Type                  | Description                                                                         |
-|---------------|-----------------------|-------------------------------------------------------------------------------------|
-| `id`          | `str \| UUID \| None` | Optional unique identifier for the calendar.                                        |
-| `provider`    | `str \| UUID`         | The provider UUID                                                                   |
-| `type`        | `CalendarType`        | The type of calendar - either `CalendarType.Clinic` or `CalendarType.Administrative` |
-| `location`    | `str \| UUID \| None` | location UUID to associate with the calendar. |
-| `description` | `str \| None`         | description of the calendar's purpose.                                              |

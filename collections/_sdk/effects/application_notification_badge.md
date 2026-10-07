@@ -5,17 +5,18 @@ excerpt: "Display and update a notification badge count on an application icon."
 hidden: false
 ---
 
-Notification badges let your plugin surface a count on an
-[application](/sdk/handlers-applications/) icon — the small number that
-indicates, for example, how many unread items are waiting. Badges are shown for
-applications scoped [`global`](/sdk/handlers-applications/#application-scopes) or
-[`patient_specific`](/sdk/handlers-applications/#application-scopes) — on their
-icon in the app drawer, or, when the application sets `show_in_panel`, on the panel
-alongside the other panel buttons — and for
-[`provider_menu_item`](/sdk/handlers-applications/#application-scopes) applications,
-next to their label in the provider menu. Applications in other scopes
-(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
-display badges.
+Notification badges let your plugin show a count on an [application](/sdk/handlers-applications/), such as how many unread items are waiting.
+
+Where the badge appears depends on the application's [scope](/sdk/handlers-applications/#application-scopes):
+
+| Scope | Where the badge appears |
+| --- | --- |
+| `global` | On the application's icon in the app drawer. |
+| `patient_specific` | On the application's icon in the app drawer, or on the panel when the application sets `show_in_panel`. |
+| `provider_menu_item` | Next to the application's label in the provider menu. |
+| `portal_menu_item` | Next to the application's label in the patient portal menu, for the patient who is logged in. |
+
+Applications in other scopes, such as `full_chart` and the Provider Companion scopes, do not show badges.
 
 There are two ways a badge is set:
 
@@ -29,16 +30,29 @@ There are two ways a badge is set:
 
 ## Setting a badge
 
-`ApplicationNotificationBadge` is a fluent builder. Construct it with the target
-application's identifier, optionally `.filter(...)` to target patients, then call
-`.broadcast(...)` to produce the effect.
+`ApplicationNotificationBadge` is a fluent builder. Construct it with the target application's identifier, optionally call `.filter(...)` to target patients, then return `.broadcast(...)` from your handler.
 
-| Method / Attribute       |          | Type        | Description                                                                                                                                                |
-| ------------------------ | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `application_identifier` | required | String      | Passed to the constructor. Must match the application's `class` string declared in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) — the `<module path>:<ClassName>` value (identical to the handler's `identifier`). An unknown identifier raises a validation error. |
-| `count`                  | required | Integer     | Passed to `.broadcast()`. The badge value to display. Must be `>= 0`; a count of `0` clears the badge.                                                      |
-| `staff_ids`              | optional | list[String] | Passed to `.broadcast()`. [Staff](/sdk/data-staff/) keys that should see the update.                                                                       |
-| `patient_ids`            | optional | list[String] | Passed to `.filter()`. [Patient](/sdk/data-patient/) keys whose chart context the update applies to.                                                       |
+### Methods
+
+#### filter(*, patient_ids: list[str] | None = None) → ApplicationNotificationBadge
+
+Scopes the update to the listed patients: their charts, and their own patient portal. Returns the builder, so the call chains into `.broadcast(...)`.
+
+#### broadcast(count: int, staff_ids: list[str] | None = None) → Effect
+
+Sets the badge to `count` for the staff and patients you target. See [Targeting](#targeting).
+
+- `count` is required and must be `>= 0`; a count of `0` clears the badge.
+- The `application_identifier` passed to the constructor must match an installed application, or the effect raises a validation error.
+
+### Attributes
+
+| Attribute                | Type        | Description                                                                                                                                                | Required |
+| ------------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `application_identifier` | `str`       | Passed to the constructor. Must match the application's `class` string declared in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications), the `<module path>:<ClassName>` value (identical to the handler's `identifier`). | Yes      |
+| `count`                  | `int`       | Passed to `.broadcast()`. The badge value to display.                                                                                                      | Yes      |
+| `staff_ids`              | `list[str]` | Passed to `.broadcast()`. Ids of the [staff](/sdk/data-staff/) who should see the update.                                                                  | No       |
+| `patient_ids`            | `list[str]` | Passed to `.filter()`. Ids of the [patients](/sdk/data-patient/) the update applies to: their charts, and their own patient portal.                        | No       |
 
 The `application_identifier` is the application's `class` string from
 `CANVAS_MANIFEST.json` (`<module path>:<ClassName>`). For example, an `InboxApp`
@@ -73,12 +87,20 @@ ApplicationNotificationBadge("my_plugin.apps.inbox:InboxApp").broadcast(count=3,
 | `staff_ids` | `patient_ids` | Who sees the badge                                                                       |
 | ----------- | ------------- | ---------------------------------------------------------------------------------------- |
 | set         | empty         | The listed staff, on any patient (and on global views).                                  |
-| empty       | set           | Staff currently viewing the listed patients' charts.                                     |
+| empty       | set           | Staff currently viewing the listed patients' charts, and the listed patients in the patient portal. |
 | set         | set           | The listed staff, but only while viewing the listed patients' charts.                    |
-| empty       | empty         | All staff, all patients (a system-wide update).                                          |
+| empty       | empty         | All staff, all patients (a system-wide update). The patient portal is not updated.       |
 
-Patients are never subscribers themselves — `patient_ids` scopes the badge to a
-patient's chart, where staff viewing that chart will see it.
+The patient portal receives an update only when you set `patient_ids` and leave
+`staff_ids` empty. Each listed patient sees the new count on the matching
+`portal_menu_item` application while they're logged in to the portal. Updates
+that name staff, and system-wide updates, never reach the portal. A patient
+only ever receives updates sent for their own id.
+
+Because `patient_ids` reaches both audiences, the application's scope decides
+where the badge appears. A `patient_specific` application shows it to staff on
+the chart. A `portal_menu_item` application shows it to the patient in the
+portal.
 
 > **Note on "all patients" (empty `patient_ids`):** the update is delivered
 > **live** only to charts a staff member currently has open. Other patients'
@@ -95,6 +117,11 @@ from canvas_sdk.effects.application_notification_badge import ApplicationNotific
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(
     patient_ids=["patient-id"]
 ).broadcast(count=5)
+
+# Show a badge to a patient in the patient portal (portal_menu_item application).
+ApplicationNotificationBadge("my_plugin.apps.messages:PortalMessagesApp").filter(
+    patient_ids=["patient-id"]
+).broadcast(count=2)
 
 # Combine: only the on-call provider, and only on this patient's chart.
 ApplicationNotificationBadge("my_plugin.apps.patient_labs:PatientLabsApp").filter(

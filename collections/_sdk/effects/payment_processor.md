@@ -9,6 +9,12 @@ These effects are returned from a custom [Payment Processor](/sdk/handlers-payme
 
 All of the classes below are importable from `canvas_sdk.effects.payment_processor`.
 
+## Methods
+
+### apply() → Effect
+
+Every class on this page has an `apply()` method, and the base payment processor handler calls it for you: return the object itself from the matching handler method, as the examples below do. Attributes marked **Yes** under Required must be set.
+
 ## PaymentProcessorMetadata
 
 Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCESSOR__LIST`. Canvas uses it to discover which processors are installed and to route later events (charge, add card, etc.) to the right handler.
@@ -20,10 +26,12 @@ Advertises a payment processor to Canvas in response to `REVENUE__PAYMENT_PROCES
 
 Because the base handler already responds to `REVENUE__PAYMENT_PROCESSOR__LIST` with this effect, you only need to construct it directly in advanced cases where you override that default behavior.
 
-| Attribute  |          | Type                                          | Description                                                                      |
-|------------|----------|-----------------------------------------------|----------------------------------------------------------------------------------|
-| identifier | required | String                                        | Unique identifier of the payment processor. Generated automatically per handler. |
-| type       | required | [PaymentProcessorType](#paymentprocessortype) | The kind of processor. Currently only `CARD` is supported.                       |
+### Attributes
+
+| Attribute    | Type                                          | Description                                                                      | Required |
+|--------------|-----------------------------------------------|----------------------------------------------------------------------------------|----------|
+| `identifier` | `str`                                         | Unique identifier of the payment processor. Generated automatically per handler. | Yes      |
+| `type`       | [PaymentProcessorType](#paymentprocessortype) | The kind of processor. Currently only `CARD` is supported.                       | Yes      |
 
 ### PaymentProcessorType
 
@@ -35,10 +43,12 @@ Because the base handler already responds to `REVENUE__PAYMENT_PROCESSOR__LIST` 
 
 Returns the HTML form used to collect and tokenize card details, in response to `REVENUE__PAYMENT_PROCESSOR__SELECTED`. The `content` is rendered as inner HTML inside Canvas and must implement the [Form Workflow](/sdk/handlers-payment-processors/#form-workflow).
 
-| Attribute |          | Type   | Description                                              |
-|-----------|----------|--------|----------------------------------------------------------|
-| intent    | required | String | The purpose of the form. One of `"pay"` or `"add_card"`. |
-| content   | required | String | The HTML content to render inside Canvas.                |
+### Attributes
+
+| Attribute | Type  | Description                                              | Required |
+|-----------|-------|----------------------------------------------------------|----------|
+| `intent`  | `str` | The purpose of the form. One of `"pay"` or `"add_card"`. | Yes      |
+| `content` | `str` | The HTML content to render inside Canvas.                | Yes      |
 
 ```python
 from canvas_sdk.effects.payment_processor import PaymentProcessorForm
@@ -55,12 +65,14 @@ def payment_form(self, patient: Patient | None = None) -> PaymentProcessorForm:
 
 Returns the result of charging a card, in response to `REVENUE__PAYMENT_PROCESSOR__CHARGE`.
 
-| Attribute      |          | Type           | Description                                                    |
-|----------------|----------|----------------|----------------------------------------------------------------|
-| success        | required | Boolean        | Whether the charge succeeded.                                  |
-| transaction_id | required | String \| None | The identifier of the transaction, if one was created.         |
-| api_response   | required | Dictionary     | The raw response returned by the payment provider.             |
-| error_code     | optional | String \| None | An error code describing why the charge failed, if applicable. |
+### Attributes
+
+| Attribute        | Type          | Description                                                    | Required |
+|------------------|---------------|----------------------------------------------------------------|----------|
+| `success`        | `bool`        | Whether the charge succeeded.                                  | Yes      |
+| `transaction_id` | `str \| None` | The identifier of the transaction, if one was created.         | Yes      |
+| `api_response`   | `dict`        | The raw response returned by the payment provider.             | Yes      |
+| `error_code`     | `str \| None` | An error code describing why the charge failed, if applicable. | No       |
 
 ```python
 from decimal import Decimal
@@ -85,16 +97,18 @@ Represents a patient's saved payment method, returned in response to `REVENUE__P
 
 The cards managed by your custom processor live with your third-party payment provider — your processor is responsible for persisting them there when a card is added and deleting them when a card is removed. Canvas does not persist them for you; it asks your handler for the current list each time it needs to display saved cards, and the values you return here are rendered directly.
 
-| Attribute             |          | Type           | Description                                 |
-|-----------------------|----------|----------------|---------------------------------------------|
-| payment_method_id     | required | String         | The identifier of the saved payment method. |
-| brand                 | required | String         | The card brand (e.g. `"Visa"`).             |
-| card_holder_name      | required | String \| None | The name of the card holder.                |
-| expiration_year       | required | Integer        | The card's expiration year.                 |
-| expiration_month      | required | Integer        | The card's expiration month.                |
-| card_last_four_digits | required | String         | The last four digits of the card number.    |
-| postal_code           | optional | String \| None | The billing postal code.                    |
-| country               | optional | String \| None | The billing country.                        |
+### Attributes
+
+| Attribute               | Type          | Description                                 | Required |
+|-------------------------|---------------|---------------------------------------------|----------|
+| `payment_method_id`     | `str`         | The identifier of the saved payment method. | Yes      |
+| `brand`                 | `str`         | The card brand (e.g. `"Visa"`).             | Yes      |
+| `card_holder_name`      | `str \| None` | The name of the card holder.                | Yes      |
+| `expiration_year`       | `int`         | The card's expiration year.                 | Yes      |
+| `expiration_month`      | `int`         | The card's expiration month.                | Yes      |
+| `card_last_four_digits` | `str`         | The last four digits of the card number.    | Yes      |
+| `postal_code`           | `str \| None` | The billing postal code.                    | No       |
+| `country`               | `str \| None` | The billing country.                        | No       |
 
 ```python
 from canvas_sdk.effects.payment_processor import PaymentMethod
@@ -119,9 +133,11 @@ def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]
 
 Returns the result of adding a payment method, in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD`.
 
-| Attribute |          | Type    | Description                           |
-|-----------|----------|---------|---------------------------------------|
-| success   | required | Boolean | Whether the payment method was added. |
+### Attributes
+
+| Attribute | Type   | Description                           | Required |
+|-----------|--------|---------------------------------------|----------|
+| `success` | `bool` | Whether the payment method was added. | Yes      |
 
 ```python
 from typing import Any
@@ -137,9 +153,11 @@ def add_payment_method(self, token: str, patient: Patient, **kwargs: Any) -> Add
 
 Returns the result of removing a payment method, in response to `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE`.
 
-| Attribute |          | Type    | Description                             |
-|-----------|----------|---------|-----------------------------------------|
-| success   | required | Boolean | Whether the payment method was removed. |
+### Attributes
+
+| Attribute | Type   | Description                             | Required |
+|-----------|--------|-----------------------------------------|----------|
+| `success` | `bool` | Whether the payment method was removed. | Yes      |
 
 ```python
 from canvas_sdk.effects.payment_processor import RemovePaymentMethodResponse
