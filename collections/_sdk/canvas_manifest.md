@@ -4,7 +4,7 @@ excerpt: "Reference for every field in a plugin's CANVAS_MANIFEST.json"
 hidden: false
 ---
 
-Every plugin has a `CANVAS_MANIFEST.json` file at the root of its package. The manifest names the plugin, lists the handlers and applications Canvas loads, and declares the variables, URL permissions, and custom data namespace the plugin needs. It can also describe how the plugin is listed in the plugin catalog.
+Every plugin has a `CANVAS_MANIFEST.json` file at the root of its package. The manifest names the plugin, lists the handlers and applications Canvas loads, and declares the variables, URL permissions, and custom data namespace the plugin needs. It can also describe how the plugin is listed in the Canvas Platform plugin catalog.
 
 The manifest is validated against a JSON schema when you run [`canvas validate`](/sdk/canvas_cli/#canvas-validate), [`canvas validate-manifest`](/sdk/canvas_cli/#canvas-validate-manifest), or [`canvas install`](/sdk/canvas_cli/#canvas-install). Unknown top-level keys and unknown component types fail validation.
 
@@ -74,7 +74,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `url_permissions` | array | No | External URLs the plugin's iframes may load, and what each may do. See [URL permissions](#url-permissions). |
 | `origins` | object | No | Legacy form of `url_permissions`. |
 | `custom_data` | object | No | The custom data namespace the plugin uses. See [Custom data](#custom-data). |
-| `catalog` | object | No | How the plugin is listed in the Canvas plugin catalog. See [Catalog](#catalog). |
+| `catalog` | object | No | How the plugin is listed in the Canvas Platform plugin catalog. See [Catalog](#catalog). |
 | `references` | array of strings | No | Links to related documentation or resources. |
 | `diagram` | string or boolean | No | Path to an architecture or workflow diagram, or `false`. |
 
@@ -318,7 +318,9 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 ## Catalog
 
-`catalog` describes the plugin's listing in the Canvas plugin catalog. The listing covers the plugin's title, where it appears in Canvas, and what changed in this version. Because the listing lives in the manifest, it ships with the code it describes and changes in the same commit.
+`catalog` describes the plugin's listing in the Canvas Platform plugin catalog. The listing gives the plugin's title, where its work shows up in Canvas, and what changed in this version. Canvas Platform reads the listing from the manifest of each revision you push, so the listing ships with the code it describes.
+
+`canvas validate` checks the block before you push, and Canvas Platform refuses a push whose listing breaks the same rules.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -387,11 +389,11 @@ Each entry in `screenshots` has these fields:
 | `alt` | string | Yes | Alternative text describing the image. Up to 200 characters. |
 | `caption` | string | No | Caption shown with the image. Up to 40 characters. |
 
-`path` and `setup_instructions` must stay inside the plugin package: they can't start with `/`, contain a `..` segment, or contain a backslash. Validation checks the form of each path, not that the file exists, so check that each file is in the package before you install.
+`path` and `setup_instructions` must stay inside the plugin package: they can't start with `/`, and they can't contain `..` or a backslash anywhere. A file name such as `shots/a..b.png` is refused too. `canvas validate` checks the form of each path, not that the file exists, so check that each file is in the package before you push.
 
 ### Release notes
 
-`release_notes` describes the current `plugin_version` only. Replace it when you bump the version instead of adding to it; each version's manifest carries its own notes.
+`release_notes` describes the current `plugin_version` only. Replace it when you bump the version instead of adding to it. Canvas Platform builds the plugin's release history from the notes in each revision you push.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
