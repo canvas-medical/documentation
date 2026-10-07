@@ -35,6 +35,19 @@ from canvas_sdk.v1.data.patient import Patient
 patients = Patient.objects.filter(first_name="Bob", last_name="Loblaw", birth_date="1960-09-22")
 ```
 
+<!-- source: discussion #294 -->
+### Retrieving only committed, recorded data
+
+To restrict a patient's clinical data to committed records, use the queryset's `committed()` method. It keeps records with a non-null `committer` and a null `entered_in_error`, and the model's default manager already excludes deleted records. For example, for a patient's observations:
+
+```python?partial=true
+from canvas_sdk.v1.data.observation import Observation
+
+observations = Observation.objects.for_patient(patient.id).committed()
+```
+
+Most clinical data models provide `committed()`. On a model that records a committer without providing it, such as [`Command`](/sdk/data-command/), filter on `committer_id__isnull=False, entered_in_error_id__isnull=True` directly.
+
 ## Accessing the patient photo
 
 The `photo_url` property returns a presigned S3 URL for securely accessing the patient's uploaded avatar photo. If the patient has no uploaded avatar, the property returns a default avatar URL instead — so the value is always safe to render without a null check.
@@ -61,6 +74,16 @@ if photo:
     print(photo.title)
 ```
 
+<!-- source: discussion #1471 -->
+## Reading uploaded images and PDFs
+
+To read uploaded files (such as insurance card images or scanned PDFs) programmatically, use the file-upload data models, which expose the underlying S3 link rather than requiring direct bucket/AWS credentials:
+
+- [`DocumentReference`](/sdk/data-document-reference/) — uploaded documents
+- [`Snapshot` / `SnapshotImage`](/sdk/data-snapshot/) — snapshot images
+- [`PatientIdentificationCard`](#patientidentificationcard) — insurance card and ID card images (`image_url` property)
+- [`MessageAttachment.file_url`](/sdk/data-message/#messageattachment) — files attached to messages
+
 ## Accessing educational materials
 
 If you have a `Patient` object, the educational materials recorded on their notes can be accessed with the `education_material` reverse relation:
@@ -70,6 +93,18 @@ from canvas_sdk.v1.data.patient import Patient
 
 patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
 educational_materials = patient.education_material.all()
+```
+
+<!-- source: discussion #1322 -->
+## Detecting patient portal registration
+
+To detect whether a patient has registered for the patient portal, use the `is_portal_registered` boolean on the patient's [`CanvasUser`](/sdk/data-canvasuser) record (via the `user` relation). Patient portal verification is a separate process from contact-point verification, so check this boolean rather than `PatientContactPoint.last_verified` for portal registration:
+
+```python
+from canvas_sdk.v1.data.patient import Patient
+
+patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+registered = patient.user.is_portal_registered
 ```
 
 ## Attributes
@@ -264,13 +299,22 @@ for addr in patient_addresses:
 | verification_token | String                                                                |
 | opted_out          | Boolean                                                               |
 
+<!-- source: discussion #504 -->
+<!-- source: discussion #614 -->
+To fetch a patient's contact points, query the patient's `telecom` relation. Use `.all()` for every contact point, or `.filter()` for a subset such as phone numbers:
+
 ```python
 from canvas_sdk.v1.data.patient import Patient
 from logger import log
 
 patient_id = "d7af3e356368446c85b40a5d6ff7288e"
 patient = Patient.objects.get(id=patient_id)
+
+# All contact points
 patient_contacts = patient.telecom.all()
+
+# Just the phone numbers
+phone_contacts = patient.telecom.filter(system="phone")
 
 for contact in patient_contacts:
    log.info(f"Patient contact: {contact.system} - {contact.value}") # phone - 5555555555

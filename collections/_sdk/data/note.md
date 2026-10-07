@@ -165,22 +165,66 @@ for note in notes:
     print(note.body)
 ```
 
-The `command_uuid` in a command object matches the `id` field of the [Command](/sdk/data-command/) model. It is present on the command lines of every note, so use it to retrieve the full command:
+#### Reading a note's commands
+
+To work with the commands in a note, use the note's `commands` relation rather than walking `body`. It returns the note's [Command](/sdk/data-command/) records in a single query, the same way for every note:
 
 ```python
 from canvas_sdk.v1.data.note import Note
-from canvas_sdk.v1.data.command import Command
 
 note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
 
-# Find all command references in the note body
-for item in note.body:
-    if item.get("type") == "command":
-        command_uuid = item["data"]["command_uuid"]
-        command = Command.objects.get(id=command_uuid)
-        print(f"Command type: {command.schema_key}")
-        print(f"Command data: {command.data}")
+for command in note.commands.all():
+    print(f"Command type: {command.schema_key}")
+    print(f"Command data: {command.data}")
 ```
+
+`commands` includes commands that were entered in error; leave them out with `note.commands.exclude(state="entered_in_error")`. Its results are not in the order the commands appear in the note. When order matters, take the order from `body`, whose command lines carry a `command_uuid` matching each command's `id`, and still load the commands in one query:
+
+```python
+from canvas_sdk.v1.data.note import Note
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+
+commands = {str(command.id): command for command in note.commands.all()}
+commands_in_order = [
+    commands[line["data"]["command_uuid"]]
+    for line in note.body
+    if line.get("type") == "command" and line["data"]["command_uuid"] in commands
+]
+```
+
+<!-- source: discussion #1022 -->
+### Fetch command details from a command lifecycle event
+
+When a command lifecycle event such as `LAB_ORDER_COMMAND__POST_COMMIT` fires, `self.target` contains the command's `id`. Use that ID to load the [`Command`](/sdk/data-command/) data record and read its `data` JSON — either to act on it inside the listener, or to expose it through a [`SimpleAPIRoute`](/sdk/handlers-simple-api-http/#simpleapiroute) endpoint your application can query later by command ID:
+
+```python
+import json
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
+from canvas_sdk.v1.data.command import Command
+
+
+class CommandAPI(SimpleAPIRoute):
+    PATH = "/routes/commands/<id>"
+
+    def authenticate(self, credentials: APIKeyCredentials) -> bool:
+        ...
+
+    def get(self) -> list[Response | Effect]:
+        command_id = self.request.path_params["id"]
+        command = Command.objects.get(id=command_id)
+
+        return [
+            JSONResponse(json.dumps(command.data), status_code=HTTPStatus.OK)
+        ]
+```
+
+Your application would then GET `https://<your-instance>.canvasmedical.com/plugin-io/api/<plugin_name>/routes/commands/<id>`.
 
 ### Retrieve the audit history for a note
 
@@ -236,11 +280,16 @@ if CurrentNoteStateEvent.objects.filter(note=note, state=NoteStates.LOCKED).exis
     pass
 ```
 
-### Retrieve the PDF of a locked note
+<!-- source: discussion #1021 -->
+### Retrieve the PDF of a locked or signed note
 
-Locking a note captures it as a PDF showing the note at the moment of the lock. The file is stored on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent) that recorded the lock, so you get there through the note's state history rather than from the note itself.
+Finalizing a note captures it as a PDF showing the note at that moment. A note type that does not require a signature is captured when the note is locked, and a note type with `is_sig_required` set is captured when the note is signed. The file is stored on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent) that recorded the lock or signature, so you reach it through the note's state history rather than from the note itself.
 
-Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the lock event's `dbid`:
+{% include alert.html type="info" content="Only notes whose note type has a <a href='/sdk/data-note/#notetypecategories'>category</a> of <code>ENCOUNTER</code>, <code>INPATIENT</code>, or <code>REVIEW</code> are captured this way; notes in any other category have no PDF. A note can be finalized more than once. Each time captures its own PDF and Canvas supersedes the earlier ones, so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version." %}
+
+#### Look up a note's PDF
+
+Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` rather than hardcoding the per-environment `dbid`, and match `object_id` against the `dbid` of the note's lock and signature events:
 
 ```python
 from canvas_sdk.v1.data import ContentType, DocumentReference, DocumentReferenceStatus
@@ -248,7 +297,7 @@ from canvas_sdk.v1.data.note import Note, NoteStates
 
 note = Note.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 
-lock_events = note.state_history.filter(state=NoteStates.LOCKED)
+finalized_events = note.state_history.filter(state__in=[NoteStates.LOCKED, NoteStates.SIGNED])
 
 content_type = ContentType.objects.filter(
     app_label="api", model="notestatechangeevent"
@@ -256,14 +305,68 @@ content_type = ContentType.objects.filter(
 
 document = DocumentReference.objects.filter(
     content_type=content_type,
-    object_id__in=[event.dbid for event in lock_events],
+    object_id__in=[event.dbid for event in finalized_events],
     status=DocumentReferenceStatus.CURRENT,
 ).first()
 
 url = document.document_url if document else None
 ```
 
-{% include alert.html type="info" content="A note can be locked more than once. Each lock captures its own PDF, and Canvas supersedes the earlier ones — so filter on <code>CURRENT</code> for the version that is in force, or drop the status filter to see every captured version. Only encounter, inpatient, and review note types are captured this way; other note types have no PDF." %}
+#### React when a PDF is captured
+
+The PDF is generated in the background after the note is locked or signed, so it does not exist yet when the state change itself fires. Listen for [`DOCUMENT_REFERENCE_CREATED`](/sdk/events/#document-references) instead. Canvas creates the note's DocumentReference once the PDF is ready, with `related_object` already pointing at the lock or signature event, so `document_url` can be read straight away:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import DocumentReference
+from canvas_sdk.v1.data.note import NoteStateChangeEvent
+from logger import log
+
+
+class NotePdfCaptured(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.DOCUMENT_REFERENCE_CREATED)
+
+    def compute(self):
+        document = DocumentReference.objects.get(id=self.event.target.id)
+        state_change = document.related_object
+        if not isinstance(state_change, NoteStateChangeEvent):
+            return []  # a document reference that is not a note PDF
+
+        log.info(f"Note {state_change.note.id} PDF: {document.document_url}")
+        return []
+```
+
+`document_url` is a presigned link that expires after an hour. To export the PDF to an external system, either fetch the file within that window, or send only the note ID and let your application request a fresh link later through a [SimpleAPI](/sdk/handlers-simple-api-http/) endpoint you stand up in Canvas.
+
+<!-- source: discussion #1533 -->
+### Determine if a note is signed
+
+For note types where `is_sig_required` is `True`, the terminal state is `SGN` (Signed) rather than `LKD` (Locked). To check whether a note is currently signed, retrieve its [`CurrentNoteStateEvent`](/sdk/data-note/#currentnotestateevent) and compare against `NoteStates.SIGNED`:
+
+```python
+from canvas_sdk.v1.data.note import Note, CurrentNoteStateEvent, NoteStates
+
+note = Note.objects.get(id="89992c23-c298-4118-864a-26cb3e1ae822")
+current_state = CurrentNoteStateEvent.objects.filter(note=note).first()
+is_signed = current_state is not None and current_state.state == NoteStates.SIGNED
+```
+
+Because a note can be signed, amended, and re-signed, the full state history lives in [`NoteStateChangeEvent`](/sdk/data-note/#notestatechangeevent). To get the signer and the timestamp of the most recent signature, query for the latest `SGN` event and read its `originator` (the [`CanvasUser`](/sdk/data-canvasuser) who signed) and `created` timestamp:
+
+```python?partial=true
+from canvas_sdk.v1.data.note import NoteStateChangeEvent, NoteStates
+
+# `note` is the Note from the previous example
+sign_event = NoteStateChangeEvent.objects.filter(
+    note=note,
+    state=NoteStates.SIGNED,
+).order_by("-created").first()
+
+if sign_event:
+    signed_at = sign_event.created
+    signed_by = sign_event.originator  # CanvasUser who signed
+```
 
 ### Find all open notes
 
@@ -323,7 +426,8 @@ claim = note.get_claim()
 
 ### Get the NoteType of a given note
 
-To get the note type for a specific note, use the `note_type_version` attribute which provides access to the related `NoteType` object:
+<!-- source: discussion #1150 -->
+A note's type is available through its `note_type_version` attribute, which returns the related [NoteType](#notetype) object:
 
 ```python
 from canvas_sdk.v1.data.note import Note
@@ -406,6 +510,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | chart_section_reviews       | QuerySet[[ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)] | All chart section reviews associated with this note                                                                                                                   |
 | visual_exam_findings        | QuerySet[[VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)] | All visual exam findings associated with this note                                                                                                                       |
 | state_history       | QuerySet[[NoteStateChangeEvent](#notestatechangeevent)] | The note's state-change audit history                                                                                                                                       |
+| action_events       | QuerySet[[NoteActionEvent](/sdk/data-fax/#noteactionevent)] | Faxes of this note, with their [delivery status](/sdk/data-fax/#delivery-status) |
 | current_state       | [CurrentNoteStateEvent](#currentnotestateevent) | The note's current state event                                                                                                                                                      |
 | assessments         | QuerySet[[Assessment](/sdk/data-assessment/#assessment)] | All assessments associated with this note                                                                                                                                  |
 | goals               | QuerySet[[Goal](/sdk/data-goal/#goal)] | All goals associated with this note                                                                                                                                                          |

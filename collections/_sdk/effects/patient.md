@@ -7,12 +7,36 @@ hidden: false
 
 The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 
+Build a `Patient` with the [attributes](#attributes) you want to set, then return one of its two methods from your handler: `create()` for a new patient, or `update()` for an existing one.
+
+## Methods
+
+### create() → Effect
+
+Creates a new patient record.
+
+- `first_name` and `last_name` are required.
+- `patient_id` is optional. By default Canvas generates the patient's id; to choose it yourself, see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation).
+
+See [Creating a patient](#creating-a-patient) for an example.
+
+### update() → Effect
+
+Updates an existing patient record.
+
+- `patient_id` is required, and must be the id of an existing patient.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
+See [Updating a patient](#updating-a-patient) for an example.
+
+Both methods check that `default_location_id` and `default_provider_id`, when set, refer to an existing practice location and staff member.
+
 ## Attributes
 
 | Attribute                | Type                                        | Description                                 | Required |
 | ------------------------ | ------------------------------------------- | ------------------------------------------- | -------- |
-| `first_name`             | `str`                                       | Patient's first name                        | Yes      |
-| `last_name`              | `str`                                       | Patient's last name                         | Yes      |
+| `first_name`             | `str`                                       | Patient's first name                        | For `create()` |
+| `last_name`              | `str`                                       | Patient's last name                         | For `create()` |
 | `middle_name`            | `str` or `None`                             | Patient's middle name                       | No       |
 | `birthdate`              | `datetime.date` or `None`                   | Patient's date of birth                     | No       |
 | `prefix`                 | `str` or `None`                             | Name prefix (e.g., "Dr.", "Mr.")            | No       |
@@ -35,7 +59,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `contact_points`         | list[[PatientContactPoint](#patientcontactpoint)] or `None`       | Patient's contact information               | No       |
 | `contacts`               | list[[PatientContact](#patientcontact)] or `None`                 | The patient's contacts — emergency contacts, next-of-kin, and other related persons. See [Managing patient contacts](#managing-patient-contacts) | No       |
 | `external_identifiers`   | list[[PatientExternalIdentifier](#patientexternalidentifier)] or `None` | Patient's external identifiers              | No       |
-| `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
+| `patient_id`             | `str` or `None`                             | Patient id. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens); see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | For `update()` |
 | `addresses`              | list[[PatientAddress](#patientaddress)] or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | list[[PatientPreferredPharmacy](#patientpreferredpharmacy)] or `None`  | Patient's preferred pharmacies              | No       |
 | `metadata`               | list[[PatientMetadata](#patientmetadata)] or `None`           | Patient metadata                            | No       |
@@ -53,6 +77,9 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 | `use`         | `ContactPointUse`    | Purpose of the contact point (e.g., home, work)                   | Yes      |
 | `rank`        | `int`                | Priority order of contact methods                                 | Yes      |
 | `has_consent` | `bool` or `None`     | Whether consent has been given to use this contact method         | No       |
+
+<!-- source: discussion #1410 -->
+{% include alert.html type="info" content="If you have already validated a patient's phone or email in a prior workflow, set <code>has_consent=True</code> on the <code>PatientContactPoint</code> when creating the patient. This marks the contact point as okay to text or email and suppresses the additional 'click here' verification message that Canvas would otherwise send." %}
 
 ## PatientContact
 
@@ -136,10 +163,6 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 
 ## Implementation Details
 
-- **Creation**: Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation)
-- **Updates**: Updates existing patient records when `patient_id` is provided
-- Validates that referenced practice locations exist in the system
-- Verifies that referenced healthcare providers exist in the system
 - Structures contact information through the `PatientContactPoint` dataclass
 - Structures the patient's contacts through the `PatientContact` dataclass, added or modified per entry according to `contact_identifier` — see [Managing patient contacts](#managing-patient-contacts)
 - Structures external identifier through the `PatientExternalIdentifier` dataclass
@@ -200,7 +223,6 @@ class MyHandler(BaseHandler):
 ```
 
 ### Updating a patient
-
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier

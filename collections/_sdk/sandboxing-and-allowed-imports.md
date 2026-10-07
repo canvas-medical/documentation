@@ -21,6 +21,14 @@ Provides infrastructure for defining Abstract Base Classes (ABCs) to enforce int
 Provides functions for encoding and decoding data in base64 format, commonly used for data transmission and storage. [read more](https://docs.python.org/3/library/base64.html)
 - `b64decode`
 - `b64encode`
+- `urlsafe_b64decode`
+- `urlsafe_b64encode`
+
+##### `bisect`
+Provides functions for finding insertion points in a sorted list and inserting items while keeping it sorted. [read more](https://docs.python.org/3/library/bisect.html)
+- `bisect_left`
+- `bisect_right`
+- `insort`
 
 ##### `collections`
 Provides specialized container datatypes that extend beyond the built-in types like lists and dictionaries. [read more](https://docs.python.org/3/library/collections.html)
@@ -116,11 +124,21 @@ Provides regular expression matching operations for pattern matching and text pr
 - `DOTALL`
 - `findall`
 - `fullmatch`
+- `I`
 - `IGNORECASE`
 - `match`
 - `search`
 - `split`
 - `sub`
+
+##### `secrets`
+Provides cryptographically secure random values for tokens, verification codes, and other values that must be hard to guess. Use it instead of `random`, whose output is predictable. This module is unrelated to the plugin secrets declared in `CANVAS_MANIFEST.json`. [read more](https://docs.python.org/3/library/secrets.html)
+- `choice`
+- `compare_digest`
+- `randbelow`
+- `token_bytes`
+- `token_hex`
+- `token_urlsafe`
 
 ##### `string`
 Provides string constants and template classes for string manipulation and formatting operations. [read more](https://docs.python.org/3/library/string.html)
@@ -196,6 +214,7 @@ Django’s PostgreSQL-specific index types for advanced indexing strategies. [re
 
 ##### `django.db`
 Django’s database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
+- `DatabaseError`
 - `IntegrityError`
 
 ##### `django.db.models`
@@ -255,6 +274,7 @@ Django’s database functions for common SQL operations and window functions. [r
 - `Lag`
 - `LastValue`
 - `Lead`
+- `Length`
 - `NthValue`
 - `Ntile`
 - `PercentRank`
@@ -284,6 +304,9 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 - `ExpiredSignatureError`
 - `InvalidTokenError`
 - `PyJWKClient`
+
+<!-- source: discussion #796 -->
+`encode` can sign tokens with RS256, which some external APIs, such as Google's, require. The `cryptography` package that RS256 relies on is installed, but plugins can't import it directly.
 
 ##### `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
@@ -395,6 +418,9 @@ Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`,
 {% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
 
 {% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
+
+<!-- source: discussion #844 -->
+{% include alert.html type="info" content="<code>match</code> statements are allowed in plugin code." %}
 
 ### `extract_exc_frames()`
 
@@ -537,6 +563,11 @@ Some SDK objects declare an `__exports__` attribute listing exactly which attrib
 If there is a library or function not on this list that you wish to import in your plugin, reach out on the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
+
+<!-- source: discussion #1505 -->
+### Error monitoring
+
+Error-monitoring SDKs such as `sentry_sdk` are not available in the sandbox. Record errors and diagnostics with [plugin logging](/sdk/plugin-logs/) instead.
 
 ## Policy on Vendor-Specific Libraries:
 

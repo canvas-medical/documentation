@@ -9,7 +9,7 @@ Embedded applications render **inside a specific Canvas surface** (a tab within
 a note, the scheduling modal, or a pane pinned to a window edge) rather than as
 an icon in the app drawer. They
 are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
-register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders
+register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
 There are three kinds:
@@ -186,6 +186,8 @@ class ConditionalIntakeApp(NoteApplication):
 ### Opening by Default
 
 You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
+
+When a user opens a note from a command permalink, the note starts on the built-in Note tab instead, so the linked command is visible. Opening the note any other way still opens the default application.
 
 ```python
 from canvas_sdk.effects import Effect

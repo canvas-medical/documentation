@@ -17,7 +17,17 @@ from canvas_sdk.effects.phone_dial_configuration import (
 )
 ```
 
+Build a `PhoneDialConfiguration` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
+
 ---
+
+## Methods
+
+### apply() → Effect
+
+Makes the listed sections' numbers clickable.
+
+- `clickable_sections` is required, with at least one section.
 
 ## How it works
 
@@ -51,11 +61,11 @@ Click-to-dial also exists as an instance setting, independent of any plugin. Whe
 
 ## Attributes
 
-| Field                | Type                     | Default  | Description                                                                                                                                                              |
-|----------------------|--------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clickable_sections` | list[[PhoneDialSection](#phonedialsection)] | Required | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                     |
-| `click_handling`     | [PhoneDialClickHandling](#phonedialclickhandling) | `DEVICE` | How a click on the listed sections is handled.                                                                                                                           |
-| `dial_label`         | `str` \| `None`            | `None`   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. |
+| Attribute            | Type                                              | Description                                                                                                                                                                                                                                                                                  | Required |
+|----------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `clickable_sections` | list[[PhoneDialSection](#phonedialsection)]       | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                                                                                                                   | Yes      |
+| `click_handling`     | [PhoneDialClickHandling](#phonedialclickhandling) | How a click on the listed sections is handled. Defaults to `DEVICE`.                                                                                                                                                                                                                         | No       |
+| `dial_label`         | `str` \| `None`                                   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. Defaults to `None`. | No       |
 
 ### PhoneDialSection
 
@@ -142,7 +152,7 @@ class DialClickedNumber(BaseHandler):
         zoom_dial_url_base = self.secrets["ZOOM_DIAL_URL_BASE"]
         phone_number = self.event.context["phone_number"]
         # source names the chart section the click came from, e.g. "contact".
-        source = self.event.context["source"]
+        source = self.event.context.get("source")
         return [
             RedirectEffect(
                 url=f"{zoom_dial_url_base}?number={quote(phone_number)}",
@@ -151,7 +161,7 @@ class DialClickedNumber(BaseHandler):
         ]
 ```
 
-Declare both keys under `variables` in your plugin's `CANVAS_MANIFEST.json` so an admin can set them — an undeclared variable has nowhere to receive a value, so the secret read and the redirect both fail silently:
+Declare both keys under `variables` in your plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables) so an admin can set them — an undeclared variable has nowhere to receive a value, so the secret read and the redirect both fail silently:
 
 ```json
 {

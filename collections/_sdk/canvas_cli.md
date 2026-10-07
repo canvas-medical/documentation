@@ -55,6 +55,18 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
 - Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
 - To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
 
+<!-- source: discussion #611 -->
+## Checking the SDK/runtime version on an instance
+
+`canvas --version` reports the version of the locally installed CLI. To find the SDK/runtime version actually running on a given Canvas instance — useful when verifying that an expected SDK change is live — import `version` from `canvas_sdk.handlers.base` inside a plugin running on that instance:
+
+```python
+from canvas_sdk.handlers.base import version
+from logger import log
+
+log.info(f"SDK version: {version}")
+```
+
 ## Usage
 
 ```console
@@ -118,26 +130,56 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
-Before uploading, `canvas install` runs the same pre-flight validation as [`canvas validate`](#canvas-validate):
+**Where to run it**
+
+<!-- source: discussion #1159 -->
+- Run it from one directory **above** the plugin folder, the one that holds `CANVAS_MANIFEST.json`, and pass the folder name. If the manifest is at `extensions/encounter_list/CANVAS_MANIFEST.json`, run this from `extensions`:
+
+  ```console
+  $ canvas install encounter_list --host your-host
+  ```
+- Or run `canvas install .` from inside the plugin folder.
+- The command is `canvas install`. There is no `canvas plugin install`.
+
+**Plugin folder layout**
+
+<!-- source: discussion #1527 -->
+- Keep the manifest, the package's `__init__.py`, and the folders it references (such as `routes/` and `protocols/`) in the same directory. Class paths in the manifest, such as `my_plugin.routes.charting`, resolve from there.
+- An extra level of nesting, with the manifest outside the inner package folder, makes those paths resolve one level too deep. The plugin loads, but its SimpleAPI endpoints return an empty 404, often with nothing in `canvas logs`. If that happens, check the folder structure and that every import in the referenced modules resolves.
+
+**Validation before upload**
+
+`canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
 - [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
 - Sandbox-load validation (imports every handler in the sandbox)
 
-If the static lint reports an error, or any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin is built or uploaded, so it never reaches your instance. Run `canvas validate` first for detailed per-handler results.
+If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
 
-The CLI automatically excludes common build artifacts from the plugin bundle:
+**What gets packaged**
+
+The CLI packages every file in the plugin folder except:
 - `__pycache__` directories
 - `*.pyc` and `*.pyo` files
 - `node_modules` directories
-- Hidden files and directories (e.g., `.git`, `.env`)
+- Hidden files and directories (for example, `.git` and `.env`)
+- Symlinks
 
-To exclude additional files, create a `.canvasignore` file in your plugin directory. This file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore).
+To exclude more files, add a `.canvasignore` file:
+- Put it in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin folder.
+- It uses [.gitignore](https://git-scm.com/docs/gitignore) syntax, and its patterns match paths relative to the plugin folder.
 
-Example
 ```md
 # Exclude test files
 test_*.py
 ```
+
+The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
+
+**Troubleshooting**
+
+<!-- source: discussion #795 -->
+- **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 
 ### `canvas uninstall`
 

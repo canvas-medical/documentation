@@ -22,7 +22,7 @@ To create a new application, run the following command:
 canvas init application
 ```
 
-This will generate a boilerplate application along with a `CANVAS_MANIFEST.json` file.
+This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file.
 
 ## Step 3: Understanding the `CANVAS_MANIFEST.json` File
 
