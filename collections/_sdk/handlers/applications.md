@@ -368,14 +368,17 @@ preserved when the plugin is reinstalled or updated.
 
 ## Notification Badges
 
-You can display a notification badge — a small count — on a `global`,
-`patient_specific`, or `provider_menu_item` application: on the icon in the app
-drawer or panel (`global` / `patient_specific`, the latter when the application
-sets `show_in_panel`), or next to the label in the provider menu
-(`provider_menu_item`). A badge is useful for surfacing how many items are waiting
+You can display a notification badge — a small count — on an application in
+these scopes:
+
+- `global` and `patient_specific`: on the icon in the app drawer, or on the panel
+  when a `patient_specific` application sets `show_in_panel`.
+- `provider_menu_item`: next to the label in the provider menu.
+- `portal_menu_item`: next to the label in the patient portal menu.
+
+A badge is useful for surfacing how many items are waiting
 for attention, such as unread messages or open tasks. Applications in other scopes
-(`full_chart`, `portal_menu_item`, and the Provider Companion scopes) do not
-display badges.
+(`full_chart` and the Provider Companion scopes) do not display badges.
 
 ### Initial count on load
 
@@ -422,12 +425,26 @@ def compute_notification_badge(self) -> int | None:
     ).count()
 ```
 
+For a `portal_menu_item` application, the count is computed for the patient
+logged in to the portal. The event context carries that patient and no staff
+member:
+
+```python
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+def compute_notification_badge(self) -> int | None:
+    patient_id = self.event.context.get("patient", {}).get("id")
+    if not patient_id:
+        return None
+    return Task.objects.filter(patient__id=patient_id, status=TaskStatus.OPEN).count()
+```
+
 The badge event context contains:
 
 | Key       | Description                                                          |
 | --------- | -------------------------------------------------------------------- |
 | `staff`   | A dict with the staff `id` and `type` (present for staff-facing apps). |
-| `patient` | A dict with the patient `id` and `type` (present on a patient chart). |
+| `patient` | A dict with the patient `id` and `type` (present on a patient chart, and in the patient portal for the logged-in patient). |
 
 > **Note:** Note Applications (`NoteApplication`) do not
 > support notification badges.
