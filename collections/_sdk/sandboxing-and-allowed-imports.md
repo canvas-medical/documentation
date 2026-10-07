@@ -305,6 +305,9 @@ A library for encoding and decoding JSON Web Tokens (JWT) for secure data transm
 - `InvalidTokenError`
 - `PyJWKClient`
 
+<!-- source: discussion #796 -->
+`encode` can sign tokens with RS256, which some external APIs, such as Google's, require. The `cryptography` package that RS256 relies on is installed, but plugins can't import it directly.
+
 ##### `pydantic`
 A data validation library using Python type annotations for parsing and validating data structures. [read more](https://docs.pydantic.dev/)
 - `BaseModel`
@@ -415,6 +418,9 @@ Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`,
 {% include alert.html type="warning" content="<code>type</code> is not available in the sandbox <em>at all</em>, including the one-argument <code>type(x)</code> form used to check an object's type — it raises <code>NameError: name 'type' is not defined</code>. Use <code>isinstance(x, SomeClass)</code> to test a type, or <code>x.__class__.__name__</code> to read its name." %}
 
 {% include alert.html type="info" content="<code>@dataclass(frozen=True)</code> and <code>@dataclass(slots=True)</code> load and run fine in the sandbox — they are not forbidden." %}
+
+<!-- source: discussion #844 -->
+{% include alert.html type="info" content="<code>match</code> statements are allowed in plugin code." %}
 
 ### `extract_exc_frames()`
 
@@ -557,6 +563,11 @@ Some SDK objects declare an `__exports__` attribute listing exactly which attrib
 If there is a library or function not on this list that you wish to import in your plugin, reach out on the [Canvas developer forum](https://github.com/canvas-medical/canvas-plugins/discussions). Additional imports can often be added after a security review.
 
 The allowed imports are defined in the [Canvas Plugins repository](https://github.com/canvas-medical/canvas-plugins/blob/main/plugin_runner/sandbox.py) and are regularly updated to support common development needs while maintaining security.
+
+<!-- source: discussion #1505 -->
+### Error monitoring
+
+Error-monitoring SDKs such as `sentry_sdk` are not available in the sandbox. Record errors and diagnostics with [plugin logging](/sdk/plugin-logs/) instead.
 
 ## Policy on Vendor-Specific Libraries:
 
