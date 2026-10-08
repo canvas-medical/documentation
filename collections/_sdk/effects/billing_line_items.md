@@ -195,6 +195,8 @@ class MyHandler(BaseHandler):
 
 To remove a billing line item, build a `RemoveBillingLineItem` and return its `apply()` from your handler.
 
+When a Perform command is entered in error, Canvas removes the billing line item that the command added to the note footer. You don't need a plugin to remove it.
+
 ### Methods
 
 #### apply() → Effect
@@ -210,6 +212,8 @@ Removes the billing line item from the note's footer.
 | billing_line_item_id | String | The id of the [BillingLineItem](/sdk/data-billing-line-item/) to remove. | Yes |
 
 ### Example
+
+When a Perform command is entered in error, this handler removes every billing line item on the note that has the command's CPT code. That includes matching line items that came from other sources, such as another plugin, which Canvas doesn't remove on its own.
 
 ```python
 from canvas_sdk.effects import Effect
