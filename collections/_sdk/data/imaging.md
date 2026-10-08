@@ -110,7 +110,7 @@ url = imaging_report.document_url
 
 ## Accessing the imaging order PDF
 
-The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is printed or faxed. Until then, the order has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
+The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is faxed. Printing the order doesn't save it, so an order that has never been faxed has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
 
 ```python
 from canvas_sdk.v1.data.imaging import ImagingOrder
