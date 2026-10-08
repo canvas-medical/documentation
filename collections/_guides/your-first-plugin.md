@@ -32,8 +32,6 @@ additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 
 ## 2. Configure the Canvas CLI for your instances
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> Installing plugins with <code>credentials.ini</code> is deprecated in favor of deploying through Canvas Platform. It isn't supported as of December 14, 2026. See <a href='/sdk/canvas_cli/#moving-from-credentialsini-to-canvas-platform'>Moving from credentials.ini to Canvas Platform</a>."  %}
-
 The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If
 you've used our FHIR API, you'll be very familiar with the process for
 [registering credentials](/api/customer-authentication/). Register a separate

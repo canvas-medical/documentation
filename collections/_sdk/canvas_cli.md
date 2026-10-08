@@ -18,8 +18,6 @@ To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade 
 
 ### Configuration and Authenticating to Your Canvas Instance
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> Installing plugins directly on an instance with <code>credentials.ini</code> and <code>canvas install</code> is deprecated in favor of deploying through <a href='#canvas-platform'>Canvas Platform</a>. It isn't supported as of December 14, 2026. See <a href='#moving-from-credentialsini-to-canvas-platform'>Moving from credentials.ini to Canvas Platform</a>."  %}
-
 Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
 
 {% include alert.html type="info" content= "<b>Getting Credentials: </b>Learn how to get register a client_id and client_secret <a href='/api/customer-authentication/#registering-a-third-party-application-on-canvas'>here</a>.<br/>The Canvas CLI uses OAuth, just like the FHIR API."  %}
@@ -44,81 +42,6 @@ client_secret=localclientsecret
 You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
 
 **You are now ready to use the Canvas CLI**
-
-## Canvas Platform
-
-Canvas Platform hosts each plugin's git repository and deploys the plugin to the Canvas instances it manages. Instead of uploading a package to one instance with `canvas install`, you push the plugin's code with `canvas deploy`. Canvas Platform then rolls it out to the instances you choose.
-
-### Signing in
-
-Sign in once per machine with [`canvas login`](#canvas-login), which opens your browser. The CLI stores the session in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes it automatically. `canvas login` also lists the plugin prefix of each organization you belong to.
-
-The CLI connects to `https://platform.canvasmedical.com` by default. To use a different Canvas Platform, pass `--platform <url>` to `canvas login` or set the `CANVAS_PLATFORM_URL` environment variable. Later commands keep using the platform you last signed in to.
-
-### Plugin names
-
-A plugin deployed through Canvas Platform has a publisher-prefixed name in the form `<org prefix>__<package>`, such as `acme__intake`. The prefix decides which of your organizations publishes the plugin. Use the full name for the manifest `name`, the package folder, and the package's imports. A name can contain only lowercase letters, digits, and underscores, and the part after the prefix must start with a letter.
-
-When you're signed in, [`canvas init`](#canvas-init) adds your organization's prefix to the name for you.
-
-### Which plugins go through Canvas Platform
-
-`canvas config set`, `canvas config unset`, and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed directly on an instance. Each command decides per plugin:
-
-- If the name has no prefix, or you aren't signed in to Canvas Platform, the command goes directly to the instance.
-- Otherwise, the CLI asks Canvas Platform whether it manages the plugin. If it does, the command goes through Canvas Platform, and you name target instances with `--instance`. If it doesn't, the command goes directly to the instance named by `--host`.
-
-An instance refuses `canvas install`, `canvas uninstall`, `canvas enable`, `canvas disable`, and `canvas config set` requests made directly against a plugin that Canvas Platform manages on it. Publish new code for that plugin with `canvas deploy`, and change its variables or remove it with `--instance` while signed in.
-
-`canvas deploy`, `canvas init`, and `canvas clone` set up the plugin's repository so that git signs in to Canvas Platform's git server through the CLI. You don't need a separate git password.
-
-**Example:**
-
-```console
-$ canvas login
-$ canvas init                                   # scaffolds acme__my_cool_plugin and registers it
-$ canvas deploy my-cool-plugin/acme__my_cool_plugin --instance acme-staging
-$ canvas config set acme__my_cool_plugin API_URL=https://api.example.com --instance acme-staging
-```
-
-### Moving from `credentials.ini` to Canvas Platform
-
-Installing plugins directly on an instance with `credentials.ini` and `canvas install` is deprecated in favor of deploying through Canvas Platform. It isn't supported as of December 14, 2026. Until then, both ways work side by side on the same machine. `canvas install` prints a deprecation warning each time it runs, and other commands print a notice about the change to standard error at most once a day.
-
-To move a plugin to Canvas Platform:
-
-1. Run `canvas login`. It lists the prefix of each organization you belong to.
-2. Rename the plugin to `<org prefix>__<package>`. Update the manifest `name`, the package folder, and the package's own imports. See [Plugin names](#plugin-names).
-3. Deploy the renamed plugin with `canvas deploy <plugin dir> --instance <instance>`.
-4. Set its variables with `canvas config set <name> KEY=VALUE --instance <instance>`.
-5. Remove the plugin installed under the old name. The renamed plugin is a separate plugin, so the old one keeps running until you remove it:
-
-   ```console
-   $ canvas disable <old name> --host <instance>
-   $ canvas uninstall <old name> --host <instance>
-   ```
-
-### Using a service account in CI
-
-A CI system, such as GitHub Actions, can run the CLI against Canvas Platform without anyone signing in. Create a service account token on the Canvas Platform **Credentials** page and store it as a CI secret. Expose the secret to the job as the `CANVAS_PLATFORM_TOKEN` environment variable. To target a platform other than `https://platform.canvasmedical.com`, also set `CANVAS_PLATFORM_URL`.
-
-When `CANVAS_PLATFORM_TOKEN` is set, every command uses the service account, even on a machine where someone previously ran `canvas login`. The token doesn't expire or refresh. If Canvas Platform rejects it, the token was probably rotated or revoked on the **Credentials** page; create a new one and update the CI secret.
-
-Without a terminal, `canvas deploy` can't prompt you:
-
-- Commit your changes before deploying, or pass `--yes` to commit them with a default message. Otherwise, deploy refuses to push uncommitted changes.
-- Deploy can't answer consent requests for cross-plugin custom data access. A deployment that needs consent lists the requests with the deployment ID and exits with a non-zero status. Answer them from a terminal.
-
-**Example:**
-
-{% raw %}
-```yaml
-- name: Deploy plugin
-  env:
-    CANVAS_PLATFORM_TOKEN: ${{ secrets.CANVAS_PLATFORM_TOKEN }}
-  run: canvas deploy acme__intake --instance acme-staging --yes
-```
-{% endraw %}
 
 ## Update Notifications
 
@@ -157,13 +80,9 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 
 ## Commands
 
-- `login`: Sign in to Canvas Platform through your browser
-- `logout`: Sign out of Canvas Platform
 - `init`: Create a new plugin
-- `deploy`: Publish a plugin to Canvas Platform and deploy it
-- `clone`: Clone a plugin's repository from Canvas Platform
 - `install`: Install a plugin into a Canvas instance
-- `uninstall`: Uninstall a plugin
+- `uninstall`: Uninstall a plugin from a Canvas instance
 - `enable`: Enable a plugin from a Canvas instance
 - `disable`: Disable a plugin from a Canvas instance
 - `list`: List all plugins from a Canvas instance
@@ -171,111 +90,17 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 - `validate-manifest`: Validate the Canvas Manifest json file
 - `logs`: Listen and print log streams from a Canvas instance
 - `config list`: List plugin variables on a Canvas instance
-- `config set`: Set plugin variables
-- `config unset`: Clear plugin variable values
-
-### `canvas login`
-
-Sign in to Canvas Platform through your browser. The CLI also prints the sign-in URL, so you can finish signing in on another device when the machine has no browser. See [Canvas Platform](#canvas-platform).
-
-**Usage**:
-
-```console
-$ canvas login [OPTIONS]
-```
-
-**Options**:
-
-- `--platform TEXT`: Canvas Platform URL. Defaults to `CANVAS_PLATFORM_URL`, then the platform you last signed in to, then `https://platform.canvasmedical.com`.
-- `--help`: Show this message and exit.
-
-### `canvas logout`
-
-Sign out of Canvas Platform. This revokes the machine's session and deletes its stored tokens.
-
-**Usage**:
-
-```console
-$ canvas logout [OPTIONS]
-```
-
-**Options**:
-
-- `--platform TEXT`: Canvas Platform URL
-- `--help`: Show this message and exit.
+- `config set`: Set plugin variables on a Canvas instance
 
 ### `canvas init`
 
 Create a new plugin.
 
-When you're signed in to Canvas Platform, the CLI names the package `<org prefix>__<package>` and registers the plugin. It also creates a git repository whose `origin` remote is Canvas Platform. When you're signed out, the plugin is named from the project name you enter and isn't registered.
-
 **Usage**:
 
 ```console
-$ canvas init [OPTIONS] [PLUGIN_TYPE]
+$ canvas init [OPTIONS]
 ```
-
-**Arguments**:
-
-- `PLUGIN_TYPE`: The type of plugin to create, `handler` or `application`. Defaults to `handler`.
-
-**Options**:
-
-- `--org TEXT`: The organization that publishes the plugin, when you can publish in more than one. Without it, the CLI asks you to choose.
-- `--help`: Show this message and exit.
-
-### `canvas deploy`
-
-Publish a plugin's code to Canvas Platform and deploy it to one or more instances.
-
-The manifest `name` must be [publisher-prefixed](#plugin-names). By default, deploy:
-
-1. Registers the plugin with Canvas Platform, if it isn't registered yet.
-2. Points the repository's `origin` remote at Canvas Platform. If the plugin isn't in a git repository yet, deploy offers to create one.
-3. Commits uncommitted changes after you confirm.
-4. Pushes `HEAD` to `main` and deploys that commit.
-5. Waits for the result on each instance and exits with a non-zero status unless the deployment succeeds on every one.
-
-To update the plugin's code and its catalog listing on Canvas Platform without deploying it to any instance, pass `--push-only`. Deploy registers the plugin and pushes `HEAD` to `main` the same way, then stops and prints the `canvas deploy --ref` command that deploys the pushed commit. A publisher with no instance of its own, or a CI job, can use it to keep a plugin's listing current.
-
-The repository must be rooted at the directory that contains the plugin package. If the package is nested deeper in a larger repository, move it into its own repository or check it out with [`canvas clone`](#canvas-clone).
-
-If the deployment needs consent for cross-plugin custom data access, deploy shows each request and asks you to answer it. Under `--yes`, or without a terminal, deploy lists the requests and exits with a non-zero status without answering them.
-
-**Usage**:
-
-```console
-$ canvas deploy [OPTIONS] PLUGIN_DIR
-```
-
-**Arguments**:
-
-- `PLUGIN_DIR`: Path to the plugin package to deploy [required]
-
-**Options**:
-
-- `--instance TEXT`: Instance to deploy to. Repeat it to deploy to several instances. Without it, deploy targets the only instance you can deploy to, or lists the choices when there are several.
-- `--ref TEXT`: Deploy a branch, tag, or commit that's already pushed, without pushing.
-- `--no-push`: Deploy the pushed `main` branch as-is, without pushing `HEAD` first.
-- `--push-only`: Push `HEAD` to `main` without deploying it to any instance. Can't be combined with `--instance`, `--ref`, or `--no-push`.
-- `-y, --yes`: Commit uncommitted changes without prompting, using a default commit message. This doesn't approve consent requests.
-- `--help`: Show this message and exit.
-
-### `canvas clone`
-
-Clone a plugin's repository from Canvas Platform, with `origin` and git sign-in already set up so you can run `canvas deploy`.
-
-**Usage**:
-
-```console
-$ canvas clone [OPTIONS] NAME [DIRECTORY]
-```
-
-**Arguments**:
-
-- `NAME`: Name of the plugin to clone, such as `acme__intake` [required]
-- `DIRECTORY`: Where to clone it. Defaults to a directory named after the plugin.
 
 **Options**:
 
@@ -304,8 +129,6 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 - `--help`: Show this message and exit.
 
 **Notes**:
-
-`canvas install` uploads the plugin to the instance directly. This is deprecated and isn't supported as of December 14, 2026, so the command prints a deprecation warning each time it runs. Use [`canvas deploy`](#canvas-deploy) to publish plugins through Canvas Platform instead. See [Moving from `credentials.ini` to Canvas Platform](#moving-from-credentialsini-to-canvas-platform).
 
 **Where to run it**
 
@@ -360,9 +183,7 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 
 ### `canvas uninstall`
 
-Uninstall a plugin.
-
-For a plugin Canvas Platform manages, an uninstall deployment removes it from each instance you name with `--instance`, which is required. For any other plugin, the CLI removes it from the instance directly. See [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
+Uninstall a plugin from a Canvas instance.
 
 **Usage**:
 
@@ -372,13 +193,12 @@ $ canvas uninstall [OPTIONS] NAME
 
 **Arguments**:
 
-- `NAME`: Plugin name to uninstall [required]
+- `NAME`: Plugin name to delete [required]
 
 **Options**:
 
-- `--instance TEXT`: Instance to uninstall from. Repeat it to uninstall from several instances.
-- `--force`: Uninstall an enabled plugin from an instance directly
-- `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform doesn't manage
+- `--force`: Force uninstallation of the plugin
+- `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
 ### `canvas enable`
@@ -654,11 +474,7 @@ $ canvas config list my_plugin
 
 ### `canvas config set`
 
-Set or update one or more plugin variables. Pass one or more `KEY=value` pairs as positional arguments.
-
-For a plugin Canvas Platform manages, the CLI stores the values in Canvas Platform, and a configure deployment applies them to the running plugin. Without `--instance`, the command targets the only instance the plugin is installed on that you can configure. An instance where the plugin isn't installed yet receives the stored values when the plugin is next deployed there.
-
-For any other plugin, the CLI writes the values to the instance directly, and each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`.
+Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
 
 **Usage**:
 
@@ -693,39 +509,7 @@ $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
 
 **Options**:
 
-- `--instance TEXT`: Instance to configure, for a plugin Canvas Platform manages. Repeat it to configure several instances.
-- `--secret TEXT`: For a plugin Canvas Platform manages, set a variable that no revision of the manifest declares, as sensitive, e.g. Key=value. Repeatable.
-- `--variable TEXT`: For a plugin Canvas Platform manages, set a variable that no revision of the manifest declares, as non-sensitive, e.g. Key=value. Repeatable.
-- `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform doesn't manage
+- `--host TEXT`: Canvas instance to connect to
 - `--help`: Show this message and exit.
 
-> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag of a declared variable.
-
-### `canvas config unset`
-
-Clear one or more plugin variable values.
-
-For a plugin Canvas Platform manages, the CLI clears the values in Canvas Platform, and a configure deployment removes them from the running plugin. Without `--instance`, the command targets the only instance the plugin is installed on that you can configure. For any other plugin, the CLI sets each value to empty on the instance directly.
-
-**Usage**:
-
-```console
-$ canvas config unset [OPTIONS] PLUGIN KEYS...
-```
-
-**Example**:
-
-```console
-$ canvas config unset acme__intake API_TOKEN --instance acme-staging
-```
-
-**Arguments**:
-
- - `PLUGIN`: Plugin name to clear variables for
- - `KEYS...`: Variable keys to clear, e.g. API_TOKEN
-
-**Options**:
-
-- `--instance TEXT`: Instance to configure, for a plugin Canvas Platform manages. Repeat it to configure several instances.
-- `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform doesn't manage
-- `--help`: Show this message and exit.
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.
