@@ -52,15 +52,19 @@ version here.
 
 Using the [Canvas CLI](/sdk/canvas_cli/), create an application from a
 template using `canvas init application`. After providing a name, the Canvas
-CLI will create a directory with your application inside it.
+CLI will create a directory with your application inside it. If you're signed in
+to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform),
+the directory is named with your organization's prefix, such as `acme__my_smart_app`.
+The application is also registered with Canvas Platform.
 
 ```bash
 dev@canvas:plugins$ canvas init application
   [1/1] project_name (My Cool Application): My Smart App
-Project created in /Users/dev/src/plugins/my_smart_app
+Project created in /Users/dev/src/plugins/acme__my_smart_app
+Registered acme__my_smart_app with Canvas Platform.
 
-dev@canvas:plugins$ tree my_smart_app/
-my_smart_app/
+dev@canvas:plugins$ tree acme__my_smart_app/
+acme__my_smart_app/
 ├── CANVAS_MANIFEST.json
 ├── README.md
 ├── applications
@@ -149,8 +153,18 @@ class MyApplication(Application):
 ```
 
 That's all the plugin work we need to do in order to create a launcher for the
-SMART application. Install the plugin into your Canvas instance, navigate to a
-patient's chart, and choose your application from the launcher.
+SMART application. Deploy the plugin to your Canvas instance with
+[`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), navigate to a patient's chart,
+and choose your application from the launcher.
+
+```console
+$ canvas deploy acme__my_smart_app --instance <instance>
+```
+
+Canvas Platform hosts a git repository for each plugin, rooted at the folder that
+contains `acme__my_smart_app`. The first deploy offers to create that repository,
+so if the folder holds other projects, move the application into a folder of its
+own first.
 
 ## Executing the launch sequence
 

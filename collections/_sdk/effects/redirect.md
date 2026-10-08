@@ -78,7 +78,7 @@ Both steps are required, and both default to "blocked": if you don't **declare**
 Set a value from the CLI with your shell's newline quoting so each entry stays on its own line (see [`canvas config set`](/sdk/canvas_cli/#canvas-config-set)):
 
 ```console
-$ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+$ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient' --instance acme-staging
 ```
 
 Non-allowlisted destinations are dropped, and the platform logs only the plugin name and the blocked host (never the full URL/path). Protocol-relative (`//host`) and backslash (`/\host`) targets are always rejected.
