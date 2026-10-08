@@ -1,49 +1,53 @@
 ---
 title: "Embedded Applications"
 slug: "handlers-embedded-applications"
-excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, or dock a persistent pane to a window edge."
+excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, dock a persistent pane to a window edge, or launch from the provider menu or panel bar."
 hidden: false
 ---
 
-Embedded applications render **inside a specific Canvas surface** (a tab within
-a note, the scheduling modal, or a pane pinned to a window edge) rather than as
-an icon in the app drawer. They
-are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
+Each embedded application belongs to **a specific Canvas surface**, such as a
+note, the scheduling modal, or the provider side menu. Embedded applications are
+ordinary [handlers](/sdk/handlers-basehandler/). You subclass a base class,
 register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
-There are three kinds:
+There are five kinds:
 
-| Base class            | Surface                                                  |
-|-----------------------|----------------------------------------------------------|
-| `NoteApplication`     | A tab within a patient's note                            |
-| `SchedulingApplication` | Replaces the built-in scheduling modal at every entry point |
-| `DockedApplication` | A persistent pane pinned to a window edge, always visible |
+| Base class                | Surface                                                  |
+|---------------------------|----------------------------------------------------------|
+| [`NoteApplication`](#note-applications)         | A tab within a patient's note                            |
+| [`SchedulingApplication`](#scheduling-applications)   | Replaces the built-in scheduling modal at every entry point |
+| [`DockedApplication`](#docked-applications)       | A persistent pane pinned to a window edge, always visible |
+| [`ProviderMenuApplication`](#provider-menu-applications) | An entry in the provider side menu (the navigation sidebar, also called the hamburger menu) |
+| [`PanelApplication`](#panel-applications)        | An entry in the panel bar or the app drawer              |
 
 ## How embedded applications work
 
 Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one
-by subclassing `NoteApplication`, `SchedulingApplication`, or `DockedApplication`
-and registering it under `handlers` in your `CANVAS_MANIFEST.json` — everything
-else is inherited from that parent class.
+by subclassing one of the base classes above and registering it under `handlers`
+in your `CANVAS_MANIFEST.json`. The surface comes from that parent class.
 
 Because the parent class defines the behavior, there's very little to configure:
 
-- The **surface** comes from the class you inherit — `NoteApplication` renders as
-  a tab in a note, `SchedulingApplication` replaces the scheduling modal, and
-  `DockedApplication` pins a persistent pane to a window edge. You don't set a
-  `scope` or an `icon`.
-- Canvas renders Note and Scheduling Applications **on demand**: when a note opens
-  or a scheduling action is triggered, Canvas asks which embedded application is
-  installed for that surface, then renders what your handler returns. A Docked
-  Application is the exception: it stays mounted at all times instead of rendering
-  on demand. None of the three are persisted as drawer applications, so they don't
-  appear in the app drawer or under Plugins_IO > Applications.
+- The **surface** comes from the class you inherit. You don't set a `scope`. The
+  provider menu and the panel bar each take a few extra class attributes, such as
+  an icon URL, described in their own sections below.
+- When Canvas renders each kind:
+  - **Note and Scheduling Applications** render on demand. When a note opens or a
+    scheduling action is triggered, Canvas asks which embedded application is
+    installed for that surface, then renders what your handler returns.
+  - **Docked Applications** stay mounted at all times.
+  - **Provider Menu and Panel Applications** are fetched when their menu loads and
+    refreshed as the user navigates.
+- Embedded applications create no application record, so they don't appear under
+  Plugins_IO > Applications.
+- Only a Panel Application can appear in the app drawer, as described in
+  [Panel Applications](#panel-applications).
 - If no embedded application is installed for a surface, Canvas falls back to its
-  built-in behavior — an unmodified note, or the built-in scheduling modal.
+  built-in behavior: an unmodified note, or the built-in scheduling modal.
 
-Since the surface and scope are inherited from the parent class, register these
-under `handlers` rather than `applications`.
+Since the surface is inherited from the parent class, register these under
+`handlers` rather than `applications`.
 
 ## Note Applications
 
@@ -632,6 +636,329 @@ mount it as a docked pane.
       {
         "class": "my_plugin.apps.task_dock:TaskDock",
         "description": "Open task list docked to the right edge."
+      }
+    ]
+  }
+}
+```
+
+## Provider Menu Applications
+
+A provider menu application adds an entry to the **provider side menu**, the
+navigation sidebar also called the hamburger menu. A provider can open the menu
+from any page in the EHR. Use one when a plugin needs a launch point that isn't
+tied to a patient chart or a note.
+
+### Implementing a Provider Menu Application
+
+Subclass `ProviderMenuApplication` and implement `on_open()` to return the effect
+that runs when the entry is clicked, typically a
+[`LaunchModalEffect`](/sdk/layout-effect/#modals):
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import MenuPosition, ProviderMenuApplication
+
+
+class CareGaps(ProviderMenuApplication):
+    """Provider menu entry that opens the care-gaps worklist."""
+
+    NAME = "Care gaps"
+    IDENTIFIER = "my_plugin__care_gaps"
+    MENU_POSITION = MenuPosition.BOTTOM
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the worklist when the menu entry is clicked."""
+        return LaunchModalEffect(
+            url="https://care-gaps.example.com/worklist",
+            title="Care gaps",
+        ).apply()
+```
+
+Configure the entry with these class attributes:
+
+| Attribute       | Required | Description |
+|-----------------|----------|-------------|
+| `NAME`          | Required | The label shown for the menu entry. |
+| `IDENTIFIER`    | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
+| `MENU_POSITION` | Optional | The group the entry joins, as a [`MenuPosition`](#menuposition) value. Defaults to `MenuPosition.TOP`. |
+| `ICON_URL`      | Optional | Not displayed. The provider menu shows only the `NAME` label, so setting this has no visible effect. |
+| `PRIORITY`      | Optional | An integer that orders entries within a group. Lower values appear first. Entries sort together with `provider_menu_item` drawer applications, which are ordered by their `menu_order` manifest field. Defaults to `0`. |
+
+{% include alert.html type="info" content="<b>Don't confuse <code>ProviderMenuApplication</code> with the <code>provider_menu_item</code> drawer scope.</b> A <code>ProviderMenuApplication</code> is a handler registered under <code>handlers</code>, configured with Python class attributes such as <code>MENU_POSITION</code>. <code>provider_menu_item</code> is a manifest scope for a drawer application in the <code>applications</code> array, configured with manifest fields such as <code>icon</code> (see <a href='/sdk/handlers-applications/#application-scopes'>Application Scopes</a>). Both place an entry in the provider menu, and they can coexist." %}
+
+### MenuPosition
+
+`MenuPosition` is an enum of the two groups in the provider menu:
+
+| Name     | Value    | Group                       |
+|----------|----------|-----------------------------|
+| `TOP`    | `top`    | Top of the provider menu    |
+| `BOTTOM` | `bottom` | Bottom of the provider menu |
+
+Any other `MENU_POSITION` value raises a `ValueError` when Canvas loads the menu.
+
+### Visibility
+
+Provider menu and panel applications decide whether their entry appears by
+overriding `visible()`. Return `True` to show the entry and `False` to hide it.
+The default returns `True`, so the entry appears for every user on every page.
+
+Canvas calls `visible()` when the menu loads and again each time the user
+navigates to another page, so an entry can appear on some pages and not others.
+`on_context_change()` is separate: it runs only while your application is open,
+not each time the menu refreshes its entries.
+
+`visible()` reads the page and the user from `self.event.context`:
+
+```python?partial=true
+# On a patient chart
+{
+    "user": {"type": "Staff", "id": "4150cd20de8a470aa570a852859ac87e"},
+    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35",
+    "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
+}
+
+# On any other page
+{
+    "user": {"type": "Staff", "id": "4150cd20de8a470aa570a852859ac87e"},
+    "url": "/schedule",
+}
+```
+
+| Key       | Description |
+|-----------|-------------|
+| `user`    | The signed-in user. `id` is the [Staff](/sdk/data-staff/) id. |
+| `url`     | The path of the current page, without the domain. See [Pages a pane sees](#pages-a-pane-sees) for the paths Canvas sends. |
+| `patient` | Present only on a patient chart. `id` is the patient's id. |
+
+Show the entry only on patient charts:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only while a patient chart is open."""
+    return self.event.context.get("patient") is not None
+```
+
+Show the entry only to staff with a given role, using the
+[Staff](/sdk/data-staff/) data model:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import ProviderMenuApplication
+from canvas_sdk.v1.data import Staff
+
+ALLOWED_ROLE_CODES = ["MD", "NP"]
+
+
+class CareGaps(ProviderMenuApplication):
+    """Provider menu entry that only prescribers can see."""
+
+    NAME = "Care gaps"
+    IDENTIFIER = "my_plugin__care_gaps"
+
+    def visible(self) -> bool:
+        """Show the entry only to staff who hold an allowed role."""
+        staff_id = self.event.context.get("user", {}).get("id")
+        if not staff_id:
+            return False
+
+        return Staff.objects.filter(
+            id=staff_id,
+            roles__internal_code__in=ALLOWED_ROLE_CODES,
+        ).exists()
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the worklist, or an access message for staff without a role."""
+        if not self.visible():
+            return LaunchModalEffect(
+                content="<p>You don't have access to Care gaps.</p>",
+                title="Care gaps",
+            ).apply()
+
+        return LaunchModalEffect(
+            url="https://care-gaps.example.com/worklist",
+            title="Care gaps",
+        ).apply()
+```
+
+Role codes come from your instance's staff role setup, so use the
+`internal_code` values your instance's [staff roles](/sdk/data-staff/#staffrole)
+carry. To allow a fixed list
+of people instead, compare `staff_id` against a set of Staff ids.
+
+{% include alert.html type="warning" content="<b>Hiding an entry only removes it from the menu.</b> Canvas doesn't call <code>visible()</code> when an application opens, so a user who has a link to it can still open it. An open application's URL carries its identifier, base64-encoded, as <code>#application=&lt;encoded identifier&gt;</code>, and loading that URL runs <code>on_open()</code> directly. If the content itself must be restricted, run the same check in <code>on_open()</code> and return a message instead of the content when it fails. The example above does this by calling <code>self.visible()</code> from <code>on_open()</code>, which works because the open event carries the same <code>user</code> context." %}
+
+### Badges
+
+Override `compute_notification_badge()`, inherited from `Application` and
+described under
+[Notification Badges](/sdk/handlers-applications/#notification-badges), to show a
+count on the entry. Return a non-negative integer, or `None` (the default) for no
+badge. A count of `0` shows no badge.
+
+Canvas computes the count when the menu loads, not on each navigation. To change
+the count after load, emit an
+[`ApplicationNotificationBadge`](/sdk/effect-application-notification-badge/)
+effect for the application's `identifier`, as described under
+[Live updates](/sdk/handlers-applications/#live-updates).
+
+### Manifest Configuration
+
+Register your provider menu application under the `handlers` section of your
+`CANVAS_MANIFEST.json`:
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.care_gaps:CareGaps",
+        "description": "Care-gaps worklist in the provider menu."
+      }
+    ]
+  }
+}
+```
+
+## Panel Applications
+
+A panel application adds an entry beside the panel buttons, both inside and
+outside patient charts. By default, the entry appears in the app drawer with its
+icon and name, alongside drawer applications. Set `SHOW_IN_DRAWER = False` to
+show the icon directly in the panel bar instead. The panel bar shows only the
+icon, with no label, so every panel application sets an `ICON_URL`.
+
+### Implementing a Panel Application
+
+Subclass `PanelApplication`, set `ICON_URL`, and implement `on_open()` to return
+the effect that runs when the icon is clicked:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import PanelApplication
+
+
+class Inbox(PanelApplication):
+    """Panel bar entry that opens the messaging inbox."""
+
+    NAME = "Inbox"
+    IDENTIFIER = "my_plugin__inbox"
+    ICON_URL = "https://assets.example.com/inbox-icon.png"
+    SHOW_IN_DRAWER = False
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the inbox when the panel icon is clicked."""
+        return LaunchModalEffect(
+            url="https://inbox.example.com",
+            title="Inbox",
+        ).apply()
+```
+
+Configure the entry with these class attributes:
+
+| Attribute        | Required | Description |
+|------------------|----------|-------------|
+| `NAME`           | Required | The entry's name, shown under the icon in the app drawer. The panel bar shows only the icon. |
+| `ICON_URL`       | Required | The icon shown for the entry, as an `https://` URL or a `data:` URI. A path to a file in your plugin package does not work. See [Panel Icons](#panel-icons). |
+| `IDENTIFIER`     | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
+| `SHOW_IN_DRAWER` | Optional | When `True` (the default), the entry appears in the app drawer. When `False`, the icon shows directly in the panel bar. |
+| `PRIORITY`       | Optional | An integer that orders entries. Lower values appear first. Entries sort together with drawer applications, which are ordered by their `panel_priority` manifest field. Defaults to `0`. |
+
+A `PanelApplication` subclass without an `ICON_URL` raises `ImproperlyConfigured`
+when the class is defined, so the plugin fails to load rather than showing an
+entry with nothing to click. To share behavior across several panel entries,
+define an intermediate base class with `abstract = True`. That class may omit
+`ICON_URL`, but each subclass of it must set one:
+
+```python?partial=true
+class InboxBase(PanelApplication):
+    abstract = True
+
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(url="https://inbox.example.com").apply()
+
+
+class TeamInbox(InboxBase):
+    NAME = "Team inbox"
+    ICON_URL = "https://assets.example.com/team-inbox-icon.png"
+```
+
+Panel applications support `visible()` and notification badges as described
+under [Visibility](#visibility) and [Badges](#badges).
+
+### Panel Icons
+
+Canvas uses the `ICON_URL` string as the icon's image source, exactly as you set
+it. This differs from the `icon` field of a drawer application in the manifest,
+which is a path to a file in your plugin package that Canvas uploads and stores
+when the plugin is installed. A `PanelApplication` creates no application record,
+so nothing uploads its icon, and a package path such as `assets/inbox.png`
+doesn't load.
+
+`ICON_URL` takes either of these:
+
+- **An `https://` URL** to an image hosted outside Canvas:
+
+  ```python?partial=true
+  ICON_URL = "https://assets.example.com/inbox-icon.png"
+  ```
+
+- **A `data:` URI** that holds the image itself, which keeps the icon inside your
+  plugin code. An SVG can be written inline with its special characters
+  percent-encoded (`<` as `%3C`, `>` as `%3E`, `#` as `%23`):
+
+  ```python?partial=true
+  ICON_URL = (
+      "data:image/svg+xml,"
+      "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E"
+      "%3Ccircle cx='12' cy='12' r='10' fill='%23336699'/%3E"
+      "%3C/svg%3E"
+  )
+  ```
+
+  A PNG works as a base64-encoded `data:image/png;base64,...` string.
+
+Canvas has no fallback for an icon that fails to load, so a broken URL shows a
+broken image in the panel bar. Host the image somewhere that stays available.
+
+### Patient Charts and Other Pages
+
+A panel application has one scope for every page, so it has no equivalent of a
+drawer application's `patient_specific` and `global` scopes. Its entry appears
+in the panel bar on patient charts and on every other page unless `visible()`
+says otherwise. Its context includes a `patient` only on a patient chart, so
+check for one to choose where the entry appears:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only on patient charts, like a patient_specific application."""
+    return self.event.context.get("patient") is not None
+```
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only outside patient charts, like a global application."""
+    return self.event.context.get("patient") is None
+```
+
+To show the entry on every page, leave `visible()` as it is.
+
+### Manifest Configuration
+
+Register your panel application under the `handlers` section of your
+`CANVAS_MANIFEST.json`:
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.inbox:Inbox",
+        "description": "Messaging inbox in the panel bar."
       }
     ]
   }
