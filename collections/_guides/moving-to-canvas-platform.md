@@ -41,14 +41,14 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
   Acme Health (acme): plugin prefix acme__
 ```
 
-`canvas login` lists each organization you belong to and its plugin prefix. The prefix you choose for a plugin decides which organization publishes it.
+`canvas login` lists each organization you belong to and its plugin prefix. The prefix you choose for a plugin decides which organization publishes it. Later, `canvas whoami` shows the same list, along with the platform the CLI is using and what you can do in each organization.
 
 ### 2. Rename the plugin with the prefix
 
 Rename the plugin to `<org prefix>__<package>` in three places:
 
 - the manifest `name`: `"name": "acme__intake"`
-- the package folder: `intake/` becomes `acme__intake/`
+- the package folder: `intake/` becomes `acme__intake/`. `canvas deploy` refuses a folder that does not match the manifest `name`, before it commits or pushes anything
 - every import and class path that names the package, including the handler and application paths in `CANVAS_MANIFEST.json`: `intake.handlers.events:Handler` becomes `acme__intake.handlers.events:Handler`
 
 If the plugin declares [`custom_data`](/sdk/canvas_manifest/#custom-data):
