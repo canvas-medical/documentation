@@ -330,7 +330,7 @@ Three things the effect does not do:
 
 The user's avatar and name, and the **Sign out** button, are always rendered and cannot be hidden.
 
-Because this is an allow-list rather than a block-list, it does not pick up native items added in future Canvas releases. If a new item ships and you want it visible, add it to your list — otherwise it stays hidden on your instance. For example, a plugin whose list predates `GOOGLE_CALENDAR` hides the **Google Calendar** item until you add it.
+Because this is an allow-list rather than a block-list, it does not pick up native items added in future Canvas releases. If a new item ships and you want it visible, add it to your list — otherwise it stays hidden on your instance.
 
 #### When the allow-list is not applied
 
@@ -375,7 +375,7 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | HELP_CENTER                 | Open the Canvas help center in a new tab                       |
 | GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
 
-`GOOGLE_CALENDAR` renders only on instances with Google Calendar sync turned on.
+Google Calendar sync is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
 ### Hiding the Schedule item
 
