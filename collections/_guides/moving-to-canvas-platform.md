@@ -108,7 +108,7 @@ Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship c
 
 ## Move CI
 
-A CI job signs in as a service account. An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform. Its token is shown once and lasts a year; store it as a CI secret, expose it as `CANVAS_PLATFORM_TOKEN`, and delete the instance's `client_id` and `client_secret` from CI:
+CI/CD pipelines are supported through service accounts. A service account belongs to your organization rather than to a person, so a pipeline keeps deploying when the person who set it up leaves, and Canvas Platform's audit log names the account behind each deploy. An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform, with the Plugin developer and Deploy manager roles the pipeline needs. Its token is shown once and lasts a year; store it as a CI secret, expose it as `CANVAS_PLATFORM_TOKEN`, and delete the instance's `client_id` and `client_secret` from CI:
 
 ```yaml
 - run: pip install canvas
@@ -117,7 +117,7 @@ A CI job signs in as a service account. An Organization admin, Plugin developer 
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-`--yes` commits any uncommitted changes with the default message. A deploy that needs consent for custom data access exits non-zero and lists the requests, so answer those from a terminal.
+`--yes` commits any uncommitted changes with the default message. A deploy that needs consent for custom data access exits non-zero and lists the requests, so answer those from a terminal. [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) covers rotating and revoking the token.
 
 ## Other machines and teammates
 

@@ -28,7 +28,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
   Acme Health (acme): plugin prefix acme__
 ```
 
-`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it.
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
 A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
 
@@ -36,17 +36,26 @@ A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org p
 
 **You are now ready to use the Canvas CLI.** Continue with [`canvas init`](#canvas-init) and [`canvas deploy`](#canvas-deploy).
 
-### Signing in from CI
+### Service accounts for CI/CD
 
-A CI job (GitHub Actions, for example) signs in as a service account rather than a person. An organization admin, plugin developer or deploy manager creates one on the Credentials page in Canvas Platform; its token is shown once and lasts a year. Store it as a CI secret and expose it to the job as `CANVAS_PLATFORM_TOKEN`:
+The Canvas CLI supports service accounts for automated pipelines such as GitHub Actions, GitLab CI or any other CI/CD system. A service account is an identity that belongs to your organization rather than to a person, so a pipeline that publishes and deploys plugins keeps working when the person who set it up leaves, and Canvas Platform's audit log names the service account behind each push and deploy. A pipeline signs in with the account's token instead of `canvas login`, which needs a browser.
+
+**Create a service account.** An organization admin, plugin developer or deploy manager creates one on the Credentials page in Canvas Platform. A service account can hold the plugin developer and deploy manager roles, and never more than the person creating it holds: a plugin developer cannot create an account that deploys. Its token is shown once and is valid for a year.
+
+**Use it in a pipeline.** Store the token as a secret in your CI/CD system and expose it to the job as the `CANVAS_PLATFORM_TOKEN` environment variable. No `canvas login` step is needed:
 
 ```yaml
+- run: pip install canvas
 - run: canvas deploy my-plugin/acme__my_plugin --instance acme-staging --yes
   env:
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session. Rotating or revoking the account on the Credentials page ends the token, and the CLI says so on its next request.
+- When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
+- `--yes` commits uncommitted changes without prompting. A deployment that needs consent for another plugin's custom data exits non-zero and lists the requests, because only a person at a terminal answers those.
+- `CANVAS_PLATFORM_URL` points the job at a platform other than https://platform.canvasmedical.com.
+
+**Rotate or revoke it.** The token does not refresh. Rotating it on the Credentials page ends the old token, and revoking the service account ends it for good; either way the CLI's next request says that Canvas Platform did not accept `CANVAS_PLATFORM_TOKEN`. `canvas logout` signs out only a browser session and leaves the token alone.
 
 ### Instance API credentials (`credentials.ini`): deprecated
 
@@ -163,7 +172,7 @@ $ canvas login [OPTIONS]
 
 ### `canvas logout`
 
-Revoke this machine's Canvas Platform session and delete its stored tokens.
+Revoke this machine's Canvas Platform session and delete its stored tokens. A [service account token](#service-accounts-for-cicd) in `CANVAS_PLATFORM_TOKEN` is left alone, and the command says that commands still act as that account.
 
 **Usage**:
 
