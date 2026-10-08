@@ -21,7 +21,7 @@ The Canvas CLI signs in to [Canvas Platform](https://platform.canvasmedical.com)
 | Uninstall | `canvas uninstall <name> --host <instance>` | `canvas uninstall <name> --instance <instance>` |
 | Code history | Whatever was last uploaded | Every pushed commit, in the plugin's repository on Canvas Platform |
 
-`canvas install` prints a deprecation warning on every run, and every other command reminds you about the change once a day.
+`canvas install` prints a deprecation warning on every run, and at most once a day any command, `canvas install` included, reminds you about the change.
 
 ## Before you start
 
@@ -102,7 +102,7 @@ $ canvas deploy intake-plugin/acme__intake --instance acme-staging
 $ canvas uninstall intake --host acme-staging
 ```
 
-`canvas deploy` waits for each instance's outcome and exits non-zero unless every instance succeeds.
+`canvas deploy` waits up to 300 seconds for each instance's outcome and exits non-zero unless every instance succeeds in that time.
 
 Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship changes with `canvas deploy`.
 

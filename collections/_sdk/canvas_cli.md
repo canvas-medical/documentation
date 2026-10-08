@@ -88,7 +88,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Deprecation notices
 
-`canvas install` prints a deprecation warning to standard error on every run. Every other command, at most once a day, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning on every run. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
 
 ### Which plugins go through Canvas Platform
 
@@ -97,7 +97,7 @@ You can define your default host with `is_default=true`. If no default is explic
 - A name without a prefix, or a machine that is not signed in, goes straight to the instance.
 - Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
 
-`--instance` names the instances for a plugin Canvas Platform manages, and `--host` names an instance for one it does not; `--host` is refused for a managed plugin. An instance refuses `canvas install` for a plugin Canvas Platform manages, and the error names `canvas deploy`.
+`--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`. An instance refuses `canvas install` for a plugin Canvas Platform manages, and the error names `canvas deploy`.
 
 git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
 
@@ -243,6 +243,19 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+
+**Waiting for the outcome**
+
+For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
+
+Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
+
+```text
+  acme__intake on acme-staging: succeeded
+    Stored values left out because this revision does not declare them: OLD_FLAG
+```
+
+If the plugin still needs one of these values, declare its key in the manifest and deploy again.
 
 **Plugin repository layout**
 
@@ -661,7 +674,7 @@ $ canvas config list my_plugin
 
 Set (or update) one or more plugin variables. Pass one or more `KEY=value` pairs as positional arguments.
 
-For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward.
+For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward for the keys that revision declares; see [Waiting for the outcome](#canvas-deploy).
 
 For a plugin Canvas Platform does not manage, the values are written to the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
