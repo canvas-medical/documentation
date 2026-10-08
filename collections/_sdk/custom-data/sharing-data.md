@@ -101,7 +101,7 @@ canvas install my_plugin \
   --secret namespace_read_write_access_key=3b35fad9-6462-4e83-83f5-c0e4bde49b71
 ```
 
-If the namespace already exists on the instance, Canvas checks each namespace access key you pass with `--secret` or `canvas config set` before it saves anything. Canvas rejects the request when the key isn't registered for that namespace, or when you pass the read key as `namespace_read_write_access_key`. Each instance registers its own keys, so a key copied from the same namespace on another instance is rejected. If the namespace doesn't exist yet, Canvas accepts the keys and creates the namespace with them, as described in [Pre-Supplying Keys at Creation](#pre-supplying-keys-at-creation).
+Canvas validates namespace access keys for plugins installed with `canvas install`. If the namespace already exists on the instance, Canvas checks each key you pass with `--secret` or `canvas config set` before it saves anything. Canvas rejects the request when the key isn't registered for that namespace, or when you pass the read key as `namespace_read_write_access_key`. Each instance registers its own keys, so a key copied from the same namespace on another instance is rejected. If the namespace doesn't exist yet, Canvas accepts the keys and creates the namespace with them, as described in [Pre-Supplying Keys at Creation](#pre-supplying-keys-at-creation).
 
 **Alternative: Setting secrets via Admin UI:**
 
@@ -266,7 +266,7 @@ except NamespaceWriteDenied as e:
 - Ensure the secret has a value set in the Canvas UI
 
 **"'namespace_read_write_access_key' is not a valid key for namespace 'acme_corp__shared_data'. Use the key registered when this instance's namespace was created."**
-- Canvas rejected the `canvas install --secret` or `canvas config set` request because the key isn't registered for this namespace on this instance. The message names the key and namespace you supplied.
+- Canvas checks namespace access keys for plugins installed with `canvas install`. It rejected the `canvas install --secret` or `canvas config set` request because the key isn't registered for this namespace on this instance. The message names the key and namespace you supplied.
 - Copy the key from the **Secrets** section of the plugin that created the namespace on the same instance. Keys from another instance don't work.
 - If the message names `namespace_read_write_access_key`, check that you didn't pass the read key in its place.
 
