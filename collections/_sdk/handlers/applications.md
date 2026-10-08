@@ -258,7 +258,15 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 
 ## Embedded Applications
 
-Note Applications (tabs inside a note), Scheduling Applications (which replace the built-in scheduling modal), and Docked Applications (a persistent pane pinned to a window edge) are **embedded applications** — handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. They are declared under `handlers` (not `applications`), take no `scope` or `icon`, and create no application record.
+**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. There are five kinds:
+
+- Note Applications, which add tabs inside a note
+- Scheduling Applications, which replace the built-in scheduling modal
+- Docked Applications, which pin a persistent pane to a window edge
+- Provider Menu Applications, which add an entry to the provider side menu
+- Panel Applications, which add an icon to the panel bar
+
+They are declared under `handlers` (not `applications`), take no `scope`, and create no application record. A `ProviderMenuApplication` is separate from a drawer application that uses the `provider_menu_item` scope, and a `PanelApplication` is separate from a drawer application shown with `show_in_panel`; each pair can coexist.
 
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 
