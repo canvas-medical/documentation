@@ -233,6 +233,8 @@ Applications in the `global`, `patient_specific`, `provider_menu_item`, and `por
 
 A `portal_menu_item` application's URL ends in its identifier, base64-encoded. For example, `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==` decodes to `plugin_name.module.path:ClassName`. Because the identifier is made of the plugin name, module path, and class name, renaming any of them changes the URL and breaks links to it. The browser's address bar also stays the same as the patient moves between applications.
 
+To send a patient to a portal application from a plugin, return a [`RedirectEffect`](/sdk/effect-redirect/#redirects-in-the-patient-portal) with the application's `application_id` instead of building its URL. A redirect to an `/app/application/...` URL is blocked.
+
 ### Full Chart Scope
 
 Applications with the `full_chart` scope appear as navigation tabs at the top of the patient chart, alongside the default "Chart" and "Profile" tabs. This is ideal for building comprehensive patient-level views or dashboards.
