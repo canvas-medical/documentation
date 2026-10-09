@@ -179,7 +179,7 @@ for command in note.commands.all():
     print(f"Command data: {command.data}")
 ```
 
-`commands` includes commands that were entered in error; leave them out with `note.commands.exclude(state="entered_in_error")`. Its results are not in the order the commands appear in the note. When order matters, take the order from `body`, whose command lines carry a `command_uuid` matching each command's `id`, and still load the commands in one query:
+`commands` includes commands that were entered in error; leave them out with `note.commands.exclude(state="entered_in_error")`. It never includes [Private Notes commands](/sdk/data-command/#introduction), which only their author can see. Its results are not in the order the commands appear in the note. When order matters, take the order from `body`, whose command lines carry a `command_uuid` matching each command's `id`, and still load the commands in one query:
 
 ```python
 from canvas_sdk.v1.data.note import Note
