@@ -994,6 +994,9 @@ effects_module:
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-effect/
     description: Serve content for a custom section in the patient chart summary.
+  - title: "Patient Consent"
+    url: /sdk/effect-record-patient-consent/
+    description: Record a patient's decision on a consent and file the signed document.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.

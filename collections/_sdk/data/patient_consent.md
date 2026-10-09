@@ -9,6 +9,8 @@ hidden: false
 
 The `PatientConsent` model represents documented patient consents in Canvas that ensure legal compliance and protect patient rights. Each `PatientConsent` is linked to a `Patient`, has a category (which is a `PatientConsentCoding`), and optionally a rejection reason (which is a `PatientConsentRejectionCoding`).
 
+The data module is read-only. To record a patient's consent decision from a plugin, use the [RecordPatientConsent](/sdk/effect-record-patient-consent/) effect.
+
 ## Usage
 
 The `PatientConsent` model can be used to find all of the patient consents for a given patient and organization:
