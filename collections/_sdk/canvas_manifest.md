@@ -332,6 +332,8 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
     "screenshots": [
       {"path": "assets/summary.png", "caption": "In the note", "alt": "An intake summary in a note"}
     ],
+    "icon": "assets/icon.png",
+    "setup_guide": "setup_guide.md",
     "setup_instructions": "setup_instructions.md",
     "release_notes": {"kind": "fix", "title": "Summaries keep their line breaks"}
   }
@@ -348,7 +350,9 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
 | `integration` | object | No | For an integration: `unit` names what its volume counts, such as `"visits"`. |
-| `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. |
+| `icon` | string | No | Path to the image shown beside the title on the plugin's card, in place of the category's icon. Ends in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase. |
+| `setup_guide` | string | No | Path to a Markdown file for the person deciding whether to install the plugin: what to have ready, the steps, and how long setup takes. The catalog shows it as **How setup works**, beside **Pricing**. |
+| `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. For the setup description shown in the catalog, use `setup_guide`. |
 | `release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision. |
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
