@@ -106,7 +106,9 @@ You can define your default host with `is_default=true`. If no default is explic
 - A name without a prefix, or a machine that is not signed in, goes straight to the instance.
 - Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
 
-`--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`. An instance refuses `canvas install` for a plugin Canvas Platform manages, and the error names `canvas deploy`.
+`--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
+
+An instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 
 git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
 
