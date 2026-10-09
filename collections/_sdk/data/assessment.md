@@ -83,6 +83,8 @@ committed_assessments = Assessment.objects.committed()
 
 A Plan- or Procedures-section command written in the same note can be linked to an assessment, which each of these accessors reads back from the assessment's side. The command holds the other half of the link on its own `assessment` field.
 
+A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked.
+
 | Field Name          | Type                                                                          |
 | ------------------- | ----------------------------------------------------------------------------- |
 | follow_ups          | [FollowUp](/sdk/data-follow-up/#followup)[]                                   |
