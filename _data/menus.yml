@@ -878,6 +878,10 @@ embedded_applications:
     url: /sdk/handlers-embedded-applications/#scheduling-applications
   - title: "Docked Applications"
     url: /sdk/handlers-embedded-applications/#docked-applications
+  - title: "Provider Menu Applications"
+    url: /sdk/handlers-embedded-applications/#provider-menu-applications
+  - title: "Panel Applications"
+    url: /sdk/handlers-embedded-applications/#panel-applications
 
 simple_api_handlers:
   - title: "HTTP API"

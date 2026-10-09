@@ -26,6 +26,7 @@ Creates the message and sends it in one operation.
 
 - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
 - `message_id` must not be set.
+- When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
 
 ### edit() → Effect
 
@@ -39,6 +40,34 @@ Changes an existing message.
 Sends a message that was already created, if you separated creating it from sending it.
 
 - Set `message_id` to the message to send.
+- When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
+
+## Sending to a patient
+
+When `create_and_send()` or `send()` sends a message to a patient, Canvas notifies the patient the same way it does for a message sent from the chart: a text message or email to each of the patient's phone numbers and email addresses that is eligible. A contact point is eligible when all three of these are true:
+
+- `has_consent` is `True`
+- `last_verified` is set
+- `state` is `"active"`
+
+If the patient has no eligible contact point, Canvas cannot deliver the message. The message is saved but not sent, it appears as a draft in the patient's chart, and the effect fails.
+
+To avoid this, check the patient's [contact points](/sdk/data-patient/#patientcontactpoint) before sending, and use `create()` instead when none is eligible:
+
+```python?partial=true
+has_eligible_contact = patient.telecom.filter(
+    has_consent=True,
+    last_verified__isnull=False,
+    state="active",
+).exists()
+
+message = Message(content=content, sender_id=staff.id, recipient_id=patient.id)
+effect = message.create_and_send() if has_eligible_contact else message.create()
+```
+
+Instances set up to deliver patient messages through a plugin, rather than through Canvas, do not send these notifications.
+
+`create()` on its own never notifies the patient.
 
 ## Attributes
 

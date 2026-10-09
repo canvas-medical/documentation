@@ -34,6 +34,15 @@ A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org p
 
 `canvas login --platform <url>` or the `CANVAS_PLATFORM_URL` environment variable points the CLI at a platform other than https://platform.canvasmedical.com, and later commands keep using the platform you last signed in to.
 
+[`canvas whoami`](#canvas-whoami) shows which platform the CLI is using, why, and who you are signed in as there:
+
+```console
+$ canvas whoami
+Platform: https://platform.canvasmedical.com (from your last `canvas login`)
+Signed in as you@example.com (browser session from `canvas login`)
+  Acme Health (acme): plugin prefix acme__, can push, deploy, configure, uninstall
+```
+
 **You are now ready to use the Canvas CLI.** Continue with [`canvas init`](#canvas-init) and [`canvas deploy`](#canvas-deploy).
 
 ### Service accounts for CI/CD
@@ -140,6 +149,7 @@ $ canvas [OPTIONS] COMMAND [ARGS]...
 
 - `login`: Sign in to Canvas Platform through your browser
 - `logout`: Sign out of Canvas Platform
+- `whoami`: Show which Canvas Platform you are signed in to, and as whom
 - `init`: Create a new plugin
 - `deploy`: Publish a plugin to Canvas Platform and deploy it
 - `clone`: Clone a plugin's repository from Canvas Platform
@@ -185,9 +195,26 @@ $ canvas logout [OPTIONS]
 - `--platform TEXT`: Canvas Platform URL
 - `--help`: Show this message and exit.
 
+### `canvas whoami`
+
+Show the Canvas Platform the CLI uses and where that choice came from (`--platform`, `CANVAS_PLATFORM_URL`, your last `canvas login`, or the default), then the account it signs in as, whether the credential is a browser session or a [service account token](#service-accounts-for-cicd), and each organization's plugin prefix and what you can do there. When `CANVAS_PLATFORM_TOKEN` is set alongside a stored session, it says the token takes precedence.
+
+`whoami` asks Canvas Platform, so a revoked or expired credential is reported rather than shown as signed in. It never prints a token, so it is safe to run in a CI job's log. It exits non-zero when you are not signed in, with the `canvas login` command to run.
+
+**Usage**:
+
+```console
+$ canvas whoami [OPTIONS]
+```
+
+**Options**:
+
+- `--platform TEXT`: Canvas Platform URL
+- `--help`: Show this message and exit.
+
 ### `canvas init`
 
-Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, registered with Canvas Platform, and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, it is named from the project name alone.
+Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, registered with Canvas Platform, and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, it is named from the project name alone and `init` says so: `canvas deploy` refuses such a plugin, so run `canvas login` and `canvas init` again for one you can deploy. Run [`canvas whoami`](#canvas-whoami) first if you are unsure which platform you are signed in to.
 
 **Usage**:
 
@@ -237,7 +264,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 **What `deploy` does**
 
-1. Registers the plugin with Canvas Platform under the organization its prefix names. The manifest `name` must be publisher-prefixed.
+1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
 2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
 4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
