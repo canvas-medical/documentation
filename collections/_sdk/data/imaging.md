@@ -143,6 +143,7 @@ document = DocumentReference.objects.filter(
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
 | note                | [Note](/sdk/data-note/#note)                                   |
+| assessment          | [Assessment](/sdk/data-assessment/#assessment) |
 | imaging             | String                                                         |
 | imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | note_to_radiologist | String                                                         |
