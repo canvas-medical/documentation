@@ -16,6 +16,8 @@ The `user/Note.read` and `user/Note.write` scopes are available in the existing 
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 
 
+The Note API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
+
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/allowed-scopes.png){:width="70%"}
 {: refdef}

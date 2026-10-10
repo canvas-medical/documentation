@@ -76,7 +76,8 @@ Open the following URL in the user's browser:
   echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
   # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
 
-  # Or with an empty patient (if no specific patient context is needed)
+  # Or with an empty patient (if no specific patient context is needed,
+  # or the token must call staff APIs such as the Note API)
   echo -n '{"patient":""}' | base64
   # Result: eyJwYXRpZW50IjoiIn0=
   ```
@@ -215,12 +216,27 @@ Using this access token in subsequent requests ensures that records referencing 
 
 **Note:** A patient scoped token must include which patient scopes are being requested. Token requests that include the patient parameter but are missing scope or request invalid scopes will be rejected.
 
+## Tokens with a patient context
+
+A token carries a patient context in these cases:
+
+- It's a [patient scoped token](#patient-scoped-tokens).
+- It comes from an authorization code flow whose `launch` context names a patient.
+
+These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staff APIs include the `/api` endpoints, the [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin install and management endpoints. Canvas also refuses tokens on staff APIs when the user they act as isn't a staff member, such as a patient.
+
+A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
+
 ## Scopes
 
 Scopes control which parts of the API the token can access.
 
 - **Client Credentials Flow:** Scopes are optional. If omitted, the token is issued with the OAuth application's configured allowed scopes.
 - **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
+
+Every scope you request must be one of the application's allowed scopes, whatever the grant type. Canvas rejects a request that includes any other scope with an `invalid_scope` error. To use a scope the application doesn't have, add it to the application's allowed scopes first.
+
+A patient who signs in through the authorization code flow can approve only `patient/` resource scopes, plus the launch and OpenID scopes. If the request includes a `user/` or `system/` scope, Canvas denies it and redirects with `error=access_denied`.
 
 Canvas implements [SMART on FHIR scopes](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html).
 
@@ -260,7 +276,7 @@ Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
 
 **`user/`** — most clinical resources support `read`, `write`, `*`, and v2 `c r u s`. Read-only: `Coverage`, `MedicationDispense`, `Questionnaire`, `RelatedPerson`, `ServiceRequest`, `Specimen`. `Note` supports `read` and `write` only (no `*`). Resources: `*`, `AllergyIntolerance`, `CarePlan`, `CareTeam`, `Condition`, `Coverage`, `DetectedIssue`, `Device`, `DiagnosticReport`, `DocumentReference`, `Encounter`, `Goal`, `Immunization`, `Location`, `Medication`, `MedicationDispense`, `MedicationRequest`, `Note`, `Observation`, `Organization`, `Patient`, `Practitioner`, `PractitionerRole`, `Procedure`, `Provenance`, `Questionnaire`, `QuestionnaireResponse`, `RelatedPerson`, `ServiceRequest`, `Specimen`.
 
-**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints.
+**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints. These endpoints accept only a client credentials token. Canvas refuses an authorization code token even when it carries `system/Plugins.*`.
 
 **`patient/`** — restricted to the launch-context patient. Writable: `Appointment`, `Communication`, `Consent`, `Coverage`, `Media`, `MedicationStatement`, `Patient`, `PaymentNotice`, `QuestionnaireResponse`. All others read-only. Additional read-only resources beyond the user/system list: `Appointment`, `Communication`, `Consent`, `Media`, `MedicationStatement`, `PaymentNotice`, `Schedule`, `Slot`.
 
