@@ -558,7 +558,7 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
 | DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
-| SIGN | Sign the order (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, order DME, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
@@ -587,6 +587,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
 | Medical History | `*_MEDICAL_HISTORY_COMMAND` | |
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
+| Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
 | POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |

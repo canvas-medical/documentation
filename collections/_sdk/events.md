@@ -16364,6 +16364,496 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+#### Order DME Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": int
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+The `ORDER_DME__ITEM__*` events fire when a user searches the DME formulary in the item field. The `ORDER_DME__SEND_TO__*` events fire when a user searches for a supplier in the **Send to** field. Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+
+In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
+
+- **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+
 #### Perform Command
 
 <table>
