@@ -61,6 +61,21 @@ printed_letters = Letter.objects.filter(printed__isnull=False)
 staff_letters = Letter.objects.filter(staff_id="a1b2c3d4e5f6")
 ```
 
+## The printed attachments
+
+When a letter is printed or faxed, Canvas merges the documents attached to it into one PDF and stores it on `printed_document`, so later prints and faxes send the same attachments. It holds the attachments only, not the letter body, and a letter with no attachments still gets one with no pages. For the full letter as it went out, use the document reference below.
+
+The `printed_document_url` property returns a presigned S3 URL for that PDF, valid for one hour, or `None` until the letter has been printed or faxed.
+
+```python
+from canvas_sdk.v1.data import Letter
+
+letter = Letter.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Returns a presigned S3 URL (valid for 1 hour), or None
+url = letter.printed_document_url
+```
+
 ## The document reference
 
 `content` holds the letter's body, not the document that goes out. Canvas renders the letter — including anything attached to it — to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the letter.
@@ -97,4 +112,6 @@ url = document.document_url if document else None
 | printed    | DateTime                        | When the letter was printed (null if not printed) |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
+| printed_document | File                      | The letter's attachments merged into one PDF, saved when it is printed or faxed (null until then) |
+| printed_document_url | String (computed)     | Presigned S3 URL for `printed_document`, or `None` |
 | letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |

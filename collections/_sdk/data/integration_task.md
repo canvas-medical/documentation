@@ -95,6 +95,19 @@ reviewer_reviews = IntegrationTaskReview.objects.by_reviewer("staff-id")
 team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 ```
 
+## Accessing the document file
+
+The `document_url` property returns a presigned S3 URL for the document as Canvas received it (the fax, the uploaded file, or the file from the integration engine), or `None` when the task has no file. The URL is valid for one hour. Annotations staff make in Canvas are saved as separate files, so they don't appear in this one.
+
+```python
+from canvas_sdk.v1.data.integration_task import IntegrationTask
+
+task = IntegrationTask.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Returns a presigned S3 URL (valid for 1 hour), or None
+url = task.document_url
+```
+
 ## Attributes
 
 ### IntegrationTask
@@ -108,11 +121,13 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | status           | [IntegrationTaskStatus](#integrationtaskstatus)                |                                      |
 | type             | String                                                         |                                      |
 | title            | String                                                         |                                      |
+| document         | File                                                           | The document as received             |
 | channel          | [IntegrationTaskChannel](#integrationtaskchannel)              |                                      |
 | patient          | [Patient](/sdk/data-patient/#patient)                          |                                      |
 | service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |                                      |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |                                      |
 | action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)[] | Faxes of this task, with their [delivery status](/sdk/data-fax/#delivery-status) |
+| document_url     | String (computed)                                              | Presigned S3 URL, or `None`          |
 | is_fax           | Boolean (computed)                                             | Whether this is a fax task           |
 | is_pending       | Boolean (computed)                                             | Whether this task is pending review  |
 | is_processed     | Boolean (computed)                                             | Whether this task has been processed |
