@@ -163,6 +163,33 @@ requests = [
 responses = http.batch_requests(requests, timeout=10)
 ```
 
+## Sanitizing HTML
+
+`sanitize_html` removes everything outside a small formatting allowlist from an HTML string. Use it before rendering HTML that came from an untrusted source (a patient, an integration, any API input) into a page staff will open.
+
+```python
+from canvas_sdk.utils.html import sanitize_html
+
+safe = sanitize_html("<p onclick='steal()'>Hi <script>alert(1)</script><b>there</b></p>")
+# '<p>Hi <b>there</b></p>'
+```
+
+- Kept: the tags `p`, `br`, `b`, `strong`, `i`, `em`, `u`, `ul`, `ol`, `li`, `a`, `span`, `div`, and `href` on `a` when it uses `http`, `https`, or `mailto`. Every link gets `rel="noopener noreferrer"`.
+- Removed: all other tags and attributes (including `style`, `class`, and `on*` event handlers), comments, the contents of `script` and `style`, and links with any other scheme (`javascript:`, `data:`, ...).
+- Text is HTML-escaped, so the result is safe to render as HTML.
+
+In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates), the same function is available as a filter with no `{% raw %}{% load %}{% endraw %}` needed. `None` renders as an empty string:
+
+{% raw %}
+
+```html
+<span class="message-text">{{ message.content|sanitize_html }}</span>
+```
+
+{% endraw %}
+
+See [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely) for the other template rules.
+
 ## Generating PDFs
 
 Plugin authors can generate PDFs using the `pdf_generator` client. There are two approaches: generating from a URL that serves HTML, or generating directly from an HTML string. Both methods upload the resulting PDF to S3 and return a presigned URL.
