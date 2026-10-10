@@ -194,22 +194,27 @@ class MyHandler(BaseHandler):
 
 ## Configuring the Patient Portal
 
-Return a `PatientPortalApplicationConfiguration` effect from a handler on the `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` event to set application-level portal options. Today this controls whether the self-scheduling entry points appear; pair it with [Shape Self-Scheduling](#shape-self-scheduling) to control *what* patients can book.
+Return a `PatientPortalApplicationConfiguration` effect from a handler on the `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` event to set application-level portal options:
+
+- **Self-scheduling:** show or hide the self-scheduling entry points. Pair this with [Shape Self-Scheduling](#shape-self-scheduling) to control *what* patients can book.
+- **Default homepage:** open one of your plugin's portal applications, instead of the widgets landing page, when a patient lands on the portal home page.
 
 ### Methods
 
 #### apply() → Effect
 
-Applies the portal options.
+Applies the portal options. Every attribute is optional; set only the options you want to change.
 
-- `can_schedule_appointments` is required.
+- If `default_homepage_application_identifier` is set, it must match an installed application, or the effect raises a validation error.
 
 ### Attributes
 
-| Attribute                   | Type   | Description                                                  | Required |
-|-----------------------------|--------|--------------------------------------------------------------|----------|
-| `can_schedule_appointments` | `bool` | If the patient is allowed to book or reschedule appointments | Yes      |
+| Attribute                                 | Type   | Description                                                                                                                                                                                                                   | Required |
+|-------------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `can_schedule_appointments`               | `bool` | If the patient is allowed to book or reschedule appointments. When omitted, patients can self-schedule if at least one note type is schedulable through the patient portal.                                                                                                            | No       |
+| `default_homepage_application_identifier` | `str`  | The application to open as the patient's portal homepage. Use the application's `class` string from [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications), the `<module path>:<ClassName>` value. When omitted, patients see the widgets landing page. | No       |
 
+The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -225,7 +230,8 @@ class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         return [
           PatientPortalApplicationConfiguration(
-            can_schedule_appointments=True
+            can_schedule_appointments=True,
+            default_homepage_application_identifier="my_plugin.apps.care_dashboard:CareDashboardApp",
           ).apply()
         ]
 
