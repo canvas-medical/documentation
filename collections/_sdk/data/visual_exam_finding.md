@@ -97,7 +97,7 @@ committed_findings = VisualExamFinding.objects.committed()
 | modified         | DateTime                              |                  |
 | patient          | [Patient](/sdk/data-patient/#patient) |                  |
 | note             | [Note](/sdk/data-note/#note)          |                  |
-| image            | String (S3 key)                       |                  |
+| image            | File (S3 key)                         |                  |
 | title            | String                                |                  |
 | narrative        | String                                |                  |
 | originator       | [CanvasUser](/sdk/data-canvasuser)    |                  |

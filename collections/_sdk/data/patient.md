@@ -61,7 +61,7 @@ patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
 url = patient.photo_url
 ```
 
-If you need the underlying [`PatientPhoto`](#patientphoto) record (for example, to read the original `url` or `title`), use the `photo` property:
+If you need the underlying [`PatientPhoto`](#patientphoto) record (for example, to read its `title`, or the stored file key with `url.name`), use the `photo` property:
 
 ```python
 from canvas_sdk.v1.data.patient import Patient
@@ -417,7 +417,7 @@ Represents a patient's uploaded avatar photo.
 | created    | DateTime            |
 | modified   | DateTime            |
 | patient    | [Patient](#patient) |
-| url        | String              |
+| url        | File (S3 key)       |
 | title      | String              |
 
 ```python
@@ -427,7 +427,7 @@ from logger import log
 patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
 
 for photo in patient.photos.all():
-    log.info(f"Photo: {photo.title}, stored at: {photo.url}")
+    log.info(f"Photo: {photo.title}, stored at: {photo.url.name}")
 ```
 
 ### PatientIdentificationCard
@@ -440,7 +440,7 @@ Represents a patient identification card image (e.g., driver's license, insuranc
 | created    | DateTime            |                  |
 | modified   | DateTime            |                  |
 | patient    | [Patient](#patient) |                  |
-| image      | String              |                  |
+| image      | File (S3 key)       |                  |
 | title      | String              |                  |
 | active     | Boolean             |                  |
 | image_url  | String (computed)   | Presigned S3 URL |
