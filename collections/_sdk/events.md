@@ -3296,6 +3296,195 @@ Surescripts response events fire when the platform receives a response from Sure
   </tbody>
 </table>
 
+#### Faxed Documents
+
+Canvas records an action event each time a note, referral, imaging order, lab order or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own [letter action events](#letters).
+
+- The `_CREATED` event fires when the fax is submitted. `delivered_by_fax` on the target is still `None`.
+- The `_UPDATED` event fires when the faxing service reports the outcome. Read `delivered_by_fax` and `fax_result_msg` on the target; see [delivery status](/sdk/data-fax/#delivery-status).
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so a plugin that retries failed faxes should retry each action event only once.
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a note fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a referral is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a referral fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an imaging order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an imaging order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a lab order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a lab order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an integration task is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an integration task fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Observations
 
 <table>
