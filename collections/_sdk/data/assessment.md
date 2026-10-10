@@ -85,7 +85,7 @@ Plan- and Procedures-section commands, and the order, medication, and educationa
 
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked.
 
-Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes, as each command's `assessment_id` parameter in the [commands module](/sdk/commands/) describes. Clearing the link leaves those codes in place.
+Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
 
 | Field Name                   | Type                                                                          |
 | ---------------------------- | ----------------------------------------------------------------------------- |
