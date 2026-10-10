@@ -1517,17 +1517,29 @@ Orders durable medical equipment (DME), such as a wheelchair, catheter, or showe
 
 **Command-specific parameters**:
 
-| Name                    | Type                                  | Description |
-|:------------------------|:--------------------------------------|:------------|
-| `dme_product_id`        | _string_                              | External ID of the formulary product being ordered. Can't be combined with `free_text_item`. |
-| `free_text_item`        | _string_                              | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
-| `diagnosis_codes`       | _list[string]_                        | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
-| `quantity`              | _integer_                             | Number of units ordered. Must be at least 1. |
-| `length_of_need`        | _integer_                             | Number of months the patient needs the equipment, from 1 to 99. Use `99` for lifetime need. |
-| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
-| `ordering_provider_key` | _string_                              | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. |
+| Name                    | Type                                  | Required to sign | Description |
+|:------------------------|:--------------------------------------|:-----------------|:------------|
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
+| `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
+| `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
+| `length_of_need`        | _integer_                             | `false` | Number of months the patient needs the equipment, from 1 to 99. Use `99` for lifetime need. |
+| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
+| `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
 
 Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` outside 1 to 99 raises a validation error when you create the command object.
+
+Canvas leaves a field empty when its value doesn't resolve: a `dme_product_id` that doesn't match an active formulary product, or an `ordering_provider_key` that doesn't match an active prescriber. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value.
+
+When the order is signed, Canvas saves the item, its code, the indications, and the patient's latest height and weight with the order, so later changes to the formulary or the patient's vitals don't change the printed order.
+
+**Command-specific actions**:
+
+| Action Name   | Available When       | Description                                                                 |
+|---------------|----------------------|-----------------------------------------------------------------------------|
+| `sign_action` | command is staged    | Signs the order, transitioning it from staged to committed state.           |
+| `print_order` | command is committed | Prints the order as a requisition. Requires printing access. |
+| `fax`         | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access. |
 
 To filter or annotate the products and suppliers a user sees while filling in the command, handle the `ORDER_DME__ITEM__PRE_SEARCH`, `ORDER_DME__ITEM__POST_SEARCH`, `ORDER_DME__SEND_TO__PRE_SEARCH`, and `ORDER_DME__SEND_TO__POST_SEARCH` [events](/sdk/events/#order-dme-command).
 

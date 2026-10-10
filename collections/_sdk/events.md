@@ -16801,8 +16801,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16843,11 +16842,17 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
+
+The `ORDER_DME__ITEM__*` events fire when a user searches the DME formulary in the item field. The `ORDER_DME__SEND_TO__*` events fire when a user searches for a supplier in the **Send to** field. Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+
+In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
+
+- **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
 
 #### Perform Command
 
