@@ -30,38 +30,27 @@ referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find
 additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
 
-## 2. Configure the Canvas CLI for your instances
+## 2. Sign in to Canvas Platform
 
-The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If
-you've used our FHIR API, you'll be very familiar with the process for
-[registering credentials](/api/customer-authentication/). Register a separate
-OAuth application, choosing `confidential` for the Client type, and `client-credentials`
-for the Authorization grant type. Redirect URIs can be left blank, and the
-Algorithm should be `No OIDC support`. Note the client_id and client_secret
-for the next step.
+The Canvas CLI deploys plugins through [Canvas Platform](https://platform.canvasmedical.com).
+Sign in once on your machine:
 
-Create a file at the path `~/.canvas/credentials.ini`.
-Here is what its contents should look like:
-
-```ini
-[buttered-popcorn]
-client_id=butter
-client_secret=salt
-
-[buttered-popcorn-dev]
-client_id=devbutter
-client_secret=devsalt
-is_default=true
+```sh
+$ canvas login
+Signed in to https://platform.canvasmedical.com as you@example.com.
+  Acme Health (acme): plugin prefix acme__
 ```
 
-Each section represents credentials for a different Canvas instance. Replace
-the section headers with your Canvas subdomains. The example configuration
-provided would be valid for instances with URLs
-`https://buttered-popcorn.canvasmedical.com` and `https://buttered-popcorn-dev.canvasmedical.com`.
+`canvas login` opens your browser and lists each organization you belong to with
+its plugin prefix. Every plugin you publish is named with that prefix, such as
+`acme__paperwork_eviscerator`. Publishing a plugin needs the Plugin developer role
+in the organization, and deploying it needs Deploy manager.
 
-You can optionally set the `is_default` flag for the instance you wish to be
-implied when using the CLI. If no section is set as default, the first one
-will be considered default.
+Run `canvas whoami` at any time to check which platform you are signed in to and as whom.
+If you run `canvas init` while signed out, it says so and creates a plugin that
+`canvas deploy` refuses, so sign in first.
+
+{% include alert.html type="info" content="Configuring the CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code> is deprecated, and support ends on December 14, 2026. See <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
 
 
 ## 3. Initialize a new plugin
@@ -73,9 +62,13 @@ run `canvas init`, and answer the prompt to name your plugin.
 $ canvas init
   [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
 Project created in /Users/andrew/src/canvas-plugins/paperwork-eviscerator
+Registered acme__paperwork_eviscerator with Canvas Platform.
 ```
 
-This output shows the location of our freshly generated plugin project.
+This output shows the location of our freshly generated plugin project. `canvas init`
+names the package with your organization's prefix, registers it with Canvas Platform,
+and makes the project folder a git repository that `canvas deploy` pushes to. If you
+belong to several organizations, it asks which one publishes the plugin.
 
 ## 4. Navigate the structure of a plugin
 
@@ -84,7 +77,7 @@ Let's take a look at what was generated for us.
 ```sh
 $ tree paperwork-eviscerator/
 paperwork-eviscerator/
-├── paperwork_eviscerator
+├── acme__paperwork_eviscerator
 │    ├── CANVAS_MANIFEST.json
 │    ├── README.md
 │    └── handlers
@@ -108,12 +101,12 @@ reference for every field it can contain.
 {
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
-    "name": "paperwork_eviscerator",
+    "name": "acme__paperwork_eviscerator",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
         "handlers": [
             {
-                "class": "paperwork_eviscerator.handlers.event_handlers:Handler",
+                "class": "acme__paperwork_eviscerator.handlers.event_handlers:Handler",
                 "description": "A handler that does xyz...",
                 "data_access": {
                     "event": "",
@@ -145,7 +138,7 @@ Only handlers declared here are invoked by the plugin runner. If they are
 not declared, they will be ignored.
 
 Secrets can be declared (though not defined) here. Any secrets declared here
-will be initialized on plugin install, and can be set in the plugin listing in the Settings section of your Canvas instance.
+will be initialized on plugin install, and can be set with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set).
 
 ### README.md
 
@@ -226,14 +219,24 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, deploying is simple. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and
-run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged,
-uploaded, installed, and enabled. As you make changes to your plugin, run the
-same command to update the code of the installed plugin.
+When your plugin is just the way you'd like it, validate it and deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
+
+```sh
+$ canvas validate acme__paperwork_eviscerator
+$ canvas deploy acme__paperwork_eviscerator --instance buttered-popcorn-dev
+```
+
+`canvas deploy` commits your changes after you confirm, pushes them to Canvas Platform, and
+deploys that commit to the instance, where the plugin is installed and enabled. Replace
+`buttered-popcorn-dev` with your instance; without `--instance`, `deploy` targets the only
+instance you can deploy to, or lists the choices. As you make changes to your plugin, run the
+same command to deploy the new code.
 
 ## 8. Tail the logs
 
 To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
+
+`canvas logs` connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until it moves to your Canvas Platform sign-in, before December 14, 2026.
 
 <br/>
 <br/>

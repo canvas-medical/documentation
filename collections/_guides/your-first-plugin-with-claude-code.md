@@ -25,7 +25,8 @@ Together, Claude Code with CPA lets developers go from an idea to a working, dep
 
 - Python 3.12+ installed
 - A Canvas instance with admin access
-- [OAuth credentials configured](/api/customer-authentication/) and saved locally in `~/.canvas/credentials.ini` (register an application with `confidential` client type and `client-credentials` grant type). For more, see [these configuration steps](/guides/your-first-plugin/#2-configure-the-canvas-cli-for-your-instances)
+- The Canvas CLI signed in to Canvas Platform with `canvas login`. See [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform)
+- Instance API credentials in `~/.canvas/credentials.ini`, which `/cpa:deploy` uses to install the plugin and stream its logs. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated); this method is deprecated, and support ends on December 14, 2026
 - [Claude Code installed](https://docs.anthropic.com/en/docs/claude-code/overview)
 
 ## 1. Install the Canvas Plugin Assistant and Set Up Your Environment

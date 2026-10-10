@@ -535,6 +535,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Moving to Canvas Platform"
+    url: /guides/moving-to-canvas-platform/
+    description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
+    uses:
+      - sdk
+
   - title: "Choosing Your Patient Experience"
     url: /guides/choosing-your-patient-experience/
     description: Decide whether to use, extend, or replace the built-in patient portal

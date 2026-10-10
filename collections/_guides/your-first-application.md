@@ -22,7 +22,7 @@ To create a new application, run the following command:
 canvas init application
 ```
 
-This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file.
+This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file. Signed in to Canvas Platform, `canvas init` names the package with your organization's prefix, such as `acme__my_cool_application`, and registers it with Canvas Platform.
 
 ## Step 3: Understanding the `CANVAS_MANIFEST.json` File
 
@@ -32,7 +32,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
 {
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
-    "name": "my_cool_application",
+    "name": "acme__my_cool_application",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "url_permissions": [
         {
@@ -43,7 +43,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
     "components": {
         "applications": [
             {
-                "class": "my_cool_application.applications.my_application:MyApplication",
+                "class": "acme__my_cool_application.applications.my_application:MyApplication",
                 "name": "My Application",
                 "description": "An Application that does xyz...",
                 "scope": "global",
@@ -126,13 +126,16 @@ class MyApplication(Application):
 
 When opened in a patient's chart, both right chart pane targets stay open while the user moves around the same patient's chart. They close when the user opens a different patient or leaves the chart.
 
-## Step 5: Installing the Application
+## Step 5: Deploying the Application
 
-To install your application, run:
+Sign in with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) if you haven't, then validate and deploy your application to an instance:
 
 ```bash
-canvas install <path/to/application>
+canvas validate <path/to/application>
+canvas deploy <path/to/application> --instance <instance>
 ```
+
+`<path/to/application>` is the package folder that holds `CANVAS_MANIFEST.json`, named with your organization's prefix, such as `acme__my_application`. See [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy).
 
 <br/>
 <br/>

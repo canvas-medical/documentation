@@ -27,7 +27,20 @@ then it must do so via API calls.
 
 For a full overview of how namespaces are created, managed, and cleaned up during development, see [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/).
 
-### Discovering Access Keys
+### Custom data on Canvas Platform
+
+For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform holds each namespace's access keys and sends them to every plugin entitled to them, so no key is copied between plugins:
+
+- The first plugin that declares `"access": "read_write"` for a namespace on an instance creates it there and owns it.
+- Another plugin that declares the same namespace, to read or to write, needs consent from the organization that runs the instance. `canvas deploy` shows each consent request and asks you to answer it; the deployment starts once every request is approved, and an approval stands for later deploys to that instance.
+- Leave `namespace_read_access_key` and `namespace_read_write_access_key` out of the manifest's `variables`. Canvas Platform supplies them, refuses a manifest that declares them, and refuses `canvas config set` for them.
+- A namespace that already exists on an instance, created by a plugin installed with `canvas install`, needs its keys recorded with Canvas Platform before a deploy can use it. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) covers that step.
+
+### Access keys for plugins installed with `canvas install` (deprecated)
+
+{% include alert.html type="warning" content="<code>canvas install</code> is deprecated, and support ends on December 14, 2026. The rest of this section describes how plugins installed straight onto an instance share a namespace. Plugins deployed with <code>canvas deploy</code> share a namespace as described in <a href='#custom-data-on-canvas-platform'>Custom data on Canvas Platform</a>." %}
+
+#### Discovering Access Keys
 
 After the namespace is created, you can find the generated keys in the **Canvas admin UI**:
 
@@ -43,7 +56,7 @@ Share these keys securely with developers of other plugins that need access:
 
 > **Important:** Store these keys in a secure location outside of Canvas, such as 1Password. Removing a key from the manifest's `secrets` array does **not** delete the stored value — it is preserved. However, **uninstalling the plugin deletes its secrets**, including the namespace keys. Because the namespace itself survives an uninstall, a later reinstall will not regenerate the keys, so a copy kept outside Canvas is the only way to restore access. See [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin).
 
-### Pre-Supplying Keys at Creation
+#### Pre-Supplying Keys at Creation
 
 By default, Canvas auto-generates the two access keys the first time a `read_write` plugin creates a namespace. You can also **supply both keys yourself** at that first install — pass them through the same `--secret` mechanism used for joins:
 
@@ -69,7 +82,7 @@ When to use this:
 - You're restoring access to a previously-dropped namespace and want to reuse known key values.
 - You want deterministic key values across test runs in CI.
 
-### Configuring Plugin Access
+#### Configuring Plugin Access
 
 Each plugin that joins a namespace must:
 
@@ -115,16 +128,15 @@ If you've already installed the plugin without the secret:
 {
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
-  "name": "my_plugin",
-  "variables": [
-    {"name": "namespace_read_write_access_key", "sensitive": false}
-  ],
+  "name": "acme_corp__my_plugin",
   "custom_data": {
     "namespace": "acme_corp__shared_data",
     "access": "read_write"
   }
 }
 ```
+
+A plugin installed with `canvas install` also declares the access key it is given in `variables`, as shown in [Configuring Plugin Access](#configuring-plugin-access).
 
 **Namespace naming requirements:**
 - Must contain `__` (double underscore) to separate organization from name

@@ -48,10 +48,13 @@ This guide demonstrates how to build an external application that integrates wit
 5. **Save** the application
 6. Copy the **Client ID** - you'll need this in the next step
 
-### Step 2. Install the Plugin
+### Step 2. Deploy the Plugin
+
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
 
 ```bash
-canvas install note_management_app/note_management_app --secret client_id=<YOUR_CLIENT_ID>
+canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
+canvas config set acme__note_management_app client_id=<YOUR_CLIENT_ID> --instance <YOUR_INSTANCE>
 ```
 
 ### OAuth Flow Details
