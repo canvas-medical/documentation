@@ -132,6 +132,7 @@ url = document.document_url if document else None
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
 | note                  | [Note](/sdk/data-note/#note)                                   |
+| assessment            | [Assessment](/sdk/data-assessment/#assessment) |
 | assessments           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | clinical_question     | String                                                         |

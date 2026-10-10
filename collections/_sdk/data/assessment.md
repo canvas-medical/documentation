@@ -81,19 +81,31 @@ committed_assessments = Assessment.objects.committed()
 
 ### Commands linked to an assessment
 
-A Plan- or Procedures-section command written in the same note can be linked to an assessment, which each of these accessors reads back from the assessment's side. The command holds the other half of the link on its own `assessment` field.
+Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to an assessment made in the same note. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
 
-| Field Name          | Type                                                                          |
-| ------------------- | ----------------------------------------------------------------------------- |
-| follow_ups          | [FollowUp](/sdk/data-follow-up/#followup)[]                                   |
-| goals               | [Goal](/sdk/data-goal/#goal)[]                                                |
-| immunizations       | [Immunization](/sdk/data-immunization/#immunization)[]                        |
-| instructions        | [Instruction](/sdk/data-instruction/#instruction)[]                           |
-| note_tasks          | [NoteTask](/sdk/data-task/#notetask)[]                                        |
-| plans               | [Plan](/sdk/data-plan/#plan)[]                                                |
-| procedures          | [Procedure](/sdk/data-procedure/#procedure)[]                                 |
-| stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
-| updategoals         | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
+A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked.
+
+Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
+
+| Field Name                   | Type                                                                          |
+| ---------------------------- | ----------------------------------------------------------------------------- |
+| follow_ups                   | [FollowUp](/sdk/data-follow-up/#followup)[]                                   |
+| goals                        | [Goal](/sdk/data-goal/#goal)[]                                                |
+| immunizations                | [Immunization](/sdk/data-immunization/#immunization)[]                        |
+| instructions                 | [Instruction](/sdk/data-instruction/#instruction)[]                           |
+| linked_change_medications    | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]           |
+| linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
+| linked_imaging_orders        | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                             |
+| linked_lab_orders            | [LabOrder](/sdk/data-labs/#laborder)[]                                        |
+| linked_prescriptions         | [Prescription](/sdk/data-prescription/#prescription)[]                        |
+| linked_referrals             | [Referral](/sdk/data-referral/#referral)[]                                    |
+| note_tasks                   | [NoteTask](/sdk/data-task/#notetask)[]                                        |
+| plans                        | [Plan](/sdk/data-plan/#plan)[]                                                |
+| procedures                   | [Procedure](/sdk/data-procedure/#procedure)[]                                 |
+| stopped_medications          | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[] |
+| updategoals                  | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
+
+Use `linked_referrals` for referrals linked this way. The `referrals` accessor above reads a referral's separate `assessments` list instead.
 
 A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 
