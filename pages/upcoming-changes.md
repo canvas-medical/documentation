@@ -28,7 +28,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>Workflow SDK</td>
       <td style="color: green;">New Version</td>
-      <td>The Workflow SDK has been deprecated, and will only receive fixes for defects or security issues. We are replacing its functionality with the Canvas SDK and its plugins, and will not set a date for the removal of the Workflow SDK until the Canvas SDK reaches feature parity. At that time we will present a migration plan to convert Workflow SDK Protocols into Canvas Plugins.</td>
+      <td>The Workflow SDK is deprecated and receives only fixes for defects or security issues. Build new logic as Canvas SDK plugins. Most instances no longer accept uploads of new protocol code, and an upload request returns a 403 error. You can still activate, deactivate, and switch between protocol versions already uploaded to an instance. Requests made with a Workflow SDK API key work as before. Requests made from a logged-in Canvas session need the Administrative Developer or Clinical Developer role. We will not set a date for the removal of the Workflow SDK until the Canvas SDK reaches feature parity. At that time we will present a migration plan to convert Workflow SDK Protocols into Canvas Plugins.</td>
       <td></td>
       <td>TBD<br/>(Not Soon)</td>
     </tr>
