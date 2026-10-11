@@ -216,7 +216,7 @@ Applies the portal options. Every attribute is optional; set only the options yo
 
 The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
 
-While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Consents, forms, and modals returned by `PATIENT_PORTAL__POST_LOGIN` handlers appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
+While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Portal consents, [forms](#forms), and [modals from `PATIENT_PORTAL__POST_LOGIN` handlers](#show-a-modal-after-login) still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
 
 ```python
 from canvas_sdk.effects import Effect
