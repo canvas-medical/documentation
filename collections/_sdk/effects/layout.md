@@ -373,6 +373,9 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | MULTI_FACTOR_AUTHENTICATION | Open multi-factor authentication setup in a new tab            |
 | CHANGELOG                   | Open the Canvas release notes in a new tab                     |
 | HELP_CENTER                 | Open the Canvas help center in a new tab                       |
+| GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
+
+Google Calendar sync is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
 ### Hiding the Schedule item
 
