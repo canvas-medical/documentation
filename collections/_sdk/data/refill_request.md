@@ -115,6 +115,8 @@ The `message_id` and `content` attributes carry the details of the inbound eRx m
 | Field Name     | Type                              |
 |----------------|-----------------------------------|
 | dbid           | Integer                           |
+| created        | DateTime                          |
+| modified       | DateTime                          |
 | refill_request | [RefillRequest](#refillrequest)   |
 | system         | String                            |
 | version        | String                            |

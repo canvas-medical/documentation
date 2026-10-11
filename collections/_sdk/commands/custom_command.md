@@ -9,7 +9,7 @@ hidden: false
 
 The `CustomCommand` class allows plugins to create custom commands with HTML-rendered content that can be inserted into patient charts. Custom commands are designed for displaying read-only content and do not support user input or interactive forms.
 
-**Important**: Custom commands must be configured in the plugin's `CANVAS_MANIFEST.json` file under the `commands` array before they can be used.
+**Important**: Custom commands must be configured in the plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#commands) file under the `commands` array before they can be used.
 
 ## Parameters
 

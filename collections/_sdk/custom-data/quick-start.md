@@ -5,7 +5,7 @@ slug: "custom-data-quick-start"
 
 ## Getting Started
 
-To use custom data in your plugin, declare a `custom_data` section in your `CANVAS_MANIFEST.json` with a namespace and access level.
+To use custom data in your plugin, declare a `custom_data` section in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#custom-data) with a namespace and access level.
 The namespace is a unique identifier scoped to your organization (formatted as `organization__name` with a double underscore),
 and the access level controls whether the plugin can read only or read and write data. When the first `read_write` plugin is installed
 into a namespace, the system automatically initializes a data namespace, prepares tables, and generates `namespace_read_access_key`

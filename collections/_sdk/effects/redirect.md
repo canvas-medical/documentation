@@ -18,15 +18,25 @@ By default the navigation replaces the current tab. Set `target` to `RedirectEff
 
 > **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{key}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
 
+Build a `RedirectEffect` and return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Redirects the user.
+
+- Provide exactly one of `url` or `application_id`. An `application_id` must identify an existing application.
+- `target` defaults to `SAME_TAB`.
+
 ## Attributes
 
-| Name             | Type                          | Required | Description                                                                                                   |
-|------------------|-------------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| `url`            | `str`                         | Yes\*    | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty. |
-| `application_id` | `str`                         | Yes\*    | The identifier of a Canvas application to open. Must exist and be enabled.                                     |
-| `target`         | [`TargetType`](#targettype)   | No       | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`.                                          |
+| Name | Type | Description | Required |
+|---|---|---|---|
+| `url` | `str` | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty. | Exactly one of `url` or `application_id` |
+| `application_id` | `str` | The identifier of a Canvas application to open. Must exist and be enabled. | Exactly one of `url` or `application_id` |
+| `target` | [`TargetType`](#targettype) | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`. | No |
 
-**\*** Provide **exactly one** of `url` or `application_id` — they are mutually exclusive.
 
 ## `TargetType`
 
@@ -43,7 +53,7 @@ Every destination is validated **on the server** before the browser navigates �
 
 The allowlist governs only *where a plugin may send a user* — it does **not** change what that user is allowed to see, and cannot be used to bypass their permissions. A redirect performs an ordinary browser navigation, so the destination still enforces the user's own access: redirecting a user to a page or application they lack permission for behaves exactly as if they navigated there themselves (they're denied by that destination), and never elevates their access.
 
-The allowlist is configured **per instance by an administrator** via three plugin secrets. Your plugin declares the keys in its manifest `variables`; the admin sets each value on the Plugin admin page, or from the CLI with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set). (This redirect allowlist is separate from the manifest's `url_permissions` field, which allow-lists iframe and script domains for layout effects — the two are unrelated.) Each value is a list with **one entry per line** — entries are newline-delimited, not comma-separated, because URLs and paths can legitimately contain commas (e.g. `?q=1,2,3`):
+The allowlist is configured **per instance by an administrator** via three plugin secrets. Your plugin declares the keys in its [manifest `variables`](/sdk/canvas_manifest/#variables); the admin sets each value on the Plugin admin page, or from the CLI with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set). (This redirect allowlist is separate from the manifest's `url_permissions` field, which allow-lists iframe and script domains for layout effects — the two are unrelated.) Each value is a list with **one entry per line** — entries are newline-delimited, not comma-separated, because URLs and paths can legitimately contain commas (e.g. `?q=1,2,3`):
 
 | Secret key                       | Value (one entry per line)          | Permits                                                                                          |
 |----------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------|

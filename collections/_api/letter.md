@@ -93,6 +93,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
 
+<!-- source: discussion #1064 -->
+## Populating a letter with chart data
 
-
-
+Letter Template placeholders cannot reach command values or ICD codes from a note; only the fixed set of patient, provider, and practice placeholders is supported. To produce a letter populated with chart data, command values, or ICD codes, build the letter's content in a plugin from values you read through the SDK [data module](/sdk/data/), then create the letter with this API.

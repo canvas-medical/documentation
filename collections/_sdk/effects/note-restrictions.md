@@ -14,6 +14,14 @@ The `NoteRestrictionsEffect` and `NoteRestrictionsUpdatedEffect` allow plugins t
 
 ## NoteRestrictionsEffect
 
+To restrict a note for the requesting user, build a `NoteRestrictionsEffect` and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Applies the restrictions to the user who opened the note. No attribute is required; an effect with none set leaves the note unrestricted.
+
 ### How it works
 
 Every time a note is opened (or its restrictions are refetched), Canvas fires a `GET_NOTE_RESTRICTIONS` event targeting that note's external ID. Plugins that subscribe to this event can return a `NoteRestrictionsEffect` to control what the user sees.
@@ -30,11 +38,11 @@ If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by def
 
 ### Attributes
 
-| Field             | Type            | Default | Description                                                                                            |
-|-------------------|-----------------|---------|--------------------------------------------------------------------------------------------------------|
-| `restrict_access` | `bool`          | `False` | Whether the requesting user is restricted from editing this note.                                      |
-| `blur_content`    | `bool`          | `False` | Whether the note body should be blurred for the requesting user.                                       |
-| `banner_message`  | `str` \| `None` | `None`  | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed. |
+| Attribute         | Type            | Description                                                                                                                                                     | Required |
+|-------------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `restrict_access` | `bool`          | Whether the requesting user is restricted from editing this note. Defaults to `False`.                                                                          | No       |
+| `blur_content`    | `bool`          | Whether the note body should be blurred for the requesting user. Defaults to `False`.                                                                           | No       |
+| `banner_message`  | `str` \| `None` | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed. Defaults to `None`. | No       |
 
 ### Example
 
@@ -74,15 +82,25 @@ class NoteAccessHandler(BaseHandler):
 
 ## NoteRestrictionsUpdatedEffect
 
+To push a restriction change to everyone viewing a note, build a `NoteRestrictionsUpdatedEffect` and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Tells every client viewing the note to refetch its restrictions.
+
+- `note_id` is required.
+
 ### How it works
 
 When a plugin performs an action that changes whether a note is restricted (e.g. writing an edit lock to `NoteMetadata`, updating an access rule), it can emit a `NoteRestrictionsUpdatedEffect`. Canvas will broadcast a WebSocket notification to all clients currently viewing that note, causing them to refetch their restrictions immediately — no page reload required.
 
 ### Attributes
 
-| Field     | Type  | Description                                         |
-|-----------|-------|-----------------------------------------------------|
-| `note_id` | `str` (UUID) | The id of the note whose restrictions have changed. |
+| Attribute | Type         | Description                                         | Required |
+|-----------|--------------|-----------------------------------------------------|----------|
+| `note_id` | `str` (UUID) | The id of the note whose restrictions have changed. | Yes      |
 
 ### Example
 
