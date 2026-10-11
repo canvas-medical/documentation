@@ -264,7 +264,10 @@ Content that comes from a patient or an integration, such as a patient portal me
 ```python
 from canvas_sdk.utils.html import sanitize_html
 
-safe = sanitize_html(message.content)
+untrusted = '<p onclick="alert(1)">Can I refill <b>my</b> prescription?</p><script>alert(1)</script>'
+
+safe = sanitize_html(untrusted)
+# '<p>Can I refill <b>my</b> prescription?</p>'
 ```
 
 **Parameters**:
