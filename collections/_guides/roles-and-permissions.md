@@ -82,10 +82,10 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
-Canvas limits what a user who isn't a superuser can change, even with Staff Permissions
-Access. They can't edit a superuser's staff record, and they can't change their own roles
-or their own staff permission groups. Turning emergency access on or off requires the
-Emergency Access role.
+When a user who isn't a superuser edits staff records, Canvas limits what they can change,
+even with Staff Permissions Access. They can't edit a superuser's staff record, and they
+can't change the roles or staff permission groups on their own staff record. Turning
+emergency access on or off requires the Emergency Access role.
 
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
