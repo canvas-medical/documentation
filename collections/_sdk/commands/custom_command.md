@@ -97,28 +97,24 @@ Create a template file for your command content (e.g., `templates/risk_assessmen
 </html>
 ```
 
-Create a simpler print version (e.g., `templates/risk_assessment_print.html`):
+Create a simpler print version (e.g., `templates/risk_assessment_print.html`). Print pages inline this HTML and remove the `<html>`, `<head>`, and `<body>` tags, so write it as a fragment and put the top-level class on a wrapping `<div>`:
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        .risk-assessment-print {
-            font-family: Arial, sans-serif;
-            font-size: 11px;
+<style>
+    .risk-assessment-print {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
 
-            .section {
-                margin-bottom: 8px;
-            }
-
-            .label {
-                font-weight: bold;
-            }
+        .section {
+            margin-bottom: 8px;
         }
-    </style>
-</head>
-<body class="risk-assessment-print">
+
+        .label {
+            font-weight: bold;
+        }
+    }
+</style>
+<div class="risk-assessment-print">
     <h3>Risk Assessment</h3>
     <div class="section">
         <span class="label">Cardiovascular Risk:</span> High - Hypertension, family history
@@ -126,8 +122,7 @@ Create a simpler print version (e.g., `templates/risk_assessment_print.html`):
     <div class="section">
         <span class="label">Falls Risk:</span> Moderate - Age over 65, history of dizziness
     </div>
-</body>
-</html>
+</div>
 ```
 
 ### Step 2: Use Templates in Your Command
@@ -208,8 +203,29 @@ Custom commands support two versions of content:
 ### Print Content (print_content)
 - Rendered when printing the chart or generating PDFs
 - Should be simpler and more compact
+- Sanitized before it is added to the print page, as described in [Print content sanitization](#print-content-sanitization)
+
+If you don't provide `print_content`, print pages use `content` instead, with the same sanitization.
 
 **Best Practice**: Always provide both versions for the best user experience.
+
+## Print content sanitization
+
+The chart displays `content` in a sandboxed frame, but print pages inline the HTML into the page itself. Canvas sanitizes that HTML first, so script in a plugin's output can't run on the print page. Before sanitizing, Canvas prefixes your class names and IDs with the command's key and updates the selectors in your `<style>` blocks to match.
+
+Print pages keep:
+
+- `<style>` blocks. The sanitizer doesn't change the CSS inside them.
+- `class`, `id`, and `style` attributes.
+- Common formatting and structure tags, such as headings, paragraphs, `<div>`, `<span>`, lists, tables, links, and images.
+
+Print pages remove:
+
+- `<script>` and `<svg>` elements, including their contents.
+- Event handler attributes, such as `onclick` and `onerror`.
+- Other tags outside the allowed set, such as `<html>`, `<head>`, `<body>`, `<section>`, `<tfoot>`, `<iframe>`, form elements, and buttons. Their text and child elements stay on the page, but the tag's own attributes, including its `class`, are lost.
+- Inline `style` properties other than these formatting properties: `background-color`, `border`, `border-collapse`, `border-color`, `border-style`, `border-width`, `color`, `float`, `font-family`, `font-size`, `font-style`, `font-weight`, `height`, `line-height`, `margin`, `margin-left`, `margin-right`, `max-height`, `max-width`, `padding`, `padding-left`, `text-align`, `text-decoration`, `vertical-align`, and `width`. For example, an inline `display: flex` or `margin-top` is removed. Put rules like these in a `<style>` block instead.
+- Link and image URLs with a scheme other than `http`, `https`, `mailto`, or `tel`, such as `javascript:`. Images can also use `data:` URLs. The link text stays on the page.
 
 ## Limitations
 
