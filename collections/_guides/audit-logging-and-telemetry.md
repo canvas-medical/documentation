@@ -30,7 +30,8 @@ Printing discloses patient information, so Canvas records every print. Recorded
 documents include notes, After Visit Summaries, letters, appointment lists, claim forms,
 and superbills. Patient receipts and ledgers, insurance cards, and cash reconciliation
 reports are recorded too. So are full chart exports that a plugin requests on a staff
-member's behalf.
+member's behalf. When a patient downloads the After Visit Summary of their own visit from
+the patient portal, Canvas records a download attributed to that patient.
 
 Each print event records the document printed, its identifier, the acting user, the
 patient in context, and a UTC timestamp. Some documents, such as appointment lists and

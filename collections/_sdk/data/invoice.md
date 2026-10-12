@@ -61,7 +61,22 @@ invoices = Invoice.objects.filter(recipient__id="1eed3ea2a8d546a1b681a2a45de1d79
 
 ## Accessing the statement PDF
 
-`Invoice` holds the statement's amounts and delivery details, not the rendered file. Canvas attaches the PDF to a [DocumentReference](/sdk/data-document-reference/#the-related-object), which you reach by resolving the [ContentType](/sdk/data-content-type/) for the invoice and matching `object_id` against the invoice's `dbid`:
+The `invoice_pdf_url` property returns a presigned S3 URL for the statement's PDF, or `None` when the invoice has no PDF. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data import Invoice
+
+invoice = Invoice.objects.get(dbid=42)
+
+# Presigned S3 URL to the statement PDF, or None if there is no PDF
+url = invoice.invoice_pdf_url
+```
+
+## The document reference
+
+Canvas also attaches the same PDF to a [DocumentReference](/sdk/data-document-reference/#the-related-object), which carries the statement's document coding and status and represents it in the FHIR API. Use `invoice_pdf_url` to get the file itself, and the document reference when you want that metadata.
+
+To find it, resolve the [ContentType](/sdk/data-content-type/) for the invoice and match `object_id` against the invoice's `dbid`:
 
 ```python
 from canvas_sdk.v1.data import ContentType, DocumentReference, Invoice
@@ -92,6 +107,8 @@ url = document.document_url if document else None
 | recipient      | [Patient](/sdk/data-patient/#patient)             |
 | recipient_type | [InvoiceRecipients](#invoicerecipients)           |
 | total_amount   | Decimal                                           |
+| invoice_pdf    | File (S3 key)                                     |
+| invoice_pdf_url | String (computed)                                |
 | status         | [InvoiceStatus](#invoicestatus)                   |
 | workflow       | [InvoiceWorkflow](#invoiceworkflow)               |
 | error_message  | String                                            |

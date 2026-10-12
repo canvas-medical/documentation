@@ -326,9 +326,10 @@ sections:
           - name: date
             type: string
             description: Filter by start time. See [Date Filtering](/api/date-filtering) for more information.
+          # sources: discussions #1123, #653
           - name: status
             type: string
-            description: The status of the appointment.
+            description: The status of the appointment. Accepts one value per request, so a comma-separated list of statuses is not supported. To retrieve appointments across several statuses, make one request per status and combine the results.
             search_options:
               - value: proposed
               - value: pending

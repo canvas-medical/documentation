@@ -9,24 +9,29 @@ hidden: false
 
 The `BatchOriginateCommandEffect` provides an efficient way to insert multiple commands into a note simultaneously. When you need to create many commands at once, using batch originate significantly improves performance compared to individual originate operations.
 
-**Parameters:**
+Build a `BatchOriginateCommandEffect` with the commands to insert, then return its `apply()` from your handler.
 
-| Attribute      | Type   | Required | Description                                    |
-|----------------|--------|----------|------------------------------------------------|
-| `commands`     | `list` | `true`   | List of command instances to batch originate   |
-| `line_number`  | `int`  | `false`  | Which note line the commands land on. Defaults to `-1`, which inserts them at the bottom of the note; set a specific line to target that line instead. Combine with `replace_line=True` to also take over (replace the content of) that line. |
-| `replace_line` | `bool` | `false`  | Replace the content of the target line (the one set by `line_number`) with the originated commands, instead of inserting them as new lines. Defaults to `False`. |
+## Methods
 
-**Returns:**
+### apply() → Effect
 
-An `Effect` that can be applied to originate all commands in a single operation.
+Originates every command in `commands` in a single operation.
 
+- `commands` is required, and each command needs the fields its own `originate()` requires.
+
+## Attributes
+
+| Attribute      | Type   | Description                                    | Required |
+|----------------|--------|------------------------------------------------|----------|
+| `commands`     | `list` | List of command instances to batch originate.  | Yes      |
+| `line_number`  | `int`  | Which note line the commands land on. Defaults to `-1`, which inserts them at the bottom of the note; set a specific line to target that line instead. Combine with `replace_line=True` to also take over (replace the content of) that line. | No       |
+| `replace_line` | `bool` | Replace the content of the target line (the one set by `line_number`) with the originated commands, instead of inserting them as new lines. Defaults to `False`. | No       |
 
 ## How It Works
 
 The batch originate effect processes multiple commands in a single operation:
 
-1. **Command Preparation**: Each command in the list required all necessary fields for `originate`
+1. **Command Preparation**: Each command in the list requires all necessary fields for `originate`
 2. **Note Update**: The note is updated once with all command UUIDs, rather than updating for each command individually
 
 This approach minimizes database round-trips and improves overall performance.
@@ -69,7 +74,7 @@ return [
 ]
 ```
 
-## Basic Usage
+## Example
 
 ```python
 from canvas_sdk.commands import (

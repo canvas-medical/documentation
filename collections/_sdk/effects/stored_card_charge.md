@@ -22,21 +22,30 @@ from canvas_sdk.effects.payment import ChargeStoredCard
 
 ## Charging a stored card
 
-Import the `ChargeStoredCard` class, create an instance of it, and return its `.apply()` method from `compute`.
+Build a `ChargeStoredCard` and return its `apply()` from your handler.
 
-| Attribute         |          | Type      | Description                                                                                                                                            |
-| ----------------- | -------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| patient_id        | required | String    | The Canvas [Patient](/sdk/data-patient/#patient) id to charge.                                                                                          |
-| payment_card_id   | required | String    | A reference to the stored card that the configured processor resolves: the Canvas [PaymentCard](/sdk/data-payment-card/) id for the built-in Stripe processor, or a custom processor's own reference. |
-| amount            | required | Decimal   | The amount to charge, in dollars, with up to two decimal places (for example, `Decimal("49.99")`). Must be greater than `0`.                            |
-| idempotency_key   | required | UUID or String | A key that makes the charge safe to retry. Reusing the same key for a retry guarantees the patient is not charged twice. See [Idempotency](#idempotency). |
-| claim_id          | optional\* | UUID or String | A [Claim](/sdk/data-claim/) id to post the payment against. When omitted, the payment is allocated across the patient's outstanding balance. See [Payment allocation](#payment-allocation). |
-| copay             | optional | Boolean   | Whether the charge is a copay. When `true`, the amount is posted to the claim's copay line item; requires `claim_id`. Defaults to `false`. See [Payment allocation](#payment-allocation). |
-| description       | optional | String    | A free-text description to record with the payment. It has no length limit, and is recorded only on a charge that names a `claim_id`.                   |
+### Methods
 
-\* `claim_id` is required when `copay` is `true`.
+#### apply() → Effect
 
-**Example:**
+Charges the stored card.
+
+- `patient_id`, `payment_card_id`, `amount`, and `idempotency_key` are required, and `patient_id` must be the id of an existing patient.
+- `claim_id` is required when `copay` is `true`, and must be the id of an existing claim when set.
+
+### Attributes
+
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| patient_id | String | The Canvas [Patient](/sdk/data-patient/#patient) id to charge. | Yes |
+| payment_card_id | String | A reference to the stored card that the configured processor resolves: the Canvas [PaymentCard](/sdk/data-payment-card/) id for the built-in Stripe processor, or a custom processor's own reference. | Yes |
+| amount | Decimal | The amount to charge, in dollars, with up to two decimal places (for example, `Decimal("49.99")`). Must be greater than `0`. | Yes |
+| idempotency_key | UUID or String | A key that makes the charge safe to retry. Reusing the same key for a retry guarantees the patient is not charged twice. See [Idempotency](#idempotency). | Yes |
+| claim_id | UUID or String | A [Claim](/sdk/data-claim/) id to post the payment against. When omitted, the payment is allocated across the patient's outstanding balance. See [Payment allocation](#payment-allocation). | When `copay` is `true` |
+| copay | Boolean | Whether the charge is a copay. When `true`, the amount is posted to the claim's copay line item; requires `claim_id`. Defaults to `false`. See [Payment allocation](#payment-allocation). | No |
+| description | String | A free-text description to record with the payment. It has no length limit, and is recorded only on a charge that names a `claim_id`. | No |
+
+### Example
 
 ```python
 from decimal import Decimal

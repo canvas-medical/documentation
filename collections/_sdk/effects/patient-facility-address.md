@@ -9,26 +9,50 @@ The `PatientFacilityAddress` effect enables the creation, updating, and deletion
 
 You can either reference an existing facility by ID, or create a new facility inline by providing the facility details.
 
+Build a `PatientFacilityAddress` with the [attributes](#attributes) you want to set, then return one of its methods from your handler: `create()`, `update()`, or `delete()`.
+
+## Methods
+
+### create() → Effect
+
+Creates a patient facility address.
+
+- `patient_id` is required, and must be the id of an existing patient.
+- Supply either `facility_id` for an existing facility, or the fields to create a new facility (`facility_name`, `facility_city`, `facility_state_code`, and `facility_postal_code`), but not both. See [Facility Reference Options](#facility-reference-options).
+- `id` must not be set.
+
+### update() → Effect
+
+Updates an existing patient facility address.
+
+- `id` is required, and must be the id of an existing patient facility address.
+
+### delete() → Effect
+
+Deletes an existing patient facility address.
+
+- `id` is required, and must be the id of an existing patient facility address.
+
 ## Attributes
 
-| Attribute               | Type                   | Description                                            | Required                       |
-|-------------------------|------------------------|--------------------------------------------------------|--------------------------------|
-| `id`                    | `str` or `UUID`        | ID of the patient facility address (for update/delete) | Yes (update/delete)            |
-| `patient_id`            | `str` or `UUID`        | ID of the patient                                      | Yes (create)                   |
-| `facility_id`           | `str` or `UUID`        | ID of an existing facility to link                     | Yes (if not creating new)      |
-| `facility_name`         | `str`                  | Name of new facility to create                         | Yes (if creating new facility) |
-| `facility_npi_number`   | `str`                  | NPI number for new facility                            | No                             |
-| `facility_phone_number` | `str`                  | Phone number for new facility                          | No                             |
-| `facility_fax_number`   | `str`                  | Fax number for new facility                            | No                             |
-| `facility_active`       | `bool`                 | Whether the new facility is active                     | No                             |
-| `facility_line1`        | `str`                  | Street address line 1 for new facility                 | No                             |
-| `facility_line2`        | `str`                  | Street address line 2 for new facility                 | No                             |
-| `facility_city`         | `str`                  | City for new facility                                  | Yes (if creating new facility) |
-| `facility_district`     | `str`                  | District for new facility                              | No                             |
-| `facility_state_code`   | `str`                  | State code for new facility (e.g., "CA", "NY")         | Yes (if creating new facility) |
-| `facility_postal_code`  | `str`                  | Postal code for new facility                           | Yes (if creating new facility) |
-| `room_number`           | `str`                  | Room number at the facility                            | No                             |
-| `address_type`          | `AddressType` or `str` | Type of address: "physical" or "both"                  | No (defaults to "physical")    |
+| Attribute               | Type                   | Description                                            | Required |
+|-------------------------|------------------------|--------------------------------------------------------|----------|
+| `id`                    | `str` or `UUID`        | ID of the patient facility address                     | For `update()` and `delete()` |
+| `patient_id`            | `str` or `UUID`        | ID of the patient                                      | For `create()` |
+| `facility_id`           | `str` or `UUID`        | ID of an existing facility to link                     | For `create()`, unless creating a new facility |
+| `facility_name`         | `str`                  | Name of new facility to create                         | When creating a new facility |
+| `facility_npi_number`   | `str`                  | NPI number for new facility                            | No       |
+| `facility_phone_number` | `str`                  | Phone number for new facility                          | No       |
+| `facility_fax_number`   | `str`                  | Fax number for new facility                            | No       |
+| `facility_active`       | `bool`                 | Whether the new facility is active                     | No       |
+| `facility_line1`        | `str`                  | Street address line 1 for new facility                 | No       |
+| `facility_line2`        | `str`                  | Street address line 2 for new facility                 | No       |
+| `facility_city`         | `str`                  | City for new facility                                  | When creating a new facility |
+| `facility_district`     | `str`                  | District for new facility                              | No       |
+| `facility_state_code`   | `str`                  | State code for new facility (e.g., "CA", "NY")         | When creating a new facility |
+| `facility_postal_code`  | `str`                  | Postal code for new facility                           | When creating a new facility |
+| `room_number`           | `str`                  | Room number at the facility                            | No       |
+| `address_type`          | `AddressType` or `str` | Type of address: "physical" or "both". Defaults to "physical". | No |
 
 ## Facility Reference Options
 
@@ -55,26 +79,6 @@ The `address_type` field accepts the following values:
 |------------|-----------------------------------|
 | `physical` | Physical/street address (default) |
 | `both`     | Both physical and mailing address |
-
-## Effect Methods
-
-### `.create()`
-
-Creates a new patient facility address. Requires `patient_id` and either `facility_id` or facility creation fields.
-
-**Effect Type:** `CREATE_PATIENT_FACILITY_ADDRESS`
-
-### `.update()`
-
-Updates an existing patient facility address. Requires `id` of the address to update.
-
-**Effect Type:** `UPDATE_PATIENT_FACILITY_ADDRESS`
-
-### `.delete()`
-
-Deletes an existing patient facility address. Requires `id` of the address to delete.
-
-**Effect Type:** `DELETE_PATIENT_FACILITY_ADDRESS`
 
 ## Validation
 
