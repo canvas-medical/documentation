@@ -5670,7 +5670,7 @@ class FollowUpDateInPlan(BaseHandler):
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is picked in an Assess command. <code>data.condition</code> describes the pick. When the pick is an ICD-10 code the patient doesn't have charted yet, <code>id</code> is <code>null</code> and <code>codings</code> holds the picked code. The condition isn't recorded until the command is committed.</td></tr>
+    <tr><td colspan="2">Occurs when a condition already on the patient's chart is picked in an Assess command. <code>data.condition</code> holds the condition's <code>id</code> and its <code>codings</code>. Picking an ICD-10 code the patient doesn't have charted sends <a href="#assess_command__icd10_code_selected"><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a> instead. Clearing the field sends neither event.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -5690,11 +5690,46 @@ class FollowUpDateInPlan(BaseHandler):
   "narrative": str
 "data":
   "condition":
-    "id": null | condition_id
+    "id": condition_id
     "codings":
       "code": str
       "system": str
       "display": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="assess_command__icd10_code_selected"></a>
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_COMMAND__ICD10_CODE_SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when an ICD-10 code the patient doesn't have charted is picked in an Assess command. No condition exists yet, so <code>data.codings</code> holds the picked code. Committing the command records the condition, or reuses the patient's charted condition with that code if one was added in the meantime.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "background": str
+  "status": str
+  "narrative": str
+"data":
+  "codings":
+    "code": str
+    "system": str
+    "display": str
 "note":
   "uuid": note_id
 "patient":

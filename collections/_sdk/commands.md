@@ -714,6 +714,8 @@ Canvas checks `icd10_code` against the ICD-10 terminology when it applies the ef
 
 `condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
 
+Committing the command checks `condition_id` again. If the condition was entered in error after it was picked, or isn't on the patient's chart, the commit fails with the error `The condition picked in this Assess was entered in error or is not on this patient's chart. Pick the condition again.`
+
 ---
 
 ### ChangeMedication
