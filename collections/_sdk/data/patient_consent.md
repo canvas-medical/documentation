@@ -114,24 +114,24 @@ for reference in consent.document_references:
 
 ### PatientConsentCoding
 
-| Field Name             | Type                                                          | Description      |
-|------------------------|---------------------------------------------------------------|------------------|
-| dbid                   | Integer                                                       |                  |
-| created                | DateTime                                                      |                  |
-| modified               | DateTime                                                      |                  |
-| system                 | String                                                        |                  |
-| version                | String                                                        |                  |
-| code                   | String                                                        |                  |
-| display                | String                                                        |                  |
-| user_selected          | Boolean                                                       |                  |
-| expiration_rule        | [PatientConsentExpirationRule](#patientconsentexpirationrule) |                  |
-| is_mandatory           | Boolean                                                       |                  |
-| is_proof_required      | Boolean                                                       |                  |
-| show_in_patient_portal | Boolean                                                       |                  |
-| summary                | String                                                        |                  |
-| document               | File (S3 key)                                                 |                  |
-| document_url           | String (computed)                                             | Presigned S3 URL |
-| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |                  |
+| Field Name             | Type                                                          | Description              |
+|------------------------|---------------------------------------------------------------|--------------------------|
+| dbid                   | Integer                                                       |                          |
+| created                | DateTime                                                      |                          |
+| modified               | DateTime                                                      |                          |
+| system                 | String                                                        |                          |
+| version                | String                                                        |                          |
+| code                   | String                                                        |                          |
+| display                | String                                                        |                          |
+| user_selected          | Boolean                                                       |                          |
+| expiration_rule        | [PatientConsentExpirationRule](#patientconsentexpirationrule) |                          |
+| is_mandatory           | Boolean                                                       |                          |
+| is_proof_required      | Boolean                                                       |                          |
+| show_in_patient_portal | Boolean                                                       |                          |
+| summary                | String                                                        |                          |
+| document               | File (S3 key)                                                 |                          |
+| document_url           | String (computed)                                             | Presigned S3 URL or None |
+| patient_consent        | QuerySet[[PatientConsent](#patientconsent)]                   |                          |
 
 
 ### PatientConsentRejectionCoding
