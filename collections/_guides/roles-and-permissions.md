@@ -82,6 +82,17 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
+Users who aren't superusers can't use the admin console to raise their own access or a
+superuser's, even with Staff Permissions Access:
+
+- A superuser's staff and user records open read-only.
+- They can't change their own roles, on their staff record or on a role's page, or a
+  superuser's roles.
+- Their own groups, permissions, and active status are read-only.
+- They can't change a group they belong to.
+
+Turning emergency access on or off requires the Emergency Access role.
+
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
 
