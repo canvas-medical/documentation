@@ -134,3 +134,16 @@ class MyHandler(BaseHandler):
 ```
 
 This access pattern is unchanged from earlier Canvas versions, so migrating a plugin from the legacy `secrets:` array to the new `variables:` schema requires no handler code changes.
+
+<!-- source: discussion #618 -->
+> **Both steps are required.** `self.secrets["KEY"]` returns a value only after you have:
+>
+> 1. Declared the key in `CANVAS_MANIFEST.json`.
+> 2. Set a value for it, with the CLI or on the plugin configuration page in the Admin UI (`/admin/plugin_io/plugin/`).
+>
+> If either step is missing, the lookup returns no value.
+
+<!-- source: discussion #1415 -->
+### Configuring SimpleAPI credentials
+
+A SimpleAPI route that authenticates with [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins) reads its key from the `simpleapi-api-key` secret, unless the route sets a different name in `API_KEY_SECRET_NAME`. Declare that secret, set its value in the secrets Admin UI, then send the **same** value in the `Authorization` header of each request to the route. If the configured secret and the header value do not match, or the secret has no value set, the endpoint responds with `401 Unauthorized` ("Provided credentials are invalid").

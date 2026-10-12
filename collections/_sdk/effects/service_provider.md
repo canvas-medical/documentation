@@ -11,17 +11,39 @@ providers. Providers created this way are readable through the
 `is_customer_managed` — and can be offered in the provider-search surfaces by
 [handling those searches yourself](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 
-## Create Service Provider
+Build a `ServiceProvider` with the [attributes](#attributes) you want to set, then return one of its methods from your handler: `create()`, `update()`, or `deactivate()`.
 
-Creates a service provider, or updates a matching one.
+## Methods
 
-### Attributes
+### create() → Effect
+
+Creates a service provider, or updates a matching one; see [Calling create more than once](#calling-create-more-than-once).
+
+- `first_name`, `specialty`, and `business_address` are required, and reject empty strings.
+- `id` must not be set.
+
+### update() → Effect
+
+Updates the provider with the given `id`.
+
+- `id` is required, and must be the id of an existing provider.
+- Only the attributes you set on the effect are changed, so an update never clears a field you did not mention. `first_name` and `specialty` cannot be set to `None`.
+- Set `is_active=True` to reactivate a deactivated provider. Nothing else reactivates one.
+
+### deactivate() → Effect
+
+Deactivates a provider without deleting it, so anything referencing it keeps working.
+
+- `id` is required, and must be the id of an existing provider.
+
+## Attributes
 
 | Attribute          | Type            | Description                                     | Required |
 |--------------------|-----------------|-------------------------------------------------|----------|
-| `first_name`       | `str`           | Provider name, or the organization name         | Yes      |
-| `specialty`        | `str`           | Free text                                       | Yes      |
-| `business_address` | `str`           | Business address                                | Yes      |
+| `id`               | `str` or `UUID` | The id of the provider. Must not be set on create | For `update()` and `deactivate()` |
+| `first_name`       | `str`           | Provider name, or the organization name         | For `create()` |
+| `specialty`        | `str`           | Free text                                       | For `create()` |
+| `business_address` | `str`           | Business address                                | For `create()` |
 | `last_name`        | `str` or `None` | Omit for organizations                          | No       |
 | `practice_name`    | `str` or `None` | Practice or organization name                   | No       |
 | `business_phone`   | `str` or `None` | Business phone number                           | No       |
@@ -31,9 +53,7 @@ Creates a service provider, or updates a matching one.
 | `notes`            | `str` or `None` | Free-text notes                                 | No       |
 | `is_active`        | `bool`          | Defaults to `True`                              | No       |
 
-The required fields reject empty strings.
-
-### Calling create more than once
+## Calling create more than once
 
 Creating never produces a duplicate. These four fields together identify a provider:
 
@@ -55,7 +75,9 @@ Because of this, the same create is safe to run repeatedly — on a schedule, on
 or as a re-import of a directory you already loaded. An omitted or empty `last_name` is treated as
 the empty string when matching, so repeated creates for an organization resolve to the same record.
 
-### Example Usage
+## Example Usage
+
+### Creating providers
 
 ```python
 from canvas_sdk.effects.service_provider import ServiceProvider
@@ -86,10 +108,7 @@ class ProviderLoader(BaseHandler):
         ]
 ```
 
-## Update Service Provider
-
-Updates the provider with the given `id`. Only the fields you set are sent, so an update never
-clears a field you did not mention. `first_name` and `specialty` cannot be set to `None`.
+### Updating a provider
 
 ```python?partial=true
 ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", notes="Prefers fax").update()
@@ -97,15 +116,11 @@ ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", notes="Prefers fax").
 
 ### Reactivating a provider
 
-Set `is_active=True` explicitly. Nothing else reactivates a provider.
-
 ```python?partial=true
 ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11", is_active=True).update()
 ```
 
-## Deactivate Service Provider
-
-Deactivates a provider without deleting it, so anything referencing it keeps working.
+### Deactivating a provider
 
 ```python?partial=true
 ServiceProvider(id="d2194110-5c9a-4842-8733-ef09ea5ead11").deactivate()

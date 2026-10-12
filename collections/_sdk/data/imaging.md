@@ -108,6 +108,19 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## Accessing the imaging order PDF
+
+The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is faxed. Printing the order doesn't save it, so an order that has never been faxed has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Presigned S3 URL to the order PDF, or None if no PDF has been saved
+url = imaging_order.document_url
+```
+
 ## Review assignment
 
 An imaging report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
@@ -170,6 +183,8 @@ document = DocumentReference.objects.filter(
 | ordering_provider   | [Staff](/sdk/data-staff/#staff)                                |
 | priority            | String                                                         |
 | delegated           | Boolean                                                        |
+| document            | File (S3 key)                                                  |
+| document_url        | String (computed)                                               |
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
 | action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
