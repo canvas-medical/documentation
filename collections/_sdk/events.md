@@ -16382,7 +16382,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16409,7 +16409,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16436,7 +16436,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16484,7 +16484,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16511,7 +16511,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16538,7 +16538,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16565,7 +16565,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16592,7 +16592,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16619,7 +16619,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16646,7 +16646,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16673,7 +16673,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16700,7 +16700,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16727,7 +16727,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":
@@ -16754,7 +16754,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "item": dict
   "indications": list[dict]
   "quantity": int
-  "length_of_need": int
+  "length_of_need": str
   "send_to": dict
   "ordering_provider": dict
 "note":

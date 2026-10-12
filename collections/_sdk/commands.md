@@ -1523,15 +1523,15 @@ Orders durable medical equipment (DME), such as a wheelchair, catheter, or showe
 | `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
 | `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
-| `length_of_need`        | _integer_                             | `false` | Number of months the patient needs the equipment, from 1 to 99. Use `99` for lifetime need. |
+| `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
 | `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
 
-Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` outside 1 to 99 raises a validation error when you create the command object.
+Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
 
-Canvas leaves a field empty when its value doesn't resolve: a `dme_product_id` that doesn't match an active formulary product, or an `ordering_provider_key` that doesn't match an active prescriber. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value.
+Canvas leaves a field empty when its value doesn't resolve. A `dme_product_id` resolves only to an active formulary product, and an `ordering_provider_key` only to an active staff member. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value. Signing also fails when the ordering provider isn't an active prescriber, because the printed order names them as the signer.
 
-When the order is signed, Canvas saves the item, its code, the indications, and the patient's latest height and weight with the order, so later changes to the formulary or the patient's vitals don't change the printed order.
+Signing saves the item's formulary name and code and the indications with the order, along with the patient's latest height and weight. Later changes to the formulary or the patient's vitals don't change the printed order.
 
 **Command-specific actions**:
 
@@ -1563,7 +1563,7 @@ formulary_order = OrderDmeCommand(
     dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
     diagnosis_codes=["N186"],
     quantity=1,
-    length_of_need=99,
+    length_of_need="Lifetime",
     service_provider=supplier,
     ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
 )
@@ -1574,7 +1574,7 @@ free_text_order = OrderDmeCommand(
     free_text_item="Bariatric shower chair",
     diagnosis_codes=["E6601"],
     quantity=1,
-    length_of_need=12,
+    length_of_need="12 months",
     service_provider=supplier,
     ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
 )
