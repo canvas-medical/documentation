@@ -46,7 +46,7 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 
 and you'll get back a JSON which will contain an `access_token` that'll be valid for 10 hours.
 
-The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `401 Unauthorized`. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
+The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
 
 ## Authorization Code
 
