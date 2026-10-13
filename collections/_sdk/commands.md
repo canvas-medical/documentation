@@ -384,7 +384,7 @@ Commands have two types of actions:
 <!-- source: discussion #1046 -->
 A printed note groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
 
-On an instance with Note Revamp enabled, the Assessment, Procedures, and Plan sections print together under one Assessment & Plan heading. Their commands keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout.
+With Note Revamp enabled, a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note still in the older format prints those sections under separate headings, as it does without Note Revamp.
 
 To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 
