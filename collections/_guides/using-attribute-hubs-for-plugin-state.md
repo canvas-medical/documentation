@@ -452,8 +452,8 @@ def fetch_results(self, hub):
     return response.json().get("results", [])
 ```
 
-You'll also need to add the secrets to your manifest and configure them at
-install time:
+You'll also need to add the secrets to your manifest and set their values with
+`canvas config set`:
 
 ```json?partial=true
 "variables": [

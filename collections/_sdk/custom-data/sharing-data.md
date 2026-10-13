@@ -104,7 +104,7 @@ Each plugin that joins a namespace must:
 
 > Namespace access keys are declared with `"sensitive": false` so the value remains readable in the Admin UI's Secrets inline — that's the surface developers use to copy a key into a sibling plugin that joins the same namespace.
 
-**Installing with the Canvas CLI (recommended):**
+**Installing with the Canvas CLI:**
 
 Provide the access key using the `--secret` flag:
 
