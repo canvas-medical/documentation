@@ -25,7 +25,7 @@ Adds the banner alert.
 | Attribute      | Type                          | Description                                                                                                                                        | Required |
 | -------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | patient_id     | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   | If `patient_filter` is not provided |
-| patient_filter | dict                          | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients | If `patient_id` is not provided |
+| patient_filter | dict                          | A [patient filter](#patient-filters) that applies the effect to every matching patient. For example, `{"active": True}` applies the effect to all active patients. | If `patient_id` is not provided |
 | key            | String                        | An identifier that categorizes the alert.                                                                                                          | Yes      |
 | narrative      | String                        | The content of the alert. Maximum 90 characters.                                                                                                   | Yes      |
 | placement      | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               | Yes      |
@@ -172,7 +172,7 @@ Removes the banner alert.
 | Attribute      | Type   | Description                                                                 | Required |
 | -------------- | ------ | --------------------------------------------------------------------------- | -------- |
 | patient_id     | String | The id of the [patient](/sdk/data-patient/) whose alert should be removed.   | If `patient_filter` is not provided |
-| patient_filter | dict   | Patient queryset filters to remove the alert from multiple patients.        | If `patient_id` is not provided |
+| patient_filter | dict   | A [patient filter](#patient-filters) that removes the alert from every matching patient. | If `patient_id` is not provided |
 | key            | String | The key of the alert to remove.                                             | Yes      |
 
 ### Example
@@ -187,6 +187,20 @@ banner_alert = RemoveBannerAlert(
 
 banner_alert.apply()
 ```
+
+## Patient filters
+
+A `patient_filter` selects patients by the patient fields the SDK exposes. Each key is a field name, optionally followed by `__` and a lookup, such as `"last_name__istartswith": "Sm"`. The filter accepts these fields:
+
+- `id`, `key`, and `mrn`
+- `active` and `deceased`
+- `first_name`, `middle_name`, `last_name`, and `nickname`
+- `birth_date` and `sex_at_birth`
+- `external_identifiers__system` and `external_identifiers__value`
+
+It accepts these lookups: `exact`, `iexact`, `in`, `lt`, `lte`, `gt`, `gte`, `range`, `isnull`, `startswith`, `istartswith`, `endswith`, `iendswith`, `contains`, and `icontains`.
+
+Each value must be a string, number, boolean, `None`, or a list of those. Canvas rejects the effect when a key names any other field, related model, or lookup, or when a value has another type. A rejected effect changes no patients.
 
 <br/>
 <br/>
