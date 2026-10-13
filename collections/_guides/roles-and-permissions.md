@@ -82,6 +82,8 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
+Turning emergency access on or off requires the Emergency Access role.
+
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
 
