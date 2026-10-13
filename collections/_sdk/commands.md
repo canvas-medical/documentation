@@ -708,7 +708,7 @@ assess = AssessCommand(
 
 **Validation**:
 
-Setting both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command, with the error `Name the condition with either condition_id or icd10_code, not both`.
+Passing both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command, with the error `Name the condition with either condition_id or icd10_code, not both`. This applies even when one of them is `None`, because the empty value would clear the other. Leave out the argument you aren't using.
 
 Canvas checks `icd10_code` against the ICD-10 terminology when it applies the effect. A code that matches no ICD-10 condition fails with the error `ICD-10 code <code> not found`, and the command is neither created nor updated.
 
