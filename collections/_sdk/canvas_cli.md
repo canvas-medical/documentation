@@ -279,6 +279,7 @@ Canvas Platform hosts one git repository per plugin, rooted at the directory tha
 paperwork-eviscerator/          # repository root
 ├── acme__paperwork_eviscerator/
 │   ├── CANVAS_MANIFEST.json
+│   ├── OVERVIEW.md             # the plugin's overview in the catalog
 │   └── handlers/
 ├── pyproject.toml
 └── tests/

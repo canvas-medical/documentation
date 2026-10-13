@@ -64,7 +64,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `sdk_version` | string | Yes | The Canvas SDK version the plugin was built against. |
 | `plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See [Versioning your plugin](#versioning-your-plugin). |
 | `name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes. |
-| `description` | string | Yes | What the plugin does. |
+| `description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card. |
 | `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
 | `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See [Tags](#tags). |
 | `license` | string | Yes | A license identifier such as `"MIT"`, or an empty string. |
@@ -364,6 +364,8 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision. |
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
+
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
