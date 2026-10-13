@@ -347,22 +347,18 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out. |
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
-| `integration` | object | No | For an integration: `unit` names what its volume counts, such as `"visits"`. |
 | `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. |
 | `release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision. |
-| `pricing` | object | No | What an organization pays to use the plugin. See [Pricing](#pricing). |
+| `pricing` | array | No | What Canvas charges for the plugin, one component per unit. Leave it out for a plugin with no charge. See [Pricing and vendors](#pricing-and-vendors). |
+| `vendors` | array | No | The third parties the plugin depends on, and who holds the account with each. See [Pricing and vendors](#pricing-and-vendors). |
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
 
-### Pricing
+### Pricing and vendors
 
-`pricing` is the plugin's price book in the catalog, the same for every organization. It answers three separate questions, and all three keys are required when `pricing` is present:
+`pricing` and `vendors` tell an organization what a plugin costs before it installs it. `pricing` lists what Canvas charges, and `vendors` lists the third-party services the plugin relies on and whether any of them bills the organization separately.
 
-- `canvas_fee`: what Canvas charges for the plugin.
-- `vendor_fee`: what a partner charges for its own service.
-- `model_use`: where the plugin's model calls are billed.
-
-This plugin costs $0.40 per visit for an organization's first 1,000 production visits each month and $0.25 per visit after that. Its model calls are part of that price, and no vendor charges anything beyond Canvas:
+This plugin costs $5.75 per visit and bills its model calls by token. It sends messages through a Twilio account that the organization sets up and pays Twilio for directly:
 
 ```json
 {
@@ -370,68 +366,35 @@ This plugin costs $0.40 per visit for an organization's first 1,000 production v
     "title": "Intake Summary",
     "category": "Charting",
     "surfaces": ["Note"],
-    "pricing": {
-      "canvas_fee": {
-        "model": "per_unit",
-        "unit": {"singular": "visit", "plural": "visits"},
-        "meter": {
-          "key": "intake_summary.visit",
-          "billable_stages": ["production"],
-          "aggregation": "organization_month"
-        },
-        "schedule": [
-          {
-            "id": "intake-summary-list-2026-10",
-            "effective_from": "2026-10-01",
-            "effective_to": null,
-            "bands": [
-              {"up_to": 1000, "unit_price": 40000000000},
-              {"up_to": null, "unit_price": 25000000000}
-            ]
-          }
-        ]
-      },
-      "vendor_fee": null,
-      "model_use": {"billed_as": "included_in_unit_price"}
-    }
+    "pricing": [
+      {"unit": "visit", "price_per_unit": "5.75"},
+      {"unit": "token"}
+    ],
+    "vendors": [
+      {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
+    ]
   }
 }
 ```
 
-A plugin covered by the Canvas subscription sets `"canvas_fee": {"model": "included"}` and has no line on any invoice. A plugin billed per unit sets `"model": "per_unit"` and these fields:
+`pricing` is a list of one to 10 components, in the order the catalog's Pricing card shows them. Each component has these fields:
 
-| Field | Description |
-|-------|-------------|
-| `unit` | What one unit of work is called, as `singular` and `plural`, for display such as "$0.40 per visit" and "1,750 visits". |
-| `meter.key` | The meter name each usage record carries. Starts with a lowercase letter, followed by lowercase letters, digits, underscores or periods. |
-| `meter.billable_stages` | The instance stages whose units are billed, at least one and none repeated: `sandbox`, `development`, `staging`, `production`. Units on other stages are rated at zero. |
-| `meter.aggregation` | Always `organization_month`. |
-| `schedule` | The list price over time, oldest version first, with at least one version. |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `unit` | string | Yes | What Canvas charges for, in the singular, such as `visit` or `page`. At most 40 characters. |
+| `price_per_unit` | string | Yes, except for `token` | The price of one unit in US dollars, written as a string such as `"5.75"` or `"0.0025"`, with at most four decimal places. `"0"` is allowed; a number such as `5.75` or a negative price is refused. |
 
-Each version in `schedule` has these fields:
+The `token` unit takes no `price_per_unit`, because the Canvas inference gateway prices tokens by model. List it when Canvas charges for the plugin's model calls by token.
 
-| Field | Description |
-|-------|-------------|
-| `id` | A non-empty identifier, recorded on every invoice line rated under this version. |
-| `effective_from` | The first day of a month, such as `2026-10-01`. |
-| `effective_to` | The first day of a later month, which the version no longer covers, or `null` while the version is open-ended. Starting and ending on the first of a month means one billing period is never rated under two prices. |
-| `bands` | Graduated volume bands, in ascending order. Each band has `up_to` (a whole number of at least 1, or `null` for no upper limit) and `unit_price`. A flat price is one band with `up_to: null`. |
+`vendors` is a list of one to 10 vendors. Each vendor has these fields:
 
-`unit_price` is a whole number of USD nanocents, at least 0: $0.40 is `40000000000`. Fractional and negative prices are refused. Canvas Platform checks that versions and bands are in order and leave no gaps when you push, so `canvas validate` doesn't catch those mistakes.
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | The vendor's name. At most 64 characters. |
+| `relationship` | string | Yes | `canvas_managed` when Canvas sets up the vendor account, or `self_managed` when the organization does. |
+| `additional_fees` | boolean | Yes | `true` when the vendor bills the organization directly for its own fees, apart from what Canvas charges. |
 
-`vendor_fee` is `null` when the vendor charges nothing beyond Canvas. Otherwise it's an object with these fields:
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| `basis` | Yes | How the vendor charges: `included`, `usage`, `subscription`, `per_claim`, `per_transaction`, `per_page`, `per_seat` or `per_query`. |
-| `billed_by` | Yes | `vendor` when the vendor invoices the organization, or `canvas_pass_through` when Canvas bills the charge on the vendor's behalf. |
-| `pass_through_service` | When `billed_by` is `canvas_pass_through` | The name of the service Canvas passes the charge through for. |
-
-`model_use.billed_as` takes one of three values:
-
-- `included_in_unit_price`: the plugin calls models through a Canvas credential, and the per-unit price covers those calls. Requires a `per_unit` Canvas fee.
-- `organization_tokens`: the plugin calls models with the organization's own inference keys, so the organization pays for tokens directly. Not allowed with a `per_unit` Canvas fee, since a per-unit price already includes the plugin's model calls.
-- `none`: the plugin calls no model.
+A unit or vendor can appear only once in its list. Names are compared without regard to case or spacing, so `Visit` and `visit` count as the same unit. `canvas validate` refuses the repeat, as Canvas Platform does on push.
 
 ## Tags
 
