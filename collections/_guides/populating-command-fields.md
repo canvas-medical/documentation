@@ -77,7 +77,7 @@ The richest autocompletes in the UI search a clinical terminology in real time: 
 |---------------|--------|
 | Prescribe / MedicationStatement / Refill / AdjustPrescription medication (`fdb_code`, `new_fdb_code`) | [Searching for medications](/sdk/utils/#searching-for-medications) (Ontologies) |
 | Allergy allergen | [Searching for allergens](/sdk/utils/#searching-for-allergens) (Ontologies) |
-| Diagnose / Assess-adjacent ICD-10 codes | [Looking up clinical codes](/sdk/utils/#looking-up-clinical-codes) (Ontologies) |
+| Diagnose and Assess ICD-10 codes (`icd10_code`) | [Looking up clinical codes](/sdk/utils/#looking-up-clinical-codes) (Ontologies) |
 | Family History, Surgical History, Instruct concepts | [Searching clinical concepts](/sdk/utils/#searching-clinical-concepts) (Ontologies) |
 | Prescribe pharmacy (`pharmacy`) | [Searching for pharmacies](/sdk/utils/#searching-for-pharmacies) (Pharmacy) |
 | ImagingOrder image code | [Searching for imaging codes](/sdk/utils/#searching-for-imaging-codes) (Science) |

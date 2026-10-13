@@ -467,6 +467,10 @@ which is what decides where it shows up and which commands can act on it later:
 | [AddCondition](#addcondition) | `active` | `false` | No |
 | [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
 
+[Assess](#assess) with `icd10_code` can also add a condition to the chart. It assesses the
+patient's charted condition with that code, and records a new condition on the problem list only
+when the patient has none.
+
 Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
 from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
 surgical entry, and [AddCondition](#addcondition) ignores one when checking whether a condition is
@@ -478,7 +482,7 @@ Four more commands act on a condition that is already on the chart.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [Assess](#assess) | You are recording an assessment against a condition on the chart, named by `condition_id` or `icd10_code`. Assessing a resolved condition makes it active again. |
 | [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
 | [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
 | [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
@@ -643,16 +647,25 @@ allergy = AllergyCommand(
 
 ### Assess
 
-Records an assessment against a condition already on the patient's chart. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+Records an assessment of a patient's condition. Name the condition in one of two ways:
+
+- `condition_id` assesses a specific condition already on the patient's chart.
+- `icd10_code` assesses a condition by its ICD-10 code, so the condition doesn't have to be charted first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
+
+Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
+Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
 **Command-specific parameters**:
 
-| Name           | Type          | Required to commit | Description                                                                |
-|:---------------|:--------------|:---------|:---------------------------------------------------------------------------|
-| `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
-| `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
-| `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
+| Name                        | Type          | Required to commit | Description                                                                |
+|:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
+| `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
+| `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
+| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
+| `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
+| `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
@@ -662,7 +675,9 @@ Records an assessment against a condition already on the patient's chart. See [U
 | `STABLE`       | `"stable"`       | The condition is stable.        |
 | `DETERIORATED` | `"deteriorated"` | The condition has deteriorated. |
 
-**Example**:
+**Examples**:
+
+Assess a condition already on the chart:
 
 ```python
 from canvas_sdk.commands import AssessCommand
@@ -676,11 +691,30 @@ assess = AssessCommand(
 )
 ```
 
+Assess a condition by ICD-10 code, whether or not the patient has it charted:
+
+```python
+from datetime import date
+from canvas_sdk.commands import AssessCommand
+
+assess = AssessCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='M54.50',
+    approximate_date_of_onset=date(2012, 1, 1),
+    background='lifted heavy box',
+    narrative='unable to sleep lately'
+)
+```
+
 **Validation**:
+
+Passing both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command, with the error `Name the condition with either condition_id or icd10_code, not both`. This applies even when one of them is `None`, because the empty value would clear the other. Leave out the argument you aren't using.
+
+Canvas checks `icd10_code` against the ICD-10 terminology when it applies the effect. A code that matches no ICD-10 condition fails with the error `ICD-10 code <code> not found`, and the command is neither created nor updated.
 
 `condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
 
-The check needs that note or command to exist, so it is skipped when you create the note and originate the command in the same batch of effects. Nothing is rejected in that case, since there is not yet a chart to compare the condition against.
+Committing the command checks `condition_id` again. If the condition was entered in error after it was picked, or isn't on the patient's chart, the commit fails with the error `The condition picked in this Assess was entered in error or is not on this patient's chart. Pick the condition again.`
 
 ---
 

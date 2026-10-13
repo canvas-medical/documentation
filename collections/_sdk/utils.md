@@ -675,7 +675,7 @@ Beyond medications and allergens, the ontologies service resolves coded concepts
 
 #### `GET /icd/condition/` — ICD-10 conditions
 
-**Used by:** [Diagnose](/sdk/commands/#diagnose) (`icd10_code`), [Medical History](/sdk/commands/#medicalhistory) (`past_medical_history`), and the `diagnosis_codes` fields on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), and other diagnosis-code commands. _(Prescribe/Refill `icd10_codes` come from the patient's active conditions, not this search.)_
+**Used by:** [Diagnose](/sdk/commands/#diagnose) (`icd10_code`), [Assess](/sdk/commands/#assess) (`icd10_code`), [Medical History](/sdk/commands/#medicalhistory) (`past_medical_history`), and the `diagnosis_codes` fields on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), and other diagnosis-code commands. _(Prescribe/Refill `icd10_codes` come from the patient's active conditions, not this search.)_
 
 Search ICD-10 conditions by text, or resolve a specific code. This backs the condition/diagnosis autocompletes on commands such as [Diagnose](/sdk/commands/#diagnose), [Assess](/sdk/commands/#assess), and [Medical History](/sdk/commands/#medicalhistory). Query parameters:
 
