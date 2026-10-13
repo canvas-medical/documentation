@@ -699,7 +699,7 @@ sections:
             • If the <code>id</code> is included in an entry, Canvas updates the matching record. <br>
             • If the <code>id</code> is omitted, Canvas creates a new record. <br>
             • If an entry returned via Search/Read is **not** included in the update body, it is deleted (with the exception of <code>identifier</code>, which is only deleted when its <code>period.end</code> is in the future). <br><br>
-            The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>default-provider</code>, and <code>default-location</code> extensions — their values are dropped if those extensions are not present on update. <br><br>
+            The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions — their values are dropped if those extensions are not present on update. To keep a patient's current values, read the patient first and send these extensions back on the update. <br><br>
             <b>Other fields</b><br><br>
             Any field that is required on create is also required on update. Optional fields that are not included in the update body retain their stored values.
         search:
