@@ -259,6 +259,18 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
 
 
+### Faxes
+
+Check out the [Fax Effects](/sdk/effect-fax/) documentation. To fax a whole note, use `FAX_NOTE` under [Notes](#notes).
+
+| Effect | Description |
+|---|---|
+| FAX_REFERRAL | Fax a referral and its attachments. |
+| FAX_IMAGING_ORDER | Fax an imaging order. |
+| FAX_LAB_ORDER | Fax a lab order's requisition form. |
+| FAX_LETTER | Fax a letter and its attachments. |
+
+
 ### Appointments
 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
