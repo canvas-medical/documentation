@@ -29354,7 +29354,7 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
 
 The Assess command's condition search lists the patient's charted conditions before new ICD-10 codes. A plugin handling `ASSESS__CONDITION__PRE_SEARCH` or `ASSESS__CONDITION__POST_SEARCH` can receive both kinds of result:
 
-- **Charted conditions** come first, active ones before the rest. An empty search term returns only these. A search term matches a charted condition when its ICD-10 code contains the term. It also matches when every word of the term appears in the condition's name, in any order. A charted condition's `value` is the condition's id rather than an ICD-10 code, and its `extra` has no `coding`. Its `annotations` hold the ICD-10 code followed by the condition's clinical status, such as `Active` or `Resolved`.
+- **Charted conditions** come first, active ones before the rest. A resolved condition is left out when an active condition has the same ICD-10 code. Picking it would make it a second active condition. An empty search term returns only charted conditions. A search term matches a charted condition when its ICD-10 code contains the term. It also matches when every word of the term appears in the condition's name, in any order. A charted condition's `value` is the condition's id rather than an ICD-10 code, and its `extra` has no `coding`. Its `annotations` hold the ICD-10 code followed by the condition's clinical status, such as `Active` or `Resolved`.
 - **ICD-10 codes** from the terminology search follow, in the structure shown above. A code the patient already has charted is listed as the charted condition instead, so picking it doesn't record a duplicate.
 
 ```json
