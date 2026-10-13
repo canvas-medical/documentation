@@ -319,7 +319,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 ## Catalog
 
-`catalog` is the plugin's listing in the Canvas Platform plugin catalog. Canvas Platform reads it from the manifest of each pushed revision, so the listing ships with the code it describes, and it refuses a push whose listing breaks the rules below. [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy) updates the listing without deploying to an instance, and `canvas validate` checks it locally.
+`catalog` is the plugin's listing in the Canvas Platform plugin catalog. Canvas Platform reads it from the manifest each time a push moves the plugin's `main` branch, so the listing ships with the code it describes; pushes to other branches and tags leave the catalog as it is. It refuses a push whose listing breaks the rules below. [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy) updates the listing without deploying to an instance, and `canvas validate` checks it locally.
 
 ```json
 {
@@ -332,6 +332,15 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
     "screenshots": [
       {"path": "assets/summary.png", "caption": "In the note", "alt": "An intake summary in a note"}
     ],
+    "pricing": [
+      {"unit": "visit", "price_per_unit": "1.50"},
+      {"unit": "token"}
+    ],
+    "vendors": [
+      {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
+    ],
+    "icon": "assets/icon.png",
+    "setup_guide": "setup_guide.md",
     "setup_instructions": "setup_instructions.md",
     "release_notes": {"kind": "fix", "title": "Summaries keep their line breaks"}
   }
@@ -347,12 +356,16 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out. |
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
-| `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. |
-| `release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision. |
 | `pricing` | array | No | What Canvas charges for the plugin, one component per unit. Leave it out for a plugin with no charge. See [Pricing and vendors](#pricing-and-vendors). |
 | `vendors` | array | No | The third parties the plugin depends on, and who holds the account with each. See [Pricing and vendors](#pricing-and-vendors). |
+| `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase. |
+| `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works. |
+| `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. It is not shown on the plugin's page. |
+| `release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision. |
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
+
+An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
 ### Pricing and vendors
 
@@ -377,7 +390,7 @@ This plugin costs $5.75 per visit and bills its model calls by token. It sends m
 }
 ```
 
-`pricing` is a list of one to 10 components, in the order the catalog's Pricing card shows them. Each component has these fields:
+`pricing` is a list of one to 10 components, in the order the plugin's page lists them. Each component has these fields:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
