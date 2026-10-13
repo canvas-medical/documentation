@@ -14,7 +14,7 @@ layout: apipage
 ## Registering a third-party application on Canvas
 
 - Registering a third-party application is always the first step.
-- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
+- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. A group that carries the **Can register and manage OAuth applications** permission also works. Without one of these, the application pages below return `403 Forbidden`. See [Developer access](/guides/roles-and-permissions/#developer-access) for how to grant the permission.
 - Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
 - In order to do so, you'll need to:
   1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page:

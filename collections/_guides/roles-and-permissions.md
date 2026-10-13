@@ -87,6 +87,26 @@ Turning emergency access on or off requires the Emergency Access role.
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
 
+## Developer access
+
+Registering OAuth applications and changing protocol code are developer tasks. An OAuth
+application can issue tokens for every scope it allows, including plugin administration,
+and protocol code runs inside Canvas. Staff with the Administrative Developer or Clinical
+Developer role can do both.
+
+To grant these tasks without a developer role, add one of these permissions to a group,
+then add staff to that group:
+
+| Permission | Grants |
+| --- | --- |
+| Can register and manage OAuth applications | Register, view, edit, and delete OAuth applications at `/auth/applications/` |
+| Can upload, activate, and switch versions of protocol code | Upload, activate, and switch versions of Workflow SDK protocols |
+
+No default group carries either permission. The add and change permissions on OAuth
+applications and protocol uploads don't grant these tasks. Both permissions grant
+developer-level access, so review the groups that carry them along with the
+security-sensitive roles above.
+
 ## Patient groups
 
 Patient groups appear alongside roles in the admin console but behave differently: they
