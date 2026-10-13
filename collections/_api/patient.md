@@ -38,7 +38,7 @@ sections:
               Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race**, **ethnicity**, **tribal-affiliation**, **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string. <br><br>
               The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
             update_description: >-
-              <b>Replace semantics on update:</b> the **preferred-pharmacy**, **patient-default-provider**, and **patient-default-location** extensions follow delete-on-omission — if not included in the request, the stored value is dropped.
+              <b>Replace semantics on update:</b> the **preferred-pharmacy**, **patient-default-provider**, **patient-default-location**, and **business-line** extensions follow delete-on-omission — if not included in the request, the stored value is dropped. To keep a patient's current values, read the patient first and send these extensions back on the update.
             attributes:
               - name: url
                 type: string
