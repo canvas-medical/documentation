@@ -14,7 +14,7 @@ layout: apipage
 ## Registering a third-party application on Canvas
 
 - Registering a third-party application is always the first step.
-- Only superusers and staff with the Administrative Developer or Clinical Developer role can register, view, edit, or delete applications. Anyone else gets `403 Forbidden`. These are the roles that manage plugins, and an application can issue tokens for every scope it allows, including plugin administration.
+- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
 - Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
 - In order to do so, you'll need to:
   1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page:

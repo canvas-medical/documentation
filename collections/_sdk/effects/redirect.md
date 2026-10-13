@@ -11,12 +11,14 @@ A redirect is delivered only to the **acting user** who triggered the handler �
 
 Provide **exactly one** destination:
 
-* `url` — a full URL string the plugin composes in Python (it may include patient/note ids). Either an external URL (`https://...`) or an internal Canvas path (`/panel`, `/patient/{key}?noteId=...`).
+* `url` — a full URL string the plugin composes in Python (it may include patient/note ids). Either an external URL (`https://...`) or an internal Canvas path (`/panel`, `/patient/{id}?noteId=...`).
 * `application_id` — the identifier of a Canvas application to open.
 
 By default the navigation replaces the current tab. Set `target` to `RedirectEffect.TargetType.NEW_TAB` to open a `url` destination in a new tab instead.
 
-> **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{key}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+> **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{id}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+
+For staff, an internal `url` can be any Canvas path, including its query string. The paths staff use most, such as the patient chart, schedule, patient list, and revenue pages, are listed in [Pages a pane sees](/sdk/handlers-embedded-applications/#pages-a-pane-sees). For patients, internal paths are limited to the [portal routes](#redirects-in-the-patient-portal).
 
 Build a `RedirectEffect` and return its `apply()` from your handler.
 
@@ -33,7 +35,7 @@ Redirects the user.
 
 | Name | Type | Description | Required |
 |---|---|---|---|
-| `url` | `str` | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty. | Exactly one of `url` or `application_id` |
+| `url` | `str` | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{id}`), composed by the plugin. Non-empty. For common staff paths, see [Pages a pane sees](/sdk/handlers-embedded-applications/#pages-a-pane-sees). For patients, see the [portal routes](#redirects-in-the-patient-portal). | Exactly one of `url` or `application_id` |
 | `application_id` | `str` | The identifier of a Canvas application to open. Must exist and be enabled. | Exactly one of `url` or `application_id` |
 | `target` | [`TargetType`](#targettype) | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`. | No |
 
@@ -57,7 +59,7 @@ The allowlist is configured **per instance by an administrator** via three plugi
 
 | Secret key                       | Value (one entry per line)          | Permits                                                                                          |
 |----------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------|
-| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients`<br>`/panel`<br>`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{key}?noteId=...`). |
+| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients`<br>`/panel`<br>`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{id}?noteId=...`). |
 | `REDIRECT_ALLOWLIST_EXTERNAL`    | `https://app.example.com`           | those origins/prefixes (**include the scheme**), matched **case-insensitively** at an origin/path boundary — so it does **not** match `https://app.example.com.evil.com`, and a differing port (e.g. `https://app.example.com:8443/...`) is not a match. |
 | `REDIRECT_ALLOWLIST_APPLICATION` | `my_plugin.applications.app:MyApp`  | redirecting to those applications by id (matched exactly; the app must exist and be enabled).     |
 
