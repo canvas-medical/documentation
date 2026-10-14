@@ -56,7 +56,7 @@ p.note_uuid = self.event.context["note"]["uuid"]
 return [p.originate()]
 ```
 
-The same pattern works with any command class — `PlanCommand(note_uuid=...)`, `DiagnoseCommand(note_uuid=...)`, `MedicalHistoryCommand(note_uuid=...)`, etc.
+The same pattern works with any command class — `PlanCommand(note_uuid=...)`, `AssessCommand(note_uuid=...)`, `MedicalHistoryCommand(note_uuid=...)`, etc.
 
 ### Methods
 
@@ -97,15 +97,15 @@ def compute():
 To originate and commit in a single effect:
 
 ```python
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid='550e8400-e29b-41d4-a716-446655440000',
         icd10_code='E11.9'
     )
 
-    return [diagnose_command.originate(commit=True)]
+    return [assess_command.originate(commit=True)]
 ```
 
 #### edit
@@ -324,15 +324,15 @@ def compute():
 The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
 
 ```python
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid='550e8400-e29b-41d4-a716-446655440000',
         icd10_code='E11.9'
     )
 
-    return [diagnose_command.originate(commit=True)]
+    return [assess_command.originate(commit=True)]
 ```
 
 This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
@@ -343,12 +343,12 @@ If you need more control over the process — for example, to edit a command bet
 
 ```python
 from uuid import uuid4
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
     note_uuid = '550e8400-e29b-41d4-a716-446655440000'
 
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid=note_uuid,
         icd10_code='E11.9'
     )
@@ -356,10 +356,10 @@ def compute():
     # To chain command effects, you must know what the command's id
     # is. To accomplish that, we set the id ourselves rather than
     # allow the database to assign one.
-    diagnose_command.command_uuid = str(uuid4())
+    assess_command.command_uuid = str(uuid4())
 
     # Now we can both originate and commit in a single operation
-    return [diagnose_command.originate(), diagnose_command.commit()]
+    return [assess_command.originate(), assess_command.commit()]
 ```
 
 This pattern ensures that both the originate and commit operations use the same `command_uuid`, allowing them to be chained together reliably in a single plugin execution.
@@ -384,7 +384,7 @@ Commands have two types of actions:
 <!-- source: discussion #1046 -->
 A printed note groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
 
-On instances in the revamped note beta program, a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note in the older format, or on an instance outside the beta program, prints those sections under separate headings.
+On instances in the [revamped note beta program](/product-updates/note-revamp/), a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note in the older format, or on an instance outside the beta program, prints those sections under separate headings.
 
 To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 
@@ -451,29 +451,28 @@ the cases where more than one command could plausibly apply.
 
 ### Recording a condition
 
-Four commands create a condition. Which one fits depends on whether the condition is active now,
-whether you are assessing it, and whether it is surgical.
+Which command fits depends on whether the condition is active now, whether you are assessing it,
+and whether it is surgical.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
+| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
-| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
+| [Diagnose](#diagnose) | Still available for a new active condition you are assessing for the first time, but planned for retirement in a future release. Use Assess with `icd10_code` instead. |
 
-All four write a [Condition](/sdk/data-condition/#condition). They differ in what they set on it,
-which is what decides where it shows up and which commands can act on it later:
+Each of these writes a [Condition](/sdk/data-condition/#condition) when it records a new one. They
+differ in what they set on it, which is what decides where it shows up and which commands can act
+on it later:
 
 | Command | `clinical_status` | `surgical` | Opens an assessment |
 |:--------|:------------------|:-----------|:--------------------|
-| [Diagnose](#diagnose) | `active` | `false` | Yes |
+| [Assess](#assess) with `icd10_code` | `active` | `false` | Yes |
 | [MedicalHistory](#medicalhistory) | `resolved` | `false` | No |
 | [AddCondition](#addcondition) | `active` | `false` | No |
 | [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
-
-[Assess](#assess) with `icd10_code` can also add a condition to the chart. It assesses the
-patient's charted condition with that code, and records a new condition on the problem list only
-when the patient has none.
+| [Diagnose](#diagnose) | `active` | `false` | Yes |
 
 Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
 from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
@@ -523,7 +522,7 @@ The sections below document each command class. See [Common Attributes](#common-
 Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in
 the note's History section, without opening an assessment for it. Reach for it when the condition was
 diagnosed previously and is still active. See
-[Recording a condition](#recording-a-condition) for how it compares to Diagnose and MedicalHistory.
+[Recording a condition](#recording-a-condition) for how it compares to Assess and MedicalHistory.
 
 **Command-specific parameters**:
 
@@ -653,10 +652,12 @@ allergy = AllergyCommand(
 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
 
+- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
 - `condition_id` assesses a specific condition already on the patient's chart.
-- `icd10_code` assesses a condition by its ICD-10 code, so the condition doesn't have to be charted first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
 
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
+{% include alert.html type="info" content="If your plugin relies on <a href='/sdk/events/#assess_command__condition_selected'><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a> or <a href='/sdk/events/#assess_command__icd10_code_selected'><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a>, set the condition with <code>edit()</code>. These events fire when an existing Assess command's condition changes, so originating an Assess with <code>condition_id</code> or <code>icd10_code</code> already set sends neither. To trigger them, originate the command without a condition, then <code>edit()</code> it to set one. An <code>edit()</code> with <code>icd10_code</code> sends <code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code> even when the patient already has that condition charted." %}
 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
@@ -681,20 +682,6 @@ Entering a committed Assess in error also enters in error the condition its comm
 
 **Examples**:
 
-Assess a condition already on the chart:
-
-```python
-from canvas_sdk.commands import AssessCommand
-
-assess = AssessCommand(
-    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
-    condition_id='a1c2e3d4-5b6f-4a7c-8e9d-0f1a2b3c4d5e',
-    background='started in 2012',
-    status=AssessCommand.Status.STABLE,
-    narrative='experiencing more pain lately'
-)
-```
-
 Assess a condition by ICD-10 code, whether or not the patient has it charted:
 
 ```python
@@ -707,6 +694,20 @@ assess = AssessCommand(
     approximate_date_of_onset=date(2012, 1, 1),
     background='lifted heavy box',
     narrative='unable to sleep lately'
+)
+```
+
+Assess a specific condition already on the chart by its id:
+
+```python
+from canvas_sdk.commands import AssessCommand
+
+assess = AssessCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    condition_id='a1c2e3d4-5b6f-4a7c-8e9d-0f1a2b3c4d5e',
+    background='started in 2012',
+    status=AssessCommand.Status.STABLE,
+    narrative='experiencing more pain lately'
 )
 ```
 
@@ -826,8 +827,10 @@ close_goal = CloseGoalCommand(
 ### Diagnose
 
 Records an active condition and assesses it for the first time. See
-[Recording a condition](#recording-a-condition) for how it compares to MedicalHistory and
+[Recording a condition](#recording-a-condition) for how it compares to Assess, MedicalHistory and
 AddCondition.
+
+{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now." %}
 
 **Command-specific parameters**:
 
@@ -1444,7 +1447,7 @@ lab_review = LabReviewCommand(
 ### MedicalHistory
 
 Backfills a condition the patient had in the past that is not active now. See
-[Recording a condition](#recording-a-condition) for how it compares to Diagnose and AddCondition.
+[Recording a condition](#recording-a-condition) for how it compares to Assess and AddCondition.
 
 **Command-specific parameters**:
 

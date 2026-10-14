@@ -7,7 +7,7 @@ guide_for:
 - /sdk/utils/
 ---
 
-When a provider works with a command in the Canvas UI — Diagnose, Prescribe, Allergy, Refer, and the rest — most fields are backed by an interactive control. You start typing "type 2 diabetes" and the chart autocompletes to an ICD-10 code, you pick a pharmacy from a searchable list, and you choose a severity from a dropdown. The UI does the lookup for you and stores the underlying code, id, or enum value on the command.
+When a provider works with a command in the Canvas UI — Assess Condition, Prescribe, Allergy, Refer, and the rest — most fields are backed by an interactive control. You start typing "type 2 diabetes" and the chart autocompletes to an ICD-10 code, you pick a pharmacy from a searchable list, and you choose a severity from a dropdown. The UI does the lookup for you and stores the underlying code, id, or enum value on the command.
 
 When you build those same commands with the [commands module](/sdk/commands/) in a plugin, there is no interactive control. A command field takes the **raw value** — an FDB code, a database id, an ICD-10 code, an enum member — and it is your plugin's job to supply the correct one. This guide shows you where those values come from so your automated charting behaves like a provider working in the UI.
 
@@ -77,7 +77,7 @@ The richest autocompletes in the UI search a clinical terminology in real time: 
 |---------------|--------|
 | Prescribe / MedicationStatement / Refill / AdjustPrescription medication (`fdb_code`, `new_fdb_code`) | [Searching for medications](/sdk/utils/#searching-for-medications) (Ontologies) |
 | Allergy allergen | [Searching for allergens](/sdk/utils/#searching-for-allergens) (Ontologies) |
-| Diagnose and Assess ICD-10 codes (`icd10_code`) | [Looking up clinical codes](/sdk/utils/#looking-up-clinical-codes) (Ontologies) |
+| Assess and Diagnose ICD-10 codes (`icd10_code`) | [Looking up clinical codes](/sdk/utils/#looking-up-clinical-codes) (Ontologies) |
 | Family History, Surgical History, Instruct concepts | [Searching clinical concepts](/sdk/utils/#searching-clinical-concepts) (Ontologies) |
 | Prescribe pharmacy (`pharmacy`) | [Searching for pharmacies](/sdk/utils/#searching-for-pharmacies) (Pharmacy) |
 | ImagingOrder image code | [Searching for imaging codes](/sdk/utils/#searching-for-imaging-codes) (Science) |
@@ -89,14 +89,14 @@ For example, the UI autocompletes a diagnosis; a plugin searches ICD-10 and pass
 import json
 from urllib.parse import urlencode
 from canvas_sdk.utils.http import ontologies_http
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 response = ontologies_http.get(
     f"/icd/condition/?{urlencode({'search': 'type 2 diabetes'})}"
 )
 first = json.loads(response.text)[0]
 
-diagnose = DiagnoseCommand(
+assess = AssessCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     icd10_code=first["icd10_code"],
 )

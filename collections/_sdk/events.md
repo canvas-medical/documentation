@@ -5667,10 +5667,11 @@ class FollowUpDateInPlan(BaseHandler):
 
 #### Assess Command
 
+<a id="assess_command__condition_selected"></a>
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
-    <tr><td colspan="2">Occurs when a condition already on the patient's chart is picked in an Assess command. <code>data.condition</code> holds the condition's <code>id</code> and its <code>codings</code>. Picking an ICD-10 code the patient doesn't have charted sends <a href="#assess_command__icd10_code_selected"><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a> instead. Clearing the field sends neither event.</td></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to a condition already on the patient's chart, either by a clinician picking it or by a plugin editing the command with <code>condition_id</code>. <code>data.condition</code> holds the condition's <code>id</code> and its <code>codings</code>. Setting the condition to an ICD-10 code sends <a href="#assess_command__icd10_code_selected"><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a> instead. Clearing the field sends neither event, and neither event fires when a plugin originates an Assess command with the condition already set.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -5707,7 +5708,7 @@ class FollowUpDateInPlan(BaseHandler):
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__ICD10_CODE_SELECTED</th></tr>
-    <tr><td colspan="2">Occurs when an ICD-10 code the patient doesn't have charted is picked in an Assess command. No condition exists yet, so <code>data.codings</code> holds the picked code. Committing the command records the condition, or reuses the patient's charted condition with that code if one was added in the meantime.</td></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to an ICD-10 code rather than a charted condition, either by a clinician picking a code the patient doesn't have charted or by a plugin editing the command with <code>icd10_code</code>. No condition is attached until commit, so <code>data.codings</code> holds the code. A plugin edit sends this event even when the patient already has a condition with that code; the clinician's search shows the charted condition in that case, so a clinician's pick sends <a href="#assess_command__condition_selected"><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a>. Committing the command reuses the patient's charted condition with that code, or records a new one. The event doesn't fire when a plugin originates an Assess command with <code>icd10_code</code> already set.</td></tr>
   </thead>
   <tbody>
     <tr>

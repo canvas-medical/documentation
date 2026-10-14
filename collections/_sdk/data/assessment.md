@@ -87,7 +87,7 @@ A link only joins a command and an assessment in the same note. When a command m
 
 Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
 
-On an instance in the revamped note beta program, a [printed note](/sdk/commands/#command-actions) in the revamped format lists each linked command indented under its assessment.
+On an instance in the [revamped note beta program](/product-updates/note-revamp/), a [printed note](/sdk/commands/#command-actions) in the revamped format lists each linked command indented under its assessment.
 
 | Field Name                   | Type                                                                          |
 | ---------------------------- | ----------------------------------------------------------------------------- |

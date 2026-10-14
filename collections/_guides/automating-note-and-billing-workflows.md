@@ -147,14 +147,14 @@ The payer information lives on the claim's [`current_coverage`](/sdk/data-claim/
 
 <!-- REVIEW: clinical-accuracy sign-off required -->
 
-You can automate billing for specific note types — for instance, adding a diagnosis and an associated billing line item when an intake note is created. The key detail is that a billing line item is linked to a diagnosis through its **Assessment**, and the Assessment ID only exists once the Diagnose command has been **committed**. Passing the command UUID as the assessment ID will not work; the assessment must come from the committed diagnosis.
+You can automate billing for specific note types — for instance, adding a diagnosis and an associated billing line item when an intake note is created. The key detail is that a billing line item is linked to a diagnosis through its **Assessment**, and the Assessment ID only exists once the Assess command has been **committed**. Passing the command UUID as the assessment ID will not work; the assessment must come from the committed command.
 
-Split the work into two handlers. First, originate and commit the diagnosis when the note is created:
+Split the work into two handlers. First, originate and commit an Assess command with the ICD-10 code when the note is created. It records the condition if the patient doesn't have it yet, or reuses the charted one:
 
 ```python
 from uuid import uuid4
 
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 from canvas_sdk.effects import Effect
 from canvas_sdk.events import EventType
 from canvas_sdk.protocols import BaseProtocol
@@ -170,13 +170,13 @@ class IntakeCreatedProtocol(BaseProtocol):
 
         # Verify the note type is approved for this workflow before proceeding.
 
-        diagnose_command = DiagnoseCommand(note_uuid=str(note.id), icd10_code="Z13.41")
-        diagnose_command.command_uuid = str(uuid4())
+        assess_command = AssessCommand(note_uuid=str(note.id), icd10_code="Z13.41")
+        assess_command.command_uuid = str(uuid4())
 
-        return [diagnose_command.originate(), diagnose_command.commit()]
+        return [assess_command.originate(), assess_command.commit()]
 ```
 
-Then, in a second handler, listen for `DIAGNOSE_COMMAND__POST_COMMIT`, retrieve the diagnosis (the command's `anchor_object`), confirm it is the diagnosis you care about, and attach the billing line item using the latest assessment's ID:
+Then, in a second handler, listen for `ASSESS_COMMAND__POST_COMMIT`, retrieve the assessment (the command's `anchor_object`), confirm its condition is the diagnosis you care about, and attach the billing line item using the assessment's ID:
 
 ```python
 from canvas_sdk.commands.constants import CodeSystems
@@ -189,23 +189,21 @@ from canvas_sdk.v1.data.command import Command
 
 class AddBillingLineItemToAutismDiagnoses(BaseHandler):
 
-    RESPONDS_TO = EventType.Name(EventType.DIAGNOSE_COMMAND__POST_COMMIT)
+    RESPONDS_TO = EventType.Name(EventType.ASSESS_COMMAND__POST_COMMIT)
 
     def compute(self) -> list[Effect]:
         command = Command.objects.get(id=self.event.target.id)
 
-        diagnosis = command.anchor_object
-        icd_10_coding = diagnosis.codings.filter(system=CodeSystems.ICD10).first()
-        if icd_10_coding.code.replace(".", "") != "Z1341":
+        assessment = command.anchor_object
+        icd_10_coding = assessment.condition.codings.filter(system=CodeSystems.ICD10).first()
+        if not icd_10_coding or icd_10_coding.code.replace(".", "") != "Z1341":
             return []
         note = command.note
-
-        latest_assessment = diagnosis.assessments.last()
 
         b = AddBillingLineItem(
             note_id=str(note.id),
             cpt="AUTISM_DX",
-            assessment_ids=[str(latest_assessment.id)],
+            assessment_ids=[str(assessment.id)],
         )
         return [b.apply()]
 ```
