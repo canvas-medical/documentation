@@ -1515,6 +1515,8 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
 
+Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+
 **Command-specific parameters**:
 
 | Name                    | Type                                  | Required to sign | Description |
