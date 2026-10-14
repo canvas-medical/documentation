@@ -132,8 +132,6 @@ A `PLUGIN` section does not dial anything on its own — the click only fires `P
 
 {% include alert.html type="warning" content="The dial URL must be listed in the plugin's <code>REDIRECT_ALLOWLIST_EXTERNAL</code> secret. An unset allowlist denies everything. An entry needs both a scheme and a host, so authority-style URIs work (<code>zoomus://</code>, <code>msteams://</code>, <code>rcmobile://</code>, <code>https://</code>) but scheme-only URIs are rejected (<code>sip:</code>, <code>callto:</code>, <code>skype:</code>, <code>sms:</code>). A <code>tel:</code> link is unaffected because <code>DEVICE</code> handling opens it natively rather than through a redirect." %}
 
-{% include alert.html type="warning" content="Compose the dial URL with an f-string, not <code>str.format</code>. The RestrictedPython sandbox blocks <code>str.format</code> and <code>format_map</code> at call time, so a <code>str.format</code> version passes <code>canvas validate</code> and unit tests but fails on the first real click." %}
-
 This handler reads the base of your softphone's dial URL from a plugin secret named `ZOOM_DIAL_URL_BASE`, rather than hard-coding it, then composes the dial URL with an f-string. Set that secret to the value from your Zoom Phone account.
 
 ```python
