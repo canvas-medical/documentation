@@ -16767,6 +16767,47 @@ Refer to the [base context documentation](#context-overview) for additional deta
 
 <table>
   <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">ORDER_DME__ITEM__POST_SEARCH</th></tr>
   </thead>
   <tbody>
@@ -16789,6 +16830,47 @@ Refer to the [base context documentation](#context-overview) for additional deta
 <table>
   <thead>
     <tr><th colspan="2">ORDER_DME__ITEM__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__PRE_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -16847,11 +16929,19 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
-The `ORDER_DME__ITEM__*` events fire when a user searches the DME formulary in the item field. The `ORDER_DME__SEND_TO__*` events fire when a user searches for a supplier in the **Send to** field. Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+Each pair of search events fires when a user searches in one of the command's fields:
+
+- `ORDER_DME__ITEM__*`: the item field, which searches the DME formulary.
+- `ORDER_DME__INDICATIONS__*`: the **Indications** field, which searches ICD-10 conditions.
+- `ORDER_DME__SEND_TO__*`: the **Send to** field, which searches for a supplier.
+- `ORDER_DME__ORDERING_PROVIDER__*`: the ordering provider field, which searches active staff who can prescribe.
+
+Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
 
 In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
 
 - **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+- **Ordering provider results:** `text` is the staff member's name with credentials. `value` is Canvas's internal staff ID, not the [Staff](/sdk/data-staff/#staff) `id` that the `OrderDmeCommand` `ordering_provider_key` parameter takes.
 - **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
 
 #### Perform Command

@@ -1541,7 +1541,7 @@ Signing saves the item's formulary name and code and the indications with the or
 | `print_order` | command is committed | Prints the order as a requisition. Requires printing access. |
 | `fax`         | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access. |
 
-To filter or annotate the products and suppliers a user sees while filling in the command, handle the `ORDER_DME__ITEM__PRE_SEARCH`, `ORDER_DME__ITEM__POST_SEARCH`, `ORDER_DME__SEND_TO__PRE_SEARCH`, and `ORDER_DME__SEND_TO__POST_SEARCH` [events](/sdk/events/#order-dme-command).
+To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
 
 **Example**:
 
