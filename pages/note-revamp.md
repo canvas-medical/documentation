@@ -30,9 +30,9 @@ The revamped note is a redesigned note body that organizes commands into clinica
 Plugins can link commands to an Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and grouped print are what the beta adds.
 
 Plugins can also add their own content to the revamped note. Respond to the `NOTE__GET_CUSTOM_CONTENT` event with one or more `NoteCustomContent` effects (`canvas_sdk.effects.note_custom_content`), each giving either `content` (HTML) or a `url`, not both.
-- `section` places the content at the top of a section: `NoteCustomContent.Section.HISTORY`, `EXAM`, `ASSESSMENT_PLAN` or `INTERNAL`. Leave it unset to place the content at the top of the whole-note (**All**) view.
+- `section` places the content at the top of a section: `NoteCustomContent.Section.HISTORY`, `EXAM`, `ASSESSMENT_PLAN` or `INTERNAL`, and shows only in the **Sections** view. Leave it unset to place the content above the note body, where it shows in both the **Sections** and **All** views.
 - Content returned for the same section stacks in the order the handlers ran.
-- Each entry renders in its own frame, which resizes to fit its content.
+- Each entry renders in its own frame, which starts 120 pixels tall. To fit the frame to the content, send a `RESIZE` message with the content's height over the frame's message channel.
 - Outside the beta, Canvas doesn't send the event, so the content doesn't appear.
 
 ```python
