@@ -7,7 +7,7 @@ hidden: false
 
 Use the `RecordPatientConsent` effect to record a patient's consent decision on their chart. For example, a plugin can record the decision after the patient completes an intake form. The effect sets the consent's state and effective date, and it can file the signed document with the consent. It runs inside the plugin, so it needs no FHIR API credentials.
 
-Each patient has one [PatientConsent](/sdk/data-patient-consent/) record per consent coding. The first decision for a coding creates the record, and each later decision updates it.
+Each patient has one [PatientConsent](/sdk/data-patient-consent/) record per consent coding. The first decision for a coding creates the record. A later decision updates it only when its `effective_date` is on or after the recorded one. See [How Canvas records the decision](#how-canvas-records-the-decision).
 
 Build a `RecordPatientConsent` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
 
@@ -48,7 +48,7 @@ Identifies a consent coding or a rejection coding.
 | `code`    | `str` | The coding's code.                                                 | If `display` is empty |
 | `display` | `str` | The coding's display text. Used to find the coding only when `code` is empty. | If `code` is empty |
 
-When `code` is set, the effect finds the coding by `system` and `code`. Otherwise it finds the coding by `system` and `display`. If the reference matches no coding, or more than one, the effect fails validation. Add a `code` to a reference that matches more than one coding.
+When `code` is set, the effect finds the coding by `system` and `code`. Otherwise it finds the coding by `system` and `display`. The effect fails validation when the reference matches no coding or more than one. If a reference by `code` matches more than one coding, delete the duplicate coding in Canvas. If a reference by `display` matches more than one, reference the coding by its `code` instead.
 
 ### ConsentDocument
 
@@ -61,8 +61,9 @@ The signed copy of the consent.
 
 ## How Canvas records the decision
 
+- **Earlier-dated decisions:** The decision with the latest `effective_date` sets the consent's state, dates, and rejection reason. A decision dated before the recorded one leaves the consent as it is, but Canvas still files its document. Use this to add an older signed copy without changing the current decision.
 - **Expiration date:** Canvas computes the consent's expiration date from `effective_date` and the coding's [expiration rule](/sdk/data-patient-consent/#patientconsentexpirationrule).
-- **Rejection reason:** Each decision replaces the consent's rejection reason. A decision without `rejection_reason`, including any accepted decision, clears the earlier reason.
+- **Rejection reason:** A decision that updates the consent replaces its rejection reason. A decision without `rejection_reason`, including any accepted decision, clears the earlier reason.
 - **Signed documents:** Each document you attach is added to the consent's [signed documents](/sdk/data-patient-consent/#signed-consent-documents) with `effective_date` as its date. The document with the latest date becomes the consent's `active_document`, and earlier signed copies stay on the chart.
 - **Other consents:** The effect changes only the consent you name. A consent the patient did not answer keeps its current state.
 
