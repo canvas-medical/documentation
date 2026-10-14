@@ -192,7 +192,17 @@ The event tells you how the patient signed in: with their username and password,
 
 Modals aren't limited to sign-in. Any handler that runs because of something the patient did can open one in the portal, for example a [SimpleAPI](/sdk/handlers-simple-api-http/) route your portal page calls. The modal appears if the patient still has the portal open.
 
-See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login) and [Modals](/sdk/layout-effect/#modals) for the technical reference.
+When the patient has to finish the step before going further, such as signing a consent, make the modal **blocking**. The patient can't close it or navigate away, and it closes only when your page says the step is done.
+
+See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login), [Modals](/sdk/layout-effect/#modals), and [Blocking Modals](/sdk/layout-effect/#blocking-modals) for the technical reference.
+
+### Share after-visit summaries
+
+Patients can download the after-visit summary of their own locked visit notes from the portal, as the same PDF a clinician prints from the note. The portal doesn't link to it on its own, so you decide where patients find it: a "your visit summary is ready" widget on the landing page, a visit history page of your own, or a link in a follow-up message.
+
+Each download fires an event your plugin can respond to, so you can keep track of which patients have received their summary and follow up with the ones who haven't.
+
+See [Link to After-Visit Summaries](/sdk/patient-portal/#link-to-after-visit-summaries) for the technical reference.
 
 ### Control the navigation layout
 
@@ -206,6 +216,8 @@ Need more than a card? Add entire patient-facing **pages** with an Application s
 
 This is also how you **replace a built-in page you don't love**. Don't like how the stock My Health page presents conditions, medications, and allergies? Build your own version exactly the way you want it, then turn off the built-in page with its Path 1 toggle (`PATIENT_APP_MY_HEALTH`) so patients only ever see yours. The same works for any built-in section — keep the stock pages that suit you and swap out the ones that don't, one at a time.
 
+You can go further and make one of your pages the portal's **home page**. Patients who open the portal land on your page instead of the widgets landing page, with any consents, forms, and sign-in modals still shown on top. While a home page is set, patients don't see landing page widgets, so choose one approach or the other. See [Configuring the Patient Portal](/sdk/patient-portal/#configuring-the-patient-portal).
+
 See the [Applications handler](/sdk/handlers-applications/) and [Configure Portal Menu Items](/sdk/patient-portal/#configure-portal-menu-items) for surfacing your page in the portal navigation · SDK examples: [example_patient_portal_page](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page), [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule).
 
 Real-world examples (MSF):
@@ -213,6 +225,20 @@ Real-world examples (MSF):
 - [patient-portal-profile](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-profile) — adds a read-only **My Profile** page (demographics, care team, preferred pharmacy).
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
+
+### Send patients to another page
+
+Your pages can move the patient along when they finish a step: after they submit an intake form, take them to their messages; from a "schedule your follow-up" card on the landing page, open your scheduling page; when a step happens on a partner's site, send them there.
+
+When the patient does something in your page or widget, the handler that responds, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route your page calls, returns a redirect. Within the portal, the patient moves without a page reload, and Back returns them to where they were. A redirect can go to:
+
+- a built-in portal page that is turned on for your instance, such as Messages or Appointments
+- one of your own portal pages
+- an external URL, in the same tab or a new one
+
+Each destination has to be on your plugin's allowlist, which an administrator sets for each instance, so a plugin can only send patients where you've approved.
+
+See [Redirects in the patient portal](/sdk/effect-redirect/#redirects-in-the-patient-portal) for the technical reference.
 
 ### Missing something? Ask before you rebuild
 

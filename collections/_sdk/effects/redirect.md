@@ -5,28 +5,40 @@ excerpt: "Navigate the Canvas frontend to an allowlisted URL, page, or applicati
 hidden: false
 ---
 
-The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
+The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. In the patient portal, portal pages change in place instead (see [Redirects in the patient portal](#redirects-in-the-patient-portal)). The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
 
 A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
 
 Provide **exactly one** destination:
 
-* `url` — a full URL string the plugin composes in Python (it may include patient/note ids). Either an external URL (`https://...`) or an internal Canvas path (`/panel`, `/patient/{key}?noteId=...`).
+* `url` — a full URL string the plugin composes in Python (it may include patient/note ids). Either an external URL (`https://...`) or an internal Canvas path (`/panel`, `/patient/{id}?noteId=...`).
 * `application_id` — the identifier of a Canvas application to open.
 
 By default the navigation replaces the current tab. Set `target` to `RedirectEffect.TargetType.NEW_TAB` to open a `url` destination in a new tab instead.
 
-> **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{key}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+> **Internal navigation must be a root-relative path that starts with `/`** — e.g. `url="/schedule"` (or `/panel`, `/patient/{id}?noteId=...`). A leading-slash path is the *only* form treated as internal navigation. A bare page name like `schedule` will **not** work: anything that doesn't start with `/` is treated as an external URL and is rejected unless it's a full `https://...` URL (protocol-relative `//...` and backslash `/\...` values are always rejected). The matching `REDIRECT_ALLOWLIST_INTERNAL` entries must likewise be leading-slash paths (e.g. `/schedule`).
+
+For staff, an internal `url` can be any Canvas path, including its query string. The paths staff use most, such as the patient chart, schedule, patient list, and revenue pages, are listed in [Pages a pane sees](/sdk/handlers-embedded-applications/#pages-a-pane-sees). For patients, internal paths are limited to the [portal routes](#redirects-in-the-patient-portal).
+
+Build a `RedirectEffect` and return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Redirects the user.
+
+- Provide exactly one of `url` or `application_id`. An `application_id` must identify an existing application.
+- `target` defaults to `SAME_TAB`.
 
 ## Attributes
 
-| Name             | Type                          | Required | Description                                                                                                   |
-|------------------|-------------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| `url`            | `str`                         | Yes\*    | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{key}`), composed by the plugin. Non-empty. |
-| `application_id` | `str`                         | Yes\*    | The identifier of a Canvas application to open. Must exist and be enabled.                                     |
-| `target`         | [`TargetType`](#targettype)   | No       | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`.                                          |
+| Name | Type | Description | Required |
+|---|---|---|---|
+| `url` | `str` | A full external URL (`https://...`) or an internal Canvas path that **must start with `/`** (e.g. `/schedule`, `/patient/{id}`), composed by the plugin. Non-empty. For common staff paths, see [Pages a pane sees](/sdk/handlers-embedded-applications/#pages-a-pane-sees). For patients, see the [portal routes](#redirects-in-the-patient-portal). | Exactly one of `url` or `application_id` |
+| `application_id` | `str` | The identifier of a Canvas application to open. Must exist and be enabled. | Exactly one of `url` or `application_id` |
+| `target` | [`TargetType`](#targettype) | Where to open a `url` destination. Defaults to `TargetType.SAME_TAB`. | No |
 
-**\*** Provide **exactly one** of `url` or `application_id` — they are mutually exclusive.
 
 ## `TargetType`
 
@@ -47,7 +59,7 @@ The allowlist is configured **per instance by an administrator** via three plugi
 
 | Secret key                       | Value (one entry per line)          | Permits                                                                                          |
 |----------------------------------|-------------------------------------|--------------------------------------------------------------------------------------------------|
-| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients`<br>`/panel`<br>`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{key}?noteId=...`). |
+| `REDIRECT_ALLOWLIST_INTERNAL`    | `/patients`<br>`/panel`<br>`/patient` | those path roots and anything the plugin composes under them, matched at a path boundary (`/patient/{id}?noteId=...`). |
 | `REDIRECT_ALLOWLIST_EXTERNAL`    | `https://app.example.com`           | those origins/prefixes (**include the scheme**), matched **case-insensitively** at an origin/path boundary — so it does **not** match `https://app.example.com.evil.com`, and a differing port (e.g. `https://app.example.com:8443/...`) is not a match. |
 | `REDIRECT_ALLOWLIST_APPLICATION` | `my_plugin.applications.app:MyApp`  | redirecting to those applications by id (matched exactly; the app must exist and be enabled).     |
 
@@ -72,6 +84,38 @@ $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
 ```
 
 Non-allowlisted destinations are dropped, and the platform logs only the plugin name and the blocked host (never the full URL/path). Protocol-relative (`//host`) and backslash (`/\host`) targets are always rejected.
+
+## Redirects in the patient portal
+
+A plugin can also redirect a patient who is signed in to the patient portal. Use it to move the patient from a plugin page to their next step, such as their messages, lab results, or another portal application. The redirect works from portal menu item applications, landing page widgets, and other plugin pages shown in the portal. Return the effect from an endpoint authenticated with `PatientSessionAuthMixin`, using the same pattern as [Redirect from an application iframe](#redirect-from-an-application-iframe).
+
+Every portal redirect must first pass the plugin's allowlist (see [Security & Allowlist](#security--allowlist)). When the acting user is a patient, Canvas then checks the destination against the portal's own rules:
+
+| Destination | Portal rule |
+|---|---|
+| Internal `url` | Must be `/app` or a portal route that is turned on for the instance (see the table below). Any other internal path, including `/app/application/...`, is blocked. |
+| `application_id` | Must identify a `portal_menu_item` [application](/sdk/handlers-applications/). Open portal applications this way, not by URL. |
+| External `url` | No extra rule. A URL that passes `REDIRECT_ALLOWLIST_EXTERNAL` opens in the same tab, or in a new tab with `TargetType.NEW_TAB`. |
+
+These are the portal routes a plugin can redirect to. Each one works only while its portal page is turned on through its `PATIENT_APP_*` setting, managed by Canvas Support (see [Managing the Patient Portal](https://canvas-medical.help.usepylon.com/articles/7348270931-managing-the-patient-portal)):
+
+| Route | Setting |
+|---|---|
+| `/app/appointments` | `PATIENT_APP_APPOINTMENTS` |
+| `/app/messaging` | `PATIENT_APP_MESSAGING` |
+| `/app/payments` | `PATIENT_APP_PAYMENTS` |
+| `/app/labs` | `PATIENT_APP_LABS` |
+| `/app/contact` | `PATIENT_APP_CONTACT` |
+| `/app/records` | `PATIENT_APP_RECORDS` |
+| `/app/my-health` | `PATIENT_APP_MY_HEALTH` |
+
+The plugin's `REDIRECT_ALLOWLIST_INTERNAL` secret must also include the path, for example `/app/messaging` or `/app`.
+
+The portal changes routes and opens applications in place, without reloading the page. The browser's Back button returns the patient to the plugin page. `target` has no effect on these destinations. An application opens with its portal menu item selected.
+
+When the portal rules block a redirect, the patient stays on the current page. The plugin logs record the plugin name and either the application identifier or `<internal>` for a blocked path. The path itself is never logged.
+
+Staff users, including staff who also have a patient record, use the Canvas EHR. Their redirects follow the staff rules described earlier on this page, not the portal rules.
 
 ## Example Usage
 
@@ -119,6 +163,26 @@ Requires the identifier in the plugin's `REDIRECT_ALLOWLIST_APPLICATION` secret.
 
 ```python?partial=True
 return [RedirectEffect(application_id="my_plugin.applications.app:MyApp").apply()]
+```
+
+### Send a patient to their messages from a portal page
+
+Requires `/app/messaging` in the plugin's `REDIRECT_ALLOWLIST_INTERNAL` secret, and the portal's messaging page turned on.
+
+```python?partial=True
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.redirect import RedirectEffect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPI, api
+
+
+class PortalPageAPI(PatientSessionAuthMixin, SimpleAPI):
+    @api.post("/go-to-messages")
+    def go_to_messages(self) -> list[Response | Effect]:
+        return [
+            RedirectEffect(url="/app/messaging").apply(),
+            JSONResponse({"ok": True}),
+        ]
 ```
 
 ### Redirect from an application iframe

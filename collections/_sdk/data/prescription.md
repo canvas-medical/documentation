@@ -90,6 +90,15 @@ prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35
 sig = prescription.combined_sig  # "" when the prescription has no sig
 ```
 
+An active prescription's `combined_sig` is one of the sources a medication's [`latest_sig`](/sdk/data-medication/#latest-sig) draws on, alongside its change medications and medication statements. To get the most recent sig for the medication, read `latest_sig` from the referenced medication:
+
+```python
+from canvas_sdk.v1.data.prescription import Prescription
+
+prescription = Prescription.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+sig = prescription.medication.latest_sig
+```
+
 ## Attributes
 
 ### Prescription
@@ -100,6 +109,7 @@ sig = prescription.combined_sig  # "" when the prescription has no sig
 | dbid                          | Integer                                                                                         |                                   |
 | patient                       | [Patient](/sdk/data-patient/)                                                                   |                                   |
 | note                          | [Note](/sdk/data-note/)                                                                         |                                   |
+| assessment                    | [Assessment](/sdk/data-assessment/#assessment)                                                  |                                   |
 | prescriber                    | [Staff](/sdk/data-staff/)                                                                       |                                   |
 | supervising_provider          | [Staff](/sdk/data-staff/)                                                                       |                                   |
 | medication                    | [Medication](/sdk/data-medication/)                                                             |                                   |

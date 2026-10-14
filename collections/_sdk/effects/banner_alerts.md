@@ -9,18 +9,30 @@ The Canvas SDK allows you to place Banners on the Canvas UI.
 
 ## Adding a Banner Alert
 
-To add a banner alert, import the `AddBannerAlert` class and create an
-instance of it.
+To add a banner alert, build an `AddBannerAlert` and return its `apply()` from your handler.
 
-| Attribute      |                                              | Type                          | Description                                                                                                                                        |
-| -------------- | -------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| patient_id     | required (if patient_filter is not provided) | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   |
-| patient_filter | required (if patient_id is not provided)     | String                        | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
-| key            | required                                     | String                        | An identifier that categorizes the alert.                                                                                                          |
-| narrative      | required                                     | String                        | The content of the alert. Maximum 90 characters.                                                                                                   |
-| placement      | required                                     | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               |
-| intent         | optional                                     | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  |
-| href           | optional                                     | String                        | If given, the alert will appear as a link to this URL.                                                                                             |
+### Methods
+
+#### apply() → Effect
+
+Adds the banner alert.
+
+- `key`, `narrative`, `placement`, and `intent` are required, along with either `patient_id` or `patient_filter`.
+- `narrative` can be at most 90 characters.
+
+### Attributes
+
+| Attribute      | Type                          | Description                                                                                                                                        | Required |
+| -------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| patient_id     | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   | If `patient_filter` is not provided |
+| patient_filter | dict                          | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients | If `patient_id` is not provided |
+| key            | String                        | An identifier that categorizes the alert.                                                                                                          | Yes      |
+| narrative      | String                        | The content of the alert. Maximum 90 characters.                                                                                                   | Yes      |
+| placement      | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               | Yes      |
+| intent         | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  | Yes      |
+| href           | String                        | If given, the alert will appear as a link to this URL.                                                                                             | No       |
+
+### Example
 
 ```python
 from canvas_sdk.events import EventType
@@ -145,10 +157,25 @@ banner alert.
 
 ## Removing a Banner Alert
 
-Removing a banner alert is done wih the `RemoveBannerAlert` class. Create an
-instance of the class, identifying the key of the alert and the patient id.
-Return the Effect by calling the `.apply()` method. Both the `key` and
-`patient_id` attributes are required.
+To remove a banner alert, build a `RemoveBannerAlert` identifying the alert's key and patient, and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Removes the banner alert.
+
+- `key` is required, along with either `patient_id` or `patient_filter`.
+
+### Attributes
+
+| Attribute      | Type   | Description                                                                 | Required |
+| -------------- | ------ | --------------------------------------------------------------------------- | -------- |
+| patient_id     | String | The id of the [patient](/sdk/data-patient/) whose alert should be removed.   | If `patient_filter` is not provided |
+| patient_filter | dict   | Patient queryset filters to remove the alert from multiple patients.        | If `patient_id` is not provided |
+| key            | String | The key of the alert to remove.                                             | Yes      |
+
+### Example
 
 ```python
 from canvas_sdk.effects.banner_alert import RemoveBannerAlert
