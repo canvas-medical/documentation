@@ -321,7 +321,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -335,6 +335,7 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
 
 
 ### Patient Groups
