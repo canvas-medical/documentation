@@ -137,7 +137,8 @@ from canvas_sdk.v1.data.service_provider import ServiceProvider
 ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
 ```
 
-To surface them in the Refer, Imaging Order, fax recipient, or external care team searches, see
+To surface them in the Refer, Imaging Order, Order DME, fax recipient, or external care team
+searches, see
 [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 
 To offer them in a provider search, see

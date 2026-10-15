@@ -216,6 +216,8 @@ Need more than a card? Add entire patient-facing **pages** with an Application s
 
 This is also how you **replace a built-in page you don't love**. Don't like how the stock My Health page presents conditions, medications, and allergies? Build your own version exactly the way you want it, then turn off the built-in page with its Path 1 toggle (`PATIENT_APP_MY_HEALTH`) so patients only ever see yours. The same works for any built-in section — keep the stock pages that suit you and swap out the ones that don't, one at a time.
 
+You can go further and make one of your pages the portal's **home page**. Patients who open the portal land on your page instead of the widgets landing page, with any consents, forms, and sign-in modals still shown on top. While a home page is set, patients don't see landing page widgets, so choose one approach or the other. See [Configuring the Patient Portal](/sdk/patient-portal/#configuring-the-patient-portal).
+
 See the [Applications handler](/sdk/handlers-applications/) and [Configure Portal Menu Items](/sdk/patient-portal/#configure-portal-menu-items) for surfacing your page in the portal navigation · SDK examples: [example_patient_portal_page](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page), [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule).
 
 Real-world examples (MSF):
@@ -223,6 +225,20 @@ Real-world examples (MSF):
 - [patient-portal-profile](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-profile) — adds a read-only **My Profile** page (demographics, care team, preferred pharmacy).
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
+
+### Send patients to another page
+
+Your pages can move the patient along when they finish a step: after they submit an intake form, take them to their messages; from a "schedule your follow-up" card on the landing page, open your scheduling page; when a step happens on a partner's site, send them there.
+
+When the patient does something in your page or widget, the handler that responds, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route your page calls, returns a redirect. Within the portal, the patient moves without a page reload, and Back returns them to where they were. A redirect can go to:
+
+- a built-in portal page that is turned on for your instance, such as Messages or Appointments
+- one of your own portal pages
+- an external URL, in the same tab or a new one
+
+Each destination has to be on your plugin's allowlist, which an administrator sets for each instance, so a plugin can only send patients where you've approved.
+
+See [Redirects in the patient portal](/sdk/effect-redirect/#redirects-in-the-patient-portal) for the technical reference.
 
 ### Missing something? Ask before you rebuild
 

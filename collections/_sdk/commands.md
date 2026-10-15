@@ -56,7 +56,7 @@ p.note_uuid = self.event.context["note"]["uuid"]
 return [p.originate()]
 ```
 
-The same pattern works with any command class — `PlanCommand(note_uuid=...)`, `DiagnoseCommand(note_uuid=...)`, `MedicalHistoryCommand(note_uuid=...)`, etc.
+The same pattern works with any command class — `PlanCommand(note_uuid=...)`, `AssessCommand(note_uuid=...)`, `MedicalHistoryCommand(note_uuid=...)`, etc.
 
 ### Methods
 
@@ -97,15 +97,15 @@ def compute():
 To originate and commit in a single effect:
 
 ```python
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid='550e8400-e29b-41d4-a716-446655440000',
         icd10_code='E11.9'
     )
 
-    return [diagnose_command.originate(commit=True)]
+    return [assess_command.originate(commit=True)]
 ```
 
 #### edit
@@ -250,7 +250,7 @@ def compute():
 
 Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
 
-**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder), [OrderDme](#orderdme), and [Refer](#refer) command objects. Other command types do not support this operation.
 
 **Example**:
 
@@ -324,15 +324,15 @@ def compute():
 The simplest way to originate and commit a command in a single plugin action is to pass `commit=True` to the `originate()` method:
 
 ```python
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid='550e8400-e29b-41d4-a716-446655440000',
         icd10_code='E11.9'
     )
 
-    return [diagnose_command.originate(commit=True)]
+    return [assess_command.originate(commit=True)]
 ```
 
 This handles the origination and commit in a single effect, without needing to manage a `command_uuid` yourself.
@@ -343,12 +343,12 @@ If you need more control over the process — for example, to edit a command bet
 
 ```python
 from uuid import uuid4
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 def compute():
     note_uuid = '550e8400-e29b-41d4-a716-446655440000'
 
-    diagnose_command = DiagnoseCommand(
+    assess_command = AssessCommand(
         note_uuid=note_uuid,
         icd10_code='E11.9'
     )
@@ -356,10 +356,10 @@ def compute():
     # To chain command effects, you must know what the command's id
     # is. To accomplish that, we set the id ourselves rather than
     # allow the database to assign one.
-    diagnose_command.command_uuid = str(uuid4())
+    assess_command.command_uuid = str(uuid4())
 
     # Now we can both originate and commit in a single operation
-    return [diagnose_command.originate(), diagnose_command.commit()]
+    return [assess_command.originate(), assess_command.commit()]
 ```
 
 This pattern ensures that both the originate and commit operations use the same `command_uuid`, allowing them to be chained together reliably in a single plugin execution.
@@ -382,7 +382,11 @@ Commands have two types of actions:
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
 <!-- source: discussion #1046 -->
-When printing a note chart, the commands are always sorted into SOAP order. There is no option to disable this sorting or preserve the original entry order. To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
+A printed note groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
+
+On instances in the [revamped note beta program](/product-updates/note-revamp/), a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note in the older format, or on an instance outside the beta program, prints those sections under separate headings.
+
+To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 
 {% include alert.html type="info" content="The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it." %}
 
@@ -447,25 +451,28 @@ the cases where more than one command could plausibly apply.
 
 ### Recording a condition
 
-Four commands create a condition. Which one fits depends on whether the condition is active now,
-whether you are assessing it, and whether it is surgical.
+Which command fits depends on whether the condition is active now, whether you are assessing it,
+and whether it is surgical.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Diagnose](#diagnose) | The condition is active and you are assessing it for the first time. |
+| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
-| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
+| [Diagnose](#diagnose) | Still available for a new active condition you are assessing for the first time, but planned for retirement in a future release. Use Assess with `icd10_code` instead. |
 
-All four write a [Condition](/sdk/data-condition/#condition). They differ in what they set on it,
-which is what decides where it shows up and which commands can act on it later:
+Each of these writes a [Condition](/sdk/data-condition/#condition) when it records a new one. They
+differ in what they set on it, which is what decides where it shows up and which commands can act
+on it later:
 
 | Command | `clinical_status` | `surgical` | Opens an assessment |
 |:--------|:------------------|:-----------|:--------------------|
-| [Diagnose](#diagnose) | `active` | `false` | Yes |
+| [Assess](#assess) with `icd10_code` | `active` | `false` | Yes |
 | [MedicalHistory](#medicalhistory) | `resolved` | `false` | No |
 | [AddCondition](#addcondition) | `active` | `false` | No |
 | [SurgicalHistory](#surgicalhistory) | `resolved` | `true` | No |
+| [Diagnose](#diagnose) | `active` | `false` | Yes |
 
 Surgical history is coded in SNOMED rather than ICD-10, and the `surgical` flag is what separates it
 from past medical history: [Remove Past Medical History](#remove-past-medical-history) rejects a
@@ -478,7 +485,7 @@ Four more commands act on a condition that is already on the chart.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Assess](#assess) | You are recording an assessment against an existing condition. |
+| [Assess](#assess) | You are recording an assessment against a condition on the chart, named by `condition_id` or `icd10_code`. Assessing a resolved condition makes it active again. |
 | [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
 | [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
 | [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
@@ -515,7 +522,7 @@ The sections below document each command class. See [Common Attributes](#common-
 Records a coded (ICD-10) condition on the patient's Conditions list with clinical status active, in
 the note's History section, without opening an assessment for it. Reach for it when the condition was
 diagnosed previously and is still active. See
-[Recording a condition](#recording-a-condition) for how it compares to Diagnose and MedicalHistory.
+[Recording a condition](#recording-a-condition) for how it compares to Assess and MedicalHistory.
 
 **Command-specific parameters**:
 
@@ -643,16 +650,27 @@ allergy = AllergyCommand(
 
 ### Assess
 
-Records an assessment against a condition already on the patient's chart. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+Records an assessment of a patient's condition. Name the condition in one of two ways:
+
+- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
+- `condition_id` assesses a specific condition already on the patient's chart.
+
+Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+
+{% include alert.html type="info" content="If your plugin relies on <a href='/sdk/events/#assess_command__condition_selected'><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a> or <a href='/sdk/events/#assess_command__icd10_code_selected'><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a>, set the condition with <code>edit()</code>. These events fire when an existing Assess command's condition changes, so originating an Assess with <code>condition_id</code> or <code>icd10_code</code> already set sends neither. To trigger them, originate the command without a condition, then <code>edit()</code> it to set one. An <code>edit()</code> with <code>icd10_code</code> sends <code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code> even when the patient already has that condition charted." %}
+
+Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
 **Command-specific parameters**:
 
-| Name           | Type          | Required to commit | Description                                                                |
-|:---------------|:--------------|:---------|:---------------------------------------------------------------------------|
-| `condition_id` | _string_      | `true`   | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart.               |
-| `background`   | _string_      | `false`  | Background information about the diagnosis.                                |
-| `status`       | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
-| `narrative`    | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
+| Name                        | Type          | Required to commit | Description                                                                |
+|:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
+| `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
+| `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
+| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
+| `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
+| `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
 
 <a id="assess-status"></a>
 
@@ -662,7 +680,24 @@ Records an assessment against a condition already on the patient's chart. See [U
 | `STABLE`       | `"stable"`       | The condition is stable.        |
 | `DETERIORATED` | `"deteriorated"` | The condition has deteriorated. |
 
-**Example**:
+**Examples**:
+
+Assess a condition by ICD-10 code, whether or not the patient has it charted:
+
+```python
+from datetime import date
+from canvas_sdk.commands import AssessCommand
+
+assess = AssessCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='M54.50',
+    approximate_date_of_onset=date(2012, 1, 1),
+    background='lifted heavy box',
+    narrative='unable to sleep lately'
+)
+```
+
+Assess a specific condition already on the chart by its id:
 
 ```python
 from canvas_sdk.commands import AssessCommand
@@ -678,9 +713,13 @@ assess = AssessCommand(
 
 **Validation**:
 
+Passing both `condition_id` and `icd10_code` fails validation when you `originate` or `edit` the command, with the error `Name the condition with either condition_id or icd10_code, not both`. This applies even when one of them is `None`, because the empty value would clear the other. Leave out the argument you aren't using.
+
+Canvas checks `icd10_code` against the ICD-10 terminology when it applies the effect. A code that matches no ICD-10 condition fails with the error `ICD-10 code <code> not found`, and the command is neither created nor updated.
+
 `condition_id` must belong to the same patient as the note or command it is written to: the patient comes from `note_uuid` when you `originate` the command, and from the existing command when you `edit` one. A condition on another patient's chart — or an id that matches no condition at all — fails validation, and the command is neither created nor updated. This check is deferred when the target note (on `originate`) or command (on `edit`) is not yet persisted — for example, when a plugin creates the note and originates `AssessCommand`s against that same `note_uuid` in a single handler response. In that case the note's or command's patient cannot be resolved yet, so `condition_id` passes this validation. The patient-ownership check then runs later, once the command is applied and the note exists.
 
-The check needs that note or command to exist, so it is skipped when you create the note and originate the command in the same batch of effects. Nothing is rejected in that case, since there is not yet a chart to compare the condition against.
+Committing the command checks `condition_id` again. If the condition was entered in error after it was picked, or isn't on the patient's chart, the commit fails with the error `The condition picked in this Assess was entered in error or is not on this patient's chart. Pick the condition again.`
 
 ---
 
@@ -694,6 +733,7 @@ Changes the sig on an active medication without issuing a new prescription. See 
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being changed. Must be an active medication on that patient's chart. |
 | `sig`           | _string_ | `false`  | Administration details of the medication.                          |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -769,7 +809,7 @@ def compute():
 | `goal_id`            | _int_                    | `true`   | The `dbid` of the [Goal](/sdk/data-goal/#goal) being closed. Must be a goal on that patient's chart.                                     |
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The final achievement status of the goal. Must be one of [`GoalCommand.AchievementStatus`](#goal-achievementstatus). |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal.                                 |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -787,8 +827,10 @@ close_goal = CloseGoalCommand(
 ### Diagnose
 
 Records an active condition and assesses it for the first time. See
-[Recording a condition](#recording-a-condition) for how it compares to MedicalHistory and
+[Recording a condition](#recording-a-condition) for how it compares to Assess, MedicalHistory and
 AddCondition.
+
+{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now." %}
 
 **Command-specific parameters**:
 
@@ -887,7 +929,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
-| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`  | _string_                 | `false`                   | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -937,7 +979,7 @@ unstructured = FollowUpCommand(
 | `achievement_status` | _[AchievementStatus](#goal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#goal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 
 <a id="goal-achievementstatus"></a>
@@ -1017,6 +1059,7 @@ hpi = HistoryOfPresentIllnessCommand(
 | `comment`               | _string_          | `false`  | Additional comments (max length: 1024 characters).                            |
 | `ordering_provider_key` | _string_          | `true`   | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the imaging.                                |
 | `linked_items_urns`     | _list[string]_    | `false`  | List of URNs for items linked to the imaging order command.                   |
+| `assessment_id`         | _string_          | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -1191,7 +1234,7 @@ Records a vaccine **administered** during the visit, including the lot it came f
 | `sig`             | _string_  | `false`            | Directions, as free text - for example `"0.5 mL IM, left deltoid"` (max 75 characters).                    |
 | `consent_given`   | _boolean_ | `true`             | Whether the patient consented after reviewing the Vaccine Information Statement. Must be `true` to commit. |
 | `given_by_id`     | _string_  | `true`             | The `id` of the [Staff](/sdk/data-staff/#staff) member who administered the vaccine. Must be active.       |
-| `assessment_id`   | _string_  | `false`            | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`   | _string_  | `false`            | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 *`lot_id` and `lot_number` are mutually exclusive; supplying both raises an error. Either may
 be omitted.
@@ -1255,7 +1298,7 @@ immunize_unstocked = ImmunizeCommand(
 |-----------|------------|----------|-----------------------------------------------------------------------|
 | `coding`  | __[Coding](#coding)__ | `true`   | The SNOMED code or UNSTRUCTURED code that represents the instruction. Search SNOMED with the [instruction endpoint](/sdk/utils/#get-snomedinstruction--instructions). |
 | `comment` | _string_   | `false`  | Additional comments related to the instruction.                       |
-| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 <!-- source: discussion #1047 -->
 The Educational Material command only supports a fixed set of selectable values and is not available in this commands module. For free-text patient education, use `InstructCommand` instead — its `UNSTRUCTURED` coding accepts arbitrary instruction text.
@@ -1313,6 +1356,7 @@ Built-in validations ensure that:
 | `diagnosis_codes`       | _list[string]_ | `false`  | ICD-10 Diagnosis codes justifying the lab order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).                                                                                                                 |
 | `fasting_required`      | _boolean_      | `false`  | Indicates if fasting is required for the tests.                                                                                                                  |
 | `comment`               | _string_       | `false`  | Additional comments related to the lab order (max length: 128 characters).                                                                                        |
+| `assessment_id`         | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -1403,7 +1447,7 @@ lab_review = LabReviewCommand(
 ### MedicalHistory
 
 Backfills a condition the patient had in the past that is not active now. See
-[Recording a condition](#recording-a-condition) for how it compares to Diagnose and AddCondition.
+[Recording a condition](#recording-a-condition) for how it compares to Assess and AddCondition.
 
 **Command-specific parameters**:
 
@@ -1511,6 +1555,81 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 ---
 
+### OrderDme
+
+Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
+
+Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+
+**Command-specific parameters**:
+
+| Name                    | Type                                  | Required to sign | Description |
+|:------------------------|:--------------------------------------|:-----------------|:------------|
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
+| `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
+| `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
+| `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
+| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
+| `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
+
+Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
+
+Canvas leaves a field empty when its value doesn't resolve. A `dme_product_id` resolves only to an active formulary product, and an `ordering_provider_key` only to an active staff member. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value. Signing also fails when the ordering provider isn't an active prescriber, because the printed order names them as the signer.
+
+Signing saves the item's formulary name and code and the indications with the order, along with the patient's latest height and weight. Later changes to the formulary or the patient's vitals don't change the printed order.
+
+**Command-specific actions**:
+
+| Action Name   | Available When       | Description                                                                 |
+|---------------|----------------------|-----------------------------------------------------------------------------|
+| `sign_action` | command is staged    | Signs the order, transitioning it from staged to committed state.           |
+| `print_order` | command is committed | Prints the order as a requisition. Requires printing access. |
+| `fax`         | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access. |
+
+To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
+
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+
+**Example**:
+
+```python
+from canvas_sdk.commands import OrderDmeCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+supplier = ServiceProvider(
+    first_name="Acme",
+    last_name="Medical Supply",
+    practice_name="Acme Medical Supply",
+    specialty="Durable Medical Equipment",
+    business_fax="5555550100",
+)
+
+# A product from the DME formulary
+formulary_order = OrderDmeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+    diagnosis_codes=["N186"],
+    quantity=1,
+    length_of_need="Lifetime",
+    service_provider=supplier,
+    ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+
+# An off-formulary item
+free_text_order = OrderDmeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    free_text_item="Bariatric shower chair",
+    diagnosis_codes=["E6601"],
+    quantity=1,
+    length_of_need="12 months",
+    service_provider=supplier,
+    ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+```
+
+---
+
 ### SurgicalHistory
 
 Records a past surgical procedure, coded in SNOMED. See [Recording a condition](#recording-a-condition) for how it compares to the other condition commands.
@@ -1577,7 +1696,7 @@ surgical_history_unstructured = PastSurgicalHistoryCommand(
 |------------|----------------------|----------|------------------------------------------------------|
 | `cpt_code` | _string_ or _[Coding](#coding)_ | `true`   | The CPT code of the procedure or action performed. Look it up in the [Charge Description Master](/sdk/data-charge-description-master/#chargedescriptionmaster).   |
 | `notes`    | _string_             | `false`  | Additional notes related to the performed procedure. |
-| `assessment_id` | _string_        | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id` | _string_        | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Coding Support**:
 
@@ -1629,7 +1748,7 @@ perform_unstructured = PerformCommand(
 | Name        | Type     | Required to commit | Description                          |
 |:------------|:---------|:---------|:-------------------------------------|
 | `narrative` | _string_ | `true`   | The narrative of the patient's plan. |
-| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -1780,6 +1899,7 @@ def compute():
 | `prescriber_id`             | _string_                      | `true`   | The [Staff](/sdk/data-staff/#staff) id of the prescriber.                                          |
 | `supervising_provider_id`   | _string_                      | `false`   | The [Staff](/sdk/data-staff/#staff) id of the supervising provider of the prescriber.               |
 | `note_to_pharmacist`        | _string_                      | `false`  | Additional notes or instructions for the pharmacist. Up to 210 characters — see [Limits](#prescribe-limits). |
+| `assessment_id`             | _string_                      | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition to `icd10_codes` unless it's already listed. A prescription holds at most two codes, so a link that would add a third is rejected. |
 
 *Must provide exactly one of: fdb_code, compound_medication_id, or compound_medication_data
 
@@ -2334,6 +2454,7 @@ unstructured_rfv = ReasonForVisitCommand(
 | `include_visit_note`  | _boolean_               | `false`  | Flag indicating whether the visit note should be included in the referral.                   |
 | `comment`             | _string_                | `false`  | An optional comment providing further details about the referral.                            |
 | `linked_items_urns`   | _list[string]_          | `false`  | List of URNs for items linked to the referral command.                                       |
+| `assessment_id`       | _string_                | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 **Command-specific actions**:
 
@@ -2669,7 +2790,7 @@ Records that a patient is stopping a medication, along with the reason. See [Rec
 |:----------------|:---------|:---------|:-------------------------------------------------------------------|
 | `medication_id` | _string_ | `true`   | The id of the [Medication](/sdk/data-medication/#medication) being stopped. Must be a medication already recorded on that patient's chart. |
 | `rationale`     | _string_ | `false`  | The reason for stopping the medication.                            |
-| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id` | _string_ | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Example**:
 
@@ -2722,7 +2843,7 @@ questionnaire = StructuredAssessmentCommand(
 | `comment`           | _string_       | `false`  | Additional comments or notes about the task.        |
 | `labels`            | _list[string]_ | `false`  | Labels to apply to the task. Each value is matched (case-insensitive) against an existing [TaskLabel](/sdk/data-task/#tasklabel) by name; values that don't match an existing label are ignored. |
 | `linked_items_urns` | _list[string]_ | `false`  | URNs for items linked to the task.                  |
-| `assessment_id`     | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`     | _string_       | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 **Enums and Types**:
 
@@ -2851,7 +2972,7 @@ UpdateDiagnosisCommand(
 | `achievement_status` | _[AchievementStatus](#updategoal-achievementstatus) enum_ | `false`  | The current achievement status of the goal.               |
 | `priority`           | _[Priority](#updategoal-priority) enum_          | `false`  | The priority of the goal.                                 |
 | `progress`           | _string_                 | `false`  | A narrative about the patient's progress toward the goal. |
-| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. If that Assessment is later entered in error or deleted, this link is automatically cleared. |
+| `assessment_id`      | _string_                 | `false`  | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). |
 
 <a id="updategoal-achievementstatus"></a>
 
@@ -3043,7 +3164,7 @@ A single FDB code can contain multiple `clinical_quantities`, so filter to the c
 
 ### ServiceProvider
 
-`ServiceProvider` represents detailed information about healthcare service providers, used in referral and imaging order commands.
+`ServiceProvider` represents detailed information about healthcare service providers, used in referral, imaging order, and Order DME commands.
 
 | Field Name       | Type               | Description                                            |
 |------------------|--------------------|--------------------------------------------------------|
