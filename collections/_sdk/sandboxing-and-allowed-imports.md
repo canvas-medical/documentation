@@ -455,7 +455,7 @@ Reading a plain attribute off an external module is also limited to that module'
 
 Modules in your plugin's own package aren't on the allow-list and don't need to be. You can import one of them and read its attributes through the module object, the same as importing those names directly:
 
-```python
+```python?partial=true
 from my_plugin.lib import store
 
 store.get_latest()  # same as: from my_plugin.lib.store import get_latest
