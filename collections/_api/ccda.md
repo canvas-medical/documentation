@@ -10,7 +10,9 @@ Software requirements for retrieving C-CDA via API calls can be found [here](/ap
 
 If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) to get you set up.
 
-If you use a [client credentials](/api/customer-authentication/#client-credentials) token, request it with the `system/*.*` scope. Canvas refuses a client credentials token with narrower scopes on this endpoint with `403 Forbidden`.
+A C-CDA carries the patient's whole clinical record. The export therefore requires a wildcard read [scope](/api/customer-authentication/#scopes) at the `patient/`, `user/`, or `system/` level. Canvas accepts the SMART v1 forms `*.read` and `*.*`, and SMART v2 forms that include read, such as `*.r`, `*.rs`, and `*.cruds`. For example, a [client credentials](/api/customer-authentication/#client-credentials) token with `system/*.read` can export a C-CDA. A token with only `system/Appointment.read` cannot. Canvas refuses a token without a wildcard read scope with `403 Forbidden`.
+
+An application can also send its client ID and secret with the request instead of a token. In that case, the OAuth application's allowed scopes must include a wildcard read scope.
 
 A token bound to one patient returns only that patient's record, whatever patient key the URL names. A token is bound to a patient when its [SMART launch context](/api/customer-authentication/#authorization-code) names that patient. A token issued to a patient's own login is bound to that patient too. Staff and client credentials tokens export the patient the URL names.
 
@@ -87,7 +89,7 @@ In general: Codes in the 2xx range indicate success. Codes in the 4xx range indi
     </tr>
     <tr>
       <td>403 - Forbidden</td>
-      <td>No valid Bearer token provided.</td>
+      <td>No valid Bearer token provided, or the token has no wildcard read scope.</td>
     </tr>
     <tr>
       <td>404 - Not Found</td>
