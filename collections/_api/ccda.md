@@ -12,6 +12,8 @@ If you have a Canvas Production instance, you will need to request a token and r
 
 If you use a [client credentials](/api/customer-authentication/#client-credentials) token, request it with the `system/*.*` scope. Canvas refuses a client credentials token with narrower scopes on this endpoint with `403 Forbidden`.
 
+A token bound to one patient returns only that patient's record, whatever patient key the URL names. A token is bound to a patient when its [SMART launch context](/api/customer-authentication/#authorization-code) names that patient. A token issued to a patient's own login is bound to that patient too. Staff and client credentials tokens export the patient the URL names.
+
 ## Request and Parameters
 
 In order to generate a CCDA for a known patient id, you'll need to do a GET request to the endpoint `{YOUR_EHR_INSTANCE}/api/data-export/ccda/{patient_id}?document={document_type}`, where `document_type` can be either `continuity` or `referral`. You can check all parameters in the table below.
