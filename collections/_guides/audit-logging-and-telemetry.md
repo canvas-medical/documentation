@@ -138,6 +138,121 @@ default, or pseudonymized on request.
 
 {% include alert.html type="info" content="The SIEM export is opt-in and enabled per instance by Canvas — it is not a self-serve toggle. Request it through your Canvas representative, who sets up your destination endpoint and the credentials Canvas presents to it." %}
 
+#### Event format
+
+Each request to your endpoint is a `POST` with `Content-Type: application/x-ndjson`, carrying
+up to 500 events, one JSON object per line. Every body ends with a newline, so successive
+bodies appended to one file read as a single NDJSON stream. Events follow OCSF 1.1.0.
+
+| Field | Meaning |
+| --- | --- |
+| `metadata.uid` | Unique id for the event. Delivery is at-least-once, so use it to drop duplicates. |
+| `metadata.correlation_uid` | Id of the request that produced the event, when there was one. Events from the same request share it. |
+| `metadata.version` | OCSF schema version. |
+| `category_uid`, `class_uid`, `activity_id`, `type_uid` | OCSF classification of the event (see the table below). `type_uid` is `class_uid * 100 + activity_id`. |
+| `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
+| `status_id` | Outcome: `1` success, `2` failure. |
+| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in, `uid` is `null` and `name` is the username that was tried. |
+| `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. |
+| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. |
+| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, or `provenance`; `event_name` names the Canvas action; `reason` explains a failed sign-in; `payload` carries extra identifiers. |
+
+| `class_uid` | OCSF class | Canvas events |
+| --- | --- | --- |
+| 3001 | Account Change | Staff account created |
+| 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued |
+| 3005 | User Access Management | Staff access granted or revoked |
+| 6001 | Web Resources Access | Chart opened, note printed |
+| 6003 | API Activity | Clinical records created, updated, or deleted; coverage, address, and care team changes |
+
+With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
+tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` is
+omitted.
+
+#### Example events
+
+The examples below are formatted across several lines for reading; each arrives on a single
+line. Identifiers and addresses are illustrative.
+
+A failed sign-in:
+
+```json
+{
+  "metadata": {
+    "version": "1.1.0",
+    "uid": "6be79fea-caa8-40e1-a480-9c86e2b243f4",
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"}
+  },
+  "category_uid": 3,
+  "class_uid": 3002,
+  "activity_id": 1,
+  "type_uid": 300201,
+  "time": 1791999125000,
+  "actor": {"user": {"uid": null, "name": "jsmith"}},
+  "src_endpoint": {
+    "ip": "203.0.113.24",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
+  },
+  "status_id": 2,
+  "enrichments": {"source": "authentication", "reason": "invalid_credentials"}
+}
+```
+
+A staff member opening a patient's chart:
+
+```json
+{
+  "metadata": {
+    "version": "1.1.0",
+    "uid": "b7f9f925-646d-4607-ac71-36f5708565ca",
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "correlation_uid": "f32eec1863c3dda8afea21ba0cb39a9d"
+  },
+  "category_uid": 6,
+  "class_uid": 6001,
+  "activity_id": 2,
+  "type_uid": 600102,
+  "time": 1791999185000,
+  "actor": {"user": {"uid": "412", "name": "jsmith"}},
+  "src_endpoint": {
+    "ip": "203.0.113.24",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
+  },
+  "status_id": 1,
+  "resources": [{"type": "patient", "uid": "381bf94ac3b269eedec9dc3f660a4cf0"}],
+  "enrichments": {"source": "activity_log", "event_name": "chart_access"}
+}
+```
+
+An update to a condition on that patient's chart:
+
+```json
+{
+  "metadata": {
+    "version": "1.1.0",
+    "uid": "98e8a792-dd0f-4d4e-909e-94653f2af09c",
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "correlation_uid": "0c5d1f7a9e2b4c6d8f1a3b5c7d9e0f12"
+  },
+  "category_uid": 6,
+  "class_uid": 6003,
+  "activity_id": 3,
+  "type_uid": 600303,
+  "time": 1791999302000,
+  "actor": {"user": {"uid": "412", "name": "jsmith"}},
+  "src_endpoint": {
+    "ip": "203.0.113.24",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
+  },
+  "status_id": 1,
+  "resources": [
+    {"type": "patient", "uid": "381bf94ac3b269eedec9dc3f660a4cf0"},
+    {"type": "Condition", "uid": "bcd22a35-eb11-49b3-bd7c-3f7ef93e4385"}
+  ],
+  "enrichments": {"source": "provenance"}
+}
+```
+
 ## Plugin activity
 
 Plugins execute in an isolated runner, and their activity is instrumented per plugin,
