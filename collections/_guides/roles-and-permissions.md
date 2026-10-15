@@ -20,6 +20,11 @@ only exercise it for patients within the groups assigned to them. This is how an
 organization restricts a clinician to a panel, a site, or a program rather than the whole
 patient population.
 
+Patient-group scope applies however a record is reached. Lists and direct lookups by
+ID return only records for patients in the user's groups. An appointment for a
+patient outside those groups still appears on the schedule, but without its subject, note,
+or patient address.
+
 Both levels are always evaluated together. A user must satisfy the model permission and
 the object permission — and be an active user — for access to be granted.
 
@@ -63,7 +68,7 @@ These are deliberately separate so that read access can be granted without write
 | Schedule write | Create and modify appointments |
 | Tasking Access | View and update tasks |
 | Printing Access | Print from the chart |
-| Revenue access | The revenue module and authorization management |
+| Revenue access | The revenue module, including claims, payments, coverage and eligibility information, remittances, and authorization management |
 | Data integration Access | The data integration module |
 | Patient Data Integration Access | Patient-level data integration tasks |
 | Questionnaire Builder Access | The questionnaire builder |
@@ -96,6 +101,28 @@ user to a patient group determines which patients their permissions apply to.
 Every instance is provisioned with an **All Patients** group. Narrower groups are created
 per organization to reflect panels, sites, programs, or any other division that should
 bound a user's reach.
+
+## Permissions for common workflows
+
+Some workflows need more than one permission. Use this table when you design a role for
+billing staff, front-desk staff, or another restricted group. Check that the role includes
+every permission in each row it needs. Where a row mentions patient-group access, the
+user must also be in a group that includes the patient.
+
+| Workflow | Required permissions |
+| --- | --- |
+| View coverage and eligibility information | Revenue access. Coverage is listed only for patients the user has patient-group access to |
+| Change, order, expire, or remove a coverage, or remove a coverage card photo | Change permission on coverage, and patient-group access |
+| Update a coverage's eligibility summary | Change permission on coverage, revenue access, and patient-group access |
+| Change claims and their coverages, snoozes, labels, comments, activity logs, and manual remits | Revenue access. Batch claim actions apply only to claims for patients the user has patient-group access to |
+| Add, update, or delete a prior authorization, or generate a batch of patient statements | Revenue access |
+| Collect a payment on a claim | Add permission on payment collections, revenue access, and patient-group access. A saved card can be charged only for the patient it belongs to |
+| Create, edit, or delete a payer | Add, change, or delete permission on payers, which the admin console lists as insurers. Any signed-in user can search for and view payers, so staff can enter coverage without these permissions |
+| Process ERAs in the admin console | Revenue access and view permission on ERA process jobs |
+| Select claims for an installment plan in the admin console | View permission on installment plans to see the selection, and change permission to save it |
+| Create, view, or update a campaign, or add an intervention to one | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient |
+| Remove a care team member | Change permission on care team memberships, and patient-group access |
+| Send, edit, or delete a message | Change permission on notes, and patient-group access. A message that has been sent or received can't be changed, except to mark it read |
 
 ## Extending the defaults
 
