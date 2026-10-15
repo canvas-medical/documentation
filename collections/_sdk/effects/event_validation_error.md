@@ -9,6 +9,18 @@ hidden: false
 
 The `EventValidationError` effect is used to block the creation of an event (such as a NoteStateChangeEvent create) when custom validation fails. If this effect is returned by a protocol in response to an event (e.g., `NOTE_STATE_CHANGE_EVENT_PRE_CREATE`), the event is aborted and the provided error message is surfaced to the user.
 
+Build an `EventValidationError`, add one or more errors with `add_error()`, and return its `apply()` from your handler.
+
+## Methods
+
+### add_error(message: str | ValidationError) → EventValidationError
+
+Adds a validation error to the effect, either as a message string or a `ValidationError`. It returns the effect, so calls can be chained.
+
+### apply() → Effect
+
+Blocks the event and shows the errors to the user.
+
 ## Attributes
 
 | Attribute | Type                  | Description                                       | Required |

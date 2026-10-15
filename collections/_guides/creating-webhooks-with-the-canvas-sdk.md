@@ -154,7 +154,7 @@ so you can use it to make FHIR API requests.
 
 You also have access to `self.secrets`, which is a python dictionary
 containing the key-value pairs from your plugins configuration page. You
-declare the keys in your `CANVAS_MANIFEST.json`, and can then set the values
+declare the keys in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables), and can then set the values
 after the plugin is installed.
 
 We'll set two secrets, one for the unique id of the webhook, and one for an

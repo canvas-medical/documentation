@@ -14,6 +14,8 @@ layout: apipage
 ## Registering a third-party application on Canvas
 
 - Registering a third-party application is always the first step.
+- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
+- Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
 - In order to do so, you'll need to:
   1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page:
   <img src="/assets/images/ed67823-Screenshot_2021-10-26_at_16.22.31.png" alt="Authorization Page" style="width: 50%;" />
@@ -43,6 +45,8 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 ```
 
 and you'll get back a JSON which will contain an `access_token` that'll be valid for 10 hours.
+
+The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
 
 ## Authorization Code
 

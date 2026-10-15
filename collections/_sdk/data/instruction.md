@@ -134,6 +134,8 @@ cessation_counseling = (
 | Field Name    | Type                        |
 |---------------|-----------------------------|
 | dbid          | Integer                     |
+| created       | DateTime                    |
+| modified      | DateTime                    |
 | system        | String                      |
 | version       | String                      |
 | code          | String                      |

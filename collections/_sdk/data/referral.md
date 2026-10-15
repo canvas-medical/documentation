@@ -132,6 +132,7 @@ url = document.document_url if document else None
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
 | note                  | [Note](/sdk/data-note/#note)                                   |
+| assessment            | [Assessment](/sdk/data-assessment/#assessment) |
 | assessments           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | clinical_question     | String                                                         |
@@ -145,6 +146,7 @@ url = document.document_url if document else None
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
+| action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
 
 ### ReferralReport
 
@@ -195,6 +197,8 @@ url = document.document_url if document else None
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | report        | [ReferralReport](#referralreport) |
 | system        | String                            |
 | version       | String                            |

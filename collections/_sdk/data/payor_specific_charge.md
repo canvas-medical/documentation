@@ -40,6 +40,8 @@ You can also access a transactor's specific charges from the `Transactor` model:
 | Field Name            | Type                                                           |
 | --------------------- | -------------------------------------------------------------- |
 | dbid                  | Integer                                                        |
+| created               | DateTime                                                       |
+| modified              | DateTime                                                       |
 | transactor            | [Transactor](/sdk/data-coverage/#transactor)                   |
 | charge                | [ChargeDescriptionMaster](/sdk/data-charge-description-master) |
 | charge_amount         | Decimal                                                        |

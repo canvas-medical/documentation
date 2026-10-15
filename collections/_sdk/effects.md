@@ -321,7 +321,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -335,6 +335,7 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
 
 
 ### Patient Groups
@@ -558,12 +559,13 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
 | DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
-| SIGN | Sign the order (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, order DME, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
 | Command Type | Effect Prefix | Notes |
 |---|---|---|
+| Add Condition | `*_ADD_CONDITION_COMMAND` | |
 | Adjust Prescription | `*_ADJUST_PRESCRIPTION_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Allergy | `*_ALLERGY_COMMAND` | |
 | Assess | `*_ASSESS_COMMAND` | |
@@ -586,6 +588,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
 | Medical History | `*_MEDICAL_HISTORY_COMMAND` | |
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
+| Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
 | POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
@@ -597,6 +600,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Remove Allergy | `*_REMOVE_ALLERGY_COMMAND` | |
+| Remove Past Medical History | `*_REMOVE_PAST_MEDICAL_HISTORY_COMMAND` | |
 | Resolve Condition | `*_RESOLVE_CONDITION_COMMAND` | |
 | Review of Systems | `*_ROS_COMMAND` | |
 | Stop Medication | `*_STOP_MEDICATION_COMMAND` | |
