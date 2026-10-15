@@ -162,8 +162,8 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as. |
 | `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
 | `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
-| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. On an update to a clinical record, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
-| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, `provenance`, or `access_control`; `event_name` names the Canvas action; `impersonated_by` is the username of the administrator acting as the user in `actor`, on every event during that session; `plugin_handler` names the plugin handler alongside `actor.invoked_by`; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
+| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. The patient `uid` is the patient key, the same id the FHIR API uses for the Patient. A record `uid` is Canvas's internal record id, which differs from the record's FHIR resource id. On an update to a clinical record, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
+| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, `provenance`, or `access_control`; `event_name` names the Canvas action; `impersonated_by` is the username of the administrator acting as the user in `actor`, on every event during that session (`id:` followed by the administrator's user id if the username can't be read); `plugin_handler` names the plugin handler alongside `actor.invoked_by`; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
 
 | `class_uid` | OCSF class | Canvas events |
 | --- | --- | --- |
@@ -171,7 +171,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued, an administrator starting or ending a session as another user |
 | 3005 | User Access Management | Staff access granted or revoked |
 | 6001 | Web Resources Access | Chart opened, note printed |
-| 6003 | API Activity | Clinical records created, updated, or deleted; coverage, address, and care team changes; requests refused for lack of permission |
+| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; requests refused for lack of permission |
 
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
