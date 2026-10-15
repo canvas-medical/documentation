@@ -48,7 +48,7 @@ Set exactly one of `url` or `content`. The effect raises a validation error when
 
 Use `content` for a static block you can build as an HTML string inside the handler.
 
-Use `url` for a block that updates itself after the note renders. Canvas renders inline `content` in a frame it manages, and a [WebSocket](/sdk/handlers-simple-api-websocket/) opened from that frame receives no messages. A page served from your plugin keeps its WebSocket connection open and can receive `Broadcast` messages. For example, a section card can update its command count when a command is added to the note.
+Use `url` for a block that updates itself after the note renders, as described in [Keeping content current](#keeping-content-current). Canvas renders inline `content` in a frame it manages, and a [WebSocket](/sdk/handlers-simple-api-websocket/) opened from that frame receives no messages. A page served from your plugin keeps its WebSocket connection open and can receive `Broadcast` messages.
 
 ### Keeping content current
 
@@ -58,6 +58,43 @@ Canvas fires `NOTE__GET_CUSTOM_CONTENT` when a note renders, and doesn't fire it
 2. From a handler that responds to the events that change the block, return a [`Broadcast`](/sdk/handlers-simple-api-websocket/#broadcasting-messages) effect for that channel. Put the new data in the message, so the page can update without fetching anything.
 
 For example, a block that counts the note's commands can broadcast new counts when a command is added, deleted, or entered in error. Each command type fires its own events for these, such as `PLAN_COMMAND__POST_ORIGINATE`, `PLAN_COMMAND__POST_DELETE`, and `PLAN_COMMAND__POST_ENTER_IN_ERROR`.
+
+This handler broadcasts to a note's channel when a Plan or Vitals command is added to the note:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import Broadcast
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data.command import Command
+
+
+class NotifyNoteBlocks(BaseHandler):
+    RESPONDS_TO = [
+        EventType.Name(EventType.PLAN_COMMAND__POST_ORIGINATE),
+        EventType.Name(EventType.VITALS_COMMAND__POST_ORIGINATE),
+    ]
+
+    def compute(self) -> list[Effect]:
+        note_id = (
+            Command.objects.filter(id=self.event.target.id)
+            .values_list("note__id", flat=True)
+            .first()
+        )
+
+        if not note_id:
+            return []
+
+        return [
+            Broadcast(
+                channel=f"note-{note_id}",
+                message={
+                    "event_type": "command_added",
+                    "command_id": self.event.target.id,
+                },
+            ).apply()
+        ]
+```
 
 ### Permissions for URL blocks
 
