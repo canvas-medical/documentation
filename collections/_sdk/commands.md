@@ -1589,6 +1589,8 @@ Signing saves the item's formulary name and code and the indications with the or
 
 To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
 
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+
 **Example**:
 
 ```python
