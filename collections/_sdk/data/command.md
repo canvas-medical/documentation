@@ -9,6 +9,8 @@ hidden: false
 
 The `Command` model represents a [command](/sdk/commands/) in a note.
 
+Private Notes commands (`schema_key` of `privateNotes`) are not available through this model. Only the provider who writes a private note can see it, so `Command.objects` and `note.commands` never return these commands, even when you filter by their `schema_key` or `id`.
+
 ## Basic usage
 
 To get a command by identifier, use the `get` method on the `Command` model manager:
@@ -110,6 +112,7 @@ The following table shows the different command `schema_key` values with links t
 | labOrder            | [LabOrder](/sdk/commands/#laborder)                              |
 | medicalHistory      | [MedicalHistory](/sdk/commands/#medicalhistory)                  |
 | medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)        |
+| orderDme            | [OrderDme](/sdk/commands/#orderdme)                              |
 | perform             | [Perform](/sdk/commands/#perform)                                |
 | plan                | [Plan](/sdk/commands/#plan)                                      |
 | pocLabTest          | [POCLabTest](/sdk/commands/#poclabtest)                          |

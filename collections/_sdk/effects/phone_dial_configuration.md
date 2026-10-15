@@ -17,7 +17,17 @@ from canvas_sdk.effects.phone_dial_configuration import (
 )
 ```
 
+Build a `PhoneDialConfiguration` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
+
 ---
+
+## Methods
+
+### apply() → Effect
+
+Makes the listed sections' numbers clickable.
+
+- `clickable_sections` is required, with at least one section.
 
 ## How it works
 
@@ -51,11 +61,11 @@ Click-to-dial also exists as an instance setting, independent of any plugin. Whe
 
 ## Attributes
 
-| Field                | Type                     | Default  | Description                                                                                                                                                              |
-|----------------------|--------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `clickable_sections` | list[[PhoneDialSection](#phonedialsection)] | Required | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                     |
-| `click_handling`     | [PhoneDialClickHandling](#phonedialclickhandling) | `DEVICE` | How a click on the listed sections is handled.                                                                                                                           |
-| `dial_label`         | `str` \| `None`            | `None`   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. |
+| Attribute            | Type                                              | Description                                                                                                                                                                                                                                                                                  | Required |
+|----------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `clickable_sections` | list[[PhoneDialSection](#phonedialsection)]       | The chart sections whose numbers become clickable. Provide at least one — an empty list is rejected.                                                                                                                                                                   | Yes      |
+| `click_handling`     | [PhoneDialClickHandling](#phonedialclickhandling) | How a click on the listed sections is handled. Defaults to `DEVICE`.                                                                                                                                                                                                                         | No       |
+| `dial_label`         | `str` \| `None`                                   | A display affordance only. When `dial_label` is set, the section shows the number plus a "Dial number with `<label>`" button. When it isn't, the number itself is the link. Where the call actually goes is still the click handler's decision, not the configuration's. Defaults to `None`. | No       |
 
 ### PhoneDialSection
 
@@ -122,8 +132,6 @@ A `PLUGIN` section does not dial anything on its own — the click only fires `P
 
 {% include alert.html type="warning" content="The dial URL must be listed in the plugin's <code>REDIRECT_ALLOWLIST_EXTERNAL</code> secret. An unset allowlist denies everything. An entry needs both a scheme and a host, so authority-style URIs work (<code>zoomus://</code>, <code>msteams://</code>, <code>rcmobile://</code>, <code>https://</code>) but scheme-only URIs are rejected (<code>sip:</code>, <code>callto:</code>, <code>skype:</code>, <code>sms:</code>). A <code>tel:</code> link is unaffected because <code>DEVICE</code> handling opens it natively rather than through a redirect." %}
 
-{% include alert.html type="warning" content="Compose the dial URL with an f-string, not <code>str.format</code>. The RestrictedPython sandbox blocks <code>str.format</code> and <code>format_map</code> at call time, so a <code>str.format</code> version passes <code>canvas validate</code> and unit tests but fails on the first real click." %}
-
 This handler reads the base of your softphone's dial URL from a plugin secret named `ZOOM_DIAL_URL_BASE`, rather than hard-coding it, then composes the dial URL with an f-string. Set that secret to the value from your Zoom Phone account.
 
 ```python
@@ -142,7 +150,7 @@ class DialClickedNumber(BaseHandler):
         zoom_dial_url_base = self.secrets["ZOOM_DIAL_URL_BASE"]
         phone_number = self.event.context["phone_number"]
         # source names the chart section the click came from, e.g. "contact".
-        source = self.event.context["source"]
+        source = self.event.context.get("source")
         return [
             RedirectEffect(
                 url=f"{zoom_dial_url_base}?number={quote(phone_number)}",

@@ -160,7 +160,7 @@ sections:
               <br><br>
               There must be exactly one contact point with the specifications `system`: **email** and `rank`: **1**. An error will be triggered if there is more than one `email` with `rank` set to **1**, however, multiple emails with other ranks (e.g., rank 2, 3, 4, etc.) are allowed.
               <br><br>
-              **IMPORTANT**: Updating email contact points is not permitted. During updates, the values must remain unchanged from the original creation or retrieval.
+              **IMPORTANT**: The rank **1** email is the practitioner's login email, where password reset links are sent, so an update can't set it to a new address: the rank **1** email must be one the practitioner already has. To add an email, give it a rank of **2** or higher and omit `id`. An email contact point that includes an `id` must keep its current value. A request that breaks either rule fails with the error `Updating email telecoms (email Contact Points) is not allowed at this moment. Emails must remain the same.`
             attributes:
               - name: id
                 type: string

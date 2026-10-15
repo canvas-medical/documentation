@@ -152,12 +152,12 @@ for reference in consent.document_references:
 
 ### PatientConsentStatus
 
-| Value                       | Label                       |
-| --------------------------- | --------------------------- |
-| accepted                    | Accepted                    |
-| accepted_via_patient_portal | Accepted Via Patient Portal |
-| rejected                    | Rejected                    |
-| rejected_via_patient_portal | Rejected Via Patient Portal |
+| Member                | Value                       | Label                       |
+| --------------------- | --------------------------- | --------------------------- |
+| `ACCEPTED`            | accepted                    | Accepted                    |
+| `ACCEPTED_VIA_PORTAL` | accepted_via_patient_portal | Accepted Via Patient Portal |
+| `REJECTED`            | rejected                    | Rejected                    |
+| `REJECTED_VIA_PORTAL` | rejected_via_patient_portal | Rejected Via Patient Portal |
 
 ### PatientConsentExpirationRule
 

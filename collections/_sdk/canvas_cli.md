@@ -55,6 +55,18 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
 - Because the notice is printed to standard error, it will not interfere with piped or redirected command output.
 - To disable update checks, set the environment variable `CANVAS_NO_UPDATE_CHECK=1`.
 
+<!-- source: discussion #611 -->
+## Checking the SDK/runtime version on an instance
+
+`canvas --version` reports the version of the locally installed CLI. To find the SDK/runtime version actually running on a given Canvas instance — useful when verifying that an expected SDK change is live — import `version` from `canvas_sdk.handlers.base` inside a plugin running on that instance:
+
+```python
+from canvas_sdk.handlers.base import version
+from logger import log
+
+log.info(f"SDK version: {version}")
+```
+
 ## Usage
 
 ```console
@@ -118,29 +130,56 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 **Notes**:
 
-Before uploading, `canvas install` runs the same pre-flight validation as [`canvas validate`](#canvas-validate):
+**Where to run it**
+
+<!-- source: discussion #1159 -->
+- Run it from one directory **above** the plugin folder, the one that holds `CANVAS_MANIFEST.json`, and pass the folder name. If the manifest is at `extensions/encounter_list/CANVAS_MANIFEST.json`, run this from `extensions`:
+
+  ```console
+  $ canvas install encounter_list --host your-host
+  ```
+- Or run `canvas install .` from inside the plugin folder.
+- The command is `canvas install`. There is no `canvas plugin install`.
+
+**Plugin folder layout**
+
+<!-- source: discussion #1527 -->
+- Keep the manifest, the package's `__init__.py`, and the folders it references (such as `routes/` and `protocols/`) in the same directory. Class paths in the manifest, such as `my_plugin.routes.charting`, resolve from there.
+- An extra level of nesting, with the manifest outside the inner package folder, makes those paths resolve one level too deep. The plugin loads, but its SimpleAPI endpoints return an empty 404, often with nothing in `canvas logs`. If that happens, check the folder structure and that every import in the referenced modules resolves.
+
+**Validation before upload**
+
+`canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
 - [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
 - Sandbox-load validation (imports every handler in the sandbox)
 
-If the static lint reports an error, or any handler fails to load — for example, due to a disallowed import like `subprocess` — the install aborts before the plugin is built or uploaded, so it never reaches your instance. Run `canvas validate` first for detailed per-handler results.
+If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
 
-The CLI packages every file in the plugin directory except:
+**What gets packaged**
+
+The CLI packages every file in the plugin folder except:
 - `__pycache__` directories
 - `*.pyc` and `*.pyo` files
 - `node_modules` directories
-- Hidden files and directories (e.g., `.git`, `.env`)
+- Hidden files and directories (for example, `.git` and `.env`)
 - Symlinks
 
-To exclude additional files, create a `.canvasignore` file in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin directory, so run the command from the directory that holds your `.canvasignore`. The file follows the same syntax as [.gitignore](https://git-scm.com/docs/gitignore), and its patterns match paths relative to the plugin directory.
+To exclude more files, add a `.canvasignore` file:
+- Put it in the directory you run `canvas install` from. The CLI reads it from the current working directory, not from the plugin folder.
+- It uses [.gitignore](https://git-scm.com/docs/gitignore) syntax, and its patterns match paths relative to the plugin folder.
 
-The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
-
-Example
 ```md
 # Exclude test files
 test_*.py
 ```
+
+The CLI prints a warning, but still installs, when a single file is over 1 MB, the package holds more than 100 files, or its total size is over 1 MB.
+
+**Troubleshooting**
+
+<!-- source: discussion #795 -->
+- **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 
 ### `canvas uninstall`
 
@@ -248,17 +287,14 @@ $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
 These issues will fail on the instance (sandbox / Custom Data):
-  ✗ my_plugin/handlers/protocol.py:18  [setattr-blocked]  `setattr()` is blocked by the sandbox. Use direct attribute assignment (`obj.attr = value`) instead.
+  ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
 **Sandbox constructs (errors).** These compile under RestrictedPython but are rejected when a handler runs on the instance, so a plain sandbox load can miss them. See [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#forbidden-constructs) for the full list and the allowed alternatives.
 
 | Rule code | Flags |
 | --- | --- |
-| `setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value` |
-| `delattr-blocked` | `delattr(obj, "x")` — use `del obj.x` |
-| `bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data |
-| `type-blocked` | Any call to `type()`. It is absent from the sandbox builtins, so even the one-argument `type(x)` raises `NameError` — use `isinstance(x, SomeClass)` or `x.__class__.__name__`, and declare classes with `class …:` rather than `type(name, bases, dict)` |
+| `type-blocked` | A `type()` call with anything other than a single argument, such as `type(name, bases, dict)`. The sandbox's `type` takes one argument, so declare classes with `class …:` instead. `type(x)` is not flagged. |
 | `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v` |
 | `augmented-attribute` | Augmented assignment on an attribute, e.g. `obj.attr += v` — rewrite as `obj.attr = obj.attr + v` |
 
@@ -285,6 +321,7 @@ After the static lint passes, sandbox-load validation executes each handler modu
 - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
 - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
 - **Import errors** — Missing dependencies or broken imports.
+- **Refused code in helper modules** — Functions in the modules your handlers import that contain code the sandbox refuses. Every handler fails with a `PluginInstallationError` listing each construct by module and line. See [Helper modules](/sdk/sandboxing-and-allowed-imports/#helper-modules).
 
 For each handler, the output shows whether it loaded successfully:
 
@@ -298,6 +335,17 @@ Loading 2 handler(s) in the sandbox:
 ```
 
 The command exits with code 1 if any handler fails validation.
+
+If your handlers read attributes that don't exist while they load, the output ends with a warning that lists them. In the sandbox those reads return `None` for now, and a future release will raise `AttributeError` instead (see [Attributes that don't exist](/sdk/sandboxing-and-allowed-imports/#attributes-that-dont-exist)). The warning doesn't fail validation:
+
+```console
+$ canvas validate my_plugin
+Loading 1 handler(s) in the sandbox:
+  ✓ my_plugin.handlers.events:MyHandler
+
+Warning: these names do not exist. Each reads as None today and will raise an AttributeError in a future release:
+  - Settings.retry_limit
+```
 
 #### Limitations
 

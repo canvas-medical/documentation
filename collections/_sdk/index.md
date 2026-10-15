@@ -47,6 +47,16 @@ Plugins, the custom packages you author with the Canvas SDK, run in a sandboxed 
   <object alt="Diagram of the Canvas Plugins Runtime Environment" type="image/svg+xml" data="/assets/images/sdk/canvas_plugins_runtime_diagram.svg" style="width: 90%;"></object>
 </p>
 
+<!-- source: discussion #615 -->
+## Using these docs with AI coding tools
+
+If you build plugins with an AI coding assistant, such as Claude Code or Cursor, point it at these docs so its suggestions match the real SDK and FHIR API:
+
+- [`/llms.txt`](/llms.txt) is an index of the docs, with a link to a Markdown copy of each page.
+- [`/llms-full.txt`](/llms-full.txt) is the full SDK, FHIR API, and guides content as one Markdown file.
+- Add `.md` to any page's URL for a Markdown copy of it, for example [`/sdk/data-patient.md`](/sdk/data-patient.md).
+- The docs are also indexed on [Context7](https://context7.com/canvas-medical/documentation), for editors that use it.
+
 ## Where can I get additional help?
 
 Our [open-source GitHub repo](https://github.com/canvas-medical/canvas-plugins) has a [discussions](https://github.com/canvas-medical/canvas-plugins/discussions) section, where you can request help or suggest improvements. We also welcome [issue reports](https://github.com/canvas-medical/canvas-plugins/issues) and [pull requests](https://github.com/canvas-medical/canvas-plugins/pulls)!
