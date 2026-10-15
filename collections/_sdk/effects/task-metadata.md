@@ -15,13 +15,6 @@ extensible task information storage beyond standard task fields.
 Task metadata serves as a powerful extension mechanism for storing custom task-related information that doesn't
 fit within the standard task data model.
 
-## Attributes
-
-| Attribute | Type  | Description                                                       | Required |
-|-----------|-------|-------------------------------------------------------------------|----------|
-| `task_id` | `str` | Id of the task record to associate metadata with                  | Yes      |
-| `key`     | `str` | Unique identifier for the metadata entry within the task context  | Yes      |
-
 ## Methods
 
 ### upsert(value: str) → Effect
@@ -43,6 +36,13 @@ An `Effect` object configured for upserting task metadata.
 - If a metadata entry with the specified key already exists for the task, it will be updated with the new value
 - If no entry exists, a new metadata entry will be created
 - The operation is idempotent - repeated calls with the same key and value will not create duplicate entries
+
+## Attributes
+
+| Attribute | Type  | Description                                                       | Required |
+|-----------|-------|-------------------------------------------------------------------|----------|
+| `task_id` | `str` | Id of the task record to associate metadata with                  | Yes      |
+| `key`     | `str` | Unique identifier for the metadata entry within the task context  | Yes      |
 
 ## Implementation Details
 

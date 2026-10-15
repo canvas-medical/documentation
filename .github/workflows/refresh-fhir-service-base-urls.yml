@@ -1,0 +1,129 @@
+name: Refresh FHIR Service Base URLs
+
+# ONC 45 CFR 170.404(b)(2) requires the published FHIR service base URL bundles to be
+# "reviewed quarterly and, as necessary, updated". Each scheduled run is the quarterly review:
+# it regenerates the bundles from Console data, and either opens a PR for engineering review
+# (CODEOWNERS requests it) or, when nothing changed, records "reviewed, no changes" in the run
+# summary. The script's output is deterministic, so an unchanged instance list opens no PR.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 UTC on the 1st of Jan, Apr, Jul, Oct
+    - cron: "0 9 1 1,4,7,10 *"
+  pull_request:
+    paths:
+      - scripts/api/**
+      - .github/workflows/refresh-fhir-service-base-urls.yml
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the docs repo
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+
+      - name: Test the bundle generator
+        working-directory: scripts/api
+        run: >-
+          uv run --no-project
+          --with pytest
+          --with fhir-resources==8.2.0
+          --with httpx==0.28.1
+          python -m pytest -q
+
+  refresh-fhir-service-base-urls:
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the docs repo
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.14"
+
+      # Console is only reachable over Tailscale.
+      # Step copied from canvas-claude-usage/.github/workflows/weekly-report.yml.
+      - name: Tailscale
+        env:
+          TAILSCALE_EXIT_NODE_IP: ${{ secrets.TAILSCALE_EXIT_NODE_IP }}
+        uses: tailscale/github-action@v4.1.2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+          args: --exit-node ${{ env.TAILSCALE_EXIT_NODE_IP }}
+          ping: ${{ env.TAILSCALE_EXIT_NODE_IP }}
+
+      - name: Regenerate FHIR service base URL bundles
+        env:
+          CONSOLE_BASE_URL: ${{ secrets.CONSOLE_BASE_URL }}
+          CONSOLE_AUTH_TOKEN: ${{ secrets.CONSOLE_AUTH_TOKEN }}
+        run: uv run scripts/api/fhir_service_base_urls.py
+
+      - name: Detect changes
+        id: changes
+        # create-pull-request moves the changes onto its branch, so record counts and stat now.
+        run: |
+          for f in _static/fhir-service-base-urls-production.json _static/fhir-service-base-urls-nonproduction.json; do
+            endpoints=$(jq '[.entry[] | select(.resource.resourceType == "Endpoint")] | length' "$f")
+            orgs=$(jq '[.entry[] | select(.resource.resourceType == "Organization")] | length' "$f")
+            echo "- \`$f\`: $endpoints endpoints, $orgs organizations"
+          done > "$RUNNER_TEMP/counts.md"
+          git diff --stat -- _static/fhir-service-base-urls-*.json > "$RUNNER_TEMP/diffstat.txt"
+          if git diff --quiet -- _static/fhir-service-base-urls-*.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open pull request for review
+        id: pr
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PROJECT_AND_REPO_PAT }}
+          branch: refresh-fhir-service-base-urls
+          delete-branch: true
+          add-paths: _static/fhir-service-base-urls-*.json
+          title: "Quarterly FHIR service base URL review"
+          commit-message: "chore: refresh FHIR service base URLs"
+          body: |
+            Automated quarterly review of the published FHIR service base URL bundles, regenerated from Console data, for ONC 45 CFR 170.404(b)(2) ("reviewed quarterly and, as necessary, updated").
+
+            The generator is deterministic (ids are UUIDv5 over each Endpoint's base URL and each Organization's name, entries are sorted), so this diff contains only real changes: added or removed instances, and Organization name or address changes. Review that each change matches Console, then merge to publish.
+
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      - name: Record the review in the run summary
+        env:
+          CHANGED: ${{ steps.changes.outputs.changed }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
+        run: |
+          {
+            echo "## FHIR service base URL quarterly review"
+            echo
+            cat "$RUNNER_TEMP/counts.md"
+            echo
+            if [ "$CHANGED" = "true" ]; then
+              echo "**Reviewed, changes found.** Pull request ($PR_OPERATION): $PR_URL"
+              echo
+              echo '```'
+              cat "$RUNNER_TEMP/diffstat.txt"
+              echo '```'
+            else
+              echo "**Reviewed, no changes.** The published bundles match Console, so no update was necessary."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,6 +1,6 @@
 ---
 title: "Customize Search Results"
-last_modified_at: "2024-05-17"
+last_modified_at: "2026-05-30"
 guide_for:
 - /sdk/events/
 - /sdk/effects/
@@ -190,12 +190,12 @@ For complete details about medication search result data contracts and other sea
 
 ## Offering your own providers alongside the directory
 
-The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external
-care team — search the shared contact directory by default. Providers you create with the
+Five surfaces search for providers: Refer, Imaging Order, Order DME, fax recipient, and a patient's
+external care team. Each searches the shared contact directory by default. Providers you create with the
 [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you
 maintain your own directory you have to offer them yourself.
 
-The pattern is the same on all four surfaces: query your own
+The pattern is the same on all five surfaces: query your own
 [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and
 return the combined list.
 
@@ -210,6 +210,7 @@ Which helper you call depends on the surface:
 | --- | --- | --- |
 | Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()` |
 | Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()` |
+| Order DME | `ORDER_DME__SEND_TO__POST_SEARCH` | `as_search_result()` |
 | Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()` |
 | External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()` |
 
@@ -286,7 +287,7 @@ class ContactDirectorySearch(BaseHandler):
         ]
 ```
 
-For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for
+For Refer, Imaging Order, and Order DME, subscribe to those three events instead and swap `as_search_contact()` for
 `as_search_result()`. The merge is the same, except the directory's results carry their display name
 in `text` rather than in `firstName` / `lastName`.
 
@@ -322,6 +323,17 @@ This can be useful for customizing search results based on:
 - Role-based filtering (e.g., showing different prescriber options based on the user's specialty)
 - Permission-based access control
 - User's organization or practice location
+
+## Mapping Lay Terms to Medical Terms
+
+<!-- sources: discussion #935 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+
+A common question is whether custom search results can map an over-general lay term to a proper medical term and coding — for example, surfacing *Essential hypertension (I10)* when a clinician searches for "high blood pressure."
+
+What these events give you is the ability to **modify the result set that Canvas returns for a search**. In a `POST_SEARCH` handler you receive the results Canvas found for the user's query in `self.context["results"]`, and you can reorder them, annotate them, filter them, or add to them before they are shown — exactly as the example above floats a preferred medication to the top. So if a search for a lay term already returns the medical concept you want among its results, you can promote and annotate that result so the clinician sees it first.
+
+The search events are not a free-text translation layer, however: the events carry the structured search results rather than an arbitrary mapping from any phrase to any coding. If you need to act on the exact text the user typed (to recognize specific lay phrases), inspect the search context the event provides rather than relying on the rendered UI. Because terminology mapping touches clinical coding accuracy, validate any term-to-code associations with your clinical team before deploying.
 
 ## Watch Me Build It
 
