@@ -141,8 +141,8 @@ default, or pseudonymized on request.
 #### Event format
 
 Each request to your endpoint is a `POST` with `Content-Type: application/x-ndjson`, carrying
-up to 500 events, one JSON object per line. Every body ends with a newline, so successive
-bodies appended to one file read as a single NDJSON stream. Events follow OCSF 1.1.0.
+up to 500 events by default, one JSON object per line. Every body ends with a newline, so
+successive bodies appended to one file read as a single NDJSON stream. Events follow OCSF 1.1.0.
 
 | Field | Meaning |
 | --- | --- |
@@ -152,10 +152,10 @@ bodies appended to one file read as a single NDJSON stream. Events follow OCSF 1
 | `category_uid`, `class_uid`, `activity_id`, `type_uid` | OCSF classification of the event (see the table below). `type_uid` is `class_uid * 100 + activity_id`. |
 | `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
 | `status_id` | Outcome: `1` success, `2` failure. |
-| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in, `uid` is `null` and `name` is the username that was tried. |
-| `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. |
+| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. |
+| `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
 | `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. |
-| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, or `provenance`; `event_name` names the Canvas action; `reason` explains a failed sign-in; `payload` carries extra identifiers. |
+| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, or `provenance`; `event_name` names the Canvas action; `reason` is `invalid_credentials` or `account_locked` on a failed sign-in; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
 
 | `class_uid` | OCSF class | Canvas events |
 | --- | --- | --- |
@@ -165,9 +165,15 @@ bodies appended to one file read as a single NDJSON stream. Events follow OCSF 1
 | 6001 | Web Resources Access | Chart opened, note printed |
 | 6003 | API Activity | Clinical records created, updated, or deleted; coverage, address, and care team changes |
 
+`activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
+failed sign-ins, lockouts, and issued portal sign-in links, and `2` is a sign-out. In User Access
+Management, `1` grants access and `2` revokes it. In the other classes, `1` is create, `2` is
+read, `3` is update, and `4` is delete. Marking a clinical record entered in error is reported
+as a delete.
+
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
-tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` is
-omitted.
+tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
+`enrichments.payload_withheld` are omitted.
 
 #### Example events
 
@@ -247,7 +253,7 @@ An update to a condition on that patient's chart:
   "status_id": 1,
   "resources": [
     {"type": "patient", "uid": "381bf94ac3b269eedec9dc3f660a4cf0"},
-    {"type": "Condition", "uid": "bcd22a35-eb11-49b3-bd7c-3f7ef93e4385"}
+    {"type": "Condition", "uid": "52817"}
   ],
   "enrichments": {"source": "provenance"}
 }
