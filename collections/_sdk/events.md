@@ -104,6 +104,7 @@ Many events include common contextual information to help you understand the sco
 - **Patient context**: Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
 - **Note context**: Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
 - **User context**: All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
+- **Search results context**: Command POST_SEARCH events include `"results"`, the list the search returned. Command PRE_SEARCH events fire before the search runs, so their context holds only `search_term` and `user`. To modify the results a search returns, respond to the POST_SEARCH event. When several handlers respond to the same PRE_SEARCH event, a handler that runs after one that returned an `AUTOCOMPLETE_SEARCH_RESULTS` effect finds those results in `"results"`.
 
 ```python
 from canvas_sdk.events import EventType
@@ -4459,8 +4460,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5006,8 +5006,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5048,8 +5047,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5090,8 +5088,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5132,8 +5129,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5174,8 +5170,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5216,8 +5211,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5659,8 +5653,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6167,8 +6160,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6519,8 +6511,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6906,8 +6897,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -7836,8 +7826,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8272,8 +8261,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_id
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8666,8 +8654,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_id
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10092,8 +10079,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10451,8 +10437,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10493,8 +10478,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10894,8 +10878,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10936,8 +10919,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11365,8 +11347,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11407,8 +11388,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12610,8 +12590,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12652,8 +12631,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12694,8 +12672,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12736,8 +12713,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13059,8 +13035,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13101,8 +13076,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13531,8 +13505,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14009,8 +13982,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14051,8 +14023,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14093,8 +14064,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14480,8 +14450,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14979,8 +14948,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15021,8 +14989,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15063,8 +15030,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15105,8 +15071,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15428,8 +15393,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15470,8 +15434,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15976,8 +15939,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16018,8 +15980,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16060,8 +16021,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16447,8 +16407,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17471,8 +17430,7 @@ In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17844,8 +17802,7 @@ In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19064,8 +19021,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19106,8 +19062,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19148,8 +19103,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19190,8 +19144,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19232,8 +19185,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19619,8 +19571,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20008,8 +19959,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20493,8 +20443,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20535,8 +20484,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20577,8 +20525,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20619,8 +20566,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21272,8 +21218,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21314,8 +21259,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22606,8 +22550,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22648,8 +22591,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22690,8 +22632,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22732,8 +22673,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22774,8 +22714,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23161,8 +23100,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23527,8 +23465,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23928,8 +23865,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24322,8 +24258,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24715,8 +24650,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25123,8 +25057,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25496,8 +25429,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25925,8 +25857,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26382,8 +26313,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26424,8 +26354,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26817,8 +26746,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26859,8 +26787,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -27309,8 +27236,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -27632,8 +27558,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -27674,8 +27599,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
