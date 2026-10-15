@@ -725,14 +725,15 @@ The dropdown of options presented to the user now reflects our modifications!
 The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
 ##  Offering your own providers alongside the directory 
-The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external care team — search the shared contact directory by default. Providers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you maintain your own directory you have to offer them yourself.
-The pattern is the same on all four surfaces: query your own [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and return the combined list.
+Five surfaces search for providers: Refer, Imaging Order, Order DME, fax recipient, and a patient's external care team. Each searches the shared contact directory by default. Providers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you maintain your own directory you have to offer them yourself.
+The pattern is the same on all five surfaces: query your own [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and return the combined list.
 **Use the POST_SEARCH event, not PRE_SEARCH.** Only the post-search context carries what the directory returned, in `context["results"]`. On a pre-search that list is empty, so there is nothing to merge with — and on a command pre-search any `AUTOCOMPLETE_SEARCH_RESULTS` effect you return is authoritative, which means an empty reply blanks the dropdown instead of leaving it alone.
 Which helper you call depends on the surface:
 Surface | Event | Helper  
 ---|---|---  
 Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()`  
 Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()`  
+Order DME | `ORDER_DME__SEND_TO__POST_SEARCH` | `as_search_result()`  
 Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()`  
 External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()`  
     ```python
@@ -792,7 +793,7 @@ External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_se
                 Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))
             ]
     ```
-For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for `as_search_result()`. The merge is the same, except the directory's results carry their display name in `text` rather than in `firstName` / `lastName`.
+For Refer, Imaging Order, and Order DME, subscribe to those three events instead and swap `as_search_contact()` for `as_search_result()`. The merge is the same, except the directory's results carry their display name in `text` rather than in `firstName` / `lastName`.
 A few things worth carrying over into your own version:
   - **Filter to`is_active=True`.** Deactivating a provider is how a customer retires it, so offering a deactivated one invites picking it again.
   - **Return a null payload when you have nothing to add** , rather than an empty list. On the contact surfaces an empty list clears the results.
@@ -2500,15 +2501,12 @@ Before it loads any handlers, `canvas validate` scans every `.py` file in the pl
     $ canvas validate my_plugin
       ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
     These issues will fail on the instance (sandbox / Custom Data):
-      ✗ my_plugin/handlers/protocol.py:18  [setattr-blocked]  `setattr()` is blocked by the sandbox. Use direct attribute assignment (`obj.attr = value`) instead.
+      ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
     ```
 **Sandbox constructs (errors).** These compile under RestrictedPython but are rejected when a handler runs on the instance, so a plain sandbox load can miss them. See [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#forbidden-constructs) for the full list and the allowed alternatives.
 Rule code | Flags  
 ---|---  
-`setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value`  
-`delattr-blocked` | `delattr(obj, "x")` — use `del obj.x`  
-`bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data  
-`type-blocked` | Any call to `type()`. It is absent from the sandbox builtins, so even the one-argument `type(x)` raises `NameError` — use `isinstance(x, SomeClass)` or `x.__class__.__name__`, and declare classes with `class …:` rather than `type(name, bases, dict)`  
+`type-blocked` | A `type()` call with anything other than a single argument, such as `type(name, bases, dict)`. The sandbox's `type` takes one argument, so declare classes with `class …:` instead. `type(x)` is not flagged.  
 `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v`  
 `augmented-attribute` | Augmented assignment on an attribute, e.g. `obj.attr += v` — rewrite as `obj.attr = obj.attr + v`  
 `@dataclass(frozen=True)` and `@dataclass(slots=True)` load and run fine in the sandbox and are intentionally not flagged.
@@ -2527,6 +2525,7 @@ After the static lint passes, sandbox-load validation executes each handler modu
   - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
   - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
   - **Import errors** — Missing dependencies or broken imports.
+  - **Refused code in helper modules** — Functions in the modules your handlers import that contain code the sandbox refuses. Every handler fails with a `PluginInstallationError` listing each construct by module and line. See [Helper modules](/sdk/sandboxing-and-allowed-imports/#helper-modules).
 For each handler, the output shows whether it loaded successfully:
     ```console
     $ canvas validate my_plugin
@@ -2537,6 +2536,14 @@ For each handler, the output shows whether it loaded successfully:
     1 of 2 handler(s) failed to load in the sandbox.
     ```
 The command exits with code 1 if any handler fails validation.
+If your handlers read attributes that don't exist while they load, the output ends with a warning that lists them. In the sandbox those reads return `None` for now, and a future release will raise `AttributeError` instead (see [Attributes that don't exist](/sdk/sandboxing-and-allowed-imports/#attributes-that-dont-exist)). The warning doesn't fail validation:
+    ```console
+    $ canvas validate my_plugin
+    Loading 1 handler(s) in the sandbox:
+      ✓ my_plugin.handlers.events:MyHandler
+    Warning: these names do not exist. Each reads as None today and will raise an AttributeError in a future release:
+      - Settings.retry_limit
+    ```
 ####  Limitations 
 A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
 > **Info:** `canvas install` runs this same static lint and sandbox-load validation before uploading, so violations are caught before they reach your instance. 
@@ -3379,6 +3386,23 @@ Parameter | Type | Description
 `data` | `dict` | Complete FHIR resource data  
 **Returns:** Updated FHIR resource `dict`.
 **Raises:** `requests.HTTPError` if the API returns an error status code.
+###  Sending other requests 
+The methods above parse every response as JSON. When you need a request they don't cover, or the raw response, send it yourself with the [`Http`](/sdk/utils/) util. Build the request from the client's `base_url` and `get_headers()`:
+    ```python
+    from canvas_sdk.utils import Http
+    response = Http().post(
+        f"{client.base_url}/Coverage",
+        headers=client.get_headers(),
+        json=coverage,
+    )
+    response.raise_for_status()
+    # The raw response is yours to read, including an empty body.
+    result = response.json() if response.text.strip() else {}
+    ```
+Member | Type | Description  
+---|---|---  
+`base_url` | `str` | The FHIR API base URL for your environment, such as `https://fumage-{CUSTOMER_IDENTIFIER}.canvasmedical.com`.  
+`get_headers()` | `dict` | The headers a FHIR API request needs. These are a bearer `Authorization` header carrying the client's access token, and `Content-Type: application/json`.  
 ##  Authentication 
 The client uses the OAuth 2.0 client credentials flow to authenticate with the Canvas API. Token management is handled automatically:
   - On first use, the client exchanges the `client_id` and `client_secret` for an access token via the Canvas token endpoint.
@@ -5952,7 +5976,7 @@ Returns an Effect that delegates an existing, staged command by creating a task.
     ```
 ####  sign 
 Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
-**Limited availability** The `sign()` method can only be called on ImagingOrder and Refer command objects. Other command types do not support this operation.
+**Limited availability** The `sign()` method can only be called on ImagingOrder, OrderDme, and Refer command objects. Other command types do not support this operation.
 **Example** :
     ```python
     from canvas_sdk.commands import ImagingOrderCommand
@@ -6869,6 +6893,63 @@ The `fdb_code` parameter accepts either:
             system=CodeSystems.UNSTRUCTURED,
             code='Herbal supplement for joint health'
         )
+    )
+    ```
+* * *
+###  OrderDme 
+Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
+Admins manage the formulary in the Django Admin UI under **DME Products** , where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+**Command-specific parameters** :
+Name | Type | Required to sign | Description  
+---|---|---|---  
+`dme_product_id` | _string_ | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`.  
+`free_text_item` | _string_ | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`.  
+`diagnosis_codes` | _list[string]_ | `true` | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).  
+`quantity` | _integer_ | `true` | Number of units ordered. Must be at least 1.  
+`length_of_need` | _string_ | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written.  
+`service_provider` | _ServiceProvider_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).  
+`ordering_provider_key` | _string_ | `true` | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe.  
+Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
+Canvas leaves a field empty when its value doesn't resolve. A `dme_product_id` resolves only to an active formulary product, and an `ordering_provider_key` only to an active staff member. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value. Signing also fails when the ordering provider isn't an active prescriber, because the printed order names them as the signer.
+Signing saves the item's formulary name and code and the indications with the order, along with the patient's latest height and weight. Later changes to the formulary or the patient's vitals don't change the printed order.
+**Command-specific actions** :
+Action Name | Available When | Description  
+---|---|---  
+`sign_action` | command is staged | Signs the order, transitioning it from staged to committed state.  
+`print_order` | command is committed | Prints the order as a requisition. Requires printing access.  
+`fax` | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access.  
+To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+**Example** :
+    ```python
+    from canvas_sdk.commands import OrderDmeCommand
+    from canvas_sdk.commands.constants import ServiceProvider
+    supplier = ServiceProvider(
+        first_name="Acme",
+        last_name="Medical Supply",
+        practice_name="Acme Medical Supply",
+        specialty="Durable Medical Equipment",
+        business_fax="5555550100",
+    )
+    # A product from the DME formulary
+    formulary_order = OrderDmeCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+        diagnosis_codes=["N186"],
+        quantity=1,
+        length_of_need="Lifetime",
+        service_provider=supplier,
+        ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+    )
+    # An off-formulary item
+    free_text_order = OrderDmeCommand(
+        note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+        free_text_item="Bariatric shower chair",
+        diagnosis_codes=["E6601"],
+        quantity=1,
+        length_of_need="12 months",
+        service_provider=supplier,
+        ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
     )
     ```
 * * *
@@ -7983,7 +8064,7 @@ These values come from the `clinical_quantities` array returned by the [medicati
     ```
 A single FDB code can contain multiple `clinical_quantities`, so filter to the correct one by matching its `clinical_quantity_description` to your medication's form. The fields map to `ClinicalQuantity` as follows: `representative_ndc` → `representative_ndc`, and `erx_ncpdp_script_quantity_qualifier_code` → `ncpdp_quantity_qualifier_code`.
 ###  ServiceProvider 
-`ServiceProvider` represents detailed information about healthcare service providers, used in referral and imaging order commands.
+`ServiceProvider` represents detailed information about healthcare service providers, used in referral, imaging order, and Order DME commands.
 Field Name | Type | Description  
 ---|---|---  
 `first_name` | _string_ | Service provider's first name (max length 512)  
@@ -13044,6 +13125,7 @@ instruct | [Instruct](/sdk/commands/#instruct)
 labOrder | [LabOrder](/sdk/commands/#laborder)  
 medicalHistory | [MedicalHistory](/sdk/commands/#medicalhistory)  
 medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)  
+orderDme | [OrderDme](/sdk/commands/#orderdme)  
 perform | [Perform](/sdk/commands/#perform)  
 plan | [Plan](/sdk/commands/#plan)  
 pocLabTest | [POCLabTest](/sdk/commands/#poclabtest)  
@@ -18424,12 +18506,12 @@ user_selected | Boolean
 patient_consents | QuerySet[PatientConsent]  
 ##  Enumeration types 
 ###  PatientConsentStatus 
-Value | Label  
----|---  
-accepted | Accepted  
-accepted_via_patient_portal | Accepted Via Patient Portal  
-rejected | Rejected  
-rejected_via_patient_portal | Rejected Via Patient Portal  
+Member | Value | Label  
+---|---|---  
+`ACCEPTED` | accepted | Accepted  
+`ACCEPTED_VIA_PORTAL` | accepted_via_patient_portal | Accepted Via Patient Portal  
+`REJECTED` | rejected | Rejected  
+`REJECTED_VIA_PORTAL` | rejected_via_patient_portal | Rejected Via Patient Portal  
 ###  PatientConsentExpirationRule 
 Value | Label  
 ---|---  
@@ -20790,10 +20872,11 @@ show_in_condition_list | Boolean
 A `ServiceProvider` is an external provider or organization — someone outside your practice that a patient's care touches. The same record backs every surface in Canvas where an outside provider gets picked:
   - The contact selected as the recipient of a [Refer](/sdk/commands/#refer) command.
   - The imaging center selected on an [Imaging Order](/sdk/commands/#imagingorder) command.
+  - The supplier selected in **Send to** on an Order DME command.
   - An external care team member added to a patient's profile.
   - The recipient of an outbound fax, and the matched sender of an inbound one — Data Integration looks up the sending fax number in the contact directory and links the resulting provider to the incoming document, which is what the `integration_tasks` relation below exposes.
 Service providers come from two places. Most are drawn from the shared external contact directory, which is what those surfaces search by default and which you can query yourself with [`GET /contacts/`](/sdk/utils/#searching-for-contacts-and-service-providers). You can also build your own directory: providers created through the [ServiceProvider effect](/sdk/effect-service-provider/) belong to your instance and are flagged with `is_customer_managed`.
-Your own providers are not searched automatically. To offer them in one of the surfaces above, handle that surface's search event and return them yourself — see the helpers under Search results below, and [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory) for a worked handler covering all four surfaces.
+Your own providers are not searched automatically. To offer them in one of the surfaces above, handle that surface's search event and return them yourself — see the helpers under Search results below, and [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory) for a worked handler covering all five surfaces.
 ##  Basic usage 
 To retrieve a `ServiceProvider` by identifier, use the `get` method on the model manager:
     ```python
@@ -20851,7 +20934,7 @@ This is also how you find an existing customer-managed provider — to get its `
 Two helpers shape a provider for the provider-search surfaces, so you do not have to build the payloads yourself. Both take an optional list of annotations, shown next to the result.
 Method | Use it for  
 ---|---  
-`as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order  
+`as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order, `Send to` on Order DME  
 `as_search_contact(annotations=None)` | The fax recipient and external care team dropdowns  
 Both identify the provider, so selecting one attaches to that exact record.
 The two helpers return different shapes, and the key casing below matches the serialized payload exactly:
@@ -24174,6 +24257,7 @@ The following command types fire `__POST_VALIDATION` and can be validated with t
   - `LAB_ORDER_COMMAND__POST_VALIDATION`
   - `MEDICAL_HISTORY_COMMAND__POST_VALIDATION`
   - `MEDICATION_STATEMENT_COMMAND__POST_VALIDATION`
+  - `ORDER_DME_COMMAND__POST_VALIDATION`
   - `PERFORM_COMMAND__POST_VALIDATION`
   - `PHYSICAL_EXAM_COMMAND__POST_VALIDATION`
   - `PLAN_COMMAND__POST_VALIDATION`
@@ -24270,6 +24354,7 @@ Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler 
   - `LAB_REVIEW_COMMAND__PRE_DELETE`
   - `MEDICAL_HISTORY_COMMAND__PRE_DELETE`
   - `MEDICATION_STATEMENT_COMMAND__PRE_DELETE`
+  - `ORDER_DME_COMMAND__PRE_DELETE`
   - `PERFORM_COMMAND__PRE_DELETE`
   - `PHYSICAL_EXAM_COMMAND__PRE_DELETE`
   - `PLAN_COMMAND__PRE_DELETE`
@@ -27902,7 +27987,6 @@ This handler makes three sections clickable with different handling: contact num
 A `PLUGIN` section does not dial anything on its own — the click only fires `PHONE_NUMBER_CLICKED`. To send the number to a softphone, subscribe to that event and return a [Redirect](/sdk/effect-redirect/) effect that navigates to the softphone's dial URL. `PHONE_NUMBER_CLICKED` carries the clicking user as `event.actor`, so the redirect has a browser to navigate — see [Event Actor](/sdk/events/#event-actor). The click event's context carries the number as `phone_number` and the chart section it came from as `source`, which is one of `patient`, `contact` or `external_care_team`, matching `PhoneDialSection`. Read it with `.get("source")` rather than indexing, since the key is left out when no section is sent.
 > **Warning:** Set `target` to `RedirectEffect.TargetType.SAME_TAB` — the only usable target here. The redirect arrives over a subscription rather than inside the click, so a `NEW_TAB` target would be treated as an unrequested popup and blocked. 
 > **Warning:** The dial URL must be listed in the plugin's `REDIRECT_ALLOWLIST_EXTERNAL` secret. An unset allowlist denies everything. An entry needs both a scheme and a host, so authority-style URIs work (`zoomus://`, `msteams://`, `rcmobile://`, `https://`) but scheme-only URIs are rejected (`sip:`, `callto:`, `skype:`, `sms:`). A `tel:` link is unaffected because `DEVICE` handling opens it natively rather than through a redirect. 
-> **Warning:** Compose the dial URL with an f-string, not `str.format`. The RestrictedPython sandbox blocks `str.format` and `format_map` at call time, so a `str.format` version passes `canvas validate` and unit tests but fails on the first real click. 
 This handler reads the base of your softphone's dial URL from a plugin secret named `ZOOM_DIAL_URL_BASE`, rather than hard-coding it, then composes the dial URL with an f-string. Set that secret to the value from your Zoom Phone account.
     ```python
     from urllib.parse import quote
@@ -28690,6 +28774,96 @@ A total on its own tells a reader little. This M-CHAT example sums the answers t
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-questionnaires/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-record-patient-consent/
+Use the `RecordPatientConsent` effect to record a patient's consent decision on their chart. For example, a plugin can record the decision after the patient completes an intake form. The effect sets the consent's state and effective date, and it can file the signed document with the consent.
+Each patient has one [PatientConsent](/sdk/data-patient-consent/) record per consent coding. The first decision for a coding creates the record. A later decision updates it only when its `effective_date` is on or after the recorded one. See How Canvas records the decision.
+Build a `RecordPatientConsent` with the attributes you want to set, then return its `apply()` from your handler.
+##  Methods 
+###  apply() → Effect 
+Records the patient's decision on one consent.
+  - `patient_id`, `consent`, `state`, and `effective_date` are required.
+  - `patient_id` must be the id of an existing patient.
+  - `consent` must match exactly one [PatientConsentCoding](/sdk/data-patient-consent/#patientconsentcoding).
+  - `rejection_reason` can be set only when `state` is `REJECTED` or `REJECTED_VIA_PORTAL`, and it must match exactly one [PatientConsentRejectionCoding](/sdk/data-patient-consent/#patientconsentrejectioncoding).
+  - `document.content` must be a PDF file, base64 encoded. Line breaks in the encoded content are allowed. The decoded content must start with the PDF signature `%PDF-`, so another file type, such as a PNG, fails validation.
+##  Attributes 
+###  RecordPatientConsent 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`patient_id` | `str` | The id of the [patient](/sdk/data-patient/). | Yes  
+`consent` | ConsentCodingReference | The consent coding the decision applies to. | Yes  
+`state` | [PatientConsentStatus](/sdk/data-patient-consent/#patientconsentstatus) | The patient's decision. | Yes  
+`effective_date` | `datetime.date` | The date the decision takes effect. It is also the date of the attached document. | Yes  
+`rejection_reason` | ConsentCodingReference | The reason the patient rejected the consent. Set it only with a rejected state. | No  
+`document` | ConsentDocument | The signed consent document to file with the consent. | No  
+The attributes are strictly typed. `state` takes a `PatientConsentStatus` member, not a string, and `effective_date` takes a `datetime.date`, not a `datetime.datetime`.
+###  ConsentCodingReference 
+Identifies a consent coding or a rejection coding.
+Attribute | Type | Description | Required  
+---|---|---|---  
+`system` | `str` | The coding system, such as `LOINC` or `INTERNAL`. | Yes  
+`code` | `str` | The coding's code. | If `display` is empty  
+`display` | `str` | The coding's display text. Used to find the coding only when `code` is empty. | If `code` is empty  
+When `code` is set, the effect finds the coding by `system` and `code`. Otherwise it finds the coding by `system` and `display`. The effect fails validation when the reference matches no coding or more than one. If a reference by `code` matches more than one coding, delete the duplicate coding in Canvas. If a reference by `display` matches more than one, reference the coding by its `code` instead.
+###  ConsentDocument 
+The signed copy of the consent.
+Attribute | Type | Description | Required  
+---|---|---|---  
+`filename` | `str` | The file name to store the document under, such as `telehealth.pdf`. It can be at most 255 characters and must not contain a path. | Yes  
+`content` | `str` | The bytes of a PDF file, base64 encoded. Other file types fail validation. | Yes  
+##  How Canvas records the decision 
+  - **Earlier-dated decisions:** The decision with the latest `effective_date` sets the consent's state, dates, and rejection reason. A decision dated before the recorded one leaves the consent as it is, but Canvas still files its document. Use this to add an older signed copy without changing the current decision.
+  - **Expiration date:** Canvas computes the consent's expiration date from `effective_date` and the coding's [expiration rule](/sdk/data-patient-consent/#patientconsentexpirationrule).
+  - **Rejection reason:** A decision that updates the consent replaces its rejection reason. A decision without `rejection_reason`, including any accepted decision, clears the earlier reason.
+  - **Signed documents:** Each document you attach is added to the consent's [signed documents](/sdk/data-patient-consent/#signed-consent-documents) with `effective_date` as its date. The document with the latest date becomes the consent's `active_document`, and earlier signed copies stay on the chart. Canvas codes each document LOINC `59284-0` (Consent Document), the same [document type](/sdk/data-patient-administrative-document/) as a consent document staff upload, and its [DocumentReference](/sdk/data-document-reference/) `type` carries that coding.
+  - **Other consents:** The effect changes only the consent you name. A consent the patient did not answer keeps its current state.
+##  Example 
+This handler records an accepted telehealth consent and attaches the signed PDF:
+    ```python
+    import base64
+    import datetime
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_consent import (
+        ConsentCodingReference,
+        ConsentDocument,
+        RecordPatientConsent,
+    )
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import PatientConsentStatus
+    class RecordTelehealthConsent(BaseHandler):
+        def compute(self) -> list[Effect]:
+            # Replace with the bytes of the PDF the patient signed.
+            signed_pdf = b"%PDF-1.7 ..."
+            effect = RecordPatientConsent(
+                # The handler responds to an event whose target is the patient.
+                patient_id=self.event.target.id,
+                consent=ConsentCodingReference(system="INTERNAL", code="TELEHEALTH"),
+                state=PatientConsentStatus.ACCEPTED_VIA_PORTAL,
+                effective_date=datetime.date.today(),
+                document=ConsentDocument(
+                    filename="telehealth.pdf",
+                    content=base64.b64encode(signed_pdf).decode(),
+                ),
+            )
+            return [effect.apply()]
+    ```
+To record a rejection, pass a rejected state and, optionally, the reason:
+    ```python
+    import datetime
+    from canvas_sdk.effects.patient_consent import ConsentCodingReference, RecordPatientConsent
+    from canvas_sdk.v1.data import PatientConsentStatus
+    effect = RecordPatientConsent(
+        patient_id="1eed3ea2a8d546a1b681a2a45de1d790",
+        consent=ConsentCodingReference(system="LOINC", code="59284-0"),
+        state=PatientConsentStatus.REJECTED,
+        effective_date=datetime.date.today(),
+        rejection_reason=ConsentCodingReference(system="INTERNAL", display="Patient declined"),
+    )
+    effect.apply()
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-record-patient-consent/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-redirect/
 The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. In the patient portal, portal pages change in place instead (see Redirects in the patient portal). The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
 A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
@@ -29059,7 +29233,7 @@ Use the [ServiceProvider data module](/sdk/data-serviceprovider/), and `is_custo
     from canvas_sdk.v1.data.service_provider import ServiceProvider
     ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
     ```
-To surface them in the Refer, Imaging Order, fax recipient, or external care team searches, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+To surface them in the Refer, Imaging Order, Order DME, fax recipient, or external care team searches, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 To offer them in a provider search, see [`as_search_result` and `as_search_contact`](/sdk/data-serviceprovider/#search-results).
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-service-provider/
 
@@ -29850,7 +30024,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -29982,7 +30156,7 @@ CALENDAR__EVENT__CREATE | Create a calendar event.
 CALENDAR__EVENT__UPDATE | Update a calendar event.  
 CALENDAR__EVENT__DELETE | Delete a calendar event.  
 ###  Patients 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 Effect | Description  
 ---|---  
 CREATE_PATIENT | Create a patient.  
@@ -29995,6 +30169,7 @@ CREATE_PATIENT_PREFERRED_PHARMACIES | Set preferred pharmacies for a patient.
 CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient.  
 UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient.  
 DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient.  
+RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document.  
 ###  Patient Groups 
 Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 Effect | Description  
@@ -30147,7 +30322,7 @@ ENTER_IN_ERROR | Mark a committed command as entered in error.
 SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only).  
 REVIEW | Place a command into review status (prescribe, refill, adjust prescription only).  
 DELEGATE | Delegate the order to someone else to complete (imaging order, refer only).  
-SIGN | Sign the order (imaging order, refer only).  
+SIGN | Sign the order (imaging order, order DME, refer only).  
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 Command Type | Effect Prefix | Notes  
 ---|---|---  
@@ -30174,6 +30349,7 @@ Lab Order | `*_LAB_ORDER_COMMAND` | Also supports SEND
 Lab Review | `*_LAB_REVIEW_COMMAND` |   
 Medical History | `*_MEDICAL_HISTORY_COMMAND` |   
 Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` |   
+Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN  
 Perform | `*_PERFORM_COMMAND` |   
 Plan | `*_PLAN_COMMAND` |   
 POC Lab Test | `*_POC_LAB_TEST_COMMAND` |   
@@ -30301,6 +30477,7 @@ Many events include common contextual information to help you understand the sco
   - **Patient context** : Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
   - **Note context** : Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
   - **User context** : All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
+  - **Search results context** : Command POST_SEARCH events include `"results"`, the list the search returned. Command PRE_SEARCH events fire before the search runs, so their context holds only `search_term` and `user`. To modify the results a search returns, respond to the POST_SEARCH event. When several handlers respond to the same PRE_SEARCH event, a handler that runs after one that returned an `AUTOCOMPLETE_SEARCH_RESULTS` effect finds those results in `"results"`.
     ```python
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
@@ -32538,8 +32715,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADD_CONDITION__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -32903,8 +33079,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -32925,8 +33100,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -32947,8 +33121,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -32969,8 +33142,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -32991,8 +33163,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33013,8 +33184,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Allergy Command 
 ALLERGY_COMMAND__POST_COMMIT  
 ---  
@@ -33284,8 +33454,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Assess Command 
 ASSESS_COMMAND__CONDITION_SELECTED  
 ---  
@@ -33608,8 +33777,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[ConditionSearchResult]  
+    }  
 ASSESS__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33799,8 +33967,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -34015,8 +34182,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Chart Section Review Command 
 CHART_SECTION_REVIEW_COMMAND__PRE_ORIGINATE  
 ---  
@@ -34534,8 +34700,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Assess Coding Gap Command 
 ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -34809,8 +34974,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_id
-    }
-    "results": list[dict]  
+    }  
 ####  Create Coding Gap Command 
 CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -35042,8 +35206,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_id
-    }
-    "results": list[dict]  
+    }  
 ####  Defer Coding Gap Command 
 DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -35873,8 +36036,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Educational Material Command 
 EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT  
 ---  
@@ -36060,8 +36222,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36082,8 +36243,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Family History Command 
 FAMILY_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -36311,8 +36471,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 FAMILY_HISTORY__RELATIVE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36333,8 +36492,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Follow Up Command 
 FOLLOW_UP_COMMAND__POST_COMMIT  
 ---  
@@ -36590,8 +36748,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 FOLLOW_UP__NOTE_TYPE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36612,8 +36769,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Goal Command 
 GOAL_COMMAND__POST_COMMIT  
 ---  
@@ -37339,8 +37495,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37361,8 +37516,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__INDICATIONS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37383,8 +37537,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37405,8 +37558,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Imaging Review Command 
 IMAGING_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -37597,8 +37749,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37619,8 +37770,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37877,8 +38027,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZATION_STATEMENT_COMMAND__AVAILABLE_ACTIONS  
 ---  
 Target object | Context object  
@@ -38172,8 +38321,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZE__GIVEN_BY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38194,8 +38342,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZE__LOT_NUMBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38216,8 +38363,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Instruct Command 
 INSTRUCT_COMMAND__POST_COMMIT  
 ---  
@@ -38431,8 +38577,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Lab Order Command 
 `LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered, for example creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The [lab-order-automated-task](https://www.canvasmedical.com/extensions/lab-order-automated-task) extension is a reference implementation.
 LAB_ORDER_COMMAND__POST_COMMIT  
@@ -38736,8 +38881,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__LAB_PARTNER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38758,8 +38902,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38780,8 +38923,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__TESTS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38802,8 +38944,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Lab Review Command 
 LAB_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -38994,8 +39135,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39016,8 +39156,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39340,8 +39479,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39362,8 +39500,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39384,8 +39521,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Medication Statement Command 
 MEDICATION_STATEMENT_COMMAND__POST_COMMIT  
 ---  
@@ -39599,8 +39735,400 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
+    }  
+####  Order DME Command 
+ORDER_DME_COMMAND__POST_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__AVAILABLE_ACTIONS  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "actions":
+      "name": string
+    "user":
+      "staff": staff_id
+ORDER_DME_COMMAND__POST_VALIDATION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_INSERTED_INTO_NOTE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__POST_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_COMMIT  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_DELETE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_ENTER_IN_ERROR  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_EXECUTE_ACTION  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_ORIGINATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME_COMMAND__PRE_UPDATE  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "fields":
+      "item": dict
+      "indications": list[dict]
+      "quantity": int
+      "length_of_need": str
+      "send_to": dict
+      "ordering_provider": dict
+    "note":
+      "uuid": note_id
+    "patient":
+      "id": pt_id  
+ORDER_DME__INDICATIONS__POST_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
     }
-    "results": list[MedicationSearchResult]  
+    "results": list[dict]  
+ORDER_DME__INDICATIONS__PRE_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }  
+ORDER_DME__ITEM__POST_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }
+    "results": list[dict]  
+ORDER_DME__ITEM__PRE_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }  
+ORDER_DME__ORDERING_PROVIDER__POST_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }
+    "results": list[dict]  
+ORDER_DME__ORDERING_PROVIDER__PRE_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }  
+ORDER_DME__SEND_TO__POST_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }
+    "results": list[dict]  
+ORDER_DME__SEND_TO__PRE_SEARCH  
+---  
+Target object | Context object  
+    "id": command_uuid
+    "type": [Command](/sdk/data-command/)
+| 
+    "search_term": str
+    "user": {
+      "staff": staff_key
+    }  
+Each pair of search events fires when a user searches in one of the command's fields:
+  - `ORDER_DME__ITEM__*`: the item field, which searches the DME formulary.
+  - `ORDER_DME__INDICATIONS__*`: the **Indications** field, which searches ICD-10 conditions.
+  - `ORDER_DME__SEND_TO__*`: the **Send to** field, which searches for a supplier.
+  - `ORDER_DME__ORDERING_PROVIDER__*`: the ordering provider field, which searches active staff who can prescribe.
+Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
+  - **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+        ```json
+        {
+          "text": "Standard wheelchair",
+          "disabled": false,
+          "description": null,
+          "annotations": ["HCPCS K0001"],
+          "extra": {
+            "dme_product_id": 12,
+            "code": "K0001",
+            "code_system": "HCPCS"
+          },
+          "value": "12"
+        }
+        ```
+A product with no code has `null` in `annotations`.
+  - **Ordering provider results:** `text` is the staff member's name with credentials. `value` is Canvas's internal staff ID, not the [Staff](/sdk/data-staff/#staff) `id` that the `OrderDmeCommand` `ordering_provider_key` parameter takes.
+        ```json
+        {
+          "text": "Jane Smith MD",
+          "disabled": false,
+          "description": null,
+          "annotations": null,
+          "extra": null,
+          "value": 42
+        }
+        ```
+  - **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier's phone, fax, and address, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+        ```json
+        {
+          "text": "Pacific Mobility (Pacific Mobility Supply), Durable Medical Equipment",
+          "disabled": false,
+          "description": "Phone: (415) 555-0142 Fax: (415) 555-0143 Address: 2037 Irving St, San Francisco, CA 94122",
+          "annotations": null,
+          "extra": {
+            "contact": {
+              "id": 8703,
+              "firstName": "Pacific",
+              "lastName": "Mobility",
+              "practiceName": "Pacific Mobility Supply",
+              "specialty": "Durable Medical Equipment",
+              "businessPhone": "4155550142",
+              "businessFax": "4155550143",
+              "businessAddress": "2037 Irving St, San Francisco, CA 94122",
+              "composeAddress": "2037 Irving St, San Francisco, CA 94122",
+              "notes": null,
+              "score": 0
+            }
+          },
+          "value": "8703"
+        }
+        ```
+When the order is signed, Canvas saves the supplier from the selected result's `extra.contact`.
 ####  Perform Command 
 PERFORM_COMMAND__POST_COMMIT  
 ---  
@@ -39814,8 +40342,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Physical Exam Command 
 PHYSICAL_EXAM_COMMAND__POST_COMMIT  
 ---  
@@ -40015,8 +40542,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Plan Command 
 PLAN_COMMAND__POST_COMMIT  
 ---  
@@ -40757,8 +41283,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -40779,8 +41304,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -40801,8 +41325,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[MedicationSearchResult]  
+    }  
 PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -40823,8 +41346,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -40845,8 +41367,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Questionnaire Command 
 QUESTIONNAIRE_COMMAND__POST_COMMIT  
 ---  
@@ -41060,8 +41581,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Reason for Visit Command 
 REASON_FOR_VISIT_COMMAND__POST_COMMIT  
 ---  
@@ -41277,8 +41797,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Refer Command 
 REFER_COMMAND__POST_COMMIT  
 ---  
@@ -41590,8 +42109,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__INDICATIONS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41612,8 +42130,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__DOCUMENTS_TO_INCLUDE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41634,8 +42151,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__LINKED_ITEMS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41656,8 +42172,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Reference Command 
 REFERENCE_COMMAND__PRE_ORIGINATE  
 ---  
@@ -42027,8 +42542,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFERRAL_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42049,8 +42563,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFERRAL_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42857,8 +43370,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42879,8 +43391,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42901,8 +43412,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42923,8 +43433,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42945,8 +43454,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Remove Allergy Command 
 REMOVE_ALLERGY_COMMAND__POST_COMMIT  
 ---  
@@ -43160,8 +43668,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Remove Past Medical History Command 
 REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -43364,8 +43871,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REMOVE_PAST_MEDICAL_HISTORY__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43593,8 +44099,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 RESOLVE_CONDITION__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43805,8 +44310,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Snooze Protocol Command 
 SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE  
 ---  
@@ -44037,8 +44541,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -44263,8 +44766,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Structured Assessment Command 
 STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT  
 ---  
@@ -44464,8 +44966,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Surgical History Command 
 SURGICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -44721,8 +45222,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Task Command 
 TASK_COMMAND__POST_COMMIT  
 ---  
@@ -45006,8 +45506,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 TASK__LABELS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45028,8 +45527,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Update Diagnosis Command 
 UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE  
 ---  
@@ -45260,8 +45758,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45282,8 +45779,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45550,8 +46046,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Uncategorized Document Review Command 
 UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -45742,8 +46237,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UNCATEGORIZED_DOCUMENT_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45764,8 +46258,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UNCATEGORIZED_DOCUMENT_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -53210,6 +53703,7 @@ In addition to the response body, you can also specify the response status code 
                 )
             ]
     ```
+When an `HTMLResponse` includes data from patients, integrations, or other external sources, build it with `render_to_string` and follow [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely). Never include secrets in an HTML response.
 ####  Returning Effects 
 **SimpleAPI** endpoints can return any number of Effects just like any Canvas plugin; this is why **SimpleAPI** endpoints return a list of items rather than just a single response object.
 Any effects present in the list returned by an endpoint will be processed by your Canvas instance, and the response object, if provided, will be sent back to the original requester.
@@ -53987,6 +54481,25 @@ Here's how you can use the `render_to_string` utility to render the template and
                 priority=25
             )
             return [portal_widget.apply()]
+    ```
+####  Rendering untrusted data safely 
+`render_to_string` escapes every `{{ value }}` by default. That escaping is what stops text from a patient, an integration, or an external API from running as script in the browser of the staff member who opens your page.
+  - Never use `|safe`, `{% autoescape off %}`, or `mark_safe` on data from patients, integrations, notes, messages, questionnaires, FHIR API input, or any external API.
+  - For HTML that has to keep its formatting, such as a message body, use the `sanitize_html` filter: `{{ message.content|sanitize_html }}`. It keeps a small set of formatting tags and removes everything else. The same function is available in Python as [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+  - To pass data to JavaScript, use Django's `json_script` filter instead of printing JSON into a `<script>` block. `json.dumps` does not escape `</script>`, so a value containing it closes your script tag and whatever follows runs as HTML.
+  - Never put [secrets](/sdk/secrets/) in template context or in any HTML or JavaScript response: anything sent to the browser can be read there. Call the external API server-side from a [SimpleAPI route](/sdk/handlers-simple-api-http/) and have your page call that route.
+Instead of this, which breaks out of the script tag when any value contains `</script>`:
+    ```html
+    <script>
+      const vitals = {{ vitals_json|safe }};
+    </script>
+    ```
+pass the Python object itself (not a `json.dumps` string) in the context and let `json_script` serialize it:
+    ```html
+    {{ vitals|json_script:"vitals-data" }}
+    <script>
+      const vitals = JSON.parse(document.getElementById("vitals-data").textContent);
+    </script>
     ```
 ##  Additional Configuration 
 To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#url-permissions) file of your plugin.
@@ -55174,6 +55687,11 @@ Provides functions for finding insertion points in a sorted list and inserting i
 Provides specialized container datatypes that extend beyond the built-in types like lists and dictionaries. [read more](https://docs.python.org/3/library/collections.html)
   - `Counter`
   - `defaultdict`
+  - `OrderedDict`
+#####  `copy`
+Provides shallow and deep copy operations for duplicating objects. [read more](https://docs.python.org/3/library/copy.html)
+  - `copy`
+  - `deepcopy`
 #####  `dataclasses`
 This module provides a decorator and functions for automatically adding generated special methods such as **init**() and **repr**() to user-defined classes. [read more](https://docs.python.org/3/library/dataclasses.html)
   - `asdict`
@@ -55206,6 +55724,12 @@ Provides precise decimal arithmetic for financial and scientific calculations wh
 #####  `defusedxml.ElementTree`
 The defusedxml package contains several Python-only workarounds and fixes for denial of service and other vulnerabilities in Python's XML libraries. [read more](https://pypi.org/project/defusedxml/)
   - `fromstring`
+#####  `email.mime.multipart`
+Provides the MIME class for building multipart email messages, such as a message with a plain-text and an HTML part. [read more](https://docs.python.org/3/library/email.mime.html)
+  - `MIMEMultipart`
+#####  `email.mime.text`
+Provides the MIME class for the text parts of an email message. [read more](https://docs.python.org/3/library/email.mime.html)
+  - `MIMEText`
 #####  `enum`
 Provides support for enumerations, useful for defining sets of named constants such as status codes or categories. [read more](https://docs.python.org/3/library/enum.html)
   - `Enum`
@@ -55216,6 +55740,7 @@ Provides utilities for higher-order functions and operations on callable objects
   - `wraps`
 #####  `hashlib`
 Provides secure hash and message digest algorithms for data integrity verification and security purposes. [read more](https://docs.python.org/3/library/hashlib.html)
+  - `sha1`
   - `sha256`
 #####  `hmac`
 Provides hash-based message authentication code (HMAC) functions for secure message authentication. [read more](https://docs.python.org/3/library/hmac.html)
@@ -55229,28 +55754,44 @@ Provides functions for escaping and unescaping HTML entities. [read more](https:
 #####  `http`
 Provides HTTP status codes and related constants for web API development and HTTP response handling. [read more](https://docs.python.org/3/library/http.html)
   - `HTTPStatus`
+#####  `io`
+Provides in-memory text and binary streams for working with data as if it were a file. [read more](https://docs.python.org/3/library/io.html)
+  - `BytesIO`
+  - `StringIO`
 #####  `json`
 Provides functions for parsing and generating JSON data, essential for API communication and data serialization. [read more](https://docs.python.org/3/library/json.html)
+  - `dump`
   - `dumps`
   - `JSONDecodeError`
+  - `load`
   - `loads`
 #####  `operator`
 Provides function equivalents of operators for functional programming and complex data operations. [read more](https://docs.python.org/3/library/operator.html)
   - `and_`
+  - `or_`
 #####  `random`
 Provides functions for generating random numbers and making random selections, useful for sampling and testing scenarios. [read more](https://docs.python.org/3/library/random.html)
+  - `choice`
   - `choices`
   - `randint`
+  - `random`
+  - `Random`
+  - `sample`
   - `uniform`
 #####  `re`
 Provides regular expression matching operations for pattern matching and text processing. [read more](https://docs.python.org/3/library/re.html)
   - `compile`
   - `DOTALL`
+  - `escape`
   - `findall`
+  - `finditer`
   - `fullmatch`
   - `I`
   - `IGNORECASE`
+  - `M`
   - `match`
+  - `MULTILINE`
+  - `S`
   - `search`
   - `split`
   - `sub`
@@ -55262,12 +55803,17 @@ Provides cryptographically secure random values for tokens, verification codes, 
   - `token_bytes`
   - `token_hex`
   - `token_urlsafe`
+#####  `statistics`
+Provides functions for calculating statistics of numeric data. [read more](https://docs.python.org/3/library/statistics.html)
+  - `median`
 #####  `string`
 Provides string constants and template classes for string manipulation and formatting operations. [read more](https://docs.python.org/3/library/string.html)
   - `ascii_lowercase`
   - `digits`
 #####  `time`
 Provides time-related functions for measuring execution time and adding delays in processing. [read more](https://docs.python.org/3/library/time.html)
+  - `monotonic`
+  - `perf_counter`
   - `time`
   - `time_ns`
 #####  `traceback`
@@ -55301,13 +55847,42 @@ Provides modules for working with URLs, including URL parsing and manipulation. 
   - `parse`
 #####  `urllib.parse`
 Provides URL parsing utilities for breaking apart and constructing URLs and query strings. [read more](https://docs.python.org/3/library/urllib.parse.html)
+  - `parse_qs`
   - `quote`
   - `unquote`
   - `urlencode`
+  - `urlparse`
 #####  `uuid`
 Provides functions for generating universally unique identifiers (UUIDs) for creating unique record identifiers. [read more](https://docs.python.org/3/library/uuid.html)
-  - `uuid4`
+  - `NAMESPACE_URL`
   - `UUID`
+  - `uuid4`
+  - `uuid5`
+#####  `xml.etree`
+The package that contains the ElementTree XML API. [read more](https://docs.python.org/3/library/xml.etree.elementtree.html)
+  - `ElementTree`
+#####  `xml.etree.ElementTree`
+Provides the ElementTree API for parsing and building XML documents. In the sandbox, parsing does not resolve external entities. [read more](https://docs.python.org/3/library/xml.etree.elementtree.html)
+  - `Element`
+  - `ElementTree`
+  - `fromstring`
+  - `indent`
+  - `iterparse`
+  - `parse`
+  - `QName`
+  - `register_namespace`
+  - `SubElement`
+  - `tostring`
+#####  `zlib`
+Provides compression and decompression compatible with gzip, along with checksum functions. [read more](https://docs.python.org/3/library/zlib.html)
+  - `adler32`
+  - `compress`
+  - `compressobj`
+  - `crc32`
+  - `decompress`
+  - `decompressobj`
+  - `error`
+  - `MAX_WBITS`
 #####  `zoneinfo`
 Provides timezone support for handling datetime objects across different time zones. [read more](https://docs.python.org/3/library/zoneinfo.html)
   - `ZoneInfo`
@@ -55315,12 +55890,26 @@ Provides timezone support for handling datetime objects across different time zo
 The following third-party modules and their allowed imports are available within the sandbox:
 #####  `arrow`
 A human-friendly approach to creating, manipulating, formatting and converting dates and times. [read more](https://arrow.readthedocs.io/en/latest/)
+  - `Arrow`
   - `get`
   - `now`
+  - `parser`
   - `utcnow`
+#####  `arrow.parser`
+The exceptions Arrow raises when it can't parse a date or time string. [read more](https://arrow.readthedocs.io/en/latest/api-guide.html#module-arrow.parser)
+  - `ParserError`
+  - `ParserMatchError`
+#####  `certifi`
+Provides the path to Mozilla's bundle of trusted root certificates. [read more](https://github.com/certifi/python-certifi)
+  - `where`
 #####  `django.contrib.postgres.indexes`
 Django's PostgreSQL-specific index types for advanced indexing strategies. [read more](https://docs.djangoproject.com/en/stable/ref/contrib/postgres/indexes/)
   - `GinIndex`
+#####  `django.core.exceptions`
+Django's core exceptions, including the ones model queries and validation raise. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#django-core-exceptions)
+  - `ObjectDoesNotExist`
+  - `PermissionDenied`
+  - `ValidationError`
 #####  `django.db`
 Django's database module providing core database exceptions. [read more](https://docs.djangoproject.com/en/stable/ref/exceptions/#database-exceptions)
   - `DatabaseError`
@@ -55396,9 +55985,20 @@ Django's transaction management for atomic database operations. [read more](http
   - `atomic`
   - `on_commit`
   - `on_rollback`
+#####  `django.utils`
+Django's utility package. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
+  - `timezone`
 #####  `django.utils.functional`
 Django's functional programming utilities including caching and lazy evaluation tools. [read more](https://docs.djangoproject.com/en/stable/ref/utils/)
   - `cached_property`
+#####  `django.utils.timezone`
+Django's helpers for working with time zone aware datetimes. [read more](https://docs.djangoproject.com/en/stable/ref/utils/#module-django.utils.timezone)
+  - `get_current_timezone`
+  - `localdate`
+  - `localtime`
+  - `make_aware`
+  - `now`
+  - `utc`
 #####  `jwt`
 A library for encoding and decoding JSON Web Tokens (JWT) for secure data transmission and authentication. [read more](https://pyjwt.readthedocs.io/en/stable/)
   - `decode`
@@ -55421,6 +56021,36 @@ A fast string matching library for fuzzy string comparison and search operations
   - `fuzz`
   - `process`
   - `utils`
+#####  `rapidfuzz.fuzz`
+RapidFuzz's string similarity scorers. [read more](https://rapidfuzz.github.io/RapidFuzz/Usage/fuzz.html)
+  - `partial_ratio`
+  - `partial_ratio_alignment`
+  - `partial_token_ratio`
+  - `partial_token_set_ratio`
+  - `partial_token_sort_ratio`
+  - `QRatio`
+  - `ratio`
+  - `token_ratio`
+  - `token_set_ratio`
+  - `token_sort_ratio`
+  - `WRatio`
+#####  `rapidfuzz.process`
+RapidFuzz's functions for comparing a string against a list of choices. [read more](https://rapidfuzz.github.io/RapidFuzz/Usage/process.html)
+  - `cdist`
+  - `cpdist`
+  - `extract`
+  - `extract_iter`
+  - `extractOne`
+#####  `rapidfuzz.utils`
+RapidFuzz's string preprocessing utilities. [read more](https://rapidfuzz.github.io/RapidFuzz/Usage/utils.html)
+  - `default_process`
+#####  `requests.exceptions`
+The exceptions the requests library raises, which the [`Http`](/sdk/utils/) util passes through. [read more](https://requests.readthedocs.io/en/latest/api/#exceptions)
+  - `ConnectionError`
+  - `HTTPError`
+  - `JSONDecodeError`
+  - `RequestException`
+  - `Timeout`
 ##  Canvas SDK Modules 
 All Canvas SDK modules are available for import and use within your plugins:
   - `canvas_sdk.caching`
@@ -55440,26 +56070,53 @@ All Canvas SDK modules are available for import and use within your plugins:
 The following Python builtin functions are available within the sandbox:
   - `all`
   - `any`
+  - `ascii`
+  - `bytearray`
   - `classmethod`
+  - `delattr`
   - `dict`
+  - `dir`
   - `enumerate`
   - `extract_exc_frames`
   - `filter`
+  - `format`
   - `getattr`
   - `hasattr`
   - `iter`
   - `list`
   - `map`
   - `max`
+  - `memoryview`
   - `min`
   - `next`
   - `property`
   - `reversed`
+  - `setattr`
   - `staticmethod`
   - `sum`
   - `super`
+  - `type`
   - `vars`
-On top of those, the sandbox inherits RestrictedPython's safe builtins. That covers the basic types (`bool`, `bytes`, `complex`, `float`, `frozenset`, `int`, `set`, `slice`, `str`, `tuple`), the common functions (`abs`, `callable`, `chr`, `divmod`, `hash`, `hex`, `id`, `isinstance`, `issubclass`, `len`, `oct`, `ord`, `pow`, `range`, `repr`, `round`, `sorted`, `zip`), and most of the standard exception classes.
+On top of those, the sandbox inherits RestrictedPython's safe builtins. That covers the basic types (`bool`, `bytes`, `complex`, `float`, `frozenset`, `int`, `set`, `slice`, `str`, `tuple`), the common functions (`abs`, `callable`, `chr`, `divmod`, `hash`, `hex`, `id`, `isinstance`, `issubclass`, `len`, `oct`, `ord`, `pow`, `range`, `repr`, `round`, `sorted`, `zip`), and the `NotImplemented` constant. Every built-in exception and warning class is also available, including the `OSError` family such as `TimeoutError` and `ConnectionError`.
+For HTTP calls, catch the exceptions in `requests.exceptions`. The [`Http`](/sdk/utils/) util passes them through unchanged:
+    ```python
+    from requests.exceptions import Timeout
+    from canvas_sdk.utils import Http
+    from logger import log
+    client = Http()
+    try:
+        response = client.get("https://example.com/api")
+    except Timeout:
+        log.warning("The request to example.com timed out.")
+    ```
+###  Builtins that work differently 
+A few builtins are narrower in the sandbox than in standard Python, so that they can't reach past the runtime restrictions:
+Builtin | In the sandbox  
+---|---  
+`type` | Takes exactly one argument. `type(x)` returns the same thing as `x.__class__`, so for an object from outside your plugin you get a proxy that exposes only names. The three-argument form raises `TypeError`; declare classes with `class …:` instead.  
+`dir` | Takes exactly one argument, and lists only the names your plugin can read on that object.  
+`setattr`, `delattr` | Follow the same rules as `obj.x = value` and `del obj.x` (see writing attributes). They also refuse any name starting with `__`, any class defined outside your plugin, and a name starting with `_` on an object defined outside your plugin.  
+`vars` | Requires an argument. For an object or module from outside your plugin it returns a filtered copy, the same as `__dict__`.  
 ###  Builtins that are not available 
 What you see above is the whole set. The sandbox works from an allow-list rather than a list of banned names, so any builtin not mentioned there raises `NameError` when your plugin runs — including builtins that future Python releases introduce.
 These are the ones plugin authors reach for most often:
@@ -55468,32 +56125,15 @@ Not available | Use instead
 `eval`, `exec`, `compile` | Write the logic directly. The sandbox cannot run code it never reviewed.  
 `open`, `input` | Neither the filesystem nor a console is reachable from a plugin.  
 `print` | `log` from `logger`. `print` is also a reserved name.  
-`type` | `isinstance(x, SomeClass)` to test a type, `x.__class__.__name__` to read its name.  
-`dir`, `globals`, `locals` | Nothing. Namespace introspection is a sandbox-escape route.  
-`bytearray` | `bytes` for binary data.  
-One group is easy to miss: the `OSError` subclasses, including `TimeoutError`, `ConnectionError`, `FileNotFoundError`, and `PermissionError`. Writing `except TimeoutError:` around an HTTP call raises `NameError`. Catch `OSError` instead — it is available, and it matches every one of them:
-    ```python
-    from canvas_sdk.utils import Http
-    client = Http()
-    try:
-        response = client.get("https://example.com/api")
-    except OSError:
-        # OSError is the shared base class, so this catches TimeoutError,
-        # ConnectionError, and the rest of the family.
-        pass
-    ```
+`globals`, `locals` | Nothing. Namespace introspection is a sandbox-escape route.  
 ##  Forbidden Constructs 
 Beyond the import allow-list above, a few Python constructs compile under RestrictedPython but are rejected when your code runs in the sandbox. `canvas validate` catches these statically before you install, so you don't have to wait for a runtime failure on the instance.
 Construct | Why it's rejected | Use instead  
 ---|---|---  
-`setattr(obj, "x", value)` | Dynamic attribute assignment is blocked | Direct assignment: `obj.x = value`  
-`delattr(obj, "x")` | Dynamic attribute deletion is blocked | `del obj.x`  
-`bytearray(...)` | Not available in the sandbox | `bytes` for binary data  
-`type(name, bases, dict)` | Dynamic class creation (3-argument `type`) is not available | Declare the class normally with `class …:`  
+`type(name, bases, dict)` | The sandbox's `type` takes one argument, so dynamic class creation raises `TypeError` | Declare the class normally with `class …:`  
 `obj.attr += v` | Augmented assignment to an attribute is rejected, including on classes you defined yourself | Explicit reassignment: `obj.attr = obj.attr + v`  
 `d[k] += v` | Augmented assignment to a dict item, list item, or slice is rejected | Explicit reassignment: `d[k] = d[k] + v`  
 Augmented assignment to a plain variable is fine — `count += 1`, `total *= 2`, and the rest of the `-=` / `*=` / `//=` / `%=` / `**=` / `&=` / `|=` / `^=` / `<<=` / `>>=` family all work. It is only the attribute and item forms above that are rejected, and both fail when the plugin is compiled, so you find out at install time rather than mid-request.
-> **Warning:** `type` is not available in the sandbox _at all_ , including the one-argument `type(x)` form used to check an object's type — it raises `NameError: name 'type' is not defined`. Use `isinstance(x, SomeClass)` to test a type, or `x.__class__.__name__` to read its name. 
 > **Info:** `@dataclass(frozen=True)` and `@dataclass(slots=True)` load and run fine in the sandbox — they are not forbidden. 
 > **Info:** `match` statements are allowed in plugin code. 
 ###  `extract_exc_frames()`
@@ -55513,35 +56153,65 @@ Source code lines and local variables are not accessible.
             log.info(f"{frame.filename}:{frame.lineno} in {frame.name}")
     ```
 ##  Runtime Restrictions 
-The sandbox enforces the rules in this section every time an attribute is read or written, so they surface as an `AttributeError` while your plugin is running. That is what separates them from the forbidden constructs, which are rejected when your code is compiled and reported by `canvas validate` before you install. Nothing described here is caught until the code executes.
+The sandbox enforces the rules in this section every time an attribute is read or written, so they surface as an `AttributeError` while your plugin is running. That is what separates them from the forbidden constructs, which are rejected when your code is compiled and reported by `canvas validate` before you install. Except for the helper-module check below, nothing described here is caught until the code executes.
 Throughout this section, **your plugin's code** means modules inside your own plugin package. **External code** means everything else — the Canvas SDK, the standard library, and third-party modules.
+###  Helper modules 
+The rules apply to every module in your plugin, not only the modules your manifest names as handlers. A helper module that a handler imports runs in the sandbox too, so its functions keep the sandbox's rules when a handler calls them.
+A function body in a helper module runs only when something calls it. So the plugin runner also reads those bodies when it loads your plugin. If one contains a construct the rules refuse, the runner doesn't load the plugin. Every handler in the plugin then fails with a `PluginInstallationError` that lists each construct with its module and line. `canvas validate` and `canvas install` report the same error. The check looks for:
+  - an import of a module that isn't on the allow-list
+  - importing or reading a name that the allow-list doesn't grant from an allowed module, such as `re.Match`
+  - reading `__dict__`, `raw`, or a restricted method name on any object
+  - a `format` or `format_map` template whose fields read attributes or items (see string formatting)
+  - any call to `vars()`
+Fix each listed line, then validate again.
 ###  Reading attributes 
 Attribute names that begin with an underscore are restricted, and the rule depends on where the object came from:
 Object defined in | `_single_underscore` | `__dunder__`  
 ---|---|---  
 Your plugin's code | Readable | Only names on the allow-list below  
-External code | Blocked | Only names on the allow-list below  
+External code | Blocked, except `_meta` on SDK models | Only names on the allow-list below  
 The dunder allow-list is the same in both cases:
   - `__annotations__`
   - `__args__`
+  - `__ceil__`
   - `__class__`
   - `__dict__`
+  - `__doc__`
   - `__eq__`
+  - `__floor__`
   - `__init__`
   - `__members__`
   - `__name__`
   - `__origin__`
+  - `__round__`
   - `__traceback__`
-Two of those return a restricted stand-in rather than the real object:
-  - **`__class__`** on an object defined outside your plugin returns a read-only proxy that exposes only `__name__`. This is what prevents `__class__.__mro__` and `__class__.__subclasses__()` from being used to reach code outside the sandbox.
-  - **`__traceback__`** returns a safe traceback exposing only `tb_frame`, `tb_lineno`, and `tb_next`. Its frame exposes only `f_code`, and that code object exposes only `co_filename` and `co_name`. Local and global variables are never reachable. `extract_exc_frames()` is the more convenient way to read a traceback.
+  - `__trunc__`
+Several names return a restricted stand-in rather than the real object:
+  - **`__class__`** on an object defined outside your plugin, or on any class, returns a read-only proxy that exposes only `__name__` and `__mro__`. On an object your plugin defined, it returns the real class.
+  - **`__mro__`** on any class returns a tuple of proxies that each expose only `__name__`. You can check a class's ancestry by name, but `__subclasses__()` and the classes themselves can't be reached to get outside the sandbox.
+  - **`__dict__`** on an object, class, or module from outside your plugin returns a copy without any name that starts with an underscore. For a module, the copy holds only the names its allow-list entry grants. For an object that declares `__exports__`, it holds only those names. Changing the copy doesn't change the object. `vars()` returns the same copy. On your plugin's own objects and modules, both return the real namespace.
+  - **`__traceback__`** returns a safe traceback exposing only `tb_frame`, `tb_lineno`, and `tb_next`. Its frame exposes only `f_code` and `f_lineno`, and that code object exposes only `co_filename` and `co_name`. Local and global variables are never reachable. `extract_exc_frames()` is the more convenient way to read a traceback.
+  - **`_meta`** on an SDK model class or instance returns a read-only view for inspecting the model's fields. It exposes `app_label`, `concrete_fields`, `db_table`, `fields`, `get_field()`, `get_fields()`, `local_fields`, `model_name`, `pk`, `verbose_name`, and `verbose_name_plural`. Each field in it exposes `attname`, `blank`, `choices`, `column`, `concrete`, `default`, `get_internal_type()`, `is_relation`, `many_to_many`, `many_to_one`, `max_length`, `name`, `null`, `one_to_many`, `one_to_one`, and `related_model`. A field's `default` reads as `None` when the default is a callable.
 Reading a plain attribute off an imported module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+###  Attributes that don't exist 
+In the sandbox, reading an attribute that nothing defines returns `None`, where standard Python raises `AttributeError`. This behavior is deprecated, and a future release will raise `AttributeError` instead. Until then, the first time your plugin reads each such name, a warning naming it appears in your [plugin logs](/sdk/plugin-logs/). `canvas validate` also lists the names your handlers read while they load. It can't see names read later, inside a handler method.
+To read an attribute that may be absent, pass `getattr` a default. That returns the default without a warning:
+    ```python
+    class Reading:
+        def __init__(self) -> None:
+            self.value = 98.6
+    reading = Reading()
+    reading.unit                    # None for now, with a warning; AttributeError in a future release
+    getattr(reading, "unit", None)  # None, with no warning
+    ```
+An `AttributeError` raised by an attribute that does exist propagates as it does in standard Python, rather than reading as `None`. Two examples are an error raised inside a property, and Django's `RelatedObjectDoesNotExist` from a one-to-one relation that has no related record. Catch the error, or pass `getattr` a default, where the value may be missing.
+A read that the rules on this page refuse, such as an underscore name on an external object, still raises `AttributeError`.
 ###  Reading items 
-Subscripting with a string key that starts with an underscore is blocked on every object, including dictionaries you created yourself:
+A string key that starts with an underscore can be read from any dictionary, including subclasses such as `defaultdict`, `Counter`, and `OrderedDict`. The same goes for built-in containers and objects from the allowed standard-library and third-party modules. Other objects, including a class in your plugin that implements `__getitem__` without subclassing `dict`, raise an `AttributeError` for that key:
     ```python
     config = {"timeout": 30, "_internal": True}
     config["timeout"]    # fine
-    config["_internal"]  # AttributeError
+    config["_internal"]  # fine
     ```
 ###  Writing attributes 
 You can set attributes on modules that belong to your plugin. Setting an attribute on any other module is blocked.
@@ -55550,7 +56220,6 @@ For objects, whether a write is allowed depends on where the object's class was 
   - **Class defined in external code** — the write is blocked if any of the following is true: 
     - the name you are assigning through was brought in by an `import`
     - the attribute currently holds a callable, so the assignment would replace a method
-    - the target is a dictionary and the key is a string starting with an underscore
     ```python
     class MyThing:
         """Defined in your plugin, so its instances are writable."""
@@ -55571,17 +56240,28 @@ These four names cannot be used for a function, variable, class, or argument any
     from logger import log
     log.info("plugin started")
     ```
+The sandbox also reserves `__metaclass__` and the names of its own guards: `_apply_`, `_getattr_`, `_getitem_`, `_getiter_`, `_inplacevar_`, `_iter_unpack_sequence_`, `_print`, `_print_`, `_unpack_sequence_`, and `_write_`. Binding one of them in any way, including as an import alias, a loop target, or an `except … as` name, is an error.
+Names that start with two underscores can't be bound either, with three exceptions:
+  - `__all__`
+  - methods defined directly in a class body, such as `__init__` or `__str__`
+  - function and lambda argument names
 ###  Introspection attributes 
 The attributes the `inspect` module relies on are unavailable, because they expose frames, globals, and raw bytecode:
 `co_code`, `cr_await`, `cr_code`, `cr_frame`, `cr_origin`, `f_back`, `f_builtins`, `f_code`, `f_generator`, `f_globals`, `f_locals`, `f_trace`, `gi_code`, `gi_frame`, `gi_yieldfrom`, `tb_frame`, `tb_next`
 The safe traceback wrappers under reading attributes are the one exception: they re-expose `tb_frame`, `tb_next`, and `f_code` through an explicit allow-list, stripped down to the fields listed there.
+These method names can't be read from any object, including your plugin's own:
+`create_module`, `eval`, `exec`, `exec_module`, `find_loader`, `find_module`, `find_spec`, `load_module`, `mro`
+To read a class's ancestry, use `__mro__` rather than `mro()`.
 ###  String formatting 
-The `format` and `format_map` methods of `str` are not available. Use an f-string or the `%` operator instead:
+`format` and `format_map` work when you call them on a string. Their replacement fields can't read attributes or items of the values they format, so a field such as `{0.name}` or `{0[first_name]}` raises `NotImplementedError`. Read the value out first, then format it. Calling `format` through the `str` type, as in `str.format(template, value)`, also raises `NotImplementedError`.
     ```python
-    name = "Canvas"
-    greeting = f"Hello {name}"       # fine
-    greeting = "Hello %s" % name     # fine
-    greeting = "Hello {}".format(name)  # NotImplementedError
+    patient = {"first_name": "Ada"}
+    name = patient["first_name"]
+    greeting = "Hello {}".format(name)                 # fine
+    greeting = "Hello {name}".format(name=name)        # fine
+    greeting = f"Hello {patient['first_name']}"        # fine
+    greeting = "Hello {0[first_name]}".format(patient)  # NotImplementedError
+    greeting = str.format("Hello {}", name)            # NotImplementedError
     ```
 ###  `__exports__`
 Some SDK objects declare an `__exports__` attribute listing exactly which attribute names may be read from them. Where it is present it takes precedence over the other rules in this section: names in the list are readable, and anything else raises an `AttributeError`.
@@ -56098,6 +56778,7 @@ In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-
     <span class="message-text-content">{{ msg.text|sanitize_html }}</span>
     ```
 The filter marks its output as safe, so don't add `|safe`. A `None` value renders as an empty string.
+For the other rules on rendering untrusted data in templates, such as passing data to JavaScript, see [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely).
 ##  Making requests to the Ontologies service 
 Plugin authors can make requests to our Ontologies service using the `ontologies_http` wrapper.
 In addition to the `json()` method of the response, which you'll use to access the response itself, you can also access the `status_code` to verify that the request was succcessful.

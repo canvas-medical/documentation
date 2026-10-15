@@ -449,6 +449,8 @@ class MyAPI(SimpleAPIRoute):
         ]
 ```
 
+When an `HTMLResponse` includes data from patients, integrations, or other external sources, build it with `render_to_string` and follow [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely). Never include secrets in an HTML response.
+
 #### Returning Effects
 
 **SimpleAPI** endpoints can return any number of Effects just like any Canvas plugin; this is why
