@@ -32119,7 +32119,7 @@ Target object | Context object
        "id": pt_id  
 LETTER_ACTION_EVENT_CREATED  
 ---  
-Occurs when a letter action event is created.  
+Occurs when a letter is printed or faxed. For a fax, `delivered_by_fax` on the target is still `None`.  
 Target object | Context object  
     "id": letter_action_event_id
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
@@ -32127,7 +32127,7 @@ Target object | Context object
     empty  
 LETTER_ACTION_EVENT_UPDATED  
 ---  
-Occurs when a letter action event is updated.  
+Occurs when the faxing service reports whether a letter fax was delivered, and again if a later report changes the outcome or its message. See [delivery status](/sdk/data-fax/#delivery-status).  
 Target object | Context object  
     "id": letter_action_event_id
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
