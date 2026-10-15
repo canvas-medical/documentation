@@ -26,7 +26,7 @@ Together, Claude Code with CPA lets developers go from an idea to a working, dep
 - Python 3.12+ installed
 - A Canvas instance with admin access
 - The Canvas CLI signed in to Canvas Platform with `canvas login`. See [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform)
-- Instance API credentials in `~/.canvas/credentials.ini`, which `/cpa:deploy` uses to install the plugin and stream its logs. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated); this method is deprecated, and support ends on December 14, 2026
+- Instance API credentials in `~/.canvas/credentials.ini`, which `/cpa:deploy` uses to stream the plugin's logs, with a section named after your instance. Deploying goes through Canvas Platform. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated); this method is deprecated, and support ends on December 14, 2026
 - [Claude Code installed](https://docs.anthropic.com/en/docs/claude-code/overview)
 
 ## 1. Install the Canvas Plugin Assistant and Set Up Your Environment
@@ -43,7 +43,7 @@ Here's what happens next:
 
 1. **Brainstorm** — CPA asks follow-up questions to refine your requirements
 2. **Specification** — CPA generates a `plugin-spec.md` for your review. Read through it and approve or request changes
-3. **Scaffold** — CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files
+3. **Scaffold** — CPA creates the [plugin project structure](/guides/your-first-plugin/#4-navigate-the-structure-of-a-plugin), manifest, and handler files. Plugins are named `<your org prefix>__<name>`, such as `acme__vitals_alert`; see [Rename the plugin with the prefix](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix)
 4. **Implement** — CPA writes the protocol/handler code based on the spec
 5. **Test** — CPA generates and runs tests to verify the plugin works correctly
 
@@ -57,7 +57,9 @@ When you're at the point of completion where you need to try the plugin yourself
 /cpa:deploy
 ```
 
-CPA validates the plugin, bumps the version, deploys it to your Canvas instance, and starts log monitoring so you can see output in real time.
+CPA validates the plugin, bumps the version, commits your changes, and runs `canvas deploy` to the instance you pick by its slug, such as `acme-staging`. Variables from your secrets file are set with `canvas config set`, and log monitoring starts so you can see output in real time.
+
+When the plugin reads another plugin's custom data, Canvas Platform asks for consent. Claude shows the consent request and asks you to run the deploy command in your own terminal to approve it.
 
 To test our example first plugin, open a patient chart in your Canvas instance, create a new note, and click the button in the note header. You should see a Reason for Visit command appear with the text "hello world".
 
@@ -82,7 +84,7 @@ Ask CPA to handle the case where the note already has a Reason for Visit command
 The `/cpa:deploy` command will start a subagent called `deploy-uat`, which runs a background task to access the `canvas logs` stream. Ask Claude to look at them anytime you need help troubleshooting. You can also of course view logs in the shell manually with:
 
 ```bash
-uv run canvas logs <your-instance>
+uv run canvas logs --host <your-instance>
 ```
 
 ### Keep going
