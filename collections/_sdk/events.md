@@ -3264,7 +3264,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a letter action event is created.</td></tr>
+    <tr><td colspan="2">Occurs when a letter is printed or faxed. For a fax, <code>delivered_by_fax</code> on the target is still <code>None</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3282,7 +3282,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">LETTER_ACTION_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a letter action event is updated.</td></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a letter fax was delivered, and again if a later report changes the outcome or its message. See <a href="/sdk/data-fax/#delivery-status">delivery status</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
