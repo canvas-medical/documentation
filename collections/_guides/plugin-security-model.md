@@ -61,10 +61,11 @@ See [Customer Authentication](/api/customer-authentication/) and
 
 ### Who can install
 
-Installing or updating a plugin is an authenticated operation: it requires an OAuth token
-carrying the plugin scope for your instance. Controlling who holds that credential is the
-primary control over what reaches your production environment, and it is a control your
-organization owns.
+Installing or updating a plugin is an authenticated operation: it requires a client
+credentials OAuth token carrying the plugin scope for your instance. Canvas refuses a token
+that a user obtains by approving the scope on their own consent screen. Controlling who
+holds that credential is the primary control over what reaches your production
+environment, and it is a control your organization owns.
 
 ### Installing from your own pipeline
 
