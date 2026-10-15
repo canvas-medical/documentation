@@ -61,6 +61,21 @@ printed_letters = Letter.objects.filter(printed__isnull=False)
 staff_letters = Letter.objects.filter(staff_id="a1b2c3d4e5f6")
 ```
 
+## The printed attachments
+
+`printed_document` holds the letter's attachments, merged into one PDF, not the letter body. Canvas saves it the first time the letter is printed or faxed, and reuses it for later prints and faxes. The `printed_document_url` property returns a presigned S3 URL for that PDF, or `None` when the letter hasn't been printed or faxed. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data.letter import Letter
+
+letter = Letter.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
+
+# Presigned S3 URL to the merged attachments PDF, or None
+attachments_url = letter.printed_document_url
+```
+
+To read the full letter as it went out, use its document reference.
+
 ## The document reference
 
 `content` holds the letter's body, not the document that goes out. Canvas renders the letter — including anything attached to it — to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the letter.
@@ -95,6 +110,8 @@ url = document.document_url if document else None
 | modified   | DateTime                        |                                    |
 | content    | String                          | The rendered letter content        |
 | printed    | DateTime                        | When the letter was printed (null if not printed) |
+| printed_document | File (S3 key)             | The letter's attachments merged into one PDF, saved when the letter is first printed or faxed (null until then) |
+| printed_document_url | String (computed)     | Presigned S3 URL for `printed_document`, or `None` if unset |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
 | staff      | [Staff](/sdk/data-staff/#staff) | The staff member who created the letter (nullable) |
 | letter_action_events | QuerySet[LetterActionEvent] | Action events (e.g. printed, faxed) recorded for this letter |
