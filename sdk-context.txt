@@ -725,14 +725,15 @@ The dropdown of options presented to the user now reflects our modifications!
 The search results in this example follow the MedicationSearchResult structure. Each result contains fields like `text`, `disabled`, `description`, `annotations`, `extra`, and `value` that provide detailed information about the medication option.
 For complete details about medication search result data contracts and other search result structures, see the [Search Result Data Structures](/sdk/events/#search-result-data-structures) section in the Events documentation.
 ##  Offering your own providers alongside the directory 
-The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external care team — search the shared contact directory by default. Providers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you maintain your own directory you have to offer them yourself.
-The pattern is the same on all four surfaces: query your own [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and return the combined list.
+Five surfaces search for providers: Refer, Imaging Order, Order DME, fax recipient, and a patient's external care team. Each searches the shared contact directory by default. Providers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you maintain your own directory you have to offer them yourself.
+The pattern is the same on all five surfaces: query your own [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and return the combined list.
 **Use the POST_SEARCH event, not PRE_SEARCH.** Only the post-search context carries what the directory returned, in `context["results"]`. On a pre-search that list is empty, so there is nothing to merge with — and on a command pre-search any `AUTOCOMPLETE_SEARCH_RESULTS` effect you return is authoritative, which means an empty reply blanks the dropdown instead of leaving it alone.
 Which helper you call depends on the surface:
 Surface | Event | Helper  
 ---|---|---  
 Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()`  
 Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()`  
+Order DME | `ORDER_DME__SEND_TO__POST_SEARCH` | `as_search_result()`  
 Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()`  
 External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()`  
     ```python
@@ -792,7 +793,7 @@ External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_se
                 Effect(type=EffectType.AUTOCOMPLETE_SEARCH_RESULTS, payload=json.dumps(None))
             ]
     ```
-For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for `as_search_result()`. The merge is the same, except the directory's results carry their display name in `text` rather than in `firstName` / `lastName`.
+For Refer, Imaging Order, and Order DME, subscribe to those three events instead and swap `as_search_contact()` for `as_search_result()`. The merge is the same, except the directory's results carry their display name in `text` rather than in `firstName` / `lastName`.
 A few things worth carrying over into your own version:
   - **Filter to`is_active=True`.** Deactivating a provider is how a customer retires it, so offering a deactivated one invites picking it again.
   - **Return a null payload when you have nothing to add** , rather than an empty list. On the contact surfaces an empty list clears the results.
@@ -6918,6 +6919,7 @@ Action Name | Available When | Description
 `print_order` | command is committed | Prints the order as a requisition. Requires printing access.  
 `fax` | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access.  
 To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 **Example** :
     ```python
     from canvas_sdk.commands import OrderDmeCommand
@@ -20870,10 +20872,11 @@ show_in_condition_list | Boolean
 A `ServiceProvider` is an external provider or organization — someone outside your practice that a patient's care touches. The same record backs every surface in Canvas where an outside provider gets picked:
   - The contact selected as the recipient of a [Refer](/sdk/commands/#refer) command.
   - The imaging center selected on an [Imaging Order](/sdk/commands/#imagingorder) command.
+  - The supplier selected in **Send to** on an Order DME command.
   - An external care team member added to a patient's profile.
   - The recipient of an outbound fax, and the matched sender of an inbound one — Data Integration looks up the sending fax number in the contact directory and links the resulting provider to the incoming document, which is what the `integration_tasks` relation below exposes.
 Service providers come from two places. Most are drawn from the shared external contact directory, which is what those surfaces search by default and which you can query yourself with [`GET /contacts/`](/sdk/utils/#searching-for-contacts-and-service-providers). You can also build your own directory: providers created through the [ServiceProvider effect](/sdk/effect-service-provider/) belong to your instance and are flagged with `is_customer_managed`.
-Your own providers are not searched automatically. To offer them in one of the surfaces above, handle that surface's search event and return them yourself — see the helpers under Search results below, and [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory) for a worked handler covering all four surfaces.
+Your own providers are not searched automatically. To offer them in one of the surfaces above, handle that surface's search event and return them yourself — see the helpers under Search results below, and [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory) for a worked handler covering all five surfaces.
 ##  Basic usage 
 To retrieve a `ServiceProvider` by identifier, use the `get` method on the model manager:
     ```python
@@ -20931,7 +20934,7 @@ This is also how you find an existing customer-managed provider — to get its `
 Two helpers shape a provider for the provider-search surfaces, so you do not have to build the payloads yourself. Both take an optional list of annotations, shown next to the result.
 Method | Use it for  
 ---|---  
-`as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order  
+`as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order, `Send to` on Order DME  
 `as_search_contact(annotations=None)` | The fax recipient and external care team dropdowns  
 Both identify the provider, so selecting one attaches to that exact record.
 The two helpers return different shapes, and the key casing below matches the serialized payload exactly:
@@ -29230,7 +29233,7 @@ Use the [ServiceProvider data module](/sdk/data-serviceprovider/), and `is_custo
     from canvas_sdk.v1.data.service_provider import ServiceProvider
     ServiceProvider.objects.filter(is_customer_managed=True, is_active=True)
     ```
-To surface them in the Refer, Imaging Order, fax recipient, or external care team searches, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+To surface them in the Refer, Imaging Order, Order DME, fax recipient, or external care team searches, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
 To offer them in a provider search, see [`as_search_result` and `as_search_contact`](/sdk/data-serviceprovider/#search-results).
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-service-provider/
 
