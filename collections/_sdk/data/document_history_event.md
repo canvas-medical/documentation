@@ -15,7 +15,7 @@ Each entry stores who acted (`actor`), who received the document or the released
 
 To get a history entry by identifier, use the `get` method on the `DocumentHistoryEvent` model manager:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import DocumentHistoryEvent
 
 event = DocumentHistoryEvent.objects.get(id="0f6b3c2e-8a51-4d7e-9c14-5b2e7a9d3f60")
@@ -25,7 +25,7 @@ event = DocumentHistoryEvent.objects.get(id="0f6b3c2e-8a51-4d7e-9c14-5b2e7a9d3f6
 
 History entries link to their document through `content_type` and `object_id`, which is the document's `dbid`. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, rather than hardcoding its `dbid`:
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import ContentType, DocumentHistoryEvent, ImagingReport
 
 report = ImagingReport.objects.get(id="3a5d8e21-6b4f-4c9a-8e27-1d9f0b6c4a73")
@@ -44,7 +44,7 @@ History entries can be filtered by any attribute that exists on the model.
 
 ### By event type
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
 
 comments = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.COMMENTED)
@@ -52,7 +52,7 @@ comments = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventTy
 
 ### Signers of recorded documents
 
-```python
+```python?partial=true
 from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
 
 recorded = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.RECORDED)
