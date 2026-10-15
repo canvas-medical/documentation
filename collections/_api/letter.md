@@ -13,6 +13,8 @@ This endpoint was built as an addition to the Note API and uses the user/Note.wr
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 
 
+Like the Note API, the Letter API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
+
 {:refdef: style="text-align: center;"}
 ![description](/assets/images/allowed-scopes.png){:width="70%"}
 {: refdef}
@@ -93,6 +95,7 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
 
+<!-- source: discussion #1064 -->
+## Populating a letter with chart data
 
-
-
+Letter Template placeholders cannot reach command values or ICD codes from a note; only the fixed set of patient, provider, and practice placeholders is supported. To produce a letter populated with chart data, command values, or ICD codes, build the letter's content in a plugin from values you read through the SDK [data module](/sdk/data/), then create the letter with this API.

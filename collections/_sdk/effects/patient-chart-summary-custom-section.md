@@ -5,44 +5,31 @@ excerpt: "Effect for rendering a custom section in the patient chart summary."
 hidden: false
 ---
 
-## Overview
-
 The `PatientChartSummaryCustomSection` effect allows plugin developers to supply the content for a custom section in the patient chart summary. It is returned by a [`PatientChartSummaryCustomSectionHandler`](/sdk/patient-chart-summary-custom-section-handler/) in response to a request for the section's content.
 
-Content can be provided as an inline HTML string or as a URL to a hosted page. An icon must always be supplied — it is shown in the chart summary header when the section is collapsed.
+Content can be provided as an inline HTML string or as a URL to a hosted page. An icon must always be supplied; it is shown in the chart summary header when the section is collapsed.
 
-```python
-from canvas_sdk.effects.patient_chart_summary_custom_section import PatientChartSummaryCustomSection
-from canvas_sdk.templates import render_to_string
+Build a `PatientChartSummaryCustomSection` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
 
+## Methods
 
-# Serve content as an inline HTML string
-PatientChartSummaryCustomSection(
-    content=render_to_string("templates/my_section.html"),
-    icon="📋",
-)
+### apply() → Effect
 
-# Serve content from a hosted URL
-PatientChartSummaryCustomSection(
-    url="/plugin-io/api/my_plugin/my-section",
-    icon_url="/plugin-io/api/my_plugin/icon.png",
-)
-```
+Supplies the section's content.
 
-## Structure
+- Exactly one of `content` or `url` is required.
+- Exactly one of `icon` or `icon_url` is required.
 
-### Attributes
+Providing both fields in a pair, or neither, raises a `ValidationError`.
 
-| Attribute  | Required                                 | Type            | Description                                                                                     |
-|------------|------------------------------------------|-----------------|-------------------------------------------------------------------------------------------------|
-| `content`  | required (if `url` is not provided)      | `str` \| `None` | Inline HTML content to render in the section. Mutually exclusive with `url`.                    |
-| `url`      | required (if `content` is not provided)  | `str` \| `None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.               |
-| `icon`     | required (if `icon_url` is not provided) | `str` \| `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`. |
-| `icon_url` | required (if `icon` is not provided)     | `str` \| `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.      |
+## Attributes
 
-### Validation
-
-Exactly one of `content` / `url` must be provided, and exactly one of `icon` / `icon_url` must be provided. Providing both fields in a pair or neither will raise a `ValidationError` when `.apply()` is called.
+| Attribute  | Type            | Description                                                                                     | Required                         |
+|------------|-----------------|-------------------------------------------------------------------------------------------------|----------------------------------|
+| `content`  | `str` \| `None` | Inline HTML content to render in the section. Mutually exclusive with `url`.                    | Exactly one of `content` or `url` |
+| `url`      | `str` \| `None` | URL of the page to load in the section iframe. Mutually exclusive with `content`.               | Exactly one of `content` or `url` |
+| `icon`     | `str` \| `None` | Text or emoji displayed as the section icon when collapsed. Mutually exclusive with `icon_url`. | Exactly one of `icon` or `icon_url` |
+| `icon_url` | `str` \| `None` | URL of an image to use as the section icon when collapsed. Mutually exclusive with `icon`.      | Exactly one of `icon` or `icon_url` |
 
 ## Examples
 

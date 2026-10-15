@@ -2,8 +2,10 @@
   &__gridrow {
     @media (min-width: $breakpoint-xxl) {
       display: grid;
-      grid-template-columns: 550px 550px;
-      grid-column-gap: $container-padding;
+      // Two equal columns that share the article's width; minmax(0, …) lets
+      // long code lines scroll inside a column instead of widening it.
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-column-gap: 32px;
     }
     padding: 0 $container-padding; 
   }

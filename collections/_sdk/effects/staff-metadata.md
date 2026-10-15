@@ -11,13 +11,6 @@ The `StaffMetadata` effect provides a flexible key-value storage system for staf
 
 `StaffMetadata` exposes `.upsert(value)` to write or replace a metadata entry, and `.delete()` to remove one. The same key may be used across many staff members; the `(staff, key)` pair is unique per staff member.
 
-## Attributes
-
-| Attribute  | Type  | Description                                                       | Required |
-|------------|-------|-------------------------------------------------------------------|----------|
-| `staff_id` | `str` | Id of the [Staff](/sdk/data-staff/) record to associate metadata with | Yes      |
-| `key`      | `str` | Unique identifier for the metadata entry within the staff context | Yes      |
-
 ## Methods
 
 ### upsert(value: str) → Effect
@@ -118,6 +111,13 @@ effect = StaffMetadata(
     key="department",
 ).delete()
 ```
+
+## Attributes
+
+| Attribute  | Type  | Description                                                       | Required |
+|------------|-------|-------------------------------------------------------------------|----------|
+| `staff_id` | `str` | Id of the [Staff](/sdk/data-staff/) record to associate metadata with | Yes      |
+| `key`      | `str` | Unique identifier for the metadata entry within the staff context | Yes      |
 
 ## Validation
 

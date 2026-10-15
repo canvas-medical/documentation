@@ -108,6 +108,19 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## Accessing the imaging order PDF
+
+The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is faxed. Printing the order doesn't save it, so an order that has never been faxed has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Presigned S3 URL to the order PDF, or None if no PDF has been saved
+url = imaging_order.document_url
+```
+
 ## The document reference
 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
@@ -143,6 +156,7 @@ document = DocumentReference.objects.filter(
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
 | note                | [Note](/sdk/data-note/#note)                                   |
+| assessment          | [Assessment](/sdk/data-assessment/#assessment) |
 | imaging             | String                                                         |
 | imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | note_to_radiologist | String                                                         |
@@ -152,8 +166,11 @@ document = DocumentReference.objects.filter(
 | ordering_provider   | [Staff](/sdk/data-staff/#staff)                                |
 | priority            | String                                                         |
 | delegated           | Boolean                                                        |
+| document            | File (S3 key)                                                  |
+| document_url        | String (computed)                                               |
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
+| action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
 
 ### ImagingReview
 
@@ -176,31 +193,33 @@ document = DocumentReference.objects.filter(
 
 ### ImagingReport
 
-| Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
-| id                 | UUID                                                                  |
-| dbid               | Integer                                                               |
-| created            | DateTime                                                              |
-| modified           | DateTime                                                              |
-| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
-| junked             | Boolean                                                               |
-| requires_signature | Boolean                                                               |
-| assigned_date      | DateTime                                                              |
-| patient            | [Patient](/sdk/data-patient/#patient)                                 |
-| order              | [ImagingOrder](#imagingorder)                                         |
-| source             | [ImagingReportSource](#imagingreportsource)                           |
-| name               | String                                                                |
-| result_date        | Date                                                                  |
-| original_date      | Date                                                                  |
-| review             | [ImagingReview](#imagingreview)                                       |
-| document_url       | String (property) — presigned S3 URL, or `None` if the report has no file |
-| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+| Field Name         | Type                                                                  | Description                                           |
+|--------------------|-----------------------------------------------------------------------|-------------------------------------------------------|
+| id                 | UUID                                                                  |                                                       |
+| dbid               | Integer                                                               |                                                       |
+| created            | DateTime                                                              |                                                       |
+| modified           | DateTime                                                              |                                                       |
+| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |                                                       |
+| junked             | Boolean                                                               |                                                       |
+| requires_signature | Boolean                                                               |                                                       |
+| assigned_date      | DateTime                                                              |                                                       |
+| patient            | [Patient](/sdk/data-patient/#patient)                                 |                                                       |
+| order              | [ImagingOrder](#imagingorder)                                         |                                                       |
+| source             | [ImagingReportSource](#imagingreportsource)                           |                                                       |
+| name               | String                                                                |                                                       |
+| result_date        | Date                                                                  |                                                       |
+| original_date      | Date                                                                  |                                                       |
+| review             | [ImagingReview](#imagingreview)                                       |                                                       |
+| document_url       | String (computed)                                                     | Presigned S3 URL, or `None` if the report has no file |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |                                                       |
 
 ### ImagingReportCoding
 
 | Field Name    | Type                            |
 |---------------|---------------------------------|
 | dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
 | report        | [ImagingReport](#imagingreport) |
 | system        | String                          |
 | version       | String                          |

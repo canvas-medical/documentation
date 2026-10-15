@@ -70,14 +70,14 @@ url = image.image_url
 
 ### SnapshotImage
 
-| Field Name  | Type                        |
-|-------------|-----------------------------|
-| dbid        | Integer                     |
-| created     | DateTime                    |
-| modified    | DateTime                    |
-| snapshot    | [Snapshot](#snapshot)       |
-| image       | String                      |
-| title       | String                      |
-| instruction | String                      |
-| tag         | String                      |
-| image_url   | String (property) — presigned S3 URL |
+| Field Name  | Type                  | Description      |
+|-------------|-----------------------|------------------|
+| dbid        | Integer               |                  |
+| created     | DateTime              |                  |
+| modified    | DateTime              |                  |
+| snapshot    | [Snapshot](#snapshot) |                  |
+| image       | String                |                  |
+| title       | String                |                  |
+| instruction | String                |                  |
+| tag         | String                |                  |
+| image_url   | String (computed)     | Presigned S3 URL |
