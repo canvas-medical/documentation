@@ -2939,6 +2939,38 @@ update_goal = UpdateGoalCommand(
 
 ---
 
+### VisualExamFinding
+
+Records a titled image of a clinical observation, with a narrative, on a note. The Visual Exam Finding command must be enabled on the instance to attach an image.
+
+**Command-specific parameters**:
+
+| Name               | Type     | Description |
+|:-------------------|:---------|:------------|
+| `title`            | _string_ | The title of the finding. Up to 255 characters. |
+| `narrative`        | _string_ | A description of the observation. |
+| `image_upload_key` | _string_ | The upload key of a PNG or JPEG image, from a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas copies the file to the finding and then deletes the upload, so each key works only once. Not allowed in a recommendation, such as one on a protocol card. |
+
+The command supports `originate`, `edit`, `delete`, `commit`, and `enter_in_error`. To read findings, see [VisualExamFinding](/sdk/data-visual-exam-finding/).
+
+**Example**:
+
+```python
+from canvas_sdk.commands import VisualExamFindingCommand
+
+finding = VisualExamFindingCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    title='Rash',
+    narrative='Erythematous rash on the left forearm',
+    image_upload_key='acme/plugin-uploads/my_plugin/20261014T120000Z-abc-rash.jpg',
+)
+effect = finding.originate()
+```
+
+In a SimpleAPI handler, set `image_upload_key` to the `key` of the uploaded `StoredFilePart` rather than a literal string.
+
+---
+
 ### Vitals
 
 **Command-specific parameters**:
