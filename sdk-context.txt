@@ -28785,7 +28785,7 @@ Records the patient's decision on one consent.
   - `patient_id` must be the id of an existing patient.
   - `consent` must match exactly one [PatientConsentCoding](/sdk/data-patient-consent/#patientconsentcoding).
   - `rejection_reason` can be set only when `state` is `REJECTED` or `REJECTED_VIA_PORTAL`, and it must match exactly one [PatientConsentRejectionCoding](/sdk/data-patient-consent/#patientconsentrejectioncoding).
-  - `document.content` must be valid base64. Line breaks in the encoded content are allowed.
+  - `document.content` must be a PDF file, base64 encoded. Line breaks in the encoded content are allowed. The decoded content must start with the PDF signature `%PDF-`, so another file type, such as a PNG, fails validation.
 ##  Attributes 
 ###  RecordPatientConsent 
 Attribute | Type | Description | Required  
@@ -28810,12 +28810,12 @@ The signed copy of the consent.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `filename` | `str` | The file name to store the document under, such as `telehealth.pdf`. It can be at most 255 characters and must not contain a path. | Yes  
-`content` | `str` | The file's bytes, base64 encoded. | Yes  
+`content` | `str` | The bytes of a PDF file, base64 encoded. Other file types fail validation. | Yes  
 ##  How Canvas records the decision 
   - **Earlier-dated decisions:** The decision with the latest `effective_date` sets the consent's state, dates, and rejection reason. A decision dated before the recorded one leaves the consent as it is, but Canvas still files its document. Use this to add an older signed copy without changing the current decision.
   - **Expiration date:** Canvas computes the consent's expiration date from `effective_date` and the coding's [expiration rule](/sdk/data-patient-consent/#patientconsentexpirationrule).
   - **Rejection reason:** A decision that updates the consent replaces its rejection reason. A decision without `rejection_reason`, including any accepted decision, clears the earlier reason.
-  - **Signed documents:** Each document you attach is added to the consent's [signed documents](/sdk/data-patient-consent/#signed-consent-documents) with `effective_date` as its date. The document with the latest date becomes the consent's `active_document`, and earlier signed copies stay on the chart.
+  - **Signed documents:** Each document you attach is added to the consent's [signed documents](/sdk/data-patient-consent/#signed-consent-documents) with `effective_date` as its date. The document with the latest date becomes the consent's `active_document`, and earlier signed copies stay on the chart. Canvas codes each document LOINC `59284-0` (Consent Document), the same [document type](/sdk/data-patient-administrative-document/) as a consent document staff upload, and its [DocumentReference](/sdk/data-document-reference/) `type` carries that coding.
   - **Other consents:** The effect changes only the consent you name. A consent the patient did not answer keeps its current state.
 ##  Example 
 This handler records an accepted telehealth consent and attaches the signed PDF:
