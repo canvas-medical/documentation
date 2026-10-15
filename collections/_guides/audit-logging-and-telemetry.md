@@ -44,7 +44,10 @@ does not record a separate print event.
 
 Alongside the record audit trail, Canvas captures:
 
-- **Authentication events** — sign-in successes and failures, and account lockouts.
+- **Authentication events** — sign-in successes and failures, account lockouts, and Canvas
+  administrators starting and ending a session as another user.
+- **Refused requests** — requests and GraphQL operations refused for lack of permission,
+  attributed to the user who was refused.
 - **Administrative activity** — configuration and permission changes, surfaced in the
   admin console and protected there against edit and deletion.
 - **Staff activity reports** — generated nightly.
@@ -149,27 +152,40 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `metadata.uid` | Unique id for the event. Delivery is at-least-once, so use it to drop duplicates. |
 | `metadata.correlation_uid` | Id of the request that produced the event, when there was one. Events from the same request share it. |
 | `metadata.version` | OCSF schema version. |
+| `metadata.tenant_uid` | The Canvas instance that produced the event, so one SIEM can take events from several instances. |
+| `metadata.labels` | `environment:production` for a production instance, `environment:non-production` for a sandbox or test instance. |
 | `category_uid`, `class_uid`, `activity_id`, `type_uid` | OCSF classification of the event (see the table below). `type_uid` is `class_uid * 100 + activity_id`. |
 | `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
 | `status_id` | Outcome: `1` success, `2` failure. |
-| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. |
+| `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation. Absent on success. |
+| `api.operation` | On a refused request, the operation that was refused: the HTTP method and route pattern (`GET api/Patient/<str:id>`), or `graphql`, the operation type, and the field (`graphql mutation updateNote`). Never the actual path or its arguments. |
+| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as. |
+| `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
 | `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
-| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. |
-| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, or `provenance`; `event_name` names the Canvas action; `reason` is `invalid_credentials` or `account_locked` on a failed sign-in; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
+| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. On an update, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
+| `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, `provenance`, or `access_control`; `event_name` names the Canvas action; `impersonated_by` is the username of the administrator acting as the user in `actor`, on every event during that session; `plugin_handler` names the plugin handler alongside `actor.invoked_by`; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
 
 | `class_uid` | OCSF class | Canvas events |
 | --- | --- | --- |
 | 3001 | Account Change | Staff account created |
-| 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued |
+| 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued, an administrator starting or ending a session as another user |
 | 3005 | User Access Management | Staff access granted or revoked |
 | 6001 | Web Resources Access | Chart opened, note printed |
-| 6003 | API Activity | Clinical records created, updated, or deleted; coverage, address, and care team changes |
+| 6003 | API Activity | Clinical records created, updated, or deleted; coverage, address, and care team changes; requests refused for lack of permission |
 
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
-failed sign-ins, lockouts, and issued portal sign-in links, and `2` is a sign-out. In User Access
-Management, `1` grants access and `2` revokes it. In the other classes, `1` is create, `2` is
-read, `3` is update, and `4` is delete. Marking a clinical record entered in error is reported
+failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
+user, and `2` is a sign-out or the end of one. In User Access Management, `1` grants access and
+`2` revokes it. In the other classes, `1` is create, `2` is read, `3` is update, `4` is delete,
+and `99` is a refused GraphQL mutation. Marking a clinical record entered in error is reported
 as a delete.
+
+On a staff account created or a change to staff access, `actor` is the administrator who made
+the change and `resources` holds the account changed. A change made outside a signed-in
+session, such as a directory sync, has a `null` actor. When an administrator starts a session
+as another user, `actor` is the administrator and `resources` holds the user taken over, with
+`event_name` `impersonation.started` (and `impersonation.ended` when the session returns to
+the administrator).
 
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
@@ -187,7 +203,10 @@ A failed sign-in:
   "metadata": {
     "version": "1.1.0",
     "uid": "6be79fea-caa8-40e1-a480-9c86e2b243f4",
-    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"}
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "tenant_uid": "acme",
+    "labels": ["environment:production"],
+    "correlation_uid": "7a1c3e5f9b2d4f6a8c0e1b3d5f7a9c2e"
   },
   "category_uid": 3,
   "class_uid": 3002,
@@ -200,7 +219,8 @@ A failed sign-in:
     "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15"
   },
   "status_id": 2,
-  "enrichments": {"source": "authentication", "reason": "invalid_credentials"}
+  "status_code": "invalid_credentials",
+  "enrichments": {"source": "authentication"}
 }
 ```
 
@@ -212,6 +232,8 @@ A staff member opening a patient's chart:
     "version": "1.1.0",
     "uid": "b7f9f925-646d-4607-ac71-36f5708565ca",
     "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "tenant_uid": "acme",
+    "labels": ["environment:production"],
     "correlation_uid": "f32eec1863c3dda8afea21ba0cb39a9d"
   },
   "category_uid": 6,
@@ -238,6 +260,8 @@ An update to a condition on that patient's chart:
     "version": "1.1.0",
     "uid": "98e8a792-dd0f-4d4e-909e-94653f2af09c",
     "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "tenant_uid": "acme",
+    "labels": ["environment:production"],
     "correlation_uid": "0c5d1f7a9e2b4c6d8f1a3b5c7d9e0f12"
   },
   "category_uid": 6,
@@ -253,9 +277,74 @@ An update to a condition on that patient's chart:
   "status_id": 1,
   "resources": [
     {"type": "patient", "uid": "381bf94ac3b269eedec9dc3f660a4cf0"},
-    {"type": "Condition", "uid": "52817"}
+    {
+      "type": "Condition",
+      "uid": "52817",
+      "data": {"changed_fields": ["clinical_status", "committer"]}
+    }
   ],
   "enrichments": {"source": "provenance"}
+}
+```
+
+A request refused for lack of permission:
+
+```json
+{
+  "metadata": {
+    "version": "1.1.0",
+    "uid": "3d0b8f4e-2a61-4c7e-9f15-6e8a2c4b7d90",
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "tenant_uid": "acme",
+    "labels": ["environment:production"],
+    "correlation_uid": "5e7a9c1b3d5f7a9c2e4b6d8f0a2c4e6b"
+  },
+  "category_uid": 6,
+  "class_uid": 6003,
+  "activity_id": 2,
+  "type_uid": 600302,
+  "time": 1791999411000,
+  "actor": {"user": {"uid": "418", "name": "mlee"}},
+  "src_endpoint": {
+    "ip": "198.51.100.7",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  "status_id": 2,
+  "status_code": "403",
+  "api": {"operation": "GET api/Patient/<str:id>"},
+  "enrichments": {"source": "access_control", "event_name": "access_denied"}
+}
+```
+
+A Canvas administrator, signed in as `jsmith`, opening a patient's chart:
+
+```json
+{
+  "metadata": {
+    "version": "1.1.0",
+    "uid": "c41e7a2d-8b3f-4e19-a6d0-2f5c9b1e7a34",
+    "product": {"name": "Canvas", "vendor_name": "Canvas Medical"},
+    "tenant_uid": "acme",
+    "labels": ["environment:production"],
+    "correlation_uid": "9c2e4b6d8f0a2c4e6b8d0f1a3c5e7b9d"
+  },
+  "category_uid": 6,
+  "class_uid": 6001,
+  "activity_id": 2,
+  "type_uid": 600102,
+  "time": 1791999520000,
+  "actor": {"user": {"uid": "412", "name": "jsmith"}},
+  "src_endpoint": {
+    "ip": "192.0.2.15",
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+  },
+  "status_id": 1,
+  "resources": [{"type": "patient", "uid": "381bf94ac3b269eedec9dc3f660a4cf0"}],
+  "enrichments": {
+    "source": "activity_log",
+    "event_name": "chart_access",
+    "impersonated_by": "canvas-support"
+  }
 }
 ```
 
