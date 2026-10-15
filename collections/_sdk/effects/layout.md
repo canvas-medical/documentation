@@ -375,7 +375,7 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | HELP_CENTER                 | Open the Canvas help center in a new tab                       |
 | GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
 
-Google Calendar sync is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
+[Google Calendar sync](/product-updates/google-calendar-sync/) is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
 ### Hiding the Schedule item
 
@@ -654,6 +654,40 @@ class PortalWidgetHandler:
 
         return [portal_widget.apply()]
 ```
+
+#### Rendering untrusted data safely
+
+`render_to_string` escapes every {% raw %}`{{ value }}`{% endraw %} by default. That escaping is what stops text from a patient, an integration, or an external API from running as script in the browser of the staff member who opens your page.
+
+- Never use `|safe`, {% raw %}`{% autoescape off %}`{% endraw %}, or `mark_safe` on data from patients, integrations, notes, messages, questionnaires, FHIR API input, or any external API.
+- For HTML that has to keep its formatting, such as a message body, use the `sanitize_html` filter: {% raw %}`{{ message.content|sanitize_html }}`{% endraw %}. It keeps a small set of formatting tags and removes everything else. The same function is available in Python as [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+- To pass data to JavaScript, use Django's `json_script` filter instead of printing JSON into a `<script>` block. `json.dumps` does not escape `</script>`, so a value containing it closes your script tag and whatever follows runs as HTML.
+- Never put [secrets](/sdk/secrets/) in template context or in any HTML or JavaScript response: anything sent to the browser can be read there. Call the external API server-side from a [SimpleAPI route](/sdk/handlers-simple-api-http/) and have your page call that route.
+
+Instead of this, which breaks out of the script tag when any value contains `</script>`:
+
+{% raw %}
+
+```html
+<script>
+  const vitals = {{ vitals_json|safe }};
+</script>
+```
+
+{% endraw %}
+
+pass the Python object itself (not a `json.dumps` string) in the context and let `json_script` serialize it:
+
+{% raw %}
+
+```html
+{{ vitals|json_script:"vitals-data" }}
+<script>
+  const vitals = JSON.parse(document.getElementById("vitals-data").textContent);
+</script>
+```
+
+{% endraw %}
 
 ## Additional Configuration
 
