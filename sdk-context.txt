@@ -30477,6 +30477,7 @@ Many events include common contextual information to help you understand the sco
   - **Patient context** : Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
   - **Note context** : Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
   - **User context** : All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
+  - **Search results context** : Command POST_SEARCH events include `"results"`, the list the search returned. Command PRE_SEARCH events fire before the search runs, so their context holds only `search_term` and `user`. To modify the results a search returns, respond to the POST_SEARCH event. When several handlers respond to the same PRE_SEARCH event, a handler that runs after one that returned an `AUTOCOMPLETE_SEARCH_RESULTS` effect finds those results in `"results"`.
     ```python
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
@@ -32714,8 +32715,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADD_CONDITION__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33079,8 +33079,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33101,8 +33100,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33123,8 +33121,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__CHANGE_MEDICATION_TO__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33145,8 +33142,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33167,8 +33163,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ADJUST_PRESCRIPTION__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33189,8 +33184,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Allergy Command 
 ALLERGY_COMMAND__POST_COMMIT  
 ---  
@@ -33460,8 +33454,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Assess Command 
 ASSESS_COMMAND__CONDITION_SELECTED  
 ---  
@@ -33784,8 +33777,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[ConditionSearchResult]  
+    }  
 ASSESS__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -33975,8 +33967,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 CANCEL_PRESCRIPTION__SELECTED_PRESCRIPTION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -34191,8 +34182,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Chart Section Review Command 
 CHART_SECTION_REVIEW_COMMAND__PRE_ORIGINATE  
 ---  
@@ -34710,8 +34700,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Assess Coding Gap Command 
 ASSESS_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -34985,8 +34974,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_id
-    }
-    "results": list[dict]  
+    }  
 ####  Create Coding Gap Command 
 CREATE_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -35218,8 +35206,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_id
-    }
-    "results": list[dict]  
+    }  
 ####  Defer Coding Gap Command 
 DEFER_CODING_GAP_COMMAND__PRE_ORIGINATE  
 ---  
@@ -36049,8 +36036,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Educational Material Command 
 EDUCATIONAL_MATERIAL_COMMAND__POST_COMMIT  
 ---  
@@ -36236,8 +36222,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 EDUCATIONAL_MATERIAL__TITLE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36258,8 +36243,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Family History Command 
 FAMILY_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -36487,8 +36471,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 FAMILY_HISTORY__RELATIVE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36509,8 +36492,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Follow Up Command 
 FOLLOW_UP_COMMAND__POST_COMMIT  
 ---  
@@ -36766,8 +36748,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 FOLLOW_UP__NOTE_TYPE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -36788,8 +36769,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Goal Command 
 GOAL_COMMAND__POST_COMMIT  
 ---  
@@ -37515,8 +37495,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37537,8 +37516,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__INDICATIONS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37559,8 +37537,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_ORDER__ORDERING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37581,8 +37558,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Imaging Review Command 
 IMAGING_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -37773,8 +37749,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -37795,8 +37770,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMAGING_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38053,8 +38027,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZATION_STATEMENT_COMMAND__AVAILABLE_ACTIONS  
 ---  
 Target object | Context object  
@@ -38348,8 +38321,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZE__GIVEN_BY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38370,8 +38342,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 IMMUNIZE__LOT_NUMBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38392,8 +38363,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Instruct Command 
 INSTRUCT_COMMAND__POST_COMMIT  
 ---  
@@ -38607,8 +38577,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Lab Order Command 
 `LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered, for example creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The [lab-order-automated-task](https://www.canvasmedical.com/extensions/lab-order-automated-task) extension is a reference implementation.
 LAB_ORDER_COMMAND__POST_COMMIT  
@@ -38912,8 +38881,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__LAB_PARTNER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38934,8 +38902,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__ORDERING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38956,8 +38923,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_ORDER__TESTS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -38978,8 +38944,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Lab Review Command 
 LAB_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -39170,8 +39135,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39192,8 +39156,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 LAB_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39516,8 +39479,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 MEDICAL_HISTORY__APPROXIMATE_START_DATE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39538,8 +39500,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 MEDICAL_HISTORY__PAST_MEDICAL_HISTORY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -39560,8 +39521,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Medication Statement Command 
 MEDICATION_STATEMENT_COMMAND__POST_COMMIT  
 ---  
@@ -39775,8 +39735,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[MedicationSearchResult]  
+    }  
 ####  Order DME Command 
 ORDER_DME_COMMAND__POST_COMMIT  
 ---  
@@ -40383,8 +40342,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Physical Exam Command 
 PHYSICAL_EXAM_COMMAND__POST_COMMIT  
 ---  
@@ -40584,8 +40542,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Plan Command 
 PLAN_COMMAND__POST_COMMIT  
 ---  
@@ -41326,8 +41283,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41348,8 +41304,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41370,8 +41325,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[MedicationSearchResult]  
+    }  
 PRESCRIBE__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41392,8 +41346,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 PRESCRIBE__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -41414,8 +41367,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Questionnaire Command 
 QUESTIONNAIRE_COMMAND__POST_COMMIT  
 ---  
@@ -41629,8 +41581,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Reason for Visit Command 
 REASON_FOR_VISIT_COMMAND__POST_COMMIT  
 ---  
@@ -41846,8 +41797,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Refer Command 
 REFER_COMMAND__POST_COMMIT  
 ---  
@@ -42159,8 +42109,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__INDICATIONS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42181,8 +42130,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__DOCUMENTS_TO_INCLUDE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42203,8 +42151,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFER__LINKED_ITEMS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42225,8 +42172,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Reference Command 
 REFERENCE_COMMAND__PRE_ORIGINATE  
 ---  
@@ -42596,8 +42542,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFERRAL_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -42618,8 +42563,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFERRAL_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43426,8 +43370,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PHARMACY__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43448,8 +43391,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PRESCRIBE__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43470,8 +43412,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__SUPERVISING_PROVIDER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43492,8 +43433,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REFILL__PRESCRIBER__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -43514,8 +43454,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Remove Allergy Command 
 REMOVE_ALLERGY_COMMAND__POST_COMMIT  
 ---  
@@ -43729,8 +43668,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Remove Past Medical History Command 
 REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -43933,8 +43871,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 REMOVE_PAST_MEDICAL_HISTORY__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -44162,8 +44099,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 RESOLVE_CONDITION__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -44374,8 +44310,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Snooze Protocol Command 
 SNOOZE_PROTOCOL_COMMAND__PRE_ORIGINATE  
 ---  
@@ -44606,8 +44541,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 SNOOZE_PROTOCOL__PROTOCOL__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -44832,8 +44766,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Structured Assessment Command 
 STRUCTURED_ASSESSMENT_COMMAND__POST_COMMIT  
 ---  
@@ -45033,8 +44966,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Surgical History Command 
 SURGICAL_HISTORY_COMMAND__POST_COMMIT  
 ---  
@@ -45290,8 +45222,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Task Command 
 TASK_COMMAND__POST_COMMIT  
 ---  
@@ -45575,8 +45506,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 TASK__LABELS__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45597,8 +45527,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Update Diagnosis Command 
 UPDATE_DIAGNOSIS_COMMAND__PRE_ORIGINATE  
 ---  
@@ -45829,8 +45758,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UPDATE_DIAGNOSIS__CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -45851,8 +45779,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UPDATE_DIAGNOSIS__NEW_CONDITION__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -46119,8 +46046,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 ####  Uncategorized Document Review Command 
 UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND__POST_COMMIT  
 ---  
@@ -46311,8 +46237,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UNCATEGORIZED_DOCUMENT_REVIEW__REPORT__POST_SEARCH  
 ---  
 Target object | Context object  
@@ -46333,8 +46258,7 @@ Target object | Context object
     "search_term": str
     "user": {
       "staff": staff_key
-    }
-    "results": list[dict]  
+    }  
 UNCATEGORIZED_DOCUMENT_REVIEW__COMMUNICATION_METHOD__POST_SEARCH  
 ---  
 Target object | Context object  
