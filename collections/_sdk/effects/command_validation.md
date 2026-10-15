@@ -109,6 +109,7 @@ The following command types fire `__POST_VALIDATION` and can be validated with t
 - `LAB_ORDER_COMMAND__POST_VALIDATION`
 - `MEDICAL_HISTORY_COMMAND__POST_VALIDATION`
 - `MEDICATION_STATEMENT_COMMAND__POST_VALIDATION`
+- `ORDER_DME_COMMAND__POST_VALIDATION`
 - `PERFORM_COMMAND__POST_VALIDATION`
 - `PHYSICAL_EXAM_COMMAND__POST_VALIDATION`
 - `PLAN_COMMAND__POST_VALIDATION`
@@ -186,6 +187,10 @@ class MyHandler(BaseHandler):
 
 When validation errors are returned, the Canvas UI shows them to the user — the command's action buttons are disabled and the messages appear as a tooltip — so the command can't be committed there. Multiple errors can be returned at once, and all are displayed.
 
+On a Refill command, the error disables the command's **REVIEW** button, so the user can't reach **Sign and send**, **Sign**, or **Print**. The message appears as a tooltip on the disabled button. The [`example_commands` example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_commands) blocks every refill this way; add a condition to its handler to block refills selectively.
+
+Return the error from the `__POST_VALIDATION` event, not `__PRE_COMMIT`. On a Refill command, a validation error returned from `REFILL_COMMAND__PRE_COMMIT` is ignored, and the refill commits anyway.
+
 > **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
 
 ## Block a deletion
@@ -225,6 +230,7 @@ Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler 
 - `LAB_REVIEW_COMMAND__PRE_DELETE`
 - `MEDICAL_HISTORY_COMMAND__PRE_DELETE`
 - `MEDICATION_STATEMENT_COMMAND__PRE_DELETE`
+- `ORDER_DME_COMMAND__PRE_DELETE`
 - `PERFORM_COMMAND__PRE_DELETE`
 - `PHYSICAL_EXAM_COMMAND__PRE_DELETE`
 - `PLAN_COMMAND__PRE_DELETE`
