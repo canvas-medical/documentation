@@ -1559,13 +1559,13 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
 
-Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+Admins manage the formulary in the Django Admin UI under **DME Products**. In a plugin, look up a product and its ID with the [DmeProduct](/sdk/data-dme/#dmeproduct) data model, as the example below does.
 
 **Command-specific parameters**:
 
 | Name                    | Type                                  | Required to sign | Description |
 |:------------------------|:--------------------------------------|:-----------------|:------------|
-| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | The `id` of an active [DmeProduct](/sdk/data-dme/#dmeproduct) in your DME formulary. Can't be combined with `free_text_item`. |
 | `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
 | `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
@@ -1594,6 +1594,7 @@ To filter or annotate the products, indications, suppliers, and ordering provide
 ```python
 from canvas_sdk.commands import OrderDmeCommand
 from canvas_sdk.commands.constants import ServiceProvider
+from canvas_sdk.v1.data import DmeProduct
 
 supplier = ServiceProvider(
     first_name="Acme",
@@ -1603,10 +1604,13 @@ supplier = ServiceProvider(
     business_fax="5555550100",
 )
 
-# A product from the DME formulary
+# A product from the DME formulary, looked up by its HCPCS code.
+# get() raises an error unless exactly one active product has this code.
+wheelchair = DmeProduct.objects.get(code="K0001", active=True)
+
 formulary_order = OrderDmeCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
-    dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+    dme_product_id=str(wheelchair.id),
     diagnosis_codes=["N186"],
     quantity=1,
     length_of_need="Lifetime",
