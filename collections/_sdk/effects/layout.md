@@ -375,7 +375,7 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | HELP_CENTER                 | Open the Canvas help center in a new tab                       |
 | GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
 
-Google Calendar sync is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
+[Google Calendar sync](/product-updates/google-calendar-sync/) is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
 ### Hiding the Schedule item
 

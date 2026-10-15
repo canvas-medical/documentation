@@ -2087,7 +2087,7 @@ post
 #### Appointment create
 Create an **Appointment**  
 It is recommended to utilize the [FHIR Slot Search](/api/slot#search) to find appointment times for a specific practitioner.  
-**Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
+**Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.` On instances in the [Google Calendar Sync beta](/product-updates/google-calendar-sync/), busy time from a provider's connected Google calendars counts as a scheduled appointment for this check. That busy time is not an Appointment, so it is not returned by Appointment search.
 ### Attributes
 resourceType 
 string 
@@ -44965,7 +44965,7 @@ The request requires user authorization.
 ### 
 A slot of time on a schedule that may be available for booking appointments.  
 <http://hl7.org/fhir/R4/slot.html>  
-All slots are determined through our Google Calendar integration. Find out how to set this up [here](https://help.canvasmedical.com/articles/6105998178-managing-provider-availability).
+All slots are determined through our Google Calendar integration. Find out how to set this up [here](https://help.canvasmedical.com/articles/6105998178-managing-provider-availability). On instances in the [Google Calendar Sync beta](/product-updates/google-calendar-sync/), busy time from the Google calendars a provider connects is left out of their slots, the same way booked appointments are.
 ### Endpoints
 get /Slot
 get
