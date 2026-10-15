@@ -571,6 +571,8 @@ Build a `ScheduleEvent` with the attributes the operation needs, then return one
 
 `create() → Effect` creates a schedule event with the attributes below.
 
+{% include alert.html type="info" content="Canvas doesn't check the provider's availability when a plugin creates, updates, or reschedules a schedule event. The double booking setting and <a href='/product-updates/google-calendar-sync/'>Google Calendar Sync</a> busy time don't block the effect, so check for conflicts in your plugin before booking." %}
+
 ### Attributes
 
 | Attribute              | Type                                    | Description                                                         | Required    |
@@ -728,6 +730,8 @@ The `Appointment` effect facilitates creating, updating, and cancelling patient 
 Build an `Appointment` with the attributes the operation needs, then return one of its methods from your handler: `create()`, covered here, or [`update()`](#update-appointment), [`reschedule()`](#reschedule-appointment), [`cancel()`](#cancel-appointment), or [`revert()`](#revert-appointment).
 
 `create() → Effect` creates an appointment with the attributes below.
+
+{% include alert.html type="info" content="Canvas doesn't check the provider's availability when a plugin creates, updates, or reschedules an appointment. The double booking setting and <a href='/product-updates/google-calendar-sync/'>Google Calendar Sync</a> busy time don't block the effect, so check for conflicts in your plugin before booking." %}
 
 ### Attributes
 

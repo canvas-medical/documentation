@@ -1431,3 +1431,7 @@ releasenotes_betas:
     url: /product-updates/cancelrx/
   - title: "Commands Module"
     url: /product-updates/commands-module/
+  - title: "Revamped Note"
+    url: /product-updates/note-revamp/
+  - title: "Google Calendar Sync"
+    url: /product-updates/google-calendar-sync/

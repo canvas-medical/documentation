@@ -375,7 +375,7 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | HELP_CENTER                 | Open the Canvas help center in a new tab                       |
 | GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
 
-Google Calendar sync is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
+[Google Calendar sync](/product-updates/google-calendar-sync/) is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
 ### Hiding the Schedule item
 
@@ -595,6 +595,14 @@ Consider a simple HTML file named `templates/custom_content.html`:
 {% endraw %}
 
 This template uses Django template placeholders like {% raw %} `{{ title }}`, `{{ heading }}`, and `{{ message }}` {% endraw %} to dynamically render content based on the provided context.
+
+Django escapes context values by default, so HTML in a value renders as literal text. If a value holds HTML from a patient or an integration, such as message content, use the builtin {% raw %}`|sanitize_html`{% endraw %} filter instead of {% raw %}`|safe`{% endraw %}. The filter keeps basic formatting and links and removes scripts, event handlers, and other unsafe markup. For the full list of what it keeps, see [Sanitizing untrusted HTML](/sdk/utils/#sanitizing-untrusted-html).
+
+{% raw %}
+```html
+<p>{{ message|sanitize_html }}</p>
+```
+{% endraw %}
 
 #### Rendering the Template in Python
 

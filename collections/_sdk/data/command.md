@@ -9,6 +9,8 @@ hidden: false
 
 The `Command` model represents a [command](/sdk/commands/) in a note.
 
+Private Notes commands (`schema_key` of `privateNotes`) are not available through this model. Only the provider who writes a private note can see it, so `Command.objects` and `note.commands` never return these commands, even when you filter by their `schema_key` or `id`.
+
 ## Basic usage
 
 To get a command by identifier, use the `get` method on the `Command` model manager:

@@ -5667,9 +5667,11 @@ class FollowUpDateInPlan(BaseHandler):
 
 #### Assess Command
 
+<a id="assess_command__condition_selected"></a>
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to a condition already on the patient's chart, either by a clinician picking it or by a plugin editing the command with <code>condition_id</code>. <code>data.condition</code> holds the condition's <code>id</code> and its <code>codings</code>. Setting the condition to an ICD-10 code sends <a href="#assess_command__icd10_code_selected"><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a> instead. Clearing the field sends neither event, and neither event fires when a plugin originates an Assess command with the condition already set.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -5681,9 +5683,54 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
+"data":
+  "condition":
+    "id": condition_id
+    "codings":
+      "code": str
+      "system": str
+      "display": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="assess_command__icd10_code_selected"></a>
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_COMMAND__ICD10_CODE_SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to an ICD-10 code rather than a charted condition, either by a clinician picking a code the patient doesn't have charted or by a plugin editing the command with <code>icd10_code</code>. No condition is attached until commit, so <code>data.codings</code> holds the code. A plugin edit sends this event even when the patient already has a condition with that code; the clinician's search shows the charted condition in that case, so a clinician's pick sends <a href="#assess_command__condition_selected"><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a>. Committing the command reuses the patient's charted condition with that code, or records a new one. The event doesn't fire when a plugin originates an Assess command with <code>icd10_code</code> already set.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "background": str
+  "status": str
+  "narrative": str
+"data":
+  "codings":
+    "code": str
+    "system": str
+    "display": str
 "note":
   "uuid": note_id
 "patient":
@@ -5706,6 +5753,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5731,6 +5781,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5756,6 +5809,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5802,6 +5858,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5827,6 +5886,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5852,6 +5914,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5877,6 +5942,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5902,6 +5970,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5927,6 +5998,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5952,6 +6026,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5977,6 +6054,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -6002,6 +6082,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -6027,6 +6110,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -6052,6 +6138,9 @@ class FollowUpDateInPlan(BaseHandler):
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -29261,6 +29350,19 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
     ]
   },
   "value": "T84011D"
+}
+```
+
+The Assess command's condition search lists the patient's charted conditions before new ICD-10 codes. A plugin handling `ASSESS__CONDITION__PRE_SEARCH` or `ASSESS__CONDITION__POST_SEARCH` can receive both kinds of result:
+
+- **Charted conditions** come first, active ones before the rest. A resolved condition is left out when an active condition has the same ICD-10 code. Picking it would make it a second active condition. An empty search term returns only charted conditions. A search term matches a charted condition when its ICD-10 code contains the term. It also matches when every word of the term appears in the condition's name, in any order. A charted condition's `value` is the condition's id rather than an ICD-10 code, and its `extra` has no `coding`. Its `annotations` hold the ICD-10 code followed by the condition's clinical status, such as `Active` or `Resolved`.
+- **ICD-10 codes** from the terminology search follow, in the structure shown above. A code the patient already has charted is listed as the charted condition instead, so picking it doesn't record a duplicate.
+
+```json
+{
+  "text": "Unilateral primary osteoarthritis, right knee",
+  "annotations": ["M17.11", "Active"],
+  "value": 4217
 }
 ```
 

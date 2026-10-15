@@ -86,18 +86,18 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand, PlanCommand
+from canvas_sdk.commands import AssessCommand, PlanCommand
 
 
 class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
-        diagnose = DiagnoseCommand(
+        assess = AssessCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
-            today_assessment="still not great",
+            narrative="still not great",
         )
         
         plan = PlanCommand(
@@ -112,7 +112,7 @@ class MyHandler(BaseHandler):
             status=ProtocolCard.Status.DUE,
             recommendations=[
               Recommendation(title="this recommendation has no action, just words!"),
-              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[diagnose, plan])
+              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[assess, plan])
             ],
         )
 
@@ -120,8 +120,8 @@ class MyHandler(BaseHandler):
             title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
         )
 
-        p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
-        p.recommendations.append(title="new recommendation", button="start", commands=[diagnose])
+        p.recommendations.append(assess.recommend(title="this inserts an assess command"))
+        p.recommendations.append(title="new recommendation", button="start", commands=[assess])
 
         return [p.apply()]
 
@@ -138,7 +138,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 
 class MyHandler(BaseHandler):
@@ -162,13 +162,13 @@ class MyHandler(BaseHandler):
             title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
         )
 
-        diagnose = DiagnoseCommand(
+        assess = AssessCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
-            today_assessment="still not great",
+            narrative="still not great",
         )
-        p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
+        p.recommendations.append(assess.recommend(title="this inserts an assess command"))
 
         if self.event.type in [EventType.PLUGIN_CREATED, EventType.PLUGIN_UPDATED]:
             p.patient_filter = {"active": True}
