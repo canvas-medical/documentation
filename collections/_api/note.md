@@ -11,7 +11,7 @@ This API allows customers to create and update notes. The effect of creating a n
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
 
 <!-- source: discussion #1294 -->
-The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
+The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. Read and search requests need `user/Note.read`. Create and update requests need `user/Note.write`, and Canvas refuses them with `403 Forbidden` when the token carries only `user/Note.read`. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
 
 - Create a new [OAuth application](/api/customer-authentication)
 - Ask Canvas to add the new scopes to an existing OAuth application 
