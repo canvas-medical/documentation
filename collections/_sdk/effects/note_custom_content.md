@@ -9,7 +9,7 @@ The `NoteCustomContent` effect adds a custom content block to a clinical note. U
 
 Return this effect in response to the `NOTE__GET_CUSTOM_CONTENT` event. If no handler returns one, the note renders without custom content.
 
-Custom content is part of the updated note layout, which Canvas turns on per instance. On an instance without the updated layout, Canvas doesn't fire `NOTE__GET_CUSTOM_CONTENT`, and notes render without custom content.
+{% include alert.html type="warning" content="<b>Beta Participation:</b> Custom content is part of the <a href=\"/product-updates/note-revamp/\">revamped note beta program</a>, which Canvas turns on per instance. On an instance outside the beta, Canvas doesn't fire <code>NOTE__GET_CUSTOM_CONTENT</code>, and notes render without custom content. Reach out to Canvas support if you would like to participate." %}
 
 ---
 
@@ -49,6 +49,15 @@ Set exactly one of `url` or `content`. The effect raises a validation error when
 Use `content` for a static block you can build as an HTML string inside the handler.
 
 Use `url` for a block that updates itself after the note renders. Canvas renders inline `content` in a frame it manages, and a [WebSocket](/sdk/handlers-simple-api-websocket/) opened from that frame receives no messages. A page served from your plugin keeps its WebSocket connection open and can receive `Broadcast` messages. For example, a section card can update its command count when a command is added to the note.
+
+### Keeping content current
+
+Canvas fires `NOTE__GET_CUSTOM_CONTENT` when a note renders, and doesn't fire it again as the note changes. To keep a block current, hold its state in the page and push updates to it with a `Broadcast` effect, rather than expecting Canvas to ask for the content again:
+
+1. Serve the block from a `url`, and have the page connect to a [WebSocket](/sdk/handlers-simple-api-websocket/) channel your plugin defines. Use one channel per note, such as `note-<note id>`, so a block hears only about the note it's rendered in.
+2. From a handler that responds to the events that change the block, return a [`Broadcast`](/sdk/handlers-simple-api-websocket/#broadcasting-messages) effect for that channel. Put the new data in the message, so the page can update without fetching anything.
+
+For example, a block that counts the note's commands can broadcast new counts when a command is added, deleted, or entered in error. Each command type fires its own events for these, such as `PLAN_COMMAND__POST_ORIGINATE`, `PLAN_COMMAND__POST_DELETE`, and `PLAN_COMMAND__POST_ENTER_IN_ERROR`.
 
 ### Permissions for URL blocks
 
