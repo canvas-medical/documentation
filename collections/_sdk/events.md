@@ -17030,8 +17030,65 @@ Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effec
 In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
 
 - **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+
+  ```json
+  {
+    "text": "Standard wheelchair",
+    "disabled": false,
+    "description": null,
+    "annotations": ["HCPCS K0001"],
+    "extra": {
+      "dme_product_id": 12,
+      "code": "K0001",
+      "code_system": "HCPCS"
+    },
+    "value": "12"
+  }
+  ```
+
+  A product with no code has `null` in `annotations`.
+
 - **Ordering provider results:** `text` is the staff member's name with credentials. `value` is Canvas's internal staff ID, not the [Staff](/sdk/data-staff/#staff) `id` that the `OrderDmeCommand` `ordering_provider_key` parameter takes.
-- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+
+  ```json
+  {
+    "text": "Jane Smith MD",
+    "disabled": false,
+    "description": null,
+    "annotations": null,
+    "extra": null,
+    "value": 42
+  }
+  ```
+
+- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier's phone, fax, and address, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+
+  ```json
+  {
+    "text": "Pacific Mobility (Pacific Mobility Supply), Durable Medical Equipment",
+    "disabled": false,
+    "description": "Phone: (415) 555-0142 Fax: (415) 555-0143 Address: 2037 Irving St, San Francisco, CA 94122",
+    "annotations": null,
+    "extra": {
+      "contact": {
+        "id": 8703,
+        "firstName": "Pacific",
+        "lastName": "Mobility",
+        "practiceName": "Pacific Mobility Supply",
+        "specialty": "Durable Medical Equipment",
+        "businessPhone": "4155550142",
+        "businessFax": "4155550143",
+        "businessAddress": "2037 Irving St, San Francisco, CA 94122",
+        "composeAddress": "2037 Irving St, San Francisco, CA 94122",
+        "notes": null,
+        "score": 0
+      }
+    },
+    "value": "8703"
+  }
+  ```
+
+  When the order is signed, Canvas saves the supplier from the selected result's `extra.contact`.
 
 #### Perform Command
 

@@ -5,7 +5,7 @@ excerpt: "Record a patient's decision on a consent and file the signed document.
 hidden: false
 ---
 
-Use the `RecordPatientConsent` effect to record a patient's consent decision on their chart. For example, a plugin can record the decision after the patient completes an intake form. The effect sets the consent's state and effective date, and it can file the signed document with the consent. It runs inside the plugin, so it needs no FHIR API credentials.
+Use the `RecordPatientConsent` effect to record a patient's consent decision on their chart. For example, a plugin can record the decision after the patient completes an intake form. The effect sets the consent's state and effective date, and it can file the signed document with the consent.
 
 Each patient has one [PatientConsent](/sdk/data-patient-consent/) record per consent coding. The first decision for a coding creates the record. A later decision updates it only when its `effective_date` is on or after the recorded one. See [How Canvas records the decision](#how-canvas-records-the-decision).
 
