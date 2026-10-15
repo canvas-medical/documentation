@@ -17738,6 +17738,7 @@ Because a note can be signed, amended, and re-signed, the full state history liv
         signed_at = sign_event.created
         signed_by = sign_event.originator  # CanvasUser who signed
     ```
+> **Info:** The PDF reached here through `DocumentReference` (`document_url`) is one of the consumer-read copies described under [NoteStateChangeEvent](/sdk/data-note/#notestatechangeevent). On an instance with the exclusion setting enabled, the PDF omits entered-in-error commands — see that section. 
 ###  Find all open notes 
 You can find all open notes by retrieving the note records with a current state which indicates it can be edited. (See list below)
     ```python
@@ -17937,6 +17938,7 @@ originator | [CanvasUser](/sdk/data-canvasuser)
 state | [NoteState](/sdk/data-note/#notestates)  
 note_state_document | String  
 note_state_html | String  
+> **Info:** The `note_state_document` and `note_state_html` fields hold the snapshot captured when a note is locked. The FHIR `DocumentReference` PDF content is copied from `note_state_document` at that same time, so all three are the copies consumers read. By default they include commands that were entered in error, which appear struck through in `note_state_html` as `Entered in Error/Removed on …` entries. When Canvas Support enables the opt-in setting (`EXCLUDE_ENTERED_IN_ERROR_FROM_NOTE_DOCUMENTS`, off by default) on an instance, these read copies instead omit entered-in-error commands — the field names and the `DocumentReference` schema are unchanged, only each copy's content differs. The full audit copy that keeps entered-in-error commands remains available from the note-footer PDF link served by `/api/NoteStateChangeEventDocument/{id}.pdf`. 
 ###  CurrentNoteStateEvent 
 Field Name | Type  
 ---|---  
