@@ -176,6 +176,7 @@ The following effects are available to be applied in Canvas.
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
 | REDIRECT                                    | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/). |
+| PHONE_DIAL__CONFIGURATION                   | Make the phone numbers in a patient chart clickable so a plugin can dial them or handle the click. Check out [Phone Dial Configuration](/sdk/effect-phone-dial-configuration/). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
@@ -320,7 +321,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -334,6 +335,7 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
 
 
 ### Patient Groups
@@ -398,6 +400,7 @@ Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation
 
 | Effect | Description |
 |---|---|
+| CREATE_QUESTIONNAIRE | Create a questionnaire at runtime from a plugin. |
 | CREATE_QUESTIONNAIRE_RESULT | Create a questionnaire result. |
 
 
@@ -506,6 +509,7 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 | Effect | Description |
 |---|---|
+| REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/). |
 | REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module. |
@@ -555,12 +559,13 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
 | DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
-| SIGN | Sign the order (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, order DME, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
 | Command Type | Effect Prefix | Notes |
 |---|---|---|
+| Add Condition | `*_ADD_CONDITION_COMMAND` | |
 | Adjust Prescription | `*_ADJUST_PRESCRIPTION_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Allergy | `*_ALLERGY_COMMAND` | |
 | Assess | `*_ASSESS_COMMAND` | |
@@ -583,6 +588,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
 | Medical History | `*_MEDICAL_HISTORY_COMMAND` | |
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
+| Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
 | POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
@@ -594,6 +600,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Remove Allergy | `*_REMOVE_ALLERGY_COMMAND` | |
+| Remove Past Medical History | `*_REMOVE_PAST_MEDICAL_HISTORY_COMMAND` | |
 | Resolve Condition | `*_RESOLVE_CONDITION_COMMAND` | |
 | Review of Systems | `*_ROS_COMMAND` | |
 | Stop Medication | `*_STOP_MEDICATION_COMMAND` | |

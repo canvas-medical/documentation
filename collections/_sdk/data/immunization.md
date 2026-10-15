@@ -132,6 +132,7 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | dbid                          | Integer                                         |
 | patient                       | [Patient](/sdk/data-patient/#patient)          |
 | note                          | [Note](/sdk/data-note/#note)                   |
+| assessment                    | [Assessment](/sdk/data-assessment/#assessment) |
 | status                        | [ImmunizationStatus](#immunizationstatus)      |
 | lot_number                    | String                                          |
 | manufacturer                  | String                                          |
@@ -157,6 +158,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | system        | String                            |
 | version       | String                            |
 | code          | String                            |
@@ -189,6 +192,8 @@ immunization_statements = ImmunizationStatement.objects.for_patient(patient_id)
 | Field Name             | Type                                              |
 |------------------------|---------------------------------------------------|
 | dbid                   | Integer                                           |
+| created                | DateTime                                          |
+| modified               | DateTime                                          |
 | system                 | String                                            |
 | version                | String                                            |
 | code                   | String                                            |

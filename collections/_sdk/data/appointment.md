@@ -41,6 +41,39 @@ parent_appointment = appointment.parent_appointment
 children = parent_appointment.children.all()
 ```
 
+<!-- source: discussion #941 -->
+## Getting the reason for visit
+
+The reason for visit is recorded on the appointment's note, not on the `Appointment` itself. Read the note's [`ReasonForVisit`](/sdk/data-reason-for-visit/) records through its `reasons_for_visit` attribute. The Reason for Visit command has no commit step, so read the records directly rather than filtering for committed ones:
+
+```python
+from canvas_sdk.v1.data.appointment import Appointment
+
+appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+if appointment.note:
+    reasons = appointment.note.reasons_for_visit.all()
+```
+
+<!-- source: discussion #939 -->
+## Detecting rescheduled appointments
+
+What a reschedule looks like to a plugin depends on the operation used to move the appointment rather than on the surface the request came from. There are two shapes, and a plugin that needs to catch every reschedule has to handle both.
+
+**Cancel and create** fires both [`APPOINTMENT_RESCHEDULED`](/sdk/events/#appointments) and `APPOINTMENT_CREATED`, each targeting the newly created appointment. The original appointment's status is set to cancelled, and the new appointment's `appointment_rescheduled_from` points back at it. This is what happens with:
+
+- The reschedule flow in the provider UI.
+- The reschedule flow in the patient portal.
+- The [Appointment effect](/sdk/effect-notes/#reschedule-appointment)'s `reschedule()`.
+
+Listen for `APPOINTMENT_RESCHEDULED` rather than handling `APPOINTMENT_CREATED` and filtering on `appointment_rescheduled_from`. The purpose-built event already draws that distinction.
+
+**Update in place** fires only [`APPOINTMENT_UPDATED`](/sdk/events/#appointments). A single appointment record is modified, nothing is cancelled, no new appointment appears, and `APPOINTMENT_RESCHEDULED` does not fire even though the appointment moved to a different time. This is what happens with:
+
+- The [Appointment effect](/sdk/effect-notes/#update-appointment)'s `update()` carrying a new `start_time`.
+- A FHIR API appointment update, which changes the appointment's attributes to comply with FHIR.
+
+The SDK can produce either shape, so which one your plugin sees depends on what the calling code chose. A plugin that has to catch every move of an appointment needs to handle both `APPOINTMENT_RESCHEDULED` and `APPOINTMENT_UPDATED`.
+
 ## Filtering
 
 Appointments can be filtered by any attribute that exists on the model.
@@ -77,6 +110,8 @@ appointment = Appointment.objects.filter(
 |------------------------------|-------------------------------------------------------------------|
 | id                           | UUID                                                              |
 | dbid                         | Integer                                                           |
+| created                      | DateTime                                                          |
+| modified                     | DateTime                                                          |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)                                |
 | patient                      | [Patient](/sdk/data-patient/#patient)                             |
 | appointment_rescheduled_from | [Appointment](#appointment)                                       |
@@ -114,6 +149,16 @@ appointment = Appointment.objects.filter(
 | issued_date     | Date                        |
 | expiration_date | Date                        |
 | appointment     | [Appointment](#appointment) |
+
+### AppointmentLabel
+
+The join between an appointment and a [TaskLabel](/sdk/data-task/#tasklabel). Reach the labels on an appointment through its `labels` attribute rather than querying this model.
+
+| Field Name  | Type                                   |
+|-------------|----------------------------------------|
+| dbid        | Integer                                |
+| appointment | [Appointment](#appointment)            |
+| task_label  | [TaskLabel](/sdk/data-task/#tasklabel) |
 
 ### AppointmentMetadata
 

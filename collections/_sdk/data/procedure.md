@@ -111,6 +111,7 @@ procedures = Procedure.objects.find(Colonoscopy)
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
+| assessment       | [Assessment](/sdk/data-assessment/#assessment) |
 | provider         | [Staff](/sdk/data-staff/)             |
 | status           | [ProcedureStatus](#procedurestatus)   |
 | notes            | String                                |
@@ -121,6 +122,8 @@ procedures = Procedure.objects.find(Colonoscopy)
 | Field Name    | Type                    |
 | ------------- | ----------------------- |
 | dbid          | Integer                 |
+| created       | DateTime                |
+| modified      | DateTime                |
 | system        | String                  |
 | version       | String                  |
 | code          | String                  |

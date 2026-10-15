@@ -97,6 +97,7 @@ plugins:
   - jekyll-feed
   - jekyll-last-modified-at
   - jekyll-menus
+  - jekyll-redirect-from
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-tabs

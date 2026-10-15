@@ -20,6 +20,7 @@ group :jekyll_plugins do
    gem 'jekyll-feed'
    gem "jekyll-last-modified-at", "~> 1.3.2"
    gem 'jekyll-menus'
+   gem 'jekyll-redirect-from'
    gem 'jekyll-seo-tag'
    gem 'jekyll-sitemap'
    gem 'jekyll-tabs'

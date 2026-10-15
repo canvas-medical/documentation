@@ -64,6 +64,8 @@ The `OrganizationAddress` model represents a physical or mailing address associa
 | -------------------- | --------------------------------------------------------------------------- |
 | id                   | UUID                                                                        |
 | dbid                 | Integer                                                                     |
+| created              | DateTime                                                                    |
+| modified             | DateTime                                                                    |
 | organization         | [Organization](#organization)                                               |
 | use                  | [AddressUseWithBilling](/sdk/data-enumeration-types/#addressusewithbilling) |
 | type                 | [AddressType](/sdk/data-enumeration-types/#addresstype)                     |
@@ -91,6 +93,8 @@ The `OrganizationContactPoint` model represents a contact method (such as phone,
 | ------------ | --------------------------------------------------------------------- |
 | id           | UUID                                                                  |
 | dbid         | Integer                                                               |
+| created      | DateTime                                                              |
+| modified     | DateTime                                                              |
 | organization | [Organization](#organization)                                         |
 | system       | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value        | String                                                                |

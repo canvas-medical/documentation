@@ -40,7 +40,10 @@ credentials you configure in the next step.
 The first step to embedding a SMART application is to configure OAuth
 credentials for it to use. Navigate to `<YOUR_CANVAS_URL>/auth/applications/register/`
 and choose `Public` client type, `Authorization code` grant type, the `RSA`
-algorithm, and set the redirect uri for your SMART application.
+algorithm, and set the redirect uri for your SMART application. Registering
+an application takes the Administrative Developer or Clinical Developer
+role; see [Registering a third-party application on
+Canvas](/api/customer-authentication/#registering-a-third-party-application-on-canvas).
 
 ![OAuth Configuration](/assets/images/guides/embedding-a-smart-app/SMART_OAuth.png){: style='width: 50%'}
 

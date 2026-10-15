@@ -72,6 +72,7 @@ committed_plans = Plan.objects.committed()
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |
 | note             | [Note](/sdk/data-note)                |
+| assessment       | [Assessment](/sdk/data-assessment/#assessment) |
 | narrative        | String                                |
 
 <br/>
