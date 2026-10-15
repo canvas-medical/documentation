@@ -313,7 +313,6 @@ from http import HTTPStatus
 from canvas_sdk.commands import (
     AllergyCommand,
     AssessCommand,
-    DiagnoseCommand,
     HistoryOfPresentIllnessCommand,
     LabOrderCommand,
     PlanCommand,
@@ -331,7 +330,6 @@ COMMANDS: dict[str, type[_BaseCommand]] = {
     for command in (
         AllergyCommand,
         AssessCommand,
-        DiagnoseCommand,
         HistoryOfPresentIllnessCommand,
         LabOrderCommand,
         PlanCommand,
@@ -344,7 +342,6 @@ STAGED_ACTIONS = {"commit", "delete", "enter_in_error"}
 ACTIONS: dict[str, set[str]] = {
     AllergyCommand.Meta.key: STAGED_ACTIONS,
     AssessCommand.Meta.key: STAGED_ACTIONS,
-    DiagnoseCommand.Meta.key: STAGED_ACTIONS,
     HistoryOfPresentIllnessCommand.Meta.key: STAGED_ACTIONS,
     PlanCommand.Meta.key: STAGED_ACTIONS,
     LabOrderCommand.Meta.key: {"delete", "send", "enter_in_error"},

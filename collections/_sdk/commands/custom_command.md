@@ -232,10 +232,41 @@ Print pages remove:
 - Inline `style` properties other than these formatting properties: `background-color`, `border`, `border-collapse`, `border-color`, `border-style`, `border-width`, `color`, `float`, `font-family`, `font-size`, `font-style`, `font-weight`, `height`, `line-height`, `margin`, `margin-left`, `margin-right`, `max-height`, `max-width`, `padding`, `padding-left`, `text-align`, `text-decoration`, `vertical-align`, and `width`. For example, an inline `display: flex` or `margin-top` is removed. Put rules like these in a `<style>` block instead.
 - Link and image URLs with a scheme other than `http`, `https`, `mailto`, or `tel`, such as `javascript:`. Images can also use `data:` URLs. The link text stays on the page.
 
+## Collapsible Content
+
+The `content` frame stops responding to clicks once the command is committed or the note is locked, so a toggle inside `content` can't be opened in a finished note. To show a long, read-only record without it taking up the note, attach it with [`set_custom_html`](/sdk/commands/#set_custom_html) inside a `<details>` element. Custom HTML renders under the command's title in its own frame. That frame keeps responding to clicks after the command is committed or the note is locked, and it grows when the provider opens the `<details>` element.
+
+- Set the custom HTML while the command is still staged: return `set_custom_html` in the same list as `originate()`, before any `commit()`.
+- `content` is still required. Keep it to a short summary; the custom HTML appears above it.
+- Custom HTML isn't printed, so put the full record in `print_content`.
+
+```python
+from canvas_sdk.commands.commands.custom_command import CustomCommand
+from canvas_sdk.templates import render_to_string
+import uuid
+
+full_record = render_to_string("templates/intake_record.html")
+
+command = CustomCommand(
+    schema_key="intakeRecord",
+    content="<p>Intake submitted. 3 answers flagged for review.</p>",
+    print_content=full_record
+)
+command.command_uuid = str(uuid.uuid4())
+command.note_uuid = "rk786p"
+
+effects = [
+    command.originate(),
+    command.set_custom_html(
+        f"<details><summary>Show full intake</summary>{full_record}</details>"
+    ),
+]
+```
+
 ## Limitations
 
 - Custom commands are read-only and cannot capture user input
-- Interactive elements (forms, buttons, input fields) are not supported
+- Interactive elements (forms, buttons, input fields) are not supported, and the `content` frame stops responding to clicks once the command is committed or the note is locked. To let providers expand long content, see [Collapsible Content](#collapsible-content).
 - Commands must be configured in the manifest before use
 - The `schema_key` must be unique across every plugin installed on the Canvas instance. Installing a plugin whose `schema_key` is already owned by another installed plugin will fail with a validation error.
 

@@ -24,7 +24,7 @@ from logger import log
 log.info(f"Handler fired for note {self.event.context.get('note')}")
 ```
 
-If a handler fails to load (for example, an import error at install time), only that handler is skipped — other handlers in the same plugin keep running — so check the logs for load-time errors as well as runtime ones.
+If a handler fails to load (for example, an import error at install time), only that handler is skipped — other handlers in the same plugin keep running — so check the logs for load-time errors as well as runtime ones. The exception is a helper module whose functions contain code the sandbox refuses. Then none of the plugin's handlers load, as [Helper modules](/sdk/sandboxing-and-allowed-imports/#helper-modules) describes.
 
 ## Deployment does not require IP whitelisting
 
@@ -53,7 +53,7 @@ class MyHandler(SharedBase):
     ...
 ```
 
-Use the absolute form. The sandbox rejects relative imports such as `from .base import SharedBase` with `ImportError: 'base' is not an allowed import.`, because it checks the module name without its package. The allowed-imports list applies to third-party and standard-library modules; any module inside your own plugin package is importable.
+Relative imports such as `from .base import SharedBase` work too. They resolve against the importing module's package, and one that reaches above your plugin package raises `ImportError`. The allowed-imports list applies to third-party and standard-library modules; any module inside your own plugin package is importable.
 
 ## Time zones: use `zoneinfo.ZoneInfo`
 
@@ -102,5 +102,5 @@ Guard your lookups rather than indexing blindly:
 
 The guards also raise their own `AttributeError`s for a few patterns:
 
-- Reading an item whose key is a string starting with `_` (`data["_private"]`) raises `"_private" is an invalid item name because it starts with "_"`.
-- On an object that does not come from your plugin, writing a dictionary key that starts with `_`, overwriting an attribute or item that holds a callable, or setting an attribute on something you imported (`SomeImportedClass.attr = ...`) raises `Forbidden assignment to a non-module attribute: ...`.
+- Dictionaries accept item keys that start with `_`. Other objects may not, such as one of your own classes that implements `__getitem__`. Reading `obj["_private"]` from one raises `"_private" is an invalid item name because it starts with "_"`.
+- Some writes to an object that does not come from your plugin raise `Forbidden assignment to a non-module attribute: ...`. These are overwriting an attribute or item that holds a callable, and setting an attribute on something you imported (`SomeImportedClass.attr = ...`).

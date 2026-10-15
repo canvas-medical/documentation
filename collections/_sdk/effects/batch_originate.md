@@ -49,13 +49,13 @@ from uuid import uuid4
 
 # Set command_uuid so each draft can be committed after batch origination
 plan1.command_uuid = str(uuid4())
-diagnose.command_uuid = str(uuid4())
+assess.command_uuid = str(uuid4())
 
 # One note update for all drafts, followed by a commit per command
 return [
-    BatchOriginateCommandEffect(commands=[plan1, diagnose]).apply(),
+    BatchOriginateCommandEffect(commands=[plan1, assess]).apply(),
     plan1.commit(),
-    diagnose.commit(),
+    assess.commit(),
 ]
 ```
 
@@ -81,7 +81,7 @@ from canvas_sdk.commands import (
     PlanCommand,
     HistoryOfPresentIllnessCommand,
     QuestionnaireCommand,
-    DiagnoseCommand
+    AssessCommand
 )
 from canvas_sdk.effects.batch_originate import BatchOriginateCommandEffect
 from canvas_sdk.handlers import BaseHandler
@@ -107,10 +107,10 @@ class Handler(BaseHandler):
         hpi.narrative = "Annual wellness visit"
         hpi.note_uuid = note_uuid
 
-        diagnose = DiagnoseCommand()
-        diagnose.icd10_code = "E11.9"
-        diagnose.note_uuid = note_uuid
-        diagnose.background = "Type 2 diabetes mellitus"
+        assess = AssessCommand()
+        assess.icd10_code = "E11.9"
+        assess.note_uuid = note_uuid
+        assess.background = "Type 2 diabetes mellitus"
 
         # Add a questionnaire
         questionnaire = QuestionnaireCommand()
@@ -122,7 +122,7 @@ class Handler(BaseHandler):
             questionnaire.questionnaire_id = str(questionnaire_id.id)
 
         # Batch originate all commands
-        commands_to_originate = [plan1, plan2, hpi, diagnose, questionnaire]
+        commands_to_originate = [plan1, plan2, hpi, assess, questionnaire]
         return [BatchOriginateCommandEffect(commands=commands_to_originate).apply()]
 ```
 
