@@ -158,11 +158,11 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
 | `status_id` | Outcome: `1` success, `2` failure. |
 | `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation. Absent on success. |
-| `api.operation` | On a refused request, the operation that was refused: the HTTP method and route pattern (`GET api/Patient/<str:id>`), or `graphql`, the operation type, and the field (`graphql mutation updateNote`). Never the actual path or its arguments. |
+| `api.operation` | On a refused request, the operation that was refused: the HTTP method and the URL pattern the request matched (`GET api/Patient/(?P<key>[a-f0-9]{32})$`), or `graphql`, the operation type, and the top-level field (`graphql mutation updateNoteBody`). Never the actual path or its arguments. |
 | `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as. |
 | `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
 | `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
-| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. On an update, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
+| `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. On an update to a clinical record, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
 | `enrichments` | Canvas detail. `source` is `authentication`, `activity_log`, `provenance`, or `access_control`; `event_name` names the Canvas action; `impersonated_by` is the username of the administrator acting as the user in `actor`, on every event during that session; `plugin_handler` names the plugin handler alongside `actor.invoked_by`; `payload` carries extra identifiers; `payload_withheld` lists the names of payload fields left out because they can contain names or free text. |
 
 | `class_uid` | OCSF class | Canvas events |
@@ -177,8 +177,8 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
 user, and `2` is a sign-out or the end of one. In User Access Management, `1` grants access and
 `2` revokes it. In the other classes, `1` is create, `2` is read, `3` is update, `4` is delete,
-and `99` is a refused GraphQL mutation. Marking a clinical record entered in error is reported
-as a delete.
+and `99` is a refused GraphQL mutation. A refused request whose operation type can't be
+determined has `0`. Marking a clinical record entered in error is reported as a delete.
 
 On a staff account created or a change to staff access, `actor` is the administrator who made
 the change and `resources` holds the account changed. A change made outside a signed-in
@@ -189,7 +189,8 @@ the administrator).
 
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
-`enrichments.payload_withheld` are omitted.
+`enrichments.payload_withheld` are omitted. `changed_fields` is kept, since it holds only
+field names.
 
 #### Example events
 
@@ -311,7 +312,7 @@ A request refused for lack of permission:
   },
   "status_id": 2,
   "status_code": "403",
-  "api": {"operation": "GET api/Patient/<str:id>"},
+  "api": {"operation": "GET api/Patient/(?P<key>[a-f0-9]{32})$"},
   "enrichments": {"source": "access_control", "event_name": "access_denied"}
 }
 ```
