@@ -53776,6 +53776,7 @@ In addition to the response body, you can also specify the response status code 
                 )
             ]
     ```
+When an `HTMLResponse` includes data from patients, integrations, or other external sources, build it with `render_to_string` and follow [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely). Never include secrets in an HTML response.
 ####  Returning Effects 
 **SimpleAPI** endpoints can return any number of Effects just like any Canvas plugin; this is why **SimpleAPI** endpoints return a list of items rather than just a single response object.
 Any effects present in the list returned by an endpoint will be processed by your Canvas instance, and the response object, if provided, will be sent back to the original requester.
@@ -54553,6 +54554,25 @@ Here's how you can use the `render_to_string` utility to render the template and
                 priority=25
             )
             return [portal_widget.apply()]
+    ```
+####  Rendering untrusted data safely 
+`render_to_string` escapes every `{{ value }}` by default. That escaping is what stops text from a patient, an integration, or an external API from running as script in the browser of the staff member who opens your page.
+  - Never use `|safe`, `{% autoescape off %}`, or `mark_safe` on data from patients, integrations, notes, messages, questionnaires, FHIR API input, or any external API.
+  - For HTML that has to keep its formatting, such as a message body, use the `sanitize_html` filter: `{{ message.content|sanitize_html }}`. It keeps a small set of formatting tags and removes everything else. The same function is available in Python as [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+  - To pass data to JavaScript, use Django's `json_script` filter instead of printing JSON into a `<script>` block. `json.dumps` does not escape `</script>`, so a value containing it closes your script tag and whatever follows runs as HTML.
+  - Never put [secrets](/sdk/secrets/) in template context or in any HTML or JavaScript response: anything sent to the browser can be read there. Call the external API server-side from a [SimpleAPI route](/sdk/handlers-simple-api-http/) and have your page call that route.
+Instead of this, which breaks out of the script tag when any value contains `</script>`:
+    ```html
+    <script>
+      const vitals = {{ vitals_json|safe }};
+    </script>
+    ```
+pass the Python object itself (not a `json.dumps` string) in the context and let `json_script` serialize it:
+    ```html
+    {{ vitals|json_script:"vitals-data" }}
+    <script>
+      const vitals = JSON.parse(document.getElementById("vitals-data").textContent);
+    </script>
     ```
 ##  Additional Configuration 
 To use URLs or custom scripts within the `LaunchModalEffect` or `PortalWidget`, additional security configurations must be specified in the [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#url-permissions) file of your plugin.
@@ -56831,6 +56851,7 @@ In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-
     <span class="message-text-content">{{ msg.text|sanitize_html }}</span>
     ```
 The filter marks its output as safe, so don't add `|safe`. A `None` value renders as an empty string.
+For the other rules on rendering untrusted data in templates, such as passing data to JavaScript, see [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely).
 ##  Making requests to the Ontologies service 
 Plugin authors can make requests to our Ontologies service using the `ontologies_http` wrapper.
 In addition to the `json()` method of the response, which you'll use to access the response itself, you can also access the `status_code` to verify that the request was succcessful.
