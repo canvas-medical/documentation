@@ -63,8 +63,8 @@ The same pattern works with any command class — `PlanCommand(note_uuid=...)`, 
 **Not every command supports every method.** `originate` is the only one they all have; `edit`,
 `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
-check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
-to [custom commands](/sdk/commands-custom-command/) alone.
+check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` works
+on any staged command, including [custom commands](/sdk/commands-custom-command/#collapsible-content).
 
 To call these over HTTP rather than from a handler, see
 [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
@@ -250,7 +250,7 @@ def compute():
 
 Returns an Effect that signs an existing, staged command, transitioning it to a committed state.
 
-**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder) and [Refer](#refer) command objects. Other command types do not support this operation.
+**Limited availability** The `sign()` method can only be called on [ImagingOrder](#imagingorder), [OrderDme](#orderdme), and [Refer](#refer) command objects. Other command types do not support this operation.
 
 **Example**:
 
@@ -1550,6 +1550,81 @@ medication_statement_unstructured = MedicationStatementCommand(
         system=CodeSystems.UNSTRUCTURED,
         code='Herbal supplement for joint health'
     )
+)
+```
+
+---
+
+### OrderDme
+
+Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
+
+Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+
+**Command-specific parameters**:
+
+| Name                    | Type                                  | Required to sign | Description |
+|:------------------------|:--------------------------------------|:-----------------|:------------|
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
+| `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
+| `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
+| `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
+| `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
+| `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
+| `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
+
+Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
+
+Canvas leaves a field empty when its value doesn't resolve. A `dme_product_id` resolves only to an active formulary product, and an `ordering_provider_key` only to an active staff member. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value. Signing also fails when the ordering provider isn't an active prescriber, because the printed order names them as the signer.
+
+Signing saves the item's formulary name and code and the indications with the order, along with the patient's latest height and weight. Later changes to the formulary or the patient's vitals don't change the printed order.
+
+**Command-specific actions**:
+
+| Action Name   | Available When       | Description                                                                 |
+|---------------|----------------------|-----------------------------------------------------------------------------|
+| `sign_action` | command is staged    | Signs the order, transitioning it from staged to committed state.           |
+| `print_order` | command is committed | Prints the order as a requisition. Requires printing access. |
+| `fax`         | command is committed | Faxes the order, prefilling the supplier's fax number when one is on file. Requires printing access. |
+
+To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
+
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+
+**Example**:
+
+```python
+from canvas_sdk.commands import OrderDmeCommand
+from canvas_sdk.commands.constants import ServiceProvider
+
+supplier = ServiceProvider(
+    first_name="Acme",
+    last_name="Medical Supply",
+    practice_name="Acme Medical Supply",
+    specialty="Durable Medical Equipment",
+    business_fax="5555550100",
+)
+
+# A product from the DME formulary
+formulary_order = OrderDmeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+    diagnosis_codes=["N186"],
+    quantity=1,
+    length_of_need="Lifetime",
+    service_provider=supplier,
+    ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+)
+
+# An off-formulary item
+free_text_order = OrderDmeCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    free_text_item="Bariatric shower chair",
+    diagnosis_codes=["E6601"],
+    quantity=1,
+    length_of_need="12 months",
+    service_provider=supplier,
+    ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
 )
 ```
 
@@ -3089,7 +3164,7 @@ A single FDB code can contain multiple `clinical_quantities`, so filter to the c
 
 ### ServiceProvider
 
-`ServiceProvider` represents detailed information about healthcare service providers, used in referral and imaging order commands.
+`ServiceProvider` represents detailed information about healthcare service providers, used in referral, imaging order, and Order DME commands.
 
 | Field Name       | Type               | Description                                            |
 |------------------|--------------------|--------------------------------------------------------|
