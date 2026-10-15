@@ -3298,7 +3298,7 @@ Surescripts response events fire when the platform receives a response from Sure
 
 #### Faxed Documents
 
-Canvas records an action event each time a note, referral, imaging order, lab order or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own [letter action events](#letters).
+Canvas records an action event each time a note, referral, imaging order, lab order, or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own [letter action events](#letters).
 
 - The `_CREATED` event fires when the fax is submitted. `delivered_by_fax` on the target is still `None`.
 - The `_UPDATED` event fires when the faxing service reports the outcome. Read `delivered_by_fax` and `fax_result_msg` on the target; see [delivery status](/sdk/data-fax/#delivery-status).
