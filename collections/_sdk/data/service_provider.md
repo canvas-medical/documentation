@@ -13,6 +13,7 @@ picked:
 
 - The contact selected as the recipient of a [Refer](/sdk/commands/#refer) command.
 - The imaging center selected on an [Imaging Order](/sdk/commands/#imagingorder) command.
+- The supplier selected in **Send to** on an Order DME command.
 - An external care team member added to a patient's profile.
 - The recipient of an outbound fax, and the matched sender of an inbound one — Data Integration
   looks up the sending fax number in the contact directory and links the resulting provider to the
@@ -29,7 +30,7 @@ Your own providers are not searched automatically. To offer them in one of the s
 that surface's search event and return them yourself — see the helpers under
 [Search results](#search-results) below, and
 [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory)
-for a worked handler covering all four surfaces.
+for a worked handler covering all five surfaces.
 
 ## Basic usage
 
@@ -113,7 +114,7 @@ payloads yourself. Both take an optional list of annotations, shown next to the 
 
 | Method | Use it for |
 | --- | --- |
-| `as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order |
+| `as_search_result(annotations=None)` | A command's provider search — `Refer to` on Refer, `Imaging center` on Imaging Order, `Send to` on Order DME |
 | `as_search_contact(annotations=None)` | The fax recipient and external care team dropdowns |
 
 Both identify the provider, so selecting one attaches to that exact record.

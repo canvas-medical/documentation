@@ -303,6 +303,8 @@ In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-
 
 The filter marks its output as safe, so don't add `|safe`. A `None` value renders as an empty string.
 
+For the other rules on rendering untrusted data in templates, such as passing data to JavaScript, see [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely).
+
 ## Making requests to the Ontologies service
 
 Plugin authors can make requests to our Ontologies service using the

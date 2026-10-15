@@ -104,6 +104,7 @@ Many events include common contextual information to help you understand the sco
 - **Patient context**: Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
 - **Note context**: Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
 - **User context**: All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
+- **Search results context**: Command POST_SEARCH events include `"results"`, the list the search returned. Command PRE_SEARCH events fire before the search runs, so their context holds only `search_term` and `user`. To modify the results a search returns, respond to the POST_SEARCH event. When several handlers respond to the same PRE_SEARCH event, a handler that runs after one that returned an `AUTOCOMPLETE_SEARCH_RESULTS` effect finds those results in `"results"`.
 
 ```python
 from canvas_sdk.events import EventType
@@ -4459,8 +4460,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5006,8 +5006,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5048,8 +5047,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5090,8 +5088,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5132,8 +5129,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5174,8 +5170,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5216,8 +5211,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5659,8 +5653,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6167,8 +6160,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6519,8 +6511,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6906,8 +6897,7 @@ class FollowUpDateInPlan(BaseHandler):
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -7836,8 +7826,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8272,8 +8261,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_id
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -8666,8 +8654,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_id
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10092,8 +10079,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10451,8 +10437,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10493,8 +10478,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10894,8 +10878,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10936,8 +10919,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11365,8 +11347,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11407,8 +11388,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12610,8 +12590,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12652,8 +12631,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12694,8 +12672,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12736,8 +12713,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13059,8 +13035,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13101,8 +13076,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13531,8 +13505,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14009,8 +13982,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14051,8 +14023,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14093,8 +14064,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14480,8 +14450,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14979,8 +14948,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15021,8 +14989,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15063,8 +15030,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15105,8 +15071,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15428,8 +15393,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15470,8 +15434,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15976,8 +15939,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16018,8 +15980,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16060,8 +16021,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16447,11 +16407,647 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
+
+#### Order DME Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+Each pair of search events fires when a user searches in one of the command's fields:
+
+- `ORDER_DME__ITEM__*`: the item field, which searches the DME formulary.
+- `ORDER_DME__INDICATIONS__*`: the **Indications** field, which searches ICD-10 conditions.
+- `ORDER_DME__SEND_TO__*`: the **Send to** field, which searches for a supplier.
+- `ORDER_DME__ORDERING_PROVIDER__*`: the ordering provider field, which searches active staff who can prescribe.
+
+Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+
+In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
+
+- **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+
+  ```json
+  {
+    "text": "Standard wheelchair",
+    "disabled": false,
+    "description": null,
+    "annotations": ["HCPCS K0001"],
+    "extra": {
+      "dme_product_id": 12,
+      "code": "K0001",
+      "code_system": "HCPCS"
+    },
+    "value": "12"
+  }
+  ```
+
+  A product with no code has `null` in `annotations`.
+
+- **Ordering provider results:** `text` is the staff member's name with credentials. `value` is Canvas's internal staff ID, not the [Staff](/sdk/data-staff/#staff) `id` that the `OrderDmeCommand` `ordering_provider_key` parameter takes.
+
+  ```json
+  {
+    "text": "Jane Smith MD",
+    "disabled": false,
+    "description": null,
+    "annotations": null,
+    "extra": null,
+    "value": 42
+  }
+  ```
+
+- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier's phone, fax, and address, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+
+  ```json
+  {
+    "text": "Pacific Mobility (Pacific Mobility Supply), Durable Medical Equipment",
+    "disabled": false,
+    "description": "Phone: (415) 555-0142 Fax: (415) 555-0143 Address: 2037 Irving St, San Francisco, CA 94122",
+    "annotations": null,
+    "extra": {
+      "contact": {
+        "id": 8703,
+        "firstName": "Pacific",
+        "lastName": "Mobility",
+        "practiceName": "Pacific Mobility Supply",
+        "specialty": "Durable Medical Equipment",
+        "businessPhone": "4155550142",
+        "businessFax": "4155550143",
+        "businessAddress": "2037 Irving St, San Francisco, CA 94122",
+        "composeAddress": "2037 Irving St, San Francisco, CA 94122",
+        "notes": null,
+        "score": 0
+      }
+    },
+    "value": "8703"
+  }
+  ```
+
+  When the order is signed, Canvas saves the supplier from the selected result's `extra.contact`.
 
 #### Perform Command
 
@@ -16834,8 +17430,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17207,8 +17802,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18427,8 +19021,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18469,8 +19062,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18511,8 +19103,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18553,8 +19144,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18595,8 +19185,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18982,8 +19571,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19371,8 +19959,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19856,8 +20443,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19898,8 +20484,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19940,8 +20525,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19982,8 +20566,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20635,8 +21218,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -20677,8 +21259,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21969,8 +22550,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22011,8 +22591,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22053,8 +22632,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22095,8 +22673,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22137,8 +22714,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22524,8 +23100,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22890,8 +23465,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23291,8 +23865,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23685,8 +24258,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24078,8 +24650,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24486,8 +25057,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24859,8 +25429,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25288,8 +25857,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25745,8 +26313,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25787,8 +26354,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26180,8 +26746,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26222,8 +26787,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26672,8 +27236,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26995,8 +27558,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -27037,8 +27599,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>

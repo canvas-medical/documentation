@@ -14903,7 +14903,8 @@ Open the following URL in the user's browser:
         # Encode a launch context with a patient id
         echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
         # Result: eyJwYXRpZW50IjoiUEFUSUVOVF9LRVlfSEVSRSJ9
-        # Or with an empty patient (if no specific patient context is needed)
+        # Or with an empty patient (if no specific patient context is needed,
+        # or the token must call staff APIs such as the Note API)
         echo -n '{"patient":""}' | base64
         # Result: eyJwYXRpZW50IjoiIn0=
         ```
@@ -15007,10 +15008,18 @@ See Resources by context for the full list of resources a `patient/` scope can r
     ```
 Using this access token in subsequent requests ensures that records referencing other patients cannot be retrieved through accidental or malicious misuse of the token. Canvas will also deny requests for any resource types which were not included in `scope` of the token request and requests for resource types which do not support patient-scoped tokens.
 **Note:** A patient scoped token must include which patient scopes are being requested. Token requests that include the patient parameter but are missing scope or request invalid scopes will be rejected.
+##  Tokens with a patient context 
+A token carries a patient context in these cases:
+  - It's a patient scoped token.
+  - It comes from an authorization code flow whose `launch` context names a patient.
+These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staff APIs include the `/api` endpoints, the [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin install and management endpoints. Canvas also refuses tokens on staff APIs when the user they act as isn't a staff member, such as a patient.
+A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
 ##  Scopes 
 Scopes control which parts of the API the token can access.
   - **Client Credentials Flow:** Scopes are optional. If omitted, the token is issued with the OAuth application's configured allowed scopes.
   - **Authorization Code Flow:** Scopes are required and must be passed in the authorize URL.
+Every scope you request must be one of the application's allowed scopes, whatever the grant type. Canvas rejects a request that includes any other scope with an `invalid_scope` error. To use a scope the application doesn't have, add it to the application's allowed scopes first.
+A patient who signs in through the authorization code flow can approve only `patient/` resource scopes, plus the launch and OpenID scopes. If the request includes a `user/` or `system/` scope, Canvas denies it and redirects with `error=access_denied`.
 Canvas implements [SMART on FHIR scopes](https://hl7.org/fhir/smart-app-launch/STU2/scopes-and-launch-context.html).
 ###  Scope syntax 
 Most scopes have the form `<context>/<resource>.<permission>`:
@@ -15037,7 +15046,7 @@ Scope | Description
 ###  Resources by context 
 Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
 **`user/`** — most clinical resources support `read`, `write`, `*`, and v2 `c r u s`. Read-only: `Coverage`, `MedicationDispense`, `Questionnaire`, `RelatedPerson`, `ServiceRequest`, `Specimen`. `Note` supports `read` and `write` only (no `*`). Resources: `*`, `AllergyIntolerance`, `CarePlan`, `CareTeam`, `Condition`, `Coverage`, `DetectedIssue`, `Device`, `DiagnosticReport`, `DocumentReference`, `Encounter`, `Goal`, `Immunization`, `Location`, `Medication`, `MedicationDispense`, `MedicationRequest`, `Note`, `Observation`, `Organization`, `Patient`, `Practitioner`, `PractitionerRole`, `Procedure`, `Provenance`, `Questionnaire`, `QuestionnaireResponse`, `RelatedPerson`, `ServiceRequest`, `Specimen`.
-**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints.
+**`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints. These endpoints accept only a client credentials token. Canvas refuses an authorization code token even when it carries `system/Plugins.*`.
 **`patient/`** — restricted to the launch-context patient. Writable: `Appointment`, `Communication`, `Consent`, `Coverage`, `Media`, `MedicationStatement`, `Patient`, `PaymentNotice`, `QuestionnaireResponse`. All others read-only. Additional read-only resources beyond the user/system list: `Appointment`, `Communication`, `Consent`, `Media`, `MedicationStatement`, `PaymentNotice`, `Schedule`, `Slot`.
 ###  Operation scopes 
 Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
@@ -24709,6 +24718,7 @@ The Letter API uses the existing Canvas OAuth authentication flow, so you can si
 This endpoint was built as an addition to the Note API and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Note API. To get access:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
+Like the Note API, the Letter API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
 ![description](/assets/images/allowed-scopes.png)
     ```python
     import requests
@@ -28721,6 +28731,7 @@ The Note API uses the existing OAuth authentication flow from the FHIR API, so y
 The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
+The Note API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
 ![description](/assets/images/allowed-scopes.png)
     ```python
     import requests
