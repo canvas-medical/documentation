@@ -100,6 +100,8 @@ Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that 
 | Data integration task | `INTEGRATION_TASK_ACTION_EVENT_CREATED` | `INTEGRATION_TASK_ACTION_EVENT_UPDATED` | [IntegrationTaskActionEvent](#integrationtaskactionevent) |
 | Letter | `LETTER_ACTION_EVENT_CREATED` | `LETTER_ACTION_EVENT_UPDATED` | [LetterActionEvent](/sdk/data-letter-action-event/) |
 
+`LETTER_ACTION_EVENT_CREATED` also fires when a letter is printed. Check that the action event's `event_type` is `FAXED` before you treat it as a fax.
+
 A later report that changes the outcome or its message fires `_UPDATED` again, so retry each action event at most once. This handler reacts to a failed note fax; the same pattern works for any row above with its own event and model:
 
 ```python
