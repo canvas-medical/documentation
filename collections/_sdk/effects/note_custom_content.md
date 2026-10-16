@@ -98,7 +98,7 @@ class NotifyNoteBlocks(BaseHandler):
 
 ### Permissions for URL blocks
 
-A `url` block's frame receives the permissions your plugin registers for that URL in the `url_permissions` section of `CANVAS_MANIFEST.json`, such as `MICROPHONE` or `ALLOW_SAME_ORIGIN`. The format is the same as for [modals and widgets](/sdk/layout-effect/#additional-configuration). Inline `content` blocks receive no permissions.
+A `url` block's frame receives the permissions your plugin registers for that URL in the [`url_permissions`](/sdk/canvas_manifest/#url-permissions) section of `CANVAS_MANIFEST.json`, such as `MICROPHONE` or `ALLOW_SAME_ORIGIN`. The format is the same as for [modals and widgets](/sdk/layout-effect/#additional-configuration). Inline `content` blocks receive no permissions.
 
 ### Frame height
 
