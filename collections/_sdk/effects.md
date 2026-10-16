@@ -369,6 +369,7 @@ Check out the [Message Effects](/sdk/effect-messages/) documentation.
 | SEND_MESSAGE | Send a message. |
 | CREATE_AND_SEND_MESSAGE | Create and send a message in one step. |
 | EDIT_MESSAGE | Edit a message. |
+| [ASSIGN_MESSAGE_TEAM](/sdk/effect-messages/#assigning-a-message-to-a-team) | Assign a message to a team, change its team, or unassign it. |
 
 
 ### Observations

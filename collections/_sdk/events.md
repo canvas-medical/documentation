@@ -2964,6 +2964,37 @@ Surescripts response events fire when the platform receives a response from Sure
 
 <table>
   <thead>
+    <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_id
+"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
+      <td><pre>"message":
+  "id": message_id
+  "sender": str
+  "recipient": str
+  "read": datetime str | null
+"team":
+  "id": team_id
+  "name": str
+"previous_team":
+  "id": team_id
+  "name": str
+"patient":
+  "id": pt_id
+"assigned_at": datetime str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MESSAGE_TRANSMISSION_CREATED</th></tr>
     <tr><td colspan="2">Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).</td></tr>
   </thead>
