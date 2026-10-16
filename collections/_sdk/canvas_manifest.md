@@ -19,6 +19,7 @@ my_plugin/                       # project directory
 │   └── test_event_handlers.py
 └── acme__my_plugin/             # plugin package
     ├── CANVAS_MANIFEST.json
+    ├── OVERVIEW.md
     ├── README.md
     ├── __init__.py
     ├── assets/
