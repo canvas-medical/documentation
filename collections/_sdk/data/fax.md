@@ -87,6 +87,31 @@ latest = (
 
 Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugin's faxes from another plugin's. If more than one plugin faxes the same note to the same number, compare `created` with when your plugin returned the effect.
 
+### Reacting when a fax fails
+
+Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. `NOTE_ACTION_EVENT_UPDATED` fires when the faxing service reports a note fax's outcome:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import NoteActionEvent
+
+
+class NoteFaxFailed(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_ACTION_EVENT_UPDATED)
+
+    def compute(self):
+        action_event = NoteActionEvent.objects.select_related("note", "fax").get(
+            id=self.event.target.id
+        )
+        if action_event.delivered_by_fax is not False:
+            return []
+
+        failed_number = action_event.fax.to_fax_number if action_event.fax else None
+        # Retry or alert, at most once per action event.
+        return []
+```
+
 ### From a fax
 
 A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
