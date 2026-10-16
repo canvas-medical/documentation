@@ -76,6 +76,14 @@ intake-plugin/            # repository root
 
 If the package is not in a git repository yet, `canvas deploy` offers to create one at its parent directory. If the package sits inside a larger repository with other code, move it into a repository of its own first, since `deploy` refuses a package nested deeper than that. Add a `.gitignore` for virtual environments and local secrets, because the repository is what gets deployed.
 
+If the plugin already has its own repository on GitHub or elsewhere, rename that remote before the first deploy. `canvas deploy` points the repository's `origin` remote at Canvas Platform, replacing whatever `origin` pointed to:
+
+```console
+$ git remote rename origin github
+```
+
+Your existing repository stays reachable as `github`, and `origin` becomes the plugin's repository on Canvas Platform.
+
 ### 4. Push the code and store its variables
 
 Push the code without deploying it, so Canvas Platform knows the plugin:
@@ -108,14 +116,19 @@ Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship c
 
 ## Move CI
 
-CI/CD pipelines are supported through service accounts. A service account belongs to your organization rather than to a person, so a pipeline keeps deploying when the person who set it up leaves, and Canvas Platform's audit log names the account behind each deploy. An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform, with the Plugin developer and Deploy manager roles the pipeline needs. Its token is shown once and lasts a year; store it as a CI secret, expose it as `CANVAS_PLATFORM_TOKEN`, and delete the instance's `client_id` and `client_secret` from CI:
+CI/CD pipelines are supported through service accounts. A service account belongs to your organization rather than to a person, so a pipeline keeps deploying when the person who set it up leaves, and Canvas Platform's audit log names the account behind each deploy. An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform. An Organization admin can give it both the Plugin developer and Deploy manager roles the pipeline needs; a Plugin developer or Deploy manager can give only the roles they hold. Its token is shown once and lasts a year; store it as a CI secret, expose it as `CANVAS_PLATFORM_TOKEN`, and delete the instance's `client_id` and `client_secret` from CI:
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
 - run: pip install canvas
 - run: canvas deploy intake-plugin/acme__intake --instance acme-staging --yes
   env:
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
+
+`fetch-depth: 0` checks out the full history, which the push to Canvas Platform needs. That push is not forced, so it is refused when Canvas Platform's `main` has a commit the pipeline's checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
 
 `--yes` commits any uncommitted changes with the default message. A deploy that needs consent for custom data access exits non-zero and lists the requests, so answer those from a terminal. [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) covers rotating and revoking the token.
 
