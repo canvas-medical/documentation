@@ -39,7 +39,7 @@ Changes an existing coverage.
 
 ### expire(coverage_end_date) → Effect
 
-Ends an existing coverage on `coverage_end_date`, a `datetime.date`. `coverage_id` is required. Canvas records an audit event, as it does when a coverage is expired from the chart.
+Ends an existing coverage on `coverage_end_date`, a `datetime.date`. `coverage_id` is required. The end date must be on or after the coverage's start date; a coverage can end on the day it starts. Canvas records an audit event, as it does when a coverage is expired from the chart.
 
 ### remove() → Effect
 
