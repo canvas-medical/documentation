@@ -89,7 +89,18 @@ Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugi
 
 ### Reacting when a fax fails
 
-Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. `NOTE_ACTION_EVENT_UPDATED` fires when the faxing service reports a note fax's outcome:
+Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
+
+| Document | Fax submitted | Outcome reported | Target |
+| --- | --- | --- | --- |
+| Note | `NOTE_ACTION_EVENT_CREATED` | `NOTE_ACTION_EVENT_UPDATED` | [NoteActionEvent](#noteactionevent) |
+| Referral | `REFERRAL_ACTION_EVENT_CREATED` | `REFERRAL_ACTION_EVENT_UPDATED` | [ReferralActionEvent](#referralactionevent) |
+| Imaging order | `IMAGING_ORDER_ACTION_EVENT_CREATED` | `IMAGING_ORDER_ACTION_EVENT_UPDATED` | [ImagingOrderActionEvent](#imagingorderactionevent) |
+| Lab order | `LAB_ORDER_ACTION_EVENT_CREATED` | `LAB_ORDER_ACTION_EVENT_UPDATED` | [LabOrderActionEvent](#laborderactionevent) |
+| Data integration task | `INTEGRATION_TASK_ACTION_EVENT_CREATED` | `INTEGRATION_TASK_ACTION_EVENT_UPDATED` | [IntegrationTaskActionEvent](#integrationtaskactionevent) |
+| Letter | `LETTER_ACTION_EVENT_CREATED` | `LETTER_ACTION_EVENT_UPDATED` | [LetterActionEvent](/sdk/data-letter-action-event/) |
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so retry each action event at most once. This handler reacts to a failed note fax; the same pattern works for any row above with its own event and model:
 
 ```python
 from canvas_sdk.events import EventType
