@@ -145,7 +145,8 @@ sections:
             description: >-
               Person who received and recorded the answers.<br><br>
               If omitted, then the built-in automation user **Canvas Bot** will be set as the author.<br><br>
-              Supported reference types for create operations are: **Patient**, **Practitioner**
+              Supported reference types for create operations are: **Patient**, **Practitioner**<br><br>
+              With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), Canvas rejects a **Practitioner** author. Reference the patient, or omit `author`; without an `author`, Canvas records the patient instead of **Canvas Bot**.
             type: json
             attributes:
                 - name: reference

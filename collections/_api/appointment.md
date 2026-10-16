@@ -78,7 +78,7 @@ sections:
               External Ids for this item. <br><br>
               The identifier list defines additional identifiers that are able to be stored for an appointment.<br><br>These identifiers will not be surfaced on the Patient's chart, but they may help you identify the patient in your system by associating your identifier with the resource's `id`.
             update_description: >-
-              To update an existing `identifier`, include the `id` in the `identifier[x].id` field returned from Read/Search.<br><br>
+              To update an existing `identifier`, include the `id` in the `identifier[x].id` field returned from Read/Search. The `id` must belong to this appointment. Canvas reports an identifier `id` from another appointment as not found.<br><br>
               The `identifier` section sent in an update will entirely replace existing identifiers currently within the period.start and period.end dates.<br><br>
               If an `identifier` already exists in the Canvas database and is not included in the Update message, it will be deleted if and only if the period.end date is in the future.
             attributes:
