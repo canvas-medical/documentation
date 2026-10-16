@@ -166,9 +166,11 @@ Values in the `PatientProfileConfiguration.Section` enum are:
 
 ## Panel Configuration
 
-This effect allows you to define which panel buttons should be displayed on the main page or the patient page.
+Use this effect to choose which panel buttons appear on the main page or the patient page, and in what order. The buttons appear in the order you list them in `sections`, and any button you leave out is hidden.
 
-The order of the buttons in the array will determine their order on the panel.
+On the patient page, this includes the Protocols button. To keep Protocols on the patient chart, include `PanelPatientSection.PROTOCOL` in your list. Protocols always stays in the top bar and doesn't count toward the five buttons the top bar shows on small screens.
+
+When no plugin returns a configuration, Canvas shows every button, with Protocols first on the patient page. Canvas also shows every button if `sections` includes a value it doesn't recognize, such as a section added in a newer SDK release than your Canvas instance supports.
 
 ![Before and after](/assets/images/sdk/panel-configuration-before-after.png)(width:70%)
 
@@ -229,10 +231,13 @@ Values in the `PanelPatientSection` enum are:
 | INPATIENT_STAY         | inpatientStay         |
 | LAB_REPORT             | labReport             |
 | PRESCRIPTION_ALERT     | prescriptionAlert     |
+| PROTOCOL               | protocol              |
 | REFERRAL_REPORT        | referralReport        |
 | REFILL_REQUEST         | refillRequest         |
 | TASK                   | task                  |
 | UNCATEGORIZED_DOCUMENT | uncategorizedDocument |
+
+`PROTOCOL` is available only on the patient page. A `GLOBAL` configuration that includes it fails validation.
 
 ## Patient Note Header Dropdown Configuration
 

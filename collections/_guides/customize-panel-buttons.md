@@ -24,6 +24,8 @@ You’ll use:
 
 The SDK has built-in safeguards to prevent you from mixing them up or placing a section on the wrong page.
 
+Any button you leave out of `sections` is hidden. On the patient page, this includes the Protocols button, so add `PanelPatientSection.PROTOCOL` to your list if your users need it.
+
 That’s It!
 
 Once you apply the effect, your panel is configured — go check your page to see the changes in action!
