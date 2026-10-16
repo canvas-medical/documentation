@@ -399,7 +399,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
 {
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
-  "name": "risk_calculator",
+  "name": "acme__risk_calculator",
   "description": "Calculates clinical risk scores for patients",
   "url_permissions": [
     {
@@ -410,7 +410,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
   "components": {
     "applications": [
       {
-        "class": "risk_calculator.applications.calculator:RiskCalculatorApp",
+        "class": "acme__risk_calculator.applications.calculator:RiskCalculatorApp",
         "name": "Risk Calculator",
         "description": "Calculates cardiovascular risk for the open patient",
         "icon": "assets/risk_calculator.png",
@@ -421,7 +421,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
     ],
     "handlers": [
       {
-        "class": "risk_calculator.handlers.api:RiskCalculatorAPI",
+        "class": "acme__risk_calculator.handlers.api:RiskCalculatorAPI",
         "description": "Serves the calculator page and its data"
       }
     ],
@@ -453,4 +453,4 @@ Validate a manifest with the [Canvas CLI](/sdk/canvas_cli/):
 canvas validate acme__my_plugin
 ```
 
-`canvas validate` checks the manifest against the schema and then loads every handler in the plugin sandbox, which catches disallowed imports and other errors that only appear on the instance. `canvas validate-manifest my_plugin` runs the manifest checks alone.
+`canvas validate` checks the manifest against the schema and then loads every handler in the plugin sandbox, which catches disallowed imports and other errors that only appear on the instance. `canvas validate-manifest acme__my_plugin` runs the manifest checks alone.

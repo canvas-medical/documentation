@@ -64,8 +64,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 ```
 
 - Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history.
-- The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
-
+- The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out, or the commit Canvas Platform makes when someone edits the plugin's listing in the [catalog](/sdk/canvas_manifest/#catalog). Once a pipeline deploys a plugin, deploy it only from the pipeline. After a catalog edit, bring the commit into the repository the pipeline checks out before the next run. In a clone where `origin` is Canvas Platform and the remote the pipeline checks out is `github`, run `git pull origin main`, then `git push github main`.
 - When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
 - `--yes` commits uncommitted changes without prompting. A deployment that needs consent for another plugin's custom data exits non-zero and lists the requests, because only a person at a terminal answers those.
 - `CANVAS_PLATFORM_URL` points the job at a platform other than https://platform.canvasmedical.com.
@@ -273,9 +272,9 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 **What `deploy` does**
 
 1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
-2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
+2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it. An existing `origin`, such as a GitHub remote, is repointed without a prompt, so rename it first to keep it: `git remote rename origin github`.
 3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+4. Pushes HEAD to `main` without forcing, deploys that commit to each instance, and waits for each instance's outcome. The push is refused when Canvas Platform's `main` has a commit that HEAD lacks, so pull it first.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 

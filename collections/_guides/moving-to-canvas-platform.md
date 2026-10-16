@@ -128,7 +128,7 @@ CI/CD pipelines are supported through service accounts. A service account belong
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-`fetch-depth: 0` checks out the full history, which the push to Canvas Platform needs. That push is not forced, so it is refused when Canvas Platform's `main` has a commit the pipeline's checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
+`fetch-depth: 0` checks out the full history, which the push to Canvas Platform needs. That push is not forced, so it is refused when Canvas Platform's `main` has a commit the pipeline's checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out, or the commit Canvas Platform makes when someone edits the plugin's catalog listing. Once a pipeline deploys a plugin, deploy it only from the pipeline, and after a catalog edit, bring that commit into the repository the pipeline checks out before it runs again, as [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) shows.
 
 `--yes` commits any uncommitted changes with the default message. A deploy that needs consent for custom data access exits non-zero and lists the requests, so answer those from a terminal. [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) covers rotating and revoking the token.
 
