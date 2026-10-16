@@ -19,7 +19,7 @@ The revamped note is a redesigned note body that organizes commands into clinica
 - Linking a prescription or order adds the assessed condition to its Indications.
 - Changes show up live for everyone who has the note open.
 
-**Grouped Assessment & Plan when printed:** A printed note in the revamped format shows one Assessment & Plan section in place of separate Assessment, Procedures and Plan headings. The commands keep the order the provider gave them in the note, and each Assess Condition command prints with its linked commands indented beneath it. Faxed notes, the copy saved when a note is locked, and the patient's entire-record print use the same layout.
+**Printed in the note's sections:** A printed note in the revamped format shows the History, Exam and Assessment & Plan sections in the note's SOAP or APSO order, the same sections it shows on screen. Commands in each section print in the order the provider arranged them, and each Assess Condition command prints with its linked commands indented beneath it. The Internal section isn't printed, and free text prints under Notes at the end. Faxed notes, the copy saved when a note is locked, and the patient's entire-record print use the same layout.
 
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
 
@@ -27,7 +27,7 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 ## For developers
 
-Plugins can link commands to an Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and grouped print are what the beta adds.
+Plugins can link commands to an Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and sectioned print are what the beta adds.
 
 Plugins can also add their own content to the revamped note. Respond to the `NOTE__GET_CUSTOM_CONTENT` event with one or more `NoteCustomContent` effects (`canvas_sdk.effects.note_custom_content`), each giving either `content` (HTML) or a `url`, not both.
 - `section` places the content at the top of a section: `NoteCustomContent.Section.HISTORY`, `EXAM`, `ASSESSMENT_PLAN` or `INTERNAL`, and shows only in the **Sections** view. Leave it unset to place the content above the note body, where it shows in both the **Sections** and **All** views.
