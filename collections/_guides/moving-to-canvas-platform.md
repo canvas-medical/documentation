@@ -55,7 +55,7 @@ If the plugin declares [`custom_data`](/sdk/canvas_manifest/#custom-data):
 
 - Leave its `namespace` as it is, so the renamed plugin reads and writes the same tables.
 - Remove `namespace_read_access_key` and `namespace_read_write_access_key` from the manifest's `variables`. Canvas Platform holds each namespace's keys and sends them to every plugin entitled to them, and it refuses a manifest that declares them.
-- Before the first deploy, Canvas Platform needs the keys of a namespace that already exists on the instance. Until it has them, `canvas deploy` stops with a message that the instance already has the namespace. Send the instance name, the namespace name, and both keys (the old plugin holds them as secrets) to your Canvas team, who record them with Canvas Platform.
+- Before the first deploy, Canvas Platform needs the keys of a namespace that already exists on the instance. Until it has them, `canvas deploy` stops with a message that the instance already has the namespace. Send the instance name, the namespace name, and both keys (the old plugin holds them as secrets) to your Canvas team through the Canvas Platform Support Form, a support ticket, or a 1Password share, and they record them with Canvas Platform. Never send the keys by email or Slack: they grant access to custom data that can hold PHI.
 
 See [Custom data on Canvas Platform](/sdk/custom-data-sharing-data/#custom-data-on-canvas-platform) for how plugins share a namespace.
 
@@ -140,4 +140,4 @@ Each developer runs `canvas login` once on their own machine. A teammate who has
 $ canvas clone acme__intake
 ```
 
-After December 14, 2026, the CLI does not read `~/.canvas/credentials.ini`. Delete it then, and revoke the OAuth clients it named on each instance.
+Keep `~/.canvas/credentials.ini` until `canvas logs`, `list`, `enable`, `disable`, `config list` and the `namespace` commands also sign in through Canvas Platform, because they authenticate with it today. [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) lists which commands still use it. Once none do, delete the file and revoke the OAuth clients it named on each instance.

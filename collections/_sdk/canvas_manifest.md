@@ -365,7 +365,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
 
-Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push.
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
