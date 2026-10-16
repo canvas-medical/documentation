@@ -17,7 +17,7 @@ my_plugin/                       # project directory
 ├── pyproject.toml
 ├── tests/
 │   └── test_event_handlers.py
-└── my_plugin/                   # plugin package
+└── acme__my_plugin/             # plugin package
     ├── CANVAS_MANIFEST.json
     ├── README.md
     ├── __init__.py
@@ -30,7 +30,7 @@ my_plugin/                       # project directory
         └── intake_form.yml
 ```
 
-A handler in `my_plugin/handlers/event_handlers.py` is referenced as `my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas deploy`: `canvas validate my_plugin/my_plugin` from outside the project, or `canvas validate my_plugin` from inside it.
+A handler in `acme__my_plugin/handlers/event_handlers.py` is referenced as `acme__my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas deploy`: `canvas validate my_plugin/acme__my_plugin` from outside the project, or `canvas validate acme__my_plugin` from inside it.
 
 Canvas runs only the handlers and applications the manifest lists. A handler class in the package that the manifest doesn't reference is never loaded, and `canvas validate` warns about each one it finds. Every other file in the package directory still ships with the plugin, so your handlers can import your own modules and read templates and assets without listing them in the manifest. `canvas deploy` ships the files committed to the plugin's git repository, so `.gitignore` decides what is left out. See [Plugin repository layout](/sdk/canvas_cli/#canvas-deploy).
 
@@ -40,7 +40,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 {
   "sdk_version": "0.1.4",
   "plugin_version": "0.0.1",
-  "name": "my_plugin",
+  "name": "acme__my_plugin",
   "description": "A description of what this plugin does",
   "components": {
     "handlers": [],
@@ -84,7 +84,7 @@ Change `plugin_version` every time you deploy a new build, including builds sent
 
 - the Plugins list in the Canvas Admin
 - `canvas list`, as `name@version`
-- the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "my_plugin", version 1.4.0`
+- the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "acme__my_plugin", version 1.4.0`
 
 Use [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 
@@ -132,7 +132,7 @@ Handlers respond to Canvas events: [event handlers](/sdk/handlers-basehandler/),
   "components": {
     "handlers": [
       {
-        "class": "my_plugin.handlers.patient_sync:PatientSync",
+        "class": "acme__my_plugin.handlers.patient_sync:PatientSync",
         "description": "Sends patient updates to an external system"
       }
     ]
@@ -161,7 +161,7 @@ Applications add entry points to the Canvas UI. See [Applications](/sdk/handlers
   "components": {
     "applications": [
       {
-        "class": "my_plugin.applications.risk_calculator:RiskCalculator",
+        "class": "acme__my_plugin.applications.risk_calculator:RiskCalculator",
         "name": "Risk Calculator",
         "description": "Calculates cardiovascular risk for the open patient",
         "icon": "assets/risk_calculator.png",
@@ -365,7 +365,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
 
-Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push.
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
@@ -450,7 +450,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
 Validate a manifest with the [Canvas CLI](/sdk/canvas_cli/):
 
 ```bash
-canvas validate my_plugin
+canvas validate acme__my_plugin
 ```
 
 `canvas validate` checks the manifest against the schema and then loads every handler in the plugin sandbox, which catches disallowed imports and other errors that only appear on the instance. `canvas validate-manifest my_plugin` runs the manifest checks alone.
