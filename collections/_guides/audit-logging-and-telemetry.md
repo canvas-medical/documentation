@@ -159,7 +159,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `status_id` | Outcome: `1` success, `2` failure. |
 | `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation. Absent on success. |
 | `api.operation` | On a refused request, the operation that was refused: the HTTP method and the URL pattern the request matched (`GET api/Patient/(?P<key>[a-f0-9]{32})$`), or `graphql`, the operation type, and the top-level field (`graphql mutation updateNoteBody`). Never the actual path or its arguments. |
-| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as, except on a staff account created or a change to staff access, where it is the administrator. |
+| `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as, except when a staff account is created or staff access changes, where it is the administrator. |
 | `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
 | `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
 | `resources` | What the event acted on: the patient (`type` `patient`) and the record, typed by its Canvas resource name. The patient `uid` is the patient key, the same id the FHIR API uses for the Patient. A record `uid` is Canvas's internal record id, which differs from the record's FHIR resource id. On an update to a clinical record, the record's `data.changed_fields` lists the names of the fields that changed; values are never included. |
@@ -180,11 +180,12 @@ user, and `2` is a sign-out or the end of one. In User Access Management, `1` gr
 and `99` is a refused GraphQL mutation. A refused request whose operation type can't be
 determined has `0`. Marking a clinical record entered in error is reported as a delete.
 
-On a staff account created or a change to staff access, `actor` is the administrator who made
+When a staff account is created or staff access changes, `actor` is the administrator who made
 the change and `resources` holds the account changed. A change made outside a signed-in
-session, such as a directory sync, has a `null` actor. When the administrator is acting as
-another user, `actor` is the administrator and `enrichments.payload.impersonated_username` is
-the username of the user being acted as. When an administrator starts a session
+session, such as a directory sync, has a `null` actor. If the administrator made the change
+while acting as another user, `actor` is still the administrator, and
+`enrichments.payload.impersonated_username` holds the username of the user being acted as. It
+is `null` when no one is being acted as. When an administrator starts a session
 as another user, `actor` is the administrator and `resources` holds the user taken over, with
 `event_name` `impersonation.started` (and `impersonation.ended` when the session returns to
 the administrator).
