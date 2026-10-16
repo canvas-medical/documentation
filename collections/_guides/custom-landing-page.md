@@ -25,13 +25,16 @@ A widget can be added by listening to the `PATIENT_PORTAL__WIDGET_CONFIGURATION`
 
 ### Step 1: Initialize a plugin
 
-The Canvas CLI gives you a great head start when creating a plugin. Simply run 
+The Canvas CLI gives you a great head start when creating a plugin. Run
 
 ```bash
   canvas init
 ```
 
-Then, follow the prompts to name and configure your new plugin project.
+Then, follow the prompts to name and configure your new plugin project. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform),
+`canvas init` names the package with your organization's prefix, such as `acme__my_cool_plugin`,
+and registers it with Canvas Platform. It also makes the project folder a git repository
+that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
 
 
 ### Step 2: Update your handler

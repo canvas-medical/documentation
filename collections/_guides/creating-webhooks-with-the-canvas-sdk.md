@@ -15,16 +15,20 @@ working through this exercise." %}
 
 ## Initialize a new plugin
 
-The Canvas CLI gives you a great head start when creating a plugin. Simply
-run `canvas init`, and answer the prompt to name your plugin.
+The Canvas CLI gives you a great head start when creating a plugin. Run
+`canvas init`, and answer the prompt to name your plugin.
 
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Task Webhook
 Project created in /Users/andrew/src/canvas-plugins/task-webhook
+Registered acme__task_webhook with Canvas Platform.
 ```
 
-This output shows the location of our freshly generated plugin.
+This output shows the location of our freshly generated plugin. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform),
+`canvas init` names the package with your organization's prefix, such as `acme__task_webhook`,
+and registers it with Canvas Platform. It also makes the project folder a git repository
+that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
 
 ## Edit the plugin code
 
@@ -63,13 +67,13 @@ You can see this log output by first streaming logs with `canvas logs` and
 then creating a task. You can create this task with Canvas Chat, a Task
 Command, or our [FHIR Task Create endpoint](/api/task/#create).
 
-After you've [installed your plugin](/sdk/canvas_cli/#canvas-install) and
+After you've [deployed your plugin](/sdk/canvas_cli/#canvas-deploy) and
 created a task, you should see this in your log stream:
 
 ```sh
 INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
-INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
+INFO 2024-09-26 17:04:08,396 Loading custom-plugins/acme__task_webhook
+INFO 2024-09-26 17:04:08,396 Loading plugin 'acme__task_webhook:acme__task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:04:24,410 A Task was created!
 ```
 
@@ -118,12 +122,12 @@ class Handler(BaseHandler):
         return []
 ```
 
-After you've [installed your updated plugin](/sdk/canvas_cli/#canvas-install) and
+After you've [deployed your updated plugin](/sdk/canvas_cli/#canvas-deploy) and
 created a task, you should see this in your log stream:
 
 ```sh
-INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
+INFO 2024-09-26 17:18:23,206 Loading custom-plugins/acme__task_webhook
+INFO 2024-09-26 17:18:23,207 Reloading plugin 'acme__task_webhook:acme__task_webhook.handlers.event_handlers:Handler'
 INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
 ```
 
@@ -164,12 +168,12 @@ auth token. Here's what the manifest file looks like with secrets declared:
 {
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
-    "name": "task_webhook",
+    "name": "acme__task_webhook",
     "description": "Webhooks for task creation",
     "components": {
         "handlers": [
             {
-                "class": "task_webhook.handlers.event_handlers:Handler",
+                "class": "acme__task_webhook.handlers.event_handlers:Handler",
                 "description": "Hit an API when a task is created",
                 "data_access": {
                     "event": "",
@@ -196,7 +200,13 @@ across different installations. Marking each entry with `"sensitive": true`
 means the values will be masked in the Admin UI and listed only as `[set]`
 or `[not set]` by `canvas config list`.
 
-Here's how that configuration looks:
+You can also set them from the CLI with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set):
+
+```console
+$ canvas config set acme__task_webhook WEBHOOK_ID=<webhook-id> AUTH_TOKEN=<auth-token> --instance <instance>
+```
+
+Here's how that configuration looks in the plugin configuration page:
 
 ![Plugin secrets
 configuration](/assets/images/webhook-guide/webhook-guide-secrets.png)

@@ -135,7 +135,7 @@ canvas validate <path/to/application>
 canvas deploy <path/to/application> --instance <instance>
 ```
 
-`<path/to/application>` is the package folder that holds `CANVAS_MANIFEST.json`, named with your organization's prefix, such as `acme__my_application`. See [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy).
+`<path/to/application>` is the package folder that holds `CANVAS_MANIFEST.json`, named with your organization's prefix, such as `acme__my_cool_application`. See [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy).
 
 <br/>
 <br/>

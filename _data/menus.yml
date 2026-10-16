@@ -976,6 +976,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Custom Content"
+    url: /sdk/effect-note-custom-content/
+    description: Render custom HTML blocks inside a clinical note.
   - title: "Note Footer Configuration"
     url: /sdk/effect-note-footer-configuration/
     description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
@@ -1000,6 +1003,9 @@ effects_module:
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-effect/
     description: Serve content for a custom section in the patient chart summary.
+  - title: "Patient Consent"
+    url: /sdk/effect-record-patient-consent/
+    description: Record a patient's decision on a consent and file the signed document.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
@@ -1437,3 +1443,7 @@ releasenotes_betas:
     url: /product-updates/cancelrx/
   - title: "Commands Module"
     url: /product-updates/commands-module/
+  - title: "Revamped Note"
+    url: /product-updates/note-revamp/
+  - title: "Google Calendar Sync"
+    url: /product-updates/google-calendar-sync/

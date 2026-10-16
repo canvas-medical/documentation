@@ -226,12 +226,16 @@ The `scope` attribute determines where your application is visible within Canvas
 <!-- source: discussion #556 -->
 ### Who sees an application
 
-Applications in the `global`, `patient_specific`, `provider_menu_item`, and `portal_menu_item` scopes are shown to every user. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
+Applications in the `global`, `patient_specific`, and `provider_menu_item` scopes are shown to every staff member, and `portal_menu_item` applications are shown to every patient in the patient portal. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
+
+When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
 
 <!-- source: discussion #1204 -->
 ### Linking to a portal application
 
 A `portal_menu_item` application's URL ends in its identifier, base64-encoded. For example, `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==` decodes to `plugin_name.module.path:ClassName`. Because the identifier is made of the plugin name, module path, and class name, renaming any of them changes the URL and breaks links to it. The browser's address bar also stays the same as the patient moves between applications.
+
+To send a patient to a portal application from a plugin, return a [`RedirectEffect`](/sdk/effect-redirect/#redirects-in-the-patient-portal) with the application's `application_id` instead of building its URL. A redirect to an `/app/application/...` URL is blocked.
 
 ### Full Chart Scope
 

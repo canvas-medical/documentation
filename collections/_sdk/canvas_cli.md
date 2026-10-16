@@ -49,16 +49,22 @@ Signed in as you@example.com (browser session from `canvas login`)
 
 The Canvas CLI supports service accounts for automated pipelines such as GitHub Actions, GitLab CI or any other CI/CD system. A service account is an identity that belongs to your organization rather than to a person, so a pipeline that publishes and deploys plugins keeps working when the person who set it up leaves, and Canvas Platform's audit log names the service account behind each push and deploy. A pipeline signs in with the account's token instead of `canvas login`, which needs a browser.
 
-**Create a service account.** An organization admin, plugin developer or deploy manager creates one on the Credentials page in Canvas Platform. A service account can hold the plugin developer and deploy manager roles, and never more than the person creating it holds: a plugin developer cannot create an account that deploys. Its token is shown once and is valid for a year.
+**Create a service account.** An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform. A service account can hold the Plugin developer and Deploy manager roles. An Organization admin can give it either role; a Plugin developer or Deploy manager can give only the roles they hold, so a Plugin developer cannot create an account that deploys. Its token is shown once and is valid for a year.
 
 **Use it in a pipeline.** Store the token as a secret in your CI/CD system and expose it to the job as the `CANVAS_PLATFORM_TOKEN` environment variable. No `canvas login` step is needed:
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
 - run: pip install canvas
 - run: canvas deploy my-plugin/acme__my_plugin --instance acme-staging --yes
   env:
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
+
+- Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history.
+- The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
 
 - When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
 - `--yes` commits uncommitted changes without prompting. A deployment that needs consent for another plugin's custom data exits non-zero and lists the requests, because only a person at a terminal answers those.
@@ -70,7 +76,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a> walks through the switch." %}
 
-With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list` and `logs` authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each of these commands moves to your Canvas Platform sign-in before December 14, 2026.
+With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
 
@@ -97,7 +103,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Deprecation notices
 
-`canvas install` prints a deprecation warning to standard error on every run. Every other command, at most once a day, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning on every run. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
 
 ### Which plugins go through Canvas Platform
 
@@ -106,7 +112,9 @@ You can define your default host with `is_default=true`. If no default is explic
 - A name without a prefix, or a machine that is not signed in, goes straight to the instance.
 - Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
 
-`--instance` names the instances for a plugin Canvas Platform manages, and `--host` names an instance for one it does not; `--host` is refused for a managed plugin. An instance refuses `canvas install` for a plugin Canvas Platform manages, and the error names `canvas deploy`.
+`--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
+
+An instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 
 git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
 
@@ -271,6 +279,19 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
+**Waiting for the outcome**
+
+For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
+
+Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
+
+```text
+  acme__intake on acme-staging: succeeded
+    Stored values left out because this revision does not declare them: OLD_FLAG
+```
+
+If the plugin still needs one of these values, declare its key in the manifest and deploy again.
+
 **Plugin repository layout**
 
 Canvas Platform hosts one git repository per plugin, rooted at the directory that contains the package:
@@ -279,6 +300,7 @@ Canvas Platform hosts one git repository per plugin, rooted at the directory tha
 paperwork-eviscerator/          # repository root
 ├── acme__paperwork_eviscerator/
 │   ├── CANVAS_MANIFEST.json
+│   ├── OVERVIEW.md             # the plugin's overview in the catalog
 │   └── handlers/
 ├── pyproject.toml
 └── tests/
@@ -499,17 +521,14 @@ $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
 These issues will fail on the instance (sandbox / Custom Data):
-  ✗ my_plugin/handlers/protocol.py:18  [setattr-blocked]  `setattr()` is blocked by the sandbox. Use direct attribute assignment (`obj.attr = value`) instead.
+  ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
 **Sandbox constructs (errors).** These compile under RestrictedPython but are rejected when a handler runs on the instance, so a plain sandbox load can miss them. See [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#forbidden-constructs) for the full list and the allowed alternatives.
 
 | Rule code | Flags |
 | --- | --- |
-| `setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value` |
-| `delattr-blocked` | `delattr(obj, "x")` — use `del obj.x` |
-| `bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data |
-| `type-blocked` | Any call to `type()`. It is absent from the sandbox builtins, so even the one-argument `type(x)` raises `NameError` — use `isinstance(x, SomeClass)` or `x.__class__.__name__`, and declare classes with `class …:` rather than `type(name, bases, dict)` |
+| `type-blocked` | A `type()` call with anything other than a single argument, such as `type(name, bases, dict)`. The sandbox's `type` takes one argument, so declare classes with `class …:` instead. `type(x)` is not flagged. |
 | `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v` |
 | `augmented-attribute` | Augmented assignment on an attribute, e.g. `obj.attr += v` — rewrite as `obj.attr = obj.attr + v` |
 
@@ -536,6 +555,7 @@ After the static lint passes, sandbox-load validation executes each handler modu
 - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
 - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
 - **Import errors** — Missing dependencies or broken imports.
+- **Refused code in helper modules** — Functions in the modules your handlers import that contain code the sandbox refuses. Every handler fails with a `PluginInstallationError` listing each construct by module and line. See [Helper modules](/sdk/sandboxing-and-allowed-imports/#helper-modules).
 
 For each handler, the output shows whether it loaded successfully:
 
@@ -549,6 +569,17 @@ Loading 2 handler(s) in the sandbox:
 ```
 
 The command exits with code 1 if any handler fails validation.
+
+If your handlers read attributes that don't exist while they load, the output ends with a warning that lists them. In the sandbox those reads return `None` for now, and a future release will raise `AttributeError` instead (see [Attributes that don't exist](/sdk/sandboxing-and-allowed-imports/#attributes-that-dont-exist)). The warning doesn't fail validation:
+
+```console
+$ canvas validate my_plugin
+Loading 1 handler(s) in the sandbox:
+  ✓ my_plugin.handlers.events:MyHandler
+
+Warning: these names do not exist. Each reads as None today and will raise an AttributeError in a future release:
+  - Settings.retry_limit
+```
 
 #### Limitations
 
@@ -688,7 +719,7 @@ $ canvas config list my_plugin
 
 Set (or update) one or more plugin variables. Pass one or more `KEY=value` pairs as positional arguments.
 
-For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward.
+For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward for the keys that revision declares; see [Waiting for the outcome](#canvas-deploy).
 
 For a plugin Canvas Platform does not manage, the values are written to the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 

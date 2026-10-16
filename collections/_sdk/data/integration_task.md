@@ -29,6 +29,21 @@ patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 tasks = patient.integration_tasks.all()
 ```
 
+## Accessing the document file
+
+The `document_url` property returns a presigned S3 URL for the document as Canvas received it, or `None` when the task has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data.integration_task import IntegrationTask
+
+task = IntegrationTask.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Presigned S3 URL to the received document, or None
+url = task.document_url
+```
+
+{% include alert.html type="info" content="<code>document_url</code> always points to the original file. Canvas saves staff annotations as separate files that the SDK doesn't expose, so the URL doesn't reflect them." %}
+
 ## Filtering
 
 Integration tasks and reviews can be filtered by any attribute that exists on the models.
@@ -108,11 +123,13 @@ team_reviews = IntegrationTaskReview.objects.by_team("team-id")
 | status           | [IntegrationTaskStatus](#integrationtaskstatus)                |                                      |
 | type             | String                                                         |                                      |
 | title            | String                                                         |                                      |
+| document         | File (S3 key)                                                  | The document as received             |
 | channel          | [IntegrationTaskChannel](#integrationtaskchannel)              |                                      |
 | patient          | [Patient](/sdk/data-patient/#patient)                          |                                      |
 | service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |                                      |
 | reviews          | [IntegrationTaskReview](#integrationtaskreview)[]              |                                      |
 | action_events    | [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)[] | Faxes of this task, with their [delivery status](/sdk/data-fax/#delivery-status) |
+| document_url     | String (computed)                                              | Presigned S3 URL for `document`, or `None` if unset |
 | is_fax           | Boolean (computed)                                             | Whether this is a fax task           |
 | is_pending       | Boolean (computed)                                             | Whether this task is pending review  |
 | is_processed     | Boolean (computed)                                             | Whether this task has been processed |

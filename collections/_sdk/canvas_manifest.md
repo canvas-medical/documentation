@@ -17,7 +17,7 @@ my_plugin/                       # project directory
 ├── pyproject.toml
 ├── tests/
 │   └── test_event_handlers.py
-└── my_plugin/                   # plugin package
+└── acme__my_plugin/             # plugin package
     ├── CANVAS_MANIFEST.json
     ├── OVERVIEW.md
     ├── README.md
@@ -31,7 +31,7 @@ my_plugin/                       # project directory
         └── intake_form.yml
 ```
 
-A handler in `my_plugin/handlers/event_handlers.py` is referenced as `my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas deploy`: `canvas validate my_plugin/my_plugin` from outside the project, or `canvas validate my_plugin` from inside it.
+A handler in `acme__my_plugin/handlers/event_handlers.py` is referenced as `acme__my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas deploy`: `canvas validate my_plugin/acme__my_plugin` from outside the project, or `canvas validate acme__my_plugin` from inside it.
 
 Canvas runs only the handlers and applications the manifest lists. A handler class in the package that the manifest doesn't reference is never loaded, and `canvas validate` warns about each one it finds. Every other file in the package directory still ships with the plugin, so your handlers can import your own modules and read templates and assets without listing them in the manifest. `canvas deploy` ships the files committed to the plugin's git repository, so `.gitignore` decides what is left out. See [Plugin repository layout](/sdk/canvas_cli/#canvas-deploy).
 
@@ -41,7 +41,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 {
   "sdk_version": "0.1.4",
   "plugin_version": "0.0.1",
-  "name": "my_plugin",
+  "name": "acme__my_plugin",
   "description": "A description of what this plugin does",
   "components": {
     "handlers": [],
@@ -65,7 +65,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `sdk_version` | string | Yes | The Canvas SDK version the plugin was built against. |
 | `plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See [Versioning your plugin](#versioning-your-plugin). |
 | `name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes. |
-| `description` | string | Yes | What the plugin does. |
+| `description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card. |
 | `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
 | `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See [Tags](#tags). |
 | `license` | string | Yes | A license identifier such as `"MIT"`, or an empty string. |
@@ -85,7 +85,7 @@ Change `plugin_version` every time you deploy a new build, including builds sent
 
 - the Plugins list in the Canvas Admin
 - `canvas list`, as `name@version`
-- the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "my_plugin", version 1.4.0`
+- the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "acme__my_plugin", version 1.4.0`
 
 Use [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 
@@ -133,7 +133,7 @@ Handlers respond to Canvas events: [event handlers](/sdk/handlers-basehandler/),
   "components": {
     "handlers": [
       {
-        "class": "my_plugin.handlers.patient_sync:PatientSync",
+        "class": "acme__my_plugin.handlers.patient_sync:PatientSync",
         "description": "Sends patient updates to an external system"
       }
     ]
@@ -162,7 +162,7 @@ Applications add entry points to the Canvas UI. See [Applications](/sdk/handlers
   "components": {
     "applications": [
       {
-        "class": "my_plugin.applications.risk_calculator:RiskCalculator",
+        "class": "acme__my_plugin.applications.risk_calculator:RiskCalculator",
         "name": "Risk Calculator",
         "description": "Calculates cardiovascular risk for the open patient",
         "icon": "assets/risk_calculator.png",
@@ -357,8 +357,8 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out. |
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
-| `pricing` | array | No | What Canvas charges for the plugin, one component per unit. Leave it out for a plugin with no charge. See [Pricing and vendors](#pricing-and-vendors). |
-| `vendors` | array | No | The third parties the plugin depends on, and who holds the account with each. See [Pricing and vendors](#pricing-and-vendors). |
+| `pricing` | array | No | What Canvas charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. Leave `pricing` out for a plugin with no charge. |
+| `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas. |
 | `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase. |
 | `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works. |
 | `setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. It is not shown on the plugin's page. |
@@ -366,49 +366,9 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
 
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
+
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
-
-### Pricing and vendors
-
-`pricing` and `vendors` tell an organization what a plugin costs before it installs it. `pricing` lists what Canvas charges, and `vendors` lists the third-party services the plugin relies on and whether any of them bills the organization separately.
-
-This plugin costs $5.75 per visit and bills its model calls by token. It sends messages through a Twilio account that the organization sets up and pays Twilio for directly:
-
-```json
-{
-  "catalog": {
-    "title": "Intake Summary",
-    "category": "Charting",
-    "surfaces": ["Note"],
-    "pricing": [
-      {"unit": "visit", "price_per_unit": "5.75"},
-      {"unit": "token"}
-    ],
-    "vendors": [
-      {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
-    ]
-  }
-}
-```
-
-`pricing` is a list of one to 10 components, in the order the plugin's page lists them. Each component has these fields:
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `unit` | string | Yes | What Canvas charges for, in the singular, such as `visit` or `page`. At most 40 characters. |
-| `price_per_unit` | string | Yes, except for `token` | The price of one unit in US dollars, written as a string such as `"5.75"` or `"0.0025"`, with at most four decimal places. `"0"` is allowed; a number such as `5.75` or a negative price is refused. |
-
-The `token` unit takes no `price_per_unit`, because the Canvas inference gateway prices tokens by model. List it when Canvas charges for the plugin's model calls by token.
-
-`vendors` is a list of one to 10 vendors. Each vendor has these fields:
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | The vendor's name. At most 64 characters. |
-| `relationship` | string | Yes | `canvas_managed` when Canvas sets up the vendor account, or `self_managed` when the organization does. |
-| `additional_fees` | boolean | Yes | `true` when the vendor bills the organization directly for its own fees, apart from what Canvas charges. |
-
-A unit or vendor can appear only once in its list. Names are compared without regard to case or spacing, so `Visit` and `visit` count as the same unit. `canvas validate` refuses the repeat, as Canvas Platform does on push.
 
 ## Tags
 
@@ -491,7 +451,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
 Validate a manifest with the [Canvas CLI](/sdk/canvas_cli/):
 
 ```bash
-canvas validate my_plugin
+canvas validate acme__my_plugin
 ```
 
 `canvas validate` checks the manifest against the schema and then loads every handler in the plugin sandbox, which catches disallowed imports and other errors that only appear on the instance. `canvas validate-manifest my_plugin` runs the manifest checks alone.
