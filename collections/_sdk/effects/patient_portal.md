@@ -241,7 +241,11 @@ class MyHandler(BaseHandler):
 
 ## Theme the Patient Portal
 
-Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The event's context identifies the business line the portal page is for, so you can return a different theme for each business line.
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The theme applies to every portal page, including the login and registration pages.
+
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
 
 Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
 
@@ -267,9 +271,11 @@ Applies the theme. The effect raises a validation error, naming the attribute or
 | `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
 | `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
 | `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, hyphens, and quotes.                     | No       |
-| `font_source`                    | `str` | An `https://` URL of the stylesheet that loads `font_family`, such as a Google Fonts URL. Up to 2,000 characters.                                       | No       |
-| `person_word`                    | `str` | The word the portal uses for the person: `"patient"`, `"member"`, or `"client"`.                                                                         | No       |
+| `font_source`                    | `str` | An `https://` URL of the stylesheet that loads `font_family`, such as a Google Fonts URL. Up to 2,000 characters. To load a font you host, add its origin to the plugin's [`url_permissions`](/sdk/canvas_manifest/#url-permissions). | No       |
+| `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
 | `custom_css`                     | `str` | Your own CSS for the portal, up to 50,000 characters, without any `<` character.                                                                         | No       |
+
+Setting `font_family` or `font_source` replaces the portal's default webfont.
 
 Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
 

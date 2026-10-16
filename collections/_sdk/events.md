@@ -29812,7 +29812,9 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
     </tr>
     <tr>
       <td>PATIENT_PORTAL__GET_THEME_CONFIGURATION</td>
-      <td>Patient Portal is requesting its theme. The context identifies the business line the portal page is for. Reply with a <code>PatientPortalTheme</code> effect; see <a href="/sdk/patient-portal/#theme-the-patient-portal">Theme the Patient Portal</a>.</td>
+      <td>Patient Portal page is loading, including the login page. Reply with a <code>PatientPortalTheme</code> effect; see <a href="/sdk/patient-portal/#theme-the-patient-portal">Theme the Patient Portal</a>.
+      <br />Context object:
+      <pre>"business_line_id": str | null</pre></td>
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
