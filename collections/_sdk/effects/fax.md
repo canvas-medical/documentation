@@ -19,8 +19,8 @@ The fax effects send one document to a fax recipient without the rest of its not
 | Attribute | Type | Description | Required |
 | --- | --- | --- | --- |
 | `referral_id`, `imaging_order_id`, `lab_order_id` or `letter_id` | `UUID` or `str` | Identifier of the document to fax. Each effect takes its own. | Yes |
-| `recipient_name` | `str` | Name of the fax recipient | Lab orders and letters |
-| `recipient_fax_number` | `str` | Fax number of the recipient. Should include the country code | Lab orders and letters |
+| `recipient_name` | `str` | Name of the fax recipient. Give it together with `recipient_fax_number`. | Lab orders and letters |
+| `recipient_fax_number` | `str` | Fax number of the recipient, including the country code. Give it together with `recipient_name`. | Lab orders and letters |
 | `include_coversheet` | `bool` | Whether to include a coversheet with the fax | No |
 | `subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used) | No |
 | `comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used) | No |
@@ -29,7 +29,8 @@ The fax effects send one document to a fax recipient without the rest of its not
 ## Implementation Details
 
 - Validates that the document exists.
-- A referral or imaging order sent without `recipient_name` or `recipient_fax_number` takes the missing value from the referral's service provider or the order's imaging center. If there is no service provider, or it has no fax number, nothing is faxed.
+- Give `recipient_name` and `recipient_fax_number` together. For a referral or imaging order, you can leave both out to fax the referral's service provider or the order's imaging center. If you give only one, nothing is faxed. If there is no service provider, or it has no fax number, nothing is faxed.
+- A referral, imaging order or lab order must be committed and not entered in error, as for its own **Fax** action in Canvas. Otherwise nothing is faxed.
 - If `include_coversheet` is `True`, `subject`, `comment` and `location_id` become required, as they do for [Fax Note](/sdk/effect-notes/#fax-note).
 - The fax is recorded on the document as a [ReferralActionEvent](/sdk/data-fax/#referralactionevent), [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent), [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent) or [LetterActionEvent](/sdk/data-letter-action-event/), with Canvas Bot as its `originator`. It appears in the document's fax history in Canvas, and `delivered_by_fax` is updated when the faxing service reports the outcome. See [Faxes sent by a plugin](/sdk/data-fax/#faxes-sent-by-a-plugin).
 
