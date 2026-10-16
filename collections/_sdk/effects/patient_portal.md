@@ -239,6 +239,90 @@ class MyHandler(BaseHandler):
 
 ```
 
+## Theme the Patient Portal
+
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
+
+Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
+
+### Methods
+
+#### apply() → Effect
+
+Applies the theme. The effect raises a validation error, naming the attribute or color pair at fault, when:
+
+- An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
+- A value doesn't match its format or range in the Attributes table.
+- `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+- `font_source` is set without `font_family`.
+- A color pair the portal draws together falls below the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA contrast ratio. See [Contrast checks](#contrast-checks).
+
+### Attributes
+
+| Attribute                        | Type  | Description                                                                                                                                              | Required |
+|----------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `brand_color`                    | `str` | The brand color, as a six-digit hex color such as `"#0F766E"`.                                                                                           | No       |
+| `menu_background_color`          | `str` | The background of the left navigation menu, as a six-digit hex color.                                                                                    | No       |
+| `menu_selected_background_color` | `str` | The background of the selected menu item, as a six-digit hex color.                                                                                      | No       |
+| `menu_text_color`                | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No       |
+| `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
+| `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
+| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No       |
+| `font_source`                    | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No       |
+| `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
+| `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
+
+Setting `font_family` replaces the portal's default webfont.
+
+Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
+
+### Contrast checks
+
+Every pair below draws text, so each needs the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA ratio for normal text, 4.5:1. `apply()` checks a pair when your theme sets at least one of its colors, and checks the brand pairs when your theme sets `brand_color`. A side you leave unset is checked as the portal default. A pair of colors that appears twice, such as the brand on a white page and white text on the brand, is reported once.
+
+| Foreground                           | Background                                                   | Minimum ratio | Checked when you set                                          |
+|--------------------------------------|--------------------------------------------------------------|---------------|---------------------------------------------------------------|
+| Menu text (set or picked)            | `menu_background_color`                                      | 4.5:1         | `menu_text_color` or `menu_background_color`                  |
+| Body text (`#212121`)                | `page_background_color`                                      | 4.5:1         | `page_background_color`                                       |
+| White text (buttons, sent messages)  | `brand_color`                                                | 4.5:1         | `brand_color`                                                 |
+| `brand_color`                        | `page_background_color`                                      | 4.5:1         | `brand_color`                                                 |
+| `brand_color`                        | Section and accordion headers, a light tint of the brand color | 4.5:1         | `brand_color`                                                 |
+| Menu text (set or picked)            | `menu_selected_background_color`, or a tint of the menu text when unset | 4.5:1 | `menu_background_color`                                     |
+| `brand_color`                        | `menu_selected_background_color`                             | 4.5:1         | `brand_color` or `menu_selected_background_color`, with the default menu background |
+
+With the default menu background, the selected menu item draws its text in the brand color. A saturated brand color on a saturated selected background can fail even when each color passes against the page.
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class PortalThemeHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_THEME_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [
+            PatientPortalTheme(
+                brand_color="#0F766E",
+                page_background_color="#F0FDFA",
+                # A dark menu: the portal picks white menu text.
+                menu_background_color="#1F2937",
+                corner_radius=8,
+                font_family="Inter, sans-serif",
+                font_source="https://fonts.googleapis.com/css2?family=Inter&display=swap",
+                person_word="member",
+            ).apply()
+        ]
+```
+
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
