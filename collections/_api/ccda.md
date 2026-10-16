@@ -12,9 +12,12 @@ If you have a Canvas Production instance, you will need to request a token and r
 
 Canvas OAuth tokens carry [scopes](/api/customer-authentication/#scopes) in SMART on FHIR syntax, and the C-CDA export reads those same scopes. A C-CDA isn't a FHIR resource, so no single resource scope covers it. Because a C-CDA carries the patient's whole clinical record, the export requires a wildcard read scope at the `patient/`, `user/`, or `system/` level. Canvas accepts the v1 forms `*.read` and `*.*`, and v2 forms that include read, such as `*.r`, `*.rs`, and `*.cruds`. For example, a [client credentials](/api/customer-authentication/#client-credentials) token with `system/*.read` can export a C-CDA. A token with only `system/Appointment.read` cannot. Canvas refuses a token without a wildcard read scope with `403 Forbidden`.
 
-An application can also send its client ID and secret with the request instead of a token. In that case, the OAuth application's allowed scopes must include a wildcard read scope.
+An application can also send its client ID and secret with the request instead of a token. Canvas accepts this only from an OAuth application whose `Client type` is `Confidential`, and that application's allowed scopes must include a wildcard read scope. A `Public` application's secret ships inside the app, so it doesn't prove the caller's identity. Canvas refuses it with `403 Forbidden`. A public application exports its patient's record with a patient-bound token instead.
 
-A token bound to one patient returns only that patient's record, whatever patient key the URL names. A token is bound to a patient when its [SMART launch context](/api/customer-authentication/#authorization-code) names that patient. A token issued to a patient's own login is bound to that patient too. Staff and client credentials tokens export the patient the URL names.
+A token bound to one patient returns only that patient's record, whatever patient key the URL names. A token is bound to a patient when its [SMART launch context](/api/customer-authentication/#authorization-code) names that patient. A token issued to a patient's own login is bound to that patient too. Other tokens export the patient the URL names, with these limits:
+
+- A staff user's token exports only a patient that user can access. If the user's [patient groups](/guides/roles-and-permissions/#patient-groups) don't include the patient, Canvas returns `403 Forbidden`.
+- A [client credentials](/api/customer-authentication/#client-credentials) token exports only when its OAuth application is `Confidential`. Canvas refuses a client credentials token issued to a `Public` application with `403 Forbidden`.
 
 ## Request and Parameters
 
@@ -89,7 +92,7 @@ In general: Codes in the 2xx range indicate success. Codes in the 4xx range indi
     </tr>
     <tr>
       <td>403 - Forbidden</td>
-      <td>No valid Bearer token provided, or the token has no wildcard read scope.</td>
+      <td>No valid Bearer token provided, the token has no wildcard read scope, the staff user can't access the patient, or the client credentials belong to a public application.</td>
     </tr>
     <tr>
       <td>404 - Not Found</td>
