@@ -190,12 +190,12 @@ For complete details about medication search result data contracts and other sea
 
 ## Offering your own providers alongside the directory
 
-The four provider-search surfaces — Refer, Imaging Order, fax recipient, and a patient's external
-care team — search the shared contact directory by default. Providers you create with the
+Five surfaces search for providers: Refer, Imaging Order, Order DME, fax recipient, and a patient's
+external care team. Each searches the shared contact directory by default. Providers you create with the
 [ServiceProvider effect](/sdk/effect-service-provider/) are not searched automatically, so if you
 maintain your own directory you have to offer them yourself.
 
-The pattern is the same on all four surfaces: query your own
+The pattern is the same on all five surfaces: query your own
 [ServiceProvider](/sdk/data-serviceprovider/) records, put them ahead of the directory's results, and
 return the combined list.
 
@@ -210,6 +210,7 @@ Which helper you call depends on the surface:
 | --- | --- | --- |
 | Refer | `REFER__REFER_TO__POST_SEARCH` | `as_search_result()` |
 | Imaging Order | `IMAGING_ORDER__IMAGING_CENTER__POST_SEARCH` | `as_search_result()` |
+| Order DME | `ORDER_DME__SEND_TO__POST_SEARCH` | `as_search_result()` |
 | Fax recipient | `FAX__RECIPIENT__POST_SEARCH` | `as_search_contact()` |
 | External care team | `PATIENT_PROFILE__EXTERNAL_CARE_TEAM__POST_SEARCH` | `as_search_contact()` |
 
@@ -286,7 +287,7 @@ class ContactDirectorySearch(BaseHandler):
         ]
 ```
 
-For Refer and Imaging Order, subscribe to those two events instead and swap `as_search_contact()` for
+For Refer, Imaging Order, and Order DME, subscribe to those three events instead and swap `as_search_contact()` for
 `as_search_result()`. The merge is the same, except the directory's results carry their display name
 in `text` rather than in `firstName` / `lastName`.
 
