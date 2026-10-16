@@ -171,7 +171,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued, an administrator starting or ending a session as another user |
 | 3005 | User Access Management | Staff access granted or revoked |
 | 6001 | Web Resources Access | Chart opened, note printed |
-| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; requests refused for lack of permission |
+| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient consent, patient location, facility address, and care team changes; requests refused for lack of permission |
 
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
