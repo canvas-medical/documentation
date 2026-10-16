@@ -29811,6 +29811,10 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
     <tr>
+      <td>PATIENT_PORTAL__GET_THEME_CONFIGURATION</td>
+      <td>Patient Portal is requesting its theme. The context identifies the business line the portal page is for. Reply with a <code>PatientPortalTheme</code> effect; see <a href="/sdk/patient-portal/#theme-the-patient-portal">Theme the Patient Portal</a>.</td>
+    </tr>
+    <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
       <td>Patient Profile is loading. See <a href="{% link _guides/profile-additional-fields.md %}" target="_blank">How to add patient profile additional fields</a> for examples of how to use this event.
       <br />Context object:

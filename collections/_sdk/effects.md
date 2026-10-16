@@ -471,6 +471,7 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
 | SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
+| PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal). |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
