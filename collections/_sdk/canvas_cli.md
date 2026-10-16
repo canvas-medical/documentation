@@ -500,17 +500,14 @@ $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
 These issues will fail on the instance (sandbox / Custom Data):
-  ✗ my_plugin/handlers/protocol.py:18  [setattr-blocked]  `setattr()` is blocked by the sandbox. Use direct attribute assignment (`obj.attr = value`) instead.
+  ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
 **Sandbox constructs (errors).** These compile under RestrictedPython but are rejected when a handler runs on the instance, so a plain sandbox load can miss them. See [Sandboxing and Allowed Imports](/sdk/sandboxing-and-allowed-imports/#forbidden-constructs) for the full list and the allowed alternatives.
 
 | Rule code | Flags |
 | --- | --- |
-| `setattr-blocked` | `setattr(obj, "x", value)` — use `obj.x = value` |
-| `delattr-blocked` | `delattr(obj, "x")` — use `del obj.x` |
-| `bytearray-blocked` | `bytearray(...)` — use `bytes` for binary data |
-| `type-blocked` | Any call to `type()`. It is absent from the sandbox builtins, so even the one-argument `type(x)` raises `NameError` — use `isinstance(x, SomeClass)` or `x.__class__.__name__`, and declare classes with `class …:` rather than `type(name, bases, dict)` |
+| `type-blocked` | A `type()` call with anything other than a single argument, such as `type(name, bases, dict)`. The sandbox's `type` takes one argument, so declare classes with `class …:` instead. `type(x)` is not flagged. |
 | `augmented-subscript` | Augmented assignment on a subscript, e.g. `d[k] += v` — rewrite as `d[k] = d[k] + v` |
 | `augmented-attribute` | Augmented assignment on an attribute, e.g. `obj.attr += v` — rewrite as `obj.attr = obj.attr + v` |
 
@@ -537,6 +534,7 @@ After the static lint passes, sandbox-load validation executes each handler modu
 - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
 - **RestrictedPython compile-time errors** — Syntax or constructs that RestrictedPython cannot compile.
 - **Import errors** — Missing dependencies or broken imports.
+- **Refused code in helper modules** — Functions in the modules your handlers import that contain code the sandbox refuses. Every handler fails with a `PluginInstallationError` listing each construct by module and line. See [Helper modules](/sdk/sandboxing-and-allowed-imports/#helper-modules).
 
 For each handler, the output shows whether it loaded successfully:
 
@@ -550,6 +548,17 @@ Loading 2 handler(s) in the sandbox:
 ```
 
 The command exits with code 1 if any handler fails validation.
+
+If your handlers read attributes that don't exist while they load, the output ends with a warning that lists them. In the sandbox those reads return `None` for now, and a future release will raise `AttributeError` instead (see [Attributes that don't exist](/sdk/sandboxing-and-allowed-imports/#attributes-that-dont-exist)). The warning doesn't fail validation:
+
+```console
+$ canvas validate my_plugin
+Loading 1 handler(s) in the sandbox:
+  ✓ my_plugin.handlers.events:MyHandler
+
+Warning: these names do not exist. Each reads as None today and will raise an AttributeError in a future release:
+  - Settings.retry_limit
+```
 
 #### Limitations
 

@@ -109,6 +109,7 @@ sig = prescription.medication.latest_sig
 | dbid                          | Integer                                                                                         |                                   |
 | patient                       | [Patient](/sdk/data-patient/)                                                                   |                                   |
 | note                          | [Note](/sdk/data-note/)                                                                         |                                   |
+| assessment                    | [Assessment](/sdk/data-assessment/#assessment)                                                  |                                   |
 | prescriber                    | [Staff](/sdk/data-staff/)                                                                       |                                   |
 | supervising_provider          | [Staff](/sdk/data-staff/)                                                                       |                                   |
 | medication                    | [Medication](/sdk/data-medication/)                                                             |                                   |

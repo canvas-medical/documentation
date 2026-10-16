@@ -534,6 +534,7 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
 | note                      | [Note](/sdk/data-note/#note)                      |
+| assessment                | [Assessment](/sdk/data-assessment/#assessment) |
 | ontology_lab_partner      | String                                            |
 | ordering_provider         | [Staff](/sdk/data-staff/#staff)                   |
 | comment                   | String                                            |
