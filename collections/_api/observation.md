@@ -352,7 +352,8 @@ sections:
             create_description: >-
               Related Observation reference(s) that belongs to the Observation group/panel.<br><br>
               Only need to supply this attribute in a Vital Sign Panel to specify specific child observations that are a part of the panel. In Canvas these will form the Vitals Command. This observation IDs can be found using the [Observation Search](/api/observation/#search). <br><br>
-              If a new vital sign panel is created and links pre-existing vital signs via the `hasMember` attribute, those linked observations will update their `derivedFrom` attribute to be set to the newly created vital sign panel.
+              If a new vital sign panel is created and links pre-existing vital signs via the `hasMember` attribute, those linked observations will update their `derivedFrom` attribute to be set to the newly created vital sign panel.<br><br>
+              Each referenced observation must belong to the panel's `subject`. Canvas reports an observation from another patient as not found.
             attributes:
                 - name: reference
                   type: string
@@ -376,6 +377,7 @@ sections:
               Related Observation resource that the Observation is made from.<br><br>
               This attribute should only be used to link a vital sign to an existing "parent" vital sign panel. It ingests a reference to the vital sign panel's observation. This observation ID can be found using the [Observation Search](/api/observation/#search).<br><br> 
               If this field is omitted on a vital sign observation, a vital sign panel will automatically be created. <br><br>
+              The referenced panel must belong to the observation's `subject`. Canvas reports a panel from another patient as not found.<br><br>
               It is important to note that each vital sign panel can only contain a single vital sign of each type. Adding a duplicate of a vital sign will result in a 422 error: "Vital sign reading already exists for the given reading".
             attributes:
               - name: reference

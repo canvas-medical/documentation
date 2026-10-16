@@ -231,6 +231,16 @@ These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staf
 
 A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
 
+### Writes with a patient context
+
+A token with a patient context acts for that patient, so Canvas keeps each FHIR write it makes within the patient's own record:
+
+- **[Patient](/api/patient/) update:** Staff manage some chart fields, so Canvas keeps them at their current values whether the request includes them or leaves them out. These fields are `active`, `deceasedBoolean`, `deceasedDateTime`, and the `clinical-note`, `administrative-note`, `patient-default-provider`, `patient-default-location`, and `business-line` extensions.
+- **[QuestionnaireResponse](/api/questionnaireresponse/) create:** Canvas rejects a request whose `author` references a Practitioner. Set `author` to the patient, or leave it out.
+- **[Observation](/api/observation/) create:** The `subject` must be the patient in context.
+- **[Create Lab Report](/api/diagnosticreport-operations/):** The `subject` of the `labReport` must be the patient in context.
+- **[Add Claim Activity Log Item](/api/claim-operations/):** The claim must be on one of the patient's own notes. Canvas reports any other claim as not found.
+
 ## Scopes
 
 Scopes control which parts of the API the token can access.

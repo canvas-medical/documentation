@@ -696,10 +696,11 @@ sections:
           description: >-
             <b>How updates and deletions to <code>identifier</code>, <code>telecom</code>, <code>address</code>, and <code>contact</code> are handled:</b><br><br>
             Each entry returned via Search/Read includes an <code>id</code>. <br><br>
-            • If the <code>id</code> is included in an entry, Canvas updates the matching record. <br>
+            • If the <code>id</code> is included in an entry, Canvas updates the matching record. An <code>identifier</code>, <code>telecom</code>, or <code>address</code> <code>id</code> must belong to this patient. Canvas reports an <code>id</code> from another patient's record as not found. <br>
             • If the <code>id</code> is omitted, Canvas creates a new record. <br>
             • If an entry returned via Search/Read is **not** included in the update body, it is deleted (with the exception of <code>identifier</code>, which is only deleted when its <code>period.end</code> is in the future). <br><br>
             The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions — their values are dropped if those extensions are not present on update. To keep a patient's current values, read the patient first and send these extensions back on the update. <br><br>
+            With a [token that has a patient context](/api/customer-authentication/#writes-with-a-patient-context), an update leaves the staff-managed fields unchanged: <code>active</code>, <code>deceasedBoolean</code>, <code>deceasedDateTime</code>, and the <code>clinical-note</code>, <code>administrative-note</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions. They keep their current values even when the update leaves them out. <br><br>
             <b>Other fields</b><br><br>
             Any field that is required on create is also required on update. Optional fields that are not included in the update body retain their stored values.
         search:
