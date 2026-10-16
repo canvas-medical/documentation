@@ -190,7 +190,9 @@ sections:
                 type: string
                 description: Plain text representation of the coverage type.
           - name: subscriber
-            description: Who was signed up for or 'owns' the Coverage.
+            description: >-
+              Who was signed up for or 'owns' the Coverage.<br><br>
+              With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), the subscriber must be the patient in context. Canvas reports any other patient as not found.
             type: json
             required_in: create,update
             attributes:

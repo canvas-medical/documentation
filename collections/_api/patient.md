@@ -284,7 +284,8 @@ sections:
             create_description: The MRN is auto-issued by Canvas; do not include it on create.
             update_description: >-
               The MRN is managed by Canvas — do not modify it. <br><br>
-              <b>Replace semantics:</b> Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing identifier; omit `id` to add a new one. An identifier already in Canvas that is **not** included in the update message will be deleted only if its `period.end` is in the future.
+              <b>Replace semantics:</b> Each entry returned via Search/Read includes an `id`. Include the `id` to preserve or modify an existing identifier; omit `id` to add a new one. An identifier already in Canvas that is **not** included in the update message will be deleted only if its `period.end` is in the future.<br><br>
+              With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), Canvas ignores `identifier` on update and keeps the patient's identifiers as they are.
             attributes:
               - name: id
                 type: string
@@ -700,7 +701,7 @@ sections:
             • If the <code>id</code> is omitted, Canvas creates a new record. <br>
             • If an entry returned via Search/Read is **not** included in the update body, it is deleted (with the exception of <code>identifier</code>, which is only deleted when its <code>period.end</code> is in the future). <br><br>
             The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions — their values are dropped if those extensions are not present on update. To keep a patient's current values, read the patient first and send these extensions back on the update. <br><br>
-            With a [token that has a patient context](/api/customer-authentication/#writes-with-a-patient-context), an update leaves the staff-managed fields unchanged: <code>active</code>, <code>deceasedBoolean</code>, <code>deceasedDateTime</code>, and the <code>clinical-note</code>, <code>administrative-note</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions. They keep their current values even when the update leaves them out. <br><br>
+            With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), Canvas rejects an update that changes a staff-managed field: <code>active</code>, <code>deceasedBoolean</code>, <code>deceasedDateTime</code>, or the <code>clinical-note</code>, <code>administrative-note</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, or <code>business-line</code> extension. To keep a staff-managed field, send its current value or leave it out; Canvas doesn't drop these extensions when such an update omits them. The update also leaves <code>identifier</code> entries unchanged. <br><br>
             <b>Other fields</b><br><br>
             Any field that is required on create is also required on update. Optional fields that are not included in the update body retain their stored values.
         search:

@@ -233,13 +233,18 @@ A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and 
 
 ### Writes with a patient context
 
-A token with a patient context acts for that patient, so Canvas keeps each FHIR write it makes within the patient's own record:
+Canvas keeps each FHIR write made with a patient-context token within the patient in context. For every patient-context token:
 
-- **[Patient](/api/patient/) update:** Staff manage some chart fields, so Canvas keeps them at their current values whether the request includes them or leaves them out. These fields are `active`, `deceasedBoolean`, `deceasedDateTime`, and the `clinical-note`, `administrative-note`, `patient-default-provider`, `patient-default-location`, and `business-line` extensions.
-- **[QuestionnaireResponse](/api/questionnaireresponse/) create:** Canvas rejects a request whose `author` references a Practitioner. Set `author` to the patient, or leave it out.
 - **[Observation](/api/observation/) create:** The `subject` must be the patient in context.
 - **[Create Lab Report](/api/diagnosticreport-operations/):** The `subject` of the `labReport` must be the patient in context.
 - **[Add Claim Activity Log Item](/api/claim-operations/):** The claim must be on one of the patient's own notes. Canvas reports any other claim as not found.
+
+Some writes are also limited to what a patient can do. These limits apply when the token acts as the patient: a token from a patient's own login, or a [patient scoped token](#patient-scoped-tokens). A token that a staff member gets by launching an app from the patient's chart is still held to that patient, but it acts as the staff member, so these limits don't apply to it.
+
+- **[Patient](/api/patient/) update:** Staff manage some chart fields, and Canvas rejects an update that changes one of them. To keep a field, send its current value or leave it out. These fields are `active`, `deceasedBoolean`, `deceasedDateTime`, and the `clinical-note`, `administrative-note`, `patient-default-provider`, `patient-default-location`, and `business-line` extensions. Canvas also leaves the patient's `identifier` entries as they are, so an update can't add or remove an identifier.
+- **[QuestionnaireResponse](/api/questionnaireresponse/) create and update:** Canvas rejects a request whose `author` references a Practitioner. Set `author` to the patient, or leave it out. Without an `author`, Canvas records the patient as the author, and as the user who marks a response `entered-in-error`.
+- **[Media](/api/media/) create:** Canvas rejects a request whose `operator` references a Practitioner.
+- **[Coverage](/api/coverage/) create and update:** The `subscriber` must be the patient in context. Canvas reports any other patient as not found. To link a coverage that another patient subscribes to, such as a family member's plan, staff must make the change.
 
 ## Scopes
 
