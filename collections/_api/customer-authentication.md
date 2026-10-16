@@ -48,7 +48,15 @@ and you'll get back a JSON which will contain an `access_token` that'll be valid
 
 The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`.
 
-The one exception is the staff list. A client credentials token with the `system/Practitioner.read` scope can read it with `GET /api/Staff/`. That response leaves out each staff member's `taxId` and `taxIdType`, because a tax ID can be a Social Security number. Creating staff, reading one staff member at `/api/Staff/<key>`, and every other `/api` endpoint still need `system/*.*`.
+The one exception is the staff list. A client credentials token with the `system/Practitioner.read` scope can read it with `GET /api/Staff/`. For that token, each staff member in the response contains only these fields:
+
+- `id`, `key`, `firstName`, `lastName`, `fullName`, `active`, `birthDate`, `sexAtBirth`, `npiNumber`, `spiNumber`, and `isPrescriber`
+- `roles`, where each entry holds a `role` object with `name`, `internalCode`, `domain`, and `domainPrivilegeLevel`
+- `telecom`, where each entry holds `system`, `value`, and `use`
+- `addresses`, where each entry holds `use`, `type`, `line1`, `line2`, `city`, `stateCode`, and `postalCode`
+- `licenses`, where each entry holds `licenseType`, `licenseOrCertificationIdentifier`, `state`, and `primary`
+
+Every other staff field is left out, including `taxId` and `taxIdType`, because a tax ID can be a Social Security number. A `system/*.*` token gets the full staff record. Creating staff, reading one staff member at `/api/Staff/<key>`, and every other `/api` endpoint still need `system/*.*`.
 
 The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
 
