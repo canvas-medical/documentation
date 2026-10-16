@@ -7,7 +7,7 @@ hidden: false
 
 The `NoteCustomContent` effect adds a custom content block to a clinical note. Use it to show plugin-generated information where clinicians already work in the note. For example, show a patient summary above the note body or a card inside a note section. A block can be an inline HTML string or the URL of a page your plugin serves.
 
-Return this effect in response to the `NOTE__GET_CUSTOM_CONTENT` event. If no handler returns one, the note renders without custom content.
+Return this effect in response to the [`NOTE__GET_CUSTOM_CONTENT`](/sdk/events/#note-custom-content) event. If no handler returns one, the note renders without custom content.
 
 {% include alert.html type="warning" content="<b>Beta Participation:</b> Custom content is part of the <a href=\"/product-updates/note-revamp/\">revamped note beta program</a>, which Canvas turns on per instance. On an instance outside the beta, Canvas doesn't fire <code>NOTE__GET_CUSTOM_CONTENT</code>, and notes render without custom content. Reach out to Canvas support if you would like to participate." %}
 
@@ -27,7 +27,7 @@ When a note renders, Canvas fires `NOTE__GET_CUSTOM_CONTENT` targeting that note
 
 | Field     | Type                                  | Default | Description |
 |-----------|---------------------------------------|---------|-------------|
-| `section` | `NoteCustomContent.Section` or `None` | `None`  | The note section to render the block in. When unset, the block renders above the note body. |
+| `section` | [`NoteCustomContent.Section`](#sections) or `None` | `None`  | The note section to render the block in. When unset, the block renders above the note body. |
 | `url`     | `str`                                 | `None`  | The URL of a page to render in the block, such as a [SimpleAPI](/sdk/handlers-simple-api/) route your plugin serves. |
 | `content` | `str`                                 | `None`  | An HTML string to render in the block. |
 
