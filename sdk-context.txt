@@ -1966,6 +1966,7 @@ Let's take a look at what was generated for us.
     paperwork-eviscerator/
     ├── acme__paperwork_eviscerator
     │    ├── CANVAS_MANIFEST.json
+    │    ├── OVERVIEW.md
     │    ├── README.md
     │    └── handlers
     │         ├── __init__.py
@@ -1974,7 +1975,7 @@ Let's take a look at what was generated for us.
     └── tests
         ├── __init__.py
         └── test_models.py
-    5 directories, 9 files
+    5 directories, 10 files
     ```
 ###  CANVAS_MANIFEST.json 
 The CANVAS_MANIFEST.json is particularly important. It is used during the installation of the plugin. See the [Canvas Manifest](/sdk/canvas_manifest/) reference for every field it can contain.
@@ -2016,6 +2017,8 @@ Only handlers declared here are invoked by the plugin runner. If they are not de
 Secrets can be declared (though not defined) here. Any secrets declared here will be initialized on plugin install, and can be set with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set).
 ###  README.md 
 Share details about the purpose of your plugins and how it works in this README file.
+###  OVERVIEW.md 
+This file is the overview on your plugin's page in the Canvas Platform plugin catalog, written for the person deciding whether to install it. Canvas Platform renders it as markdown. Delete it to leave the plugin without an overview. See [Catalog](/sdk/canvas_manifest/#catalog) in the Canvas Manifest reference.
 ###  handlers/event_handlers.py 
 This file contains the handler class declared in the manifest file. We've included some sample content and copious comments for inspiration.
     ```python
@@ -2854,6 +2857,7 @@ The manifest is validated against a JSON schema when you run [`canvas validate`]
     │   └── test_event_handlers.py
     └── acme__my_plugin/             # plugin package
         ├── CANVAS_MANIFEST.json
+        ├── OVERVIEW.md
         ├── README.md
         ├── __init__.py
         ├── assets/
