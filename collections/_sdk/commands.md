@@ -63,8 +63,8 @@ The same pattern works with any command class — `PlanCommand(note_uuid=...)`, 
 **Not every command supports every method.** `originate` is the only one they all have; `edit`,
 `delete`, `commit`, `enter_in_error`, `review`, `send`, `delegate` and `sign` each depend on the
 command. The [command type table](/sdk/effects/#commands) lists the actions each command accepts —
-check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` belongs
-to [custom commands](/sdk/commands-custom-command/) alone.
+check it before relying on one. `upsert_metadata` works on any command, and `set_custom_html` works
+on any staged command, including [custom commands](/sdk/commands-custom-command/#collapsible-content).
 
 To call these over HTTP rather than from a handler, see
 [`CommandAPI`](/sdk/handlers-simple-api-commands/#methods).
@@ -1559,13 +1559,13 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
 
-Admins manage the formulary in the Django Admin UI under **DME Products**. In a plugin, look up a product and its ID with the [DmeProduct](/sdk/data-dme/#dmeproduct) data model, as the example below does.
+Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
 
 **Command-specific parameters**:
 
 | Name                    | Type                                  | Required to sign | Description |
 |:------------------------|:--------------------------------------|:-----------------|:------------|
-| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | The `id` of an active [DmeProduct](/sdk/data-dme/#dmeproduct) in your DME formulary. Can't be combined with `free_text_item`. |
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
 | `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
 | `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
@@ -1589,12 +1589,13 @@ Signing saves the item's formulary name and code and the indications with the or
 
 To filter or annotate the products, indications, suppliers, and ordering providers a user sees while filling in the command, handle the `PRE_SEARCH` and `POST_SEARCH` [events](/sdk/events/#order-dme-command) for the `ITEM`, `INDICATIONS`, `SEND_TO`, and `ORDERING_PROVIDER` fields, such as `ORDER_DME__ITEM__POST_SEARCH`.
 
+Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provider/) aren't searched in **Send to** automatically. To offer them there, see [Offering your own providers alongside the directory](/guides/customize-search-results/#offering-your-own-providers-alongside-the-directory).
+
 **Example**:
 
 ```python
 from canvas_sdk.commands import OrderDmeCommand
 from canvas_sdk.commands.constants import ServiceProvider
-from canvas_sdk.v1.data import DmeProduct
 
 supplier = ServiceProvider(
     first_name="Acme",
@@ -1604,13 +1605,10 @@ supplier = ServiceProvider(
     business_fax="5555550100",
 )
 
-# A product from the DME formulary, looked up by its HCPCS code.
-# get() raises an error unless exactly one active product has this code.
-wheelchair = DmeProduct.objects.get(code="K0001", active=True)
-
+# A product from the DME formulary
 formulary_order = OrderDmeCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
-    dme_product_id=str(wheelchair.id),
+    dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
     diagnosis_codes=["N186"],
     quantity=1,
     length_of_need="Lifetime",
