@@ -90,7 +90,11 @@ Push the code without deploying it, so Canvas Platform knows the plugin:
 
 ```console
 $ canvas deploy intake-plugin/acme__intake --push-only
+Pushed acme__intake 5d768a166204 to main on Canvas Platform.
+To install this commit on an instance: canvas deploy intake-plugin/acme__intake --ref 5d768a166204
 ```
+
+The last line is the command that would install this commit; step 5 deploys the plugin once its variables are stored.
 
 Then store its variable values for the instance. The plugin is not installed there yet, so the values wait for the first deploy:
 

@@ -28,7 +28,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
   Acme Health (acme): plugin prefix acme__
 ```
 
-`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
 A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
 
@@ -258,7 +258,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
-- `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+- `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Prints the pushed commit and the `canvas deploy --ref` command that installs it on an instance. Takes no `--instance`, `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
 
