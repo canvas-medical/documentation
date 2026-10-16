@@ -241,7 +241,7 @@ class MyHandler(BaseHandler):
 
 ## Theme the Patient Portal
 
-Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The theme applies to every portal page, including the login and registration pages.
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
 
 Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
 
@@ -257,7 +257,8 @@ Applies the theme. The effect raises a validation error, naming the attribute or
 
 - An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
 - A value doesn't match its format or range in the Attributes table.
-- `custom_css` contains a `<` character.
+- `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+- `font_source` is set without `font_family`.
 - A color pair the portal draws together falls below the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA contrast ratio. See [Contrast checks](#contrast-checks).
 
 ### Attributes
@@ -270,27 +271,28 @@ Applies the theme. The effect raises a validation error, naming the attribute or
 | `menu_text_color`                | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No       |
 | `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
 | `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
-| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, hyphens, and quotes.                     | No       |
-| `font_source`                    | `str` | An `https://` URL of the stylesheet that loads `font_family`, such as a Google Fonts URL. Up to 2,000 characters. To load a font you host, add its origin to the plugin's [`url_permissions`](/sdk/canvas_manifest/#url-permissions). | No       |
+| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No       |
+| `font_source`                    | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No       |
 | `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
-| `custom_css`                     | `str` | Your own CSS for the portal, up to 50,000 characters, without any `<` character.                                                                         | No       |
+| `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
 
-Setting `font_family` or `font_source` replaces the portal's default webfont.
+Setting `font_family` replaces the portal's default webfont.
 
 Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
 
 ### Contrast checks
 
-`apply()` checks only the pairs where your theme sets at least one of the two colors. A side you leave unset is checked as the portal default. Text needs a ratio of at least 4.5:1, and the brand color needs at least 3:1.
+Every pair below draws text, so each needs the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA ratio for normal text, 4.5:1. `apply()` checks a pair when your theme sets at least one of its colors, and checks the brand pairs when your theme sets `brand_color`. A side you leave unset is checked as the portal default. A pair of colors that appears twice, such as the brand on a white page and white text on the brand, is reported once.
 
 | Foreground                           | Background                                                   | Minimum ratio | Checked when you set                                          |
 |--------------------------------------|--------------------------------------------------------------|---------------|---------------------------------------------------------------|
 | Menu text (set or picked)            | `menu_background_color`                                      | 4.5:1         | `menu_text_color` or `menu_background_color`                  |
 | Body text (`#212121`)                | `page_background_color`                                      | 4.5:1         | `page_background_color`                                       |
-| `brand_color`                        | `page_background_color`                                      | 3:1           | `brand_color` or `page_background_color`                      |
-| `brand_color`                        | Section and accordion headers, a light tint of the brand color | 3:1           | `brand_color`                                                 |
+| White text (buttons, sent messages)  | `brand_color`                                                | 4.5:1         | `brand_color`                                                 |
+| `brand_color`                        | `page_background_color`                                      | 4.5:1         | `brand_color`                                                 |
+| `brand_color`                        | Section and accordion headers, a light tint of the brand color | 4.5:1         | `brand_color`                                                 |
 | Menu text (set or picked)            | `menu_selected_background_color`, or a tint of the menu text when unset | 4.5:1 | `menu_background_color`                                     |
-| `brand_color`                        | `menu_selected_background_color`                             | 3:1           | `brand_color` or `menu_selected_background_color`, with the default menu background |
+| `brand_color`                        | `menu_selected_background_color`                             | 4.5:1         | `brand_color` or `menu_selected_background_color`, with the default menu background |
 
 With the default menu background, the selected menu item draws its text in the brand color. A saturated brand color on a saturated selected background can fail even when each color passes against the page.
 

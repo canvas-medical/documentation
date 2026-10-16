@@ -548,6 +548,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Theming the Patient Portal"
+    url: /guides/theme-the-patient-portal/
+    description: Give the patient portal your practice's colors, font, corner radius and wording
+    uses:
+      - sdk
+
   - title: "Creating Webhooks"
     url: /guides/creating-webhooks-with-the-canvas-sdk/
     description: Make automatic API requests based on Canvas events
