@@ -46831,13 +46831,14 @@ The first step to embedding a SMART application is to configure OAuth credential
 ![OAuth Configuration](/assets/images/guides/embedding-a-smart-app/SMART_OAuth.png)
 ##  Creating an application 
 We encourage you to read our more comprehensive guide on [creating applications via the Canvas SDK](/guides/your-first-application/), but we can provide an abridged version here.
-Using the [Canvas CLI](/sdk/canvas_cli/), create an application from a template using `canvas init application`. After providing a name, the Canvas CLI will create a directory with your application inside it.
+Using the [Canvas CLI](/sdk/canvas_cli/), create an application from a template using `canvas init application`. After providing a name, the Canvas CLI will create a directory with your application inside it. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform), the directory is named with your organization's prefix, such as `acme__my_smart_app`. The application is also registered with Canvas Platform.
     ```bash
     dev@canvas:plugins$ canvas init application
       [1/1] project_name (My Cool Application): My Smart App
-    Project created in /Users/dev/src/plugins/my_smart_app
-    dev@canvas:plugins$ tree my_smart_app/
-    my_smart_app/
+    Project created in /Users/dev/src/plugins/acme__my_smart_app
+    Registered acme__my_smart_app with Canvas Platform.
+    dev@canvas:plugins$ tree acme__my_smart_app/
+    acme__my_smart_app/
     ├── CANVAS_MANIFEST.json
     ├── README.md
     ├── applications
@@ -46895,7 +46896,11 @@ We can set this initial URL and launch params in the `on_open` method found in `
                 target=LaunchModalEffect.TargetType.RIGHT_CHART_PANE,
             ).apply()
     ```
-That's all the plugin work we need to do in order to create a launcher for the SMART application. Install the plugin into your Canvas instance, navigate to a patient's chart, and choose your application from the launcher.
+That's all the plugin work we need to do in order to create a launcher for the SMART application. Deploy the plugin to your Canvas instance with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), navigate to a patient's chart, and choose your application from the launcher.
+    ```console
+    $ canvas deploy acme__my_smart_app --instance <instance>
+    ```
+Canvas Platform hosts a git repository for each plugin, rooted at the folder that contains `acme__my_smart_app`. The first deploy offers to create that repository, so if the folder holds other projects, move the application into a folder of its own first.
 ##  Executing the launch sequence 
 Upon launching your application, the SMART app will need the user to sign off on the access token it will receive to access the FHIR API on behalf of the logged in user.
 ![Authorize the token](/assets/images/guides/embedding-a-smart-app/SMART_Authorize.png)
@@ -47181,9 +47186,11 @@ This guide demonstrates how to build an external application that integrates wit
      - **Scopes** : Add `offline_access` (this allows the app to receive refresh tokens)
   5. **Save** the application
   6. Copy the **Client ID** \- you'll need this in the next step
-###  Step 2. Install the Plugin 
+###  Step 2. Deploy the Plugin 
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
     ```bash
-    canvas install note_management_app/note_management_app --secret client_id=<YOUR_CLIENT_ID>
+    canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
+    canvas config set acme__note_management_app client_id=<YOUR_CLIENT_ID> --instance <YOUR_INSTANCE>
     ```
 ###  OAuth Flow Details 
 ####  Authorization Code Flow with PKCE 
