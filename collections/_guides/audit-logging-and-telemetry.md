@@ -193,9 +193,10 @@ A refused request whose operation type can't be determined has `0`. Marking a cl
 entered in error is reported as a delete.
 
 On a staff account created or a change to staff access, `actor` is the administrator who made
-the change and `resources` holds the account changed. This holds during a session as another
-user too: `actor` is the administrator, not the user being acted as. A change made outside a signed-in
-session, such as a directory sync, has a `null` actor. When an administrator starts a session
+the change and `resources` holds the account changed. A change made outside a signed-in
+session, such as a directory sync, has a `null` actor. When the administrator is acting as
+another user, `actor` is still the administrator, not the user being acted as, and
+`enrichments.payload.impersonated_username` is the username of the user being acted as. When an administrator starts a session
 as another user, `actor` is the administrator and `resources` holds the user taken over, with
 `event_name` `impersonation.started` (and `impersonation.ended` when the session returns to
 the administrator).
