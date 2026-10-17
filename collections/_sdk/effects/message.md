@@ -34,13 +34,34 @@ Changes an existing message.
 
 - `message_id` is required, and must be the id of an existing message.
 - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+- `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See [Attaching files](#attaching-files).
 
 ### send() → Effect
 
 Sends a message that was already created, if you separated creating it from sending it.
 
 - Set `message_id` to the message to send.
+- `attachment_upload_keys` must not be set. Attach files with `create()`, `create_and_send()`, or `edit()` before sending.
 - When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
+
+## Attaching files
+
+To attach files to a message, set `attachment_upload_keys` to a list of upload keys. Each key is the `key` of a `StoredFilePart` that a user uploaded to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
+
+Attachments can be PNG, JPEG, or PDF files. When the effect is applied, Canvas checks that each key is a file your plugin uploaded and that the file is one of these types. It adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
+
+```python?partial=true
+from canvas_sdk.effects.note.message import Message
+
+effect = Message(
+    content="Here is the form we discussed.",
+    sender_id=staff.id,
+    recipient_id=patient.id,
+    attachment_upload_keys=[part.key for part in form_data.get_list("files") if not part.error],
+).create_and_send()
+```
+
+To read a message's attachments, see [MessageAttachment](/sdk/data-message/#messageattachment).
 
 ## Sending to a patient
 
@@ -78,6 +99,7 @@ Instances set up to deliver patient messages through a plugin, rather than throu
 | `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                 | Yes      |
 | `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                               | Yes      |
 | `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No       |
+| `attachment_upload_keys` | `list[str]` or `None` | Upload keys of PNG, JPEG, or PDF files to attach. Not allowed with `send()`. See [Attaching files](#attaching-files). | No |
 
 ## Validation & Errors
 
@@ -94,7 +116,6 @@ Before any effect is emitted, the model runs these checks:
 
 - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
 - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
-- **No Attachments Supported:** The Message effect does not yet support attachments.
 - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
 
 
