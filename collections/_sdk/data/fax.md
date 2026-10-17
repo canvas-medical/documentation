@@ -67,7 +67,7 @@ for event in failed:
 
 ### Faxes sent by a plugin
 
-A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
+A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. The [fax effects](/sdk/effect-fax/) for referrals, imaging orders, lab orders and letters record theirs the same way, on that document's action event model. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
 
 ```python?partial=true
 from canvas_sdk.v1.data import NoteActionEvent
