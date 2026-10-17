@@ -101,6 +101,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `ALLOW_PATIENT_DOCUMENT_UPLOADS` | Patient document uploads on "My Health" | `False` |
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
+| `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
 
@@ -203,6 +204,14 @@ Patients can download the after-visit summary of their own locked visit notes fr
 Each download fires an event your plugin can respond to, so you can keep track of which patients have received their summary and follow up with the ones who haven't.
 
 See [Link to After-Visit Summaries](/sdk/patient-portal/#link-to-after-visit-summaries) for the technical reference.
+
+### Share lab and imaging requisitions
+
+Patients can also download the requisition of their own lab and imaging orders. A lab requisition is the form a clinician prints from the order. An imaging requisition is the letter that tells the patient how to prepare for the test. As with summaries, you decide where the link appears, such as next to an upcoming lab visit on a page of your own. By default, a requisition is available until results arrive for the order. Canvas Support can extend that to completed orders with the `PATIENT_PORTAL_REQUISITION_ORDER_STATES` setting.
+
+Downloads fire the same event as summaries, so one handler can track every document a patient has received.
+
+See [Link to Lab and Imaging Requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for the technical reference.
 
 ### Control the navigation layout
 
