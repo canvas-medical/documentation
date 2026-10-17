@@ -596,13 +596,14 @@ The `UpdateUserEffect` updates a portal user's phone number or email. In the fut
 Updates the user's phone number or email.
 
 - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- `user_dbid` must belong to a patient's portal account. Canvas rejects the effect, and changes nothing, when the user is a staff member or superuser or isn't linked to a patient.
 - Only the fields you set are changed, and setting one to `None` clears it. With neither set, nothing changes.
 
 #### Attributes
 
 | Attribute      | Type  | Description                                                           | Required |
 |----------------|-------|-----------------------------------------------------------------------|----------|
-| `user_dbid`    | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to update. | Yes      |
+| `user_dbid`    | `int` | The `dbid` of the patient's [CanvasUser](/sdk/data-canvasuser/#user) to update. | Yes      |
 | `phone_number` | `str` | The phone number to store.                                            | No       |
 | `email`        | `str` | The email to store.                                                   | No       |
 
