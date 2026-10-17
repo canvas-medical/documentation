@@ -75,6 +75,8 @@ Open the following URL in the user's browser:
 
 - **`launch` parameter (required for staff users):** Staff users must include a `launch` parameter containing a base64-encoded JSON object with context. Without this parameter, the authorization will be denied with `error=access_denied`.
 
+  Canvas adds the launch context's keys to the token response and can add them to the token introspection response. Canvas drops any key that names a field it sets itself, so a launch context can't change a token's value, scope, or lifetime. The dropped keys include `access_token`, `scope`, `expires_in`, `active`, `client_id`, `sub`, and `exp`. Other keys, such as `patient`, pass through unchanged. A `launch` value that doesn't decode to a JSON object is denied with `error=access_denied`.
+
   ```bash
   # Encode a launch context with a patient id
   echo -n '{"patient":"PATIENT_KEY_HERE"}' | base64
