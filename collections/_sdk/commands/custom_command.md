@@ -221,15 +221,17 @@ The chart displays `content` in a sandboxed frame, but print pages inline the HT
 Print pages keep:
 
 - `<style>` blocks. The sanitizer doesn't change the CSS inside them.
-- `class`, `id`, and `style` attributes.
-- Common formatting and structure tags, such as headings, paragraphs, `<div>`, `<span>`, lists, tables, links, and images.
+- `<link rel="stylesheet">` tags whose `href` uses `https`. A stylesheet link over `http` loses its `href`.
+- `class`, `id`, `style`, `title`, `dir`, and `lang` attributes.
+- Common formatting and structure tags, such as headings, paragraphs, `<div>`, `<span>`, `<section>`, lists, tables, links, and images.
+- Inline `<svg>` charts drawn with `<g>`, `<defs>`, `<clipPath>`, `<rect>`, `<line>`, `<polyline>`, `<polygon>`, `<circle>`, `<ellipse>`, `<path>`, `<text>`, and `<tspan>`, with their geometry attributes and presentation attributes such as `fill`, `stroke`, and `transform`.
 
 Print pages remove:
 
-- `<script>` and `<svg>` elements, including their contents.
-- Event handler attributes, such as `onclick` and `onerror`.
-- Other tags outside the allowed set, such as `<head>`, `<section>`, `<tfoot>`, `<iframe>`, form elements, and buttons. Their text and child elements stay on the page, including `<style>` blocks inside `<head>`, but the tag's own attributes, including its `class`, are lost.
-- Inline `style` properties other than these formatting properties: `background-color`, `border`, `border-collapse`, `border-color`, `border-style`, `border-width`, `color`, `float`, `font-family`, `font-size`, `font-style`, `font-weight`, `height`, `line-height`, `margin`, `margin-left`, `margin-right`, `max-height`, `max-width`, `padding`, `padding-left`, `text-align`, `text-decoration`, `vertical-align`, and `width`. For example, an inline `display: flex` or `margin-top` is removed. Put rules like these in a `<style>` block instead.
+- `<script>` elements, including their contents, and the `<title>` element with its text.
+- Event handler attributes, such as `onclick` and `onerror`, including on SVG elements.
+- Other tags outside the allowed set, such as `<head>`, `<tfoot>`, `<iframe>`, form elements, and buttons. Their text and child elements stay on the page, including `<style>` blocks inside `<head>`, but the tag's own attributes, including its `class`, are lost.
+- Inline `style` properties that can overlay, clip, or hide parts of the printout, such as `position`, `top`, `left`, `z-index`, `transform`, `opacity`, `visibility`, and `overflow`, along with `background-image` and other properties outside the formatting allowlist. Formatting properties stay, including colors, fonts, text alignment and decoration, borders, margins, padding, sizes, `display`, and flexbox layout. A `<style>` block isn't filtered, so put rules that inline styles can't carry there instead.
 - Link and image URLs with a scheme other than `http`, `https`, `mailto`, or `tel`, such as `javascript:`. Images can also use `data:` URLs. The link text stays on the page.
 
 ## Collapsible Content
