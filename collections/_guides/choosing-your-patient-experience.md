@@ -114,6 +114,19 @@ When the care team sends a patient a message or shares a lab result, Canvas noti
 
 Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
 
+### Sign-in request limits
+
+The portal limits how often anyone can request sign-in messages or try a password. Requesting a link sends a real email or text message, so the limits keep a patient's inbox from being flooded and slow down attempts to guess passwords or probe for accounts.
+
+| Request | Limit |
+|---|---|
+| Signing in with a username and password | 10 attempts per minute from one IP address |
+| Requesting a link from the **Reset Password** or **Get an invite** page | 10 requests per minute from one IP address, and 5 per hour for one email address or phone number |
+
+The per-address limit counts every request for that email address or phone number, from any device, whether or not it matches a patient. Different spellings of the same address or number count together, such as `555-010-1234` and `+1 (555) 010-1234`. So if a patient says a reset link never arrived after several tries, they may need to wait up to an hour before requesting another.
+
+When a request goes over a limit, the password form shows "Too many login attempts. Please wait a minute and try again.", and the link pages show "Too many requests. Please try again later." These limits are separate from the account lockout that follows repeated wrong passwords. Canvas manages both.
+
 ### Branding
 
 You can put your organization's identity on the portal without building anything:
