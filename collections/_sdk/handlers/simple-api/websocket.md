@@ -83,6 +83,12 @@ def authenticate(self) -> bool:
   ...
 ```
 
+#### Connections from browser pages on other sites
+
+Canvas refuses a WebSocket connection that a browser opens from a page on another site, even when the request carries a valid `api_key` or session. A browser sends the page's origin in the `Origin` header of every WebSocket connection, and Canvas compares that origin to the host the connection was sent to. Pages served from your Canvas instance, such as plugin pages, pass this check. Scripts and servers that send no `Origin` header are unaffected.
+
+To show channel messages in a web app hosted on another domain, connect to the channel from that app's server and pass the messages on to its pages.
+
 
 ### Broadcasting Messages
 

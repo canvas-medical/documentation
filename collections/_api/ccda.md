@@ -16,7 +16,7 @@ An application can also send its client ID and secret with the request instead o
 
 A token bound to one patient returns only that patient's record, whatever patient key the URL names. A token is bound to a patient when its [SMART launch context](/api/customer-authentication/#authorization-code) names that patient. A token issued to a patient's own login is bound to that patient too. Other tokens export the patient the URL names, with these limits:
 
-- A staff user's token exports only a patient that user can access. If the user's [patient groups](/guides/roles-and-permissions/#patient-groups) don't include the patient, Canvas returns `403 Forbidden`.
+- A staff user's token exports only a patient that user can access. If the user's [patient groups](/guides/roles-and-permissions/#patient-groups) don't include the patient, or no patient has that key, Canvas returns `403 Forbidden`.
 - A [client credentials](/api/customer-authentication/#client-credentials) token exports only when its OAuth application is `Confidential`. Canvas refuses a client credentials token issued to a `Public` application with `403 Forbidden`.
 
 ## Request and Parameters
