@@ -30,6 +30,8 @@ busy_blocks = provider.google_calendar_busy_blocks.filter(active=True)
 
 A busy block records its start and its length in minutes, not an end time. A Google event that spans several days arrives as one busy block for each day.
 
+Releasing a busy block also updates its `modified` time. A plugin that keeps its own copy of busy time can query for blocks modified since its last check and remove those where `active` is `False`. If released busy time returns to Google, Canvas creates a new busy block rather than reactivating the released one.
+
 ### Find a provider's busy time for a day
 
 This example lists a provider's current busy intervals that start on a given day, ordered by start time:
