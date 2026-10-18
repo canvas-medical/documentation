@@ -111,8 +111,8 @@ user must also be in a group that includes the patient.
 
 | Workflow | Required permissions |
 | --- | --- |
-| View coverage and eligibility information | Revenue access. Coverage is listed only for patients the user has patient-group access to |
-| Change, order, expire, or remove a coverage, or remove a coverage card photo | Change permission on coverage, and patient-group access |
+| View coverage and eligibility information | Revenue access, and patient-group access. Coverage and eligibility requests and responses for patients outside the user's groups aren't returned |
+| Change, order, expire, or remove a coverage, or remove a coverage card photo | Change permission on coverage, and patient-group access. Copay and coinsurance also require revenue access. Without it, the rest of a new or edited coverage saves, but its copay and coinsurance stay unchanged |
 | Update a coverage's eligibility summary | Change permission on coverage, revenue access, and patient-group access |
 | Change claims and their coverages, snoozes, labels, comments, activity logs, and manual remits | Revenue access. Batch claim actions apply only to claims for patients the user has patient-group access to |
 | Add, update, or delete a prior authorization, or generate a batch of patient statements | Revenue access |
