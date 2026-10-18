@@ -187,6 +187,12 @@ as another user, `actor` is the administrator and `resources` holds the user tak
 `event_name` `impersonation.started` (and `impersonation.ended` when the session returns to
 the administrator).
 
+On a patient consent created or changed, `actor` is whoever recorded the decision. That's the
+patient when they respond to consents in the patient portal, and the staff user who records a
+consent in Canvas or files a consent document. A consent that arrives in an integration message
+names the `canvas-bot` account. A consent that a plugin records with the
+[`RecordPatientConsent`](/sdk/effect-record-patient-consent/) effect names the user whose action triggered the plugin, or `canvas-bot` when no user did.
+
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
 `enrichments.payload_withheld` are omitted. `changed_fields` is kept, since it holds only
