@@ -122,10 +122,11 @@ understand — and are delivered as batched newline-delimited JSON (NDJSON).
 
 The endpoint must be an `https://` URL whose host resolves only to public internet
 addresses, not to private, loopback, or link-local ones. The URL can't contain a
-username, password, or backslash; Canvas sends credentials in a request header instead. If
-the URL doesn't meet these requirements, Canvas sends nothing and holds events until the URL is corrected. Canvas
-doesn't follow redirects, so the endpoint must accept the POST at the configured URL. A
-redirect response counts as a failed delivery, and Canvas retries the batch later.
+username, password, or backslash; Canvas sends credentials in a request header instead.
+If the URL doesn't meet these requirements, Canvas sends nothing and holds events until
+the URL is corrected. Canvas doesn't follow redirects, so the endpoint must accept the POST
+at the configured URL. A redirect response counts as a failed delivery, and Canvas retries
+the batch later.
 
 Delivery is at-least-once, so the receiving system must tolerate occasional duplicate
 events. "Delivered" means your endpoint accepted the batch with an HTTP 2xx response; it
