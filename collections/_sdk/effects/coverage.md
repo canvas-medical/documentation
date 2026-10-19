@@ -21,7 +21,7 @@ Creates a coverage for a patient.
 
 - `patient_id`, `issuer_id`, `coverage_rank`, `id_number`, and `patient_relationship_to_subscriber` are required.
 - `coverage_id` must not be set.
-- The patient must not already have an active coverage with the same `coverage_rank` in the same stack.
+- The patient must not already have a coverage with the same `coverage_rank` in the same stack. A coverage that ends today or earlier, in the instance's time zone, frees its rank. To replace a primary coverage, expire the old one with today's date, then create the new one the same day.
 - `stack` defaults to `IN_USE`, and `coverage_start_date` defaults to today in the instance's time zone.
 - Canvas requests an eligibility check after the coverage is saved.
 
@@ -121,7 +121,7 @@ The ordering must follow these rules:
 
 Canvas applies the permissions of the user behind the effect:
 
-- A staff member needs the same permissions to create or update a coverage as in the chart.
+- A staff member needs the same permissions as in the chart: permission to change coverages, and access to the patient. This applies to every coverage change, including `expire()`, `remove()`, `remove_photo()`, and `CoverageReorder`.
 - A patient, for example on a patient portal page, can write only their own coverages.
 - An effect with no user behind it, such as one from a scheduled task, runs as Canvas Bot and needs no permission.
 
