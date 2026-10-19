@@ -112,7 +112,7 @@ user must also be in a group that includes the patient.
 | Workflow | Required permissions |
 | --- | --- |
 | View coverage and eligibility information | Revenue access, and patient-group access. Coverage and eligibility requests and responses for patients outside the user's groups aren't returned |
-| Change, order, expire, or remove a coverage, or remove a coverage card photo | Change permission on coverage, and patient-group access. Copay and coinsurance also require revenue access. Without it, the rest of a new or edited coverage saves, but its copay and coinsurance stay unchanged |
+| Change, order, expire, or remove a coverage, or remove a coverage card photo | Change permission on coverage, and patient-group access. Setting or changing copay or coinsurance also requires revenue access. Without it, a save that changes either value fails with a permission error and saves none of the coverage's changes. A save that leaves both values as stored succeeds |
 | Update a coverage's eligibility summary | Change permission on coverage, revenue access, and patient-group access |
 | Change claims and their coverages, snoozes, labels, comments, activity logs, and manual remits | Revenue access, and patient-group access. Batch claim actions skip claims for patients outside the user's groups. A user limited to specific patient groups can't change a claim that has no patient |
 | Add, update, or delete a prior authorization | Revenue access, and patient-group access. Claims for patients outside the user's groups aren't linked to the authorization |
@@ -121,7 +121,7 @@ user must also be in a group that includes the patient.
 | Create, edit, or delete a payer | Add, change, or delete permission on payers, which the admin console lists as insurers. Any signed-in user can search for and view payers, so staff can enter coverage without these permissions. Adding an address or phone number to a payer requires change permission on payers |
 | Process ERAs in the admin console | Revenue access and view permission on ERA process jobs |
 | Select claims for an installment plan in the admin console | View or change permission on installment plans to see the selection, and change permission to save it |
-| Create, view, or update a campaign, or add an intervention to one | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient |
+| Create, view, or update a campaign, or view or add its interventions | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient. Without that access, campaign data shown elsewhere is empty instead of failing. A protocol lists no campaigns, and a message sent by a campaign shows no intervention |
 | Remove a care team member | Change permission on care team memberships, and patient-group access |
 | Create, edit, or delete a staff record, including its signature | Add, change, or delete permission on staff. Any signed-in user can view staff records without these permissions |
 | Send, edit, or delete a message | Patient-group access. No model permission is required. A message that has been sent, or that a campaign created, can only be marked read. It can't be sent again, edited, or deleted. If the message's template restricts editing, its content can't be changed |
