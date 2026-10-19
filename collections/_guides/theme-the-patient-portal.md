@@ -127,6 +127,8 @@ It changes:
 - The selected menu item's text and icon, when the menu keeps its default background.
 - Checkboxes, focus rings and other controls that use the primary color.
 
+The button in the Session Expired notice keeps the default blue.
+
 ### `menu_background_color`
 
 The background of the left menu on desktop and of the slide-out menu on phones.
@@ -180,11 +182,11 @@ PatientPortalTheme(corner_radius=20)
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/portal-theme/corner-radius.png" alt="The Payments page with 20 pixel rounded cards" /></div>
 
-It rounds cards, panels, accordions, buttons, text fields and the login card. Shapes that are round by design keep their shape: avatars, round icon buttons and pill-shaped labels. The menu always keeps square corners.
+It rounds cards, panels, accordions, buttons, text fields and the login card. Shapes that are round by design keep their shape: avatars, round icon buttons and pill-shaped labels. The menu always keeps square corners. Pop-up windows, such as questionnaire forms and the Session Expired notice, keep their default corners.
 
 ### `font_family` and `font_source`
 
-The font for the whole portal. `font_family` is the family name, and `font_source` is the [Google Fonts](https://fonts.google.com/) stylesheet that loads it.
+The font for the portal. `font_family` is the family name, and `font_source` is the [Google Fonts](https://fonts.google.com/) stylesheet that loads it.
 
 ```python?partial=true
 PatientPortalTheme(
@@ -195,7 +197,7 @@ PatientPortalTheme(
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/portal-theme/font.png" alt="The login page in the Lora font" /></div>
 
-- The font applies to titles, menus, cards, buttons, tabs, form fields and notices.
+- The font applies to titles, menus, cards, buttons, tabs, form fields and notices. Questionnaire forms keep the default font, Lato.
 - Write the family name without quotes, also for multi-word names such as `Open Sans`.
 - `font_source` must be a Google Fonts stylesheet (`https://fonts.googleapis.com/css2?...`), and it needs `font_family`.
 - To use a font the browser already has, such as `Georgia`, set only `font_family`.
@@ -210,7 +212,7 @@ PatientPortalTheme(person_word="member")
 
 <div style="max-width: 100%"><img style="max-width: 100%" src="/assets/images/sdk/portal-theme/person-word.png" alt="The login page with the heading Member Login and the text Not yet a member" /></div>
 
-It changes the login heading ("Member Login"), the registration heading ("Member Registration") and the registration prompt ("Not yet a member?"). Emails keep the word "patient".
+It changes the login heading ("Member Login"), the registration heading ("Member Registration") and the registration prompt ("Not yet a member?"). The registration page's "Already a patient?" link and emails keep the word "patient".
 
 ### `custom_css`
 

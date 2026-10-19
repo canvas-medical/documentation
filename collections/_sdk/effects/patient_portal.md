@@ -276,7 +276,7 @@ Applies the theme. The effect raises a validation error, naming the attribute or
 | `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
 | `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
 
-Setting `font_family` replaces the portal's default webfont.
+Setting `font_family` replaces the portal's default webfont, except in questionnaire forms, which keep Lato. Pop-up windows, such as questionnaire forms and the Session Expired notice, keep their default corner radius.
 
 Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
 
