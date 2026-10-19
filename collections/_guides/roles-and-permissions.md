@@ -122,7 +122,7 @@ user must also be in a group that includes the patient.
 | Select claims for an installment plan in the admin console | View permission on installment plans to see the selection, and change permission to save it |
 | Create, view, or update a campaign, or add an intervention to one | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient |
 | Remove a care team member | Change permission on care team memberships, and patient-group access |
-| Send, edit, or delete a message | Patient-group access. No model permission is required. A message that has been sent, or that a campaign created, can only be marked read. It can't be edited or deleted |
+| Send, edit, or delete a message | Patient-group access. No model permission is required. A message that has been sent, or that a campaign created, can only be marked read. It can't be sent again, edited, or deleted. If the message's template restricts editing, its content can't be changed |
 
 ## Extending the defaults
 
