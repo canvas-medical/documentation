@@ -192,7 +192,7 @@ sections:
           - name: subscriber
             description: >-
               Who was signed up for or 'owns' the Coverage.<br><br>
-              With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), the subscriber must be the patient in context. Canvas reports any other patient as not found.
+              With a [token that acts as the patient](/api/customer-authentication/#writes-with-a-patient-context), the subscriber must be the patient in context. On update, Canvas also accepts the subscriber already on the coverage, so the patient can send back a coverage that staff linked to a family member. Canvas reports any other patient as not found.
             type: json
             required_in: create,update
             attributes:

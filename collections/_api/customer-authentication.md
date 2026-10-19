@@ -245,7 +245,7 @@ Some writes are also limited to what a patient can do. These limits apply when t
 - **[Patient](/api/patient/) update:** Staff manage some chart fields, and Canvas rejects an update that changes one of them. To keep a field, send its current value or leave it out. These fields are `active`, `deceasedBoolean`, `deceasedDateTime`, and the `clinical-note`, `administrative-note`, `patient-default-provider`, `patient-default-location`, and `business-line` extensions. Canvas also leaves the patient's `identifier` entries as they are, so an update can't add or remove an identifier.
 - **[QuestionnaireResponse](/api/questionnaireresponse/) create and update:** Canvas rejects a request whose `author` references a Practitioner. Set `author` to the patient, or leave it out. Without an `author`, Canvas records the patient as the author, and as the user who marks a response `entered-in-error`.
 - **[Media](/api/media/) create:** Canvas rejects a request whose `operator` references a Practitioner. Set `operator` to the patient, or leave it out.
-- **[Coverage](/api/coverage/) create and update:** The `subscriber` must be the patient in context. Canvas reports any other patient as not found. To link a coverage that another patient subscribes to, such as a family member's plan, staff must make the change.
+- **[Coverage](/api/coverage/) create and update:** The `subscriber` must be the patient in context. On update, Canvas also accepts the subscriber already on the coverage. Canvas reports any other patient as not found. To link a coverage that another patient subscribes to, such as a family member's plan, staff must make the change; the patient can then update that coverage without changing its subscriber.
 
 ## Scopes
 
