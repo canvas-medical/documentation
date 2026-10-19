@@ -26,11 +26,25 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
+      <td>Diagnose command and <code>DiagnoseCommand</code></td>
+      <td style="color: orange;">Deprecation</td>
+      <td>The Assess Condition command now records new conditions as well as conditions already on the chart, and reuses a charted condition instead of adding a duplicate. We plan to retire the Diagnose command in a future release. Existing Diagnose commands in notes stay as they are, and Diagnose remains available until then. Plugins should use <a href="/sdk/commands/#assess"><code>AssessCommand</code></a> with <code>icd10_code</code> for new work; <code>DiagnoseCommand</code> keeps working for now and will be deprecated when Diagnose is retired. You may want to update clinician training materials that mention Diagnose. <a href="/release-notes/1-367-0/">Read more.</a></td>
+      <td>TBD</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Workflow SDK</td>
       <td style="color: green;">New Version</td>
       <td>The Workflow SDK is deprecated and receives only fixes for defects or security issues. Build new logic as Canvas SDK plugins. Uploading new protocol code returns an error. If you still use the Workflow SDK, reach out to Canvas support and we can help you migrate to plugins.</td>
       <td></td>
       <td></td>
+    </tr>
+    <tr>
+      <td>Canvas CLI: Installing plugins with <code>canvas install</code> and <code>credentials.ini</code></td>
+      <td style="color: red;">Breaking Change</td>
+      <td>Installing plugins straight onto an instance with <code>canvas install</code>, using the instance credentials in <code>~/.canvas/credentials.ini</code>, is deprecated, and support for it ends on 12/14/2026. Deploy plugins through Canvas Platform with <code>canvas login</code> and <code>canvas deploy</code> instead. Moving a plugin to Canvas Platform includes renaming it with your organization's prefix. <a href="/guides/moving-to-canvas-platform/">Read more.</a></td>
+      <td></td>
+      <td>12/14/2026</td>
     </tr>
     <tr>
       <td>Read-only replica: Clinical note body structure</td>

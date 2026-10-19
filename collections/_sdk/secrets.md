@@ -58,28 +58,29 @@ It emits a deprecation warning during `canvas validate-manifest` and is mapped i
 
 ### Configuring Variables from the CLI
 
-Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
+Set values with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set), passing `KEY=value` pairs. Each value keeps the sensitivity the manifest declares for it.
 
-Provide values during install:
-
-```console
-$ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value --variable LOG_LEVEL=info
-```
-
-Update values on an installed plugin:
+For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform stores the values for each instance and a configure deployment brings them to the running plugin:
 
 ```console
-$ canvas config set <plugin_name> API_TOKEN=abc123 LOG_LEVEL=warn
+$ canvas config set acme__my_plugin API_TOKEN=abc123 LOG_LEVEL=info --instance acme-staging
 ```
 
-Pass multiple values by repeating the flag:
+Values stored for an instance before the plugin is installed there wait for its first deploy, so a plugin that needs a value from its first run can have it set first:
 
 ```console
-$ canvas install <plugin_name> \
-  --secret API_TOKEN=abc123 \
-  --secret WEBHOOK_SECRET=xyz \
-  --variable LOG_LEVEL=info
+$ canvas deploy my-plugin/acme__my_plugin --push-only
+$ canvas config set acme__my_plugin API_TOKEN=abc123 --instance acme-staging
+$ canvas deploy my-plugin/acme__my_plugin --instance acme-staging
 ```
+
+Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset):
+
+```console
+$ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
+```
+
+{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install --secret</code> and <code>--variable</code> set values while installing straight onto an instance with <code>credentials.ini</code>. Support ends on December 14, 2026; see <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
 
 #### Listing configured values
 

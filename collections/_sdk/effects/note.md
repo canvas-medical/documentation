@@ -571,6 +571,8 @@ Build a `ScheduleEvent` with the attributes the operation needs, then return one
 
 `create() → Effect` creates a schedule event with the attributes below.
 
+{% include alert.html type="info" content="Canvas doesn't check the provider's availability when a plugin creates, updates, or reschedules a schedule event. The double booking setting and <a href='/product-updates/google-calendar-sync/'>Google Calendar Sync</a> busy time don't block the effect, so check for conflicts in your plugin before booking." %}
+
 ### Attributes
 
 | Attribute              | Type                                    | Description                                                         | Required    |
@@ -729,6 +731,8 @@ Build an `Appointment` with the attributes the operation needs, then return one 
 
 `create() → Effect` creates an appointment with the attributes below.
 
+{% include alert.html type="info" content="Canvas doesn't check the provider's availability when a plugin creates, updates, or reschedules an appointment. The double booking setting and <a href='/product-updates/google-calendar-sync/'>Google Calendar Sync</a> busy time don't block the effect, so check for conflicts in your plugin before booking." %}
+
 ### Attributes
 
 | Attribute                  | Type                                    | Description                                                                                 | Required |
@@ -748,6 +752,7 @@ Build an `Appointment` with the attributes the operation needs, then return one 
 - Validates that the appointment note type exists, is of category `ENCOUNTER`, and is scheduleable
 - Ensures the patient exists in the system
 - Verifies that the practice location and provider exist
+- Records one `SCH` (Scheduling) and one `BKD` (Booked) entry in the appointment note's [state history](/sdk/data-note/#notestatechangeevent). Both entries have the user who triggered the effect as their `originator`, or Canvas Bot if no user triggered it. The note's own `originator` is the appointment's provider.
 
 ### Example Usage
 
@@ -837,6 +842,8 @@ Reschedules an existing appointment by creating a new appointment and cancelling
 | `external_identifiers`     | `list[AppointmentIdentifier]` or `None` | Updated external identifiers         | No       |
 
 **Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
+
+Rescheduling adds a `BKD` (Booked) entry to the appointment note's [state history](/sdk/data-note/#notestatechangeevent). The entry has the user who triggered the effect as its `originator`, or Canvas Bot if no user triggered it.
 
 #### Example Usage
 

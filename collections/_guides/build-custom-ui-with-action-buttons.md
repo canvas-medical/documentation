@@ -290,7 +290,7 @@ Use `StaffSessionAuthMixin` so only logged-in staff can call the endpoint. Parse
 from http import HTTPStatus
 from uuid import uuid4
 
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import SimpleAPIRoute, StaffSessionAuthMixin
@@ -309,24 +309,24 @@ class AddDiagnosisAPI(StaffSessionAuthMixin, SimpleAPIRoute):
         background = body.get("background", "")
         assessment = body.get("assessment", "")
 
-        diagnose = DiagnoseCommand(
+        assess = AssessCommand(
             # Set command_uuid so the response can return the new command's ID.
             command_uuid=str(uuid4()),
             note_uuid=note_id,
             icd10_code=icd10_code,
             background=background,
-            today_assessment=assessment,
+            narrative=assessment,
         )
 
         log.info(f"Adding diagnosis {icd10_code} to note {note_id}")
 
         return [
-            diagnose.originate(),
+            assess.originate(),
             JSONResponse(
                 {
                     "success": True,
                     "message": "Diagnosis added to note",
-                    "command_id": diagnose.command_uuid,
+                    "command_id": assess.command_uuid,
                 },
                 status_code=HTTPStatus.CREATED,
             ),
@@ -339,9 +339,9 @@ class AddDiagnosisAPI(StaffSessionAuthMixin, SimpleAPIRoute):
 User clicks "Add Diagnosis" in the note header
   → ActionButton.handle() returns a LaunchModalEffect with HTML/JS (note_id embedded)
   → The modal form captures input and POSTs to the SimpleAPI endpoint
-  → AddDiagnosisAPI authenticates (StaffSessionAuthMixin), builds a DiagnoseCommand
+  → AddDiagnosisAPI authenticates (StaffSessionAuthMixin), builds an AssessCommand with the ICD-10 code
   → It calls .originate() and returns a JSON response
-  → The diagnosis command appears in the note body
+  → The Assess Condition command appears in the note body
 ```
 
 ## One plugin or several? Grouping components
