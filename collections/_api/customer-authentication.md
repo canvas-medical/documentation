@@ -56,7 +56,7 @@ Before you begin, you need:
 
 - An application registered with the `client-credentials` grant type, as described in [Registering a third-party application on Canvas](#registering-a-third-party-application-on-canvas).
 - A signing key pair: an EC key on the P-384 curve, which signs with `ES384`, or an RSA key, which signs with `RS384`. Canvas accepts no other signing algorithms.
-- A JSON Web Key Set (JWKS) URL that serves your public key and is reachable from your Canvas instance. Give each key in the set a `kid` (key ID).
+- A JSON Web Key Set (JWKS) URL that serves your public key over HTTPS from a public address. Give each key in the set a `kid` (key ID).
 
 #### Add your JWKS URL to the application
 
@@ -67,7 +67,11 @@ You add the JWKS URL after you register the application, because the registratio
 3. In **JSON Web Key Set URL**, enter your JWKS URL, such as `https://your-app.example.com/.well-known/jwks.json`.
 4. Select **Save**.
 
-Canvas fetches the key set from this URL each time it verifies an assertion, so a key you add to or remove from the set takes effect without changing the application.
+Canvas fetches the key set from this URL each time it verifies an assertion, so a key you add to or remove from the set takes effect without changing the application. Canvas fetches it only under these conditions:
+
+- The URL uses `https`, and its host resolves only to public IP addresses. Canvas refuses a URL that resolves to any non-public address, such as a private or loopback address.
+- The URL returns the key set directly with `200 OK`. Canvas doesn't follow redirects.
+- The full response arrives within 5 seconds and is no larger than 64 KB.
 
 #### Build the client assertion
 
@@ -76,7 +80,7 @@ Sign a JWT with these header fields:
 | Header field | Value |
 |---|---|
 | `alg` | `ES384` or `RS384`, matching your key. |
-| `kid` | The key ID of the signing key in your JWKS. Canvas uses it to find the public key. |
+| `kid` | The key ID of the signing key in your JWKS. Canvas uses the key whose `kid` matches. That key's `use` must be `sig` or absent. |
 | `jku` | Optional. If present, it must exactly match the application's **JSON Web Key Set URL**. |
 
 The JWT must carry these claims:
@@ -86,10 +90,10 @@ The JWT must carry these claims:
 | `iss` | Your `Client ID`. |
 | `sub` | Your `Client ID`, the same value as `iss`. |
 | `aud` | The token endpoint URL, `{YOUR_CANVAS_EHR_INSTANCE}/auth/token/`, including the trailing slash. |
-| `exp` | The expiration time, in seconds since the Unix epoch. Keep it short; five minutes is typical. |
-| `jti` | A unique identifier for this assertion, such as a random UUID. |
+| `exp` | The expiration time, in seconds since the Unix epoch. Set it no more than five minutes after you create the assertion. |
+| `jti` | A unique identifier for this assertion, up to 255 characters, such as a random UUID. |
 
-Canvas rejects an assertion that is missing any of these claims. When it checks `exp`, and `iat` or `nbf` if you include them, Canvas allows up to 30 seconds of clock difference between your system and your Canvas instance.
+Canvas rejects an assertion that is missing any of these claims. When it checks `exp`, and `iat` or `nbf` if you include them, Canvas allows up to 30 seconds of clock difference between your system and your Canvas instance. Canvas also rejects an assertion whose `exp` is more than 10 minutes in the future: the five-minute limit plus five minutes for clock difference.
 
 Canvas accepts each `jti` only once, to prevent replay. It remembers a `jti` until five minutes after the assertion's `exp`, so create a new assertion with a new `jti` for every token request.
 
@@ -153,9 +157,10 @@ If Canvas can't verify the assertion, it responds with `401 Unauthorized` and an
 
 - The `iss` doesn't match a registered `Client ID`, or `sub` differs from `iss`.
 - The application has no **JSON Web Key Set URL**, or a `jku` header doesn't match it.
-- Canvas can't fetch the key set, or the set has no key with the assertion's `kid`.
+- Canvas can't fetch the key set. For example, the URL isn't `https`, resolves to a non-public address, redirects, takes longer than 5 seconds, or returns more than 64 KB.
+- The key set has no signing key with the assertion's `kid`.
 - The signature doesn't verify, or the JWT uses an algorithm other than `ES384` or `RS384`.
-- The `aud` isn't the token endpoint URL, a required claim is missing, or the assertion expired more than 30 seconds ago.
+- The `aud` isn't the token endpoint URL, a required claim is missing, the assertion expired more than 30 seconds ago, or its `exp` is more than 10 minutes in the future.
 - The `jti` was already used.
 
 ## Authorization Code
