@@ -73,13 +73,14 @@ Below, you can see how it will appear in the app — these fields will be stored
 Webhooks are user-defined callbacks that make a request to an API. You may want to create a webhook to notify a system you control that some event has occurred in Canvas. This guide shows how to create a webhook that sends an API request containing the ID of a Task upon its creation.
 > **Info:** This guide assumes pre-existing knowledge of the Canvas SDK. If you're starting from scratch, you may want to read and implement [Your First Plugin (with Claude Code)](/guides/your-first-plugin-with-claude-code/) before working through this exercise. 
 ##  Initialize a new plugin 
-The Canvas CLI gives you a great head start when creating a plugin. Simply run `canvas init`, and answer the prompt to name your plugin.
+The Canvas CLI gives you a great head start when creating a plugin. Run `canvas init`, and answer the prompt to name your plugin.
     ```sh
     $ canvas init
       [1/1] project_name (My Cool Plugin): Task Webhook
     Project created in /Users/andrew/src/canvas-plugins/task-webhook
+    Registered acme__task_webhook with Canvas Platform.
     ```
-This output shows the location of our freshly generated plugin.
+This output shows the location of our freshly generated plugin. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform), `canvas init` names the package with your organization's prefix, such as `acme__task_webhook`, and registers it with Canvas Platform. It also makes the project folder a git repository that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
 ##  Edit the plugin code 
 The default content of this file shows you the information you have available to you in the comments. I've stripped it down to almost nothing so we can layer in the functionality step by step.
 ###  Log a message when a task is created. 
@@ -101,11 +102,11 @@ The code below listens for the `TASK_CREATED` event and logs the string "A Task 
             return []
     ```
 You can see this log output by first streaming logs with `canvas logs` and then creating a task. You can create this task with Canvas Chat, a Task Command, or our [FHIR Task Create endpoint](/api/task/#create).
-After you've [installed your plugin](/sdk/canvas_cli/#canvas-install) and created a task, you should see this in your log stream:
+After you've [deployed your plugin](/sdk/canvas_cli/#canvas-deploy) and created a task, you should see this in your log stream:
     ```sh
     INFO 2024-09-26 17:04:08,396 Starting server, listening on port 50051
-    INFO 2024-09-26 17:04:08,396 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:04:08,396 Loading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
+    INFO 2024-09-26 17:04:08,396 Loading custom-plugins/acme__task_webhook
+    INFO 2024-09-26 17:04:08,396 Loading plugin 'acme__task_webhook:acme__task_webhook.handlers.event_handlers:Handler'
     INFO 2024-09-26 17:04:24,410 A Task was created!
     ```
 Awesome! But we're not here to log, we need to make an API request. To do that, we need to use the HTTP client found in the Canvas SDK's [Utils module](/sdk/utils/)
@@ -137,10 +138,10 @@ We can use <https://webhook.site/> for a quick way to test our webhook and see t
                 log.info("Notification unsuccessful. =[")
             return []
     ```
-After you've [installed your updated plugin](/sdk/canvas_cli/#canvas-install) and created a task, you should see this in your log stream:
+After you've [deployed your updated plugin](/sdk/canvas_cli/#canvas-deploy) and created a task, you should see this in your log stream:
     ```sh
-    INFO 2024-09-26 17:18:23,206 Loading custom-plugins/task_webhook
-    INFO 2024-09-26 17:18:23,207 Reloading plugin 'task_webhook:task_webhook.handlers.event_handlers:Handler'
+    INFO 2024-09-26 17:18:23,206 Loading custom-plugins/acme__task_webhook
+    INFO 2024-09-26 17:18:23,207 Reloading plugin 'acme__task_webhook:acme__task_webhook.handlers.event_handlers:Handler'
     INFO 2024-09-26 17:18:33,850 Successfully notified API of task creation!
     ```
 One thing worth mentioning here: making HTTP requests to external servers will slow plugin execution while it waits on the external server to respond. It's a good idea to make sure the servers you're hitting have a sufficiently quick response time.
@@ -156,12 +157,12 @@ We'll set two secrets, one for the unique id of the webhook, and one for an auth
     {
         "sdk_version": "0.1.4",
         "plugin_version": "0.0.1",
-        "name": "task_webhook",
+        "name": "acme__task_webhook",
         "description": "Webhooks for task creation",
         "components": {
             "handlers": [
                 {
-                    "class": "task_webhook.handlers.event_handlers:Handler",
+                    "class": "acme__task_webhook.handlers.event_handlers:Handler",
                     "description": "Hit an API when a task is created",
                     "data_access": {
                         "event": "",
@@ -181,7 +182,11 @@ We'll set two secrets, one for the unique id of the webhook, and one for an auth
     }
     ```
 The `variables` array declares two sensitive variables, `WEBHOOK_ID` and `AUTH_TOKEN`. After we update the plugin, we can set values for these in the plugin configuration page. This allows for different values to be used across different installations. Marking each entry with `"sensitive": true` means the values will be masked in the Admin UI and listed only as `[set]` or `[not set]` by `canvas config list`.
-Here's how that configuration looks:
+You can also set them from the CLI with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set):
+    ```console
+    $ canvas config set acme__task_webhook WEBHOOK_ID=<webhook-id> AUTH_TOKEN=<auth-token> --instance <instance>
+    ```
+Here's how that configuration looks in the plugin configuration page:
 ![Plugin secrets
 configuration](/assets/images/webhook-guide/webhook-guide-secrets.png)
 With those values set, we can use them in our code:
@@ -270,11 +275,11 @@ This guide provides examples of how to leverage patient data to personalize the 
 ##  How to add a Widget? 
 A widget can be added by listening to the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event and returning one or several `PortalWidget`
 ###  Step 1: Initialize a plugin 
-The Canvas CLI gives you a great head start when creating a plugin. Simply run
+The Canvas CLI gives you a great head start when creating a plugin. Run
     ```bash
       canvas init
     ```
-Then, follow the prompts to name and configure your new plugin project.
+Then, follow the prompts to name and configure your new plugin project. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform), `canvas init` names the package with your organization's prefix, such as `acme__my_cool_plugin`, and registers it with Canvas Platform. It also makes the project folder a git repository that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
 ###  Step 2: Update your handler 
 Modify your handler to handle the widget configuration event. For example:
     ```python
@@ -1422,16 +1427,18 @@ We will make two simple changes to the charting interface when the selected pati
   1. Move the Immunization list to the top of the patient summary
   2. Prevent adult-only diagnosis choices from appearing in searches
 First, we'll need to initialize a new plugin.
-The Canvas CLI gives you a great head start when creating a plugin. Simply run `canvas init`, and answer the prompt to name your plugin.
+The Canvas CLI gives you a great head start when creating a plugin. Run `canvas init`, and answer the prompt to name your plugin.
     ```sh
     $ canvas init
       [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
     Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-customizations
+    Registered acme__pediatric_patient_chart_customizations with Canvas Platform.
     ```
-This output shows the location of our freshly generated plugin project. In this directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your code.
+This output shows the location of our freshly generated plugin project. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform), `canvas init` names the package with your organization's prefix, such as `acme__pediatric_patient_chart_customizations`, and registers it with Canvas Platform. It also makes the project folder a git repository that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
+In the package directory, you'll see a default class (`acme__pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your code.
     ```sh
-    $ tree pediatric_patient_chart_customizations/
-    pediatric_patient_chart_customizations/
+    $ tree acme__pediatric_patient_chart_customizations/
+    acme__pediatric_patient_chart_customizations/
     ├── CANVAS_MANIFEST.json
     ├── README.md
     └── handlers
@@ -1443,8 +1450,8 @@ You can use this file as a starting point, or you can start fresh with a new fil
 ###  Move Immunizations to the Top of the Patient Summary 
 I've created a new file, `handlers/pediatric_chart_layout.py`, and I've updated my `CANVAS_MANIFEST.json` to reflect it.
     ```sh
-    $ tree pediatric_patient_chart_customizations/
-    pediatric_patient_chart_customizations/
+    $ tree acme__pediatric_patient_chart_customizations/
+    acme__pediatric_patient_chart_customizations/
     ├── CANVAS_MANIFEST.json
     ├── README.md
     └── handlers
@@ -1551,14 +1558,14 @@ When loading the patient's summary, the front-end consults a list of sections to
             ])
             return [layout.apply()]
     ```
-Once installed, pediatric patients will have their immunization section at the top of their summary, while adult patients will continue to have social determinants as their initial section.
+Once you deploy the plugin with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), pediatric patients will have their immunization section at the top of their summary. Adult patients will continue to have social determinants as their initial section.
 ###  Prevent adult-only diagnosis choices from appearing in searches 
 Some diagnosis codes are restricted to adult patients. CMS provides a [list](https://www.cms.gov/Medicare/Coding/OutpatientCodeEdit/Downloads/ICD-10-IOCE-Code-Lists.pdf) of these "Adult Diagnoses". We can reference this list and filter them out of the diagnosis search results for pediatric patients. This increases the quality of your search and makes it easier for you to find the right choice.
 I've created a new file, `handlers/pediatric_condition_search.py`, and I've updated my `CANVAS_MANIFEST.json` to reflect it.
 Here's the updated plugin file structure:
     ```sh
-    $ tree pediatric_patient_chart_customizations/
-    pediatric_patient_chart_customizations/
+    $ tree acme__pediatric_patient_chart_customizations/
+    acme__pediatric_patient_chart_customizations/
     ├── CANVAS_MANIFEST.json
     ├── README.md
     └── handlers
@@ -1572,12 +1579,12 @@ And here's the updated `CANVAS_MANIFEST.json`:
     {
         "sdk_version": "0.1.4",
         "plugin_version": "0.0.1",
-        "name": "pediatric_patient_chart_customizations",
+        "name": "acme__pediatric_patient_chart_customizations",
         "description": "Customizations for pediatric patients",
         "components": {
             "handlers": [
                 {
-                    "class": "pediatric_patient_chart_customizations.handlers.pediatric_chart_layout:PediatricChartLayout",
+                    "class": "acme__pediatric_patient_chart_customizations.handlers.pediatric_chart_layout:PediatricChartLayout",
                     "description": "Moves the immunization section to the top of the patient summary on pediatric charts.",
                     "data_access": {
                         "event": "",
@@ -1586,7 +1593,7 @@ And here's the updated `CANVAS_MANIFEST.json`:
                     }
                 },
                 {
-                    "class": "pediatric_patient_chart_customizations.handlers.pediatric_condition_search:PediatricConditionSearch",
+                    "class": "acme__pediatric_patient_chart_customizations.handlers.pediatric_condition_search:PediatricConditionSearch",
                     "description": "Filters the condition search to eliminate adult-only conditions on pediatric charts.",
                     "data_access": {
                         "event": "",
@@ -1758,7 +1765,7 @@ Here's the full code:
                 )
             ]
     ```
-Once installed, certain diagnosis codes will not clutter up search results in commands for pediatric patients, but will continue to show as expected for patients over the age of 15.
+Once deployed, certain diagnosis codes will not clutter up search results in commands for pediatric patients, but will continue to show as expected for patients over the age of 15.
 ##  Watch the Workflow in Action 
 View and deploy the Pediatric Patient Chart Customization Extension [here](https://www.canvasmedical.com/extensions/pediatric-patient-chart-customizations).
 ##  Conclusion 
@@ -1777,14 +1784,14 @@ To create a new application, run the following command:
     ```bash
     canvas init application
     ```
-This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file.
+This will generate a boilerplate application along with a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications) file. Signed in to Canvas Platform, `canvas init` names the package with your organization's prefix, such as `acme__my_cool_application`, and registers it with Canvas Platform.
 ##  Step 3: Understanding the `CANVAS_MANIFEST.json` File 
 The `CANVAS_MANIFEST.json` file describes your application and its components. Below is an example of a manifest and a description of the customizable properties:
     ```json
     {
         "sdk_version": "0.1.4",
         "plugin_version": "0.0.1",
-        "name": "my_cool_application",
+        "name": "acme__my_cool_application",
         "description": "Edit the description in CANVAS_MANIFEST.json",
         "url_permissions": [
             {
@@ -1795,7 +1802,7 @@ The `CANVAS_MANIFEST.json` file describes your application and its components. B
         "components": {
             "applications": [
                 {
-                    "class": "my_cool_application.applications.my_application:MyApplication",
+                    "class": "acme__my_cool_application.applications.my_application:MyApplication",
                     "name": "My Application",
                     "description": "An Application that does xyz...",
                     "scope": "global",
@@ -1865,11 +1872,13 @@ Developers must extend the `Application` class and override the `on_open` method
   - `RIGHT_CHART_PANE`: Opens the URL in the right-hand pane of the patient chart.
   - `RIGHT_CHART_PANE_LARGE`: Opens the URL in an enlarged right-hand pane of the patient chart.
 When opened in a patient's chart, both right chart pane targets stay open while the user moves around the same patient's chart. They close when the user opens a different patient or leaves the chart.
-##  Step 5: Installing the Application 
-To install your application, run:
+##  Step 5: Deploying the Application 
+Sign in with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) if you haven't, then validate and deploy your application to an instance:
     ```bash
-    canvas install <path/to/application>
+    canvas validate <path/to/application>
+    canvas deploy <path/to/application> --instance <instance>
     ```
+`<path/to/application>` is the package folder that holds `CANVAS_MANIFEST.json`, named with your organization's prefix, such as `acme__my_cool_application`. See [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy).
 ----- END PAGE https://docs.canvasmedical.com/guides/your-first-application/
 
 
@@ -1884,7 +1893,8 @@ Together, Claude Code with CPA lets developers go from an idea to a working, dep
 ##  Prerequisites 
   - Python 3.12+ installed
   - A Canvas instance with admin access
-  - [OAuth credentials configured](/api/customer-authentication/) and saved locally in `~/.canvas/credentials.ini` (register an application with `confidential` client type and `client-credentials` grant type). For more, see [these configuration steps](/guides/your-first-plugin/#2-configure-the-canvas-cli-for-your-instances)
+  - The Canvas CLI signed in to Canvas Platform with `canvas login`. See [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform)
+  - Instance API credentials in `~/.canvas/credentials.ini`, which `/cpa:deploy` uses to install the plugin and stream its logs. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated); this method is deprecated, and support ends on December 14, 2026
   - [Claude Code installed](https://docs.anthropic.com/en/docs/claude-code/overview)
 ##  1\. Install the Canvas Plugin Assistant and Set Up Your Environment 
 Follow the installation and setup instructions in the [Canvas Plugin Assistant README](https://github.com/canvas-medical/coding-agents/tree/main/canvas-plugin-assistant). Once complete, run `/cpa:check-setup` to verify everything is ready.
@@ -1930,35 +1940,33 @@ Plugins are your tool for customizing the Canvas experience. By using the module
 The video below showcases a Canvas engineer working through this guide step-by-step.
 ##  1\. Install the Canvas CLI 
 To install the Canvas CLI, simply `pip install canvas`. Python 3.11–3.14 (`>=3.11, <3.15`) is required. You can find additional detail on the features of the Canvas CLI [here](/sdk/canvas_cli/).
-##  2\. Configure the Canvas CLI for your instances 
-The Canvas CLI uses OAuth credentials to connect to your Canvas instance. If you've used our FHIR API, you'll be very familiar with the process for [registering credentials](/api/customer-authentication/). Register a separate OAuth application, choosing `confidential` for the Client type, and `client-credentials` for the Authorization grant type. Redirect URIs can be left blank, and the Algorithm should be `No OIDC support`. Note the client_id and client_secret for the next step.
-Create a file at the path `~/.canvas/credentials.ini`. Here is what its contents should look like:
-    ```ini
-    [buttered-popcorn]
-    client_id=butter
-    client_secret=salt
-    [buttered-popcorn-dev]
-    client_id=devbutter
-    client_secret=devsalt
-    is_default=true
+##  2\. Sign in to Canvas Platform 
+The Canvas CLI deploys plugins through [Canvas Platform](https://platform.canvasmedical.com). Sign in once on your machine:
+    ```sh
+    $ canvas login
+    Signed in to https://platform.canvasmedical.com as you@example.com.
+      Acme Health (acme): plugin prefix acme__
     ```
-Each section represents credentials for a different Canvas instance. Replace the section headers with your Canvas subdomains. The example configuration provided would be valid for instances with URLs `https://buttered-popcorn.canvasmedical.com` and `https://buttered-popcorn-dev.canvasmedical.com`.
-You can optionally set the `is_default` flag for the instance you wish to be implied when using the CLI. If no section is set as default, the first one will be considered default.
+`canvas login` opens your browser and lists each organization you belong to with its plugin prefix. Every plugin you publish is named with that prefix, such as `acme__paperwork_eviscerator`. Publishing a plugin needs the Plugin developer role in the organization, and deploying it needs Deploy manager.
+Run `canvas whoami` at any time to check which platform you are signed in to and as whom. If you run `canvas init` while signed out, it says so and creates a plugin that `canvas deploy` refuses, so sign in first.
+> **Info:** Configuring the CLI with OAuth client credentials in `~/.canvas/credentials.ini` is deprecated, and support ends on December 14, 2026. See [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
 ##  3\. Initialize a new plugin 
 The Canvas CLI gives you a great head start when creating a plugin. Simply run `canvas init`, and answer the prompt to name your plugin.
     ```sh
     $ canvas init
       [1/1] project_name (My Cool Plugin): Paperwork Eviscerator
     Project created in /Users/andrew/src/canvas-plugins/paperwork-eviscerator
+    Registered acme__paperwork_eviscerator with Canvas Platform.
     ```
-This output shows the location of our freshly generated plugin project.
+This output shows the location of our freshly generated plugin project. `canvas init` names the package with your organization's prefix, registers it with Canvas Platform, and makes the project folder a git repository that `canvas deploy` pushes to. If you belong to several organizations, it asks which one publishes the plugin.
 ##  4\. Navigate the structure of a plugin 
 Let's take a look at what was generated for us.
     ```sh
     $ tree paperwork-eviscerator/
     paperwork-eviscerator/
-    ├── paperwork_eviscerator
+    ├── acme__paperwork_eviscerator
     │    ├── CANVAS_MANIFEST.json
+    │    ├── OVERVIEW.md
     │    ├── README.md
     │    └── handlers
     │         ├── __init__.py
@@ -1967,7 +1975,7 @@ Let's take a look at what was generated for us.
     └── tests
         ├── __init__.py
         └── test_models.py
-    5 directories, 9 files
+    5 directories, 10 files
     ```
 ###  CANVAS_MANIFEST.json 
 The CANVAS_MANIFEST.json is particularly important. It is used during the installation of the plugin. See the [Canvas Manifest](/sdk/canvas_manifest/) reference for every field it can contain.
@@ -1975,12 +1983,12 @@ The CANVAS_MANIFEST.json is particularly important. It is used during the instal
     {
         "sdk_version": "0.1.4",
         "plugin_version": "0.0.1",
-        "name": "paperwork_eviscerator",
+        "name": "acme__paperwork_eviscerator",
         "description": "Edit the description in CANVAS_MANIFEST.json",
         "components": {
             "handlers": [
                 {
-                    "class": "paperwork_eviscerator.handlers.event_handlers:Handler",
+                    "class": "acme__paperwork_eviscerator.handlers.event_handlers:Handler",
                     "description": "A handler that does xyz...",
                     "data_access": {
                         "event": "",
@@ -2006,9 +2014,11 @@ The CANVAS_MANIFEST.json is particularly important. It is used during the instal
     ```
 The name, plugin version, and description are all surfaced in your Canvas instance when viewing installed plugins.
 Only handlers declared here are invoked by the plugin runner. If they are not declared, they will be ignored.
-Secrets can be declared (though not defined) here. Any secrets declared here will be initialized on plugin install, and can be set in the plugin listing in the Settings section of your Canvas instance.
+Secrets can be declared (though not defined) here. Any secrets declared here will be initialized on plugin install, and can be set with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set).
 ###  README.md 
 Share details about the purpose of your plugins and how it works in this README file.
+###  OVERVIEW.md 
+This file is the overview on your plugin's page in the Canvas Platform plugin catalog, written for the person deciding whether to install it. Canvas Platform renders it as markdown. Delete it to leave the plugin without an overview. See [Catalog](/sdk/canvas_manifest/#catalog) in the Canvas Manifest reference.
 ###  handlers/event_handlers.py 
 This file contains the handler class declared in the manifest file. We've included some sample content and copious comments for inspiration.
     ```python
@@ -2065,9 +2075,15 @@ Set the `RESPONDS_TO` value to the [Event Type](/sdk/events/#event-types-and-con
 ##  6\. Return an Effect 
 Form an [Effect](/sdk/effects/#effect-types) to return to your Canvas instance.
 ##  7\. Deploy and use your plugin 
-When your plugin is just the way you'd like it, deploying is simple. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run `canvas install <path/to/plugin_package>` (i.e. `canvas install paperwork_eviscerator`) and your plugin will be packaged, uploaded, installed, and enabled. As you make changes to your plugin, run the same command to update the code of the installed plugin.
+When your plugin is just the way you'd like it, validate it and deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
+    ```sh
+    $ canvas validate acme__paperwork_eviscerator
+    $ canvas deploy acme__paperwork_eviscerator --instance buttered-popcorn-dev
+    ```
+`canvas deploy` commits your changes after you confirm, pushes them to Canvas Platform, and deploys that commit to the instance, where the plugin is installed and enabled. Replace `buttered-popcorn-dev` with your instance; without `--instance`, `deploy` targets the only instance you can deploy to, or lists the choices. As you make changes to your plugin, run the same command to deploy the new code.
 ##  8\. Tail the logs 
 To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
+`canvas logs` connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until it moves to your Canvas Platform sign-in, before December 14, 2026.
 ----- END PAGE https://docs.canvasmedical.com/guides/your-first-plugin/
 
 
@@ -2322,6 +2338,7 @@ Value | Description
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/canvas_cli/
+> **Warning:** The Canvas CLI signs in with `canvas login` and ships plugins with `canvas deploy`. Instance API credentials in `credentials.ini` and `canvas install` are deprecated, and support for them ends on **December 14, 2026**. See [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
 ##  Getting Started 
 ###  Installation using `pip`
 To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11, 3.12, or 3.13 is required.
@@ -2329,10 +2346,48 @@ To upgrade the Canvas CLI if you installed using `pip`, execute `pip install --u
 ###  Installation using `uv`
 To install the Canvas CLI using `uv`, execute `uv tool install canvas`. `uv` will find or procure an acceptable Python version.
 To upgrade the Canvas CLI if you installed using `uv`, execute `uv tool upgrade canvas`.
-###  Configuration and Authenticating to Your Canvas Instance 
-Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas instance subdomains, and add client_id and client_secret credentials to each section. For example, if your Canvas instance url is `https://buttered-popcorn.canvasmedical.com/`, you would have a section `[buttered-popcorn]` with key-value pairs for `client_id` and `client_secret`.
-> **Info:** **Getting Credentials:** Learn how to get register a client_id and client_secret [here](/api/customer-authentication/#registering-a-third-party-application-on-canvas).  
-> The Canvas CLI uses OAuth, just like the FHIR API. 
+###  Signing in to Canvas Platform 
+The Canvas CLI signs in to [Canvas Platform](https://platform.canvasmedical.com), which hosts each plugin's git repository and deploys it to the instances your organizations manage. Sign in once per machine:
+    ```console
+    $ canvas login
+    Signed in to https://platform.canvasmedical.com as you@example.com.
+      Acme Health (acme): plugin prefix acme__
+    ```
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a service account instead.
+A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
+`canvas login --platform <url>` or the `CANVAS_PLATFORM_URL` environment variable points the CLI at a platform other than https://platform.canvasmedical.com, and later commands keep using the platform you last signed in to.
+`canvas whoami` shows which platform the CLI is using, why, and who you are signed in as there:
+    ```console
+    $ canvas whoami
+    Platform: https://platform.canvasmedical.com (from your last `canvas login`)
+    Signed in as you@example.com (browser session from `canvas login`)
+      Acme Health (acme): plugin prefix acme__, can push, deploy, configure, uninstall
+    ```
+**You are now ready to use the Canvas CLI.** Continue with `canvas init` and `canvas deploy`.
+###  Service accounts for CI/CD 
+The Canvas CLI supports service accounts for automated pipelines such as GitHub Actions, GitLab CI or any other CI/CD system. A service account is an identity that belongs to your organization rather than to a person, so a pipeline that publishes and deploys plugins keeps working when the person who set it up leaves, and Canvas Platform's audit log names the service account behind each push and deploy. A pipeline signs in with the account's token instead of `canvas login`, which needs a browser.
+**Create a service account.** An Organization admin, Plugin developer or Deploy manager creates one on the Credentials page in Canvas Platform. A service account can hold the Plugin developer and Deploy manager roles. An Organization admin can give it either role; a Plugin developer or Deploy manager can give only the roles they hold, so a Plugin developer cannot create an account that deploys. Its token is shown once and is valid for a year.
+**Use it in a pipeline.** Store the token as a secret in your CI/CD system and expose it to the job as the `CANVAS_PLATFORM_TOKEN` environment variable. No `canvas login` step is needed:
+    ```yaml
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - run: pip install canvas
+    - run: canvas deploy my-plugin/acme__my_plugin --instance acme-staging --yes
+      env:
+        CANVAS_PLATFORM_TOKEN: ${{ secrets.CANVAS_PLATFORM_TOKEN }}
+    ```
+  - Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history.
+  - The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
+  - When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
+  - `--yes` commits uncommitted changes without prompting. A deployment that needs consent for another plugin's custom data exits non-zero and lists the requests, because only a person at a terminal answers those.
+  - `CANVAS_PLATFORM_URL` points the job at a platform other than https://platform.canvasmedical.com.
+**Rotate or revoke it.** The token does not refresh. Rotating it on the Credentials page ends the old token, and revoking the service account ends it for good; either way the CLI's next request says that Canvas Platform did not accept `CANVAS_PLATFORM_TOKEN`. `canvas logout` signs out only a browser session and leaves the token alone.
+###  Instance API credentials (`credentials.ini`): deprecated 
+> **Warning:** **Deprecated:** authenticating the Canvas CLI with OAuth client credentials in `~/.canvas/credentials.ini`, and installing plugins with `canvas install`, are deprecated. Support ends on **December 14, 2026**. Sign in with `canvas login` and deploy with `canvas deploy` instead. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/) walks through the switch. 
+With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
+A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in Which plugins go through Canvas Platform.
+The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
 **Example:**
     ```ini
     [buttered-popcorn]
@@ -2347,7 +2402,15 @@ Create a file `~/.canvas/credentials.ini` with sections for each of your Canvas 
     client_secret=localclientsecret
     ```
 You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
-**You are now ready to use the Canvas CLI**
+###  Deprecation notices 
+`canvas install` prints a deprecation warning on every run. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+###  Which plugins go through Canvas Platform 
+`canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
+  - A name without a prefix, or a machine that is not signed in, goes straight to the instance.
+  - Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
+`--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
+An instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
+git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
 ##  Update Notifications 
 The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
     ```shell
@@ -2371,9 +2434,13 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `--version`
   - `--help`: Show this message and exit.
 ##  Commands 
+  - `login`: Sign in to Canvas Platform through your browser
+  - `logout`: Sign out of Canvas Platform
+  - `whoami`: Show which Canvas Platform you are signed in to, and as whom
   - `init`: Create a new plugin
-  - `install`: Install a plugin into a Canvas instance
-  - `uninstall`: Uninstall a plugin from a Canvas instance
+  - `deploy`: Publish a plugin to Canvas Platform and deploy it
+  - `clone`: Clone a plugin's repository from Canvas Platform
+  - `uninstall`: Uninstall a plugin
   - `enable`: Enable a plugin from a Canvas instance
   - `disable`: Disable a plugin from a Canvas instance
   - `list`: List all plugins from a Canvas instance
@@ -2381,16 +2448,112 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `validate-manifest`: Validate the Canvas Manifest json file
   - `logs`: Listen and print log streams from a Canvas instance
   - `config list`: List plugin variables on a Canvas instance
-  - `config set`: Set plugin variables on a Canvas instance
-###  `canvas init`
-Create a new plugin.
+  - `config set`: Set plugin variables
+  - `config unset`: Clear plugin variables
+  - `install`: Install a plugin into a Canvas instance (deprecated; use `deploy`)
+###  `canvas login`
+Sign in to Canvas Platform through your browser (OAuth authorization code with PKCE). The sign-in URL is also printed, for a machine without a browser. See Signing in to Canvas Platform.
 **Usage** :
     ```console
-    $ canvas init [OPTIONS]
+    $ canvas login [OPTIONS]
     ```
+**Options** :
+  - `--platform TEXT`: Canvas Platform URL. Defaults to `$CANVAS_PLATFORM_URL`, the platform you last signed in to, or https://platform.canvasmedical.com
+  - `--help`: Show this message and exit.
+###  `canvas logout`
+Revoke this machine's Canvas Platform session and delete its stored tokens. A service account token in `CANVAS_PLATFORM_TOKEN` is left alone, and the command says that commands still act as that account.
+**Usage** :
+    ```console
+    $ canvas logout [OPTIONS]
+    ```
+**Options** :
+  - `--platform TEXT`: Canvas Platform URL
+  - `--help`: Show this message and exit.
+###  `canvas whoami`
+Show the Canvas Platform the CLI uses and where that choice came from (`--platform`, `CANVAS_PLATFORM_URL`, your last `canvas login`, or the default), then the account it signs in as, whether the credential is a browser session or a service account token, and each organization's plugin prefix and what you can do there. When `CANVAS_PLATFORM_TOKEN` is set alongside a stored session, it says the token takes precedence.
+`whoami` asks Canvas Platform, so a revoked or expired credential is reported rather than shown as signed in. It never prints a token, so it is safe to run in a CI job's log. It exits non-zero when you are not signed in, with the `canvas login` command to run.
+**Usage** :
+    ```console
+    $ canvas whoami [OPTIONS]
+    ```
+**Options** :
+  - `--platform TEXT`: Canvas Platform URL
+  - `--help`: Show this message and exit.
+###  `canvas init`
+Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, registered with Canvas Platform, and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, it is named from the project name alone and `init` says so: `canvas deploy` refuses such a plugin, so run `canvas login` and `canvas init` again for one you can deploy. Run `canvas whoami` first if you are unsure which platform you are signed in to.
+**Usage** :
+    ```console
+    $ canvas init [OPTIONS] [PLUGIN_TYPE]
+    ```
+**Arguments** :
+  - `PLUGIN_TYPE`: `handler` (default) or `application`
+**Options** :
+  - `--org TEXT`: Organization that publishes the plugin, when you can publish in several. Without it, `init` asks.
+  - `--help`: Show this message and exit.
+###  `canvas deploy`
+Publish a plugin's code to Canvas Platform and deploy it to one or more instances.
+**Usage** :
+    ```console
+    $ canvas deploy [OPTIONS] PLUGIN_DIR
+    ```
+**Arguments** :
+  - `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
+**Options** :
+  - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
+  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
+  - `--no-push`: Deploy the pushed `main` as-is, without pushing.
+  - `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+  - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
+  - `--help`: Show this message and exit.
+**Example** :
+    ```console
+    $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acme-staging
+    ```
+**Notes** :
+**What`deploy` does**
+  1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
+  2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
+  3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
+  4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+**Waiting for the outcome**
+For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
+Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
+    ```text
+      acme__intake on acme-staging: succeeded
+        Stored values left out because this revision does not declare them: OLD_FLAG
+    ```
+If the plugin still needs one of these values, declare its key in the manifest and deploy again.
+**Plugin repository layout**
+Canvas Platform hosts one git repository per plugin, rooted at the directory that contains the package:
+    ```text
+    paperwork-eviscerator/          # repository root
+    ├── acme__paperwork_eviscerator/
+    │   ├── CANVAS_MANIFEST.json
+    │   ├── OVERVIEW.md             # the plugin's overview in the catalog
+    │   └── handlers/
+    ├── pyproject.toml
+    └── tests/
+    ```
+`canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. A package nested deeper inside a larger repository is refused; move it into its own repository, or `canvas clone` it.
+Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
+**Consent for cross-plugin data access**
+A plugin that reads another plugin's [custom data](/sdk/custom-data-sharing-data/) needs consent before it deploys. At a terminal, `deploy` shows each consent request and asks you to answer it. Under `--yes`, or without a terminal, it lists the requests with the deployment id and exits non-zero without answering them.
+**Validate first**
+Run `canvas validate` before you deploy. It runs the manifest checks, the static lint, and sandbox-load validation locally, where errors are faster to fix than after a push.
+###  `canvas clone`
+Clone a plugin's repository from Canvas Platform with `origin` and the credential helper set, ready for `canvas deploy`.
+**Usage** :
+    ```console
+    $ canvas clone [OPTIONS] NAME [DIRECTORY]
+    ```
+**Arguments** :
+  - `NAME`: Plugin name, e.g. `acme__intake` [required]
+  - `DIRECTORY`: Where to clone it, a directory named after the plugin by default
 **Options** :
   - `--help`: Show this message and exit.
 ###  `canvas install`
+> **Warning:** **Deprecated:** `canvas install` uploads a plugin straight onto an instance using `credentials.ini`. Support ends on **December 14, 2026**. Use `canvas deploy`, and see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
 Install a plugin into a Canvas instance.
 **Usage** :
     ```console
@@ -2439,16 +2602,17 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 **Troubleshooting**
   - **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 ###  `canvas uninstall`
-Uninstall a plugin from a Canvas instance.
+Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
     $ canvas uninstall [OPTIONS] NAME
     ```
 **Arguments** :
-  - `NAME`: Plugin name to delete [required]
+  - `NAME`: Plugin name to uninstall [required]
 **Options** :
-  - `--force`: Force uninstallation of the plugin
-  - `--host TEXT`: Canvas instance to connect to
+  - `--instance TEXT`: Instance slug to uninstall from, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
+  - `--force`: Uninstall an enabled plugin from an instance directly
   - `--help`: Show this message and exit.
 ###  `canvas enable`
 Enable a plugin from a Canvas instance..
@@ -2546,7 +2710,7 @@ If your handlers read attributes that don't exist while they load, the output en
     ```
 ####  Limitations 
 A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
-> **Info:** `canvas install` runs this same static lint and sandbox-load validation before uploading, so violations are caught before they reach your instance. 
+> **Info:** Run `canvas validate` before `canvas deploy` so violations are caught on your machine before they reach an instance. 
 ###  `canvas validate-manifest`
 Validate the Canvas Manifest json file.
 **Usage** :
@@ -2586,7 +2750,7 @@ If `validate-manifest` detects handlers that won't resolve, it reports which cla
         runner expects: my_plugin/handlers/events.py
     CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
     ```
-> **Info:** `canvas install` runs manifest validation, the static lint, and sandbox-load validation before uploading. Use `canvas validate` for a full pre-flight check with detailed per-handler output. 
+> **Info:** Use `canvas validate` before `canvas deploy` for a full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output. 
 ###  `canvas logs`
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
 **Usage** :
@@ -2635,37 +2799,55 @@ List plugin variables on a Canvas instance. Each variable is rendered as `[set]`
       DEBUG_MODE = [not set]
     ```
 ###  `canvas config set`
-Set (or update) one or more plugin variables on a Canvas instance. Each variable must already be declared in the plugin's `CANVAS_MANIFEST.json`. Pass one or more `KEY=value` pairs as positional arguments.
+Set (or update) one or more plugin variables. Pass one or more `KEY=value` pairs as positional arguments.
+For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward for the keys that revision declares; see Waiting for the outcome.
+For a plugin Canvas Platform does not manage, the values are written to the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
-    $ canvas config set [OPTIONS] PLUGIN VARIABLES...
+    $ canvas config set [OPTIONS] PLUGIN [KEY=VALUE]...
     ```
 **Examples** :
 Set a single variable:
     ```console
-    $ canvas config set my_plugin API_TOKEN=your_api_token_value
+    $ canvas config set acme__my_plugin API_TOKEN=your_api_token_value --instance acme-staging
     ```
 Set multiple variables in one call:
     ```console
-    $ canvas config set my_plugin API_TOKEN=abc123 LOG_LEVEL=info
+    $ canvas config set acme__my_plugin API_TOKEN=abc123 LOG_LEVEL=info --instance acme-staging
     ```
 Set a variable whose value is a list with one entry per line — for example a redirect allowlist (see the [Redirect effect](/sdk/effect-redirect/)). The value is newline-delimited (not comma-separated), so use your shell's newline quoting to preserve the line breaks. In bash/zsh, ANSI-C quoting (`$'…'`) turns `\n` into a real newline:
     ```console
-    $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+    $ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient' --instance acme-staging
     ```
 **Arguments** :
   - `PLUGIN`: Plugin name to set variables for
-  - `VARIABLES...`: Variables to set, e.g. Key=value
+  - `KEY=VALUE...`: Variables to set, keeping each one's declared sensitivity
 **Options** :
-  - `--host TEXT`: Canvas instance to connect to
+  - `--instance TEXT`: Instance slug to configure, repeatable
+  - `--secret KEY=VALUE`: Set a sensitive value for a key no revision of the manifest declares, repeatable
+  - `--variable KEY=VALUE`: Set a non-sensitive value for a key no revision of the manifest declares, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
   - `--help`: Show this message and exit.
-> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag.
+> Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag of a declared variable.
+###  `canvas config unset`
+Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, each value is set to empty on the instance directly.
+**Usage** :
+    ```console
+    $ canvas config unset [OPTIONS] PLUGIN KEY...
+    ```
+**Arguments** :
+  - `PLUGIN`: Plugin name to clear variables for
+  - `KEY...`: Variable keys to clear, e.g. `API_KEY`
+**Options** :
+  - `--instance TEXT`: Instance slug to configure, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
+  - `--help`: Show this message and exit.
 ----- END PAGE https://docs.canvasmedical.com/sdk/canvas_cli/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/canvas_manifest/
 Every plugin has a `CANVAS_MANIFEST.json` file at the root of its package. The manifest names the plugin, lists the handlers and applications Canvas loads, and declares the variables, URL permissions, and custom data namespace the plugin needs.
-The manifest is validated against a JSON schema when you run [`canvas validate`](/sdk/canvas_cli/#canvas-validate), [`canvas validate-manifest`](/sdk/canvas_cli/#canvas-validate-manifest), or [`canvas install`](/sdk/canvas_cli/#canvas-install). Unknown top-level keys and unknown component types fail validation.
+The manifest is validated against a JSON schema when you run [`canvas validate`](/sdk/canvas_cli/#canvas-validate), or [`canvas validate-manifest`](/sdk/canvas_cli/#canvas-validate-manifest), and Canvas Platform checks it again on every [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) push. Unknown top-level keys and unknown component types fail validation.
 ##  Where the manifest lives 
 [`canvas init`](/sdk/canvas_cli/#canvas-init) creates a project with the plugin package inside it. The manifest sits at the top of the package directory, next to the plugin's code, and every path in the manifest (handler classes, icons, templates, the README) is relative to that directory.
     ```text
@@ -2673,8 +2855,9 @@ The manifest is validated against a JSON schema when you run [`canvas validate`]
     ├── pyproject.toml
     ├── tests/
     │   └── test_event_handlers.py
-    └── my_plugin/                   # plugin package
+    └── acme__my_plugin/             # plugin package
         ├── CANVAS_MANIFEST.json
+        ├── OVERVIEW.md
         ├── README.md
         ├── __init__.py
         ├── assets/
@@ -2685,14 +2868,14 @@ The manifest is validated against a JSON schema when you run [`canvas validate`]
         └── templates/
             └── intake_form.yml
     ```
-A handler in `my_plugin/handlers/event_handlers.py` is referenced as `my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas install`: `canvas validate my_plugin/my_plugin` from outside the project, or `canvas validate my_plugin` from inside it.
-Canvas runs only the handlers and applications the manifest lists. A handler class in the package that the manifest doesn't reference is never loaded, and `canvas validate` warns about each one it finds. Every other file in the package directory still ships with the plugin, so your handlers can import your own modules and read templates and assets without listing them in the manifest. See [`canvas install`](/sdk/canvas_cli/#canvas-install) for the files left out of the package.
+A handler in `acme__my_plugin/handlers/event_handlers.py` is referenced as `acme__my_plugin.handlers.event_handlers:ClassName`, and the icon as `assets/icon.png`. Pass the package directory, the one that holds `CANVAS_MANIFEST.json`, to `canvas validate` and `canvas deploy`: `canvas validate my_plugin/acme__my_plugin` from outside the project, or `canvas validate acme__my_plugin` from inside it.
+Canvas runs only the handlers and applications the manifest lists. A handler class in the package that the manifest doesn't reference is never loaded, and `canvas validate` warns about each one it finds. Every other file in the package directory still ships with the plugin, so your handlers can import your own modules and read templates and assets without listing them in the manifest. `canvas deploy` ships the files committed to the plugin's git repository, so `.gitignore` decides what is left out. See [Plugin repository layout](/sdk/canvas_cli/#canvas-deploy).
 ##  Basic structure 
     ```json
     {
       "sdk_version": "0.1.4",
       "plugin_version": "0.0.1",
-      "name": "my_plugin",
+      "name": "acme__my_plugin",
       "description": "A description of what this plugin does",
       "components": {
         "handlers": [],
@@ -2712,9 +2895,9 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 Field | Type | Required | Description  
 ---|---|---|---  
 `sdk_version` | string | Yes | The Canvas SDK version the plugin was built against.  
-`plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every install. See Versioning your plugin.  
-`name` | string | Yes | The plugin's name. Must not be empty. Use the plugin's package name in snake case.  
-`description` | string | Yes | What the plugin does.  
+`plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See Versioning your plugin.  
+`name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes.  
+`description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card.  
 `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See Components.  
 `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See Tags.  
 `license` | string | Yes | A license identifier such as `"MIT"`, or an empty string.  
@@ -2724,13 +2907,14 @@ Field | Type | Required | Description
 `url_permissions` | array | No | External URLs the plugin's iframes may load, and what each may do. See URL permissions.  
 `origins` | object | No | Legacy form of `url_permissions`.  
 `custom_data` | object | No | The custom data namespace the plugin uses. See Custom data.  
+`catalog` | object | No | The plugin's listing in the Canvas Platform plugin catalog. See Catalog.  
 `references` | array of strings | No | Links to related documentation or resources.  
 `diagram` | string or boolean | No | Path to an architecture or workflow diagram, or `false`.  
 ###  Versioning your plugin 
-Change `plugin_version` every time you install a new build, including builds sent only to a test instance. Canvas accepts a reinstall with an unchanged version, so the version is the only way to tell which build an instance is running. It appears in:
+Change `plugin_version` every time you deploy a new build, including builds sent only to a test instance. Canvas accepts a redeploy with an unchanged version, so the version is the only way to tell which build an instance is running. It appears in:
   - the Plugins list in the Canvas Admin
   - `canvas list`, as `name@version`
-  - the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "my_plugin", version 1.4.0`
+  - the log lines written when the plugin is installed and loaded, for example `Successfully loaded plugin "acme__my_plugin", version 1.4.0`
 Use [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 Change | Bump | Example  
 ---|---|---  
@@ -2738,10 +2922,9 @@ A fix that doesn't change behavior users rely on | `PATCH` | `1.4.0` → `1.4.1`
 New functionality that leaves existing behavior in place | `MINOR` | `1.4.1` → `1.5.0`  
 A change that breaks existing behavior, such as a renamed variable, a removed handler, or a changed custom data model | `MAJOR` | `1.5.0` → `2.0.0`  
 ####  Versioning with git 
-If you keep your plugin in a git repository, tie each version to the history:
+`canvas deploy` deploys a commit pushed to the plugin's git repository on Canvas Platform, so every build on an instance maps to a commit. Tie each version to that history:
   - **Bump the version in the commit or pull request that changes the code.** Each merged change then carries its own version, and a reviewer can see what the new number ships.
-  - **Install only committed code.** An install of uncommitted changes runs a build no commit describes, even when its version looks familiar.
-  - **Tag the commit you install** (for example `git tag v1.5.0`). A version seen in the logs or the Admin then leads straight to the source that produced it, and `git diff v1.4.1 v1.5.0` shows what changed between two installs.
+  - **Tag the commit you release** (for example `git tag v1.5.0`, then `git push origin v1.5.0`). A version seen in the logs or the Admin then leads straight to the source that produced it, `git diff v1.4.1 v1.5.0` shows what changed between two releases, and `canvas deploy <package dir> --ref v1.5.0 --instance <instance>` deploys exactly that tag.
 To tell test builds apart without spending release numbers, add a pre-release suffix such as `1.5.0-rc.1` or `1.5.0-dev.3`, and drop the suffix for the build you release.
 ##  Components 
 The `components` object groups everything Canvas loads from your plugin. Each key holds a list, and the object must contain at least one key.
@@ -2765,7 +2948,7 @@ Field | Type | Required | Description
       "components": {
         "handlers": [
           {
-            "class": "my_plugin.handlers.patient_sync:PatientSync",
+            "class": "acme__my_plugin.handlers.patient_sync:PatientSync",
             "description": "Sends patient updates to an external system"
           }
         ]
@@ -2790,7 +2973,7 @@ Field | Type | Required | Description
       "components": {
         "applications": [
           {
-            "class": "my_plugin.applications.risk_calculator:RiskCalculator",
+            "class": "acme__my_plugin.applications.risk_calculator:RiskCalculator",
             "name": "Risk Calculator",
             "description": "Calculates cardiovascular risk for the open patient",
             "icon": "assets/risk_calculator.png",
@@ -2844,12 +3027,13 @@ Field | Type | Required | Description
 ###  Content, effects, and views 
 `content`, `effects`, and `views` are accepted for compatibility and have no effect. `canvas init` adds them as empty lists, and you can remove them.
 ##  Variables 
-`variables` declares the configuration values and secrets a plugin reads from `self.secrets` at runtime. Values are set at install time with `canvas install --variable` or `--secret`, or later in the Admin UI. See [Managing Variables](/sdk/secrets/).
+`variables` declares the configuration values and secrets a plugin reads from `self.secrets` at runtime. Values are set per instance with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set). See [Managing Variables](/sdk/secrets/).
+`namespace_read_access_key` and `namespace_read_write_access_key` are reserved for a plugin deployed through Canvas Platform: Canvas Platform supplies them to plugins entitled to a custom data namespace, and refuses a manifest that declares them.
 Field | Type | Required | Description  
 ---|---|---|---  
 `name` | string | Yes | The key the value is read under in `self.secrets`.  
 `sensitive` | boolean | No | When `true`, the value is hidden in the Admin UI and CLI listings. Defaults to `false`.  
-`default` | string | No | Accepted by the schema for non-sensitive variables only. Canvas does not pre-fill the variable with it, so set the value at install time.  
+`default` | string | No | Accepted by the schema for non-sensitive variables only. Canvas does not pre-fill the variable with it, so set the value with `canvas config set`.  
     ```json
     {
       "variables": [
@@ -2913,6 +3097,51 @@ Field | Type | Required | Description
       }
     }
     ```
+##  Catalog 
+`catalog` is the plugin's listing in the Canvas Platform plugin catalog. Canvas Platform reads it from the manifest each time a push moves the plugin's `main` branch, so the listing ships with the code it describes; pushes to other branches and tags leave the catalog as it is. It refuses a push whose listing breaks the rules below. [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy) updates the listing without deploying to an instance, and `canvas validate` checks it locally.
+    ```json
+    {
+      "catalog": {
+        "title": "Intake Summary",
+        "kind": "plugin",
+        "category": "Charting",
+        "surfaces": ["Note"],
+        "keywords": ["intake", "summary"],
+        "screenshots": [
+          {"path": "assets/summary.png", "caption": "In the note", "alt": "An intake summary in a note"}
+        ],
+        "pricing": [
+          {"unit": "visit", "price_per_unit": "1.50"},
+          {"unit": "token"}
+        ],
+        "vendors": [
+          {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
+        ],
+        "icon": "assets/icon.png",
+        "setup_guide": "setup_guide.md",
+        "setup_instructions": "setup_instructions.md",
+        "release_notes": {"kind": "fix", "title": "Summaries keep their line breaks"}
+      }
+    }
+    ```
+Field | Type | Required | Description  
+---|---|---|---  
+`title` | string | Yes | The name on the plugin's card and page. At most 64 characters.  
+`category` | string | Yes | One of `Billing & RCM`, `Charting`, `Decision support`, `Interoperability`, `Labs & devices`, `Operations`, `Patient engagement`, `Population health`, `Prescribing`, `Scheduling`.  
+`surfaces` | array | Yes | Every place in Canvas the plugin's work shows up, at least one and none repeated: `Note`, `Chart app`, `Command`, `Background`, `Patient portal`, `Waffle`.  
+`kind` | string | No | `agent` for a plugin that calls a model and acts with latitude, or `plugin` for a deterministic one. Defaults to `plugin`.  
+`agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out.  
+`keywords` | array | No | Free search terms, separate from Tags: lowercase letters, digits and hyphens, up to 32 characters each.  
+`screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40.  
+`pricing` | array | No | What Canvas charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. Leave `pricing` out for a plugin with no charge.  
+`vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas.  
+`icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase.  
+`setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works.  
+`setup_instructions` | string | No | Path to a file that Studio's agent reads when an organization installs the plugin. It is not shown on the plugin's page.  
+`release_notes` | object | No | What changed in this `plugin_version`: `kind` (`fix`, `performance` or `breaking`), `title`, and an optional `body`. Canvas Platform assembles the history from every pushed revision.  
+Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
+An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 ##  Tags 
 Tags categorize a plugin. Unrecognized tag categories and values produce warnings during validation rather than errors.
 Category | Allowed values  
@@ -2985,7 +3214,7 @@ A plugin with a patient chart application, the SimpleAPI handler that serves it,
 ##  Validation 
 Validate a manifest with the [Canvas CLI](/sdk/canvas_cli/):
     ```bash
-    canvas validate my_plugin
+    canvas validate acme__my_plugin
     ```
 `canvas validate` checks the manifest against the schema and then loads every handler in the plugin sandbox, which catches disallowed imports and other errors that only appear on the instance. `canvas validate-manifest my_plugin` runs the manifest checks alone.
 ----- END PAGE https://docs.canvasmedical.com/sdk/canvas_manifest/
@@ -9933,12 +10162,12 @@ Declared Access | Namespace Exists | Key Provided | Result
 When developing a plugin with custom data, you'll typically iterate through cycles of changing your models, reinstalling the plugin, and testing. Each reinstall can leave behind tables from previous iterations — renamed models leave orphaned tables, and test data accumulates. The `canvas namespace` CLI commands let you inspect what's in a namespace and clean it up without having to connect to the database directly.
 ###  Typical Iteration Cycle 
   1. Edit your CustomModel definitions or manifest
-  2. Reinstall the plugin: `canvas install my_plugin --host dev-instance`
+  2. Redeploy the plugin: `canvas deploy acme__my_plugin --instance dev-instance`
   3. Test your changes
   4. If models were renamed or removed, use `canvas namespace reset` to clean up orphaned tables
   5. Repeat
 ##  CLI Commands 
-All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to.
+All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. They connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until they move to your Canvas Platform sign-in, before December 14, 2026.
 ###  Listing Namespaces 
 See all custom data namespaces on an instance:
     ```bash
@@ -10024,6 +10253,7 @@ To execute:
 After a drop, the next plugin installation with that namespace name will create it from scratch, generating new authentication keys. Any other plugins that were sharing the namespace will need to be reconfigured with the new keys.
 ##  Uninstalling and Reinstalling a Plugin 
 Uninstalling a plugin **deletes its secrets** , including the system-generated `namespace_read_access_key` and `namespace_read_write_access_key`. The namespace schema and its data, however, **survive the uninstall**. This is by design: uninstalling a plugin should never destroy custom data, and a namespace shared by multiple plugins must not be torn down while another plugin is still using it.
+A plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) keeps its access across an uninstall: Canvas Platform holds the namespace's keys and sends them with every install, so the next deploy restores them. The rest of this section applies to plugins installed with the deprecated `canvas install`.
 Because the namespace still exists, reinstalling the plugin does **not** regenerate the keys — key generation only happens when the namespace is first created. The reinstalled plugin is therefore left without valid access keys and cannot read or write its own data, even though configuring the secrets appeared to succeed.
 This applies in production as well as during development. To avoid getting stuck:
   - **Before uninstalling** , copy the namespace keys from the Canvas admin UI into an external secret store such as 1Password. On reinstall, set them back as plugin secrets and the plugin regains access immediately. (To find the keys: open the Canvas admin UI, find the plugin that created the namespace, and read the `namespace_read_access_key` / `namespace_read_write_access_key` secret values.)
@@ -10049,15 +10279,12 @@ You uninstalled a plugin and a reinstall can't access its data (keys were delete
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/custom-data-quick-start/
 ##  Getting Started 
-To use custom data in your plugin, declare a `custom_data` section in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#custom-data) with a namespace and access level. The namespace is a unique identifier scoped to your organization (formatted as `organization__name` with a double underscore), and the access level controls whether the plugin can read only or read and write data. When the first `read_write` plugin is installed into a namespace, the system automatically initializes a data namespace, prepares tables, and generates `namespace_read_access_key` and `namespace_read_write_access_key` secrets that control access for other plugins joining the same namespace.
+To use custom data in your plugin, declare a `custom_data` section in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#custom-data) with a namespace and access level. The namespace is a unique identifier scoped to your organization (formatted as `organization__name` with a double underscore), and the access level controls whether the plugin can read only or read and write data. When the first `read_write` plugin is deployed into a namespace, the system automatically initializes a data namespace and prepares tables. Canvas Platform holds the namespace's access keys and sends them to each plugin entitled to the namespace, so other plugins join it with consent rather than a copied key (see [Sharing Data](/sdk/custom-data-sharing-data/#custom-data-on-canvas-platform)).
     ```json
     {
       "sdk_version": "0.1.4",
       "plugin_version": "1.0.0",
-      "name": "my_plugin",
-      "variables": [
-        {"name": "namespace_read_write_access_key", "sensitive": false}
-      ],
+      "name": "acme_corp__my_plugin",
       "custom_data": {
         "namespace": "acme_corp__shared_data",
         "access": "read_write"
@@ -10065,9 +10292,9 @@ To use custom data in your plugin, declare a `custom_data` section in your [`CAN
     }
     ```
 ###  Step by Step 
-  1. `canvas init`
+  1. Sign in with `canvas login`, then run `canvas init`. These steps assume your organization's plugin prefix is `my_org`.
   2. When prompted for a name, enter `Hello Custom Data`
-  3. `cd hello-custom-data/hello_custom_data`
+  3. `cd hello-custom-data/my_org__hello_custom_data`
   4. Open `CANVAS_MANIFEST.json` in your preferred editor.
   5. Create a `custom_data` block: 
          ```json
@@ -10076,10 +10303,9 @@ To use custom data in your plugin, declare a `custom_data` section in your [`CAN
            "access": "read_write"
          }
          ```
-  6. Add `namespace_read_write_access_key` to the `secrets` array (the key will be generated by the system for you)
-  7. Next, create a `models` directory under the root of your plugin hierarchy, sibling to `CANVAS_MANIFEST.json` and `handlers`
-  8. Create an `__init__.py` file inside of `models` and open it in your editor.
-  9. Declare the following classes within the `__init__.py` file: 
+  6. Next, create a `models` directory under the root of your plugin hierarchy, sibling to `CANVAS_MANIFEST.json` and `handlers`
+  7. Create an `__init__.py` file inside of `models` and open it in your editor.
+  8. Declare the following classes within the `__init__.py` file: 
          ```python
          from canvas_sdk.v1.data import Note, ModelExtension
          from canvas_sdk.v1.data.base import CustomModel
@@ -10095,12 +10321,12 @@ To use custom data in your plugin, declare a `custom_data` section in your [`CAN
              )
              tagged_by = TextField()
          ```
-  10. Open `handlers/event_handlers.py` in your editor. Update the imports: 
+  9. Open `handlers/event_handlers.py` in your editor. Update the imports: 
          ```python
-         from hello_custom_data.models import CustomNote, NoteTag
+         from my_org__hello_custom_data.models import CustomNote, NoteTag
          ```
-  11. In the code, replace uses of `Note` with `CustomNote`. These objects behave the same as the SDK model. (See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) for why proxy models are used.)
-  12. Add the following lines **after** the `note` reference has been initialized in the code: 
+  10. In the code, replace uses of `Note` with `CustomNote`. These objects behave the same as the SDK model. (See [Extending SDK Models](/sdk/custom-data-extending-sdk-models/) for why proxy models are used.)
+  11. Add the following lines **after** the `note` reference has been initialized in the code: 
          ```python
          tag, created = NoteTag.objects.get_or_create(
              note=note,
@@ -10108,11 +10334,11 @@ To use custom data in your plugin, declare a `custom_data` section in your [`CAN
          )
          log.info(f"Note tagged by: {tag.tagged_by}")
          ```
-  13. Install the plugin to your development environment
-  14. Tail the logs with `canvas logs`
-  15. Log into Canvas, navigate to a patient chart, and create a new note
+  12. Deploy the plugin to your development instance: `canvas deploy . --instance <instance>`
+  13. Tail the logs with `canvas logs`
+  14. Log into Canvas, navigate to a patient chart, and create a new note
 In the logs you will see our message: `Note tagged by: hello-custom-data`
-What just happened? When you installed the plugin, a new database namespace called `my_org__hello_custom_data` was created. Within the namespace are tables that hold information owned by, and managed by, the `my_org` plugins. The `NoteTag` model you defined turned into a PostgreSQL table with the following structure:
+What just happened? When you deployed the plugin, a new database namespace called `my_org__hello_custom_data` was created. Within the namespace are tables that hold information owned by, and managed by, the `my_org` plugins. The `NoteTag` model you defined turned into a PostgreSQL table with the following structure:
     ```sql
     create table my_org__hello_custom_data.notetag
     (
@@ -10163,7 +10389,15 @@ Namespace sharing allows multiple plugins to read from and write to the same dat
   - You want to avoid the overhead of API calls between plugins
 ###  Namespace Lifecycle 
 For a full overview of how namespaces are created, managed, and cleaned up during development, see [Namespace Lifecycle](/sdk/custom-data-namespace-lifecycle/).
-###  Discovering Access Keys 
+###  Custom data on Canvas Platform 
+For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform holds each namespace's access keys and sends them to every plugin entitled to them, so no key is copied between plugins:
+  - The first plugin that declares `"access": "read_write"` for a namespace on an instance creates it there and owns it.
+  - Another plugin that declares the same namespace, to read or to write, needs consent from the organization that runs the instance. `canvas deploy` shows each consent request and asks you to answer it; the deployment starts once every request is approved, and an approval stands for later deploys to that instance.
+  - Leave `namespace_read_access_key` and `namespace_read_write_access_key` out of the manifest's `variables`. Canvas Platform supplies them, refuses a manifest that declares them, and refuses `canvas config set` for them.
+  - A namespace that already exists on an instance, created by a plugin installed with `canvas install`, needs its keys recorded with Canvas Platform before a deploy can use it. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) covers that step.
+###  Access keys for plugins installed with `canvas install` (deprecated) 
+> **Warning:** `canvas install` is deprecated, and support ends on December 14, 2026. The rest of this section describes how plugins installed straight onto an instance share a namespace. Plugins deployed with `canvas deploy` share a namespace as described in Custom data on Canvas Platform. 
+####  Discovering Access Keys 
 After the namespace is created, you can find the generated keys in the **Canvas admin UI** :
   1. Navigate to **Settings → Plugins**
   2. Find the plugin that created the namespace
@@ -10173,7 +10407,7 @@ Share these keys securely with developers of other plugins that need access:
   - Share `namespace_read_access_key` with plugins that only need to read data
   - Share `namespace_read_write_access_key` with plugins that need to modify data
 > **Important:** Store these keys in a secure location outside of Canvas, such as 1Password. Removing a key from the manifest's `secrets` array does **not** delete the stored value — it is preserved. However, **uninstalling the plugin deletes its secrets** , including the namespace keys. Because the namespace itself survives an uninstall, a later reinstall will not regenerate the keys, so a copy kept outside Canvas is the only way to restore access. See [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin).
-###  Pre-Supplying Keys at Creation 
+####  Pre-Supplying Keys at Creation 
 By default, Canvas auto-generates the two access keys the first time a `read_write` plugin creates a namespace. You can also **supply both keys yourself** at that first install — pass them through the same `--secret` mechanism used for joins:
     ```bash
     canvas install my_plugin \
@@ -10191,7 +10425,7 @@ When to use this:
   - You want the keys to be known and persisted outside Canvas before the namespace exists (for example, a deployment system that needs to seed sibling plugins with the same key without round-tripping through the Admin UI).
   - You're restoring access to a previously-dropped namespace and want to reuse known key values.
   - You want deterministic key values across test runs in CI.
-###  Configuring Plugin Access 
+####  Configuring Plugin Access 
 Each plugin that joins a namespace must:
   1. **Declare the namespace** in `CANVAS_MANIFEST.json`
   2. **Include the access key name** in the manifest's `variables` array
@@ -10208,7 +10442,7 @@ Each plugin that joins a namespace must:
     }
     ```
 > Namespace access keys are declared with `"sensitive": false` so the value remains readable in the Admin UI's Secrets inline — that's the surface developers use to copy a key into a sibling plugin that joins the same namespace.
-**Installing with the Canvas CLI (recommended):**
+**Installing with the Canvas CLI:**
 Provide the access key using the `--secret` flag:
     ```bash
     canvas install my_plugin \
@@ -10225,16 +10459,14 @@ If you've already installed the plugin without the secret:
     {
       "sdk_version": "0.1.4",
       "plugin_version": "1.0.0",
-      "name": "my_plugin",
-      "variables": [
-        {"name": "namespace_read_write_access_key", "sensitive": false}
-      ],
+      "name": "acme_corp__my_plugin",
       "custom_data": {
         "namespace": "acme_corp__shared_data",
         "access": "read_write"
       }
     }
     ```
+A plugin installed with `canvas install` also declares the access key it is given in `variables`, as shown in Configuring Plugin Access.
 **Namespace naming requirements:**
   - Must contain `__` (double underscore) to separate organization from name
   - Cannot use reserved PostgreSQL names (`public`, `pg_catalog`, etc.)
@@ -26017,6 +26249,128 @@ Before any effect is emitted, the model runs these checks:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-note-custom-content/
+The `NoteCustomContent` effect adds a custom content block to a clinical note. Use it to show plugin-generated information where clinicians already work in the note. For example, show a patient summary above the note body or a card inside a note section. A block can be an inline HTML string or the URL of a page your plugin serves.
+Return this effect in response to the [`NOTE__GET_CUSTOM_CONTENT`](/sdk/events/#note-custom-content) event. If no handler returns one, the note renders without custom content.
+> **Warning:** **Beta Participation:** Custom content is part of the [revamped note beta program](/product-updates/note-revamp/), which Canvas turns on per instance. On an instance outside the beta, Canvas doesn't fire `NOTE__GET_CUSTOM_CONTENT`, and notes render without custom content. Reach out to Canvas support if you would like to participate. 
+* * *
+##  How it works 
+When a note renders, Canvas fires `NOTE__GET_CUSTOM_CONTENT` targeting that note. `event.target.id` holds the note's id. A handler subscribed to the event returns one or more `NoteCustomContent` effects, and Canvas renders each block in the section it names.
+  - **Placement:** Set `section` to place a block at the top of that note section. Leave `section` unset to place the block above the note body.
+  - **Note views:** Blocks with a `section` appear only while the note is grouped into sections, and are hidden while their section is collapsed. When a user views the whole note instead, or sections are turned off for the instance, only blocks without a `section` appear.
+  - **Multiple blocks:** A handler can return several effects. Blocks returned for the same section stack in the order the handlers ran.
+  - **Frames:** Canvas renders each block in its own iframe, so one plugin's block can't reach another's.
+  - **Sections:** `section` names a section as the note renders it, not the clinical note section of a command. Canvas decides which commands each rendered section gathers, so a plugin that targets a rendered section keeps working if that grouping changes.
+###  Attributes 
+Field | Type | Default | Description  
+---|---|---|---  
+`section` | `NoteCustomContent.Section` or `None` | `None` | The note section to render the block in. When unset, the block renders above the note body.  
+`url` | `str` | `None` | The URL of a page to render in the block, such as a [SimpleAPI](/sdk/handlers-simple-api/) route your plugin serves.  
+`content` | `str` | `None` | An HTML string to render in the block.  
+Set exactly one of `url` or `content`. The effect raises a validation error when both are set or when neither is set.
+###  Sections 
+`section` accepts a member of the `NoteCustomContent.Section` enum. Plain strings such as `"exam"` fail validation.
+Member | Section  
+---|---  
+`NoteCustomContent.Section.HISTORY` | History  
+`NoteCustomContent.Section.EXAM` | Exam  
+`NoteCustomContent.Section.ASSESSMENT_PLAN` | Assessment & Plan  
+`NoteCustomContent.Section.INTERNAL` | Internal  
+###  Choose between `content` and `url`
+Use `content` for a static block you can build as an HTML string inside the handler.
+Use `url` for a block that updates itself after the note renders, as described in Keeping content current. Canvas renders inline `content` in a frame it manages, and a [WebSocket](/sdk/handlers-simple-api-websocket/) opened from that frame receives no messages. A page served from your plugin keeps its WebSocket connection open and can receive `Broadcast` messages.
+###  Keeping content current 
+Canvas fires `NOTE__GET_CUSTOM_CONTENT` when a note renders, and doesn't fire it again as the note changes. To keep a block current, hold its state in the page and push updates to it with a `Broadcast` effect, rather than expecting Canvas to ask for the content again:
+  1. Serve the block from a `url`, and have the page connect to a [WebSocket](/sdk/handlers-simple-api-websocket/) channel your plugin defines. Use one channel per note, such as `note-<note id>`, so a block hears only about the note it's rendered in.
+  2. From a handler that responds to the events that change the block, return a [`Broadcast`](/sdk/handlers-simple-api-websocket/#broadcasting-messages) effect for that channel. Put the new data in the message, so the page can update without fetching anything.
+For example, a block that counts the note's commands can broadcast new counts when a command is added, deleted, or entered in error. Each command type fires its own events for these, such as `PLAN_COMMAND__POST_ORIGINATE`, `PLAN_COMMAND__POST_DELETE`, and `PLAN_COMMAND__POST_ENTER_IN_ERROR`.
+This handler broadcasts to a note's channel when a Plan or Vitals command is added to the note:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import Broadcast
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data.command import Command
+    class NotifyNoteBlocks(BaseHandler):
+        RESPONDS_TO = [
+            EventType.Name(EventType.PLAN_COMMAND__POST_ORIGINATE),
+            EventType.Name(EventType.VITALS_COMMAND__POST_ORIGINATE),
+        ]
+        def compute(self) -> list[Effect]:
+            note_id = (
+                Command.objects.filter(id=self.event.target.id)
+                .values_list("note__id", flat=True)
+                .first()
+            )
+            if not note_id:
+                return []
+            return [
+                Broadcast(
+                    channel=f"note-{note_id}",
+                    message={
+                        "event_type": "command_added",
+                        "command_id": self.event.target.id,
+                    },
+                ).apply()
+            ]
+    ```
+###  Permissions for URL blocks 
+A `url` block's frame receives the permissions your plugin registers for that URL in the [`url_permissions`](/sdk/canvas_manifest/#url-permissions) section of `CANVAS_MANIFEST.json`, such as `MICROPHONE` or `ALLOW_SAME_ORIGIN`. The format is the same as for [modals and widgets](/sdk/layout-effect/#additional-configuration). Inline `content` blocks receive no permissions.
+###  Frame height 
+Each frame starts 120 pixels tall. To fit the frame to your block, send a `RESIZE` message with the block's height over the message channel Canvas opens with the frame:
+    ```html
+    <script>
+      window.addEventListener('message', (event) => {
+        if (event.data?.type !== 'INIT_CHANNEL' || !event.ports?.[0]) {
+          return;
+        }
+        const port = event.ports[0];
+        const reportHeight = () =>
+          port.postMessage({ type: 'RESIZE', height: document.body.scrollHeight });
+        reportHeight();
+        new ResizeObserver(reportHeight).observe(document.body);
+      });
+    </script>
+    ```
+###  Examples 
+Return an inline block above the note body:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note_custom_content import NoteCustomContent
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    class NoteReminder(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE__GET_CUSTOM_CONTENT)
+        def compute(self) -> list[Effect]:
+            return [
+                NoteCustomContent(
+                    content="<p>Review the patient's care plan before signing.</p>",
+                ).apply()
+            ]
+    ```
+Return a block for each section, each pointing at a page the plugin serves. Here `/plugin-io/api/my_plugin/section` stands in for a SimpleAPI route in your plugin that returns the block's HTML:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note_custom_content import NoteCustomContent
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    BASE_URL = "/plugin-io/api/my_plugin"
+    class SectionCards(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE__GET_CUSTOM_CONTENT)
+        def compute(self) -> list[Effect]:
+            note_id = self.event.target.id
+            return [
+                NoteCustomContent(
+                    section=section,
+                    url=f"{BASE_URL}/section?note_id={note_id}&section={section.value}",
+                ).apply()
+                for section in NoteCustomContent.Section
+            ]
+    ```
+For a complete plugin that serves its blocks as pages and keeps them current over a WebSocket, see the [`note_custom_content` example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/note_custom_content).
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-note-custom-content/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-note-footer-configuration/
 The `NoteFooterConfiguration` effect configures the note footer at the note level (rather than per button). Its primary use is hiding Canvas's default state-transition buttons — Lock, Sign, Push charges, Delete, and so on — so that a plugin can supply its own footer buttons in their place, such as with [Note State Action Buttons](/sdk/handlers-action-buttons/#note-state-action-buttons).
 Return this effect in response to the `NOTE_FOOTER__GET_CONFIGURATION` event, which fires when a note's footer is loaded. If your handler does not return a configuration, the default state-transition buttons remain visible.
@@ -28945,7 +29299,7 @@ Declare the keys in your manifest so the admin can fill them:
 Both steps are required, and both default to "blocked": if you don't **declare** a key in the manifest, the admin has no field to fill; if the admin doesn't **set** a value, that key's allowlist is empty. An empty or absent secret allows nothing — so each redirect category (internal / external / application) only works once its key is declared _and_ an admin has given it a value. A freshly installed plugin can therefore redirect nowhere until an admin opts it in.
 Set a value from the CLI with your shell's newline quoting so each entry stays on its own line (see [`canvas config set`](/sdk/canvas_cli/#canvas-config-set)):
     ```console
-    $ canvas config set my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient'
+    $ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patient' --instance acme-staging
     ```
 Non-allowlisted destinations are dropped, and the platform logs only the plugin name and the blocked host (never the full URL/path). Protocol-relative (`//host`) and backslash (`/\host`) targets are always rejected.
 ##  Redirects in the patient portal 
@@ -30054,7 +30408,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -30141,6 +30495,7 @@ GENERATE_FULL_CHART_PDF | Generate a full chart PDF for a patient.
 NOTE_RESTRICTIONS | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/).  
 NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  
 NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/).  
+NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/).  
 ###  Appointments 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
 Effect | Description  
@@ -47208,6 +47563,12 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+###  Note Custom Content 
+NOTE__GET_CUSTOM_CONTENT  
+---  
+Occurs when a note renders on an instance in the [revamped note beta program](/product-updates/note-revamp/). Plugins respond with custom content blocks to show above the note body or inside a note section. See the [Note Custom Content effect](/sdk/effect-note-custom-content/) for usage details.  
+Target  
+    note_id  
 ###  Note Footer Configuration 
 NOTE_FOOTER__GET_CONFIGURATION  
 ---  
@@ -56353,22 +56714,22 @@ It emits a deprecation warning during `canvas validate-manifest` and is mapped i
 > **Warning:** **Deprecation Notice:** The legacy `secrets` array format is deprecated. Use the `variables` format shown above instead. The legacy format will continue to work but displays a deprecation warning during `canvas validate-manifest`. 
 > ⚠️ **Pre-existing values default to non-sensitive.** Any plugin secret that existed before Canvas 1.305.0 — or any value configured via the legacy `secrets:` array — is stored with `sensitive: false`. It will appear in plain text in the Admin UI until the owning plugin is migrated to the `variables` schema with `sensitive: true` and re-installed.
 ###  Configuring Variables from the CLI 
-Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
-Provide values during install:
+Set values with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set), passing `KEY=value` pairs. Each value keeps the sensitivity the manifest declares for it.
+For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform stores the values for each instance and a configure deployment brings them to the running plugin:
     ```console
-    $ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value --variable LOG_LEVEL=info
+    $ canvas config set acme__my_plugin API_TOKEN=abc123 LOG_LEVEL=info --instance acme-staging
     ```
-Update values on an installed plugin:
+Values stored for an instance before the plugin is installed there wait for its first deploy, so a plugin that needs a value from its first run can have it set first:
     ```console
-    $ canvas config set <plugin_name> API_TOKEN=abc123 LOG_LEVEL=warn
+    $ canvas deploy my-plugin/acme__my_plugin --push-only
+    $ canvas config set acme__my_plugin API_TOKEN=abc123 --instance acme-staging
+    $ canvas deploy my-plugin/acme__my_plugin --instance acme-staging
     ```
-Pass multiple values by repeating the flag:
+Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset):
     ```console
-    $ canvas install <plugin_name> \
-      --secret API_TOKEN=abc123 \
-      --secret WEBHOOK_SECRET=xyz \
-      --variable LOG_LEVEL=info
+    $ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
     ```
+> **Warning:** **Deprecated:** `canvas install --secret` and `--variable` set values while installing straight onto an instance with `credentials.ini`. Support ends on December 14, 2026; see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
 ####  Listing configured values 
 Run `canvas config list <plugin_name>` to see which variables are configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed in the listing.
     ```console
