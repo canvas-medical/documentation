@@ -463,9 +463,34 @@ A patient can download the after-visit summary of their own locked notes from th
 
 - The PDF is the same after-visit summary a clinician prints from the note.
 - Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
-- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
 
-Each download also fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which summaries a patient has received. The event targets the patient, and its context carries the `document` (`"after_visit_summary"`) and the `note_id`. It is sent after the PDF is served, so a handler can't delay or block the download.
+## Link to Lab and Imaging Requisitions
+
+A patient can download the requisition of their own lab and imaging orders from the portal. As with after-visit summaries, the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+
+| Order   | Portal URL                                   | PDF the patient gets                                                                                                                                                       |
+|---------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lab     | `/app/laborder/<order id>/requisition`       | The requisition a clinician prints from the order. For an order sent electronically through Health Gorilla, the patient gets Health Gorilla's requisition form, as staff do. |
+| Imaging | `/app/imagingorder/<order id>/requisition`   | The "Prepare for your imaging test" letter staff print for the patient.                                                                                                    |
+
+`<order id>` is the `id` of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder).
+
+- Only the patient the order belongs to can open it, and only once the order is committed and not entered in error. Any other order id returns a 404 error.
+- By default, patients can download the requisition only while the order is open. A lab order is open until the chart shows all of its reports received. An imaging order is open until it has a result, not counting results deleted in Data Integration. To let patients download the requisitions of completed orders too, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to set `PATIENT_PORTAL_REQUISITION_ORDER_STATES` to **Open and completed orders**.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
+
+## Track Document Downloads
+
+Each after-visit summary or requisition download fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which documents a patient has received. The event targets the patient. It is sent after the PDF is served, so a handler can't delay or block the download.
+
+The event context names the `document` and the record it came from:
+
+| `document`              | Record key | Record                                                  |
+|-------------------------|------------|---------------------------------------------------------|
+| `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
+| `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
+| `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
 
 ```python
 from canvas_sdk.effects import Effect
@@ -474,14 +499,17 @@ from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class TrackSummaryDownloads(BaseHandler):
+class TrackDocumentDownloads(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
 
     def compute(self) -> list[Effect]:
-        if self.context.get("document") != "after_visit_summary":
-            return []
+        document = self.context.get("document")
 
-        log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        if document == "after_visit_summary":
+            log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        elif document in ("lab_requisition", "imaging_requisition"):
+            log.info(f"{document} downloaded for order {self.context['order_id']}")
+
         return []
 ```
 
