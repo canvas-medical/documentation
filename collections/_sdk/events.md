@@ -3168,7 +3168,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">GET_NOTE_RESTRICTIONS</th></tr>
-    <tr><td colspan="2">Fires every time a note is opened or its restrictions are refetched. Plugins respond with a <a href="/sdk/effect-note-restrictions/"><code>NoteRestrictionsEffect</code></a> to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. If no plugin responds, the note is unrestricted by default.</td></tr>
+    <tr><td colspan="2">Fires every time a note is opened or its restrictions are refetched, and when a user saves changes to a note's body or edits a letter's content. Plugins respond with a <a href="/sdk/effect-note-restrictions/"><code>NoteRestrictionsEffect</code></a> to control whether the user can edit the note, whether the content is blurred, and what banner message is displayed. When a plugin restricts access, Canvas refuses the user's save. If no plugin responds, the note is unrestricted by default.</td></tr>
   </thead>
   <tbody>
     <tr>

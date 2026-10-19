@@ -7,7 +7,7 @@ hidden: false
 
 The `NoteRestrictionsEffect` and `NoteRestrictionsUpdatedEffect` allow plugins to restrict access to notes and push real-time permission updates to connected clients.
 
-- **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells the Canvas UI whether the requesting user should see a banner, have the note content blurred, or have editing disabled.
+- **`NoteRestrictionsEffect`** — returned by a plugin in response to a `GET_NOTE_RESTRICTIONS` event. It tells Canvas whether the requesting user can edit the note, whether the note content is blurred for them, and what banner they see.
 - **`NoteRestrictionsUpdatedEffect`** — emitted by a plugin at any time to signal that restrictions for a specific note have changed, causing all connected clients viewing that note to immediately refetch their restrictions.
 
 ---
@@ -26,6 +26,10 @@ Applies the restrictions to the user who opened the note. No attribute is requir
 
 Every time a note is opened (or its restrictions are refetched), Canvas fires a `GET_NOTE_RESTRICTIONS` event targeting that note's external ID. Plugins that subscribe to this event can return a `NoteRestrictionsEffect` to control what the user sees.
 
+Canvas also fires `GET_NOTE_RESTRICTIONS` when a user saves changes to a note's body or edits a letter's content, with that user as the event actor. If a plugin returns `restrict_access=True`, Canvas refuses the save. Canvas runs this check on the server, so it holds for any request that saves to the note, not only edits made in the note view.
+
+Because a save waits for your handler, keep it fast. Canvas waits up to 10 seconds for the plugin runner to answer. If the runner doesn't answer in time or returns an error, Canvas lets the save go through, just as the note view treats the note as unrestricted when the runner fails. This keeps charting available during a plugin runner outage. Use note restrictions as workflow guards, such as edit locks, and not as the only control protecting sensitive data.
+
 If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by default.
 
 ### Event payload
@@ -40,7 +44,7 @@ If no plugin returns a `NoteRestrictionsEffect`, the note is unrestricted by def
 
 | Attribute         | Type            | Description                                                                                                                                                     | Required |
 |-------------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
-| `restrict_access` | `bool`          | Whether the requesting user is restricted from editing this note. Defaults to `False`.                                                                          | No       |
+| `restrict_access` | `bool`          | Whether the requesting user is restricted from editing this note. When `True`, Canvas disables editing in the UI and refuses the user's saves to the note body or letter content. Defaults to `False`. | No       |
 | `blur_content`    | `bool`          | Whether the note body should be blurred for the requesting user. Defaults to `False`.                                                                           | No       |
 | `banner_message`  | `str` \| `None` | Message shown in the warning banner at the top of the note. If `None`, a default "This note is currently restricted." message is displayed. Defaults to `None`. | No       |
 
