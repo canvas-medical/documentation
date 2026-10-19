@@ -116,16 +116,18 @@ Both limits are organization settings managed by Canvas: the link lifetime is th
 
 ### Sign-in request limits
 
-The portal limits how often anyone can request sign-in messages or try a password. Requesting a link sends a real email or text message, so the limits keep a patient's inbox from being flooded and slow down attempts to guess passwords or probe for accounts.
+The portal limits how often anyone can request sign-in links or try a password. Each link request sends a real email or text message, so the limits keep a patient's inbox from being flooded and slow down attempts to guess passwords or probe for accounts.
 
 | Request | Limit |
 |---|---|
-| Signing in with a username and password | 10 attempts per minute from one IP address |
-| Requesting a link from the **Reset Password** or **Get an invite** page | 10 requests per minute from one IP address, and 5 per hour for one email address or phone number |
+| Signing in with a username and password | 10 attempts per minute from one IP address, and 20 failed attempts per hour on one account from any IP address |
+| Requesting a link from the **Reset Password** or **Get an invite** page | 10 requests per minute from one IP address, and 5 links sent per hour to one patient |
 
-The per-address limit counts every request for that email address or phone number, from any device, whether or not it matches a patient. Different spellings of the same address or number count together, such as `555-010-1234` and `+1 (555) 010-1234`. So if a patient says a reset link never arrived after several tries, they may need to wait up to an hour before requesting another.
+The account limit counts only wrong passwords, so a patient who enters the right password isn't affected by someone else's guesses. After 20 failed attempts in an hour, though, the account refuses every sign-in attempt, including one with the right password, until the hour is up.
 
-When a request goes over a limit, the password form shows "Too many login attempts. Please wait a minute and try again.", and the link pages show "Too many requests. Please try again later." These limits are separate from the account lockout that follows repeated wrong passwords. Canvas manages both.
+The patient limit counts only links that were actually sent, whichever email address, phone number, or spelling of it was entered. After a patient has been sent 5 links in an hour, the page still says "Login link has been sent!", but no message goes out. So if a patient says a reset link never arrived after several tries, they may need to wait up to an hour before requesting another.
+
+When a password sign-in goes over either limit, the form shows "Too many login attempts. Please wait a minute and try again.", even when the account limit means the wait can be up to an hour. When one IP address goes over the link page limit, the page shows "Too many requests. Please try again later." These limits are separate from the account lockout that follows repeated wrong passwords. Canvas manages both.
 
 ### Branding
 

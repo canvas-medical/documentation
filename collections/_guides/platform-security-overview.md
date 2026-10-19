@@ -59,8 +59,8 @@ values, and a list of commonly-used passwords.
 Failed-login lockout applies to interactive sessions on either path, independent of the
 identity provider.
 
-Patient portal sign-in is also rate limited per IP address, and requests for sign-in
-links are limited per email address or phone number. See
+Patient portal sign-in is also rate limited per IP address and per account, and sign-in
+links are limited per patient. See
 [Sign-in request limits](/guides/choosing-your-patient-experience/#sign-in-request-limits).
 
 ### Authorization
