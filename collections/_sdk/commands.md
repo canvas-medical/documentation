@@ -1572,6 +1572,7 @@ Admins manage the formulary in the Django Admin UI under **DME Products**, where
 | `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
 | `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
+| `assessment_id`         | _string_                              | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
 
