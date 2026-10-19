@@ -15,11 +15,11 @@ Creates a new external identifier on the specified staff member.
 
 #### Attributes
 
-| Attribute  | Type           | Required | Description                                             |
-|------------|----------------|----------|---------------------------------------------------------|
-| `staff_id` | `str` / `UUID` | Yes      | UUID of the [Staff](/sdk/data-staff/) record.           |
-| `value`    | `str`          | Yes      | The identifier value (e.g. an employee ID).             |
-| `system`   | `str`          | No       | The system the identifier belongs to (typically a URL). |
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| `staff_id` | `str` / `UUID` | UUID of the [Staff](/sdk/data-staff/) record. | Yes |
+| `value` | `str` | The identifier value (e.g. an employee ID). | Yes |
+| `system` | `str` | The system the identifier belongs to (typically a URL). | No |
 
 #### Validation
 
@@ -53,11 +53,11 @@ Updates fields on an existing external identifier. Only the fields you set on th
 
 #### Attributes
 
-| Attribute | Type           | Required | Description                                     |
-|-----------|----------------|----------|-------------------------------------------------|
-| `id`      | `str` / `UUID` | Yes      | UUID of the identifier to update.               |
-| `value`   | `str`          | No       | New identifier value. Only written if supplied. |
-| `system`  | `str`          | No       | New system value. Only written if supplied.    |
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| `id` | `str` / `UUID` | UUID of the identifier to update. | Yes |
+| `value` | `str` | New identifier value. Only written if supplied. | No |
+| `system` | `str` | New system value. Only written if supplied. | No |
 
 #### Validation
 
@@ -80,9 +80,9 @@ Deletes the external identifier identified by `id`.
 
 #### Attributes
 
-| Attribute | Type           | Required | Description                       |
-|-----------|----------------|----------|-----------------------------------|
-| `id`      | `str` / `UUID` | Yes      | UUID of the identifier to delete. |
+| Attribute | Type | Description | Required |
+|---|---|---|---|
+| `id` | `str` / `UUID` | UUID of the identifier to delete. | Yes |
 
 #### Validation
 

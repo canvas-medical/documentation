@@ -28,7 +28,7 @@ detailed guidance.
 ## Prerequisites
 
 AttributeHub tables live inside your plugin's custom data namespace, so a plugin must declare a `custom_data`
-block in its `CANVAS_MANIFEST.json` before it can read or write hubs:
+block in its [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#custom-data) before it can read or write hubs:
 
 ```json
 "custom_data": {

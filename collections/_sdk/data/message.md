@@ -46,16 +46,16 @@ Represents a file attachment linked to a message.
 
 ### Fields
 
-| Name           | Type                       | Description                                |
-|----------------|----------------------------|--------------------------------------------|
-| `id`           | `UUID`                     | Unique identifier for the attachment.      |
-| `dbid`         | `Integer`                  | Database primary key.                      |
-| `created`      | `DateTime`                 | When the record was created.               |
-| `modified`     | `DateTime`                 | When the record was last modified.         |
-| `file`         | `Text`                     | Storage path or identifier for the file.   |
-| `content_type` | `String`                   | MIME type of the attachment.               |
-| `message`      | [Message](#message)        | The parent message to which this belongs.  |
-| `file_url`     | String (property)          | Presigned S3 URL for accessing the file.   |
+| Name           | Type                | Description                               |
+|----------------|---------------------|-------------------------------------------|
+| `id`           | `UUID`              | Unique identifier for the attachment.     |
+| `dbid`         | `Integer`           | Database primary key.                     |
+| `created`      | `DateTime`          | When the record was created.              |
+| `modified`     | `DateTime`          | When the record was last modified.        |
+| `file`         | `Text`              | Storage path or identifier for the file.  |
+| `content_type` | `String`            | MIME type of the attachment.              |
+| `message`      | [Message](#message) | The parent message to which this belongs. |
+| `file_url`     | String (computed)   | Presigned S3 URL for accessing the file.  |
 
 ## MessageTransmission
 

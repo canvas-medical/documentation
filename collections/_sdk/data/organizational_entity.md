@@ -32,23 +32,18 @@ For entities of any other `type`, the `service_provider` property returns `None`
 
 ### OrganizationalEntity
 
-| Field Name   | Type                                                                  |
-| ------------ | --------------------------------------------------------------------- |
-| id           | UUID                                                                  |
-| dbid         | Integer                                                               |
-| created      | DateTime                                                              |
-| modified     | DateTime                                                              |
-| content_type | [ContentType](/sdk/data-content-type/#contenttype)                    |
-| object_id    | Integer                                                               |
-| name         | String                                                                |
-| active       | Boolean                                                               |
-| type         | [OrganizationalEntityType](#organizationalentitytype)                 |
-
-## Properties
-
-| Name             | Type                                                                       | Description                                                                                       |
-| ---------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) \| `None`   | The linked `ServiceProvider` when `type` is `Service Provider`; otherwise `None`.                 |
+| Field Name       | Type                                                                                | Description                                                                       |
+|------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------|
+| id               | UUID                                                                                |                                                                                   |
+| dbid             | Integer                                                                             |                                                                                   |
+| created          | DateTime                                                                            |                                                                                   |
+| modified         | DateTime                                                                            |                                                                                   |
+| content_type     | [ContentType](/sdk/data-content-type/#contenttype)                                  |                                                                                   |
+| object_id        | Integer                                                                             |                                                                                   |
+| name             | String                                                                              |                                                                                   |
+| active           | Boolean                                                                             |                                                                                   |
+| type             | [OrganizationalEntityType](#organizationalentitytype)                               |                                                                                   |
+| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) \| `None` (computed) | The linked `ServiceProvider` when `type` is `Service Provider`; otherwise `None`. |
 
 ## Enumeration types
 

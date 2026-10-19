@@ -12,25 +12,41 @@ The `CommandValidationErrorEffect` returns structured error messages that are di
 
 In both cases you build a `CommandValidationErrorEffect`, attach one or more error messages, and return it from your handler.
 
+<!-- source: discussion #1513 -->
+<!-- source: discussion #822 -->
+Validating a command is the supported way to require fields, or to run any custom validation such as checking a free-text date entered in a questionnaire, **before a command is committed**. It is different from validating a note before it is locked: pre-lock validation only stops the note from being locked, and the command underneath it, such as a questionnaire, is still committed. Command validation blocks the commit itself and shows the error to the user. The [`command-validation` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/command-validation/command_validation) can be tailored to require every question on a questionnaire to be answered, or to check only specific questions or questionnaires.
+
 Where these errors are enforced differs by event: `__POST_VALIDATION` errors block a commit **only in the Canvas UI**, while `__PRE_DELETE` errors block a deletion through **both** the Canvas UI and the SDK [commands module](/sdk/commands/). Each section below covers the specifics.
 
 ## The effect
 
 ### CommandValidationErrorEffect
 
-The `CommandValidationErrorEffect` class accepts an optional list of `ValidationError` objects during initialization:
+Build a `CommandValidationErrorEffect`, add one or more errors, then return its `apply()` from your handler.
 
-| Attribute | Type                     | Required | Description                                            |
-| --------- | ------------------------ | -------- | ------------------------------------------------------ |
-| `errors`  | list[ValidationError]    | optional | List of validation errors to be displayed to the user. |
+#### Methods
+
+##### add_error(message: str | ValidationError) → CommandValidationErrorEffect
+
+Appends an error, given as a message or a [`ValidationError`](#validationerror), and returns the effect, so calls can be chained.
+
+##### apply() → Effect
+
+Shows the errors to the user. See [Validate a command](#validate-a-command) and [Block a deletion](#block-a-deletion) for what the errors block in each case.
+
+#### Attributes
+
+| Attribute | Type                                          | Description                                            | Required |
+| --------- | --------------------------------------------- | ------------------------------------------------------ | -------- |
+| `errors`  | `list[`[`ValidationError`](#validationerror)`]` | List of validation errors to be displayed to the user. | No       |
 
 ### ValidationError
 
 Each `ValidationError` object represents a single validation error message:
 
-| Attribute | Type   | Required | Description                         |
-| --------- | ------ | -------- | ----------------------------------- |
-| `message` | String | required | The validation error message to display. Must not be empty. |
+| Attribute | Type  | Description                                                 | Required |
+| --------- | ----- | ----------------------------------------------------------- | -------- |
+| `message` | `str` | The validation error message to display. Must not be empty. | Yes      |
 
 ### Building the errors
 
@@ -93,6 +109,7 @@ The following command types fire `__POST_VALIDATION` and can be validated with t
 - `LAB_ORDER_COMMAND__POST_VALIDATION`
 - `MEDICAL_HISTORY_COMMAND__POST_VALIDATION`
 - `MEDICATION_STATEMENT_COMMAND__POST_VALIDATION`
+- `ORDER_DME_COMMAND__POST_VALIDATION`
 - `PERFORM_COMMAND__POST_VALIDATION`
 - `PHYSICAL_EXAM_COMMAND__POST_VALIDATION`
 - `PLAN_COMMAND__POST_VALIDATION`
@@ -170,6 +187,10 @@ class MyHandler(BaseHandler):
 
 When validation errors are returned, the Canvas UI shows them to the user — the command's action buttons are disabled and the messages appear as a tooltip — so the command can't be committed there. Multiple errors can be returned at once, and all are displayed.
 
+On a Refill command, the error disables the command's **REVIEW** button, so the user can't reach **Sign and send**, **Sign**, or **Print**. The message appears as a tooltip on the disabled button. The [`example_commands` example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_commands) blocks every refill this way; add a condition to its handler to block refills selectively.
+
+Return the error from the `__POST_VALIDATION` event, not `__PRE_COMMIT`. On a Refill command, a validation error returned from `REFILL_COMMAND__PRE_COMMIT` is ignored, and the refill commits anyway.
+
 > **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
 
 ## Block a deletion
@@ -209,6 +230,7 @@ Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler 
 - `LAB_REVIEW_COMMAND__PRE_DELETE`
 - `MEDICAL_HISTORY_COMMAND__PRE_DELETE`
 - `MEDICATION_STATEMENT_COMMAND__PRE_DELETE`
+- `ORDER_DME_COMMAND__PRE_DELETE`
 - `PERFORM_COMMAND__PRE_DELETE`
 - `PHYSICAL_EXAM_COMMAND__PRE_DELETE`
 - `PLAN_COMMAND__PRE_DELETE`

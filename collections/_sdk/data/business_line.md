@@ -41,6 +41,19 @@ And you can also access all of the Business Lines under a given Organization:
 ['New Patients that love cheese', 'Spanish Speaking Patients', 'One Medical']
 ```
 
+## Accessing the logo
+
+The `logo_url` property returns a presigned S3 URL for the business line's logo image, or `None` when no logo is set. Use it to brand plugin output, such as a patient portal page or a generated document, with the logo configured in Canvas. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data import Patient
+
+patient = Patient.objects.get(id="aebe4d3f5d18410388dc69c4b5169fc3")
+
+# Presigned S3 URL to the logo image, or None if no logo is set
+logo_url = patient.business_line.logo_url if patient.business_line else None
+```
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter Business Line data:
@@ -72,6 +85,8 @@ The `filter` method can be used to filter by desired attributes. The following e
 | active       | Boolean                                 |
 | state        | [BusinessLineState](#businesslinestate) |
 | organization | [Organization](/sdk/data-organization)  |
+| logo         | File (S3 key)                           |
+| logo_url     | String (computed)                       |
 | patients     | QuerySet[[Patient](/sdk/data-patient/#patient)] |
 
 ## Enumeration types
