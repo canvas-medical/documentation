@@ -101,7 +101,8 @@ audit trail records. The excluded permissions cover:
 - Failed-login lockouts
 - Plugins and plugin secrets
 - Stored Google credentials
-- Feature flags, organization settings, and Constance configuration settings
+- Feature flags, organization settings, staff and global configuration settings, and Constance
+  settings
 - Audit and security event records, admin action logs, and record version history
 
 Turning emergency access off returns the user's directly assigned permissions to exactly what
