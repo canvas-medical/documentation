@@ -7151,11 +7151,11 @@ The `fdb_code` parameter accepts either:
 * * *
 ###  OrderDme 
 Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
-Admins manage the formulary in the Django Admin UI under **DME Products** , where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+Admins manage the formulary in the Django Admin UI under **DME Products**. In a plugin, look up a product and its ID with the [DmeProduct](/sdk/data-dme/#dmeproduct) data model, as the example below does.
 **Command-specific parameters** :
 Name | Type | Required to sign | Description  
 ---|---|---|---  
-`dme_product_id` | _string_ | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`.  
+`dme_product_id` | _string_ | `true`, unless `free_text_item` is set | The `id` of an active [DmeProduct](/sdk/data-dme/#dmeproduct) in your DME formulary. Can't be combined with `free_text_item`.  
 `free_text_item` | _string_ | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`.  
 `diagnosis_codes` | _list[string]_ | `true` | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).  
 `quantity` | _integer_ | `true` | Number of units ordered. Must be at least 1.  
@@ -7177,6 +7177,7 @@ Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provi
     ```python
     from canvas_sdk.commands import OrderDmeCommand
     from canvas_sdk.commands.constants import ServiceProvider
+    from canvas_sdk.v1.data import DmeProduct
     supplier = ServiceProvider(
         first_name="Acme",
         last_name="Medical Supply",
@@ -7184,10 +7185,12 @@ Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provi
         specialty="Durable Medical Equipment",
         business_fax="5555550100",
     )
-    # A product from the DME formulary
+    # A product from the DME formulary, looked up by its HCPCS code.
+    # get() raises an error unless exactly one active product has this code.
+    wheelchair = DmeProduct.objects.get(code="K0001", active=True)
     formulary_order = OrderDmeCommand(
         note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
-        dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+        dme_product_id=str(wheelchair.id),
         diagnosis_codes=["N186"],
         quantity=1,
         length_of_need="Lifetime",
@@ -13445,6 +13448,7 @@ Most commands write a record of their own when they are entered: a Diagnose comm
 `labReview` | [LabReview](/sdk/data-labs/#labreview)  
 `medicalHistory` | [Condition](/sdk/data-condition/#condition)  
 `medicationStatement` | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement)  
+`orderDme` | [DmeOrder](/sdk/data-dme/#dmeorder)  
 `perform` | [Procedure](/sdk/data-procedure/#procedure)  
 `plan` | [Plan](/sdk/data-plan/#plan)  
 `pocLabTest` | [LabReport](/sdk/data-labs/#labreport)  
@@ -14421,6 +14425,116 @@ originator | [CanvasUser](/sdk/data-canvasuser)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-diagnostic-view/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-dme/
+##  Introduction 
+The DME data models let a plugin read the durable medical equipment (DME) that providers order with the [OrderDme](/sdk/commands/#orderdme) command:
+  - `DmeProduct` is an item on your instance's DME formulary. Its `id` is the value `OrderDmeCommand` takes as `dme_product_id`, so a plugin can find a product by its code or name instead of hard-coding the ID.
+  - `DmeOrder` is the record a signed Order DME command creates. It keeps the ordered item, indications, quantity, supplier, and ordering provider, along with the patient's height and weight when the order was signed.
+Both models are read-only. Admins manage the formulary in the Django Admin UI under **DME Products**.
+##  Basic usage 
+###  Find a formulary product 
+Filter `DmeProduct` by code, and include `active=True`, because the Order DME command only accepts active products:
+    ```python
+    from canvas_sdk.v1.data import DmeProduct
+    wheelchair = DmeProduct.objects.filter(code="K0001", active=True).first()
+    ```
+A product can have no code, and two products can share one, so check that the lookup found a product before you use it. To match on the product name instead, use `name__icontains`.
+###  Order a formulary product 
+Pass the product's `id` as `dme_product_id`:
+    ```python
+    from canvas_sdk.commands import OrderDmeCommand
+    from canvas_sdk.v1.data import DmeProduct
+    wheelchair = DmeProduct.objects.filter(code="K0001", active=True).first()
+    if wheelchair:
+        order = OrderDmeCommand(
+            note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+            dme_product_id=str(wheelchair.id),
+            diagnosis_codes=["R262"],
+            quantity=1,
+            ordering_provider_key="b8a7c6d5-4e3f-4a2b-9c1d-0e8f7a6b5c4d",
+        )
+    ```
+###  Read signed orders 
+To get an order by identifier, use the `get` method on the `DmeOrder` model manager:
+    ```python
+    from canvas_sdk.v1.data import DmeOrder
+    order = DmeOrder.objects.get(id="3c9e2f4a-6b1d-4e8a-9f7c-5d2b0a1e8c63")
+    ```
+If you have a patient object, the patient's orders are available from the `dme_orders` attribute:
+    ```python
+    from canvas_sdk.v1.data import Patient
+    patient = Patient.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
+    orders = patient.dme_orders.all()
+    ```
+A `DmeOrder` is the [anchor object](/sdk/data-command/#the-anchor-object) of its `orderDme` command, so you can also reach it from the command:
+    ```python
+    from canvas_sdk.v1.data import Command
+    command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
+    order = command.anchor_object
+    ```
+##  Filtering 
+DME products and orders can be filtered by any attribute that exists on the model.
+###  Products by code system 
+`code_system` is a `DmeProductCodeSystem` value: `HCPCS` for Healthcare Common Procedure Coding System (HCPCS) codes, or `INTERNAL` for codes your organization assigns:
+    ```python
+    from canvas_sdk.v1.data import DmeProduct, DmeProductCodeSystem
+    hcpcs_products = DmeProduct.objects.filter(code_system=DmeProductCodeSystem.HCPCS, active=True)
+    ```
+###  Committed orders 
+The `committed` method returns orders that have been committed and not entered in error:
+    ```python
+    from canvas_sdk.v1.data import DmeOrder
+    committed_orders = DmeOrder.objects.committed()
+    ```
+##  What a signed order records 
+Canvas copies the item into the order when the command is signed, so later formulary changes don't change an existing order:
+  - For a formulary product, `product` links to the `DmeProduct`, and `item_name`, `item_code`, and `item_code_system` hold the product's values at signing.
+  - For an off-formulary item, `product` is `None`, `item_name` holds the `free_text_item` text, and `item_code` and `item_code_system` are empty strings.
+`indications` is a list of the diagnoses the order was placed for, each a dictionary with `code` and `display` keys.
+`patient_height` and `patient_weight` hold the patient's latest committed height and weight as display text with units, such as `"70 in"` and `"10 lbs, 8 oz"`. Each is an empty string when the patient had no reading at signing.
+##  Attributes 
+###  DmeProduct 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+name | String  
+code | String  
+code_system | DmeProductCodeSystem  
+active | Boolean  
+orders | DmeOrder[]  
+###  DmeOrder 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+originator | [CanvasUser](/sdk/data-canvasuser)  
+committer | [CanvasUser](/sdk/data-canvasuser)  
+entered_in_error | [CanvasUser](/sdk/data-canvasuser)  
+deleted | Boolean  
+patient | [Patient](/sdk/data-patient/#patient)  
+note | [Note](/sdk/data-note/#note)  
+product | DmeProduct  
+item_name | String  
+item_code | String  
+item_code_system | String  
+indications | JSON  
+quantity | Integer  
+length_of_need | String  
+supplier | [ServiceProvider](/sdk/data-serviceprovider/)  
+ordering_provider | [Staff](/sdk/data-staff/#staff)  
+patient_height | String  
+patient_weight | String  
+###  DmeProductCodeSystem 
+Value | Label  
+---|---  
+HCPCS | HCPCS  
+INTERNAL | Internal  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-dme/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-document-reference/
 The `DocumentReference` model represents references to documents stored in Canvas, such as uploaded PDFs, scanned files, and other clinical documents. Each document reference can link to a file stored in S3 and provides secure access via presigned URLs.
 ##  Basic Usage 
@@ -15346,6 +15460,34 @@ A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded a
     )
     ```
 Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugin's faxes from another plugin's. If more than one plugin faxes the same note to the same number, compare `created` with when your plugin returned the effect.
+###  Reacting when a fax fails 
+Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
+Document | Fax submitted | Outcome reported | Target  
+---|---|---|---  
+Note | `NOTE_ACTION_EVENT_CREATED` | `NOTE_ACTION_EVENT_UPDATED` | NoteActionEvent  
+Referral | `REFERRAL_ACTION_EVENT_CREATED` | `REFERRAL_ACTION_EVENT_UPDATED` | ReferralActionEvent  
+Imaging order | `IMAGING_ORDER_ACTION_EVENT_CREATED` | `IMAGING_ORDER_ACTION_EVENT_UPDATED` | ImagingOrderActionEvent  
+Lab order | `LAB_ORDER_ACTION_EVENT_CREATED` | `LAB_ORDER_ACTION_EVENT_UPDATED` | LabOrderActionEvent  
+Data integration task | `INTEGRATION_TASK_ACTION_EVENT_CREATED` | `INTEGRATION_TASK_ACTION_EVENT_UPDATED` | IntegrationTaskActionEvent  
+Letter | `LETTER_ACTION_EVENT_CREATED` | `LETTER_ACTION_EVENT_UPDATED` | [LetterActionEvent](/sdk/data-letter-action-event/)  
+`LETTER_ACTION_EVENT_CREATED` also fires when a letter is printed. Check that the action event's `event_type` is `FAXED` before you treat it as a fax.
+A later report that changes the outcome or its message fires `_UPDATED` again, so retry each action event at most once. This handler reacts to a failed note fax; the same pattern works for any row above with its own event and model:
+    ```python
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import NoteActionEvent
+    class NoteFaxFailed(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_ACTION_EVENT_UPDATED)
+        def compute(self):
+            action_event = NoteActionEvent.objects.select_related("note", "fax").get(
+                id=self.event.target.id
+            )
+            if action_event.delivered_by_fax is not False:
+                return []
+            failed_number = action_event.fax.to_fax_number if action_event.fax else None
+            # Retry or alert, at most once per action event.
+            return []
+    ```
 ###  From a fax 
 A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
     ```python
@@ -15885,6 +16027,18 @@ The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the
     # Presigned S3 URL to the order PDF, or None if no PDF has been saved
     url = imaging_order.document_url
     ```
+##  Review assignment 
+An imaging report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+    ```python
+    from canvas_sdk.v1.data import ImagingReport, Staff
+    imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The staff members and the team the imaging report is assigned to
+    reviewers = imaging_report.reviewers.all()
+    team = imaging_report.team
+    # Every imaging report assigned to this staff member
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
+    ```
 ##  The document reference 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
 Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
@@ -15953,6 +16107,10 @@ review_mode | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmo
 junked | Boolean |   
 requires_signature | Boolean |   
 assigned_date | DateTime |   
+assigned_by | [CanvasUser](/sdk/data-canvasuser) |   
+reviewers | [Staff](/sdk/data-staff/#staff)[] |   
+team | [Team](/sdk/data-team/#team) |   
+team_assigned_date | DateTime |   
 patient | [Patient](/sdk/data-patient/#patient) |   
 order | ImagingOrder |   
 source | ImagingReportSource |   
@@ -16932,6 +17090,18 @@ Lab reviews track the clinical review process for lab results, including provide
     for report in unreviewed_reports:
         print(f"Report from {report.date_performed} - {report.values.count()} values")
     ```
+####  Finding Lab Reports Assigned to a Reviewer 
+A lab report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+    ```python
+    from canvas_sdk.v1.data import LabReport, Staff
+    lab_report = LabReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The staff members and the team the lab report is assigned to
+    reviewers = lab_report.reviewers.all()
+    team = lab_report.team
+    # Every lab report assigned to this staff member
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    assigned = LabReport.objects.filter(reviewers__id=staff.id)
+    ```
 ###  Filtering Lab Results by Abnormal Values 
 A common use case is to alert a care team when an abnormal result arrives. Listen for [`LAB_REPORT_CREATED`](/sdk/events/#labs) (and the other [Lab events](/sdk/events/#labs) or [Imaging Report events](/sdk/events/#imaging-reports)) to react to new results, then inspect each `LabValue`'s `abnormal_flag` field — per Canvas, a value is flagged abnormal when `abnormal_flag` is set (non-null and non-empty). A common use case is to identify abnormal lab values that may require clinical attention:
     ```python
@@ -16991,6 +17161,10 @@ review_mode | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmo
 junked | Boolean  
 requires_signature | Boolean  
 assigned_date | DateTime  
+assigned_by | [CanvasUser](/sdk/data-canvasuser)  
+reviewers | [Staff](/sdk/data-staff/#staff)[]  
+team | [Team](/sdk/data-team/#team)  
+team_assigned_date | DateTime  
 patient | [Patient](/sdk/data-patient/#patient)  
 transmission_type | TransmissionType  
 for_test_only | Boolean  
@@ -18090,6 +18264,7 @@ education_material | QuerySet[[EducationalMaterial](/sdk/data-educational-materi
 procedures | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note  
 family_histories | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note  
 plans | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note  
+dme_orders | QuerySet[[DmeOrder](/sdk/data-dme/#dmeorder)] | All Order DME commands signed on this note  
 follow_ups | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note  
 reasons_for_visit | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note  
 assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note  
@@ -18572,6 +18747,18 @@ The `document_url` property returns a presigned S3 URL for securely accessing th
     # Returns a presigned S3 URL (valid for 1 hour)
     url = document.document_url
     ```
+##  Review assignment 
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+    ```python
+    from canvas_sdk.v1.data import PatientAdministrativeDocument, Staff
+    document = PatientAdministrativeDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The staff members and the team the document is assigned to
+    reviewers = document.reviewers.all()
+    team = document.team
+    # Every document assigned to this staff member
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    assigned = PatientAdministrativeDocument.objects.filter(reviewers__id=staff.id)
+    ```
 ##  The document reference 
 Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the document's coding, category and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
 Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
@@ -18624,6 +18811,7 @@ patient | [Patient](/sdk/data-patient/#patient) |
 originator | [CanvasUser](/sdk/data-canvasuser) |   
 assigned_by | [CanvasUser](/sdk/data-canvasuser) |   
 team | [Team](/sdk/data-team/#team) |   
+reviewers | [Staff](/sdk/data-staff/#staff)[] |   
 integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |   
 code | DocumentCoding |   
 name | String |   
@@ -18967,6 +19155,7 @@ deferred_detected_issues | [DeferCodingGapEvent](/sdk/data-coding-gap-event/#def
 dependent_coverages | [Coverage](/sdk/data-coverage/#coverage)[] |   
 detected_issues | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[] |   
 devices | [Device](/sdk/data-device/#device)[] |   
+dme_orders | [DmeOrder](/sdk/data-dme/#dmeorder)[] |   
 external_identifiers | PatientExternalIdentifier[] |   
 identification_cards | PatientIdentificationCard[] |   
 imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[] |   
@@ -20769,6 +20958,18 @@ The `task_list` computed property returns the same related tasks as a `list[Task
     referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
     tasks = referral.task_list
     ```
+##  Review assignment 
+A referral report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+    ```python
+    from canvas_sdk.v1.data import ReferralReport, Staff
+    referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The staff members and the team the referral report is assigned to
+    reviewers = referral_report.reviewers.all()
+    team = referral_report.team
+    # Every referral report assigned to this staff member
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    assigned = ReferralReport.objects.filter(reviewers__id=staff.id)
+    ```
 ##  The document reference 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
 To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
@@ -20825,6 +21026,7 @@ requires_signature | Boolean
 assigned_date | DateTime  
 team_assigned_date | DateTime  
 team | [Team](/sdk/data-team/#team)  
+reviewers | [Staff](/sdk/data-staff/#staff)[]  
 patient | [Patient](/sdk/data-patient/#patient)  
 referral | Referral  
 specialty | String  
@@ -21179,6 +21381,7 @@ direct_address | String | Direct address
 is_customer_managed | Boolean | `True` for providers created through the SDK — see below  
 science_contact_id | Integer | The shared directory contact this provider came from, or `None` if it came from none. Not a reliable provenance signal on its own — providers that predate this tracking have no value — so use `is_customer_managed` to identify a customer's own providers.  
 imaging_orders | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)] | Imaging orders sent to this provider  
+dme_orders | QuerySet[[DmeOrder](/sdk/data-dme/#dmeorder)] | DME orders sent to this provider  
 referrals | QuerySet[[Referral](/sdk/data-referral/#referral)] | Referrals sent to this provider  
 integration_tasks | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)] | Integration tasks associated with this provider  
 ##  Customer-managed providers 
@@ -21511,6 +21714,7 @@ roles | StaffRole[] |
 licenses | StaffLicense[] |   
 letters | [Letter](/sdk/data-letter/#letter)[] |   
 imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[] |   
+dme_orders | [DmeOrder](/sdk/data-dme/#dmeorder)[] |   
 immunizations_given | [Immunization](/sdk/data-immunization/#immunization)[] |   
 supervising_prescriptions | [Prescription](/sdk/data-prescription/#prescription)[] |   
 refill_requests | [RefillRequest](/sdk/data-refill-request/#refillrequest)[] |   
@@ -22006,6 +22210,9 @@ document_references | [DocumentReference](/sdk/data-document-reference/#document
 integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]  
 uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[]  
 referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[]  
+labreport_set | [LabReport](/sdk/data-labs/#labreport)[]  
+imagingreport_set | [ImagingReport](/sdk/data-imaging/#imagingreport)[]  
+patientadministrativedocument_set | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument)[]  
 ###  TeamContactPoint 
 Field Name | Type  
 ---|---  
@@ -22063,6 +22270,18 @@ To get uncategorized documents that have not been reviewed yet and require a rev
     from canvas_sdk.commands.commands.review import ReviewMode
     from django.db.models import Q
     unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mode=ReviewMode.REVIEW_REQUIRED), (Q(review__committer__isnull=True) | Q(review__entered_in_error__isnull=False)))
+    ```
+##  Review assignment 
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned. When the review is delegated to another staff member, `reviewers` lists the delegate in place of the original reviewer.
+    ```python
+    from canvas_sdk.v1.data import UncategorizedClinicalDocument, Staff
+    document = UncategorizedClinicalDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The staff members and the team the document is assigned to
+    reviewers = document.reviewers.all()
+    team = document.team
+    # Every document assigned to this staff member
+    staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
     ```
 ##  Delegations 
 A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
@@ -22135,6 +22354,7 @@ originator | [CanvasUser](/sdk/data-canvasuser)
 assigned_by | [CanvasUser](/sdk/data-canvasuser)  
 review | UncategorizedClinicalDocumentReview  
 team | [Team](/sdk/data-team/#team)  
+reviewers | [Staff](/sdk/data-staff/#staff)[]  
 code | [DocumentCoding](/sdk/data-patient-administrative-document/#documentcoding)  
 name | String  
 review_mode | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode)  
@@ -22601,7 +22821,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -32490,6 +32710,91 @@ Occurs when the faxing service reports whether a letter fax was delivered, and a
 Target object | Context object  
     "id": letter_action_event_id
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
+| 
+    empty  
+####  Faxed Documents 
+Canvas records an action event each time a note, referral, imaging order, lab order, or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own letter action events.
+  - The `_CREATED` event fires when the fax is submitted. `delivered_by_fax` on the target is still `None`.
+  - The `_UPDATED` event fires when the faxing service reports the outcome. Read `delivered_by_fax` and `fax_result_msg` on the target; see [delivery status](/sdk/data-fax/#delivery-status).
+A later report that changes the outcome or its message fires `_UPDATED` again, so a plugin that retries failed faxes should retry each action event only once.
+NOTE_ACTION_EVENT_CREATED  
+---  
+Occurs when a note is faxed.  
+Target object | Context object  
+    "id": note_action_event_id
+    "type": [NoteActionEvent](/sdk/data-fax/#noteactionevent)
+| 
+    empty  
+NOTE_ACTION_EVENT_UPDATED  
+---  
+Occurs when the faxing service reports whether a note fax was delivered.  
+Target object | Context object  
+    "id": note_action_event_id
+    "type": [NoteActionEvent](/sdk/data-fax/#noteactionevent)
+| 
+    empty  
+REFERRAL_ACTION_EVENT_CREATED  
+---  
+Occurs when a referral is faxed.  
+Target object | Context object  
+    "id": referral_action_event_id
+    "type": [ReferralActionEvent](/sdk/data-fax/#referralactionevent)
+| 
+    empty  
+REFERRAL_ACTION_EVENT_UPDATED  
+---  
+Occurs when the faxing service reports whether a referral fax was delivered.  
+Target object | Context object  
+    "id": referral_action_event_id
+    "type": [ReferralActionEvent](/sdk/data-fax/#referralactionevent)
+| 
+    empty  
+IMAGING_ORDER_ACTION_EVENT_CREATED  
+---  
+Occurs when an imaging order is faxed.  
+Target object | Context object  
+    "id": imaging_order_action_event_id
+    "type": [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)
+| 
+    empty  
+IMAGING_ORDER_ACTION_EVENT_UPDATED  
+---  
+Occurs when the faxing service reports whether an imaging order fax was delivered.  
+Target object | Context object  
+    "id": imaging_order_action_event_id
+    "type": [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)
+| 
+    empty  
+LAB_ORDER_ACTION_EVENT_CREATED  
+---  
+Occurs when a lab order is faxed.  
+Target object | Context object  
+    "id": lab_order_action_event_id
+    "type": [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)
+| 
+    empty  
+LAB_ORDER_ACTION_EVENT_UPDATED  
+---  
+Occurs when the faxing service reports whether a lab order fax was delivered.  
+Target object | Context object  
+    "id": lab_order_action_event_id
+    "type": [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)
+| 
+    empty  
+INTEGRATION_TASK_ACTION_EVENT_CREATED  
+---  
+Occurs when an integration task is faxed.  
+Target object | Context object  
+    "id": integration_task_action_event_id
+    "type": [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)
+| 
+    empty  
+INTEGRATION_TASK_ACTION_EVENT_UPDATED  
+---  
+Occurs when the faxing service reports whether an integration task fax was delivered.  
+Target object | Context object  
+    "id": integration_task_action_event_id
+    "type": [IntegrationTaskActionEvent](/sdk/data-fax/#integrationtaskactionevent)
 | 
     empty  
 ####  Observations 
