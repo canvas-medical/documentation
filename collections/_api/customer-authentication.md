@@ -231,6 +231,8 @@ These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staf
 
 A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
 
+FHIR operations, such as [Create Lab Report](/api/diagnosticreport-operations/) and [Add Claim Activity Log Item](/api/claim-operations/), also need a token without a patient context, including when an app is launched from a patient's chart.
+
 ## Scopes
 
 Scopes control which parts of the API the token can access.
@@ -286,7 +288,7 @@ Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
 
 ### Operation scopes
 
-Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
+Some FHIR operations require a dedicated scope in addition to the resource scope. An operation scope covers only its operation: reading or writing the resource itself still needs a resource scope. Available under both `user/` and `system/`:
 
 | Scope suffix | Operation |
 |---|---|
