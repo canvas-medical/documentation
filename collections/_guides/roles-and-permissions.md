@@ -87,7 +87,18 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
-Turning emergency access on or off requires the Emergency Access role.
+Turning emergency access on or off requires the Emergency Access role. While emergency
+access is on, the user holds add and change permissions on most records. It never grants a
+permission whose effect would outlast the session, so these stay out of reach:
+
+- Roles, groups, and staff records
+- Sign-in and multi-factor authentication
+- Plugins and their secrets
+- Credentials, organization settings, and instance configuration
+- Audit records
+
+Turning emergency access off restores exactly the direct permissions the user held before
+it was turned on.
 
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
@@ -123,6 +134,7 @@ user must also be in a group that includes the patient.
 | Select claims for an installment plan in the admin console | View or change permission on installment plans to see the selection, and change permission to save it |
 | Create, view, or update a campaign, or add an intervention to one | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient |
 | Remove a care team member | Change permission on care team memberships, and patient-group access |
+| Create, edit, or delete a staff record, including its signature | Add, change, or delete permission on staff. Any signed-in user can view staff records without these permissions |
 | Send, edit, or delete a message | Patient-group access. No model permission is required. A message that has been sent, or that a campaign created, can only be marked read. It can't be sent again, edited, or deleted. If the message's template restricts editing, its content can't be changed |
 
 ## Extending the defaults
