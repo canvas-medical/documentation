@@ -299,6 +299,8 @@ for addr in patient_addresses:
 | verification_token | String                                                                |
 | opted_out          | Boolean                                                               |
 
+The `verification_token` field is always an empty string. Plugins can't read the token Canvas sends to verify a contact point.
+
 <!-- source: discussion #504 -->
 <!-- source: discussion #614 -->
 To fetch a patient's contact points, query the patient's `telecom` relation. Use `.all()` for every contact point, or `.filter()` for a subset such as phone numbers:
