@@ -84,8 +84,9 @@ cadence.
 
 ### Emergency access
 
-Emergency access is a time-boxed override for when a user needs to work on records beyond their
-normal roles. Turning it on or off requires the Emergency Access role.
+Emergency access is a temporary override for when a user needs to work on records beyond their
+normal roles. Turning it on or off requires the Emergency Access role, and it stays on until the
+user turns it off.
 
 While emergency access is on, the user holds add and change permissions on Canvas records. It
 never grants permissions that change who holds access or how users log in, because changes made
