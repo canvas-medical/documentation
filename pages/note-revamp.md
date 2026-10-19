@@ -23,6 +23,12 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
 
+**Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.
+- A command matches on its name or on the content the note shows for it, such as a field's text, a selected option's label or a questionnaire answer. Matching ignores case and starts at two characters.
+- In the **Sections** view, each section shows only its matching commands. In the **All** view, only the commands that don't match are hidden; free text stays in place.
+- A command added while a search is active stays in view. Commands can't be dragged to a new position until the search is cleared.
+- When nothing matches, the box shows **No matches**. Select the clear button or press Escape to show the whole note again.
+
 **Easier drag and drop:** Commands are picked up by a grip in the left gutter, so clicks inside a command's fields always go to the fields.
 
 ## For developers
