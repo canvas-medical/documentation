@@ -119,7 +119,7 @@ Both limits are organization settings managed by Canvas: the link lifetime is th
 You can put your organization's identity on the portal without building anything:
 
 - **Logo** — your organization's logo is shown on the login page and throughout the portal. It's configured on your Canvas organization; until you provide one, the default Canvas logo appears. Work with Canvas to set it.
-- **Banner message** — `PATIENT_APP_BANNER` sets a short greeting above the login card.
+- **Banner message** — `PATIENT_APP_BANNER` sets a short greeting above the login card. The banner can be plain text or HTML. Canvas keeps formatting tags and removes scripts, event handlers, and `javascript:` links, so the banner can't run code on the login page. If you paste a full HTML document, only its `<body>` is shown. A `<style>` block is applied only when it sets nothing but colors, backgrounds, borders, outlines, shadows, and font and text properties. Canvas drops the whole block if it contains `url(`, `@font-face`, a backslash escape, or an `@import` of anything other than a Google Fonts stylesheet.
 - **Email sender for patient messages** — message and notification emails to patients are sent with **your organization's name** as the sender, from the address in your organization's `defaultEmail` setting (default `do-not-reply@canvasmedical.com`). You can change that address; using your own domain may require sender authentication set up with Canvas.
 
 What stays **Canvas-driven** and isn't branded per organization:
