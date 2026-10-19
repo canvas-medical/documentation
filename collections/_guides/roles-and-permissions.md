@@ -94,8 +94,13 @@ application can issue tokens for every scope it allows, including plugin adminis
 and protocol code runs inside Canvas. Staff with the Administrative Developer or Clinical
 Developer role can do both.
 
-To grant these tasks without a developer role, add one of these permissions to a group,
-then add staff to that group:
+A developer role isn't always the right fit. Clinical Developer ranks above nurse
+practitioner and physician assistant among clinical roles, so assigning it to an NP or PA
+makes it their top clinical role, and by default Canvas no longer treats them as a
+prescriber.
+
+To grant these tasks without a developer role, add the matching permission to a group,
+attach that group to a role, and assign the role to the staff who need it:
 
 | Permission | Grants |
 | --- | --- |
