@@ -122,9 +122,18 @@ user must also be in a group that includes the patient.
 | Process ERAs in the admin console | Revenue access and view permission on ERA process jobs |
 | Select claims for an installment plan in the admin console | View or change permission on installment plans to see the selection, and change permission to save it |
 | Create, view, or update a campaign, or view or add its interventions | Campaign access, plus membership in the **All Patients** group when that group is enabled, because a campaign reaches every patient. Without that access, campaign data shown elsewhere is empty instead of failing. A protocol lists no campaigns, and a message sent by a campaign shows no intervention |
+| Create, edit, or comment on a task | Patient-group access to the task's patient, or to the patient of the note the task is created from. Editing or commenting on a task also requires change permission on tasks, which Tasking Access grants. Tasks with no patient are visible to every user who can view tasks |
 | Remove a care team member | Change permission on care team memberships, and patient-group access |
 | Create, edit, or delete a staff record, including its signature | Add, change, or delete permission on staff. Any signed-in user can view staff records without these permissions |
 | Send, edit, or delete a message | Patient-group access. No model permission is required. A message that has been sent, or that a campaign created, can only be marked read. It can't be sent again, edited, or deleted. If the message's template restricts editing, its content can't be changed |
+
+The default roles don't cover every billing workflow in this table. Revenue access alone
+doesn't grant permissions on payers, ERA process jobs, or installment plans, and no other
+default role grants them either. Add those permissions to a custom role for staff who edit
+payers, process ERAs, or manage installment plans. No default role grants delete
+permission on payers. Collecting a payment on a claim needs add permission on payment
+collections, and Profile write is the only default role that grants it. Staff who collect
+payments need both Profile write and Revenue access.
 
 ## Extending the defaults
 
