@@ -50,7 +50,7 @@ Sends a message that was already created, if you separated creating it from send
 
 ## Assigning a message to a team
 
-A message always has one staff or patient `recipient`. It can also be assigned to a [team](/sdk/data-team/), so a group such as a front desk or a care team can work messages together. Staff see messages assigned to their teams in the Messages panel. A message has a single read timestamp, so when one team member reads a team message, it is read for the whole team.
+A message always has one staff or patient `recipient`. It can also be assigned to a [team](/sdk/data-team/), so a group such as a front desk or a care team can work messages together. Assigning a team does not change the `recipient`. In the Messages panel, the assignee filter defaults to **Me or my teams**, so staff see messages addressed to them and messages assigned to any of their teams, and the unread badge counts both. A message has a single read timestamp, so when one team member reads a team message, it is read for the whole team.
 
 There are two ways to assign a team:
 
