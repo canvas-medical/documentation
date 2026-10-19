@@ -262,10 +262,11 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 
 ### Faxes
 
-Check out the [Fax Effects](/sdk/effect-fax/) documentation. To fax a whole note, use `FAX_NOTE` under [Notes](#notes).
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
 
 | Effect | Description |
 |---|---|
+| FAX_NOTE | Fax a note to an external recipient. |
 | FAX_REFERRAL | Fax a referral and its attachments. |
 | FAX_IMAGING_ORDER | Fax an imaging order. |
 | FAX_LAB_ORDER | Fax a lab order's requisition form. |

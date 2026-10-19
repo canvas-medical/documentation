@@ -467,7 +467,7 @@ A patient can download the after-visit summary of their own locked notes from th
 
 ## Link to Lab and Imaging Requisitions
 
-A patient can download the requisition of their own lab and imaging orders from the portal. As with after-visit summaries, the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+A patient can download the requisition of their own lab and imaging orders from the portal. As with [after-visit summaries](#link-to-after-visit-summaries), the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
 
 | Order   | Portal URL                                   | PDF the patient gets                                                                                                                                                       |
 |---------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

@@ -963,7 +963,7 @@ effects_module:
     description: Create or update external clinical events from ADT feeds.
   - title: "Fax"
     url: /sdk/effect-fax/
-    description: Fax a referral, imaging order, lab order or letter on its own.
+    description: Fax a note, referral, imaging order, lab order or letter.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.

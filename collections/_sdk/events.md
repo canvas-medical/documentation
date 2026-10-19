@@ -28750,8 +28750,8 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
       <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
-"note_id": str (after_visit_summary only)
-"order_id": str (lab_requisition and imaging_requisition only)</pre></td>
+"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
+"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
     </tr>
   </tbody>
 </table>
