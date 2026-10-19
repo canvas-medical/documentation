@@ -109,6 +109,18 @@ received = Fax.objects.filter(direction=FaxDirection.INBOUND).order_by("-date_ut
 failed = received.filter(success=False)
 ```
 
+On a received fax, `to_fax_number` is the Canvas line that received it. Depending on the faxing service that delivered the fax, Canvas stores that number with or without the leading `+`, such as `+15555550100` or `15555550100`. To find every fax one line received, match both forms:
+
+```python?partial=true
+from canvas_sdk.v1.data import Fax, FaxDirection
+
+line = "15555550100"
+received_on_line = Fax.objects.filter(
+    direction=FaxDirection.INBOUND,
+    to_fax_number__in=[line, f"+{line}"],
+)
+```
+
 ## Attributes
 
 ### Fax
@@ -120,7 +132,7 @@ failed = received.filter(success=False)
 | created         | DateTime                      |                                                                               |
 | modified        | DateTime                      |                                                                               |
 | fax_id          | String                        | The faxing service's id for the fax                                           |
-| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it |
+| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it, which can be stored without the `+` |
 | from_fax_number | String                        | The number the fax was sent from. For a received fax, the sender's number     |
 | date_utc        | DateTime                      | When the faxing service accepted a sent fax, or finished receiving a received fax |
 | fax_pages       | Integer                       | The number of pages                                                           |
