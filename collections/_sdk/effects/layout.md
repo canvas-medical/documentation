@@ -377,6 +377,8 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 
 [Google Calendar sync](/product-updates/google-calendar-sync/) is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
 
+On instances where ID.me identity verification is turned on, the menu also has an **Identity verification** item. Prescribers use it to verify their identity through ID.me for Surescripts enrollment. The `Items` enum has no constant for this item, so any `ProviderMenuConfiguration` allow-list hides it. If your plugin sets an allow-list on one of these instances, give prescribers another link to the verification page at `/api/IdMe/dashboard/`.
+
 ### Hiding the Schedule item
 
 Hiding `SCHEDULE` does not change where providers land after logging in — that still defaults to the schedule page. Pair the effect with a [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) so providers do not arrive on a page they can no longer navigate back to.
