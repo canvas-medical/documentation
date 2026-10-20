@@ -112,6 +112,8 @@ $ canvas uninstall intake --host acme-staging
 
 `canvas deploy` waits up to 300 seconds for each instance's outcome and exits non-zero unless every instance succeeds in that time.
 
+Banner alerts belong to the plugin that added them, on patient charts and on claims alike. While the old plugin is disabled its banners are hidden, and `canvas uninstall` deletes them. To keep them, have the renamed plugin add them again before you uninstall the old one: read the old plugin's banners with [`BannerAlert`](/sdk/data-banner-alert/), filtered on its `plugin_name` and `status="active"`, then emit [`AddBannerAlert`](/sdk/effect-banner-alerts/) for each with the same patient, `key`, `narrative`, `intent`, `placement` and `href`. Claim banners work the same way.
+
 Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship changes with `canvas deploy`.
 
 ## Move CI
