@@ -46,15 +46,7 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 
 and you'll get back a JSON which will contain an `access_token` that'll be valid for 10 hours.
 
-The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`, except on the staff list described below. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
-
-A client credentials token with the `system/Practitioner.read` scope can list staff with `GET /api/Staff/`. Each staff member in that response contains these fields:
-
-- `id`, `key`, `firstName`, `lastName`, `fullName`, `active`, `birthDate`, `sexAtBirth`, `npiNumber`, `spiNumber`, and `isPrescriber`
-- `roles`, where each entry holds a `role` object with `name`, `internalCode`, `domain`, and `domainPrivilegeLevel`
-- `telecom`, where each entry holds `system`, `value`, and `use`
-- `addresses`, where each entry holds `use`, `type`, `line1`, `line2`, `city`, `stateCode`, and `postalCode`
-- `licenses`, where each entry holds `licenseType`, `licenseOrCertificationIdentifier`, `state`, and `primary`
+The `/api` endpoints check no scopes, and a client credentials token acts there with every permission of the application's owner. For that reason, a client credentials token must carry the `system/*.*` scope to call `/api`. Canvas refuses a token with narrower scopes there with `403 Forbidden`. The [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin endpoints check scopes, so they accept narrower tokens.
 
 ## Authorization Code
 
