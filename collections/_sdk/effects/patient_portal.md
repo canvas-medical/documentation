@@ -116,6 +116,12 @@ Each appointment can be customized individually, allowing each one to have its o
 
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
 
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+
+- With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
+- A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
+- Some appointments never offer either action, and Canvas doesn't fire the event for them. These are appointments that are canceled, marked as a no-show, or checked in, and appointments whose note is signed, locked, or deleted. A patient also can't cancel an appointment that has already started.
+
 MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
 
 ### Hide 'Cancel' button
@@ -242,6 +248,12 @@ class MyHandler(BaseHandler):
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
+
+Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
+
+- Self-scheduling turned on for the patient. See `can_schedule_appointments` in [Configuring the Patient Portal](#configuring-the-patient-portal).
+- A start time in the future.
+- A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
 
