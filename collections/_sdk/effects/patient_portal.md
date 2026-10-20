@@ -253,13 +253,12 @@ Every attribute is optional. An attribute you leave unset keeps the portal's def
 
 #### apply() → Effect
 
-Applies the theme. The effect raises a validation error, naming the attribute or color pair at fault, when:
+Applies the theme. The effect raises a validation error that names the attribute at fault when:
 
 - An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
 - A value doesn't match its format or range in the Attributes table.
 - `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
 - `font_source` is set without `font_family`.
-- A color pair the portal draws together falls below the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA contrast ratio. See [Contrast checks](#contrast-checks).
 
 ### Attributes
 
@@ -280,21 +279,15 @@ Setting `font_family` replaces the portal's default webfont, including in questi
 
 Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
 
-### Contrast checks
+### Color contrast
 
-Every pair below draws text, so each needs the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA ratio for normal text, 4.5:1. `apply()` checks a pair when your theme sets at least one of its colors, and checks the brand pairs when your theme sets `brand_color`. A side you leave unset is checked as the portal default. A pair of colors that appears twice, such as the brand on a white page and white text on the brand, is reported once.
+`apply()` doesn't check color contrast, so check that the colors you choose stay readable. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a contrast ratio of at least 4.5:1. The portal draws these colors together:
 
-| Foreground                           | Background                                                   | Minimum ratio | Checked when you set                                          |
-|--------------------------------------|--------------------------------------------------------------|---------------|---------------------------------------------------------------|
-| Menu text (set or picked)            | `menu_background_color`                                      | 4.5:1         | `menu_text_color` or `menu_background_color`                  |
-| Body text (`#212121`)                | `page_background_color`                                      | 4.5:1         | `page_background_color`                                       |
-| White text (buttons, sent messages)  | `brand_color`                                                | 4.5:1         | `brand_color`                                                 |
-| `brand_color`                        | `page_background_color`                                      | 4.5:1         | `brand_color`                                                 |
-| `brand_color`                        | Section and accordion headers, a light tint of the brand color | 4.5:1         | `brand_color`                                                 |
-| Menu text (set or picked)            | `menu_selected_background_color`, or a tint of the menu text when unset | 4.5:1 | `menu_background_color`                                     |
-| `brand_color`                        | `menu_selected_background_color`                             | 4.5:1         | `brand_color` or `menu_selected_background_color`, with the default menu background |
-
-With the default menu background, the selected menu item draws its text in the brand color. A saturated brand color on a saturated selected background can fail even when each color passes against the page.
+- Menu text on `menu_background_color`, and on `menu_selected_background_color`.
+- Body text on `page_background_color`.
+- `brand_color` links and section titles on `page_background_color`, and on the light brand tint behind section and accordion headers.
+- White text on `brand_color`, on primary buttons and sent messages.
+- `brand_color` text on `menu_selected_background_color`, when the menu keeps its default background.
 
 ### Example
 

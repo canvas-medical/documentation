@@ -235,22 +235,16 @@ PatientPortalTheme(
 
 {% include alert.html type="warning" content="The portal's CSS class names are not a public API, and a portal update can rename them. Use the theme attributes wherever they cover what you need, and keep custom CSS small." %}
 
-## Contrast rules
+## Choose readable colors
 
-`apply()` checks that the colors you set stay readable, and raises a validation error that names the pair at fault. Every checked pair draws text, so each needs a contrast ratio of at least 4.5:1, the [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA level for normal text:
+`apply()` checks each value's format but not its color contrast, so test your colors with a contrast checker before you install the theme. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a ratio of at least 4.5:1. Check these pairs:
 
 - Menu text on the menu background, and on the selected item's background.
 - Body text on the page background.
 - The brand color on the page background and on the header bands.
 - White text on the brand color, as on primary buttons and sent messages.
 
-A failing theme raises an error such as:
-
-```text
-menu_text_color (derived) #FFFFFF on menu_background_color #777777 has contrast 4.48:1; WCAG AA needs 4.5:1
-```
-
-Choose a darker or lighter color for one side of the pair and try again. The [SDK reference](/sdk/patient-portal/#contrast-checks) lists each pair and when it is checked.
+The [SDK reference](/sdk/patient-portal/#color-contrast) lists every pair the portal draws together.
 
 ## A theme per business line
 
@@ -291,7 +285,7 @@ from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
 
 
 def test_theme_is_valid() -> None:
-    """The theme passes the portal's format and contrast checks."""
+    """The theme passes the portal's format checks."""
     PatientPortalTheme(brand_color="#0F766E", page_background_color="#F0FDFA").apply()
 ```
 
@@ -301,7 +295,8 @@ def test_theme_is_valid() -> None:
 | --- | --- |
 | A change does not appear | The portal caches each theme for 60 seconds. Wait a minute and reload. |
 | The default theme shows | The plugin is disabled, the handler returned no effect, or it raised an error. Check the plugin logs. |
-| `apply()` raises a validation error | A value has the wrong format, or a color pair fails the contrast rules. The message names the attribute or the pair. |
+| `apply()` raises a validation error | A value has the wrong format or range. The message names the attribute. |
 | Custom CSS does not show on the login page | Custom CSS applies on signed-in pages only, by design. |
 | The font does not change | `font_source` must be a Google Fonts stylesheet, and `font_family` must match the family it loads, without quotes. |
+| Text is hard to read | Check the color pairs in [Choose readable colors](#choose-readable-colors). |
 | The menu logo is hard to see on a dark menu | The logo is the practice's own image. Upload a light version of the logo for a dark menu. |
