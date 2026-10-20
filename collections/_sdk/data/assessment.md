@@ -96,7 +96,7 @@ On an instance in the [revamped note beta program](/product-updates/note-revamp/
 | immunizations                | [Immunization](/sdk/data-immunization/#immunization)[]                        |
 | instructions                 | [Instruction](/sdk/data-instruction/#instruction)[]                           |
 | linked_change_medications    | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]           |
-| linked_dme_orders            | DmeOrder[]                                                                    |
+| linked_dme_orders            | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                         |
 | linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
 | linked_imaging_orders        | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                             |
 | linked_lab_orders            | [LabOrder](/sdk/data-labs/#laborder)[]                                        |
