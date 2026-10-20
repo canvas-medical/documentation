@@ -105,7 +105,7 @@ Frontmatter uses a structured `sections` → `blocks` → `apidoc` format with `
 
 ### Access and validation changes
 
-Changes to access controls, permissions, scopes, or input validation stay out of the docs and release notes.
+Changes to access controls, permissions, scopes, or input validation stay out of the docs and release notes. Those specific release notes are drafted by humans to ensure the change is communicated effectively.
 
 - When such a change also adds a capability, such as a new scope, endpoint, field, or event, document the capability in neutral terms: what it does and how to use it.
 - When a request needs something specific, describe what to send.
