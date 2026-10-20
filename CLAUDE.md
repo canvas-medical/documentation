@@ -109,7 +109,7 @@ Changes to access controls, permissions, scopes, or input validation stay out of
 
 - When such a change also adds a capability, such as a new scope, endpoint, field, or event, document the capability in neutral terms: what it does and how to use it.
 - When a request needs something specific, describe what to send.
-- If you're unsure whether a change belongs here, leave it out.
+- If you're unsure whether a change falls under this section, leave it out.
 
 ### Navigation
 
