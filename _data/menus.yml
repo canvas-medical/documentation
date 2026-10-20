@@ -1162,13 +1162,13 @@ data_module:
     description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
   - title: "DocumentHistoryEvent"
     url: /sdk/data-document-history-event/
-    description: An entry in a reviewable document's history, such as a reassignment, comment, signature release, or recorded review.
+    description: An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
   - title: "DocumentReviewDelegation"
     url: /sdk/data-document-review-delegation/
-    description: A signature release that lets the recipients of a reassigned document apply the releaser's signature.
+    description: A reviewable document sent to a provider for signature, or returned signed to whoever sent it.
   - title: "EducationalMaterial"
     url: /sdk/data-educational-material/
     description: Patient educational material shared from a note via the Educational Material command.

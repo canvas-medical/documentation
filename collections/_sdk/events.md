@@ -1762,7 +1762,7 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_REASSIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>reviewer</code> and <code>team</code> hold the new assignment, and either can be null. <code>reassigned_by</code> is null when the change came from outside a staff session, such as an API client or a plugin. <code>signature_released</code> is true when the reassigning staff member also released their signature; that release fires DOCUMENT_DELEGATED.</td></tr>
+    <tr><td colspan="2">Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>reviewer</code> and <code>team</code> hold the new assignment, and either can be null. <code>reassigned_by</code> is null when the change came from outside a staff session, such as an API client or a plugin. It also fires when staff send a form to a provider for signature, with <code>sent_for_signature</code> set to true, and when a signed form goes back to whoever sent it. Both of those hand-offs also fire DOCUMENT_DELEGATED.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1797,7 +1797,7 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
   "id": team_id
   "name": str
 "comment": str
-"signature_released": bool
+"sent_for_signature": bool
 "patient": <a href="/sdk/data-patient/#patient">Patient</a>
   "id": pt_id</pre></td>
     </tr>
@@ -1835,7 +1835,7 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
 <table>
   <thead>
     <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
-    <tr><td colspan="2">Occurs when staff reassign a reviewable document and release their signature to a staff member, a team, or both. A DOCUMENT_REASSIGNED event fires for the same reassignment. For an inbound document, the target is its <a href="/sdk/data-integration-task/">IntegrationTask</a> and <code>document</code> holds the inbound document metadata. For a document created in the chart, the target is the report itself and <code>document</code> is null. <code>delegated_to</code> is the recipient staff member, or the recipient team when no staff member was chosen; <code>delegated_to_team</code> is the recipient team, or null. <code>on_behalf_of</code> is the staff member whose signature the recipients may apply, and <code>comment</code> carries the comment left with the reassignment. <code>routed_back</code> is kept for compatibility and is false for these releases, because staff can't release their signature to themselves.</td></tr>
+    <tr><td colspan="2">Occurs when staff send a reviewable document to a provider for signature, and again when the provider signs it and it goes back to whoever sent it. A DOCUMENT_REASSIGNED event fires for the same hand-off. The target is always the report. <code>document</code> holds the inbound document metadata when the report came in through Data Integration, and is null otherwise, such as for a document created in the chart or an electronic lab report. <code>delegated_by</code> is the sender, or the provider returning the signed form. <code>delegated_to</code> is the provider asked to sign, or the sender the signed form returns to. <code>on_behalf_of</code> is the staff member who sent the form for signature. <code>routed_back</code> is true when the signed form went back to its sender. <code>comment</code> carries the comment left with the request. <code>signature_consent</code> is always false, because each staff member places only their own signature. <code>delegated_to_team</code> is null for these hand-offs.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1843,10 +1843,7 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": document_id
-"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre>
-or, for a document created in the chart:
-<pre>"id": report_id
+      <td><pre>"id": report_id
 "type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
       <td><pre>"report":
   "id": report_id

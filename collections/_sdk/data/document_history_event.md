@@ -7,9 +7,9 @@ hidden: false
 
 ## Introduction
 
-The `DocumentHistoryEvent` model records the review history of a Lab, Imaging, Consult/Referral, or Uncategorized document. Canvas adds an entry each time staff reassign the document, add a comment, release a signature, record the review, or enter the review in error. Together the entries form the timeline that the document's history view shows.
+The `DocumentHistoryEvent` model records the review history of a Lab, Imaging, Consult/Referral, or Uncategorized document. Canvas adds an entry each time staff reassign the document, add a comment, send it for signature, sign it, remove a signature, record the review, or enter the review in error. Together the entries form the timeline that the document's history view shows.
 
-Each entry stores who acted (`actor`), who received the document or the released signature, any comment, and, for recorded entries, whose signatures the document carried.
+Each entry stores who acted (`actor`), who received the document, any comment, and, for signed and recorded entries, whose signatures the document carried.
 
 ## Basic usage
 
@@ -66,7 +66,9 @@ for event in recorded:
 |------------|--------------|------------------|
 | `reassigned` | Staff reassign the document, including reviewer or team changes from the card's dropdowns. | `recipient_staff` and `recipient_team` hold the new assignment; `comment` holds any comment. `actor` is empty when the change came from an API client or a plugin. |
 | `commented` | Staff add a comment without changing who holds the document. | `comment` |
-| `released` | Staff release their signature while reassigning. | `recipient_staff`, `recipient_team`, and `delegation`, which links to the [DocumentReviewDelegation](/sdk/data-document-review-delegation/) |
+| `sent_for_signature` | Staff send a prepared form to a provider to sign. The document keeps its team. | `recipient_staff` holds the provider and `recipient_team` the document's team; `comment` holds any comment. A [DocumentReviewDelegation](/sdk/data-document-review-delegation/) records the same request. |
+| `signed` | The provider holding the document signs it with **SIGN FORM**. When the form goes back to whoever sent it, a `reassigned` entry follows. | `actor` and `signers` hold the provider. |
+| `signature_removed` | Staff remove a signature from a signed form so they can edit it again. Canvas restores the version from just before signing. | `actor` |
 | `recorded` | The document's review command is recorded. Recording again adds a new entry. | `signers`, `review_content_type`, and `review_object_id` |
 | `entered_in_error` | The document's review command is entered in error. | `review_content_type` and `review_object_id` |
 
@@ -86,13 +88,12 @@ When a review is entered in error, its `recorded` entry stays in the timeline, b
 | object_id           | Integer (the document's `dbid`)                                                      |
 | event_type          | [DocumentHistoryEventType](#documenthistoryeventtype)                                |
 | actor               | [Staff](/sdk/data-staff/#staff) (who acted, or empty for an API client or plugin)    |
-| recipient_staff     | [Staff](/sdk/data-staff/#staff) (who received the document or the released signature) |
-| recipient_team      | [Team](/sdk/data-team/#team) (the team that received the document or the released signature) |
+| recipient_staff     | [Staff](/sdk/data-staff/#staff) (who received the document)                          |
+| recipient_team      | [Team](/sdk/data-team/#team) (the team that received the document)                   |
 | comment             | String                                                                               |
-| delegation          | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (for `released` entries) |
 | review_content_type | [ContentType](/sdk/data-content-type/) (the review command's type)                   |
 | review_object_id    | Integer (the review command's `dbid`)                                                |
-| signers             | [Staff](/sdk/data-staff/#staff)[] (whose signatures the recorded document carried)   |
+| signers             | [Staff](/sdk/data-staff/#staff)[] (whose signatures the signed or recorded document carried) |
 | deleted_at          | DateTime (when the comment was hidden)                                               |
 | comment_hidden      | Boolean (`True` when `deleted_at` is set)                                            |
 
@@ -104,6 +105,8 @@ When a review is entered in error, its `recorded` entry stays in the timeline, b
 |--------------------|--------------------|
 | REASSIGNED         | Reassigned         |
 | COMMENTED          | Commented          |
-| RELEASED           | Released signature |
+| SENT_FOR_SIGNATURE | Sent for signature |
+| SIGNED             | Signed             |
+| SIGNATURE_REMOVED  | Signature removed  |
 | RECORDED           | Recorded           |
 | ENTERED_IN_ERROR   | Entered in error   |
