@@ -87,6 +87,44 @@ latest = (
 
 Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugin's faxes from another plugin's. If more than one plugin faxes the same note to the same number, compare `created` with when your plugin returned the effect.
 
+### Reacting when a fax fails
+
+Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
+
+| Document | Fax submitted | Outcome reported | Target |
+| --- | --- | --- | --- |
+| Note | `NOTE_ACTION_EVENT_CREATED` | `NOTE_ACTION_EVENT_UPDATED` | [NoteActionEvent](#noteactionevent) |
+| Referral | `REFERRAL_ACTION_EVENT_CREATED` | `REFERRAL_ACTION_EVENT_UPDATED` | [ReferralActionEvent](#referralactionevent) |
+| Imaging order | `IMAGING_ORDER_ACTION_EVENT_CREATED` | `IMAGING_ORDER_ACTION_EVENT_UPDATED` | [ImagingOrderActionEvent](#imagingorderactionevent) |
+| Lab order | `LAB_ORDER_ACTION_EVENT_CREATED` | `LAB_ORDER_ACTION_EVENT_UPDATED` | [LabOrderActionEvent](#laborderactionevent) |
+| Data integration task | `INTEGRATION_TASK_ACTION_EVENT_CREATED` | `INTEGRATION_TASK_ACTION_EVENT_UPDATED` | [IntegrationTaskActionEvent](#integrationtaskactionevent) |
+| Letter | `LETTER_ACTION_EVENT_CREATED` | `LETTER_ACTION_EVENT_UPDATED` | [LetterActionEvent](/sdk/data-letter-action-event/) |
+
+`LETTER_ACTION_EVENT_CREATED` also fires when a letter is printed. Check that the action event's `event_type` is `FAXED` before you treat it as a fax.
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so retry each action event at most once. This handler reacts to a failed note fax; the same pattern works for any row above with its own event and model:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import NoteActionEvent
+
+
+class NoteFaxFailed(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_ACTION_EVENT_UPDATED)
+
+    def compute(self):
+        action_event = NoteActionEvent.objects.select_related("note", "fax").get(
+            id=self.event.target.id
+        )
+        if action_event.delivered_by_fax is not False:
+            return []
+
+        failed_number = action_event.fax.to_fax_number if action_event.fax else None
+        # Retry or alert, at most once per action event.
+        return []
+```
+
 ### From a fax
 
 A `Fax` reaches its action events through `noteactionevents`, `referralactionevents`, `imagingorderactionevents`, `laborderactionevents`, `letteractionevents`, and `integrationtaskactionevents`:
