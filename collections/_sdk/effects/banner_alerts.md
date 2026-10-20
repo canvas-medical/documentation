@@ -5,22 +5,36 @@ excerpt: "Contextual information in a patient's chart."
 hidden: false
 ---
 
-The Canvas SDK allows you to place Banners on the Canvas UI.
+Use banner alerts to show contextual information in a patient's chart.
+
+{% include alert.html type="warning" content="A banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and <a href='/sdk/canvas_cli/#canvas-uninstall'>uninstalling</a> it deletes them." %}
 
 ## Adding a Banner Alert
 
-To add a banner alert, import the `AddBannerAlert` class and create an
-instance of it.
+To add a banner alert, build an `AddBannerAlert` and return its `apply()` from your handler.
 
-| Attribute      |                                              | Type                          | Description                                                                                                                                        |
-| -------------- | -------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| patient_id     | required (if patient_filter is not provided) | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   |
-| patient_filter | required (if patient_id is not provided)     | String                        | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
-| key            | required                                     | String                        | An identifier that categorizes the alert.                                                                                                          |
-| narrative      | required                                     | String                        | The content of the alert. Maximum 90 characters.                                                                                                   |
-| placement      | required                                     | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               |
-| intent         | optional                                     | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  |
-| href           | optional                                     | String                        | If given, the alert will appear as a link to this URL.                                                                                             |
+### Methods
+
+#### apply() → Effect
+
+Adds the banner alert.
+
+- `key`, `narrative`, `placement`, and `intent` are required, along with either `patient_id` or `patient_filter`.
+- `narrative` can be at most 90 characters.
+
+### Attributes
+
+| Attribute      | Type                          | Description                                                                                                                                        | Required |
+| -------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| patient_id     | String                        | The id of the [patient](/sdk/data-patient/) the alert should be associated with.                                                                   | If `patient_filter` is not provided |
+| patient_filter | dict                          | A [patient filter](#patient-filters) that applies the effect to every matching patient. For example, `{"active": True}` applies the effect to all active patients | If `patient_id` is not provided |
+| key            | String                        | An identifier that categorizes the alert.                                                                                                          | Yes      |
+| narrative      | String                        | The content of the alert. Maximum 90 characters.                                                                                                   | Yes      |
+| placement      | list[[Placement](#placement)] | List of areas the alert should show.                                                                                                               | Yes      |
+| intent         | [Intent](#intent)             | Affects the styling of the alert.                                                                                                                  | Yes      |
+| href           | String                        | If given, the alert will appear as a link to this URL.                                                                                             | No       |
+
+### Example
 
 ```python
 from canvas_sdk.events import EventType
@@ -145,10 +159,25 @@ banner alert.
 
 ## Removing a Banner Alert
 
-Removing a banner alert is done wih the `RemoveBannerAlert` class. Create an
-instance of the class, identifying the key of the alert and the patient id.
-Return the Effect by calling the `.apply()` method. Both the `key` and
-`patient_id` attributes are required.
+To remove a banner alert, build a `RemoveBannerAlert` identifying the alert's key and patient, and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Removes the banner alert.
+
+- `key` is required, along with either `patient_id` or `patient_filter`.
+
+### Attributes
+
+| Attribute      | Type   | Description                                                                 | Required |
+| -------------- | ------ | --------------------------------------------------------------------------- | -------- |
+| patient_id     | String | The id of the [patient](/sdk/data-patient/) whose alert should be removed.   | If `patient_filter` is not provided |
+| patient_filter | dict   | A [patient filter](#patient-filters) that removes the alert from every matching patient. | If `patient_id` is not provided |
+| key            | String | The key of the alert to remove.                                             | Yes      |
+
+### Example
 
 ```python
 from canvas_sdk.effects.banner_alert import RemoveBannerAlert
@@ -160,6 +189,20 @@ banner_alert = RemoveBannerAlert(
 
 banner_alert.apply()
 ```
+
+## Patient filters
+
+A `patient_filter` selects patients by patient field. Each key is a field name, optionally followed by `__` and a lookup, such as `"last_name__istartswith": "Sm"`. These fields are supported:
+
+- `id`, `key`, and `mrn`
+- `active` and `deceased`
+- `first_name`, `middle_name`, `last_name`, and `nickname`
+- `birth_date` and `sex_at_birth`
+- `external_identifiers__system` and `external_identifiers__value`
+
+These lookups are supported: `exact`, `iexact`, `in`, `lt`, `lte`, `gt`, `gte`, `range`, `isnull`, `startswith`, `istartswith`, `endswith`, `iendswith`, `contains`, and `icontains`.
+
+Each value is a string, number, boolean, `None`, or a list of strings, numbers, or booleans.
 
 <br/>
 <br/>

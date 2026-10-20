@@ -29,6 +29,21 @@ The plugin author can enter custom workflow code into the `compute` method that 
 
 For more information on writing plugins, see the guide [here](/guides/your-first-plugin/).
 
+<!-- source: discussion #1420 -->
+{% include alert.html type="info" content="A handler's <code>compute</code> method runs only for the events listed in its <code>RESPONDS_TO</code>, which can be a single event name or a list. A handler with no <code>RESPONDS_TO</code>, or one that leaves out the event you expect, installs and enables without error but never runs. If <code>compute</code> never fires, check that <code>RESPONDS_TO</code> names the right event." %}
+
+<!-- source: discussion #433 -->
+### Sending outbound webhooks
+
+A common pattern is to send an outbound webhook to a third-party system when something changes in Canvas. To do this, write a handler that responds to the relevant events, builds a custom payload, and sends it to your external URL (see [making HTTP requests](/sdk/utils/#post)). You have full control over the payload shape. The event itself typically gives you the entity id and patient id; use the [data modules](/sdk/data/) to enrich the payload with additional details — for example, retrieve a patient's email address from a [`PatientContactPoint`](/sdk/data-patient/#patientcontactpoint). Store the destination URL as a plugin [secret](/sdk/secrets/) rather than hard-coding it.
+
+<!-- source: discussion #1561 -->
+For firewall allowlisting, outbound events (such as note state change webhooks) are sent from one of three static source IP addresses:
+
+- `52.70.89.15`
+- `54.86.133.235`
+- `34.197.78.70`
+
 ## Event Actor
 
 The actor is the user that initiated the event. It can be accessed within the compute method of the plugin by `self.event.actor`.
@@ -89,6 +104,7 @@ Many events include common contextual information to help you understand the sco
 - **Patient context**: Most patient-related events include `"patient": {"id": pt_id}` in the context, allowing you to identify which patient the event relates to.
 - **Note context**: Command lifecycle events (PRE_COMMIT, POST_COMMIT, etc.) include `"note": {"uuid": note_id}` in the context, indicating the note where the command was executed.
 - **User context**: All command-related PRE_SEARCH and POST_SEARCH events include `"user": {"staff": staff_key}` in the context, containing the staff key of the user performing the search. This allows you to customize search results based on user-specific preferences, roles, or permissions.
+- **Search results context**: Command POST_SEARCH events include `"results"`, the list the search returned. Command PRE_SEARCH events fire before the search runs, so their context holds only `search_term` and `user`. To modify the results a search returns, respond to the POST_SEARCH event. When several handlers respond to the same PRE_SEARCH event, a handler that runs after one that returned an `AUTOCOMPLETE_SEARCH_RESULTS` effect finds those results in `"results"`.
 
 ```python
 from canvas_sdk.events import EventType
@@ -126,6 +142,9 @@ These events fire as a result of records being created, updated, or deleted.
   </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #947 -->
+{% include alert.html type="info" content="When a patient is created through the FHIR API, Canvas saves the patient and fires <code>PATIENT_CREATED</code> before it saves the patient's external identifiers. It then fires <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> for each identifier, and only then does the FHIR create finish. So a <code>PATIENT_CREATED</code> handler can't see the identifiers yet. To act on them, for example to recognize a patient your own FHIR POST created, listen for <code>PATIENT_EXTERNAL_IDENTIFIER_CREATED</code> instead." %}
 
 <table>
   <thead>
@@ -492,7 +511,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_FACILITY_ADDRESS_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when a patient facility address is deleted.</td></tr>
+    <tr><td colspan="2">Occurs when a patient facility address is deleted. Deleting a facility address also fires <code>PATIENT_ADDRESS_DELETED</code> (see note below).</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -507,6 +526,9 @@ These events fire as a result of records being created, updated, or deleted.
     </tr>
   </tbody>
 </table>
+
+<!-- source: discussion #1627 -->
+{% include alert.html type="info" content="Facility addresses have their own <code>PATIENT_FACILITY_ADDRESS_*</code> events. Assigning a facility to a patient fires <code>PATIENT_FACILITY_ADDRESS_CREATED</code> only, not <code>PATIENT_ADDRESS_CREATED</code>. Deleting one fires both <code>PATIENT_FACILITY_ADDRESS_DELETED</code> and <code>PATIENT_ADDRESS_DELETED</code>. Listen for the <code>PATIENT_FACILITY_ADDRESS_*</code> events for every facility address change." %}
 
 #### Patient Metadata
 
@@ -589,6 +611,9 @@ These events fire as a result of records being created, updated, or deleted.
 </table>
 
 #### Appointments
+
+<!-- source: discussion #1290 -->
+To keep an external system in sync with appointment changes made in the Canvas UI (for example, an onboarding flow that tracks whether a patient has scheduled their intake), listen for the appointment lifecycle events and post a webhook to your system. The <a href="https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/appointment-sync-webhook">appointment-sync-webhook</a> reference plugin demonstrates this: it responds to `APPOINTMENT_CREATED`, `APPOINTMENT_CANCELED`, and `APPOINTMENT_NO_SHOWED`, fetches the full appointment details, builds a payload with appointment and patient information, and sends an HTTP POST to a webhook URL configured as a plugin <a href="/sdk/secrets/">secret</a>.
 
 <table>
   <thead>
@@ -689,6 +714,25 @@ These events fire as a result of records being created, updated, or deleted.
   <thead>
     <tr><th colspan="2">APPOINTMENT_NO_SHOWED</th></tr>
     <tr><td colspan="2">Occurs when an appointment is marked as a no-show.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+       <td><pre>"id": appointment_id
+"type": <a href='/sdk/data-appointment/#appointment'>Appointment</a></pre></td>
+      <td><pre>"patient":
+    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPOINTMENT_RESCHEDULED</th></tr>
+    <tr><td colspan="2">Occurs when an appointment is rescheduled by cancelling it and creating a replacement, which is what the provider UI, the patient portal, and the Appointment effect's <code>reschedule()</code> all do. The target is the new appointment, and <code>APPOINTMENT_CREATED</code> fires for it as well. Moving an appointment by updating it in place instead, through the Appointment effect's <code>update()</code> or the FHIR API, fires only <code>APPOINTMENT_UPDATED</code>. See <a href='/sdk/data-appointment/#detecting-rescheduled-appointments'>Detecting rescheduled appointments</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1092,7 +1136,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"patient":
   "id": pt_id
 "note":
-  "uuid": note_id</pre></td>
+  "id": note_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1113,7 +1157,7 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"patient":
   "id": pt_id
 "note":
-  "uuid": note_id</pre></td>
+  "id": note_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1204,6 +1248,42 @@ These events fire as a result of records being created, updated, or deleted.
       <td><pre>"id": claim_id
 "type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
       <td><pre>"previous": bool</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes. Use it to follow payments as they post and to see when the amount the patient or their insurance owes changes. A balance can change from:
+<ul>
+<li>Payments collected in Canvas, from the claim, from the patient's billing, or by the patient in the patient portal</li>
+<li>Insurance payments and adjustments from remittances (ERAs) and manual remits</li>
+<li>Payments recorded through the FHIR <a href="/api/paymentnotice/">PaymentNotice</a> API, including copays</li>
+<li>Payments posted by plugins, with <a href="/sdk/effect-claims/#post-payment"><code>ClaimEffect.post_payment</code></a> or a <a href="/sdk/effect-charge-stored-card/">stored card charge</a></li>
+<li>Adjustments, write-offs, and transfers of a balance between payers or to the patient</li>
+<li>Changes to the claim's charges or coverages</li>
+</ul>
+The event fires once per claim after the transaction commits, so the context holds the final balances. If a claim's balances end the transaction where they started, the event doesn't fire. <code>previous</code> holds the balances from before the transaction's first change, so <code>previous</code> and <code>current</code> show the net change. Balances are strings with two decimal places, such as <code>"150.00"</code> or <code>"-12.50"</code>. To react to balance changes, use this event instead of <code>CLAIM_UPDATED</code>, which fires on every claim save and doesn't include balances.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": <a href='/sdk/data-claim/#claim'>claim_id</a>
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"patient":  # present only when the claim's note has a patient
+  "id": <a href='/sdk/data-patient/#patient'>pt_id</a>
+"note":  # present only when the claim has a note
+  "id": <a href='/sdk/data-note/#note'>note_id</a>
+"previous":
+  "patient_balance": str
+  "aggregate_coverage_balance": str
+"current":
+  "patient_balance": str
+  "aggregate_coverage_balance": str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -1392,6 +1472,13 @@ These events fire as a result of records being created, updated, or deleted.
 #### Clinical Documents
 
 These events fire during the lifecycle of documents in the <a href="https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration">Data Integration</a> module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying <a href="/sdk/data-integration-task/">IntegrationTask</a>.
+
+<!-- source: discussion #1662 -->
+Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
+
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
+- **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 
 <table>
   <thead>
@@ -2419,6 +2506,10 @@ A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDA
 
 #### Labs
 
+<!-- source: discussion #607 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+To be notified when lab results (documents and individual records) are added to Canvas, use the lab order and report events in this section. Pair them with the <a href="/sdk/data-labs/">LabReport</a> data module to read the result details.
+
 <table>
   <thead>
     <tr><th colspan="2">LAB_ORDER_CREATED</th></tr>
@@ -2952,7 +3043,8 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">NOTE_STATE_CHANGE_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs if a note state change event is updated. Locking and unlocking both trigger an update event, and there is an *additional* update event when an archived PDF copy of the note finishes generating; this is done asynchronously.</td></tr>
+    <!-- source: discussion #1233 -->
+    <tr><td colspan="2">Occurs when a note state change event is updated. After a note is locked, or signed for note types that require a signature, Canvas generates an archived PDF of the note in the background and saves it on that lock or sign event. That fires this event <b>twice</b>: once when the note's snapshot is saved and once when the PDF is saved.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3091,6 +3183,44 @@ Surescripts response events fire when the platform receives a response from Sure
   </tbody>
 </table>
 
+#### Note Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": notemetadata_id
+"type": <a href='/sdk/data-note/#notemetadata'>NoteMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a note's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": notemetadata_id
+"type": <a href='/sdk/data-note/#notemetadata'>NoteMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Letters
 
 <table>
@@ -3134,7 +3264,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">LETTER_ACTION_EVENT_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when a letter action event is created.</td></tr>
+    <tr><td colspan="2">Occurs when a letter is printed or faxed. For a fax, <code>delivered_by_fax</code> on the target is still <code>None</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3152,7 +3282,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">LETTER_ACTION_EVENT_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a letter action event is updated.</td></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a letter fax was delivered, and again if a later report changes the outcome or its message. See <a href="/sdk/data-fax/#delivery-status">delivery status</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3162,6 +3292,195 @@ Surescripts response events fire when the platform receives a response from Sure
     <tr>
       <td><pre>"id": letter_action_event_id
 "type": <a href='/sdk/data-letter-action-event/'>LetterActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Faxed Documents
+
+Canvas records an action event each time a note, referral, imaging order, lab order, or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own [letter action events](#letters).
+
+- The `_CREATED` event fires when the fax is submitted. `delivered_by_fax` on the target is still `None`.
+- The `_UPDATED` event fires when the faxing service reports the outcome. Read `delivered_by_fax` and `fax_result_msg` on the target; see [delivery status](/sdk/data-fax/#delivery-status).
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so a plugin that retries failed faxes should retry each action event only once.
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a note fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a referral is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a referral fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an imaging order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an imaging order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a lab order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a lab order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an integration task is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an integration task fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
       <td><pre>empty</pre></td>
     </tr>
   </tbody>
@@ -3400,7 +3719,8 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">TASK_LABELS_ADJUSTED</th></tr>
-    <tr><td colspan="2">Occurs when a label is added to or removed from a task. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
+    <!-- source: discussion #640 -->
+    <tr><td colspan="2">Occurs when a label is added to or removed from a task, including from the task panel. <strong>Note:</strong> unlike the other <code>TASK_*</code> events, the target of this event is the <code>TaskLabel</code> that changed — <em>not</em> the task. The affected task's ID is available in the context object as <code>task.id</code> (use that to load the task, e.g. <code>Task.objects.get(id=self.event.context["task"]["id"])</code>), and <code>action</code> tells you whether the label was <code>add</code>ed or <code>remove</code>d.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3453,6 +3773,44 @@ Surescripts response events fire when the platform receives a response from Sure
 "type": <a href='/sdk/data-task/#task'>Task</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Task Metadata
+
+<table>
+  <thead>
+    <tr><th colspan="2">TASK_METADATA_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a task's metadata is created.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": taskmetadata_id
+"type": <a href='/sdk/data-task/#taskmetadata'>TaskMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">TASK_METADATA_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when a task's metadata is updated.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": taskmetadata_id
+"type": <a href='/sdk/data-task/#taskmetadata'>TaskMetadata</a></pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3605,8 +3963,7 @@ Surescripts response events fire when the platform receives a response from Sure
     <tr>
       <td><pre>"id": staffmetadata_id
 "type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
-      <td><pre>"staff":
-    "id": staff_id</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3624,8 +3981,7 @@ Surescripts response events fire when the platform receives a response from Sure
     <tr>
       <td><pre>"id": staffmetadata_id
 "type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
-      <td><pre>"staff":
-    "id": staff_id</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3643,8 +3999,7 @@ Surescripts response events fire when the platform receives a response from Sure
     <tr>
       <td><pre>"id": staffmetadata_id
 "type": <a href='/sdk/data-staff/#staffmetadata'>StaffMetadata</a></pre></td>
-      <td><pre>"staff":
-    "id": staff_id</pre></td>
+      <td><pre>empty</pre></td>
     </tr>
   </tbody>
 </table>
@@ -3753,7 +4108,7 @@ These events fire during the command lifecycle.
     </tr>
     <tr>
       <td>POST_COMMAND_INSERTED_INTO_NOTE</td>
-      <td>After a command is added to a note in the UI.</td>
+      <td>After a user adds a command to a note in the Canvas UI. Commands added by a plugin effect or through the FHIR API do not fire this event.</td>
     </tr>
     <tr>
       <td>AVAILABLE_ACTIONS</td>
@@ -3801,7 +4156,524 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 
 - `fields`: Contains details specific to the command being originated.
 
+<!-- source: discussion #966 -->
+##### Accessing structured plan / treatment plan data
+
+If you want the structured contents of a finished note, such as a treatment plan or care plan, read its commands rather than parsing the rendered <a href="/sdk/data-document-reference/">DocumentReference</a> PDF. Use the command lifecycle events above with the <a href="/sdk/data-command/">Command</a> data model: read a note's commands with `note.commands.all()` and branch on each command's type. <a href="/sdk/commands/#plan">Plan</a>, <a href="/sdk/commands/#prescribe">Prescribe</a>, <a href="/sdk/commands/#followup">Follow-up</a>, <a href="/sdk/commands/#task">Task</a>, and Instruct commands carry most plan data.
+
+<!-- source: discussion #501 -->
+##### Post-originate versus inserted-into-note events
+
+The two event families catch different writes:
+
+- **`POST_ORIGINATE`** fires whenever a command is created, however it was written: in the Canvas UI, through the FHIR API, or by a plugin effect. Use it to react to every new command, or to **edit** the command that triggered it.
+- **`POST_INSERTED_INTO_NOTE`** (the per-command `*__POST_INSERTED_INTO_NOTE` events and `POST_COMMAND_INSERTED_INTO_NOTE`) fires only when a user inserts a command into the note body in the Canvas UI. Use it to respond to a clinician's action in the note, such as adding related commands next to the one they inserted.
+
+<!-- source: discussion #669 -->
+##### Avoiding recursion in post-update handlers
+
+{% include alert.html type="warning" content="A handler that responds to a command's <code>*__POST_UPDATE</code> event and edits that same command can loop forever. The edit updates the command, which fires <code>POST_UPDATE</code> again, which edits it again." %}
+
+Every `POST_UPDATE` handler that edits its own command needs a guard that returns no effects once the command already holds what you would set:
+
+1. **Compare before you edit.** Read the field from the event's `fields` context. If it already has the value you would write, return `[]`.
+2. **For values you compute from other inputs, cache what you used.** Store the inputs under a key such as `f"plan-update:{command_id}"` with the [cache](/sdk/caching/). On each event, return `[]` if the cached inputs match the current event. Only when they differ, update the cache and return the edit.
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+STANDARD_NARRATIVE = "Follow up in two weeks."
+
+
+class StandardizePlanNarrative(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        narrative = self.context["fields"].get("narrative")
+        # The guard: the edit below fires POST_UPDATE again, so stop once it is applied.
+        if not narrative or narrative == STANDARD_NARRATIVE:
+            return []
+        return [PlanCommand(command_uuid=self.target, narrative=STANDARD_NARRATIVE).edit()]
+```
+
+When the value comes from other data, cache the inputs instead. This handler writes a follow-up date into the plan, computed from the note's date of service. Its own edit fires `POST_UPDATE` again, finds the same inputs in the cache, and stops. A clinician's later edit to the narrative also leaves it alone, until the date of service changes:
+
+```python?partial=true
+from datetime import timedelta
+
+from canvas_sdk.caching.plugins import get_cache
+from canvas_sdk.commands import PlanCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Command
+
+
+class FollowUpDateInPlan(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PLAN_COMMAND__POST_UPDATE)
+
+    def compute(self) -> list[Effect]:
+        note = Command.objects.get(id=self.target).note
+        inputs = note.datetime_of_service.isoformat()
+
+        cache = get_cache()
+        key = f"plan-update:{self.target}"
+        # The guard: stop when this command was already updated from these inputs.
+        if cache.get(key) == inputs:
+            return []
+        cache.set(key, inputs)
+
+        follow_up = (note.datetime_of_service + timedelta(days=14)).date()
+        narrative = f"Follow up on {follow_up.isoformat()}."
+        return [PlanCommand(command_uuid=self.target, narrative=narrative).edit()]
+```
+
 ---
+
+#### Add Condition Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "background": str
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "comments": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION__CONDITION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ADD_CONDITION__CONDITION__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+    </tr>
+  </tbody>
+</table>
 
 #### Adjust Prescription Command
 
@@ -4323,8 +5195,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4365,8 +5236,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4407,8 +5277,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4449,8 +5318,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4491,8 +5359,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4533,8 +5400,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -4976,17 +5842,18 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
 
 #### Assess Command
 
+<a id="assess_command__condition_selected"></a>
 <table>
   <thead>
     <tr><th colspan="2">ASSESS_COMMAND__CONDITION_SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to a condition already on the patient's chart, either by a clinician picking it or by a plugin editing the command with <code>condition_id</code>. <code>data.condition</code> holds the condition's <code>id</code> and its <code>codings</code>. Setting the condition to an ICD-10 code sends <a href="#assess_command__icd10_code_selected"><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a> instead. Clearing the field sends neither event, and neither event fires when a plugin originates an Assess command with the condition already set.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -4998,9 +5865,54 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
+"data":
+  "condition":
+    "id": condition_id
+    "codings":
+      "code": str
+      "system": str
+      "display": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="assess_command__icd10_code_selected"></a>
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_COMMAND__ICD10_CODE_SELECTED</th></tr>
+    <tr><td colspan="2">Occurs when an Assess command's condition is set to an ICD-10 code rather than a charted condition, either by a clinician picking a code the patient doesn't have charted or by a plugin editing the command with <code>icd10_code</code>. No condition is attached until commit, so <code>data.codings</code> holds the code. A plugin edit sends this event even when the patient already has a condition with that code; the clinician's search shows the charted condition in that case, so a clinician's pick sends <a href="#assess_command__condition_selected"><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a>. Committing the command reuses the patient's charted condition with that code, or records a new one. The event doesn't fire when a plugin originates an Assess command with <code>icd10_code</code> already set.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
+  "background": str
+  "status": str
+  "narrative": str
+"data":
+  "codings":
+    "code": str
+    "system": str
+    "display": str
 "note":
   "uuid": note_id
 "patient":
@@ -5023,6 +5935,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5048,6 +5963,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5073,6 +5991,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5119,6 +6040,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5144,6 +6068,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5169,6 +6096,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5194,6 +6124,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5219,6 +6152,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5244,6 +6180,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5269,6 +6208,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5294,6 +6236,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5319,6 +6264,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5344,6 +6292,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5369,6 +6320,9 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
 "type": <a href='/sdk/data-command/'>Command</a></pre></td>
       <td><pre>"fields":
   "condition": dict
+  "approximate_date_of_onset":
+    "input": str
+    "date": str
   "background": str
   "status": str
   "narrative": str
@@ -5395,8 +6349,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5747,8 +6700,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -6134,8 +7086,7 @@ Since the command is not yet connected to a note, the `PRE_COMMAND_ORIGINATE` ev
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -7064,8 +8015,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -7464,6 +8414,47 @@ Refer to the [base context documentation](#context-overview) for additional deta
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP__DIAGNOSE__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_id
+}
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ASSESS_CODING_GAP__DIAGNOSE__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_id
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Create Coding Gap Command
 
 <table>
@@ -7812,6 +8803,47 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "uuid": note_id
 "patient":
   "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP__DIAGNOSE__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_id
+}
+"results": list[<a href='#conditionsearchresult'>ConditionSearchResult</a>]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">CREATE_CODING_GAP__DIAGNOSE__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_id
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -9236,8 +10268,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -9595,8 +10626,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -9637,8 +10667,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10038,8 +11067,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10080,8 +11108,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10509,8 +11536,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -10551,8 +11577,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11754,8 +12779,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11796,8 +12820,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11838,8 +12861,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -11880,8 +12902,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12203,8 +13224,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12245,8 +13265,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -12675,8 +13694,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13153,8 +14171,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13195,8 +14212,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13237,8 +14253,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -13624,13 +14639,15 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
 
 #### Lab Order Command
+
+<!-- source: discussion #291 -->
+`LAB_ORDER_COMMAND__POST_COMMIT` is useful for automating tasks when a lab is ordered, for example creating a task for a medical assistant whenever any lab command is committed. The event context includes the command `fields`, so you can branch on the order's details (for example, only create the task when `fields["lab_partner"]["text"]` is `"Generic Lab"`). The <a href="https://www.canvasmedical.com/extensions/lab-order-automated-task">lab-order-automated-task</a> extension is a reference implementation.
 
 <table>
   <thead>
@@ -14120,8 +15137,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14162,8 +15178,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14204,8 +15219,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14246,8 +15260,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14569,8 +15582,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -14611,8 +15623,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15117,8 +16128,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15159,8 +16169,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15201,8 +16210,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -15588,11 +16596,647 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
+
+#### Order DME Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "item": dict
+  "indications": list[dict]
+  "quantity": int
+  "length_of_need": str
+  "send_to": dict
+  "ordering_provider": dict
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__INDICATIONS__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ITEM__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__ORDERING_PROVIDER__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__POST_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}
+"results": list[dict]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">ORDER_DME__SEND_TO__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+Each pair of search events fires when a user searches in one of the command's fields:
+
+- `ORDER_DME__ITEM__*`: the item field, which searches the DME formulary.
+- `ORDER_DME__INDICATIONS__*`: the **Indications** field, which searches ICD-10 conditions.
+- `ORDER_DME__SEND_TO__*`: the **Send to** field, which searches for a supplier.
+- `ORDER_DME__ORDERING_PROVIDER__*`: the ordering provider field, which searches active staff who can prescribe.
+
+Reply to a `PRE_SEARCH` event with an [`AUTOCOMPLETE_SEARCH_RESULTS`](/sdk/effects/) effect to supply the results; returning nothing runs the normal search. Reply to a `POST_SEARCH` event with the same effect to replace or annotate the results.
+
+In `POST_SEARCH` events, each entry in `results` has `text`, `value`, `disabled`, `description`, `annotations`, and `extra` keys:
+
+- **Item results:** `text` is the product name, `annotations` holds the product's code system and code (for example, `HCPCS E0114`), and `extra` holds `dme_product_id`, `code`, and `code_system`. `code_system` is `HCPCS` or `INTERNAL`. The `value` and `extra.dme_product_id` IDs are Canvas's internal product IDs, not the external ID that the `OrderDmeCommand` `dme_product_id` parameter takes.
+
+  ```json
+  {
+    "text": "Standard wheelchair",
+    "disabled": false,
+    "description": null,
+    "annotations": ["HCPCS K0001"],
+    "extra": {
+      "dme_product_id": 12,
+      "code": "K0001",
+      "code_system": "HCPCS"
+    },
+    "value": "12"
+  }
+  ```
+
+  A product with no code has `null` in `annotations`.
+
+- **Ordering provider results:** `text` is the staff member's name with credentials. `value` is Canvas's internal staff ID, not the [Staff](/sdk/data-staff/#staff) `id` that the `OrderDmeCommand` `ordering_provider_key` parameter takes.
+
+  ```json
+  {
+    "text": "Jane Smith MD",
+    "disabled": false,
+    "description": null,
+    "annotations": null,
+    "extra": null,
+    "value": 42
+  }
+  ```
+
+- **Supplier results:** `text` is the supplier's name, `description` summarizes the supplier's phone, fax, and address, and `extra.contact` holds the contact record. Canvas searches suppliers in any specialty, using the service-area ZIP codes of the user's primary practice location.
+
+  ```json
+  {
+    "text": "Pacific Mobility (Pacific Mobility Supply), Durable Medical Equipment",
+    "disabled": false,
+    "description": "Phone: (415) 555-0142 Fax: (415) 555-0143 Address: 2037 Irving St, San Francisco, CA 94122",
+    "annotations": null,
+    "extra": {
+      "contact": {
+        "id": 8703,
+        "firstName": "Pacific",
+        "lastName": "Mobility",
+        "practiceName": "Pacific Mobility Supply",
+        "specialty": "Durable Medical Equipment",
+        "businessPhone": "4155550142",
+        "businessFax": "4155550143",
+        "businessAddress": "2037 Irving St, San Francisco, CA 94122",
+        "composeAddress": "2037 Irving St, San Francisco, CA 94122",
+        "notes": null,
+        "score": 0
+      }
+    },
+    "value": "8703"
+  }
+  ```
+
+  When the order is signed, Canvas saves the supplier from the selected result's `extra.contact`.
 
 #### Perform Command
 
@@ -15975,8 +17619,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -16348,8 +17991,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17568,8 +19210,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17610,8 +19251,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17652,8 +19292,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[<a href='#medicationsearchresult'>MedicationSearchResult</a>]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17694,8 +19333,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -17736,8 +19374,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18123,8 +19760,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18134,6 +19770,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__POST_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -18339,6 +19976,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">REASON_FOR_VISIT_COMMAND__PRE_COMMIT</th></tr>
+    <tr><td colspan="2">This event does not fire. Reason for Visit commands can't be committed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -18510,8 +20148,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -18995,8 +20632,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19037,8 +20673,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19079,8 +20714,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19121,8 +20755,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19774,8 +21407,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -19816,8 +21448,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21108,8 +22739,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21150,8 +22780,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21192,8 +22821,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21234,8 +22862,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21276,8 +22903,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -21651,6 +23277,391 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="2">REMOVE_ALLERGY__ALLERGY__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+#### Remove Past Medical History Command
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__AVAILABLE_ACTIONS</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"actions":
+  "name": string
+"user":
+  "staff": staff_id
+</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_VALIDATION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_INSERTED_INTO_NOTE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_COMMIT</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_DELETE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_ENTER_IN_ERROR</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_EXECUTE_ACTION</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_ORIGINATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_UPDATE</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"fields":
+  "condition": dict
+  "rationale": str
+"note":
+  "uuid": note_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY__CONDITION__PRE_SEARCH</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": command_uuid
+"type": <a href='/sdk/data-command/'>Command</a></pre></td>
+      <td><pre>"search_term": str
+"user": {
+  "staff": staff_key
+}</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REMOVE_PAST_MEDICAL_HISTORY__CONDITION__POST_SEARCH</th></tr>
   </thead>
   <tbody>
     <tr>
@@ -22043,8 +24054,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22437,8 +24447,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -22830,8 +24839,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23238,8 +25246,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -23611,8 +25618,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24040,8 +26046,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24497,8 +26502,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24539,8 +26543,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24932,8 +26935,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -24974,8 +26976,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25424,8 +27425,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25747,8 +27747,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -25789,8 +27788,7 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"search_term": str
 "user": {
   "staff": staff_key
-}
-"results": list[dict]</pre></td>
+}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -26901,7 +28899,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__GET_FORMS</th></tr>
-    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the `PATIENT_PORTAL__FORM_RESULT` effect as a return value</td></tr>
+    <tr><td colspan="3">Occurs on every page load of the Patient Portal; It only accepts the <a href="/sdk/patient-portal/#forms"><code>PATIENT_PORTAL__FORM_RESULT</code></a> effect as a return value</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -26923,9 +28921,67 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+<!-- source: discussion #1511 -->
+`PATIENT_PORTAL__GET_FORMS` is the built-in mechanism for presenting patient forms: respond to it with one or more [`PATIENT_PORTAL__FORM_RESULT`](/sdk/patient-portal/#forms) effects (`FormResult`) and the questionnaires are shown to the patient in a modal after they log in. If you need a different presentation, such as a standalone page where a patient picks from a list of forms to complete before an upcoming appointment, build a custom <a href="/sdk/handlers-applications/">Application</a> in the patient portal (a `portal_menu_item`-scoped Application that launches your own UI via `LaunchModalEffect`) rather than relying on the built-in forms modal.
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"document": str["after_visit_summary"]
+"note_id": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__POST_LOGIN</th></tr>
+    <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a <code>LaunchModalEffect</code> with the <code>DEFAULT_MODAL</code> target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"login_method": str["credentials" |
+                    "access_token" |
+                    "registration"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
+
+<!-- source: discussion #493 -->
+Action button and application events include context about the user who triggered them, so you can tailor behavior to the current user (for example, only showing a button to a specific staff member):
+
+```python
+{
+  "user": {
+    "id": "<either staff or patient id>",
+    "type": "Staff" | "Patient"
+  }
+}
+```
+
+This `user` context is available in an `ActionButton`'s `visible()` and `handle()` methods and in an `Application`'s `on_open()` method.
 
 <table>
   <thead>
@@ -27025,6 +29081,27 @@ For more information on handling these events, see <a href="/sdk/handlers-action
       <td><pre>patient_id</pre></td>
       <td><pre>
   "note_id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">SHOW_CHART_PATIENT_HEADER_BUTTON</th></tr>
+    <tr><td colspan="2">Occurs when the patient header is being loaded, on both the chart and the profile page. This location sits outside any note, so <code>note_id</code> is null.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre>
+  "note_id": null
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a></pre></td>
@@ -27291,6 +29368,23 @@ For more information on handling these events, see <a href="/sdk/handlers-action
   "user":
     "id": str
     "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+### Note Custom Content
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE__GET_CUSTOM_CONTENT</th></tr>
+    <tr><td colspan="2">Occurs when a note renders on an instance in the <a href='/product-updates/note-revamp/'>revamped note beta program</a>. Plugins respond with custom content blocks to show above the note body or inside a note section. See the <a href='/sdk/effect-note-custom-content/'>Note Custom Content effect</a> for usage details.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="2">Target</td>
+    </tr>
+    <tr>
+      <td colspan="2"><pre>note_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -27662,6 +29756,25 @@ Apart from `success` and `error`, every value arrives as a string or `null`, inc
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">PATIENT_CHART__DETECTED_ISSUES</th></tr>
+    <tr><td colspan="2">Occurs when the detected issues are loaded on the patient chart. The context is a bare list rather than an object keyed by name, so iterate <code>self.context</code> directly. Each entry carries only an <code>id</code>; read anything else about the issue through <a href='/sdk/data-detectedissue/'>DetectedIssue</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": patient_id
+"type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>list of:
+    "id": detected issue id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Patient Timeline Configuration
 
 <table>
@@ -27832,7 +29945,8 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION</td>
-      <td>A patient chart's summary section is loading.</td>
+      <!-- source: discussion #650 -->
+      <td>A patient chart's summary section is loading. This event fires very frequently — potentially tens of times per page load — so it should <b>not</b> be used to trigger database writes such as creating banner alerts or making API requests; doing so will slow page loads considerably. Create banner alerts at the time the underlying data is written (for example, on a patient external identifier event) rather than at display time.</td>
     </tr>
     <tr>
       <td>PATIENT_CHART_SUMMARY__GET_CUSTOM_SECTION</td>
@@ -27855,8 +29969,8 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
       <td>A plugin is enabled or when the plugin code has changed. See <a href="{% link _sdk/effects/protocol_cards.md %}" target="_blank">ProtocolCards</a> and <a href="{% link _sdk/effects/banner_alerts.md %}" target="_blank">BannerAlerts</a> for examples of how to use this event.</td>
     </tr>
     <tr>
-      <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</td>
-      <td>Adding a pharmacy for a patient in their profile.</td>
+      <td>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH</td>
+      <td>Adding a pharmacy for a patient in their profile. Reply with <code>PATIENT_PROFILE__ADD_PHARMACY__POST_SEARCH_RESULTS</code> to supply the results.</td>
     </tr>
     <tr>
       <td>FAX__RECIPIENT__PRE_SEARCH</td>
@@ -27928,6 +30042,11 @@ Context object:
   </tbody>
 </table>
 
+<!-- source: discussion #1156 -->
+#### One-time backfill with `PLUGIN_UPDATED`
+
+Event-driven plugins only react to changes that happen after they are installed, so existing records (for example, patients who already have a qualifying external identifier) will not trigger them. To apply an effect to existing records when a plugin is published, write a separate handler that responds to `PLUGIN_UPDATED`, queries for the records that need the effect, and returns the effects for any that do not already have it. For example, a backfill handler can find every patient with a matching external identifier and no existing <a href="/sdk/effect-banner-alerts/">Banner Alert</a>, and return an `AddBannerAlert` effect for each. Because the handler checks for the alert before creating it (keyed by the banner's `key`), it is idempotent — you can upload it once, remove it, or re-upload it later without creating duplicates.
+
 ### Search Result Data Structures
 
 Many event payloads include search results. This section documents the common structures within them.
@@ -27998,6 +30117,19 @@ Condition/diagnosis search events (such as `DIAGNOSE__DIAGNOSE__POST_SEARCH`, `M
     ]
   },
   "value": "T84011D"
+}
+```
+
+The Assess command's condition search lists the patient's charted conditions before new ICD-10 codes. A plugin handling `ASSESS__CONDITION__PRE_SEARCH` or `ASSESS__CONDITION__POST_SEARCH` can receive both kinds of result:
+
+- **Charted conditions** come first, active ones before the rest. A resolved condition is left out when an active condition has the same ICD-10 code. Picking it would make it a second active condition. An empty search term returns only charted conditions. A search term matches a charted condition when its ICD-10 code contains the term. It also matches when every word of the term appears in the condition's name, in any order. A charted condition's `value` is the condition's id rather than an ICD-10 code, and its `extra` has no `coding`. Its `annotations` hold the ICD-10 code followed by the condition's clinical status, such as `Active` or `Resolved`.
+- **ICD-10 codes** from the terminology search follow, in the structure shown above. A code the patient already has charted is listed as the charted condition instead, so picking it doesn't record a duplicate.
+
+```json
+{
+  "text": "Unilateral primary osteoarthritis, right knee",
+  "annotations": ["M17.11", "Active"],
+  "value": 4217
 }
 ```
 

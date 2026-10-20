@@ -11,15 +11,9 @@ The Canvas SDK provides effects for managing patient membership in groups. These
 
 An effect class for performing actions on a patient group. Instantiate it with a `group_id`, then call methods to add or deactivate members.
 
-### Attributes
-
-| Attribute  | Type      | Description                                              | Required |
-| ---------- |-----------| -------------------------------------------------------- | -------- |
-| `group_id` | `UUID`    | The id of the [patient group](/sdk/data-patient-group/)  | Yes      |
-
 ### Methods
 
-#### `add_member(patient_ids: list[str]) -> Effect`
+#### add_member(patient_ids: list[str]) → Effect
 
 Ensures one or more patients are members of the group.
 
@@ -27,13 +21,19 @@ Ensures one or more patients are members of the group.
 | ------------- | ------------ | ------------------------------------------------------------------------ |
 | `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to add to the group            |
 
-#### `deactivate_member(patient_ids: list[str]) -> Effect`
+#### deactivate_member(patient_ids: list[str]) → Effect
 
 Ensures one or more patients are not active members of the group. If a patient is currently locked in the group, this effect will be ignored for that patient.
 
 | Parameter     | Type         | Description                                                                    |
 | ------------- | ------------ | ------------------------------------------------------------------------------ |
 | `patient_ids` | `list[str]`  | List of [patient](/sdk/data-patient/) ids to deactivate from the group         |
+
+### Attributes
+
+| Attribute  | Type      | Description                                              | Required |
+| ---------- |-----------| -------------------------------------------------------- | -------- |
+| `group_id` | `UUID`    | The id of the [patient group](/sdk/data-patient-group/)  | Yes      |
 
 ### Example Usage
 

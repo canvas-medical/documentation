@@ -1,0 +1,75 @@
+// Centered placeholder hero for a page whose content is being rebuilt.
+.underconstruction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1.25rem;
+    max-width: 620px;
+    margin: 2.5rem auto 4rem;
+    padding: 0 $container-padding;
+
+    &__art {
+        display: block;
+        width: 100%;
+        max-width: 240px;
+        height: auto;
+
+        @media (max-width: $breakpoint-sm) {
+            max-width: 180px;
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.6rem;
+        line-height: 1.3;
+        color: $primary-color;
+    }
+
+    &__copy {
+        margin: 0;
+        max-width: 42ch;
+        font-size: 1rem;
+        line-height: 1.65;
+        color: rgba($text-color, 0.75);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 0.25rem;
+    }
+
+    &__link {
+        display: inline-block;
+        padding: 8px 22px;
+        border-radius: 20px;
+        font-size: 0.95rem;
+        text-decoration: none;
+        background-color: $mediumblue;
+        color: $white;
+        transition: background-color 0.15s ease-in-out;
+
+        &:hover,
+        &:focus {
+            background-color: $primary-color;
+            color: $white;
+            text-decoration: none;
+        }
+
+        &--secondary {
+            background-color: $cream;
+            color: $primary-color;
+
+            &:hover,
+            &:focus {
+                background-color: darken($cream, 6%);
+                color: $primary-color;
+            }
+        }
+    }
+}

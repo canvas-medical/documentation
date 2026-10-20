@@ -200,6 +200,8 @@ committed_note_tasks = NoteTask.objects.committed()
 | ---------------- | --------------------------------------------------- |
 | id               | UUID                                                |
 | dbid             | Integer                                             |
+| created          | DateTime                                            |
+| modified         | DateTime                                            |
 | tasks            | M2M                                                 |
 | position         | Integer                                             |
 | color            | [ColorEnum](/sdk/data-enumeration-types/#colorenum) |
@@ -209,6 +211,16 @@ committed_note_tasks = NoteTask.objects.committed()
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
 | appointments     | [Appointment](/sdk/data-appointment/)[]             |
+
+### TaskTaskLabel
+
+The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a task through its `labels` attribute rather than querying this model.
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| task       | [Task](#task)           |
+| task_label | [TaskLabel](#tasklabel) |
 
 ### TaskMetadata
 
@@ -267,10 +279,11 @@ for metadata in task_metadata:
 
 ### TaskLabelModule
 
-| Value  | Label  |
-| ------ | ------ |
-| claims | Claims |
-| tasks  | Tasks  |
+| Value        | Label        |
+| ------------ | ------------ |
+| claims       | Claims       |
+| tasks        | Tasks        |
+| appointments | Appointments |
 
 <br/>
 <br/>

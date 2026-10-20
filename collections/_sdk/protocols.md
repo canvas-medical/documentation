@@ -6,6 +6,8 @@ The handlers module lets you define workflows and workflow automations. Handlers
 
 `ClinicalQualityMeasure` is a specialized handler base class for clinical protocols — see [ClinicalQualityMeasure](#clinicalqualitymeasure) below.
 
+{% include compute-availability-warning.html %}
+
 ## Contents
 
 - [BaseHandler](#basehandler)

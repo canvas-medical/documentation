@@ -5,8 +5,6 @@ excerpt: "Patient-facing administrative documents, such as signed consent forms 
 hidden: false
 ---
 
-# PatientAdministrativeDocument
-
 The `PatientAdministrativeDocument` model represents patient-facing administrative documents: prior authorizations, advance directives and beneficiary notices, signed consent forms and agreements, insurance and prescription cards, driver's licenses, intake forms, releases of information, powers of attorney, and workers' compensation attachments. Each carries a document file and an optional `DocumentCoding`.
 
 A signed consent form is one of these records: `patient_consents` lists the [PatientConsent](/sdk/data-patient-consent/#signed-consent-documents) records it was signed for. The blank template the patient was sent lives on the consent itself, not here.
@@ -52,6 +50,24 @@ document = PatientAdministrativeDocument.objects.exclude(document="").first()
 
 # Returns a presigned S3 URL (valid for 1 hour)
 url = document.document_url
+```
+
+## Review assignment
+
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import PatientAdministrativeDocument, Staff
+
+document = PatientAdministrativeDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the document is assigned to
+reviewers = document.reviewers.all()
+team = document.team
+
+# Every document assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = PatientAdministrativeDocument.objects.filter(reviewers__id=staff.id)
 ```
 
 ## The document reference
@@ -111,29 +127,30 @@ Clinical document types are stored as [UncategorizedClinicalDocument](/sdk/data-
 
 ### PatientAdministrativeDocument
 
-| Field Name              | Type                                                                  |
-|-------------------------|-----------------------------------------------------------------------|
-| id                      | UUID                                                                  |
-| dbid                    | Integer                                                               |
-| created                 | DateTime                                                              |
-| modified                | DateTime                                                              |
-| patient                 | [Patient](/sdk/data-patient/#patient)                                 |
-| originator              | [CanvasUser](/sdk/data-canvasuser)                                    |
-| assigned_by             | [CanvasUser](/sdk/data-canvasuser)                                    |
-| team                    | [Team](/sdk/data-team/#team)                                          |
-| integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |
-| code                    | [DocumentCoding](#documentcoding)                                     |
-| name                    | String                                                                |
-| review_mode             | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
-| junked                  | Boolean                                                               |
-| assigned_date           | DateTime                                                              |
-| team_assigned_date      | DateTime                                                              |
-| original_date           | Date                                                                  |
-| comment                 | String                                                                |
-| priority                | Boolean                                                               |
-| document                | String                                                                |
-| document_url            | String (property) — presigned S3 URL or None                          |
-| patient_consents        | QuerySet[[PatientConsent](/sdk/data-patient-consent/#patientconsent)] — the consents this document is a signed copy of |
+| Field Name              | Type                                                                       | Description                                    |
+|-------------------------|----------------------------------------------------------------------------|------------------------------------------------|
+| id                      | UUID                                                                       |                                                |
+| dbid                    | Integer                                                                    |                                                |
+| created                 | DateTime                                                                   |                                                |
+| modified                | DateTime                                                                   |                                                |
+| patient                 | [Patient](/sdk/data-patient/#patient)                                      |                                                |
+| originator              | [CanvasUser](/sdk/data-canvasuser)                                         |                                                |
+| assigned_by             | [CanvasUser](/sdk/data-canvasuser)                                         |                                                |
+| team                    | [Team](/sdk/data-team/#team)                                               |                                                |
+| reviewers               | [Staff](/sdk/data-staff/#staff)[]                                          |                                                |
+| integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |                                                |
+| code                    | [DocumentCoding](#documentcoding)                                          |                                                |
+| name                    | String                                                                     |                                                |
+| review_mode             | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode)      |                                                |
+| junked                  | Boolean                                                                    |                                                |
+| assigned_date           | DateTime                                                                   |                                                |
+| team_assigned_date      | DateTime                                                                   |                                                |
+| original_date           | Date                                                                       |                                                |
+| comment                 | String                                                                     |                                                |
+| priority                | Boolean                                                                    |                                                |
+| document                | String                                                                     |                                                |
+| document_url            | String (computed)                                                          | Presigned S3 URL or None                       |
+| patient_consents        | QuerySet[[PatientConsent](/sdk/data-patient-consent/#patientconsent)]      | The consents this document is a signed copy of |
 
 ### DocumentCoding
 
@@ -142,6 +159,8 @@ A coding entry representing the type of document. Also used by [UncategorizedCli
 | Field Name    | Type    |
 |---------------|---------|
 | dbid          | Integer |
+| created       | DateTime |
+| modified      | DateTime |
 | system        | String  |
 | version       | String  |
 | code          | String  |

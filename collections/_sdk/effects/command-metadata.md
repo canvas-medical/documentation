@@ -19,7 +19,7 @@ Metadata can be written two ways, and they store to the same place:
 
 Either way, the entries are readable as [CommandMetadata](/sdk/data-command/#commandmetadata) in the data module.
 
-## Method
+## Methods
 
 ### upsert_metadata(key: str, value: str) → Effect
 
@@ -172,9 +172,9 @@ class CommandMetadataListener(BaseHandler):
 
    ```python
    import json
-   from canvas_sdk.commands import DiagnoseCommand
+   from canvas_sdk.commands import AssessCommand
 
-   cmd = DiagnoseCommand(command_uuid="abc123")
+   cmd = AssessCommand(command_uuid="abc123")
    data = {"reviewer": "user-id", "approved_at": "2025-01-15T10:30:00Z"}
    cmd.upsert_metadata(key="my_plugin:review", value=json.dumps(data))
    ```
