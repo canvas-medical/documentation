@@ -112,10 +112,9 @@ $ canvas uninstall intake --host acme-staging
 
 `canvas deploy` waits up to 300 seconds for each instance's outcome and exits non-zero unless every instance succeeds in that time.
 
-Banner alerts belong to the plugin that added them, on patient charts and on claims alike. While the old plugin is disabled its banners are hidden, and `canvas uninstall` deletes them. To keep them, have the renamed plugin add them again before you uninstall the old one:
+{% include alert.html type="warning" content="<b>Uninstalling the old plugin deletes its banner alerts.</b> Banners on patient charts and claims belong to the plugin that added them. They're hidden while the old plugin is disabled, and <code>canvas uninstall</code> deletes them. To keep them, have the renamed plugin read the old plugin's banners with <a href='/sdk/data-banner-alert/'><code>BannerAlert</code></a> or <a href='/sdk/data-claim/#claimbanneralert'><code>ClaimBannerAlert</code></a>, filtered on <code>plugin_name='intake'</code> and <code>status='active'</code>, and add them again with <a href='/sdk/effect-banner-alerts/'><code>AddBannerAlert</code></a> or <a href='/sdk/effect-claims/#add-banner'><code>ClaimEffect.add_banner()</code></a> before you uninstall the old plugin." %}
 
-- **Patient banners:** read the old plugin's banners with [`BannerAlert`](/sdk/data-banner-alert/), filtered on `plugin_name="intake"` and `status="active"`, then return [`AddBannerAlert`](/sdk/effect-banner-alerts/) for each with the same patient, `key`, `narrative`, `intent`, `placement` and `href`.
-- **Claim banners:** read them with [`ClaimBannerAlert`](/sdk/data-claim/#claimbanneralert), filtered the same way, then return [`ClaimEffect(claim_id=...).add_banner()`](/sdk/effect-claims/#add-banner) for each with the same `key`, `narrative`, `intent` and `href`. Claim banners have no `placement`.
+{% include alert.html type="info" content="<b>Protocol cards aren't deleted, but they stop showing.</b> A patient's chart shows only <a href='/sdk/effect-protocol-cards/'>protocol cards</a> from enabled plugins, so the old plugin's cards disappear when you disable it. Uninstalling it leaves them hidden. The renamed plugin's cards appear as it adds them." %}
 
 Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship changes with `canvas deploy`.
 
