@@ -5,7 +5,9 @@ excerpt: "Contextual information in a patient's chart."
 hidden: false
 ---
 
-The Canvas SDK allows you to place Banners on the Canvas UI.
+Use banner alerts to show contextual information in a patient's chart.
+
+{% include alert.html type="warning" content="A banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and <a href='/sdk/canvas_cli/#canvas-uninstall'>uninstalling</a> it deletes them." %}
 
 ## Adding a Banner Alert
 
