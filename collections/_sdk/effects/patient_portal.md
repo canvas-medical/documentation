@@ -116,7 +116,7 @@ Each appointment can be customized individually, allowing each one to have its o
 
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
 
-The Cancel and Reschedule answers also decide what the patient portal API accepts. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
 
 - With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
 - A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
