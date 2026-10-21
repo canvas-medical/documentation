@@ -28975,7 +28975,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
-    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as an after-visit summary or a lab requisition. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. See <a href='/sdk/patient-portal/#track-document-downloads'>Track Document Downloads</a> for the documents that fire it and the context each one carries.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -28986,8 +28986,9 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"document": str["after_visit_summary"]
-"note_id": str</pre></td>
+      <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
+"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
+"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
     </tr>
   </tbody>
 </table>

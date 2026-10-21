@@ -67,7 +67,7 @@ for event in failed:
 
 ### Faxes sent by a plugin
 
-A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
+A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. The [fax effects](/sdk/effect-fax/) for referrals, imaging orders, lab orders and letters record theirs the same way, on that document's action event model. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
 
 ```python?partial=true
 from canvas_sdk.v1.data import NoteActionEvent
@@ -147,6 +147,18 @@ received = Fax.objects.filter(direction=FaxDirection.INBOUND).order_by("-date_ut
 failed = received.filter(success=False)
 ```
 
+On a received fax, `to_fax_number` is the Canvas line that received it. Depending on the faxing service that delivered the fax, Canvas stores that number with or without the leading `+`, such as `+15555550100` or `15555550100`. To find every fax one line received, match both forms:
+
+```python?partial=true
+from canvas_sdk.v1.data import Fax, FaxDirection
+
+line = "15555550100"
+received_on_line = Fax.objects.filter(
+    direction=FaxDirection.INBOUND,
+    to_fax_number__in=[line, f"+{line}"],
+)
+```
+
 ## Attributes
 
 ### Fax
@@ -158,7 +170,7 @@ failed = received.filter(success=False)
 | created         | DateTime                      |                                                                               |
 | modified        | DateTime                      |                                                                               |
 | fax_id          | String                        | The faxing service's id for the fax                                           |
-| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it |
+| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it, which can be stored without the `+` |
 | from_fax_number | String                        | The number the fax was sent from. For a received fax, the sender's number     |
 | date_utc        | DateTime                      | When the faxing service accepted a sent fax, or finished receiving a received fax |
 | fax_pages       | Integer                       | The number of pages                                                           |
