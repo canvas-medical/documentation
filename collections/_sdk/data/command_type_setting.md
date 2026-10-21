@@ -7,19 +7,23 @@ hidden: false
 
 ## Introduction
 
-The `CommandTypeSetting` model holds one row per command type and whether it is turned on for the instance. An administrator turns command types on and off in Canvas. Use it to leave out commands a provider cannot add, for example to skip suggesting a follow-up when the follow-up command is turned off.
+The `CommandTypeSetting` model has one row for each command type available on the instance, with whether it is turned on. An administrator turns command types on and off in Canvas. Use it to leave out commands a provider cannot add, for example to skip suggesting a follow-up when the follow-up command is turned off.
+
+A command type that isn't available on the instance has no row. Treat a missing row the same as a command type that is turned off.
 
 ## Basic usage
 
-To read whether one command type is turned on, use the `get` method on the `CommandTypeSetting` model manager with its schema key:
+To check whether one command type is turned on, filter on its schema key and `active`:
 
 ```python
 from canvas_sdk.v1.data import CommandTypeSetting
 
-follow_up = CommandTypeSetting.objects.get(schema_key="followUp")
-if follow_up.active:
+follow_up_on = CommandTypeSetting.objects.filter(schema_key="followUp", active=True).exists()
+if follow_up_on:
     ...
 ```
+
+The check returns `False` both when the command type is turned off and when it has no row. A `get` call for a schema key with no row raises `CommandTypeSetting.DoesNotExist`.
 
 ## Filtering
 
