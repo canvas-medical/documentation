@@ -838,6 +838,8 @@ charting:
     url: /sdk/example-vitals_visualizer_plugin/
 
 portal_customization:
+  - title: "Appointment Copay Collection"
+    url: /sdk/example-appointment_copay_collection/
   - title: "Customize with Widgets"
     url: /sdk/example-portal-customization-widgets/
   - title: "Launch an Application"
