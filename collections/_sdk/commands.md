@@ -2949,7 +2949,7 @@ Records a titled image of a clinical observation, with a narrative, on a note. T
 |:-------------------|:---------|:------------|
 | `title`            | _string_ | The title of the finding. Up to 255 characters. |
 | `narrative`        | _string_ | A description of the observation. |
-| `image_upload_key` | _string_ | The upload key of a PNG or JPEG image, from a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas copies the file to the finding and then deletes the upload, so each key works only once. Not allowed in a recommendation, such as one on a protocol card. |
+| `image_upload_key` | _string_ | The upload key of a PNG or JPEG image, from a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas copies the file to the finding and then deletes the upload, so each key works only once. A key of `None` attaches no image. Not allowed in a recommendation, such as one on a protocol card. |
 
 The command supports `originate`, `edit`, `delete`, `commit`, and `enter_in_error`. To read findings, see [VisualExamFinding](/sdk/data-visual-exam-finding/).
 

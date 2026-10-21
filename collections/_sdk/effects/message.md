@@ -50,15 +50,29 @@ To attach files to a message, set `attachment_upload_keys` to a list of upload k
 
 Attachments can be PNG, JPEG, or PDF files. When the effect is applied, Canvas checks that each key is a file your plugin uploaded and that the file is one of these types. It adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
 
-```python?partial=true
-from canvas_sdk.effects.note.message import Message
+This SimpleAPI route sends the files in a `multipart/form-data` request to a patient, from the logged-in staff member:
 
-effect = Message(
-    content="Here is the form we discussed.",
-    sender_id=staff.id,
-    recipient_id=patient.id,
-    attachment_upload_keys=[part.key for part in form_data.get_list("files") if not part.error],
-).create_and_send()
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.message import Message
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+
+
+class SendFilesAPI(SimpleAPI):
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        return credentials.logged_in_user["type"] == "Staff"
+
+    @api.post("/send-files", file_uploads="stored")
+    def send_files(self) -> list[Response | Effect]:
+        form = self.request.form_data()
+        message = Message(
+            content="Here is the form we discussed.",
+            sender_id=self.request.headers["canvas-logged-in-user-id"],
+            recipient_id=form["patient_id"].value,
+            attachment_upload_keys=[part.key for part in form.get_list("files") if not part.error],
+        )
+        return [message.create_and_send(), JSONResponse({})]
 ```
 
 To read a message's attachments, see [MessageAttachment](/sdk/data-message/#messageattachment).

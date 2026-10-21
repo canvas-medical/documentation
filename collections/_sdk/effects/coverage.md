@@ -92,7 +92,7 @@ Card images are PNG or JPEG files that a user uploads to your plugin through a S
 
 When the effect is applied, Canvas checks that your plugin uploaded each file and that each file is a PNG or JPEG image. It copies the file to the coverage and then deletes the upload, so each key works only once. If any part of the effect fails, Canvas saves none of it, including the card images.
 
-On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. To remove an image, use `remove_photo()`.
+On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. A key of `None` attaches no image, so that side also keeps its current image. To remove an image, use `remove_photo()`.
 
 ## Reordering coverages
 
