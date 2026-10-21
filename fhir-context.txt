@@ -6456,6 +6456,9 @@ Search for Claim resources.
 _id 
 string 
 The Canvas resource identifier of the Claim
+created 
+date 
+Filter by `created`, which is the date of service of the note the claim is associated with. Use this parameter to retrieve only claims within a date range, such as claims added since your last sync. See [Date Filtering](/api/date-filtering) for more information.
 patient 
 string 
 The patient reference associated to the Claim in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -14862,7 +14865,7 @@ The request requires user authorization.
     - **Authorization Code** : Usually used for web/native applications since it requires a user to log in to the system.
 ##  Registering a third-party application on Canvas 
   - Registering a third-party application is always the first step.
-  - To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
+  - To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role, or membership in a group with the **Can register and manage OAuth applications** permission. Canvas support sets up the group, and you add staff to it in **Staff Permissions**.
   - Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
   - In order to do so, you'll need to: 
     1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page: ![Authorization Page](/assets/images/ed67823-Screenshot_2021-10-26_at_16.22.31.png)
@@ -15079,6 +15082,7 @@ Example: `"?date=eq2021-01-01"`
 You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
 The API endpoints that support date search parameters include:
   - [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
+  - [Claim](/api/claim/) (/Claim) - Filter by created date (the date of service of the claim's note)
   - [Consent](/api/consent/) (/Consent) - Filter by consent date
   - [DetectedIssue](/api/detectedissue/) (/DetectedIssue) - Filter by identified date
   - [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
@@ -24716,7 +24720,7 @@ The request requires user authorization.
 This API allows customers to create letters. The effect of creating a letter is the same as creating a letter in the user interface. Content can be added using HTML & CSS. Placeholders created in Canvas will not be respected.
 ##  Authentication 
 The Letter API uses the existing Canvas OAuth authentication flow, so you can simply post to the existing auth token endpoint /auth/token/
-This endpoint was built as an addition to the Note API and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Note API. To get access:
+This endpoint was built as an addition to the Note API, and creating a letter needs the `user/Note.write` scope. This scope will not be in OAuth applications that were created prior to the release of the Note API. To get access:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
 Like the Note API, the Letter API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
@@ -28729,6 +28733,7 @@ The request requires user authorization.
 This API allows customers to create and update notes. The effect of creating a note is the same as creating a note in the user interface (for example for a note with category "encounter" will create an encounter, a note that is billable will create a claim). Not all note attributes can be modified on update. For example, note type cannot be changed after note creation.
 ##  Authentication 
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
+Read and search requests need the `user/Note.read` scope. Create and update requests need `user/Note.write`.
 The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
@@ -46828,7 +46833,7 @@ SMART on FHIR applications adhere to a standards-based approach to authenticatio
 ##  Where can I get a SMART app? 
 We've provided an example SMART app [here](https://github.com/canvas-medical/example-smart-on-fhir-app). You can fork it and customize, or just use ours as-is. We use GitHub pages to host it at `https://canvas-medical.github.io/example-smart-on-fhir-app/`. Please ensure the client id [listed in `launch.html`](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/205b14ed8d4f4d9c57fd11a26f9a22c800f38c29/launch.html#L15) matches the client id for the credentials you configure in the next step.
 ##  Configuring credentials 
-The first step to embedding a SMART application is to configure OAuth credentials for it to use. Navigate to `<YOUR_CANVAS_URL>/auth/applications/register/` and choose `Public` client type, `Authorization code` grant type, the `RSA` algorithm, and set the redirect uri for your SMART application. Registering an application takes the Administrative Developer or Clinical Developer role; see [Registering a third-party application on Canvas](/api/customer-authentication/#registering-a-third-party-application-on-canvas).
+The first step to embedding a SMART application is to configure OAuth credentials for it to use. Navigate to `<YOUR_CANVAS_URL>/auth/applications/register/` and choose `Public` client type, `Authorization code` grant type, the `RSA` algorithm, and set the redirect uri for your SMART application. Registering an application takes the Administrative Developer or Clinical Developer role, or a group with the **Can register and manage OAuth applications** permission; see [Registering a third-party application on Canvas](/api/customer-authentication/#registering-a-third-party-application-on-canvas).
 ![OAuth Configuration](/assets/images/guides/embedding-a-smart-app/SMART_OAuth.png)
 ##  Creating an application 
 We encourage you to read our more comprehensive guide on [creating applications via the Canvas SDK](/guides/your-first-application/), but we can provide an abridged version here.

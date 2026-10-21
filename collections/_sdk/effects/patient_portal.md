@@ -116,6 +116,12 @@ Each appointment can be customized individually, allowing each one to have its o
 
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
 
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+
+- With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
+- A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
+- Some appointments never offer either action, and Canvas doesn't fire the event for them. These are appointments that are canceled, marked as a no-show, or checked in, and appointments whose note is signed, locked, or deleted. A patient also can't cancel an appointment that has already started.
+
 MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
 
 ### Hide 'Cancel' button
@@ -242,6 +248,12 @@ class MyHandler(BaseHandler):
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
+
+Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
+
+- Self-scheduling turned on for the patient. See `can_schedule_appointments` in [Configuring the Patient Portal](#configuring-the-patient-portal).
+- A start time in the future.
+- A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
 
@@ -463,9 +475,34 @@ A patient can download the after-visit summary of their own locked notes from th
 
 - The PDF is the same after-visit summary a clinician prints from the note.
 - Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
-- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
 
-Each download also fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which summaries a patient has received. The event targets the patient, and its context carries the `document` (`"after_visit_summary"`) and the `note_id`. It is sent after the PDF is served, so a handler can't delay or block the download.
+## Link to Lab and Imaging Requisitions
+
+A patient can download the requisition of their own lab and imaging orders from the portal. As with [after-visit summaries](#link-to-after-visit-summaries), the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+
+| Order   | Portal URL                                   | PDF the patient gets                                                                                                                                                       |
+|---------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lab     | `/app/laborder/<order id>/requisition`       | The requisition a clinician prints from the order. For an order sent electronically through Health Gorilla, the patient gets Health Gorilla's requisition form, as staff do. |
+| Imaging | `/app/imagingorder/<order id>/requisition`   | The "Prepare for your imaging test" letter staff print for the patient.                                                                                                    |
+
+`<order id>` is the `id` of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder).
+
+- Only the patient the order belongs to can open it, and only once the order is committed and not entered in error. Any other order id returns a 404 error.
+- By default, patients can download the requisition only while the order is open. A lab order is open until the chart shows all of its reports received. An imaging order is open until it has a result, not counting results deleted in Data Integration. To let patients download the requisitions of completed orders too, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to set `PATIENT_PORTAL_REQUISITION_ORDER_STATES` to **Open and completed orders**.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
+
+## Track Document Downloads
+
+Each after-visit summary or requisition download fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which documents a patient has received. The event targets the patient. It is sent after the PDF is served, so a handler can't delay or block the download.
+
+The event context names the `document` and the record it came from:
+
+| `document`              | Record key | Record                                                  |
+|-------------------------|------------|---------------------------------------------------------|
+| `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
+| `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
+| `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
 
 ```python
 from canvas_sdk.effects import Effect
@@ -474,14 +511,17 @@ from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class TrackSummaryDownloads(BaseHandler):
+class TrackDocumentDownloads(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
 
     def compute(self) -> list[Effect]:
-        if self.context.get("document") != "after_visit_summary":
-            return []
+        document = self.context.get("document")
 
-        log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        if document == "after_visit_summary":
+            log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        elif document in ("lab_requisition", "imaging_requisition"):
+            log.info(f"{document} downloaded for order {self.context['order_id']}")
+
         return []
 ```
 

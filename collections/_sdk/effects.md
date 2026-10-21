@@ -260,6 +260,19 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/). |
 
 
+### Faxes
+
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
+
+| Effect | Description |
+|---|---|
+| FAX_NOTE | Fax a note to an external recipient. |
+| FAX_REFERRAL | Fax a referral and its attachments. |
+| FAX_IMAGING_ORDER | Fax an imaging order. |
+| FAX_LAB_ORDER | Fax a lab order's requisition form. |
+| FAX_LETTER | Fax a letter and its attachments. |
+
+
 ### Appointments
 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
