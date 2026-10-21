@@ -1199,6 +1199,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Google Calendar"
+    url: /sdk/data-google-calendar/
+    description: Provider busy time and connection status from native Google Calendar sync.
   - title: "Group"
     url: /sdk/data-group/
     description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.
