@@ -1860,10 +1860,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
   </tbody>
 </table>
 
+<a id="condition_updated"></a>
 <table>
   <thead>
     <tr><th colspan="2">CONDITION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is updated for a patient.</td></tr>
+    <tr><td colspan="2">Occurs when a condition is updated for a patient, including when committing an <a href="/sdk/commands/#assess">Assess</a> command moves it onto or off the problem list.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -5868,6 +5869,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5905,6 +5907,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5938,6 +5941,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5966,6 +5970,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5994,6 +5999,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6043,6 +6049,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6071,6 +6078,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6099,6 +6107,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6127,6 +6136,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6155,6 +6165,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6183,6 +6194,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6211,6 +6223,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6239,6 +6252,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6267,6 +6281,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6295,6 +6310,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6323,6 +6339,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str

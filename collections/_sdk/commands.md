@@ -456,7 +456,7 @@ and whether it is surgical.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. |
+| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
 | [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
@@ -652,7 +652,7 @@ allergy = AllergyCommand(
 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
 
-- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
+- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one, on the problem list unless `show_in_problem_list` is `False`.
 - `condition_id` assesses a specific condition already on the patient's chart.
 
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
@@ -661,6 +661,10 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, it's left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An [UpdateDiagnosis](#updatediagnosis) command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+
+Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
+
 **Command-specific parameters**:
 
 | Name                        | Type          | Required to commit | Description                                                                |
@@ -668,6 +672,7 @@ Entering a committed Assess in error also enters in error the condition its comm
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
 | `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
@@ -694,6 +699,19 @@ assess = AssessCommand(
     approximate_date_of_onset=date(2012, 1, 1),
     background='lifted heavy box',
     narrative='unable to sleep lately'
+)
+```
+
+Record a visit-only diagnosis as an encounter diagnosis, keeping it off the problem list:
+
+```python
+from canvas_sdk.commands import AssessCommand
+
+assess = AssessCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='J02.9',
+    show_in_problem_list=False,
+    narrative='sore throat for two days'
 )
 ```
 
@@ -1892,7 +1910,7 @@ def compute():
 | `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
 | `compound_medication_id`    | _string_                      | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.             |
 | `compound_medication_data`  | [`CompoundMedicationData`](#prescribe-compoundmedicationdata)      | `false`* | Data for creating a new compound medication inline.                 |
-| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
+| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be active [Conditions](/sdk/data-condition/#condition) on the patient's chart, including encounter diagnoses kept off the problem list.  |
 | `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication. Up to 1000 characters — see [Limits](#prescribe-limits). |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
 | `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense. Must be greater than zero — see [Limits](#prescribe-limits). |
@@ -2943,7 +2961,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 
 | Name                 | Type     | Required to commit | Description                                                       |
 |----------------------|----------|----------|-------------------------------------------------------------------|
-| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
+| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's problem list. Encounter diagnoses recorded with Assess's `show_in_problem_list=False` don't match. |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
 | `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
 | `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
