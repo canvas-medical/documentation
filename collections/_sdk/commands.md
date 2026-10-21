@@ -661,7 +661,7 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, it's left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An [UpdateDiagnosis](#updatediagnosis) command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
 
 Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
 
@@ -702,7 +702,7 @@ assess = AssessCommand(
 )
 ```
 
-Record a visit-only diagnosis as an encounter diagnosis, keeping it off the problem list:
+Record a visit-only diagnosis as an encounter diagnosis:
 
 ```python
 from canvas_sdk.commands import AssessCommand
@@ -2962,7 +2962,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 
 | Name                 | Type     | Required to commit | Description                                                       |
 |----------------------|----------|----------|-------------------------------------------------------------------|
-| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's problem list. Encounter diagnoses recorded with Assess's `show_in_problem_list=False` don't match. |
+| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's chart, including encounter diagnoses recorded with Assess's `show_in_problem_list=False`. |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
 | `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
 | `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
