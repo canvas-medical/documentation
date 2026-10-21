@@ -378,6 +378,60 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
+#### Storing uploaded files
+
+To save an uploaded file on a Canvas record, declare the route with `file_uploads="stored"`. Examples include an insurance card image on a coverage or an attachment on a message. Canvas then stores each file in a `multipart/form-data` request before your handler runs, and `form_data()` returns a `StoredFilePart` for each file field instead of the file's bytes. Pass the part's `key` to an effect that accepts upload keys:
+
+- [`Coverage`](/sdk/effect-coverage/): `card_image_front_upload_key` and `card_image_back_upload_key`
+- [`PatientIdentificationCard`](/sdk/effect-patient-identification-card/): `image_upload_key`
+- [`Message`](/sdk/effect-messages/#attaching-files): `attachment_upload_keys`
+- [`VisualExamFindingCommand`](/sdk/commands/#visualexamfinding): `image_upload_key`
+
+The file never passes through your plugin or the effect payload.
+
+`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods.
+
+A `StoredFilePart` has these attributes:
+
+| Attribute        | Type            | Description                                                                 |
+|------------------|-----------------|-----------------------------------------------------------------------------|
+| `name`           | `str`           | The name of the form field.                                                 |
+| `filename`       | `str`           | The filename the client sent.                                               |
+| `content_type`   | `str` or `None` | The content type the client declared for the file.                          |
+| `content_length` | `int`           | The size of the file in bytes.                                              |
+| `key`            | `str` or `None` | The key of the stored file. `None` when the upload failed.                  |
+| `error`          | `str` or `None` | A code such as `"s3_upload_failed"` when the upload failed; otherwise `None`. |
+
+Failed uploads come back alongside successful ones, so check `error` before you read `key`:
+
+```python
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+
+
+class UploadAPI(SimpleAPI):
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        return credentials.logged_in_user["type"] == "Staff"
+
+    @api.post("/upload", file_uploads="stored")
+    def upload(self) -> list[Response | Effect]:
+        part = self.request.form_data()["file"]
+        if part.error:
+            return [JSONResponse({"error": part.error}, status_code=HTTPStatus.BAD_GATEWAY)]
+
+        # Pass part.key to an effect that accepts upload keys
+        return [JSONResponse({"key": part.key})]
+```
+
+Pass each key to an effect from the plugin that uploaded the file, and upload a file of a type the effect accepts. When the effect is applied, Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
+
+The image keys on `Coverage` and `VisualExamFindingCommand` are optional, as is `image_upload_key` on a `PatientIdentificationCard` update. Setting one of these to `None` attaches no file and leaves any existing file in place. You can pass the key of a file input the user left empty without checking it first.
+
+When you switch an existing route to `file_uploads="stored"`, check for files with `part.is_file()` rather than `isinstance(part, FileFormPart)`. A `StoredFilePart` is not a `FileFormPart`, so an `isinstance` check skips every file.
+
 ### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that

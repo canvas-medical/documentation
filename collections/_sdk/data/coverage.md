@@ -9,7 +9,9 @@ hidden: false
 
 The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and coinsurance values.
 
-Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
+To create or change coverages from a plugin, use the [Coverage effect](/sdk/effect-coverage/).
+
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images. Card images are captured via the Canvas iOS application, uploaded through the coverages modal, or attached by a plugin with the [Coverage effect](/sdk/effect-coverage/#card-images).
 
 ## Usage
 
@@ -148,6 +150,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 | Field Name                   | Type                                                |
 | ---------------------------- | --------------------------------------------------- |
+| id                           | UUID                                                |
 | dbid                         | Integer                                             |
 | created                      | DateTime                                            |
 | modified                     | DateTime                                            |

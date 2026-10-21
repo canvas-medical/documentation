@@ -38,6 +38,7 @@ Changes an existing message.
 
 - `message_id` is required, and must be the id of an existing message.
 - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+- `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See [Attaching files](#attaching-files).
 - `team_id` must not be set. Editing a message keeps its team. To change the team, use [`AssignMessageTeam`](#assigning-a-message-to-a-team).
 
 ### send() → Effect
@@ -45,8 +46,42 @@ Changes an existing message.
 Sends a message that was already created, if you separated creating it from sending it.
 
 - Set `message_id` to the message to send.
+- `attachment_upload_keys` must not be set. Attach files with `create()`, `create_and_send()`, or `edit()` before sending.
 - `team_id` must not be set. Use [`AssignMessageTeam`](#assigning-a-message-to-a-team) to change the team.
 - When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
+
+## Attaching files
+
+To attach files to a message, set `attachment_upload_keys` to a list of upload keys. Each key is the `key` of a `StoredFilePart` that a user uploaded to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
+
+Attachments can be PNG, JPEG, or PDF files, and each key must come from a file your plugin uploaded. When the effect is applied, Canvas adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
+
+This SimpleAPI route sends the files in a `multipart/form-data` request to a patient, from the logged-in staff member:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.message import Message
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+
+
+class SendFilesAPI(SimpleAPI):
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        return credentials.logged_in_user["type"] == "Staff"
+
+    @api.post("/send-files", file_uploads="stored")
+    def send_files(self) -> list[Response | Effect]:
+        form = self.request.form_data()
+        message = Message(
+            content="Here is the form we discussed.",
+            sender_id=self.request.headers["canvas-logged-in-user-id"],
+            recipient_id=form["patient_id"].value,
+            attachment_upload_keys=[part.key for part in form.get_list("files") if not part.error],
+        )
+        return [message.create_and_send(), JSONResponse({})]
+```
+
+To read a message's attachments, see [MessageAttachment](/sdk/data-message/#messageattachment).
 
 ## Sending to a patient
 
@@ -84,6 +119,7 @@ Instances set up to deliver patient messages through a plugin, rather than throu
 | `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                 | Yes      |
 | `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                               | Yes      |
 | `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No       |
+| `attachment_upload_keys` | `list[str]` or `None` | Upload keys of PNG, JPEG, or PDF files to attach. Not allowed with `send()`. See [Attaching files](#attaching-files). | No |
 | `team_id`      | `str` or `UUID` or `None` | ID of the [team](/sdk/data-team/) to assign the new message to. Not allowed with `edit()` or `send()`. See [Assigning a message to a team](#assigning-a-message-to-a-team). | No |
 
 ## Validation & Errors
@@ -103,7 +139,6 @@ Before any effect is emitted, the model runs these checks:
 
 - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
 - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
-- **No Attachments Supported:** The Message effect does not yet support attachments.
 - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
 
 
