@@ -76,6 +76,15 @@ command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
 order = command.anchor_object
 ```
 
+An order linked to an [assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) in the same note keeps that assessment on its `assessment` field. Read the orders linked to an assessment from the assessment's side with `linked_dme_orders`:
+
+```python
+from canvas_sdk.v1.data import Assessment
+
+assessment = Assessment.objects.get(id="9a4c2e7b-1f3d-4b6a-8e5c-0d2f7a9b1c34")
+linked_orders = assessment.linked_dme_orders.all()
+```
+
 ## Filtering
 
 DME products and orders can be filtered by any attribute that exists on the model.
@@ -139,6 +148,7 @@ Canvas copies the item into the order when the command is signed, so later formu
 | deleted           | Boolean                                               |
 | patient           | [Patient](/sdk/data-patient/#patient)                 |
 | note              | [Note](/sdk/data-note/#note)                          |
+| assessment        | [Assessment](/sdk/data-assessment/#assessment)        |
 | product           | [DmeProduct](#dmeproduct)                             |
 | item_name         | String                                                |
 | item_code         | String                                                |
