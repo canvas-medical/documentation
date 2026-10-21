@@ -2603,6 +2603,7 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
   - **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 ###  `canvas uninstall`
 Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see Instance API credentials).
+> **Warning:** Uninstalling a plugin deletes the [banner alerts](/sdk/effect-banner-alerts/) it added to patient charts and [claims](/sdk/effect-claims/#add-banner). Disabling a plugin hides them until it's enabled again. 
 **Usage** :
     ```console
     $ canvas uninstall [OPTIONS] NAME
@@ -6314,8 +6315,8 @@ Action | Description
 `print` | Generates a printable version of the command for documentation or external sharing.  
 `audit_history` | Displays the complete audit trail for the command, showing all modifications, state changes, and user interactions over time.  
 `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry.  
-A printed note groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
-On instances in the [revamped note beta program](/product-updates/note-revamp/), a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note in the older format, or on an instance outside the beta program, prints those sections under separate headings.
+How a printed note orders its commands depends on the note's format. A note in the older format, or any note on an instance outside the [revamped note beta program](/product-updates/note-revamp/), groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
+A note in the revamped format prints the sections it shows on screen, History, Exam, and Assessment & Plan, in the note's SOAP or APSO order. Within each section, commands print in the order the provider arranged them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. The Internal section isn't printed, and free text prints under a Notes heading after the sections. Faxed notes and the patient's entire-record print use the same layout.
 To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 > **Info:** The send action is the only command action available through the SDK, and only LabOrder, Prescribe, Refill and Adjust Prescription commands support it. 
 ###  Customizing Action Availability 
@@ -6364,7 +6365,7 @@ Some commands write to the same part of the chart and differ only in intent. The
 Which command fits depends on whether the condition is active now, whether you are assessing it, and whether it is surgical.
 Command | Use it when  
 ---|---  
-Assess with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work.  
+Assess with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit.  
 MedicalHistory | You are backfilling a condition the patient had in the past that is not active now.  
 AddCondition | The condition was diagnosed previously and is still active, and you are not assessing it.  
 SurgicalHistory | You are recording a past surgical procedure.  
@@ -6492,17 +6493,20 @@ Severity | Value | Description
 * * *
 ###  Assess 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
-  - `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
+  - `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one, on the problem list unless `show_in_problem_list` is `False`.
   - `condition_id` assesses a specific condition already on the patient's chart.
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See Recording a condition and Updating or removing a condition for how it compares to the other condition commands.
 > **Info:** If your plugin relies on [`ASSESS_COMMAND__CONDITION_SELECTED`](/sdk/events/#assess_command__condition_selected) or [`ASSESS_COMMAND__ICD10_CODE_SELECTED`](/sdk/events/#assess_command__icd10_code_selected), set the condition with `edit()`. These events fire when an existing Assess command's condition changes, so originating an Assess with `condition_id` or `icd10_code` already set sends neither. To trigger them, originate the command without a condition, then `edit()` it to set one. An `edit()` with `icd10_code` sends `ASSESS_COMMAND__ICD10_CODE_SELECTED` even when the patient already has that condition charted. 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, it's left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An UpdateDiagnosis command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
 `condition_id` | _string_ | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`.  
 `icd10_code` | _string_ | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`.  
 `approximate_date_of_onset` | _date_ | `false` | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change.  
+`show_in_problem_list` | _boolean_ | `false` | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list.  
 `background` | _string_ | `false` | Background information about the diagnosis.  
 `status` | _Status enum_ | `false` | The current status of the diagnosis. Must be one of `AssessCommand.Status`.  
 `narrative` | _string_ | `false` | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated).  
@@ -6522,6 +6526,16 @@ Assess a condition by ICD-10 code, whether or not the patient has it charted:
         approximate_date_of_onset=date(2012, 1, 1),
         background='lifted heavy box',
         narrative='unable to sleep lately'
+    )
+    ```
+Record a visit-only diagnosis as an encounter diagnosis, keeping it off the problem list:
+    ```python
+    from canvas_sdk.commands import AssessCommand
+    assess = AssessCommand(
+        note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+        icd10_code='J02.9',
+        show_in_problem_list=False,
+        narrative='sore throat for two days'
     )
     ```
 Assess a specific condition already on the chart by its id:
@@ -7389,7 +7403,7 @@ Name | Type | Required to review / send | Description
 `fdb_code` | _string_ | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.  
 `compound_medication_id` | _string_ | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.  
 `compound_medication_data` | `CompoundMedicationData` | `false`* | Data for creating a new compound medication inline.  
-`icd10_codes` | _list[string]_ | `false` | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  
+`icd10_codes` | _list[string]_ | `false` | List of ICD-10 codes (maximum 2) associated with the prescription. Must be active [Conditions](/sdk/data-condition/#condition) on the patient's chart, including encounter diagnoses kept off the problem list.  
 `sig` | _string_ | `true` | Administration instructions/details of the medication. Up to 1000 characters — see Limits.  
 `days_supply` | _integer_ | `false` | Number of days the prescription is intended to cover.  
 `quantity_to_dispense` | _Decimal | float | integer_ | `true` | The amount of medication to dispense. Must be greater than zero — see Limits.  
@@ -8157,7 +8171,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
-`condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.  
+`condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's problem list. Encounter diagnoses recorded with Assess's `show_in_problem_list=False` don't match.  
 `new_condition_code` | _string_ | `true` | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  
 `background` | _string_ | `false` | Background information or notes related to the updated diagnosis (max length: 2048 characters).  
 `narrative` | _string_ | `false` | A narrative or explanation about the update (max length: 2048 characters).  
@@ -12082,6 +12096,7 @@ error | Deleted
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-calendar/
 ##  Introduction 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
+Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
 ##  Basic usage 
 To get a calendar by identifier, use the `get` method on the `Calendar` model manager:
     ```python
@@ -13302,6 +13317,40 @@ patient | [Patient](/sdk/data-patient/#patient)
 note | [Note](/sdk/data-note)  
 detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-coding-gap-event/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-command-type-setting/
+##  Introduction 
+The `CommandTypeSetting` model holds one row per command type and whether it is turned on for the instance. An administrator turns command types on and off in Canvas. Use it to leave out commands a provider cannot add, for example to skip suggesting a follow-up when the follow-up command is turned off.
+##  Basic usage 
+To read whether one command type is turned on, use the `get` method on the `CommandTypeSetting` model manager with its schema key:
+    ```python
+    from canvas_sdk.v1.data import CommandTypeSetting
+    follow_up = CommandTypeSetting.objects.get(schema_key="followUp")
+    if follow_up.active:
+        ...
+    ```
+##  Filtering 
+Command type settings can be filtered by any attribute that exists on the model.
+###  Active command types 
+To get the schema keys of every command type turned on for the instance, in one query:
+    ```python
+    from canvas_sdk.v1.data import CommandTypeSetting
+    active = set(
+        CommandTypeSetting.objects.filter(active=True).values_list("schema_key", flat=True)
+    )
+    ```
+##  Attributes 
+###  CommandTypeSetting 
+Field Name | Type  
+---|---  
+dbid | Integer  
+schema_key | String  
+active | Boolean  
+  - **dbid** : The internal database primary key.
+  - **schema_key** : The command type's schema key, the same value as [`Command.schema_key`](/sdk/data-command/#command) (e.g., `followUp`, `refer`, `prescribe`).
+  - **active** : Whether the command type is turned on for the instance.
+----- END PAGE https://docs.canvasmedical.com/sdk/data-command-type-setting/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-command/
@@ -15445,7 +15494,7 @@ Use the document's `action_events` accessor:
         failed_number = event.fax.to_fax_number if event.fax else None
     ```
 ###  Faxes sent by a plugin 
-A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
+A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. The [fax effects](/sdk/effect-fax/) for referrals, imaging orders, lab orders and letters record theirs the same way, on that document's action event model. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
     ```python
     from canvas_sdk.v1.data import NoteActionEvent
     CANVAS_BOT_STAFF_ID = "5eede137ecfe4124b8b773040e33be14"
@@ -15502,6 +15551,15 @@ Filter on `direction` to read received faxes. `success` is `False` when the faxi
     received = Fax.objects.filter(direction=FaxDirection.INBOUND).order_by("-date_utc")
     failed = received.filter(success=False)
     ```
+On a received fax, `to_fax_number` is the Canvas line that received it. Depending on the faxing service that delivered the fax, Canvas stores that number with or without the leading `+`, such as `+15555550100` or `15555550100`. To find every fax one line received, match both forms:
+    ```python
+    from canvas_sdk.v1.data import Fax, FaxDirection
+    line = "15555550100"
+    received_on_line = Fax.objects.filter(
+        direction=FaxDirection.INBOUND,
+        to_fax_number__in=[line, f"+{line}"],
+    )
+    ```
 ##  Attributes 
 ###  Fax 
 Field Name | Type | Notes  
@@ -15511,7 +15569,7 @@ dbid | Integer |
 created | DateTime |   
 modified | DateTime |   
 fax_id | String | The faxing service's id for the fax  
-to_fax_number | String | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it  
+to_fax_number | String | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it, which can be stored without the `+`  
 from_fax_number | String | The number the fax was sent from. For a received fax, the sender's number  
 date_utc | DateTime | When the faxing service accepted a sent fax, or finished receiving a received fax  
 fax_pages | Integer | The number of pages  
@@ -15780,6 +15838,95 @@ HIGH | high-priority
 MEDIUM | medium-priority  
 LOW | low-priority  
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-goal/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-google-calendar/
+##  Introduction 
+When a provider connects their Google account through native Google Calendar sync, Canvas imports the busy time from their selected Google calendars. Canvas stores that busy time in its own records rather than as [appointments](/sdk/data-appointment/) or [calendar events](/sdk/data-calendar/), so a scheduling or booking plugin that works out availability only from `Appointment` and `Event` misses it.
+The Google Calendar data models give plugins read-only access to that busy time and to the state of each provider's connection:
+  - `GoogleCalendarBusyBlock` is a period of busy time imported from Google for a provider.
+  - `GoogleCalendarConnection` is a provider's connection to their Google account.
+  - `GoogleCalendar` is a calendar on that connection.
+Busy blocks carry only the time a provider is busy. They don't include the title or content of the Google event. These models have a `dbid` but no `id`.
+##  Busy blocks 
+A provider's busy blocks are available through the `google_calendar_busy_blocks` attribute on a [Staff](/sdk/data-staff/) object. When busy time is released, its busy block stays in the table with `active` set to `False`, so filter on `active=True` to get current busy time:
+    ```python
+    from canvas_sdk.v1.data.staff import Staff
+    provider = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    busy_blocks = provider.google_calendar_busy_blocks.filter(active=True)
+    ```
+A busy block records its start and its length in minutes, not an end time. A Google event that spans several days arrives as one busy block for each day.
+Releasing a busy block also updates its `modified` time. A plugin that keeps its own copy of busy time can query for blocks modified since its last check and remove those where `active` is `False`. If released busy time returns to Google, Canvas creates a new busy block rather than reactivating the released one.
+###  Find a provider's busy time for a day 
+This example lists a provider's current busy intervals that start on a given day, ordered by start time:
+    ```python
+    import datetime
+    from canvas_sdk.v1.data.google_calendar import GoogleCalendarBusyBlock
+    from logger import log
+    day_start = datetime.datetime(2026, 10, 20, tzinfo=datetime.UTC)
+    day_end = day_start + datetime.timedelta(days=1)
+    busy_blocks = GoogleCalendarBusyBlock.objects.filter(
+        provider__id="4150cd20de8a470aa570a852859ac87e",
+        active=True,
+        start_time__gte=day_start,
+        start_time__lt=day_end,
+    ).order_by("start_time")
+    for block in busy_blocks:
+        block_end = block.start_time + datetime.timedelta(minutes=block.duration_minutes)
+        log.info(f"Busy from {block.start_time} to {block_end} at {block.location.full_name}")
+    ```
+##  Connections and calendars 
+A provider's Google connection is available through the `google_calendar_connection` attribute on a `Staff` object. A provider who hasn't connected a Google account has no connection, so filter on the `staff` field to get `None` back instead of an exception:
+    ```python
+    from canvas_sdk.v1.data.google_calendar import GoogleCalendarConnection
+    from canvas_sdk.v1.data.staff import Staff
+    provider = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    connection = GoogleCalendarConnection.objects.filter(staff=provider).first()
+    ```
+When `needs_reconnect` is `True`, the provider needs to reconnect their Google account in Canvas.
+The calendars on a connection are available through its `calendars` attribute. Only selected calendars feed busy blocks. The calendar with `is_app_created` set to `True` is the one Canvas writes appointments to:
+    ```python
+    from canvas_sdk.v1.data.google_calendar import GoogleCalendarConnection
+    connection = GoogleCalendarConnection.objects.filter(
+        staff__id="4150cd20de8a470aa570a852859ac87e"
+    ).first()
+    if connection is not None:
+        busy_time_calendars = connection.calendars.filter(selected=True)
+        canvas_calendar = connection.calendars.filter(is_app_created=True).first()
+    ```
+##  Attributes 
+###  GoogleCalendarBusyBlock 
+Field Name | Type | Description  
+---|---|---  
+dbid | Integer | Database identifier  
+created | DateTime | When the record was created.  
+modified | DateTime | When the record was last modified.  
+provider | [Staff](/sdk/data-staff/#staff) | The provider who is busy  
+location | [PracticeLocation](/sdk/data-practicelocation/) | The practice location the busy block applies to  
+start_time | DateTime | When the busy time starts  
+duration_minutes | Integer | How long the busy time lasts, in minutes  
+active | Boolean | Whether the block is current busy time; `False` once the time is released  
+###  GoogleCalendarConnection 
+Field Name | Type | Description  
+---|---|---  
+dbid | Integer | Database identifier  
+created | DateTime | When the record was created.  
+modified | DateTime | When the record was last modified.  
+staff | [Staff](/sdk/data-staff/#staff) | The provider who owns the connection  
+google_account_email | String | The email address of the connected Google account  
+needs_reconnect | Boolean | Whether the provider must reconnect their Google account  
+calendars | GoogleCalendar[] | The Google calendars on this connection  
+###  GoogleCalendar 
+Field Name | Type | Description  
+---|---|---  
+dbid | Integer | Database identifier  
+created | DateTime | When the record was created.  
+modified | DateTime | When the record was last modified.  
+connection | GoogleCalendarConnection | The connection the calendar belongs to  
+summary | String | The calendar's name in Google  
+selected | Boolean | Whether the calendar's events feed busy blocks  
+is_app_created | Boolean | Whether this is the calendar Canvas writes appointments to  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-google-calendar/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-group/
@@ -17876,6 +18023,7 @@ Name | Type | Description
 `recipient` | [CanvasUser](/sdk/data-canvasuser) | The user who received the message. May be null.  
 `note` | [Note](/sdk/data-note) | Associated note (if any) for contextual linkage. May be null.  
 `read` | `DateTime` | Timestamp when the recipient read the message. Null if unread.  
+`team` | [Team](/sdk/data-team/#team) | The team the message is assigned to. Null if unassigned. See [Assigning a message to a team](/sdk/effect-messages/#assigning-a-message-to-a-team).  
 `transmissions` | QuerySet[MessageTransmission] | The delivery transmissions associated with this message.  
 `message` | QuerySet[MessageAttachment] | The file attachments associated with this message.  
 ##  MessageAttachment 
@@ -21727,6 +21875,8 @@ appointment_set | [Appointment](/sdk/data-appointment/#appointment)[] |
 prescription_set | [Prescription](/sdk/data-prescription/#prescription)[] |   
 note_set | [Note](/sdk/data-note/#note)[] |   
 prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |   
+google_calendar_busy_blocks | [GoogleCalendarBusyBlock](/sdk/data-google-calendar/#googlecalendarbusyblock)[] |   
+google_calendar_connection | [GoogleCalendarConnection](/sdk/data-google-calendar/#googlecalendarconnection) |   
 full_name | String (computed) | The staff member's first and last name, for example `Larry Weed`  
 credentialed_name | String (computed) | The staff member's full name suffixed with their topmost credential abbreviation, for example `Larry Weed MD`  
 top_clinical_role | StaffRole (computed) | The staff member's highest-ranking clinical role, selected by privilege level when they hold more than one, or `None` if they have no clinical role  
@@ -22210,6 +22360,7 @@ document_references | [DocumentReference](/sdk/data-document-reference/#document
 integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]  
 uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[]  
 referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[]  
+assigned_messages | [Message](/sdk/data-message/#message)[]  
 labreport_set | [LabReport](/sdk/data-labs/#labreport)[]  
 imagingreport_set | [ImagingReport](/sdk/data-imaging/#imagingreport)[]  
 patientadministrativedocument_set | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument)[]  
@@ -22821,7 +22972,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommandTypeSetting Whether each command type is turned on for the instance. ](/sdk/data-command-type-setting/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Google Calendar Provider busy time and connection status from native Google Calendar sync. ](/sdk/data-google-calendar/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -23165,7 +23316,8 @@ The effect payload is structured as JSON with the following schema:
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-banner-alerts/
-The Canvas SDK allows you to place Banners on the Canvas UI.
+Use banner alerts to show contextual information in a patient's chart.
+> **Warning:** A banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and [uninstalling](/sdk/canvas_cli/#canvas-uninstall) it deletes them. 
 ##  Adding a Banner Alert 
 To add a banner alert, build an `AddBannerAlert` and return its `apply()` from your handler.
 ###  Methods 
@@ -23177,7 +23329,7 @@ Adds the banner alert.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 patient_id | String | The id of the [patient](/sdk/data-patient/) the alert should be associated with. | If `patient_filter` is not provided  
-patient_filter | dict | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients | If `patient_id` is not provided  
+patient_filter | dict | A patient filter that applies the effect to every matching patient. For example, `{"active": True}` applies the effect to all active patients | If `patient_id` is not provided  
 key | String | An identifier that categorizes the alert. | Yes  
 narrative | String | The content of the alert. Maximum 90 characters. | Yes  
 placement | list[Placement] | List of areas the alert should show. | Yes  
@@ -23273,7 +23425,7 @@ Removes the banner alert.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 patient_id | String | The id of the [patient](/sdk/data-patient/) whose alert should be removed. | If `patient_filter` is not provided  
-patient_filter | dict | Patient queryset filters to remove the alert from multiple patients. | If `patient_id` is not provided  
+patient_filter | dict | A patient filter that removes the alert from every matching patient. | If `patient_id` is not provided  
 key | String | The key of the alert to remove. | Yes  
 ###  Example 
     ```python
@@ -23284,6 +23436,15 @@ key | String | The key of the alert to remove. | Yes
     )
     banner_alert.apply()
     ```
+##  Patient filters 
+A `patient_filter` selects patients by patient field. Each key is a field name, optionally followed by `__` and a lookup, such as `"last_name__istartswith": "Sm"`. These fields are supported:
+  - `id`, `key`, and `mrn`
+  - `active` and `deceased`
+  - `first_name`, `middle_name`, `last_name`, and `nickname`
+  - `birth_date` and `sex_at_birth`
+  - `external_identifiers__system` and `external_identifiers__value`
+These lookups are supported: `exact`, `iexact`, `in`, `lt`, `lte`, `gt`, `gte`, `range`, `isnull`, `startswith`, `istartswith`, `endswith`, `iendswith`, `contains`, and `icontains`.
+Each value is a string, number, boolean, `None`, or a list of strings, numbers, or booleans.
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-banner-alerts/
 
 
@@ -24111,6 +24272,7 @@ Parameter | Type | Description | Required
 ###  Add Banner 
 `add_banner(key: str, narrative: str, intent: BannerAlertIntent, href: str | None = None) → Effect`
 Adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
+> **Warning:** A claim banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and [uninstalling](/sdk/canvas_cli/#canvas-uninstall) it deletes them. 
 ####  Parameters 
 Parameter | Type | Description | Required  
 ---|---|---|---  
@@ -25915,6 +26077,189 @@ ADT^A13 | Cancel Discharge/End Visit
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-external-event/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-fax/
+The Canvas SDK includes effects to fax a note, or to fax a referral, imaging order, lab order or letter without the rest of its note. The recipient gets the same PDF that the document's own **Fax** action sends from Canvas.
+Effect | Sends | Recipient when you don't name one  
+---|---|---  
+`FaxNoteEffect` | The note | None. A recipient is required.  
+`FaxReferralEffect` | The referral and its attachments, plus the visit note when the referral includes it | The referral's service provider, when it has a fax number  
+`FaxImagingOrderEffect` | The imaging order | The order's imaging center, when it has a fax number  
+`FaxLabOrderEffect` | The lab order's requisition form | None. A recipient is required.  
+`FaxLetterEffect` | The letter and its attachments | None. A recipient is required.  
+##  Fax a Note 
+To fax a note, build a `FaxNoteEffect` and return its `apply()` from your handler. This effect is also documented under [Fax Note](/sdk/effect-notes/#fax-note) on the Note Effects page.
+###  Methods 
+####  apply() → Effect 
+Faxes the note.
+  - Validates that the note exists.
+  - If `include_coversheet` is `True`, `subject`, `comment` and `location_id` become required, and the practice location must exist.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`note_id` | `UUID` or `str` | Identifier of the note to fax. | Yes  
+`recipient_name` | `str` | Name of the fax recipient. | Yes  
+`recipient_fax_number` | `str` | Fax number of the recipient, including the country code. | Yes  
+`include_coversheet` | `bool` | Whether to include a coversheet with the fax. | No  
+`subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used). | No  
+`comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used). | No  
+`location_id` | `UUID` or `str` or `None` | Practice location ID (required if coversheet used). | No  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.fax import FaxNoteEffect
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self) -> list[Effect]:
+            fax_effect = FaxNoteEffect(
+                note_id="existing-note-uuid",
+                recipient_name="Dr. Jane Smith",
+                recipient_fax_number="15551234567",
+                include_coversheet=True,
+                subject="Patient Referral - Follow-up Care",
+                comment="Please review attached consultation notes for continuing care.",
+                location_id="practice-location-uuid",
+            )
+            return [fax_effect.apply()]
+    ```
+##  Fax a Referral 
+To fax a referral, build a `FaxReferralEffect` and return its `apply()` from your handler. The fax includes the referral's attachments, and the visit note when the referral includes it.
+###  Methods 
+####  apply() → Effect 
+Faxes the referral.
+  - Validates that the referral exists. It must be committed and not entered in error, as for its own **Fax** action in Canvas.
+  - Leave out both `recipient_name` and `recipient_fax_number` to fax the referral's service provider. Nothing is faxed if you give only one, if the referral has no service provider, or if the service provider has no fax number.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`referral_id` | `UUID` or `str` | Identifier of the referral to fax. | Yes  
+`recipient_name` | `str` or `None` | Name of the fax recipient. Give it together with `recipient_fax_number`. | No  
+`recipient_fax_number` | `str` or `None` | Fax number of the recipient, including the country code. Give it together with `recipient_name`. | No  
+`include_coversheet` | `bool` | Whether to include a coversheet with the fax. | No  
+`subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used). | No  
+`comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used). | No  
+`location_id` | `UUID` or `str` or `None` | Practice location ID (required if coversheet used). | No  
+###  Example 
+Fax each referral to its service provider when its Refer command is committed:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.fax import FaxReferralEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import Command
+    class FaxReferralOnCommit(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.REFER_COMMAND__POST_COMMIT)
+        def compute(self) -> list[Effect]:
+            referral = Command.objects.get(id=self.event.target.id).anchor_object
+            if referral is None:
+                return []
+            return [FaxReferralEffect(referral_id=referral.id).apply()]
+    ```
+##  Fax an Imaging Order 
+To fax an imaging order, build a `FaxImagingOrderEffect` and return its `apply()` from your handler.
+###  Methods 
+####  apply() → Effect 
+Faxes the imaging order.
+  - Validates that the imaging order exists. It must be committed and not entered in error, as for its own **Fax** action in Canvas.
+  - Leave out both `recipient_name` and `recipient_fax_number` to fax the order's imaging center. Nothing is faxed if you give only one, if the order has no imaging center, or if the imaging center has no fax number.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`imaging_order_id` | `UUID` or `str` | Identifier of the imaging order to fax. | Yes  
+`recipient_name` | `str` or `None` | Name of the fax recipient. Give it together with `recipient_fax_number`. | No  
+`recipient_fax_number` | `str` or `None` | Fax number of the recipient, including the country code. Give it together with `recipient_name`. | No  
+`include_coversheet` | `bool` | Whether to include a coversheet with the fax. | No  
+`subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used). | No  
+`comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used). | No  
+`location_id` | `UUID` or `str` or `None` | Practice location ID (required if coversheet used). | No  
+###  Example 
+Fax an imaging order to its imaging center:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.fax import FaxImagingOrderEffect
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self) -> list[Effect]:
+            return [FaxImagingOrderEffect(imaging_order_id="existing-imaging-order-uuid").apply()]
+    ```
+##  Fax a Lab Order 
+To fax a lab order's requisition form, build a `FaxLabOrderEffect` and return its `apply()` from your handler.
+###  Methods 
+####  apply() → Effect 
+Faxes the lab order's requisition form.
+  - Validates that the lab order exists. It must be committed and not entered in error, as for its own **Fax** action in Canvas.
+  - `recipient_name` and `recipient_fax_number` are required, because a lab order has no recipient on file.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`lab_order_id` | `UUID` or `str` | Identifier of the lab order to fax. | Yes  
+`recipient_name` | `str` | Name of the fax recipient. | Yes  
+`recipient_fax_number` | `str` | Fax number of the recipient, including the country code. | Yes  
+`include_coversheet` | `bool` | Whether to include a coversheet with the fax. | No  
+`subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used). | No  
+`comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used). | No  
+`location_id` | `UUID` or `str` or `None` | Practice location ID (required if coversheet used). | No  
+###  Example 
+Fax a lab order's requisition form to the lab, with a coversheet:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.fax import FaxLabOrderEffect
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self) -> list[Effect]:
+            fax_effect = FaxLabOrderEffect(
+                lab_order_id="existing-lab-order-uuid",
+                recipient_name="Acme Labs",
+                recipient_fax_number="15555550100",
+                include_coversheet=True,
+                subject="Lab requisition",
+                comment="Requisition for the attached lab order.",
+                location_id="practice-location-uuid",
+            )
+            return [fax_effect.apply()]
+    ```
+##  Fax a Letter 
+To fax a letter, build a `FaxLetterEffect` and return its `apply()` from your handler. The fax includes the letter's attachments.
+###  Methods 
+####  apply() → Effect 
+Faxes the letter.
+  - Validates that the letter exists.
+  - `recipient_name` and `recipient_fax_number` are required.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`letter_id` | `UUID` or `str` | Identifier of the letter to fax. | Yes  
+`recipient_name` | `str` | Name of the fax recipient. | Yes  
+`recipient_fax_number` | `str` | Fax number of the recipient, including the country code. | Yes  
+`include_coversheet` | `bool` | Whether to include a coversheet with the fax. | No  
+`subject` | `str` or `None` | Subject line for the coversheet (required if coversheet used). | No  
+`comment` | `str` or `None` | Additional comments for the coversheet (required if coversheet used). | No  
+`location_id` | `UUID` or `str` or `None` | Practice location ID (required if coversheet used). | No  
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.fax import FaxLetterEffect
+    from canvas_sdk.handlers.base import BaseHandler
+    class MyHandler(BaseHandler):
+        def compute(self) -> list[Effect]:
+            fax_effect = FaxLetterEffect(
+                letter_id="existing-letter-uuid",
+                recipient_name="Dr. Jane Smith",
+                recipient_fax_number="15551234567",
+            )
+            return [fax_effect.apply()]
+    ```
+##  Fax history 
+Each fax is recorded on its document with Canvas Bot as its `originator`, and appears in the document's fax history in Canvas. `delivered_by_fax` is updated when the faxing service reports the outcome. See [Faxes sent by a plugin](/sdk/data-fax/#faxes-sent-by-a-plugin).
+Effect | Recorded as  
+---|---  
+`FaxNoteEffect` | [NoteActionEvent](/sdk/data-fax/#noteactionevent), read through `note.action_events`  
+`FaxReferralEffect` | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)  
+`FaxImagingOrderEffect` | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)  
+`FaxLabOrderEffect` | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)  
+`FaxLetterEffect` | [LetterActionEvent](/sdk/data-letter-action-event/)
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-fax/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-health-gorilla-lab-order-ingest/
 The `HealthGorillaLabOrderIngest` effect creates a Canvas `LabOrder` plus its `LabTest` rows for an order that was placed outside Canvas — for example, by a partner on its own Health Gorilla tenant. Canvas records the order so it shows up in the chart, but the order's `hg_request_result` field is set to a partner-supplied skip-send marker so Canvas's send-to-Health-Gorilla worker treats the order as already-sent and never forwards it.
 Typical use is from a SimpleAPI route the partner POSTs to when they place a standing or recurring order on their side.
@@ -26369,23 +26714,28 @@ The four effects compose into the asynchronous OCR workflow:
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 The `Message` effect provides a unified way to create, edit, and transmit messages between users (patients or staff) within the Canvas platform. It supports standalone creation, immediate send after creating, edits, and dedicated send operations.
 Build a `Message` with the attributes you want to set, then return one of its methods from your handler: `create()`, `create_and_send()`, `edit()`, or `send()`.
+To route a message to a group of staff rather than one person, assign it to a team. See Assigning a message to a team.
 ##  Methods 
 ###  create() → Effect 
 Creates a message without sending it.
   - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
   - `message_id` must not be set.
+  - `team_id` is optional. Set it to create the message already assigned to a team.
 ###  create_and_send() → Effect 
 Creates the message and sends it in one operation.
   - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
   - `message_id` must not be set.
+  - `team_id` is optional. Set it to create the message already assigned to a team.
   - When the recipient is a patient, the patient needs an eligible contact point. See Sending to a patient.
 ###  edit() → Effect 
 Changes an existing message.
   - `message_id` is required, and must be the id of an existing message.
   - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+  - `team_id` must not be set. Editing a message keeps its team. To change the team, use `AssignMessageTeam`.
 ###  send() → Effect 
 Sends a message that was already created, if you separated creating it from sending it.
   - Set `message_id` to the message to send.
+  - `team_id` must not be set. Use `AssignMessageTeam` to change the team.
   - When the recipient is a patient, the patient needs an eligible contact point. See Sending to a patient.
 ##  Sending to a patient 
 When `create_and_send()` or `send()` sends a message to a patient, Canvas notifies the patient the same way it does for a message sent from the chart: a text message or email to each of the patient's phone numbers and email addresses that is eligible. A contact point is eligible when all three of these are true:
@@ -26413,6 +26763,7 @@ Attribute | Type | Description | Required
 `sender_id` | `str` or `UUID` | ID of the user (Patient or Staff) who is sending the message. | Yes  
 `recipient_id` | `str` or `UUID` | ID of the user (Patient or Staff) who will receive the message. | Yes  
 `read` | `datetime` or `None` | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No  
+`team_id` | `str` or `UUID` or `None` | ID of the [team](/sdk/data-team/) to assign the new message to. Not allowed with `edit()` or `send()`. See Assigning a message to a team. | No  
 ##  Validation & Errors 
 Before any effect is emitted, the model runs these checks:
   - **Sender and Recipient Exist** Verifies that both `sender_id` and `recipient_id` belong to either a `Patient` or a `Staff` record.
@@ -26420,6 +26771,7 @@ Before any effect is emitted, the model runs these checks:
     - **Create** and **Create-and-Send** must **not** include `message_id`.
     - **Create** and **Create-and-Send** must include non-empty `content` (content cannot be blank or whitespace-only).
     - **Edit** operations **must** include a valid `message_id` that already exists in the database.
+  - **Team Exists** When `create()` or `create_and_send()` sets `team_id`, it must be the id of an existing team. `edit()` and `send()` reject `team_id`.
 ##  Caveats 
   - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
   - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
@@ -26465,6 +26817,46 @@ Before any effect is emitted, the model runs these checks:
     ```python
     m4 = Message(message_id=m.id)
     effect_send = m4.send()
+    ```
+##  Assigning a message to a team 
+A message always has one staff or patient `recipient`. It can also be assigned to a [team](/sdk/data-team/), so a group such as a front desk or a care team can work messages together. Assigning a team does not change the `recipient`. In the global Messages panel, the assignee filter defaults to **Me or my teams** , so staff see messages addressed to them and messages assigned to any of their teams, and the unread badge counts both. A message has a single read timestamp, so when one team member reads a team message, it is read for the whole team.
+There are two ways to assign a team:
+  - Set `team_id` when you create the message with `create()` or `create_and_send()`.
+  - Return an `AssignMessageTeam` effect to set, change, or clear the team of an existing message.
+###  AssignMessageTeam 
+Build an `AssignMessageTeam` and return its `apply()` from your handler.
+####  Methods 
+#####  apply() → Effect 
+Sets, changes, or clears the team of an existing message.
+  - `message_id` is required, and must be the id of an existing message.
+  - `team_id` is required. Set it to `None` to unassign the message.
+  - The effect fails validation, and the message keeps its current team, when either id is not a valid UUID or does not match an existing message or team.
+  - Each assignment, reassignment, and unassignment emits the [`MESSAGE_TEAM_ASSIGNED`](/sdk/events/#messaging) event. Creating a message with a team emits it too.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`message_id` | `str` or `UUID` | ID of the [message](/sdk/data-message/#message) to assign. | Yes  
+`team_id` | `str` or `UUID` or `None` | ID of the [team](/sdk/data-team/) to assign the message to, or `None` to unassign it. | Yes  
+####  Example 
+This handler assigns each message a patient sends to the team named "Front Desk":
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.message import AssignMessageTeam
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import Message, Team
+    class RoutePatientMessages(BaseHandler):
+        """Assign messages that patients send to the Front Desk team."""
+        RESPONDS_TO = EventType.Name(EventType.MESSAGE_CREATED)
+        def compute(self) -> list[Effect]:
+            message = Message.objects.select_related("sender").filter(id=self.target).first()
+            # Only route messages a patient sent, not messages staff sent to a patient.
+            if message is None or message.sender is None or message.sender.is_staff:
+                return []
+            team = Team.objects.filter(name="Front Desk").first()
+            if team is None:
+                return []
+            return [AssignMessageTeam(message_id=message.id, team_id=team.id).apply()]
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-messages/
 
@@ -26925,6 +27317,7 @@ Attribute | Type | Description | Required | Updatable
 ###  Fax Note 
 `FaxNoteEffect.apply() → Effect`
 Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
+To fax a referral, imaging order, lab order or letter without the rest of its note, use the [fax effects](/sdk/effect-fax/).
 ####  Attributes 
 Attribute | Type | Description | Required  
 ---|---|---|---  
@@ -28648,7 +29041,7 @@ Appends a recommendation to the card's `recommendations`.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `patient_id` | `str` | The id of the [patient](/sdk/data-patient/). | One of `patient_id` or `patient_filter`  
-`patient_filter` | `dict` | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` applies the effect to all active patients. | One of `patient_id` or `patient_filter`  
+`patient_filter` | `dict` | A [patient filter](/sdk/effect-banner-alerts/#patient-filters) that applies the effect to every matching patient. For example, `{"active": True}` applies the effect to all active patients. | One of `patient_id` or `patient_filter`  
 `key` | `str` | A unique identifier for the protocol card. | Yes  
 `title` | `str` | The title for the protocol card, which appears at the top in bold. | No  
 `narrative` | `str` | The narrative for the protocol card, which appears just below the title. | No  
@@ -30628,7 +31021,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -30716,6 +31109,15 @@ NOTE_RESTRICTIONS | Communicate whether a note is restricted for the requesting 
 NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/).  
 NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/).  
 NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/).  
+###  Faxes 
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
+Effect | Description  
+---|---  
+FAX_NOTE | Fax a note to an external recipient.  
+FAX_REFERRAL | Fax a referral and its attachments.  
+FAX_IMAGING_ORDER | Fax an imaging order.  
+FAX_LAB_ORDER | Fax a lab order's requisition form.  
+FAX_LETTER | Fax a letter and its attachments.  
 ###  Appointments 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
 Effect | Description  
@@ -30797,6 +31199,7 @@ CREATE_MESSAGE | Create a message.
 SEND_MESSAGE | Send a message.  
 CREATE_AND_SEND_MESSAGE | Create and send a message in one step.  
 EDIT_MESSAGE | Edit a message.  
+[ASSIGN_MESSAGE_TEAM](/sdk/effect-messages/#assigning-a-message-to-a-team) | Assign a message to a team, change its team, or unassign it.  
 ###  Observations 
 Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 Effect | Description  
@@ -32023,7 +32426,7 @@ Target object | Context object
         "id": pt_id  
 CONDITION_UPDATED  
 ---  
-Occurs when a condition is updated for a patient.  
+Occurs when a condition is updated for a patient, including when committing an [Assess](/sdk/commands/#assess) command moves it onto or off the problem list.  
 Target object | Context object  
     "id": condition_id
     "type": [Condition](/sdk/data-condition/#condition)
@@ -32551,6 +32954,27 @@ Target object | Context object
 | 
     "patient":
        "id": pt_id  
+MESSAGE_TEAM_ASSIGNED  
+---  
+Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the [`AssignMessageTeam`](/sdk/effect-messages/#assignmessageteam) effect. Deleting a team emits this event for each of its messages, with `team` set to null. A save that leaves the team unchanged does not emit it. `team` is null when the message was unassigned, and `previous_team` is null when it had no team before.  
+Target object | Context object  
+    "id": message_id
+    "type": [Message](/sdk/data-message/#message)
+| 
+    "message": [Message](/sdk/data-message/#message)
+      "id": message_id
+      "sender": str, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) who sent it
+      "recipient": str, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) it was sent to
+      "read": datetime str | null
+    "team": [Team](/sdk/data-team/) | null
+      "id": team_id
+      "name": str
+    "previous_team": [Team](/sdk/data-team/) | null
+      "id": team_id
+      "name": str
+    "patient": [Patient](/sdk/data-patient/)
+      "id": pt_id
+    "assigned_at": datetime str  
 MESSAGE_TRANSMISSION_CREATED  
 ---  
 Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).  
@@ -34158,6 +34582,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34184,6 +34609,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34207,6 +34633,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34225,6 +34652,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34243,6 +34671,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34271,6 +34700,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34289,6 +34719,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34307,6 +34738,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34325,6 +34757,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34343,6 +34776,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34361,6 +34795,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34379,6 +34814,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34397,6 +34833,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34415,6 +34852,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34433,6 +34871,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -34451,6 +34890,7 @@ Target object | Context object
       "approximate_date_of_onset":
         "input": str
         "date": str
+      "show_in_problem_list": bool
       "background": str
       "status": str
       "narrative": str
@@ -47646,14 +48086,15 @@ Target | Target type | Context object
 `PATIENT_PORTAL__GET_FORMS` is the built-in mechanism for presenting patient forms: respond to it with one or more [`PATIENT_PORTAL__FORM_RESULT`](/sdk/patient-portal/#forms) effects (`FormResult`) and the questionnaires are shown to the patient in a modal after they log in. If you need a different presentation, such as a standalone page where a patient picks from a list of forms to complete before an upcoming appointment, build a custom [Application](/sdk/handlers-applications/) in the patient portal (a `portal_menu_item`-scoped Application that launches your own UI via `LaunchModalEffect`) rather than relying on the built-in forms modal.
 PATIENT_PORTAL__DOCUMENT_DOWNLOADED  
 ---  
-Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at `/app/note/<note_id>/aftervisitsummary`, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.  
+Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as an after-visit summary or a lab requisition. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. See [Track Document Downloads](/sdk/patient-portal/#track-document-downloads) for the documents that fire it and the context each one carries.  
 Target | Target type | Context object  
     patient_id
 | 
     [Patient](/sdk/data-patient/)
 | 
-    "document": str["after_visit_summary"]
-    "note_id": str  
+    "document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
+    "note_id": str, the id of the [Note](/sdk/data-note/#note) (after_visit_summary only)
+    "order_id": str, the id of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder) (lab_requisition and imaging_requisition only)  
 PATIENT_PORTAL__POST_LOGIN  
 ---  
 Occurs once, right after a patient logs in to the Patient Portal. Return a `LaunchModalEffect` with the `DEFAULT_MODAL` target to open a modal over the page the patient lands on. See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login).  
@@ -53585,6 +54026,32 @@ In the plugin, this is implemented as:
     class PayTheoryPaymentProcessor(CardPaymentProcessor):
         ...  # Your implementation here
     ```
+Register the class in the `handlers` section of your plugin's `CANVAS_MANIFEST.json`, like any other handler. The base class already declares the events it responds to, so you don't list them yourself.
+    ```json
+    {
+      "components": {
+        "handlers": [
+          {
+            "class": "my_plugin.handlers.payment_processor:PayTheoryPaymentProcessor",
+            "description": "Charges cards and manages saved payment methods through Pay Theory."
+          }
+        ]
+      }
+    }
+    ```
+###  How Canvas calls your processor 
+`PaymentProcessor` responds to the six [payment processor events](/sdk/events/#payment-processor-events) and calls a method on your subclass for each one:
+Event | Method Canvas calls | Returns  
+---|---|---  
+`REVENUE__PAYMENT_PROCESSOR__LIST` | `metadata()` (implemented for you) | [`PaymentProcessorMetadata`](/sdk/payment-processor-effect/#paymentprocessormetadata)  
+`REVENUE__PAYMENT_PROCESSOR__SELECTED` | `payment_form`, `add_card_form`, or both | [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform)  
+`REVENUE__PAYMENT_PROCESSOR__CHARGE` | `charge` | [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction)  
+`REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST` | `payment_methods` | A list of [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod)  
+`REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD` | `add_payment_method` | [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse)  
+`REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE` | `remove_payment_method` | [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse)  
+Every handler has an `identifier`, available as `self.identifier`, that Canvas derives from the handler's module path and class name. Every event after `REVENUE__PAYMENT_PROCESSOR__LIST` carries the `identifier` of the processor it targets, and your methods run only when it matches. Several payment processor plugins can be installed side by side without handling each other's events.
+> **Warning:** Keep your handler's module path and class name stable once the processor is in use. Canvas routes every payment event by `identifier`, and renaming or moving the class changes it. 
+The handler loads the [`Patient`](/sdk/data-patient/) from the event context and passes it to your methods. Some workflows have no patient context, so `payment_form`, `add_card_form`, `charge`, and `payment_methods` receive `patient=None` there. `add_payment_method` and `remove_payment_method` always receive a patient: when an event arrives without one, Canvas doesn't call them.
 * * *
 ##  Defining a `CardPaymentProcessor`
 When implementing a `CardPaymentProcessor`, you must define how Canvas should display forms for adding and charging cards, how to process those payments, and how to manage saved payment methods.
@@ -53598,6 +54065,7 @@ These methods define the HTML content that will be rendered inside Canvas to col
 These forms render wherever Canvas collects a card payment or manages saved payment methods, including:
   - the **provider UI** — the Revenue module and the patient profile payment/insurance area
   - the **Patient Portal** — when a patient makes a payment or manages their saved cards
+When a user selects your processor, the `REVENUE__PAYMENT_PROCESSOR__SELECTED` event carries an `intent` that says which form Canvas needs. An intent of `pay` calls `payment_form`, and `add_card` calls `add_card_form`. When the event has no intent, Canvas calls both and receives both forms.
 ####  Payment Form 
 Triggered when a user selects the credit card payment option. This method should return the HTML form used to collect and tokenize the payment details.
     ```python
@@ -53628,11 +54096,7 @@ Handles the actual payment. This method is triggered after tokenization and is r
     ```python
     from decimal import Decimal
     from typing import Any
-    from canvas_sdk.effects.payment_processor import (
-      CardTransaction,
-      PaymentProcessorForm
-    )
-    from canvas_sdk.templates import render_to_string
+    from canvas_sdk.effects.payment_processor import CardTransaction
     from canvas_sdk.v1.data import Patient
     def charge(
         self,
@@ -53645,7 +54109,8 @@ Handles the actual payment. This method is triggered after tokenization and is r
             "token": token,
             "amount": int(amount * 100),
             "currency": "usd",
-            "metadata": {"patient_id": patient.id},
+            # patient is None when the charge has no patient context
+            "metadata": {"patient_id": patient.id if patient else None},
         }
         result = self.api.charge(payload)
         return CardTransaction(
@@ -53699,6 +54164,8 @@ Returns the patient's saved cards as a list of [`PaymentMethod`](/sdk/payment-pr
     from canvas_sdk.effects.payment_processor import PaymentMethod
     from canvas_sdk.v1.data import Patient
     def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
+       if patient is None:
+           return []
        return [
                 PaymentMethod(
                     payment_method_id="pm_1",
@@ -53775,7 +54242,7 @@ You can optionally pass a second argument with additional context that will be f
     const result = await paymentProvider.tokenize(cardDetails);
     window.parent.setToken(result.token, result);
     ```
-The additional context will be available in the `charge` and `add_payment_method` method's `**kwargs`. See the Charge section for details on how different value types are handled.
+The additional context is available in the `**kwargs` of `charge` and `add_payment_method`. See Additional Context for how Canvas passes each type of value.
 ###  3\. Report validation status 
 Call this every time the validity of the form changes (e.g., input becomes valid or invalid). Canvas uses this to enable or disable the ability to submit the form programmatically.
     ```js
@@ -55609,6 +56076,10 @@ For a full walkthrough with examples, see the [Custom Landing Page guide](/guide
 ##  Customize Appointment Cards 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+  - With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
+  - A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
+  - Some appointments never offer either action, and Canvas doesn't fire the event for them. These are appointments that are canceled, marked as a no-show, or checked in, and appointments whose note is signed, locked, or deleted. A patient also can't cancel an appointment that has already started.
 MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
 ###  Hide 'Cancel' button 
 Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_BE_CANCELED` and return a `PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE` effect with `{"result": False}` to hide the Cancel button.
@@ -55690,6 +56161,10 @@ While a default homepage application is set, every visit to the portal home page
     ```
 ##  Shape Self-Scheduling 
 When patients self-schedule, you can filter or reorder what they're offered _before they see it_ — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a`_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
+Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
+  - Self-scheduling turned on for the patient. See `can_schedule_appointments` in Configuring the Patient Portal.
+  - A start time in the future.
+  - A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
 ###  Filter available slots 
 Respond to `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS`.
@@ -55851,19 +56326,38 @@ The event fires once per login, in the browser tab where the patient logged in. 
 A patient can download the after-visit summary of their own locked notes from the portal at `/app/note/<note id>/aftervisitsummary`, where `<note id>` is the [note's](/sdk/data-note/) `id`. The portal has no built-in link to it, so share the link from a plugin, such as a widget or a [portal page](/sdk/handlers-applications/), or in a message.
   - The PDF is the same after-visit summary a clinician prints from the note.
   - Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
-  - Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient.
-Each download also fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which summaries a patient has received. The event targets the patient, and its context carries the `document` (`"after_visit_summary"`) and the `note_id`. It is sent after the PDF is served, so a handler can't delay or block the download.
+  - Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can respond to.
+##  Link to Lab and Imaging Requisitions 
+A patient can download the requisition of their own lab and imaging orders from the portal. As with after-visit summaries, the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+Order | Portal URL | PDF the patient gets  
+---|---|---  
+Lab | `/app/laborder/<order id>/requisition` | The requisition a clinician prints from the order. For an order sent electronically through Health Gorilla, the patient gets Health Gorilla's requisition form, as staff do.  
+Imaging | `/app/imagingorder/<order id>/requisition` | The "Prepare for your imaging test" letter staff print for the patient.  
+`<order id>` is the `id` of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder).
+  - Only the patient the order belongs to can open it, and only once the order is committed and not entered in error. Any other order id returns a 404 error.
+  - By default, patients can download the requisition only while the order is open. A lab order is open until the chart shows all of its reports received. An imaging order is open until it has a result, not counting results deleted in Data Integration. To let patients download the requisitions of completed orders too, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to set `PATIENT_PORTAL_REQUISITION_ORDER_STATES` to **Open and completed orders**.
+  - Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can respond to.
+##  Track Document Downloads 
+Each after-visit summary or requisition download fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which documents a patient has received. The event targets the patient. It is sent after the PDF is served, so a handler can't delay or block the download.
+The event context names the `document` and the record it came from:
+`document` | Record key | Record  
+---|---|---  
+`"after_visit_summary"` | `note_id` | The `id` of the [Note](/sdk/data-note/)  
+`"lab_requisition"` | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)  
+`"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder)  
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
     from canvas_sdk.handlers import BaseHandler
     from logger import log
-    class TrackSummaryDownloads(BaseHandler):
+    class TrackDocumentDownloads(BaseHandler):
         RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
         def compute(self) -> list[Effect]:
-            if self.context.get("document") != "after_visit_summary":
-                return []
-            log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+            document = self.context.get("document")
+            if document == "after_visit_summary":
+                log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+            elif document in ("lab_requisition", "imaging_requisition"):
+                log.info(f"{document} downloaded for order {self.context['order_id']}")
             return []
     ```
 ##  Forms 
