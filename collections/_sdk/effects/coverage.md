@@ -90,7 +90,7 @@ For any other relationship, set `subscriber_id` to the `id` of a different patie
 
 Card images are PNG or JPEG files that a user uploads to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. Set `card_image_front_upload_key` and `card_image_back_upload_key` to the `key` of each uploaded `StoredFilePart`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
 
-When the effect is applied, Canvas checks that your plugin uploaded each file and that each file is a PNG or JPEG image. It copies the file to the coverage and then deletes the upload, so each key works only once. If any part of the effect fails, Canvas saves none of it, including the card images.
+Each key must come from a file your plugin uploaded, and each file must be a PNG or JPEG image. When the effect is applied, Canvas copies the file to the coverage and then deletes the upload, so each key works only once. If any part of the effect fails, Canvas saves none of it, including the card images.
 
 On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. A key of `None` attaches no image, so that side also keeps its current image. To remove an image, use `remove_photo()`.
 
@@ -116,14 +116,6 @@ The ordering must follow these rules:
 - Each coverage appears once and belongs to the patient.
 - Within each stack, ranks are unique and consecutive, starting at 1.
 - For each stack the ordering places a coverage in, the ordering lists every active coverage in that stack.
-
-## Who can write coverages
-
-Canvas applies the permissions of the user behind the effect:
-
-- A staff member needs the same permissions as in the chart: permission to change coverages, and access to the patient. This applies to every coverage change, including `expire()`, `remove()`, `remove_photo()`, and `CoverageReorder`.
-- A patient, for example on a patient portal page, can write only their own coverages.
-- An effect with no user behind it, such as one from a scheduled task, runs as Canvas Bot and needs no permission.
 
 ## Examples
 

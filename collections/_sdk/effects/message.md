@@ -48,7 +48,7 @@ Sends a message that was already created, if you separated creating it from send
 
 To attach files to a message, set `attachment_upload_keys` to a list of upload keys. Each key is the `key` of a `StoredFilePart` that a user uploaded to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
 
-Attachments can be PNG, JPEG, or PDF files. When the effect is applied, Canvas checks that each key is a file your plugin uploaded and that the file is one of these types. It adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
+Attachments can be PNG, JPEG, or PDF files, and each key must come from a file your plugin uploaded. When the effect is applied, Canvas adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
 
 This SimpleAPI route sends the files in a `multipart/form-data` request to a patient, from the logged-in staff member:
 

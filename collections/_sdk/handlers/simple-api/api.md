@@ -426,7 +426,7 @@ class UploadAPI(SimpleAPI):
         return [JSONResponse({"key": part.key})]
 ```
 
-Canvas checks each key when the effect is applied. A key must belong to a file the same plugin uploaded, and Canvas checks the file's content against the types the effect accepts. Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
+Pass each key to an effect from the plugin that uploaded the file, and upload a file of a type the effect accepts. When the effect is applied, Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
 
 The image keys on `Coverage` and `VisualExamFindingCommand` are optional, as is `image_upload_key` on a `PatientIdentificationCard` update. Setting one of these to `None` attaches no file and leaves any existing file in place. You can pass the key of a file input the user left empty without checking it first.
 
