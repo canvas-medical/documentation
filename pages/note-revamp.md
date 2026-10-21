@@ -14,7 +14,7 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 **Clinical sections:** The note body is grouped into History, Exam, Assessment & Plan and Internal sections, ordered to match the note's SOAP or APSO format. Each section has its own prompt for adding commands, and a **Sections / All** toggle in the note header switches between the sectioned view and the whole note.
 
-**Commands nested under their Assessment:** Plan and Procedure commands, along with Prescribe, Refill, Adjust Prescription, Change Medication, Lab Order, Imaging Order, Refer and Educational Material, appear nested under the Assess Condition command they are linked to.
+**Commands nested under their Assessment:** Plan and Procedure commands, along with Prescribe, Refill, Adjust Prescription, Change Medication, Lab Order, Imaging Order, Order DME, Refer and Educational Material, appear nested under the Assess Condition command they are linked to.
 - Drag a command onto an Assessment to link it, or drag it out to unlink it.
 - Linking a prescription or order adds the assessed condition to its Indications.
 - Changes show up live for everyone who has the note open.
