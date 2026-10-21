@@ -1860,10 +1860,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
   </tbody>
 </table>
 
+<a id="condition_updated"></a>
 <table>
   <thead>
     <tr><th colspan="2">CONDITION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is updated for a patient.</td></tr>
+    <tr><td colspan="2">Occurs when a condition is updated for a patient, including when committing an <a href="/sdk/commands/#assess">Assess</a> command moves it onto or off the problem list.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2958,6 +2959,37 @@ Surescripts response events fire when the platform receives a response from Sure
 "type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"patient":
    "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_id
+"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
+      <td><pre>"message": <a href='/sdk/data-message/#message'>Message</a>
+  "id": message_id
+  "sender": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
+  "recipient": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
+  "read": datetime str | null
+"team": <a href='/sdk/data-team/'>Team</a> | null
+  "id": team_id
+  "name": str
+"previous_team": <a href='/sdk/data-team/'>Team</a> | null
+  "id": team_id
+  "name": str
+"patient": <a href='/sdk/data-patient/'>Patient</a>
+  "id": pt_id
+"assigned_at": datetime str</pre></td>
     </tr>
   </tbody>
 </table>
@@ -5868,6 +5900,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5905,6 +5938,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5938,6 +5972,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5966,6 +6001,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5994,6 +6030,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6043,6 +6080,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6071,6 +6109,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6099,6 +6138,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6127,6 +6167,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6155,6 +6196,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6183,6 +6225,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6211,6 +6254,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6239,6 +6283,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6267,6 +6312,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6295,6 +6341,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6323,6 +6370,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
