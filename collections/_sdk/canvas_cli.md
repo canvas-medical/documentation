@@ -418,6 +418,8 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 
 Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
+{% include alert.html type="warning" content="Uninstalling a plugin deletes the <a href='/sdk/effect-banner-alerts/'>banner alerts</a> it added to patient charts and <a href='/sdk/effect-claims/#add-banner'>claims</a>. Disabling a plugin hides them until it's enabled again." %}
+
 **Usage**:
 
 ```console
