@@ -48,57 +48,6 @@ Sends a message that was already created, if you separated creating it from send
 - `team_id` must not be set. Use [`AssignMessageTeam`](#assigning-a-message-to-a-team) to change the team.
 - When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
 
-## Assigning a message to a team
-
-A message always has one staff or patient `recipient`. It can also be assigned to a [team](/sdk/data-team/), so a group such as a front desk or a care team can work messages together. Assigning a team does not change the `recipient`. In the Messages panel, the assignee filter defaults to **Me or my teams**, so staff see messages addressed to them and messages assigned to any of their teams, and the unread badge counts both. A message has a single read timestamp, so when one team member reads a team message, it is read for the whole team.
-
-There are two ways to assign a team:
-
-- Set `team_id` when you create the message with `create()` or `create_and_send()`.
-- Return an `AssignMessageTeam` effect to set, change, or clear the team of an existing message.
-
-### AssignMessageTeam
-
-Build an `AssignMessageTeam` and return its `apply()` from your handler. To unassign a message, set `team_id` to `None`.
-
-| Attribute    | Type                      | Description                                                         | Required |
-|--------------|---------------------------|---------------------------------------------------------------------|----------|
-| `message_id` | `str` or `UUID`           | ID of the message to assign.                                        | Yes      |
-| `team_id`    | `str` or `UUID` or `None` | ID of the team to assign the message to, or `None` to unassign it. | Yes      |
-
-The effect fails validation, and the message keeps its current team, when either id is not a valid UUID or does not match an existing message or team.
-
-Each assignment, reassignment, and unassignment emits the [`MESSAGE_TEAM_ASSIGNED`](/sdk/events/#messaging) event. Creating a message with a team emits it too.
-
-This handler assigns each message a patient sends to the team named "Front Desk":
-
-```python
-from canvas_sdk.effects import Effect
-from canvas_sdk.effects.note.message import AssignMessageTeam
-from canvas_sdk.events import EventType
-from canvas_sdk.handlers.base import BaseHandler
-from canvas_sdk.v1.data import Message, Team
-
-
-class RoutePatientMessages(BaseHandler):
-    """Assign messages that patients send to the Front Desk team."""
-
-    RESPONDS_TO = EventType.Name(EventType.MESSAGE_CREATED)
-
-    def compute(self) -> list[Effect]:
-        message = Message.objects.select_related("sender").filter(id=self.target).first()
-
-        # Only route messages a patient sent, not messages staff sent to a patient.
-        if message is None or message.sender is None or message.sender.is_staff:
-            return []
-
-        team = Team.objects.filter(name="Front Desk").first()
-        if team is None:
-            return []
-
-        return [AssignMessageTeam(message_id=message.id, team_id=team.id).apply()]
-```
-
 ## Sending to a patient
 
 When `create_and_send()` or `send()` sends a message to a patient, Canvas notifies the patient the same way it does for a message sent from the chart: a text message or email to each of the patient's phone numbers and email addresses that is eligible. A contact point is eligible when all three of these are true:
@@ -210,6 +159,68 @@ effect_edit = m3.edit()
 ```python?partial=True
 m4 = Message(message_id=m.id)
 effect_send = m4.send()
+```
+
+## Assigning a message to a team
+
+A message always has one staff or patient `recipient`. It can also be assigned to a [team](/sdk/data-team/), so a group such as a front desk or a care team can work messages together. Assigning a team does not change the `recipient`. In the global Messages panel, the assignee filter defaults to **Me or my teams**, so staff see messages addressed to them and messages assigned to any of their teams, and the unread badge counts both. A message has a single read timestamp, so when one team member reads a team message, it is read for the whole team.
+
+There are two ways to assign a team:
+
+- Set `team_id` when you create the message with `create()` or `create_and_send()`.
+- Return an `AssignMessageTeam` effect to set, change, or clear the team of an existing message.
+
+### AssignMessageTeam
+
+Build an `AssignMessageTeam` and return its `apply()` from your handler.
+
+#### Methods
+
+##### apply() → Effect
+
+Sets, changes, or clears the team of an existing message.
+
+- `message_id` is required, and must be the id of an existing message.
+- `team_id` is required. Set it to `None` to unassign the message.
+- The effect fails validation, and the message keeps its current team, when either id is not a valid UUID or does not match an existing message or team.
+- Each assignment, reassignment, and unassignment emits the [`MESSAGE_TEAM_ASSIGNED`](/sdk/events/#messaging) event. Creating a message with a team emits it too.
+
+#### Attributes
+
+| Attribute    | Type                      | Description                                                         | Required |
+|--------------|---------------------------|---------------------------------------------------------------------|----------|
+| `message_id` | `str` or `UUID`           | ID of the [message](/sdk/data-message/#message) to assign.          | Yes      |
+| `team_id`    | `str` or `UUID` or `None` | ID of the [team](/sdk/data-team/) to assign the message to, or `None` to unassign it. | Yes      |
+
+#### Example
+
+This handler assigns each message a patient sends to the team named "Front Desk":
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.note.message import AssignMessageTeam
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import Message, Team
+
+
+class RoutePatientMessages(BaseHandler):
+    """Assign messages that patients send to the Front Desk team."""
+
+    RESPONDS_TO = EventType.Name(EventType.MESSAGE_CREATED)
+
+    def compute(self) -> list[Effect]:
+        message = Message.objects.select_related("sender").filter(id=self.target).first()
+
+        # Only route messages a patient sent, not messages staff sent to a patient.
+        if message is None or message.sender is None or message.sender.is_staff:
+            return []
+
+        team = Team.objects.filter(name="Front Desk").first()
+        if team is None:
+            return []
+
+        return [AssignMessageTeam(message_id=message.id, team_id=team.id).apply()]
 ```
 
 <br/>
