@@ -535,6 +535,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Moving to Canvas Platform"
+    url: /guides/moving-to-canvas-platform/
+    description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
+    uses:
+      - sdk
+
   - title: "Choosing Your Patient Experience"
     url: /guides/choosing-your-patient-experience/
     description: Decide whether to use, extend, or replace the built-in patient portal
@@ -958,6 +964,9 @@ effects_module:
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
+  - title: "Fax"
+    url: /sdk/effect-fax/
+    description: Fax a note, referral, imaging order, lab order or letter.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
@@ -973,6 +982,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Custom Content"
+    url: /sdk/effect-note-custom-content/
+    description: Render custom HTML blocks inside a clinical note.
   - title: "Note Footer Configuration"
     url: /sdk/effect-note-footer-configuration/
     description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
@@ -997,6 +1009,9 @@ effects_module:
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-effect/
     description: Serve content for a custom section in the patient chart summary.
+  - title: "Patient Consent"
+    url: /sdk/effect-record-patient-consent/
+    description: Record a patient's decision on a consent and file the signed document.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
@@ -1118,6 +1133,9 @@ data_module:
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
+  - title: "CommandTypeSetting"
+    url: /sdk/data-command-type-setting/
+    description: Whether each command type is turned on for the instance.
   - title: "CommonEnumerationTypes"
     url: /sdk/data-enumeration-types/
     description: Common choice classes used in multiple models.
@@ -1151,6 +1169,9 @@ data_module:
   - title: "DiagnosticView"
     url: /sdk/data-diagnostic-view/
     description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
+  - title: "DME"
+    url: /sdk/data-dme/
+    description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
@@ -1190,6 +1211,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Google Calendar"
+    url: /sdk/data-google-calendar/
+    description: Provider busy time and connection status from native Google Calendar sync.
   - title: "Group"
     url: /sdk/data-group/
     description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.

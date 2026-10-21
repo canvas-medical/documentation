@@ -112,6 +112,7 @@ The following table shows the different command `schema_key` values with links t
 | labOrder            | [LabOrder](/sdk/commands/#laborder)                              |
 | medicalHistory      | [MedicalHistory](/sdk/commands/#medicalhistory)                  |
 | medicationStatement | [MedicationStatement](/sdk/commands/#medicationstatement)        |
+| orderDme            | [OrderDme](/sdk/commands/#orderdme)                              |
 | perform             | [Perform](/sdk/commands/#perform)                                |
 | plan                | [Plan](/sdk/commands/#plan)                                      |
 | pocLabTest          | [POCLabTest](/sdk/commands/#poclabtest)                          |
@@ -182,6 +183,7 @@ anchor = command.anchor_object
 | `labReview` | [LabReview](/sdk/data-labs/#labreview) |
 | `medicalHistory` | [Condition](/sdk/data-condition/#condition) |
 | `medicationStatement` | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement) |
+| `orderDme` | [DmeOrder](/sdk/data-dme/#dmeorder) |
 | `perform` | [Procedure](/sdk/data-procedure/#procedure) |
 | `plan` | [Plan](/sdk/data-plan/#plan) |
 | `pocLabTest` | [LabReport](/sdk/data-labs/#labreport) |

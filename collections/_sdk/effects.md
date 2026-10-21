@@ -257,6 +257,20 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
+| NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/). |
+
+
+### Faxes
+
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
+
+| Effect | Description |
+|---|---|
+| FAX_NOTE | Fax a note to an external recipient. |
+| FAX_REFERRAL | Fax a referral and its attachments. |
+| FAX_IMAGING_ORDER | Fax an imaging order. |
+| FAX_LAB_ORDER | Fax a lab order's requisition form. |
+| FAX_LETTER | Fax a letter and its attachments. |
 
 
 ### Appointments
@@ -321,7 +335,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -335,6 +349,7 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
 
 
 ### Patient Groups
@@ -368,6 +383,7 @@ Check out the [Message Effects](/sdk/effect-messages/) documentation.
 | SEND_MESSAGE | Send a message. |
 | CREATE_AND_SEND_MESSAGE | Create and send a message in one step. |
 | EDIT_MESSAGE | Edit a message. |
+| [ASSIGN_MESSAGE_TEAM](/sdk/effect-messages/#assigning-a-message-to-a-team) | Assign a message to a team, change its team, or unassign it. |
 
 
 ### Observations
@@ -558,7 +574,7 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
 | DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
-| SIGN | Sign the order (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, order DME, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
@@ -587,6 +603,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
 | Medical History | `*_MEDICAL_HISTORY_COMMAND` | |
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
+| Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
 | POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
