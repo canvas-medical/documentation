@@ -305,8 +305,8 @@ schema. It also saves you transcribing keys that are not guessable from the clas
 
 **Allow actions per command, not from one shared set.** [Not every command accepts every
 action](/sdk/effects/#commands): Prescribe and Refill are finished by sending rather than committing,
-Lab Order takes `send`, Imaging Order and Refer take `delegate` and `sign`, and Reason for Visit takes
-none of them. This matters more than it looks — see the warning below.
+Lab Order takes `send`, Imaging Order and Refer take `delegate` and `sign`, Order DME takes `sign`, and
+Reason for Visit takes none of them. This matters more than it looks — see the warning below.
 
 ```python
 from http import HTTPStatus
