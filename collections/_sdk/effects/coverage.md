@@ -94,20 +94,22 @@ Each key must come from a file your plugin uploaded, and each file must be a PNG
 
 On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. A key of `None` attaches no image, so that side also keeps its current image. To remove an image, use `remove_photo()`.
 
+For working code, see [Capture an insurance card from a form](#capture-an-insurance-card-from-a-form), which creates a coverage from uploaded card photos, and [Expire, remove, or remove a card image](#expire-remove-or-remove-a-card-image), which removes one side of the card.
+
 ## Reordering coverages
 
 `CoverageReorder` sets the rank and stack of several of a patient's coverages in one effect. Build it with the patient's `id` and an `ordering` list of `CoverageReorderEntry` objects, then return `apply()`.
 
 | Attribute    | Type                             | Description |
 |--------------|----------------------------------|-------------|
-| `patient_id` | `str`                            | The `id` of the patient. |
+| `patient_id` | `str`                            | The `id` of the [Patient](/sdk/data-patient/#patient). |
 | `ordering`   | `list[CoverageReorderEntry]`     | The new position of each coverage. Must contain at least one entry. |
 
 Each `CoverageReorderEntry` has these attributes, all required:
 
 | Attribute       | Type            | Description |
 |-----------------|-----------------|-------------|
-| `coverage_id`   | `UUID` or `str` | The `id` of one of the patient's coverages. |
+| `coverage_id`   | `UUID` or `str` | The `id` of one of the patient's [coverages](/sdk/data-coverage/#coverage). |
 | `coverage_rank` | [`CoverageRank`](/sdk/data-coverage/#coveragerank) | The coverage's new rank. |
 | `stack`         | [`CoverageStack`](/sdk/data-coverage/#coveragestack) | The coverage's new stack: `IN_USE` or `OTHER`. |
 
@@ -116,6 +118,8 @@ The ordering must follow these rules:
 - Each coverage appears once and belongs to the patient.
 - Within each stack, ranks are unique and consecutive, starting at 1.
 - For each stack the ordering places a coverage in, the ordering lists every active coverage in that stack.
+
+For working code, see [Swap primary and secondary coverages](#swap-primary-and-secondary-coverages).
 
 ## Examples
 
