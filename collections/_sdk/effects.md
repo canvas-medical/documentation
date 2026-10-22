@@ -335,7 +335,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), [Patient Identification Card](/sdk/effect-patient-identification-card/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -350,6 +350,22 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
 | RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
+| CREATE_PATIENT_IDENTIFICATION_CARD | Add an identification card image for a patient. |
+| UPDATE_PATIENT_IDENTIFICATION_CARD | Change a patient's identification card. |
+| DELETE_PATIENT_IDENTIFICATION_CARD | Delete a patient's identification card. |
+
+### Coverage
+
+Check out the [Coverage Effect](/sdk/effect-coverage/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_COVERAGE | Create an insurance coverage for a patient, with optional card images. |
+| UPDATE_COVERAGE | Change an existing coverage. |
+| EXPIRE_COVERAGE | End a coverage on a given date. |
+| REMOVE_COVERAGE | Move a coverage to the removed stack. |
+| REMOVE_COVERAGE_PHOTO | Remove the front or back card image from a coverage. |
+| REORDER_COVERAGE | Change the rank and stack of a patient's coverages. |
 
 
 ### Patient Groups
@@ -625,6 +641,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Uncategorized Document Review | `*_UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND` | |
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
+| Visual Exam Finding | `*_VISUAL_EXAM_FINDING_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
 
 
