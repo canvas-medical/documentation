@@ -3067,6 +3067,74 @@ effect = finding.originate()
 
 In a SimpleAPI handler, set `image_upload_key` to the `key` of the uploaded `StoredFilePart` rather than a literal string.
 
+**Example with an uploaded photo**:
+
+This SimpleAPI route adds a Visual Exam Finding to a note from a `multipart/form-data` request that carries the note's id, a title, a narrative, and the photo. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
+
+```python
+from http import HTTPStatus
+
+from canvas_sdk.commands import VisualExamFindingCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
+
+
+class VisualExamFindingAPI(APIKeyAuthMixin, SimpleAPI):
+    @api.post("/visual-exam-finding", file_uploads="stored")
+    def visual_exam_finding(self) -> list[Response | Effect]:
+        form = self.request.form_data()
+        image = form["image"]
+        if image.error:
+            return [JSONResponse({"error": "upload failed"}, status_code=HTTPStatus.BAD_GATEWAY)]
+
+        finding = VisualExamFindingCommand(
+            note_uuid=form["note_id"].value,
+            title=form["title"].value,
+            narrative=form["narrative"].value,
+            image_upload_key=image.key,
+        )
+        return [finding.originate(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
+```
+
+Call the route with a `multipart/form-data` POST, sending the photo as a file and the API key in the `Authorization` header:
+
+```shell
+curl --request POST \
+     --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding' \
+     --header 'Authorization: <api-key>' \
+     --form 'note_id=8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47' \
+     --form 'title=Rash' \
+     --form 'narrative=Erythematous rash on the left forearm' \
+     --form 'image=@rash.jpg;type=image/jpeg'
+```
+
+The same request from a Python script, uploading a photo saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+
+```python
+from pathlib import Path
+
+import requests
+
+url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding"
+image_path = Path("rash.jpg")
+
+with image_path.open("rb") as image:
+    response = requests.post(
+        url,
+        headers={"Authorization": "<api-key>"},
+        data={
+            "note_id": "8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+            "title": "Rash",
+            "narrative": "Erythematous rash on the left forearm",
+        },
+        files={"image": (image_path.name, image, "image/jpeg")},
+        timeout=30,
+    )
+
+print(response.status_code)
+```
+
 ---
 
 ### Vitals
