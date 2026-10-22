@@ -389,7 +389,9 @@ To save an uploaded file on a Canvas record, declare the route with `file_upload
 
 The file never passes through your plugin or the effect payload.
 
-`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods.
+`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods. Setting `FILE_UPLOADS` on a `SimpleAPIRoute` that has no `post` or `put` method raises a `PluginError` when the class is defined. The default is `"passthrough"`, which passes file bytes to your handler.
+
+A route declared with `file_uploads="stored"` takes `multipart/form-data` requests only. Canvas answers a request with any other content type with **400 Bad Request** without calling your handler.
 
 A `StoredFilePart` has these attributes:
 
@@ -402,7 +404,7 @@ A `StoredFilePart` has these attributes:
 | `key`            | `str` or `None` | The key of the stored file. `None` when the upload failed.                  |
 | `error`          | `str` or `None` | A code such as `"s3_upload_failed"` when the upload failed; otherwise `None`. |
 
-Failed uploads come back alongside successful ones, so check `error` before you read `key`:
+Canvas stores each file separately, so one failed file doesn't stop the others in the request. When every file in the request fails, Canvas answers with **502 Bad Gateway** without calling your handler. Otherwise, failed uploads come back alongside successful ones, so check `error` before you read `key`:
 
 ```python
 from http import HTTPStatus
