@@ -235,6 +235,18 @@ Real-world examples (MSF):
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
 
+### Collect insurance cards and photo IDs
+
+Let patients send what your front desk usually chases down at check-in: photos of their insurance card, a driver's license or other photo ID, or a document their care team asked for. Add an upload step to one of your own portal pages, such as an intake wizard or a pre-visit checklist, and the files land on the patient's record in Canvas without staff scanning or re-keying anything.
+
+Your page posts the patient's files to a [SimpleAPI](/sdk/handlers-simple-api-http/) route that [stores uploads](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas saves each file before your handler runs and hands your handler a key for it. Protect the route with the [patient session mixin](/sdk/handlers-simple-api-http/#patient-session) so it runs as the signed-in patient, then pass each key to the effect that fits:
+
+- **Insurance card:** the [Coverage](/sdk/effect-coverage/) effect adds or updates the patient's coverage with front and back card images. Collect the member ID and payer on the same page, since a new coverage needs both.
+- **Photo ID:** the [Patient Identification Card](/sdk/effect-patient-identification-card/) effect adds the image to the patient's identification cards.
+- **Anything else:** the [Message](/sdk/effect-messages/#attaching-files) effect attaches PNG, JPEG, or PDF files to a message to the care team.
+
+See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files) for the full list of effects that accept an upload, and the example route on the [Coverage](/sdk/effect-coverage/) effect page that creates a coverage from uploaded card photos.
+
 ### Send patients to another page
 
 Your pages can move the patient along when they finish a step: after they submit an intake form, take them to their messages; from a "schedule your follow-up" card on the landing page, open your scheduling page; when a step happens on a partner's site, send them there.
