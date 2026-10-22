@@ -94,7 +94,7 @@ Each key must come from a file your plugin uploaded, and each file must be a PNG
 
 On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. A key of `None` attaches no image, so that side also keeps its current image. To remove an image, use `remove_photo()`.
 
-For working code, see [Capture an insurance card from a form](#capture-an-insurance-card-from-a-form), which creates a coverage from uploaded card photos, and [Expire, remove, or remove a card image](#expire-remove-or-remove-a-card-image), which removes one side of the card.
+For working code, see [Capture an insurance card from a form](#capture-an-insurance-card-from-a-form), which creates a coverage from uploaded card photos, and [Expire or remove a coverage, or remove a card image](#expire-or-remove-a-coverage-or-remove-a-card-image), which removes one side of the card.
 
 ## Reordering coverages
 
@@ -181,7 +181,7 @@ coverage = CoverageModel.objects.get(id="b3b5e4f6-1c2d-4e8a-9f0b-7a6c5d4e3f21")
 effect = Coverage(coverage_id=coverage.id, group="GRP-2027", comments=None).update()
 ```
 
-### Expire, remove, or remove a card image
+### Expire or remove a coverage, or remove a card image
 
 ```python
 from datetime import date
