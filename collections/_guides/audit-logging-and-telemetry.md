@@ -191,9 +191,7 @@ Canvas Studio sets up integrations on your instance, such as Health Gorilla lab 
 DrFirst e-prescribing, and Documo faxing, by changing the instance's settings. Each save that
 changes a setting produces an API Activity update with `event_name` `settings_change`. `actor`
 is the account Canvas Studio signs in with, and `enrichments.payload.changed_keys` lists the
-names of the settings that changed. Setting values, including credentials, are never included.
-A save that changes nothing produces no event. With pseudonymized identifiers, `changed_keys`
-is left out along with the rest of the payload.
+names of the settings that changed. A save that changes nothing produces no event.
 
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
