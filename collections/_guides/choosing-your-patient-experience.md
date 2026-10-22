@@ -239,7 +239,7 @@ Real-world examples (MSF):
 
 Let patients send what your front desk usually chases down at check-in: photos of their insurance card, a driver's license or other photo ID, or a document their care team asked for. Add an upload step to one of your own portal pages, such as an intake wizard or a pre-visit checklist, and the files land on the patient's record in Canvas without staff scanning or re-keying anything.
 
-Your page posts the patient's files to a [SimpleAPI](/sdk/handlers-simple-api-http/) route that [stores uploads](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas saves each file before your handler runs and hands your handler a key for it. Protect the route with the [patient session mixin](/sdk/handlers-simple-api-http/#patient-session) so it runs as the signed-in patient, then pass each key to the effect that fits:
+Your page posts the patient's files to a [SimpleAPI](/sdk/handlers-simple-api-http/) route that [stores uploads](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas saves each file before your handler runs and hands your handler a key for it. Protect the route with the [patient session mixin](/sdk/handlers-simple-api-http/#patient-session) so only signed-in patients can call it, then pass each key to the effect that fits:
 
 - **Insurance card:** the [Coverage](/sdk/effect-coverage/) effect adds or updates the patient's coverage with front and back card images. Collect the member ID and payer on the same page, since a new coverage needs both.
 - **Photo ID:** the [Patient Identification Card](/sdk/effect-patient-identification-card/) effect adds the image to the patient's identification cards.
