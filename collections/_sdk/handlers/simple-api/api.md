@@ -411,13 +411,10 @@ from http import HTTPStatus
 
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 
 
-class UploadAPI(SimpleAPI):
-    def authenticate(self, credentials: SessionCredentials) -> bool:
-        return credentials.logged_in_user["type"] == "Staff"
-
+class UploadAPI(StaffSessionAuthMixin, SimpleAPI):
     @api.post("/upload", file_uploads="stored")
     def upload(self) -> list[Response | Effect]:
         part = self.request.form_data()["file"]
