@@ -40,9 +40,9 @@ Set `COPAY_AMOUNTS` to a JSON object that maps note type codes to dollar amounts
 
 ## Appointment statuses
 
-Each appointment on the page shows one of these statuses. The patient can pay only an appointment whose copay is due.
+The plugin gives each appointment one of these statuses, and the patient can pay only an appointment whose copay is due. A due appointment shows the copay amount with a card picker and a pay button, or a prompt to add a card when the patient has none saved. Every other appointment shows its status label.
 
-| Status | Shown when |
+| Status | When it applies |
 | --- | --- |
 | Due | The note type is billable, the claim exists, no copay has been posted to it yet, and the plugin has a copay amount |
 | Copay paid | The claim already has a copay payment |
