@@ -125,7 +125,7 @@ For working code, see [Swap primary and secondary coverages](#swap-primary-and-s
 
 ### Capture an insurance card from a form
 
-This SimpleAPI route creates a primary coverage from a `multipart/form-data` request. The request carries the patient's id, the payer's id, the member ID, and photos of both sides of the card:
+This SimpleAPI route creates a primary coverage from a `multipart/form-data` request. The request carries the patient's id, the payer's id, the member ID, and photos of both sides of the card. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
 
 ```python
 from http import HTTPStatus
@@ -133,14 +133,11 @@ from http import HTTPStatus
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.coverage import Coverage
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
 from canvas_sdk.v1.data.coverage import CoverageRank, CoverageRelationshipCode
 
 
-class InsuranceCardAPI(SimpleAPI):
-    def authenticate(self, credentials: SessionCredentials) -> bool:
-        return credentials.logged_in_user["type"] == "Staff"
-
+class InsuranceCardAPI(APIKeyAuthMixin, SimpleAPI):
     @api.post("/insurance-card", file_uploads="stored")
     def insurance_card(self) -> list[Response | Effect]:
         form = self.request.form_data()
@@ -160,6 +157,58 @@ class InsuranceCardAPI(SimpleAPI):
         )
         return [coverage.create(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
 ```
+
+Call the route with a `multipart/form-data` POST. Each form field name matches a key the handler reads, the two card photos are sent as files, and the API key goes in the `Authorization` header:
+
+```shell
+curl --request POST \
+     --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/insurance-card' \
+     --header 'Authorization: <api-key>' \
+     --form 'patient_id=b80b1cdc2e6a4aca90ccebc02e683f35' \
+     --form 'payer_id=0f3b6c1e-9a2d-4e7b-8c5f-1d2e3a4b5c6d' \
+     --form 'member_id=W123456789' \
+     --form 'card_front=@card-front.jpg;type=image/jpeg' \
+     --form 'card_back=@card-back.jpg;type=image/jpeg'
+```
+
+The same request from a Python script, uploading two card photos saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+
+```python
+from pathlib import Path
+
+import requests
+
+url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/insurance-card"
+front_path = Path("card-front.jpg")
+back_path = Path("card-back.jpg")
+
+with front_path.open("rb") as front, back_path.open("rb") as back:
+    response = requests.post(
+        url,
+        headers={"Authorization": "<api-key>"},
+        data={
+            "patient_id": "b80b1cdc2e6a4aca90ccebc02e683f35",
+            "payer_id": "0f3b6c1e-9a2d-4e7b-8c5f-1d2e3a4b5c6d",
+            "member_id": "W123456789",
+        },
+        files={
+            "card_front": (front_path.name, front, "image/jpeg"),
+            "card_back": (back_path.name, back, "image/jpeg"),
+        },
+        timeout=30,
+    )
+
+print(response.status_code)
+```
+
+Passing `files` makes `requests` send the request as `multipart/form-data`, with each `data` entry as a plain form field. Each file is a `(filename, file, content_type)` tuple; open it in binary mode.
+
+`curl --form` sends the request as `multipart/form-data` too. A browser form does the same with `enctype="multipart/form-data"`, or a `FormData` object passed to `fetch`. The route answers:
+
+- `202 Accepted` when both photos were stored and the coverage effect was returned.
+- `502 Bad Gateway` when a photo failed to store. Canvas returns this before calling the handler when every file fails; the handler returns it when only one does.
+- `400 Bad Request` when the request isn't `multipart/form-data`.
+- `401 Unauthorized` when the API key is missing or wrong.
 
 To find a payer's `id`, query the [Transactor](/sdk/data-coverage/#transactor) model:
 
