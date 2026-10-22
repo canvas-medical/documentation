@@ -35,7 +35,7 @@ Deletes an existing identification card. `card_id` is required.
 | Attribute          | Type             | Description | Required |
 |--------------------|------------------|-------------|----------|
 | `card_id`          | `int`            | The `dbid` of an existing identification card. Cards have no UUID, so they are identified by `dbid`. Must be unset when creating a card. | For `update()` and `delete()` |
-| `patient_id`       | `str`            | The `id` of the patient the card belongs to. | For `create()` |
+| `patient_id`       | `str`            | The `id` of the [Patient](/sdk/data-patient/#patient) the card belongs to. | For `create()` |
 | `image_upload_key` | `str`            | The upload key of the card image. See [Card image](#card-image). | For `create()` |
 | `title`            | `str` or `None`  | A label for the card, such as `"Driver license"`. Up to 255 characters. | No |
 | `active`           | `bool`           | Whether the card is active. | No |

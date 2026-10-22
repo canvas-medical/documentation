@@ -56,14 +56,14 @@ Removes the front or back card image from an existing coverage. `coverage_id` is
 | Attribute                            | Type                                                                        | Description | Required |
 |--------------------------------------|-----------------------------------------------------------------------------|-------------|----------|
 | `coverage_id`                        | `UUID` or `str`                                                             | The `id` of an existing [Coverage](/sdk/data-coverage/#coverage). Must be unset when creating a coverage. | For every method except `create()` |
-| `patient_id`                         | `str`                                                                       | The `id` of the patient the coverage belongs to. | For `create()` |
+| `patient_id`                         | `str`                                                                       | The `id` of the [Patient](/sdk/data-patient/#patient) the coverage belongs to. | For `create()` |
 | `issuer_id`                          | `UUID` or `str`                                                             | The `id` of the payer, a [Transactor](/sdk/data-coverage/#transactor). The coverage's plan type comes from the payer. | For `create()` |
 | `issuer_address_id`                  | `UUID` or `str` or `None`                                                   | The `id` of a [TransactorAddress](/sdk/data-coverage/#transactoraddress) that belongs to the payer. | No |
 | `issuer_phone_id`                    | `UUID` or `str` or `None`                                                   | The `id` of a [TransactorPhone](/sdk/data-coverage/#transactorphone) that belongs to the payer. | No |
 | `patient_relationship_to_subscriber` | [`CoverageRelationshipCode`](/sdk/data-coverage/#coveragerelationshipcode) | The patient's relationship to the subscriber. See [Subscribers](#subscribers). | For `create()` |
-| `subscriber_id`                      | `str`                                                                       | The `id` of the patient who holds the policy. See [Subscribers](#subscribers). | When the patient is not the subscriber |
+| `subscriber_id`                      | `str`                                                                       | The `id` of the [Patient](/sdk/data-patient/#patient) who holds the policy. See [Subscribers](#subscribers). | When the patient is not the subscriber |
 | `subscriber_identifier`              | `str` or `None`                                                             | The subscriber's identifier on the policy. Up to 100 characters. | No |
-| `coverage_rank`                      | `CoverageRank`                                                              | The coverage's order within its stack: `PRIMARY` (1), `SECONDARY` (2), `TERTIARY` (3), `QUATERNARY` (4), or `QUINARY` (5). | For `create()` |
+| `coverage_rank`                      | [`CoverageRank`](/sdk/data-coverage/#coveragerank)                          | The coverage's order within its stack: `PRIMARY` (1), `SECONDARY` (2), `TERTIARY` (3), `QUATERNARY` (4), or `QUINARY` (5). | For `create()` |
 | `stack`                              | [`CoverageStack`](/sdk/data-coverage/#coveragestack)                        | `IN_USE` or `OTHER`. Defaults to `IN_USE` on create. | No |
 | `coverage_type`                      | [`TransactorCoverageType`](/sdk/data-coverage/#transactorcoveragetype) or `None` | The type of coverage. | No |
 | `id_number`                          | `str`                                                                       | The member ID on the insurance card. Up to 100 characters. | For `create()` |
@@ -108,8 +108,8 @@ Each `CoverageReorderEntry` has these attributes, all required:
 | Attribute       | Type            | Description |
 |-----------------|-----------------|-------------|
 | `coverage_id`   | `UUID` or `str` | The `id` of one of the patient's coverages. |
-| `coverage_rank` | `CoverageRank`  | The coverage's new rank. |
-| `stack`         | `CoverageStack` | The coverage's new stack: `IN_USE` or `OTHER`. |
+| `coverage_rank` | [`CoverageRank`](/sdk/data-coverage/#coveragerank) | The coverage's new rank. |
+| `stack`         | [`CoverageStack`](/sdk/data-coverage/#coveragestack) | The coverage's new stack: `IN_USE` or `OTHER`. |
 
 The ordering must follow these rules:
 

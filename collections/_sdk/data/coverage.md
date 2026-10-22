@@ -131,7 +131,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | employer                           | String                                                |
 | coverage_start_date                | Date                                                  |
 | coverage_end_date                  | Date                                                  |
-| coverage_rank                      | Integer                                               |
+| coverage_rank                      | [CoverageRank](#coveragerank)                         |
 | state                              | [CoverageState](#coveragestate)                       |
 | plan_type                          | [CoverageType](#coveragetype)                         |
 | coverage_type                      | [TransactorCoverageType](#transactorcoveragetype)     |
@@ -241,6 +241,16 @@ The `filter` method can be used to filter by desired attributes. The following e
 | coinsurance | Integer                                  |
 
 ## Enumeration types
+
+### CoverageRank
+
+| Value | Name       | Label      |
+| ----- | ---------- | ---------- |
+| 1     | PRIMARY    | Primary    |
+| 2     | SECONDARY  | Secondary  |
+| 3     | TERTIARY   | Tertiary   |
+| 4     | QUATERNARY | Quaternary |
+| 5     | QUINARY    | Quinary    |
 
 ### CoverageStack
 
