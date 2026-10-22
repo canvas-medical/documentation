@@ -62,13 +62,10 @@ This SimpleAPI route sends the files in a `multipart/form-data` request to a pat
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.note.message import Message
 from canvas_sdk.effects.simple_api import JSONResponse, Response
-from canvas_sdk.handlers.simple_api import SessionCredentials, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 
 
-class SendFilesAPI(SimpleAPI):
-    def authenticate(self, credentials: SessionCredentials) -> bool:
-        return credentials.logged_in_user["type"] == "Staff"
-
+class SendFilesAPI(StaffSessionAuthMixin, SimpleAPI):
     @api.post("/send-files", file_uploads="stored")
     def send_files(self) -> list[Response | Effect]:
         form = self.request.form_data()

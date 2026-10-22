@@ -111,6 +111,11 @@ Changes to access controls, permissions, scopes, or input validation stay out of
 - When a request needs something specific, describe what to send.
 - If you're unsure whether a change falls under this section, leave it out.
 
+### SimpleAPI examples
+
+- Authenticate example SimpleAPI handlers with a mixin (`APIKeyAuthMixin`, `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `BasicAuthMixin`), never a hand-written `authenticate` that checks `credentials.logged_in_user["type"]`.
+  - An example that needs an extra rule subclasses the mixin and calls `super().authenticate(credentials)` before its own check. The `SessionCredentials` reference section on the SimpleAPI page is the one place a raw `authenticate` belongs.
+
 ### Navigation
 
 Sidebar menus are defined in `_data/menus.yml`. Add entries there when creating new pages.

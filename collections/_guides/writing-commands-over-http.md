@@ -270,20 +270,21 @@ to Canvas later is refused until you have decided what it should mean for your e
 ### Narrowing who reaches the endpoint at all
 
 When the rule is about the person rather than the note, put it in `authenticate` — the request never
-reaches your handler:
+reaches your handler. Start from the [staff session mixin](/sdk/handlers-simple-api-http/#staff-session),
+which turns away anyone who isn't signed-in staff, and add your rule after it:
 
 ```python?partial=true
-from canvas_sdk.handlers.simple_api import SessionCredentials
+from canvas_sdk.handlers.simple_api import SessionCredentials, StaffSessionAuthMixin
 from canvas_sdk.v1.data.staff import Staff
 
 
-def authenticate(self, credentials: SessionCredentials) -> bool:
-    """Only active staff who are providers may write commands here."""
-    if credentials.logged_in_user["type"] != "Staff":
-        return False
-    return Staff.objects.filter(
-        id=credentials.logged_in_user["id"], active=True, primary_practice_location__isnull=False
-    ).exists()
+class PlanAPI(StaffSessionAuthMixin, CommandAPI):
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        """Only active staff who are providers may write commands here."""
+        super().authenticate(credentials)
+        return Staff.objects.filter(
+            id=credentials.logged_in_user["id"], active=True, primary_practice_location__isnull=False
+        ).exists()
 ```
 
 Which of the two you use is a real choice. `authenticate` is cheaper and applies to every route, but
