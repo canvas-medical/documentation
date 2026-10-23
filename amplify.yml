@@ -5,7 +5,7 @@ frontend:
       commands:
         - rvm install $(cat .ruby-version)
         - rvm use $(cat .ruby-version)
-        - gem install bundler -v 2.4.12
+        - gem install bundler -v $(tail -1 Gemfile.lock | tr -d ' ')
         - curl -LsSf https://astral.sh/uv/install.sh | sh
     build:
       commands:

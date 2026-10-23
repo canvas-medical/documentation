@@ -6,10 +6,10 @@ Developer documentation site for Canvas Medical's SDK, FHIR API, implementation 
 
 ## Tech Stack
 
-- **Site generator:** Jekyll 4.4 (Ruby 3.1)
+- **Site generator:** Jekyll 4.4 (Ruby 4.0, version in `.ruby-version`)
 - **Assets:** Webpack 5, SCSS, Babel
 - **Python tooling:** uv, Python 3.11+ (code block validation, context generation)
-- **Package managers:** Yarn 3.x (frontend), Bundler 2.x (Ruby), uv (Python)
+- **Package managers:** Yarn 3.x (frontend), Bundler 4.x (Ruby), uv (Python)
 - **Search:** Algolia
 - **Hosting:** AWS Amplify
 
@@ -153,10 +153,13 @@ Python code blocks in markdown are validated by `test-code-blocks.py`:
 - Unfenced or unlabeled code blocks are flagged as errors
 - Mark blocks as `python?partial=true` if they intentionally omit imports
 
-Run locally:
+Run locally the way CI does, against the newest `canvas` SDK (examples use symbols that only exist there), then discard the `uv.lock` change:
 ```sh
+XDG_CONFIG_HOME="$(mktemp -d)" uv lock --upgrade-package canvas
 uv run ./test-code-blocks.py
+git checkout -- uv.lock
 ```
+An empty `XDG_CONFIG_HOME` keeps a personal `uv.toml` `exclude-newer` window from holding `canvas` back, which shows up as dozens of import failures.
 
 ## CI/CD
 
@@ -181,6 +184,7 @@ The older `sdk-context.txt` / `fhir-context.txt` (used by the Canvas Plugin Assi
 ```sh
 yarn build          # Production build → _site/ (also emits llms.txt, llms-full.txt, .md mirrors)
 yarn build:llms     # Regenerate llms.txt/llms-full.txt/.md mirrors from an existing _site/
+yarn build:minify   # Minify _site/ HTML in place (minify-html, run last by yarn build)
 yarn build:pwa      # With service worker + manifest
 yarn serve:dist     # Serve built output locally
 yarn clean:project  # Remove _site and generated assets
