@@ -733,6 +733,83 @@ class InviteVerifiedPatient(BaseHandler):
 
 What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Signing in is a separate step that sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link and setting a password does not sign the patient in, so a registered patient who has not yet signed in shows both their username and the never-logged-in line.
 
+### Customize the Login Email
+
+Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
+
+Canvas fires the event each time it emails a patient a login link:
+
+- Staff send an invite or a password reset from the Portal section of the patient's profile.
+- A plugin returns a [`SendInviteEffect`](#send-invite).
+- A patient requests a login link by email from the portal login page.
+
+The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
+
+| Key                    | Value                                                                                                                                  |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `link_type`            | `"invite"` when the patient hasn't registered yet, or `"reset"` when they have                                                         |
+| `login_url`            | The login link to send the patient                                                                                                     |
+| `practice_location_id` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/) the email is sent from: the primary location of the patient's care team lead, or the first practice location when the patient has no care team lead |
+| `default_subject`      | The subject Canvas uses by default                                                                                                     |
+| `default_body`         | The HTML body Canvas uses by default                                                                                                   |
+
+Canvas sends the subject and body you return in place of the defaults. The sender and recipient stay the same, and text messages that carry the link keep the default wording.
+
+- Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+- Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
+- When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+- Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
+
+#### Methods
+
+##### apply() → Effect
+
+Sets the subject and body of the login email.
+
+- `subject` and `html_body` are required and can't be empty or only whitespace.
+- `subject` must fit on one line, with no line breaks. `html_body` can contain line breaks.
+- Any other attribute is an error, so a misspelled attribute name fails instead of being ignored.
+
+#### Attributes
+
+| Attribute   | Type  | Description                               | Required |
+|-------------|-------|-------------------------------------------|----------|
+| `subject`   | `str` | The subject line of the email.            | Yes      |
+| `html_body` | `str` | The body of the email, as HTML.           | Yes      |
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.login_email import LoginEmailContent
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils.html import sanitize_html
+from canvas_sdk.v1.data import Patient
+
+
+class PortalLoginEmail(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_LOGIN_EMAIL)
+
+    def compute(self) -> list[Effect]:
+        patient = Patient.objects.get(id=self.target)
+        # Canvas sends the body as written, so escape patient data before adding it
+        first_name = sanitize_html(patient.first_name)
+        login_url = self.context["login_url"]
+
+        if self.context["link_type"] == "invite":
+            subject = "Your patient portal is ready"
+            intro = f"Welcome, {first_name}. Set your password to start using the portal."
+        else:
+            subject = "Reset your patient portal password"
+            intro = f"Hi {first_name}, use this link to set a new password."
+
+        return [
+            LoginEmailContent(
+                subject=subject,
+                html_body=f'<p>{intro}</p><p><a href="{login_url}">Open the patient portal</a></p>',
+            ).apply()
+        ]
+```
+
 <br/>
 <br/>
 <br/>
