@@ -172,6 +172,8 @@ On the patient page, this includes the Protocols button. To keep Protocols on th
 
 When no plugin returns a configuration, Canvas shows every button, with Protocols first on the patient page. Canvas also shows every button if `sections` includes a value it doesn't recognize, such as a section added in a newer SDK release than your Canvas instance supports.
 
+The `PANEL_SECTIONS_CONFIGURATION` event fires for both pages, and Canvas applies the sections your handler returns to whichever page sent the event. `page` only sets which enum the SDK checks your sections against. To change one page, return the effect only for that page's event: `self.target` holds the patient on the patient page and is empty on the main page. A handler that returns a main-page list for every event also replaces the patient page's buttons, which hides Protocols and Commands there.
+
 ![Before and after](/assets/images/sdk/panel-configuration-before-after.png)(width:70%)
 
 ```python

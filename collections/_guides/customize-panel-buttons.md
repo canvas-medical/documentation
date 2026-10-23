@@ -11,7 +11,7 @@ It allows you to add, order, or hide specific buttons as needed.
 
 To achieve this, you’ll use the [PANEL_SECTIONS_CONFIGURATION](/sdk/events) event, which sends both the patient and the user attributes.
 
-If you need to identify where the event is coming from, you can check if the patient attributes are present — on the global (main) page, the patient will be empty.
+The event fires for both pages, and Canvas applies the sections you return to whichever page sent it. Check `self.target` to tell the pages apart: it holds the patient on the patient page and is empty on the global (main) page. Return a configuration only for the page you want to change. If a handler returns a global list for every event, the patient page shows only those buttons, which hides Protocols and Commands.
 
 
 ## Defining the Sections
@@ -22,7 +22,7 @@ You’ll use:
 - PanelPatientSection – for sections shown on the patient page
 - PanelGlobalSection – for sections shown on the main (global) page
 
-The SDK has built-in safeguards to prevent you from mixing them up or placing a section on the wrong page.
+The SDK checks that every section you list belongs to the `page` you set. That check doesn't choose where the buttons appear; the event does.
 
 Any button you leave out of `sections` is hidden. On the patient page, this includes the Protocols button, so add `PanelPatientSection.PROTOCOL` to your list if your users need it.
 
