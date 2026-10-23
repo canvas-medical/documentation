@@ -11,7 +11,7 @@ Developer documentation site for Canvas Medical's SDK, FHIR API, implementation 
 - **Python tooling:** uv, Python 3.11+ (code block validation, context generation)
 - **Package managers:** Yarn 3.x (frontend), Bundler 4.x (Ruby), uv (Python)
 - **Search:** Algolia
-- **Hosting:** AWS Amplify
+- **Hosting:** AWS Amplify, building in a custom image (`build-image/Dockerfile`)
 
 ## Quick Start
 
@@ -167,6 +167,8 @@ An empty `XDG_CONFIG_HOME` keeps a personal `uv.toml` `exclude-newer` window fro
 - **generate-context.yml** — builds AI context files (`sdk-context.txt`, `fhir-context.txt`) on push to main
 - **update-algolia.yml** — updates search index
 - **merge-release-branch.yml** — auto-merges release branches
+- **build-image.yml** — on a `.ruby-version` or `build-image/` change, pushes the Amplify build image (Ruby from `.ruby-version`, Node, uv) to ECR Public `docs-build:latest`
+  - Amplify builds use that image, and `amplify.yml` fails a build whose image Ruby doesn't match `.ruby-version`, so a Ruby bump's first Amplify build fails until the image push finishes; rerun it.
 
 ## AI / LLM access
 
