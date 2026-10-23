@@ -10,6 +10,8 @@ This API allows customers to create and update notes. The effect of creating a n
 ## Authentication
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
 
+Read and search requests need the `user/Note.read` scope. Create and update requests need `user/Note.write`.
+
 <!-- source: discussion #1294 -->
 The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
 

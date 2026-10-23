@@ -80,14 +80,14 @@ inspect what's in a namespace and clean it up without having to connect to the d
 ### Typical Iteration Cycle
 
 1. Edit your CustomModel definitions or manifest
-2. Reinstall the plugin: `canvas install my_plugin --host dev-instance`
+2. Redeploy the plugin: `canvas deploy acme__my_plugin --instance dev-instance`
 3. Test your changes
 4. If models were renamed or removed, use `canvas namespace reset` to clean up orphaned tables
 5. Repeat
 
 ## CLI Commands
 
-All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to.
+All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. They connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until they move to your Canvas Platform sign-in, before December 14, 2026.
 
 ### Listing Namespaces
 
@@ -222,6 +222,10 @@ Uninstalling a plugin **deletes its secrets**, including the system-generated `n
 and `namespace_read_write_access_key`. The namespace schema and its data, however, **survive the uninstall**.
 This is by design: uninstalling a plugin should never destroy custom data, and a namespace shared by multiple
 plugins must not be torn down while another plugin is still using it.
+
+A plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) keeps its access across an uninstall: Canvas
+Platform holds the namespace's keys and sends them with every install, so the next deploy restores them. The rest of
+this section applies to plugins installed with the deprecated `canvas install`.
 
 Because the namespace still exists, reinstalling the plugin does **not** regenerate the keys — key generation
 only happens when the namespace is first created. The reinstalled plugin is therefore left without valid access

@@ -166,6 +166,7 @@ registered = patient.user.is_portal_registered
 | dependent_coverages                     | [Coverage](/sdk/data-coverage/#coverage)[]                                                                              |                                                                                                |
 | detected_issues                         | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)[]                                                              |                                                                                                |
 | devices                                 | [Device](/sdk/data-device/#device)[]                                                                                    |                                                                                                |
+| dme_orders                              | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                                                                   |                                                                                                |
 | external_identifiers                    | [PatientExternalIdentifier](#patientexternalidentifier)[]                                                               |                                                                                                |
 | identification_cards                    | [PatientIdentificationCard](#patientidentificationcard)[]                                                               |                                                                                                |
 | imaging_orders                          | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                                                                       |                                                                                                |
@@ -433,6 +434,8 @@ for photo in patient.photos.all():
 ### PatientIdentificationCard
 
 Represents a patient identification card image (e.g., driver's license, insurance card).
+
+To create, update, or delete identification cards from a plugin, use the [PatientIdentificationCard effect](/sdk/effect-patient-identification-card/).
 
 | Field Name | Type                | Description      |
 |------------|---------------------|------------------|

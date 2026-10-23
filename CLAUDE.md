@@ -103,6 +103,19 @@ Write flat `•` bullets only, one per line: no tag headers (`sdk`, `ui`, `bugfi
 
 Frontmatter uses a structured `sections` → `blocks` → `apidoc` format with `attributes`, `search_parameters`, `endpoints`, and example references. These are complex — read an existing file before editing.
 
+### Access and validation changes
+
+Changes to access controls, permissions, scopes, or input validation stay out of the docs and release notes. Those specific release notes are drafted by humans to ensure the change is communicated effectively.
+
+- When such a change also adds a capability, such as a new scope, endpoint, field, or event, document the capability in neutral terms: what it does and how to use it.
+- When a request needs something specific, describe what to send.
+- If you're unsure whether a change falls under this section, leave it out.
+
+### SimpleAPI examples
+
+- Authenticate example SimpleAPI handlers with a mixin (`APIKeyAuthMixin`, `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `BasicAuthMixin`), never a hand-written `authenticate` that checks `credentials.logged_in_user["type"]`.
+  - An example that needs an extra rule subclasses the mixin and calls `super().authenticate(credentials)` before its own check. The `SessionCredentials` reference section on the SimpleAPI page is the one place a raw `authenticate` belongs.
+
 ### Navigation
 
 Sidebar menus are defined in `_data/menus.yml`. Add entries there when creating new pages.
