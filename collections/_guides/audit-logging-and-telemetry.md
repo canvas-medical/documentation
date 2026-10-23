@@ -179,7 +179,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued, an administrator starting or ending a session as another user |
 | 3005 | User Access Management | Staff access granted or revoked |
 | 6001 | Web Resources Access | Chart opened, note printed |
-| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; requests refused for lack of permission |
+| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; instance settings changed by Canvas Studio; requests refused for lack of permission |
 
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
@@ -194,6 +194,12 @@ session, such as a directory sync, has a `null` actor. When an administrator sta
 as another user, `actor` is the administrator and `resources` holds the user taken over, with
 `event_name` `impersonation.started` (and `impersonation.ended` when the session returns to
 the administrator).
+
+Canvas Studio sets up integrations on your instance, such as Health Gorilla lab ordering,
+DrFirst e-prescribing, and Documo faxing, by changing the instance's settings. Each save that
+changes a setting produces an API Activity update with `event_name` `settings_change`. `actor`
+is the account Canvas Studio signs in with, and `enrichments.payload.changed_keys` lists the
+names of the settings that changed. A save that changes nothing produces no event.
 
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
