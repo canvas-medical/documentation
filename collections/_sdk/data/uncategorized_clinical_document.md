@@ -66,7 +66,7 @@ assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
 
 ## Delegations
 
-A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
+When staff send a document to a provider for signature, Canvas records a delegation, and records another when the signed document goes back to the sender. The delegations for a document are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument
@@ -76,11 +76,11 @@ document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733
 # The full delegation history, oldest first.
 history = document.delegations
 
-# The current active delegation, or None when the document is with its owner.
+# The active delegation, or None when no delegation is in effect.
 current = document.active_delegation
 ```
 
-See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
+See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model. For the document's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 ## Document codings
 

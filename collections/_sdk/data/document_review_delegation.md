@@ -7,9 +7,11 @@ hidden: false
 
 ## Introduction
 
-The `DocumentReviewDelegation` model records a hand-off of a document review from one staff member to another staff member or team. When a reviewer delegates an uncategorized clinical document, Canvas stores who delegated it, who received it, the original owner, whether the recipient may apply the owner's signature, and any instructions.
+The `DocumentReviewDelegation` model records each step of the send-for-signature flow on a reviewable document: a Lab, Imaging, Consult/Referral, or Uncategorized review. Staff prepare a form by marking where the signature and date go, then select **SEND FOR SIGNATURE** to send it to a provider. Canvas records a delegation to that provider, with the sender as `on_behalf_of`. When the provider selects **SIGN FORM**, Canvas stamps the provider's own saved signature and the date into the form and returns it to the sender. That return is recorded as a route-back delegation, and `is_route_back` is `True`.
 
-Delegations are an append-only log: a document has at most one **active** delegation at a time (`is_active`). Delegation is A↔B only — an owner delegates a document out, and the recipient may only route it back — so `on_behalf_of` always identifies the original owner and, when `signature_consent` is set, the staff member whose signature the recipient may apply while annotating the document.
+Each document has at most one **active** delegation (`is_active`). Earlier delegations stay in the table as inactive rows. The active delegation ends when the document changes hands any other way, when its review command is committed, or when it's marked as not needing review.
+
+Each staff member places only their own signature, so `signature_consent` doesn't let anyone apply another person's signature. To see the document's full timeline, including reassignments, comments, and signatures, use [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 ## Basic usage
 
@@ -21,20 +23,21 @@ from canvas_sdk.v1.data import DocumentReviewDelegation
 delegation = DocumentReviewDelegation.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
 ```
 
-If you have an [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/), its delegations are available through the `delegations` and `active_delegation` accessors:
+Each reviewable document exposes its delegations through the `delegations` and `active_delegation` accessors. [LabReport](/sdk/data-labs/#delegations), [ImagingReport](/sdk/data-imaging/#delegations), [ReferralReport](/sdk/data-referral/#delegations), and [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#delegations) all provide them:
 
 ```python
-from canvas_sdk.v1.data import UncategorizedClinicalDocument
+from canvas_sdk.v1.data import LabReport
 
-document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+lab_report = LabReport.objects.get(id="7c9e6679-7425-40de-944b-e07fc1f90ae7")
 
 # The full delegation history, oldest first.
-history = document.delegations
+history = lab_report.delegations
 
-# The current active delegation, or None when the document is with its owner.
-current = document.active_delegation
-if current and current.signature_consent:
-    signer = current.on_behalf_of  # whose signature the recipient may apply
+# The active delegation, or None when no delegation is in effect.
+current = lab_report.active_delegation
+if current and not current.is_route_back:
+    provider = current.delegated_to_staff  # the provider asked to sign
+    sender = current.on_behalf_of  # who sent the form for signature
 ```
 
 ## Filtering
@@ -49,17 +52,21 @@ from canvas_sdk.v1.data import DocumentReviewDelegation
 active = DocumentReviewDelegation.objects.filter(is_active=True)
 ```
 
-### Delegations that granted signature consent
+### Documents waiting on a provider's signature
 
 ```python
-from canvas_sdk.v1.data import DocumentReviewDelegation
+from canvas_sdk.v1.data import DocumentReviewDelegation, Staff
 
-with_consent = DocumentReviewDelegation.objects.filter(is_active=True, signature_consent=True)
+provider = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+awaiting_signature = DocumentReviewDelegation.objects.filter(
+    is_active=True, delegated_to_staff=provider
+).exclude(on_behalf_of=provider)
 ```
 
 ## Route-back
 
-Use the `is_route_back` property to tell whether an active delegation returned the document to its owner (as opposed to delegating it away):
+Use the `is_route_back` property to tell whether a delegation returned the signed document to whoever sent it, rather than sending it to a provider to sign:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument
@@ -68,7 +75,7 @@ document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733
 
 delegation = document.active_delegation
 if delegation and delegation.is_route_back:
-    ...  # the document is back with its owner
+    ...  # the signed form is back with its sender
 ```
 
 ## Attributes
@@ -81,52 +88,54 @@ if delegation and delegation.is_route_back:
 | dbid               | Integer                                                         |
 | created            | DateTime                                                        |
 | modified           | DateTime                                                        |
-| content_type       | [ContentType](/sdk/data-content-type/) (the delegated document's type) |
-| object_id          | Integer (the delegated document's `dbid`)                       |
-| delegated_by       | [Staff](/sdk/data-staff/#staff) (who handed the document off)   |
-| delegated_to_staff | [Staff](/sdk/data-staff/#staff) (recipient, if delegated to a person) |
-| delegated_to_team  | [Team](/sdk/data-team/#team) (recipient, if delegated to a team) |
-| on_behalf_of       | [Staff](/sdk/data-staff/#staff) (the original owner)            |
-| signature_consent  | Boolean (may the recipient apply the owner's signature)         |
-| comment            | String (instructions for the recipient)                         |
-| is_active          | Boolean (the current delegation for the document)               |
+| content_type       | [ContentType](/sdk/data-content-type/) (the document's type)    |
+| object_id          | Integer (the document's `dbid`)                                 |
+| delegated_by       | [Staff](/sdk/data-staff/#staff) (who sent the form, or the provider returning it signed) |
+| delegated_to_staff | [Staff](/sdk/data-staff/#staff) (the provider asked to sign, or the sender a signed form returns to) |
+| delegated_to_team  | [Team](/sdk/data-team/#team) (recipient team, on delegations recorded before send for signature) |
+| on_behalf_of       | [Staff](/sdk/data-staff/#staff) (who sent the form for signature) |
+| signature_consent  | Boolean (grants nothing; each staff member places only their own signature) |
+| comment            | String (the comment left with the request)                      |
+| is_active          | Boolean (the delegation is still in effect)                     |
 
 ## The delegated document
 
-`content_type` and `object_id` form a generic link to the document whose review was delegated: `content_type` identifies the linked model, and `object_id` is that record's `dbid`. Review delegation is currently supported only for [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) records, so `content_type` always resolves to that model and `object_id` is the document's `dbid`. The generic relation leaves room for additional document types in the future.
+`content_type` and `object_id` form a generic link to the delegated document: `content_type` identifies the linked model, and `object_id` is that record's `dbid`. A delegation can point at any of the four reviewable document types:
 
-The most direct way to work with a document's delegations is from the document itself, through its `delegations` and `active_delegation` accessors:
+| Document | `content_type.app_label` | `content_type.model` |
+|----------|--------------------------|----------------------|
+| [LabReport](/sdk/data-labs/#labreport) | `api` | `labreport` |
+| [ImagingReport](/sdk/data-imaging/#imagingreport) | `api` | `imagingreport` |
+| [ReferralReport](/sdk/data-referral/#referralreport) | `api` | `referralreport` |
+| [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) | `api` | `uncategorizedclinicaldocument` |
 
-```python
-from canvas_sdk.v1.data import UncategorizedClinicalDocument
-
-document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
-
-current = document.active_delegation   # the active DocumentReviewDelegation, or None
-history = document.delegations         # every delegation hop recorded for the document
-```
-
-To go the other way — from a delegation to the document it points at — read `content_type` to learn which model `object_id` refers to, then resolve it. A [ContentType](/sdk/data-content-type/) is identified by its stable `app_label` and `model` (the lowercased model name), so branch on those rather than on the per-environment `dbid`. This keeps working if more document types become delegatable later:
-
-```python
-from canvas_sdk.v1.data import DocumentReviewDelegation, UncategorizedClinicalDocument
-
-delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
-
-content_type = delegation.content_type
-# Today content_type is always api / uncategorizedclinicaldocument; object_id is its dbid.
-if content_type.app_label == "api" and content_type.model == "uncategorizedclinicaldocument":
-    document = UncategorizedClinicalDocument.objects.get(dbid=delegation.object_id)
-```
-
-You can also use `content_type` to find every delegation for a given document type. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the `dbid`, which differs per environment:
+To find every delegation for one document type, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`. Never hardcode the content type `dbid`, which differs per environment:
 
 ```python
 from canvas_sdk.v1.data import ContentType, DocumentReviewDelegation
 
-document_ct = ContentType.objects.filter(app_label="api", model="uncategorizedclinicaldocument").first()
+imaging_report_ct = ContentType.objects.get(app_label="api", model="imagingreport")
 
-delegations = DocumentReviewDelegation.objects.filter(content_type=document_ct)
+imaging_delegations = DocumentReviewDelegation.objects.filter(content_type=imaging_report_ct)
 ```
 
-Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation.
+To go the other way, from a delegation to its document, read `content_type` to learn which model `object_id` refers to, then resolve it:
+
+```python
+from canvas_sdk.v1.data import DocumentReviewDelegation, ImagingReport, LabReport, ReferralReport, UncategorizedClinicalDocument
+
+DOCUMENT_MODELS = {
+    "labreport": LabReport,
+    "imagingreport": ImagingReport,
+    "referralreport": ReferralReport,
+    "uncategorizedclinicaldocument": UncategorizedClinicalDocument,
+}
+
+delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
+
+model = DOCUMENT_MODELS.get(delegation.content_type.model)
+if delegation.content_type.app_label == "api" and model:
+    document = model.objects.get(dbid=delegation.object_id)
+```
+
+Exactly one of `delegated_to_staff` and `delegated_to_team` is set on a delegation. Send for signature always sets `delegated_to_staff`; `delegated_to_team` appears only on delegations recorded before send for signature existed.
