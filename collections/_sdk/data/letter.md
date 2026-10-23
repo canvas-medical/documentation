@@ -109,7 +109,7 @@ url = document.document_url if document else None
 | created    | DateTime                        |                                    |
 | modified   | DateTime                        |                                    |
 | content    | String                          | The rendered letter content        |
-| printed    | DateTime                        | When the letter was printed (null if not printed) |
+| printed    | DateTime                        | When the letter was last printed, set after its print PDF renders (null if not printed). A print that fails to render leaves it unchanged. |
 | printed_document | File (S3 key)             | The letter's attachments merged into one PDF, saved when the letter is first printed or faxed (null until then) |
 | printed_document_url | String (computed)     | Presigned S3 URL for `printed_document`, or `None` if unset |
 | note       | [Note](/sdk/data-note/)         | The note this letter is associated with |
