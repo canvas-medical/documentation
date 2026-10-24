@@ -3542,7 +3542,7 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
 <table>
   <thead>
     <tr><th colspan="2">OBSERVATION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an observation is updated.</td></tr>
+    <tr><td colspan="2">Occurs when an observation is updated. An <a href='/sdk/effect-observation/#update--effect'>Observation <code>update()</code> effect</a> that changes nothing doesn't send this event.</td></tr>
   </thead>
   <tbody>
     <tr>
