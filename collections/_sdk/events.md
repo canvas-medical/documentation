@@ -18904,6 +18904,27 @@ shape only; dynamic per-field entries appear alongside.
 
 <table>
   <thead>
+    <tr><th colspan="2">PRESCRIBE_COMMAND__PRE_SEND</th></tr>
+    <tr><td colspan="2">Fires right before Canvas sends a new prescription (Surescripts NewRx) to the pharmacy. Plugins may respond with a <a href='/sdk/effect-surescripts/#benefits-coordination-override'>SurescriptsBenefitsCoordinationOverride</a> effect to set the BIN, PCN, group ID, or member ID in the prescription's benefits coordination segment.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": prescription_id
+"type": <a href='/sdk/data-prescription'>Prescription</a></pre></td>
+      <td><pre>"prescription":
+  "id": prescription_id
+"patient":
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">PRESCRIBE_COMMAND__POST_EXECUTE_ACTION</th></tr>
   </thead>
   <tbody>
