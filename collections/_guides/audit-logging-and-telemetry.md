@@ -185,8 +185,8 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
 user, and `2` is a sign-out or the end of one. In User Access Management, `1` grants access and
 `2` revokes it. In the other classes, `1` is create, `2` is read, including a refused GraphQL
-query or subscription, `3` is update, `4` is delete, and `99` is a refused GraphQL mutation. A refused request whose operation type can't be
-determined has `0`. Marking a clinical record entered in error is reported as a delete.
+query or subscription, `3` is update, `4` is delete, and `99` is a refused GraphQL mutation. A
+refused request whose operation type can't be determined has `0`. Marking a clinical record entered in error is reported as a delete.
 
 On a staff account created or a change to staff access, `actor` is the administrator who made
 the change and `resources` holds the account changed. This holds during a session as another
