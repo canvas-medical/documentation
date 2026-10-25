@@ -166,7 +166,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
 | `status_id` | Outcome: `1` success, `2` failure. |
 | `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation. Absent on success. |
-| `api.operation` | On a refused request, the operation that was refused: the HTTP method and the URL pattern the request matched (`GET api/Patient/(?P<key>[a-f0-9]{32})$`), or `graphql`, the operation type, and the top-level field (`graphql mutation updateNoteBody`). Never the actual path or its arguments. |
+| `api.operation` | On a refused request, the operation that was refused: the HTTP method and the URL pattern the request matched (`GET api/Patient/(?P<key>[a-f0-9]{32})$`), or `graphql`, the operation type (`query`, `mutation`, or `subscription`), and the top-level field when the refusal comes from one (`graphql mutation updateNoteBody`). Never the actual path or its arguments. |
 | `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as, except on staff account and access changes (see below). |
 | `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
 | `src_endpoint.ip`, `src_endpoint.user_agent` | Client address and browser or client identifier. Both are `null` when the event didn't come from a client request. |
@@ -184,8 +184,8 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
 user, and `2` is a sign-out or the end of one. In User Access Management, `1` grants access and
-`2` revokes it. In the other classes, `1` is create, `2` is read, `3` is update, `4` is delete,
-and `99` is a refused GraphQL mutation. A refused request whose operation type can't be
+`2` revokes it. In the other classes, `1` is create, `2` is read, including a refused GraphQL
+query or subscription, `3` is update, `4` is delete, and `99` is a refused GraphQL mutation. A refused request whose operation type can't be
 determined has `0`. Marking a clinical record entered in error is reported as a delete.
 
 On a staff account created or a change to staff access, `actor` is the administrator who made
