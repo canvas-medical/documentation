@@ -661,9 +661,9 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing an Assess always records the condition as an encounter diagnosis, because it was assessed in a note. With `True`, the condition is also a problem list item. With `False`, it's an encounter diagnosis only, such as a sore throat that doesn't need tracking, and committing takes it off the problem list. The choice is saved as the condition's categories, which the [FHIR Condition](/api/condition/) resource returns: `encounter-diagnosis`, plus `problem-list-item` when the condition is on the problem list. Putting a health concern on the problem list replaces its `health-concern` category with `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, an active condition that's an encounter diagnosis only is left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An [UpdateDiagnosis](#updatediagnosis) command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the condition's categories or status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
 
-Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
+Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it. A health concern that an Assess put on the problem list becomes a health concern again. An Assess that made a resolved condition active again is the exception: entering it in error leaves the condition active and its problem list status unchanged.
 
 **Command-specific parameters**:
 
@@ -672,7 +672,7 @@ Entering in error an Assess that changed the status resets the condition's statu
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
 | `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
-| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list. |
+| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current problem list status. A new condition goes on the problem list, and so does a resolved condition the command makes active again, unless it's a health concern. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
@@ -702,7 +702,7 @@ assess = AssessCommand(
 )
 ```
 
-Record a visit-only diagnosis as an encounter diagnosis:
+Record a visit-only diagnosis as an encounter diagnosis, keeping it off the problem list:
 
 ```python
 from canvas_sdk.commands import AssessCommand
@@ -2962,7 +2962,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 
 | Name                 | Type     | Required to commit | Description                                                       |
 |----------------------|----------|----------|-------------------------------------------------------------------|
-| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's chart, including encounter diagnoses recorded with Assess's `show_in_problem_list=False`. |
+| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's problem list, or one of the patient's health concerns. An encounter diagnosis recorded with Assess's `show_in_problem_list=False` doesn't match. |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
 | `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
 | `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
