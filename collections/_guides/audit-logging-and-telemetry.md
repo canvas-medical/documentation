@@ -47,8 +47,8 @@ Alongside the record audit trail, Canvas captures:
 - **Authentication events** — sign-in successes and failures, account lockouts, and Canvas
   administrators starting and ending a session as another user.
 - **Refused requests** — requests and GraphQL operations refused for lack of permission,
-  attributed to the user who was refused. For a GraphQL subscription, a refusal when it
-  starts is recorded, but a permission error in an update it sends later is not.
+  attributed to the user who was refused. For a GraphQL subscription, both a refusal when it
+  starts and a permission error in an update it sends later are recorded.
 - **Administrative activity** — configuration and permission changes, surfaced in the
   admin console and protected there against edit and deletion.
 - **Staff activity reports** — generated nightly.
@@ -188,10 +188,10 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
 user, and `2` is a sign-out or the end of one. In User Access Management, `1` grants access and
-`2` revokes it. In the other classes, `1` is create, `2` is read, including a refused GraphQL
-query or subscription, `3` is update, `4` is delete, and `99` is a refused GraphQL mutation or websocket connection.
-A refused request whose operation type can't be determined has `0`. Marking a clinical record
-entered in error is reported as a delete.
+`2` revokes it. In the other classes, `1` is create, `2` is read (including a refused GraphQL
+query or subscription), `3` is update, `4` is delete, and `99` is a refused GraphQL mutation or a
+refused GraphQL websocket connection. A refused request whose operation type can't be
+determined has `0`. Marking a clinical record entered in error is reported as a delete.
 
 When a staff account is created or staff access changes, `actor` is the administrator who made
 the change and `resources` holds the account changed. A change made outside a signed-in
