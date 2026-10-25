@@ -47,7 +47,8 @@ Alongside the record audit trail, Canvas captures:
 - **Authentication events** — sign-in successes and failures, account lockouts, and Canvas
   administrators starting and ending a session as another user.
 - **Refused requests** — requests and GraphQL operations refused for lack of permission,
-  attributed to the user who was refused.
+  attributed to the user who was refused. For a GraphQL subscription, a refusal when it
+  starts is recorded, but a permission error in an update it sends later is not.
 - **Administrative activity** — configuration and permission changes, surfaced in the
   admin console and protected there against edit and deletion.
 - **Staff activity reports** — generated nightly.
