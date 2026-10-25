@@ -161,7 +161,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | Field | Meaning |
 | --- | --- |
 | `metadata.uid` | Unique id for the event. Delivery is at-least-once, so use it to drop duplicates. |
-| `metadata.correlation_uid` | Id of the request that produced the event, when there was one. Events from the same request share it. |
+| `metadata.correlation_uid` | Id of the request that produced the event, when there was one. Events from the same request share it. Absent on events from the GraphQL websocket, which has no request id. |
 | `metadata.version` | OCSF schema version. |
 | `metadata.tenant_uid` | The Canvas instance that produced the event, so one SIEM can take events from several instances. |
 | `metadata.labels` | `environment:production` for a production instance, `environment:non-production` for a sandbox or test instance. |
