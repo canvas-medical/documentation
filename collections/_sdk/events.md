@@ -29587,6 +29587,57 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
+    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "url": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
+  "claim": (optional)
+    "id": str
+  "claim_queue": (optional)
+    "dbid": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
+    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "staff":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a>
+  "patient":
+    "id": str
+    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Payment Processor Events
 
 These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see [Event Actor](#event-actor)). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
@@ -29741,58 +29792,6 @@ Apart from `success` and `error`, every value arrives as a string or `null`, inc
 "payment_card_id": str   # echoed, a <a href='/sdk/data-payment-card/'>PaymentCard</a> id under Stripe
 "claim_id": str          # echoed, a <a href='/sdk/data-claim/'>Claim</a> id, null when none
 "amount": str            # echoed, the dollar amount submitted</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
-    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "url": str
-  "patient":
-    "id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
-  "claim": (optional)
-    "id": str
-  "claim_queue": (optional)
-    "dbid": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
-    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "staff":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a>
-  "patient":
-    "id": str
-    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>
