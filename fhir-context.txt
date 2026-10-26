@@ -13606,7 +13606,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete information) 
+  - <information_type> (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   
@@ -13867,7 +13867,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete information) 
+  - <information_type> (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   

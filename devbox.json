@@ -2,7 +2,7 @@
   "packages": [
     "nodejs@latest",
     "yarn@latest",
-    "ruby_3_1@latest",
+    "ruby_4_0@latest",
     "gcc@latest",
     "gnumake@latest"
   ],

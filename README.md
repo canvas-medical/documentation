@@ -1,7 +1,7 @@
 # Canvas Documentation
 
 ## Requirements
-* Ruby 3.1.x, Bundler 2.x
+* Ruby 4.0.x, Bundler 4.x
 * Node >16, Yarn 3.x
 
 ## Quick start
@@ -48,6 +48,8 @@ To build the website run the following line
 yarn build
 ```
 The built website will be in `_site` folder. The build also emits LLM-facing artifacts into `_site`: `llms.txt` (index), `llms-full.txt` (full corpus), and a `.md` mirror of every page (via `generate-llms.py`). These require `uv` on the PATH. To regenerate them against an existing `_site` without a full rebuild, run `yarn build:llms`.
+
+The last step minifies every HTML page in `_site` in place with [minify-html](https://github.com/wilsonzlin/minify-html) (`minify-site.py`, also `uv`). Run it alone with `yarn build:minify`.
 
 You can also run a local server to test it with this command
 ```sh
