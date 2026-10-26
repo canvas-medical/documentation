@@ -304,10 +304,17 @@ the contract:
 
 At run time the platform:
 
-1. Reads `tools.allowed` from the manifest entry for this agent.
-2. Sets `self.tools_allowed = frozenset(tools.allowed)`.
+1. Reads `tools.allowed` and `tools.denied` from the manifest entry
+   for this agent.
+2. Resolves them with `ToolRegistry.resolve_allowed`: tool names and
+   `@category` groups in `tools.allowed` expand against the agent's
+   registry, `tools.denied` is subtracted, and unknown names resolve
+   to nothing. The result becomes `self.tools_allowed`.
 3. Replaces `self.tools` with a *scoped* registry containing only
    those tools — disallowed entries aren't in the registry at all.
+
+An agent entry with no `tools.allowed` is not filtered: `self.tools`
+stays the agent's full class-level registry.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and

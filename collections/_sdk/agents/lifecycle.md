@@ -35,20 +35,25 @@ class MyAgent(AgentPlugin):
 ## What the platform does, in order
 
 When a `RunAgentEffect` reaches the plugin-runner's `RunAgent` RPC, the
-following happens — each step is platform-driven, all inside the
-per-`scope_key` lock:
+following happens. Each step is platform-driven, and steps 4 through
+10 run inside the per-`scope_key` lock:
 
 1. **Resolve the agent class** from `LOADED_PLUGINS` by `agent_id`.
-2. **Build the `LLMGateway`** from the plugin's secrets dict via
-   `LLMGateway.from_plugin_secrets(plugin.secrets)`.
+2. **Build the `LLMGateway`** from the instance's inference gateway
+   configuration, attributed to your plugin, this agent, and this run.
+   If the instance has no gateway configured, the run stops here with
+   `error_kind="LLM_NOT_CONFIGURED"`.
 3. **Acquire the per-`scope_key` lock**. If another invocation holds
    it, the run returns `success=False` with `error_kind="AGENT_LOCKED"`;
    the Celery task auto-retries with exponential backoff. See
    [Concurrency](#concurrency) below.
 4. **Instantiate your subclass** (`agent_class()` with no arguments).
-5. **Inject the manifest tool allowlist** as
-   `agent.tools_allowed = frozenset(manifest_allowed)` and replace
-   `agent.tools` with a scoped view containing only those tools.
+5. **Apply the manifest tool allowlist.** The platform expands
+   `tools.allowed` (tool names and `@category` groups) against
+   `agent.tools`, subtracts `tools.denied`, sets `agent.tools_allowed`
+   to the result, and replaces `agent.tools` with a scoped view
+   containing only those tools. An agent entry with no `tools.allowed`
+   keeps its full registry.
 6. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
 7. **Call `load_state(scope_key)`** to get the run's starting state.
 8. **Call `run(state, gateway, trigger_payload)`** — the body of your
@@ -58,12 +63,15 @@ per-`scope_key` lock:
 10. **Call `on_run_end(result)`** (optional hook).
 11. **Release the lock.**
 12. **Stamp provenance on each emitted effect** (`plugin_name`,
-    `classname`, `handler_name`, `actor`, `source`) and stream them
+    `handler_name`, `actor`, `source`) and stream them
     back to the home-app worker for dispatch through
     `handle_effect`.
 
 If any of steps 7–9 raises, `on_run_error(exc)` fires, the exception
-is captured to Sentry, and the run returns `success=False`.
+is captured to Sentry, and the run returns `success=False`. Errors from
+the inference gateway are classified rather than captured: an outage
+(`error_kind="LLM_UNAVAILABLE"`) is retried, and a refusal
+(`error_kind="LLM_REFUSED"`) fails the run without a retry.
 
 ## The three methods you implement
 
@@ -179,22 +187,19 @@ platform will dispatch.
 
 ## `LLMGateway` shape
 
-```python
-@dataclass
+```python?partial=true
 class LLMGateway:
-    api_key: str
-    model: str
-    base_url: str | None = None
+    model: str  # the run's default model, "claude-sonnet-4-6"
+
+    def client(self, *, max_retries: int = 2) -> Anthropic:
+        """An Anthropic client that reaches only the inference gateway."""
 ```
 
-Built by the platform from the plugin's `secrets` dict via
-`LLMGateway.from_plugin_secrets(...)` before `run()` is called. Defaults
-to reading `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL`. Raises
-`LLMGatewayConfigurationError` if the key is missing — the platform
-catches this and reports the run as failed without entering your
-`run()`.
-
-> **Coming soon**: with the Canvas LLM gateway, `api_key` becomes a
-> short-lived session token and `base_url` points at the gateway
-> service. Your code (`Anthropic(api_key=gateway.api_key)`) doesn't
-> change — only the underlying credential lifecycle does.
+Built by the platform from the instance's inference gateway
+configuration before `run()` is called. It exposes no key: `client()`
+returns an `anthropic.Anthropic` client whose own key is a placeholder,
+and the real key and attribution headers are added beneath it on each
+request. The client refuses requests to any other host and to any
+endpoint besides the Messages API and token counting. See
+[Credentials](/sdk/agents/#credentials) for the errors the gateway
+returns.

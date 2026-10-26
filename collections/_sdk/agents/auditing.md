@@ -20,25 +20,31 @@ happen automatically for every run.
 
 Captured today:
 
-- **Run lifecycle metadata** — every `RunAgentEffect` produces a
-  durable record with `agent_id`, `scope_key`, `run_id`, status
-  (success / error / locked), start and end timestamps, wall-clock
-  duration.
-- **Lock outcome** — when a run is held off by lock contention,
-  that's recorded so support can see "the third attempt finally
-  acquired the lock at T+38s."
-- **Effect dispatch** — every effect the agent emits passes through
+- **Run outcomes**: the plugin runner logs each run's start
+  (`agent_id`, `scope_key`, `run_id`), its completion with the number
+  of effects emitted, lock contention, and gateway failures by kind
+  (`LLM_UNAVAILABLE`, `LLM_REFUSED`). Unexpected exceptions go to
+  Sentry, tagged with the agent ID.
+- **Run duration**: a timing metric for every `RunAgent` call,
+  tagged with the `agent_id`.
+- **LLM usage**: Canvas's inference gateway records every call in its
+  usage ledger: model, token counts by cache class, and cost, against
+  your organization's inference account. It retains no request or
+  response bodies.
+- **Effect dispatch**: every effect the agent emits passes through
   `handle_effect`, which carries the run's provenance (`plugin_name`,
-  `classname`, `handler_name`, `actor`, `source`) onto the affected
-  record.
+  `handler_name`, `actor`, `source`) onto the affected record.
 
-Captured soon (V1 LLM gateway):
+Captured with V1:
 
-- **Per-LLM-call token counts** — input, output, cache reads/writes.
-- **Per-LLM-call cost** — in your customer's currency, against your
-  customer's Anthropic subaccount.
-- **Per-LLM-call latency** — wall-clock and time-to-first-token.
-- **Tool-call envelope** — name, arguments shape/hash, latency,
+- **Run records**: a durable record per run with `agent_id`,
+  `scope_key`, `run_id`, status (success / error / locked), lock
+  outcome, start and end timestamps, and wall-clock duration.
+- **Per-call attribution**: each gateway usage record tied to the
+  plugin, agent, and run that made the call. The plugin runner sends
+  this attribution with every request today.
+- **Per-LLM-call latency**: wall-clock and time-to-first-token.
+- **Tool-call envelope**: name, arguments shape/hash, latency,
   error type for every tool the agent dispatches. Note: the
   envelope is structural metadata; the tool's *result content* is
   plugin-owned (see below) because only you know what's worth

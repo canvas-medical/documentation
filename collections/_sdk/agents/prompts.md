@@ -211,8 +211,11 @@ for current TTLs, eligibility, pricing, and breakpoint limits.
   `cache_control` markers to these agents costs nothing but won't
   save much either.
 
-> **Coming soon**: when the Canvas LLM gateway lands, prompt-caching
-> policy will likely be applied per-plugin at the gateway boundary —
-> plugin authors will declare cache breakpoints once (or accept a
-> reasonable default) and not need to thread `cache_control` through
-> every call site. Until then, opt in explicitly where it matters.
+Canvas's inference gateway passes `cache_control` through to Anthropic
+unchanged and keeps cache hits within your organization by opening
+every request with a short organization-specific system block.
+Breakpoints on the system prompt or later in the request cache your
+full prefix within your organization. A breakpoint on the tool
+definitions alone covers only the prefix ahead of that block, which
+is shared across organizations, since tool definitions come before
+the system prompt.

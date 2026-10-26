@@ -9,25 +9,11 @@ one that reads the chart on note creation and drafts a Plan command for
 the clinician to edit and commit. ~50 lines of agent code, plus a
 manifest entry and a trigger handler.
 
-## 1. Configure the plugin secret
+There is no API key to configure: agents reach Anthropic through
+Canvas's inference gateway, and the platform hands your agent a ready
+client (see [Credentials](/sdk/agents/#credentials)).
 
-Your manifest declares the Anthropic API key as a plugin variable; the
-customer's admin sets the value once the plugin is installed.
-
-`CANVAS_MANIFEST.json`:
-
-```jsonc
-{
-  "variables": [
-    {"name": "ANTHROPIC_API_KEY", "sensitive": true},
-    {"name": "ANTHROPIC_MODEL", "sensitive": false}
-  ]
-}
-```
-
-`ANTHROPIC_MODEL` is optional; the SDK defaults to `claude-sonnet-4-6`.
-
-## 2. Register a tool catalog
+## 1. Register a tool catalog
 
 Tools are pre-declared at module-import time and registered into a
 `ToolRegistry`. Start with the SDK's `standard_tools` (clinical reads
@@ -70,14 +56,13 @@ def _originate_plan(arguments, *, ctx):
 See [Tools](/sdk/agents-tools/) for the full registry / executor /
 permission model.
 
-## 3. Implement the agent
+## 2. Implement the agent
 
 `chart_summary.py`:
 
 ```python
 from typing import Any, cast
 
-from anthropic import Anthropic
 from anthropic.types import ToolUseBlock
 
 from my_plugin.agents.chart_summary_tools import tools as _registered_tools
@@ -122,7 +107,7 @@ class ChartSummary(AgentPlugin):
         effects: list[Effect] = []
         tool_ctx = {"patient_id": patient_id, "note_id": note_id, "effects": effects}
 
-        client = Anthropic(api_key=gateway.api_key)
+        client = gateway.client()
         messages: list[dict[str, Any]] = [
             {
                 "role": "user",
@@ -185,7 +170,7 @@ The `AgentPlugin` contract is three methods: `load_state`, `run`, and
 `save_state` are no-ops. The `run()` method drives the tool-use loop
 and accumulates effects.
 
-## 4. Trigger the agent
+## 3. Trigger the agent
 
 Agents don't subscribe to events directly. A regular handler does, and
 emits a `RunAgentEffect` from `compute()`.
@@ -232,7 +217,7 @@ class ChartSummaryTrigger(BaseHandler):
 and agent identity so two agents on the same patient don't serialize
 against each other. The platform uses it as the lock key.
 
-## 5. Wire it up in the manifest
+## 4. Wire it up in the manifest
 
 ```jsonc
 {
@@ -262,20 +247,20 @@ against each other. The platform uses it as the lock key.
 }
 ```
 
-The `tools.allowed` list authorizes specific tools by name. The
-platform reads this and scopes `self.tools` at run time — see
-[Tools](/sdk/agents-tools/).
+The `tools.allowed` list authorizes tools by name or by `@category`,
+and an optional `tools.denied` list subtracts from it. The platform
+reads both and scopes `self.tools` at run time (see
+[Tools](/sdk/agents-tools/)).
 
-## 6. Install + test
+## 5. Install + test
 
 ```bash
 canvas install my_plugin --host <your-instance>
 ```
 
-Configure `ANTHROPIC_API_KEY` on the plugin's admin page, then create a
-new note in the chart. Within a few seconds the agent should run on
-the worker, call the chart-read tools, and stage a draft Plan command
-on the new note.
+Create a new note in the chart. Within a few seconds the agent should
+run on the worker, call the chart-read tools, and stage a draft Plan
+command on the new note.
 
 ## Next steps
 

@@ -61,12 +61,12 @@ mocked-data tests miss.
 
 ## Stubbing the `LLMGateway`
 
-Inside `run()`, your agent instantiates an Anthropic client from
-`gateway.api_key`. Replace the client in tests so no real provider
-call happens.
+Inside `run()`, your agent gets its Anthropic client from
+`gateway.client()`. Pass `run()` a stand-in gateway whose `client()`
+returns a mock, so no network call happens.
 
 ```python
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 from anthropic.types import TextBlock, ToolUseBlock
@@ -76,9 +76,18 @@ from my_plugin.agents.chart_summary import ChartSummary
 
 
 @pytest.fixture
-def gateway():
-    """A fake gateway that satisfies the dataclass without exercising HTTP."""
-    return LLMGateway(api_key="sk-fake", model="claude-sonnet-4-6")
+def mock_client():
+    """The client the agent receives from gateway.client(); queue responses on it."""
+    return MagicMock()
+
+
+@pytest.fixture
+def gateway(mock_client):
+    """A stand-in gateway whose client() returns mock_client."""
+    gateway = MagicMock(spec=LLMGateway)
+    gateway.model = "claude-sonnet-4-6"
+    gateway.client.return_value = mock_client
+    return gateway
 
 
 def _response(*, content, stop_reason):
@@ -106,7 +115,10 @@ def _text(text):
 ```
 
 These three helpers (`_response`, `_tool_use`, `_text`) are typically
-the only LLM-mocking infrastructure you need.
+the only LLM-mocking infrastructure you need. To exercise the real
+Anthropic client and the gateway's HTTP contract instead, construct
+`LLMGateway(base_url=..., key=..., transport=...)` with an
+`httpx2.MockTransport` that returns Anthropic-shaped JSON.
 
 ## Driving the run loop in tests
 
@@ -114,14 +126,9 @@ The pattern: queue the responses you want the mock Anthropic client
 to return, then drive `run()` and assert on the result.
 
 ```python
-@patch("my_plugin.agents.chart_summary.Anthropic")
-def test_run_drafts_plan_from_tool_results(
-    mock_anthropic_cls, gateway, patient_factory
-):
+def test_run_drafts_plan_from_tool_results(mock_client, gateway, patient_factory):
     """Two-turn run: agent calls a read tool, then originates the Plan."""
     patient = patient_factory()
-    mock_client = MagicMock()
-    mock_anthropic_cls.return_value = mock_client
 
     # Turn 1: model calls find_conditions.
     # Turn 2: model calls originate_plan with a narrative, then ends.
@@ -170,14 +177,17 @@ Walk-through:
 
 Recall that the platform replaces `agent.tools` with a scoped view
 before `run()` fires. In tests you do this yourself if you want to
-exercise the filter.
+exercise the filter, resolving names and `@category` groups the same
+way the platform does.
 
 ```python
-def _make_agent(agent_cls, tools_allowed=None):
+def _make_agent(agent_cls, tools_allowed=None, tools_denied=None):
     """Instantiate an agent the way the platform would."""
     agent = agent_cls()
     if tools_allowed is not None:
-        agent.tools_allowed = frozenset(tools_allowed)
+        agent.tools_allowed = agent_cls.tools.resolve_allowed(
+            tools_allowed, denied=tools_denied
+        )
         agent.tools = agent_cls.tools.scope(agent.tools_allowed)
     return agent
 ```

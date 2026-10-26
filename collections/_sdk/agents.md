@@ -89,7 +89,7 @@ implement and what the platform does around it.
 |---|---|
 | Triggering, dispatch, lifecycle orchestration | Agent business logic (`run()`) |
 | Per-`scope_key` lock + retry on contention | State persistence (Custom Data tables you declare) |
-| LLM credentials + (soon) gateway-mediated billing | Tool implementations |
+| LLM access: gateway credentials, metering, budgets | Tool implementations |
 | Cost / token / latency metrics | Run rationale and semantic audit (see [Auditing](/sdk/agents-auditing/)) |
 | Effect dispatch | Effect choice + idempotency keying |
 | Tool permission enforcement (manifest-driven) | Tool authorization policy (declared in your manifest) |
@@ -99,26 +99,44 @@ platform makes sure it runs safely.
 
 ## Credentials
 
-For preview, plugin authors configure an Anthropic API key as a plugin
-secret (`ANTHROPIC_API_KEY`, declared in `CANVAS_MANIFEST.json`
-`variables[]`). The customer's admin sets the value on the plugin's
-configuration page. Your `run()` builds an `LLMGateway` from those
-secrets:
+Agents reach Anthropic through Canvas's inference gateway, and your
+plugin holds no API key. The platform builds the `LLMGateway` it passes
+to `run()` from the instance's gateway configuration, and
+`gateway.client()` returns an `anthropic.Anthropic` client pointed at
+the gateway:
 
 ```python?partial=true
-from canvas_sdk.agents import LLMGateway
-from anthropic import Anthropic
-
-gateway = LLMGateway.from_plugin_secrets(self.secrets)
-client = Anthropic(api_key=gateway.api_key)
+client = gateway.client()
+response = client.messages.create(
+    model=gateway.model,
+    max_tokens=1024,
+    messages=messages,
+)
 ```
 
-> **Coming soon**: a Canvas-operated LLM gateway. Plugins will receive
-> short-lived session tokens instead of provider keys; per-customer
-> subaccount routing, cost accounting, and audit happen at the gateway
-> boundary. Your `from_plugin_secrets(...)` call site stays unchanged —
-> the gateway returns a session token in `api_key` and the gateway URL
-> in `base_url`.
+The client carries a placeholder key. The real key is added beneath it
+on each request, together with headers that attribute the call to your
+plugin, agent, and run, and it never reaches plugin code. The client
+sends requests only to the gateway, and only to the Messages API and
+token counting.
+
+The gateway meters every call against your organization's inference
+account and enforces its budget and model allowlist. `gateway.model`
+defaults to `claude-sonnet-4-6`; pass any model your organization has
+enabled. Refusals come back as Anthropic's own error types, so the SDK's
+exception handling works unchanged:
+
+| Status | Cause |
+|---|---|
+| 402 `billing_error` | The organization's budget or a key's monthly limit is reached |
+| 404 `not_found_error` | The model is not available to the organization |
+| 400 `invalid_request_error` | A feature the gateway does not serve (code execution, containers, skills, the Files API, the MCP connector, the priority service tier) or a malformed request |
+
+Let these errors propagate out of `run()`. The platform retries a run
+when the gateway is unreachable, rate-limited (429), or returns a
+server error, and records a refusal as a failed run without retrying
+it. If the instance has no gateway configured, the run fails before
+your agent is instantiated.
 
 ## Manifest declaration
 
