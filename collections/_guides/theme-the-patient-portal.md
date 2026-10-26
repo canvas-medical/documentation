@@ -16,7 +16,7 @@ working through this exercise." %}
 ## How theming works
 
 1. A patient opens a portal page, the login page included.
-2. Canvas sends the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event to your plugin.
+2. Canvas sends the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event to your plugin.
 3. Your handler returns one `PatientPortalTheme` effect with the attributes you want to change.
 4. Canvas applies the theme before the page appears.
 

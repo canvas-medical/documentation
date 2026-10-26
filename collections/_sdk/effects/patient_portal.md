@@ -247,7 +247,7 @@ class MyHandler(BaseHandler):
 
 ## Theme the Patient Portal
 
-Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the `PATIENT_PORTAL__GET_THEME_CONFIGURATION` event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
 
 Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
 
