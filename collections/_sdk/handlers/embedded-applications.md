@@ -678,13 +678,13 @@ class OfficeHoursBand(PortalDockedApplication):
 
 The portal renders the `url` or `content` of the [`LaunchModalEffect`](/sdk/layout-effect/#modals) that `on_open()` returns. As with a staff docked pane, `title` isn't displayed: it becomes the band's accessible name for screen readers. If `on_open()` returns no `url` or `content`, the portal shows no band for that edge.
 
-Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a [Docked Application](#manifest-configuration). It takes no `scope` or `icon`.
+Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a [Docked Application](#manifest-configuration). It takes no `scope` or `icon`. Don't add it to the `applications` array: `portal_docked` isn't an application scope, so a manifest that lists it there fails validation.
 
 ### How a band differs from a docked pane
 
 - **Edges.** Only `DockEdge.TOP` and `DockEdge.BOTTOM` are valid. A class that sets `LEFT` or `RIGHT` raises a `ValueError` when the portal asks for its docks, so its band never appears.
 - **One band per edge.** Each edge shows at most one band. When several Portal Docked Applications share an edge, the one with the lowest `PRIORITY` is shown, with ties broken by identifier, and the others are left out.
-- **Fixed height.** `DOCK_SIZE` is the band's height, given as a positive `px`, `rem`, `em`, or `%` value, such as `64px`, `4rem`, or `10%`. A `%` value is a share of the screen height. The portal leaves out a band whose `DOCK_SIZE` is any other value. Bands have no resize control. Because the portal is mostly used on phones, the bands together take at most a quarter of the screen height, split evenly when both edges have one. A taller `DOCK_SIZE` is capped to fit.
+- **Fixed height.** `DOCK_SIZE` is the band's height, given as a positive `px`, `rem`, `em`, or `%` value, such as `64px`, `4rem`, or `10%`. A `%` value is a share of the screen height. The portal leaves out a band whose `DOCK_SIZE` is any other value. Bands have no resize control. Because the portal is mostly used on phones, the bands together take at most 25% of the screen height, split evenly between them. A single band can be up to 25% tall, and when both edges have a band, each is capped at 12.5%. A taller `DOCK_SIZE` is cut to the cap.
 - **No context changes.** The portal asks for its bands once, when a signed-in patient loads it, and calls `on_open()` then. It doesn't call `on_context_change()` as the patient moves between pages.
 - **Sandboxed iframe.** The band loads in a sandboxed iframe that runs scripts, submits forms, opens new tabs, and follows a link the patient selects to navigate the portal. To grant a hosted `url` more capabilities, list it in the manifest's [`url_permissions`](/sdk/canvas_manifest/#url-permissions).
 
