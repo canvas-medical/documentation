@@ -18,6 +18,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [updating provider information](#update-provider) on claims
 - [updating the supervising provider](#update-supervising-provider) on claims
 - [setting the incident-to flag](#set-incident-to) on claims
+- [assigning claims](#assign) to a staff member or team
+- [unassigning claims](#unassign)
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -978,6 +980,107 @@ class IncidentToHandler(BaseHandler):
         claim_id = self.event.target.id
         claim_effect = ClaimEffect(claim_id=claim_id)
         return [claim_effect.set_incident_to(True)]
+```
+
+### Assign
+
+`assign(*, assignee_id: str | None = None, team_id: str | None = None) → Effect`
+
+Assigns a claim to a staff member or a team, so the claim has an owner responsible for working it. A claim has one owner at a time: assigning a staff member removes any team assignment, and assigning a team removes any staff assignment. Calling `assign()` with neither parameter clears the assignment, the same as [`unassign()`](#unassign).
+
+When the assignment changes, Canvas emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event. To read the current owner, use the claim's [`assignee` and `team`](/sdk/data-claim/#claim) attributes.
+
+#### Parameters
+
+| Parameter     | Type            | Description                                                         | Required |
+| ------------- | --------------- | ------------------------------------------------------------------- | -------- |
+| `assignee_id` | `str` or `None` | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign    | No       |
+| `team_id`     | `str` or `None` | The `id` of the [Team](/sdk/data-team/) to assign                   | No       |
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+- Validates that `assignee_id` and `team_id` aren't both provided
+- If `assignee_id` is provided, validates that the Staff record exists
+- If `team_id` is provided, validates that the Team record exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Team
+
+
+class AssignNewClaimsHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """Assign each new claim to the billing team."""
+        team = Team.objects.filter(name="Billing").first()
+        if not team:
+            return []
+        claim_effect = ClaimEffect(claim_id=self.event.target.id)
+        return [claim_effect.assign(team_id=str(team.id))]
+```
+
+To assign a staff member instead, pass their `id` as `assignee_id`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note
+
+
+class AssignClaimToProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, assign its claim to the note's provider."""
+        if self.event.context["state"] != "LKD":
+            return []
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        if not claim or not note.provider:
+            return []
+        claim_effect = ClaimEffect(claim_id=claim.id)
+        return [claim_effect.assign(assignee_id=str(note.provider.id))]
+```
+
+### Unassign
+
+`unassign() → Effect`
+
+Clears a claim's assignment, whether the claim is assigned to a staff member or a team. Like [`assign()`](#assign), it emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event when the assignment changes.
+
+#### Implementation Details
+
+- Validates `claim_id` is provided and that the associated claim exists
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.claim import ClaimQueue, ClaimQueues
+
+
+class UnassignSettledClaimsHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_QUEUE_MOVED)
+
+    def compute(self) -> list[Effect]:
+        """Clear the owner when a claim reaches the Zero Balance queue."""
+        queue = ClaimQueue.objects.get(id=self.event.context["queue_entered"]["id"])
+        if queue.queue_sort_ordering != ClaimQueues.ZERO_BALANCE:
+            return []
+        claim_effect = ClaimEffect(claim_id=self.event.target.id)
+        return [claim_effect.unassign()]
 ```
 
 ---
