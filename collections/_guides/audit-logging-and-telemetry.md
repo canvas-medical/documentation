@@ -108,6 +108,9 @@ For print events, the report shows the document type as the data accessed and `p
 `faxpreview` as the action. When an event has no patient in context, the patient columns
 read `N/A`.
 
+For a staff account created or a change to staff access, the report names the administrator
+who made the change.
+
 {% include alert.html type="warning" content="Audit Report access is permission-based. If you need access, your internal administrators can work with Canvas support to assign it to the appropriate groups." %}
 
 ### Read-only replica database
