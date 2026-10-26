@@ -29014,6 +29014,46 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+<a id="patient_portal__widget_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__WIDGET_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when the Patient Portal landing page loads. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="patient_portal__get_theme_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_THEME_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when a Patient Portal page loads, including the login page. Return a <code>PatientPortalTheme</code> effect to theme the portal. See <a href='/sdk/patient-portal/#theme-the-patient-portal'>Theme the Patient Portal</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"business_line_id": str | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
@@ -30060,16 +30100,6 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 "results": list[dict]
 "user":
     "staff": str</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
-      <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
-    </tr>
-    <tr id="patient_portal__get_theme_configuration">
-      <td>PATIENT_PORTAL__GET_THEME_CONFIGURATION</td>
-      <td>Patient Portal page is loading, including the login page. Reply with a <code>PatientPortalTheme</code> effect; see <a href="/sdk/patient-portal/#theme-the-patient-portal">Theme the Patient Portal</a>.
-      <br />Context object:
-      <pre>"business_line_id": str | null</pre></td>
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>
