@@ -280,6 +280,8 @@ If you want to increase your application's visibility and display it alongside
 other panel buttons (instead of in the applications drawer), you can add
 the `show_in_panel` attribute. If you've added more than one application
 to that panel, you can set their priorities using the `panel_priority` attribute.
+A panel icon has no label, so Canvas shows the application's `name` in a tooltip
+when a user hovers over the icon.
 
 For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be
 rendered. For more info on the format of the `url_permissions` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.

@@ -24,7 +24,6 @@ group :jekyll_plugins do
    gem 'jekyll-seo-tag'
    gem 'jekyll-sitemap'
    gem 'jekyll-tabs'
-   gem 'octopress-minify-html'
    gem 'webrick'
 end
 
@@ -39,3 +38,5 @@ gem "base64", "~> 0.3.0"
 gem "bigdecimal", "~> 3.2"
 
 gem "mutex_m", "~> 0.3.0"
+
+gem "ostruct", "~> 0.6"

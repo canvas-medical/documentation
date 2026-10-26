@@ -9,6 +9,8 @@ hidden: false
 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
 
+Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
+
 ## Basic usage
 
 To get a calendar by identifier, use the `get` method on the `Calendar` model manager:

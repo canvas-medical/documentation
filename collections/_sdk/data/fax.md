@@ -67,7 +67,7 @@ for event in failed:
 
 ### Faxes sent by a plugin
 
-A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
+A fax sent with the [Fax Note effect](/sdk/effect-notes/#fax-note) is recorded as a `NoteActionEvent` on that note, with the Canvas Bot user as its `originator`. The [fax effects](/sdk/effect-fax/) for referrals, imaging orders, lab orders and letters record theirs the same way, on that document's action event model. Canvas Bot's staff id is `5eede137ecfe4124b8b773040e33be14` on every instance. To read the outcome, look the event up by the note, the number it was sent to, and that originator, so faxes staff sent to the same number are left out. Numbers are stored in E.164 format:
 
 ```python?partial=true
 from canvas_sdk.v1.data import NoteActionEvent
@@ -86,6 +86,44 @@ latest = (
 ```
 
 Every plugin's faxes are attributed to Canvas Bot, so this can't tell your plugin's faxes from another plugin's. If more than one plugin faxes the same note to the same number, compare `created` with when your plugin returned the effect.
+
+### Reacting when a fax fails
+
+Each faxed document type has [plugin events](/sdk/events/#faxed-documents) that target its action event. The `_CREATED` event fires when the fax is submitted, and the `_UPDATED` event fires when the faxing service reports the outcome:
+
+| Document | Fax submitted | Outcome reported | Target |
+| --- | --- | --- | --- |
+| Note | `NOTE_ACTION_EVENT_CREATED` | `NOTE_ACTION_EVENT_UPDATED` | [NoteActionEvent](#noteactionevent) |
+| Referral | `REFERRAL_ACTION_EVENT_CREATED` | `REFERRAL_ACTION_EVENT_UPDATED` | [ReferralActionEvent](#referralactionevent) |
+| Imaging order | `IMAGING_ORDER_ACTION_EVENT_CREATED` | `IMAGING_ORDER_ACTION_EVENT_UPDATED` | [ImagingOrderActionEvent](#imagingorderactionevent) |
+| Lab order | `LAB_ORDER_ACTION_EVENT_CREATED` | `LAB_ORDER_ACTION_EVENT_UPDATED` | [LabOrderActionEvent](#laborderactionevent) |
+| Data integration task | `INTEGRATION_TASK_ACTION_EVENT_CREATED` | `INTEGRATION_TASK_ACTION_EVENT_UPDATED` | [IntegrationTaskActionEvent](#integrationtaskactionevent) |
+| Letter | `LETTER_ACTION_EVENT_CREATED` | `LETTER_ACTION_EVENT_UPDATED` | [LetterActionEvent](/sdk/data-letter-action-event/) |
+
+`LETTER_ACTION_EVENT_CREATED` also fires when a letter is printed. Check that the action event's `event_type` is `FAXED` before you treat it as a fax.
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so retry each action event at most once. This handler reacts to a failed note fax; the same pattern works for any row above with its own event and model:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import NoteActionEvent
+
+
+class NoteFaxFailed(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_ACTION_EVENT_UPDATED)
+
+    def compute(self):
+        action_event = NoteActionEvent.objects.select_related("note", "fax").get(
+            id=self.event.target.id
+        )
+        if action_event.delivered_by_fax is not False:
+            return []
+
+        failed_number = action_event.fax.to_fax_number if action_event.fax else None
+        # Retry or alert, at most once per action event.
+        return []
+```
 
 ### From a fax
 
@@ -109,6 +147,18 @@ received = Fax.objects.filter(direction=FaxDirection.INBOUND).order_by("-date_ut
 failed = received.filter(success=False)
 ```
 
+On a received fax, `to_fax_number` is the Canvas line that received it. Depending on the faxing service that delivered the fax, Canvas stores that number with or without the leading `+`, such as `+15555550100` or `15555550100`. To find every fax one line received, match both forms:
+
+```python?partial=true
+from canvas_sdk.v1.data import Fax, FaxDirection
+
+line = "15555550100"
+received_on_line = Fax.objects.filter(
+    direction=FaxDirection.INBOUND,
+    to_fax_number__in=[line, f"+{line}"],
+)
+```
+
 ## Attributes
 
 ### Fax
@@ -120,7 +170,7 @@ failed = received.filter(success=False)
 | created         | DateTime                      |                                                                               |
 | modified        | DateTime                      |                                                                               |
 | fax_id          | String                        | The faxing service's id for the fax                                           |
-| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it |
+| to_fax_number   | String                        | The number the fax was sent to, for example `+15555550100`. For a received fax, the Canvas number that received it, which can be stored without the `+` |
 | from_fax_number | String                        | The number the fax was sent from. For a received fax, the sender's number     |
 | date_utc        | DateTime                      | When the faxing service accepted a sent fax, or finished receiving a received fax |
 | fax_pages       | Integer                       | The number of pages                                                           |

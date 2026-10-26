@@ -368,6 +368,8 @@ if sign_event:
     signed_by = sign_event.originator  # CanvasUser who signed
 ```
 
+{% include alert.html type="info" content="The PDF reached here through <code>DocumentReference</code> (<code>document_url</code>) is one of the consumer-read copies described under <a href=\"/sdk/data-note/#notestatechangeevent\">NoteStateChangeEvent</a>. On an instance with the exclusion setting enabled, the PDF omits entered-in-error commands — see that section." %}
+
 ### Find all open notes
 
 You can find all open notes by retrieving the note records with a current
@@ -526,6 +528,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
 | family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
 | plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
+| dme_orders          | QuerySet[[DmeOrder](/sdk/data-dme/#dmeorder)] | All Order DME commands signed on this note |
 | follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
 | reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
 | assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
@@ -615,6 +618,8 @@ for metadata in note_metadata:
 | state               | [NoteState](/sdk/data-note/#notestates) |
 | note_state_document | String                                  |
 | note_state_html     | String                                  |
+
+{% include alert.html type="info" content="The <code>note_state_document</code> and <code>note_state_html</code> fields hold the snapshot captured when a note is locked. The FHIR <code>DocumentReference</code> PDF content is copied from <code>note_state_document</code> at that same time, so all three are the copies consumers read. By default they include commands that were entered in error, which appear struck through in <code>note_state_html</code> as <code>Entered in Error/Removed on …</code> entries. When Canvas Support enables the opt-in setting (<code>EXCLUDE_ENTERED_IN_ERROR_FROM_NOTE_DOCUMENTS</code>, off by default) on an instance, these read copies instead omit entered-in-error commands — the field names and the <code>DocumentReference</code> schema are unchanged, only each copy's content differs. The full audit copy that keeps entered-in-error commands remains available from the note-footer PDF link served by <code>/api/NoteStateChangeEventDocument/{id}.pdf</code>." %}
 
 ### CurrentNoteStateEvent
 
