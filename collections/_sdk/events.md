@@ -2425,6 +2425,35 @@ A `COVERAGE_ELIGIBILITY_RESPONSE_CREATED` or `COVERAGE_ELIGIBILITY_RESPONSE_UPDA
   </tbody>
 </table>
 
+#### Instance configuration
+
+These events occur when a practice location, team, care team role, note type, coding, insurer, billing catalog entry, or vaccine catalog entry is created, updated, or deleted. They fire for every change, whether a person made it in Canvas or a plugin returned an [instance configuration effect](/sdk/effect-instance-configuration/). Each event's context object is empty.
+
+The target `id` is the record's `id` where its data model has one, and its `dbid` otherwise. The target `type` is the Canvas model name, which differs from the effect class name for some records, such as `Transactor` for insurers.
+
+| Events | Target `id` | Target `type` |
+|---|---|---|
+| PRACTICE_LOCATION_CREATED<br>PRACTICE_LOCATION_UPDATED<br>PRACTICE_LOCATION_DELETED | Practice location `id` | [PracticeLocation](/sdk/data-practicelocation/#practicelocation) |
+| PRACTICE_LOCATION_SETTING_UPDATED | Setting `dbid` | [PracticeLocationSetting](/sdk/data-practicelocation/#practicelocationsetting) |
+| TEAM_CREATED<br>TEAM_UPDATED<br>TEAM_DELETED | Team `id` | [Team](/sdk/data-team/#team) |
+| CARE_TEAM_ROLE_CREATED<br>CARE_TEAM_ROLE_UPDATED<br>CARE_TEAM_ROLE_DELETED | Role `dbid` | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
+| NOTE_TYPE_CREATED<br>NOTE_TYPE_UPDATED<br>NOTE_TYPE_DELETED | Note type `unique_identifier` | [NoteType](/sdk/data-note/#notetype) |
+| PATIENT_CONSENT_CODING_CREATED<br>PATIENT_CONSENT_CODING_UPDATED<br>PATIENT_CONSENT_CODING_DELETED | Coding `dbid` | `ConsentCoding` |
+| PATIENT_CONSENT_REJECTION_CODING_CREATED<br>PATIENT_CONSENT_REJECTION_CODING_UPDATED<br>PATIENT_CONSENT_REJECTION_CODING_DELETED | Coding `dbid` | `PatientConsentRejectionCoding` |
+| REASON_FOR_VISIT_SETTING_CODING_CREATED<br>REASON_FOR_VISIT_SETTING_CODING_UPDATED<br>REASON_FOR_VISIT_SETTING_CODING_DELETED | Coding `id` | `ReasonForVisitSettingCoding` |
+| INSURER_CREATED<br>INSURER_UPDATED<br>INSURER_DELETED | Insurer `id` | [Transactor](/sdk/data-coverage/#transactor) |
+| FEE_SCHEDULE_CREATED<br>FEE_SCHEDULE_UPDATED<br>FEE_SCHEDULE_DELETED | Entry `dbid` | [ChargeDescriptionMaster](/sdk/data-charge-description-master/) |
+| PAYOR_CHARGE_CREATED<br>PAYOR_CHARGE_UPDATED<br>PAYOR_CHARGE_DELETED | Charge `dbid` | [PayorSpecificCharge](/sdk/data-payor-specific-charge/) |
+| DISCOUNT_CREATED<br>DISCOUNT_UPDATED<br>DISCOUNT_DELETED | Discount `dbid` | `Discount` |
+| POSTING_RULE_CREATED<br>POSTING_RULE_UPDATED<br>POSTING_RULE_DELETED | Rule `dbid` | [PostingRule](/sdk/data-posting-rule/) |
+| VACCINE_CREATED<br>VACCINE_UPDATED<br>VACCINE_DELETED | Vaccine `id` | [Vaccine](/sdk/data-vaccine/#vaccine) |
+| VACCINE_LOT_CREATED<br>VACCINE_LOT_UPDATED<br>VACCINE_LOT_DELETED | Lot `id` | [VaccineLot](/sdk/data-vaccine/#vaccinelot) |
+
+Two changes emit a different event than you might expect:
+
+- Deleting a note type with the `NoteType` effect deprecates it, so it emits `NOTE_TYPE_UPDATED`.
+- `PRACTICE_LOCATION_SETTING_UPDATED` fires when an existing setting changes. A new practice location's default settings, and a setting added to a location that didn't have it, emit no event.
+
 #### Instructions
 
 <table>

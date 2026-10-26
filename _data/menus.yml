@@ -970,6 +970,9 @@ effects_module:
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
+  - title: "Instance Configuration"
+    url: /sdk/effect-instance-configuration/
+    description: Create, update, and delete practice locations, teams, note types, insurers, and billing and vaccine catalogs.
   - title: "Lab Report"
     url: /sdk/effect-lab-report/
     description: Create, update, enter-in-error, and attach results to a lab report.
@@ -1262,6 +1265,9 @@ data_module:
   - title: "LetterActionEvent"
     url: /sdk/data-letter-action-event/
     description: Actions taken on a letter, such as printing or faxing.
+  - title: "LetterTemplate"
+    url: /sdk/data-letter-template/
+    description: Reusable templates for letters, messages, and interventions.
   - title: "Medication"
     url: /sdk/data-medication/
     description: A record of a medication that is being consumed by a patient, either now, in the past, or in the future.
@@ -1316,6 +1322,9 @@ data_module:
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
+  - title: "PostingRule"
+    url: /sdk/data-posting-rule/
+    description: ERA posting rules that decide how claim adjustments are posted.
   - title: "PracticeLocation"
     url: /sdk/data-practicelocation/
     description: The practice locations present in the Canvas EMR.
@@ -1367,6 +1376,12 @@ data_module:
   - title: "ResolveConditionEvent"
     url: /sdk/data-resolve-condition-event/
     description: A record of a condition being resolved via the resolve_condition command.
+  - title: "Role"
+    url: /sdk/data-role/
+    description: Staff role definitions, such as Physician or Front Desk.
+  - title: "ScheduleDuration"
+    url: /sdk/data-schedule-duration/
+    description: Durations offered for appointments and schedule events.
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.

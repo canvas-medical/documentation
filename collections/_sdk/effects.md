@@ -456,6 +456,31 @@ Check out the [Service Provider Effects](/sdk/effect-service-provider/) document
 | DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider without deleting it. |
 
 
+### Instance Configuration
+
+Check out the [Instance Configuration Effects](/sdk/effect-instance-configuration/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_PRACTICE_LOCATION, UPDATE_PRACTICE_LOCATION, DELETE_PRACTICE_LOCATION | Manage practice locations. |
+| CREATE_PRACTICE_LOCATION_ADDRESS, UPDATE_PRACTICE_LOCATION_ADDRESS, DELETE_PRACTICE_LOCATION_ADDRESS | Manage a practice location's addresses. |
+| UPSERT_PRACTICE_LOCATION_SETTING | Set a per-location setting, such as service area ZIP codes. |
+| CREATE_TEAM, UPDATE_TEAM, DELETE_TEAM | Manage teams. |
+| ASSIGN_TEAM_MEMBER, REMOVE_TEAM_MEMBER | Add a staff member to a team or remove one. |
+| CREATE_CARE_TEAM_ROLE, UPDATE_CARE_TEAM_ROLE, DELETE_CARE_TEAM_ROLE | Manage care team roles. |
+| CREATE_NOTE_TYPE, UPDATE_NOTE_TYPE, DELETE_NOTE_TYPE | Manage encounter and schedule event note types. Delete deprecates the note type. |
+| CREATE_PATIENT_CONSENT_CODING, UPDATE_PATIENT_CONSENT_CODING, DELETE_PATIENT_CONSENT_CODING | Manage consent types. |
+| CREATE_PATIENT_CONSENT_REJECTION_CODING, UPDATE_PATIENT_CONSENT_REJECTION_CODING, DELETE_PATIENT_CONSENT_REJECTION_CODING | Manage consent rejection reasons. |
+| CREATE_REASON_FOR_VISIT_SETTING_CODING, UPDATE_REASON_FOR_VISIT_SETTING_CODING, DELETE_REASON_FOR_VISIT_SETTING_CODING | Manage structured reason-for-visit options. |
+| CREATE_INSURER, UPDATE_INSURER, DELETE_INSURER | Manage insurers. |
+| CREATE_FEE_SCHEDULE, UPDATE_FEE_SCHEDULE, DELETE_FEE_SCHEDULE | Manage fee schedule entries. |
+| CREATE_PAYOR_CHARGE, UPDATE_PAYOR_CHARGE, DELETE_PAYOR_CHARGE | Manage insurer-specific charges. |
+| CREATE_DISCOUNT, UPDATE_DISCOUNT, DELETE_DISCOUNT | Manage discounts. |
+| CREATE_POSTING_RULE, UPDATE_POSTING_RULE, DELETE_POSTING_RULE | Manage ERA posting rules. |
+| CREATE_VACCINE, UPDATE_VACCINE, DELETE_VACCINE | Manage the vaccine catalog. |
+| CREATE_VACCINE_LOT, UPDATE_VACCINE_LOT, DELETE_VACCINE_LOT | Manage vaccine lots. |
+
+
 ### External Events
 
 Check out the [External Event Effects](/sdk/effect-external-event/) documentation.
