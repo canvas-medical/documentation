@@ -105,6 +105,7 @@ plugins:
 exclude:
   - .devbox
   - .venv
+  - build-image
   - CLAUDE.md
   - CODEOWNERS
   - EVENT_TODOS.txt
