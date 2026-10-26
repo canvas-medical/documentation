@@ -82,7 +82,32 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
-Turning emergency access on or off requires the Emergency Access role.
+### Emergency access
+
+Emergency access is a temporary override for when a user needs to work on records beyond their
+normal roles. Turning it on or off requires the Emergency Access role, and it stays on until the
+user turns it off.
+
+While emergency access is on, the user holds add and change permissions on Canvas records. It
+never grants permissions whose changes would outlast the emergency session: those that change
+who holds access, how users sign in, what code runs, which credentials are used, or what the
+audit trail records. The excluded permissions cover:
+
+- Roles, role groups, permission groups, staff permissions, and staff role assignments
+- Staff records, including their contact points, external identifiers, and identity
+  verification
+- User accounts, login sessions, and OAuth configuration
+- Multi-factor authentication devices, including TOTP, email, and SMS
+- Failed-login lockouts
+- Plugins and plugin secrets
+- Stored Google credentials
+- Feature flags, organization settings, staff and global configuration settings, and Constance
+  settings
+- Audit and security event records, admin action logs, and record version history
+
+Turning emergency access off returns the user's directly assigned permissions to exactly what
+they were before it was turned on, including when the user had none. Any permission added to the
+user directly during the session is removed as well.
 
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.
