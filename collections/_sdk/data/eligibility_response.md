@@ -100,14 +100,23 @@ from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
 failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
 ```
 
-`valid_request` shows whether the check reached the payer. It is `True` when ClaimMD returned a result, including a rejection from ClaimMD or the payer. It is `False` when the request to ClaimMD failed with an HTTP error or timed out. These responses also have a non-empty `errors`, so their `status` is `FAILED`. Canvas's daily automatic eligibility check ignores responses with `valid_request` set to `False`, so it checks those coverages again on its next run.
+`valid_request` is `False` when a check got no answer for the coverage but a later request might. Canvas saves a response with `valid_request` set to `False` in these cases:
 
-To separate checks that never reached the payer from checks that ClaimMD or the payer rejected, filter on `valid_request` as well:
+- The request to Claim.MD timed out, couldn't connect, or failed with an HTTP error.
+- Claim.MD reported that no valid eligibility response came back.
+- Claim.MD reported that the policy reached its inquiry limit.
+- Claim.MD reported that the account key was missing or invalid.
+
+These responses always have a non-empty `errors`, so their `status` is `FAILED`. Their `x12_response` holds the body Claim.MD returned, which is empty after a timeout or a failed connection. Every other response has `valid_request` set to `True`, including payer rejections and other Claim.MD rejections.
+
+Canvas's daily eligibility check skips a coverage only when the coverage has a response from the past week with `valid_request` set to `True`. A coverage whose recent responses all have `valid_request` set to `False` is checked again on the next run.
+
+To separate checks that can be retried from checks that Claim.MD or the payer rejected, filter on `valid_request` as well:
 
 ```python
 from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
 
-not_sent = EligibilityResponse.objects.filter(valid_request=False)
+retryable = EligibilityResponse.objects.filter(valid_request=False)
 rejected = (
     EligibilityResponse.objects.filter(valid_request=True)
     .exclude(errors=None)
