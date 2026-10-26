@@ -12,8 +12,7 @@
                 </div>
                 {% if item.children %}
                 <ul class="toc__submenu toc__accordion toc__accordion__expanded">
-                    {% assign itemSorted = item.children | sort: "sort" %}
-                    {% for item in itemSorted %}
+                    {% for item in item.children %}
                       {%- assign expanded = false -%}
                       {% if item.children %}
                         {% for child in item.children %}
