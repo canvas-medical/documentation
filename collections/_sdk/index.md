@@ -41,11 +41,21 @@ And here are some other [guides](/guides)
 
 The Canvas SDK is your toolkit for customizing workflows natively across the full Canvas platform: scheduling, charting, billing, and more. It is a [python package](https://pypi.org/project/canvas/) used to develop and deploy plugins, which then run in this [open source runtime environment](https://github.com/canvas-medical/canvas-plugins) on your Canvas instance.
 
-Plugins, the custom packages you author with the Canvas SDK, run in a sandboxed process directly on the Canvas instance. The Canvas application emits many [events](/sdk/events) at runtime, which you can choose to respond to and produce some number of [effects](/sdk/effects). These effects are then interpreted by the Canvas application, which applies the changes your plugin returned. Events are accompanied by contextual information, and your plugin has access to additional information through the [data module](/sdk/data), which exposes a subset of the Canvas application database through a series of [Django ORM classes](https://docs.djangoproject.com/en/5.1/ref/models/querysets/) backed by read-only views. The SDK also includes a [clients module](/sdk/clients/) with pre-built integrations for third-party services like AI/ML providers, cloud storage, email, and messaging.
+Plugins, the custom packages you author with the Canvas SDK, run in a sandboxed process directly on the Canvas instance. Each plugin declares its handlers, applications, and configuration in a [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/) file, which tells Canvas what to load. The Canvas application emits many [events](/sdk/events) at runtime, which you can choose to respond to and produce some number of [effects](/sdk/effects). These effects are then interpreted by the Canvas application, which applies the changes your plugin returned. Events are accompanied by contextual information, and your plugin has access to additional information through the [data module](/sdk/data), which exposes a subset of the Canvas application database through a series of [Django ORM classes](https://docs.djangoproject.com/en/5.1/ref/models/querysets/) backed by read-only views. The SDK also includes a [clients module](/sdk/clients/) with pre-built integrations for third-party services like AI/ML providers, cloud storage, email, and messaging.
 
 <p>
   <object alt="Diagram of the Canvas Plugins Runtime Environment" type="image/svg+xml" data="/assets/images/sdk/canvas_plugins_runtime_diagram.svg" style="width: 90%;"></object>
 </p>
+
+<!-- source: discussion #615 -->
+## Using these docs with AI coding tools
+
+If you build plugins with an AI coding assistant, such as Claude Code or Cursor, point it at these docs so its suggestions match the real SDK and FHIR API:
+
+- [`/llms.txt`](/llms.txt) is an index of the docs, with a link to a Markdown copy of each page.
+- [`/llms-full.txt`](/llms-full.txt) is the full SDK, FHIR API, and guides content as one Markdown file.
+- Add `.md` to any page's URL for a Markdown copy of it, for example [`/sdk/data-patient.md`](/sdk/data-patient.md).
+- The docs are also indexed on [Context7](https://context7.com/canvas-medical/documentation), for editors that use it.
 
 ## Where can I get additional help?
 

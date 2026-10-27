@@ -46,6 +46,24 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 
 ```
 
+## Review assignment
+
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned. When the review is delegated to another staff member, `reviewers` lists the delegate in place of the original reviewer.
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument, Staff
+
+document = UncategorizedClinicalDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the document is assigned to
+reviewers = document.reviewers.all()
+team = document.team
+
+# Every document assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
+```
+
 ## Delegations
 
 A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
@@ -89,11 +107,26 @@ The `code` field comes from the document's type, which is drawn from a fixed lis
 
 Administrative document types are stored as [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/) instead. Lab reports, imaging reports and specialist consult reports have their own models, so their codings never appear here.
 
+## Accessing the document file
+
+The `document_url` property returns a presigned S3 URL for the document file, or `None` when no file is present. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument
+
+record = UncategorizedClinicalDocument.objects.get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+# Presigned S3 URL to the document file, or None
+url = record.document_url
+```
+
 ## The document reference
 
-`UncategorizedClinicalDocument` carries the document's type, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the record, which is also how the document appears in the FHIR API.
+Each record also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it. The document reference carries the document's coding, category, and status, and represents the document in the FHIR API. Use `document_url` to get the file itself, and the document reference when you want that metadata.
 
-To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
+To find it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the record's `dbid`:
 
 ```python
 from canvas_sdk.v1.data import ContentType, DocumentReference, UncategorizedClinicalDocument
@@ -130,6 +163,7 @@ url = document.document_url if document else None
 | assigned_by        | [CanvasUser](/sdk/data-canvasuser)                                          |
 | review             | [UncategorizedClinicalDocumentReview](#uncategorizedclinicaldocumentreview) |
 | team               | [Team](/sdk/data-team/#team)                                                |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                           |
 | code               | [DocumentCoding](/sdk/data-patient-administrative-document/#documentcoding) |
 | name               | String                                                                      |
 | review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode)       |
@@ -140,6 +174,8 @@ url = document.document_url if document else None
 | original_date      | Date                                                                        |
 | comment            | String                                                                      |
 | priority           | Boolean                                                                     |
+| document           | File (S3 key)                                                               |
+| document_url       | String (computed)                                                           |
 
 ### UncategorizedClinicalDocumentReview
 

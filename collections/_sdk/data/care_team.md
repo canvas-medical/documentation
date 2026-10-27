@@ -91,29 +91,24 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### CareTeamMembership
 
-| Field Name            | Type                                                                          |
-| --------------------- | ----------------------------------------------------------------------------- |
-| id                    | UUID                                                                          |
-| dbid                  | Integer                                                                       |
-| created               | DateTime                                                                      |
-| modified              | DateTime                                                                      |
-| patient               | [Patient](/sdk/data-patient/#patient)                                         |
-| staff                 | [Staff](/sdk/data-staff#staff)                                                |
-| role                  | [CareTeamRole](#careteamrole)                                                 |
-| organizational_entity | [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity) |
-| status                | [CareTeamMembershipStatus](#careteammembershipstatus)                         |
-| lead                  | Boolean                                                                       |
-| role_code             | String                                                                        |
-| role_system           | String                                                                        |
-| role_display          | String                                                                        |
+| Field Name            | Type                                                                                | Description                                                                                                           |
+|-----------------------|-------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| id                    | UUID                                                                                |                                                                                                                       |
+| dbid                  | Integer                                                                             |                                                                                                                       |
+| created               | DateTime                                                                            |                                                                                                                       |
+| modified              | DateTime                                                                            |                                                                                                                       |
+| patient               | [Patient](/sdk/data-patient/#patient)                                               |                                                                                                                       |
+| staff                 | [Staff](/sdk/data-staff#staff)                                                      |                                                                                                                       |
+| role                  | [CareTeamRole](#careteamrole)                                                       |                                                                                                                       |
+| organizational_entity | [OrganizationalEntity](/sdk/data-organizational-entity/#organizationalentity)       |                                                                                                                       |
+| status                | [CareTeamMembershipStatus](#careteammembershipstatus)                               |                                                                                                                       |
+| lead                  | Boolean                                                                             |                                                                                                                       |
+| role_code             | String                                                                              |                                                                                                                       |
+| role_system           | String                                                                              |                                                                                                                       |
+| role_display          | String                                                                              |                                                                                                                       |
+| service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) \| `None` (computed) | The external provider for this membership, resolved through its `organizational_entity`; `None` for internal members. |
 
 For external (non-staff) members, `staff` is empty and `organizational_entity` links to the external provider.
-
-#### Properties
-
-| Name             | Type                                                                       | Description                                                                                                              |
-| ---------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| service_provider | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) \| `None`   | The external provider for this membership, resolved through its `organizational_entity`; `None` for internal members. |
 
 ## Enumeration types
 

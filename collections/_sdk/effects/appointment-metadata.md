@@ -11,13 +11,6 @@ The `AppointmentMetadata` effect provides a flexible key-value storage system fo
 
 Appointment metadata serves as a powerful extension mechanism for storing custom appointment-related information that doesn't fit within the standard appointment data model. It uses the `.upsert(value)` method to apply a value to the key attributed with the Metadata effect object.
 
-## Attributes
-
-| Attribute        | Type  | Description                                                             | Required |
-|------------------|-------|-------------------------------------------------------------------------|----------|
-| `appointment_id` | `str` | Id of the [Appointment(/sdk/data-appointment/)] record to associate metadata with                 | Yes      |
-| `key`            | `str` | Unique identifier for the metadata entry within the appointment context | Yes      |
-
 ## Methods
 
 ### upsert(value: str) → Effect
@@ -39,6 +32,13 @@ An `Effect` object configured for upserting appointment metadata.
 - If a metadata entry with the specified key already exists for the appointment, it will be updated with the new value
 - If no entry exists, a new metadata entry will be created
 - The operation is idempotent - repeated calls with the same key and value will not create duplicate entries
+
+## Attributes
+
+| Attribute        | Type  | Description                                                             | Required |
+|------------------|-------|-------------------------------------------------------------------------|----------|
+| `appointment_id` | `str` | Id of the [Appointment](/sdk/data-appointment/) record to associate metadata with                 | Yes      |
+| `key`            | `str` | Unique identifier for the metadata entry within the appointment context | Yes      |
 
 ## Implementation Details
 

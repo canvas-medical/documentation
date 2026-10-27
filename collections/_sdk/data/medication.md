@@ -115,35 +115,74 @@ for medication in medications:
     sig = medication.latest_sig
 ```
 
+<!-- source: discussion #1613 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+## Filtering to match the Patient Summary
+
+The Medications list in the Patient Summary section of the chart is not reproduced by filtering on `status == "active"` alone. Per Canvas, that list applies two exclusion layers before considering status:
+
+1. Exclude uncommitted and entered-in-error records — a medication must have a non-null `committer` (it was finalized) and a null `entered_in_error` (no one flagged it as erroneous).
+2. Filter by `status` — the list defaults to `status == "active"`; users can toggle to inactive or all.
+
+The `Medication` queryset has both layers built in. `committed()` keeps records with a non-null `committer` and a null `entered_in_error`, and `active()` is `committed()` plus `status == "active"`. To replicate the Patient Summary's active medications:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+active_meds = Medication.objects.for_patient(patient_id).active()
+```
+
+For every medication the list can show (its "All" toggle, active plus inactive), use `committed()` without the status filter:
+
+```python?partial=true
+from canvas_sdk.v1.data.medication import Medication
+
+all_visible_meds = Medication.objects.for_patient(patient_id).committed()
+```
+
+### How status is computed
+
+Canvas sets a medication's `status` from its command history; users do not set it directly. A medication is `inactive` when any of the following is true, and `active` otherwise:
+
+- It has a committed stop medication event that has not been entered in error.
+- Its prescription has a committed cancellation that has not been entered in error.
+- A newer medication in the same chain of commands has replaced it, for example through an adjusted prescription.
+- Its only commands are refill denials.
+- It has no committed commands linked to it, apart from ones entered in error.
+
+Canvas recomputes `status`, `start_date`, and `end_date` whenever a related command is created, committed, or entered in error. Related commands include medication statements, prescriptions, refills, adjustments, stop medication events, prescription cancellations, and eRx refill responses, and a change to a note's date of service triggers it too.
+
+The FHIR API is the exception. Creating a `MedicationStatement` through FHIR writes `status` and the `effectivePeriod` start and end straight onto the `Medication` record without recomputing them, and those values stay until a later command triggers a recomputation.
+
 ## Attributes
 
 ### Medication
 
-| Field Name                     | Type                                                     |
-| ------------------------------ | -------------------------------------------------------- |
-| id                             | UUID                                                     |
-| dbid                           | Integer                                                  |
-| created                        | DateTime                                                 |
-| modified                       | DateTime                                                 |
-| patient                        | [Patient](/sdk/data-patient/#patient)                    |
-| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                       |
-| committer                      | [CanvasUser](/sdk/data-canvasuser)                       |
-| status                         | String                                                   |
-| start_date                     | Date                                                     |
-| end_date                       | Date                                                     |
-| quantity_qualifier_description | String                                                   |
-| clinical_quantity_description  | String                                                   |
-| potency_unit_code              | String                                                   |
-| national_drug_code             | String                                                   |
-| erx_quantity                   | String                                                   |
-| codings                        | [MedicationCoding](#medicationcoding)[]                  |
-| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]  |
-| change_medications             | [ChangeMedication](/sdk/data-change-medication)[]        |
-| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[] |
-| prescriptions                  | [Prescription](/sdk/data-prescription)[]                 |
-| previous_medications           | [Prescription](/sdk/data-prescription)[]                 |
-| prescription_change_responses  | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |
-| latest_sig                     | String (property) — see [Latest sig](#latest-sig)        |
+| Field Name                     | Type                                                                                               | Description                   |
+|--------------------------------|----------------------------------------------------------------------------------------------------|-------------------------------|
+| id                             | UUID                                                                                               |                               |
+| dbid                           | Integer                                                                                            |                               |
+| created                        | DateTime                                                                                           |                               |
+| modified                       | DateTime                                                                                           |                               |
+| patient                        | [Patient](/sdk/data-patient/#patient)                                                              |                               |
+| entered_in_error               | [CanvasUser](/sdk/data-canvasuser)                                                                 |                               |
+| committer                      | [CanvasUser](/sdk/data-canvasuser)                                                                 |                               |
+| status                         | String                                                                                             |                               |
+| start_date                     | Date                                                                                               |                               |
+| end_date                       | Date                                                                                               |                               |
+| quantity_qualifier_description | String                                                                                             |                               |
+| clinical_quantity_description  | String                                                                                             |                               |
+| potency_unit_code              | String                                                                                             |                               |
+| national_drug_code             | String                                                                                             |                               |
+| erx_quantity                   | String                                                                                             |                               |
+| codings                        | [MedicationCoding](#medicationcoding)[]                                                            |                               |
+| medication_statements          | [MedicationStatement](/sdk/data-medication-statement)[]                                            |                               |
+| change_medications             | [ChangeMedication](/sdk/data-change-medication)[]                                                  |                               |
+| stopmedicationevent_set        | [StopMedicationEvent](/sdk/data-stop-medication-event)[]                                           |                               |
+| prescriptions                  | [Prescription](/sdk/data-prescription)[]                                                           |                               |
+| previous_medications           | [Prescription](/sdk/data-prescription)[]                                                           |                               |
+| prescription_change_responses  | [PrescriptionChangeResponse](/sdk/data-prescription-change-response/#prescriptionchangeresponse)[] |                               |
+| latest_sig                     | String (computed)                                                                                  | See [Latest sig](#latest-sig) |
 
 ### MedicationCoding
 
