@@ -161,7 +161,7 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 --data-urlencode 'scope={SCOPES}'
 ```
 
-**Note:** The `scope` parameter must match the scopes from the original authorization (or be a subset). If omitted, Canvas will attempt to use the application's default allowed scopes, but this may fail with `invalid_scope` if the defaults don't match the original grant.
+**Note:** The `scope` parameter is optional. If you omit it, the new access token keeps the scopes from the original authorization. If you include it, it must match those scopes or be a subset of them.
 
 This returns a new `access_token` and a **new** `refresh_token`. The previous refresh token is consumed and cannot be reused. Store the new refresh token for the next refresh cycle.
 
