@@ -116,9 +116,9 @@ def _text(text):
 
 These three helpers (`_response`, `_tool_use`, `_text`) are typically
 the only LLM-mocking infrastructure you need. To exercise the real
-Anthropic client and the gateway's HTTP contract instead, construct
-`LLMGateway(base_url=..., key=..., transport=...)` with an
-`httpx2.MockTransport` that returns Anthropic-shaped JSON.
+Anthropic client instead, construct a real
+`LLMGateway(base_url=..., api_key=...)` and point `base_url` at a local
+stub server that returns Anthropic-shaped JSON.
 
 ## Driving the run loop in tests
 

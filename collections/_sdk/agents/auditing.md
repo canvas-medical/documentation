@@ -94,6 +94,11 @@ The reference plugin demonstrates one shape: a Custom Data table
 with one row per agent invocation, written by lifecycle hooks:
 
 ```python
+from django.db.models import DateTimeField, IntegerField, JSONField, TextField
+
+from canvas_sdk.v1.data.base import CustomModel
+
+
 class AgentRunLog(CustomModel):
     """One row per AgentPlugin invocation. Plugin-owned semantic audit."""
 

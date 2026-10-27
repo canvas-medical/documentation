@@ -52,7 +52,7 @@ What to leave out:
   shot block usually hurts. The system prompt's job is to set rules,
   not to teach by demonstration.
 
-Example from the reference plugin's chart summary agent:
+Example system prompt for a single-purpose drafting agent:
 
 ```python
 SYSTEM_PROMPT = (

@@ -9,9 +9,10 @@ one that reads the chart on note creation and drafts a Plan command for
 the clinician to edit and commit. ~50 lines of agent code, plus a
 manifest entry and a trigger handler.
 
-There is no API key to configure: agents reach Anthropic through
-Canvas's inference gateway, and the platform hands your agent a ready
-client (see [Credentials](/sdk/agents/#credentials)).
+Agents reach Anthropic through Canvas's inference gateway. Your plugin
+declares an `INFERENCE_GATEWAY_KEY` secret for its gateway key, and the
+platform hands your agent a client built from it (see
+[Credentials](/sdk/agents/#credentials)).
 
 ## 1. Register a tool catalog
 
@@ -243,7 +244,10 @@ against each other. The platform uses it as the lock key.
         }
       }
     ]
-  }
+  },
+  "variables": [
+    {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
+  ]
 }
 ```
 
@@ -255,7 +259,7 @@ reads both and scopes `self.tools` at run time (see
 ## 5. Install + test
 
 ```bash
-canvas install my_plugin --host <your-instance>
+canvas install my_plugin --host <your-instance> --secret INFERENCE_GATEWAY_KEY=<your-gateway-key>
 ```
 
 Create a new note in the chart. Within a few seconds the agent should

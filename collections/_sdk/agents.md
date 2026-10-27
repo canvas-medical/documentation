@@ -12,9 +12,7 @@ tasks, surfacing recommendations to clinicians, and so on. Unlike a
 take seconds (or minutes, for tool-heavy workflows) — it runs on a
 worker, not on the request thread.
 
-> This framework is currently in preview. The shape of the SDK is
-> stable, but some features described here are scheduled for upcoming
-> releases — those are called out inline.
+{% include alert.html type="warning" content="This framework is currently in preview. The shape of the SDK is stable, but some features described here are scheduled for upcoming releases. Those are called out inline." %}
 
 ## When agents fit
 
@@ -46,7 +44,7 @@ An agent run is asynchronous and driven by the worker, even when the
 trigger is user-initiated (e.g., a chat message). The agent's logic
 runs on the plugin-runner pod, never on the web request thread.
 
-```
+```text
 plugin trigger handler        home-app web/worker            plugin-runner pod
 ─────────────────────         ──────────────────             ─────────────────
 compute() →
@@ -99,11 +97,17 @@ platform makes sure it runs safely.
 
 ## Credentials
 
-Agents reach Anthropic through Canvas's inference gateway, and your
-plugin holds no API key. The platform builds the `LLMGateway` it passes
-to `run()` from the instance's gateway configuration, and
-`gateway.client()` returns an `anthropic.Anthropic` client pointed at
-the gateway:
+Agents reach Anthropic through Canvas's inference gateway. Each agent
+plugin holds its own gateway key: declare an `INFERENCE_GATEWAY_KEY`
+variable with `"sensitive": true` in your manifest (see
+[Manifest declaration](#manifest-declaration)), and set its value when
+you install the plugin, as with any other
+[plugin secret](/sdk/secrets/).
+
+Before each run, the platform builds the `LLMGateway` it passes to
+`run()` from the instance's gateway URL and your plugin's
+`INFERENCE_GATEWAY_KEY`. `gateway.client()` returns an
+`anthropic.Anthropic` client pointed at the gateway:
 
 ```python?partial=true
 client = gateway.client()
@@ -114,11 +118,8 @@ response = client.messages.create(
 )
 ```
 
-The client carries a placeholder key. The real key is added beneath it
-on each request, together with headers that attribute the call to your
-plugin, agent, and run, and it never reaches plugin code. The client
-sends requests only to the gateway, and only to the Messages API and
-token counting.
+The client sends your plugin's key, along with headers that attribute
+each call to your plugin, agent, and run.
 
 The gateway meters every call against your organization's inference
 account and enforces its budget and model allowlist. `gateway.model`
@@ -135,13 +136,15 @@ exception handling works unchanged:
 Let these errors propagate out of `run()`. The platform retries a run
 when the gateway is unreachable, rate-limited (429), or returns a
 server error, and records a refusal as a failed run without retrying
-it. If the instance has no gateway configured, the run fails before
-your agent is instantiated.
+it. If the instance has no gateway URL configured, or your plugin's
+`INFERENCE_GATEWAY_KEY` isn't set, the run fails before your agent is
+instantiated.
 
 ## Manifest declaration
 
 Each agent goes under `components.agents[]` in your manifest, with the
-tools you authorize it to use:
+tools you authorize it to use. Declare the gateway key under the
+top-level `variables`:
 
 ```jsonc
 {
@@ -159,7 +162,10 @@ tools you authorize it to use:
         }
       }
     ]
-  }
+  },
+  "variables": [
+    {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
+  ]
 }
 ```
 

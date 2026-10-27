@@ -101,7 +101,7 @@ def _serialize_chronic_condition(condition):
 # and appends the resulting Effect. NEVER commits — the clinician
 # reviews the draft in the chart UI.
 tools.originate_command_tool(
-    name="originate_prescribe_medication",
+    name="originate_prescription_draft",
     description=(
         "Stage a draft Prescribe command on the patient's current open "
         "note for the clinician to review, edit, and commit."
@@ -194,6 +194,9 @@ you only write one directly when using the raw `@tools.tool`
 decorator. Either way, every executor takes the same two arguments:
 
 ```python
+from typing import Any
+
+
 def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
 ```
 
@@ -226,7 +229,7 @@ class ChartSummary(AgentPlugin):
     def run(self, state, gateway, trigger_payload):
         # self.tools is the manifest-scoped view — already filtered.
         # Use it, not the imported _registered_tools.
-        client.messages.create(tools=self.tools.definitions(), ...)
+        client.messages.create(tools=self.tools.definitions(), messages=messages)
         result = self.tools.execute(name, args, ctx=tool_ctx)
 ```
 

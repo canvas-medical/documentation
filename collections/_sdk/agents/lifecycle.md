@@ -39,10 +39,10 @@ following happens. Each step is platform-driven, and steps 4 through
 10 run inside the per-`scope_key` lock:
 
 1. **Resolve the agent class** from `LOADED_PLUGINS` by `agent_id`.
-2. **Build the `LLMGateway`** from the instance's inference gateway
-   configuration, attributed to your plugin, this agent, and this run.
-   If the instance has no gateway configured, the run stops here with
-   `error_kind="LLM_NOT_CONFIGURED"`.
+2. **Build the `LLMGateway`** from the instance's inference gateway URL
+   and your plugin's `INFERENCE_GATEWAY_KEY` secret, attributed to your
+   plugin, this agent, and this run. If either is unset, the run stops
+   here with `error_kind="LLM_NOT_CONFIGURED"`.
 3. **Acquire the per-`scope_key` lock**. If another invocation holds
    it, the run returns `success=False` with `error_kind="AGENT_LOCKED"`;
    the Celery task auto-retries with exponential backoff. See
@@ -192,14 +192,13 @@ class LLMGateway:
     model: str  # the run's default model, "claude-sonnet-4-6"
 
     def client(self, *, max_retries: int = 2) -> Anthropic:
-        """An Anthropic client that reaches only the inference gateway."""
+        """An Anthropic client pointed at the inference gateway."""
 ```
 
-Built by the platform from the instance's inference gateway
-configuration before `run()` is called. It exposes no key: `client()`
-returns an `anthropic.Anthropic` client whose own key is a placeholder,
-and the real key and attribution headers are added beneath it on each
-request. The client refuses requests to any other host and to any
-endpoint besides the Messages API and token counting. See
+Built by the platform before `run()` is called, from the instance's
+inference gateway URL and your plugin's `INFERENCE_GATEWAY_KEY` secret.
+`client()` returns an `anthropic.Anthropic` client pointed at the
+gateway. It carries that key and headers that attribute each call to
+your plugin, agent, and run. See
 [Credentials](/sdk/agents/#credentials) for the errors the gateway
 returns.
