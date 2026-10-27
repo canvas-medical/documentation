@@ -2798,12 +2798,6 @@ existing_ros = ReviewOfSystemsCommand(command_uuid='d4e5f6a7-8b9c-4d0e-1f2a-3b4c
 # All previously set toggle states are automatically loaded
 ```
 
-#### Printed output
-
-By default, a printed Review of Systems lists each answered question with its selected answers after a **Reports:** label. For a question with several answer options, a **Denies:** line follows with the options the clinician didn't select.
-
-To print the command exactly as recorded, ask [Canvas Support](https://canvas-medical.help.usepylon.com/) to turn on the `PRINT_ROS_AS_RECORDED` Constance setting for your instance. With it on, each question prints with its selected answers only, without the **Reports:** label or the **Denies:** line. The Review of Systems in chart search results uses the same format.
-
 **Note:** The ReviewOfSystemsCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see [Recording responses](#questionnaire).
 
 ---
