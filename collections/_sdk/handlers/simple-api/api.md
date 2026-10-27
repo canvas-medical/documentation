@@ -660,6 +660,8 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+For a patient portal session, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+
 ##### Custom
 
 It's also possible to create custom authentication schemes. There are two ways to do this.

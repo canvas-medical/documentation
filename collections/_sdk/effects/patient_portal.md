@@ -7,6 +7,25 @@ hidden: false
 
 The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
 
+## Family Portal Access
+
+With family portal access, staff give a family member or another representative portal access to a patient's chart. A parent who is also a patient can open their child's chart as well as their own, and a representative with no chart of their own uses the portal for the chart they were given. Canvas turns family portal access on for each instance.
+
+A portal login can have several charts: its own, if it has one, and each chart it was given access to. The portal is open on one of them at a time, and the login can switch between them. Each browser tab stays on the chart it shows.
+
+Plugins receive the patient whose chart the portal is open on, which isn't always the person signed in. Canvas identifies that patient in:
+
+- The `canvas-logged-in-user-id` header on [SimpleAPI](/sdk/handlers-simple-api-http/#session) requests, which `SessionCredentials.logged_in_user` reads.
+- `logged_in_user` on [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) connections.
+- The `user` in the event context of a `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application).
+- The target of portal events, such as `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, and `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION`.
+
+A handler that looks up the patient from these values works with the chart the portal is open on. When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+
+A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+
+A message that a family member sends from the portal is filed on the chart the portal is open on. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+
 ## Configure Portal Menu Items
 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
@@ -693,6 +712,7 @@ The `SendInviteEffect` triggers a portal invitation that lets the patient regist
 Sends the portal invitation.
 
 - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- The invitation goes to the patient whose own login `user_dbid` names. For the login of a family member with no chart of their own (see [Family Portal Access](#family-portal-access)), the effect sends nothing.
 
 #### Attributes
 

@@ -66,6 +66,8 @@ def authenticate(self) -> bool:
     ...
 ```
 
+For a connection from the patient portal, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+
 #### APIKey-Based (External Clients)
 For external tools or scripts, pass an auth key as a query parameter:
 
