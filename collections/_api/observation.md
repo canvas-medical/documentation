@@ -6,6 +6,8 @@ sections:
       - type: apidoc
         name: Observation
         article: "a"
+        # REVIEW: clinical-accuracy sign-off required
+        # source: discussion #538
         description: >-
           Measurements and simple assertions made about a patient, device or other subject.<br><br>
           Canvas supports the following US Core Profiles for Observations:<br>
@@ -44,7 +46,7 @@ sections:
             3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it. <br>
             4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
             5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
-            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
+            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`). Canvas lab orders are placed with a lab-specific identifier or a CPT code rather than a LOINC code, so treat the lab vendor as the source of truth for a result's LOINC code. When you create lab results through the API, prefer the vendor's specific LOINC code over a generic laboratory result code, because what is ordered can differ slightly from what the lab performs.
               
         attributes:
           - name: resourceType

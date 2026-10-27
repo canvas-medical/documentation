@@ -77,6 +77,8 @@ results = SpecialtyReportTemplate.objects.search("cardiology")
 |-----------------------|--------------------------------------------------------------------------|
 | id                    | UUID                                                                     |
 | dbid                  | Integer                                                                  |
+| created               | DateTime                                                                 |
+| modified              | DateTime                                                                 |
 | name                  | String                                                                   |
 | code                  | String                                                                   |
 | code_system           | String                                                                   |
@@ -94,6 +96,8 @@ results = SpecialtyReportTemplate.objects.search("cardiology")
 | Field Name      | Type                                                                                 |
 |-----------------|--------------------------------------------------------------------------------------|
 | dbid            | Integer                                                                              |
+| created         | DateTime                                                                             |
+| modified        | DateTime                                                                             |
 | report_template | [SpecialtyReportTemplate](#specialtyreporttemplate)                                  |
 | sequence        | Integer                                                                              |
 | code            | String                                                                               |
@@ -109,6 +113,8 @@ results = SpecialtyReportTemplate.objects.search("cardiology")
 | Field Name | Type                                                                    |
 |------------|-------------------------------------------------------------------------|
 | dbid       | Integer                                                                 |
+| created    | DateTime                                                                |
+| modified   | DateTime                                                                |
 | field      | [SpecialtyReportTemplateField](#specialtyreporttemplatefield)           |
 | label      | String                                                                  |
 | key        | String                                                                  |

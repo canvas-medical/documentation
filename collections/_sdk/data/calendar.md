@@ -9,6 +9,8 @@ hidden: false
 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
 
+Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
+
 ## Basic usage
 
 To get a calendar by identifier, use the `get` method on the `Calendar` model manager:
@@ -78,6 +80,8 @@ calendars = Calendar.objects.for_calendar_name(
 |---------------|----------|--------------------------------------------------|
 | id            | UUID     | Unique identifier for the calendar               |
 | dbid          | Integer  | Database identifier                              |
+| created       | DateTime | When the record was created.                     |
+| modified      | DateTime | When the record was last modified.               |
 | title         | String   | The title of the calendar                        |
 | timezone      | TimeZone | The timezone for the calendar (default: UTC)     |
 | description   | String   | Optional description of the calendar's purpose   |
@@ -89,6 +93,8 @@ calendars = Calendar.objects.for_calendar_name(
 |--------------------------|-------------------------|--------------------------------------------------------|
 | id                       | UUID                    | Unique identifier for the event                        |
 | dbid                     | Integer                 | Database identifier                                    |
+| created                  | DateTime                | When the record was created.                           |
+| modified                 | DateTime                | When the record was last modified.                     |
 | title                    | String                  | The title of the event                                 |
 | description              | String                  | Description of the event                               |
 | calendar                 | [Calendar](#calendar)   | The calendar this event belongs to                     |

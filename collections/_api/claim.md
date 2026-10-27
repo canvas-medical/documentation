@@ -292,7 +292,8 @@ sections:
                 required_in: create,update
                 description_for_all_endpoints: Coverage to be used for adjudication. 
                 read_and_search_description: Only insurance objects with `focal` as True will be returned in a Search/Read. 
-                create_and_update_description: Canvas will ignore any elements that are set to False. 
+                # source: discussion #1138
+                create_and_update_description: Canvas will ignore any elements that are set to False. For a self-pay claim, send a single `"No Coverage"` entry with no `coverage.reference` and `focal` set to `false`. If that entry has `focal` set to `true`, the claim is not created.
               - name: sequence
                 required_in: create,update
                 type: positive integer
@@ -403,6 +404,9 @@ sections:
           - name: _id
             type: string
             description: The Canvas resource identifier of the Claim
+          - name: created
+            type: date
+            description: Filter by `created`, which is the date of service of the note the claim is associated with. Use this parameter to retrieve only claims within a date range, such as claims added since your last sync. See [Date Filtering](/api/date-filtering) for more information.
           - name: patient
             description: The patient reference associated to the Claim in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string

@@ -9,6 +9,8 @@ hidden: false
 
 The `VisualExamFinding` model represents a visual exam finding captured on a note. Each finding consists of a titled image along with a narrative description of the clinical observation.
 
+To record a finding from a plugin, use the [VisualExamFinding command](/sdk/commands/#visualexamfinding).
+
 ## Basic usage
 
 To get a visual exam finding by identifier, use the `get` method on the `VisualExamFinding` model manager:
@@ -89,19 +91,19 @@ committed_findings = VisualExamFinding.objects.committed()
 
 ### VisualExamFinding
 
-| Field Name | Type                                  |
-|------------|---------------------------------------|
-| id         | UUID                                  |
-| dbid       | Integer                               |
-| created    | DateTime                              |
-| modified   | DateTime                              |
-| patient    | [Patient](/sdk/data-patient/#patient) |
-| note       | [Note](/sdk/data-note/#note)          |
-| image      | String (S3 key)                       |
-| title      | String                                |
-| narrative  | String                                |
-| originator | [CanvasUser](/sdk/data-canvasuser)    |
-| committer  | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error | [CanvasUser](/sdk/data-canvasuser) |
-| image_url  | String (property) — presigned S3 URL  |
+| Field Name       | Type                                  | Description      |
+|------------------|---------------------------------------|------------------|
+| id               | UUID                                  |                  |
+| dbid             | Integer                               |                  |
+| created          | DateTime                              |                  |
+| modified         | DateTime                              |                  |
+| patient          | [Patient](/sdk/data-patient/#patient) |                  |
+| note             | [Note](/sdk/data-note/#note)          |                  |
+| image            | File (S3 key)                         |                  |
+| title            | String                                |                  |
+| narrative        | String                                |                  |
+| originator       | [CanvasUser](/sdk/data-canvasuser)    |                  |
+| committer        | [CanvasUser](/sdk/data-canvasuser)    |                  |
+| entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |                  |
+| image_url        | String (computed)                     | Presigned S3 URL |
 
