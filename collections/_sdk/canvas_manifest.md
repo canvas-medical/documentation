@@ -237,6 +237,8 @@ The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the
 | `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent can call every tool in its registry. |
 | `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed`. Applies only when `allowed` is set. |
 
+Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key. Declare it as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY`, and set its value on each instance where the plugin runs. If the key isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
+
 ```json
 {
   "components": {
@@ -250,7 +252,10 @@ The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the
         }
       }
     ]
-  }
+  },
+  "variables": [
+    {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
+  ]
 }
 ```
 
