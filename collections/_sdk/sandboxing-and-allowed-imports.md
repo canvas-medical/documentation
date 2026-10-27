@@ -271,6 +271,21 @@ Provides timezone support for handling datetime objects across different time zo
 
 The following third-party modules and their allowed imports are available within the sandbox:
 
+##### `anthropic`
+The Anthropic Python SDK, for calling Claude models from an [agent](/sdk/agents/). [read more](https://github.com/anthropics/anthropic-sdk-python)
+- `Anthropic`
+- `APIConnectionError`
+- `APIError`
+- `APIStatusError`
+- `AsyncAnthropic`
+- `BadRequestError`
+- `RateLimitError`
+
+##### `anthropic.types`
+The content block types in a Claude response, for handling text and tool calls. [read more](https://github.com/anthropics/anthropic-sdk-python/blob/main/api.md)
+- `TextBlock`
+- `ToolUseBlock`
+
 ##### `arrow`
 A human-friendly approach to creating, manipulating, formatting and converting dates and times. [read more](https://arrow.readthedocs.io/en/latest/)
 - `Arrow`
@@ -461,6 +476,7 @@ The exceptions the requests library raises, which the [`Http`](/sdk/utils/) util
 
 All Canvas SDK modules are available for import and use within your plugins:
 
+- `canvas_sdk.agents`
 - `canvas_sdk.caching`
 - `canvas_sdk.commands`
 - `canvas_sdk.effects`

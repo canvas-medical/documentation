@@ -114,6 +114,7 @@ The `components` object groups everything Canvas loads from your plugin. Each ke
 | [`applications`](#applications) | Applications that appear in the Canvas UI. |
 | [`commands`](#commands) | Custom commands the plugin adds to notes. |
 | [`questionnaires`](#questionnaires) | Questionnaire templates Canvas creates on install. |
+| [`agents`](#agents) | LLM-driven agents the plugin runs with the [Agent Runner Framework](/sdk/agents/). |
 
 ### Handlers
 
@@ -217,6 +218,36 @@ The `questionnaires` list points at YAML templates in the plugin package. Canvas
     "questionnaires": [
       {
         "template": "templates/intake_form.yml"
+      }
+    ]
+  }
+}
+```
+
+### Agents
+
+The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the tools each one may call. A handler starts an agent by returning a `RunAgentEffect` whose `agent_id` matches the agent's `class`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `class` | string | Yes | Import path to the `AgentPlugin` subclass, in `package.module:ClassName` form. |
+| `description` | string | Yes | What the agent does. |
+| `meta` | object | No | Agent metadata. |
+| `tools` | object | No | The tools from the agent's tool registry it may call. See [Tools](/sdk/agents-tools/). |
+| `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent can call every tool in its registry. |
+| `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed`. Applies only when `allowed` is set. |
+
+```json
+{
+  "components": {
+    "agents": [
+      {
+        "class": "acme__my_plugin.agents.chart_chat:ChartChatAgent",
+        "description": "Answers clinician questions about the open patient's chart",
+        "tools": {
+          "allowed": ["@clinical_reads", "@clinical_writes"],
+          "denied": ["originate_prescribe_medication"]
+        }
       }
     ]
   }
