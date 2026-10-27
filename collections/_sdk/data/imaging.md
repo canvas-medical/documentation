@@ -141,7 +141,7 @@ assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
 
 ## Delegations
 
-When staff send a imaging report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the signed report goes back to the sender. The delegations for a imaging report are available through two accessors:
+When staff send an imaging report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the signed report goes back to the sender. The delegations for an imaging report are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import ImagingReport

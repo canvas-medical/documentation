@@ -38,6 +38,19 @@ timeline = DocumentHistoryEvent.objects.filter(
 
 The `model` values for the four reviewable document types are `labreport`, `imagingreport`, `referralreport`, and `uncategorizedclinicaldocument`, all with the `app_label` `api`.
 
+To go the other way, from a history entry to its document, read the entry's `document` property. It returns the entry's [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/). On a `recorded` or `entered_in_error` entry, the `review` property returns the document's review command:
+
+```python?partial=true
+from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
+
+recorded = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.RECORDED)
+for entry in recorded:
+    document = entry.document
+    review = entry.review
+    if document is not None:
+        patient = document.patient
+```
+
 ## Filtering
 
 History entries can be filtered by any attribute that exists on the model.
