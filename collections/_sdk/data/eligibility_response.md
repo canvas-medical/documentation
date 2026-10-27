@@ -102,12 +102,14 @@ failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
 
 `valid_request` is `False` when a check got no answer for the coverage but a later request might. Canvas saves a response with `valid_request` set to `False` in these cases:
 
-- The request to Claim.MD timed out, couldn't connect, or failed with an HTTP error.
+- The request to Claim.MD timed out or failed before a response came back.
+- Claim.MD returned an HTTP error.
+- Claim.MD returned HTTP 200 with neither an eligibility result nor an error.
 - Claim.MD reported that no valid eligibility response came back.
 - Claim.MD reported that the policy reached its inquiry limit.
 - Claim.MD reported that the account key was missing or invalid.
 
-These responses always have a non-empty `errors`, so their `status` is `FAILED`. Their `x12_response` holds the body Claim.MD returned, which is empty after a timeout or a failed connection. Every other response has `valid_request` set to `True`, including payer rejections and other Claim.MD rejections.
+For these responses, `x12_response` holds the body Claim.MD returned. It is empty when the request timed out or failed before a response came back. Most of these responses have a non-empty `errors`, so their `status` is `FAILED`. A response for an HTTP 200 with nothing in it has an empty `errors`, so it doesn't match the `failed` filter above. Filter on `valid_request` to find it. Every other response has `valid_request` set to `True`, including payer rejections and other Claim.MD rejections.
 
 Canvas's daily eligibility check skips a coverage only when the coverage has a response from the past week with `valid_request` set to `True`. A coverage whose recent responses all have `valid_request` set to `False` is checked again on the next run.
 
