@@ -1,7 +1,7 @@
 ---
 title: "Embedded Applications"
 slug: "handlers-embedded-applications"
-excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, dock a persistent pane to a window edge, or launch from the provider menu or panel bar."
+excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, dock a persistent pane to a window edge or a band to the patient portal, or launch from the provider menu or panel bar."
 hidden: false
 ---
 
@@ -11,13 +11,14 @@ ordinary [handlers](/sdk/handlers-basehandler/). You subclass a base class,
 register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
-There are five kinds:
+There are six kinds:
 
 | Base class                | Surface                                                  |
 |---------------------------|----------------------------------------------------------|
 | [`NoteApplication`](#note-applications)         | A tab within a patient's note                            |
 | [`SchedulingApplication`](#scheduling-applications)   | Replaces the built-in scheduling modal at every entry point |
 | [`DockedApplication`](#docked-applications)       | A persistent pane pinned to a window edge, always visible |
+| [`PortalDockedApplication`](#portal-docked-applications) | A persistent band across the top or bottom of the patient portal |
 | [`ProviderMenuApplication`](#provider-menu-applications) | An entry in the provider side menu (the navigation sidebar, also called the hamburger menu) |
 | [`PanelApplication`](#panel-applications)        | An entry in the panel bar or the app drawer              |
 
@@ -36,7 +37,7 @@ Because the parent class defines the behavior, there's very little to configure:
   - **Note and Scheduling Applications** render on demand. When a note opens or a
     scheduling action is triggered, Canvas asks which embedded application is
     installed for that surface, then renders what your handler returns.
-  - **Docked Applications** stay mounted at all times.
+  - **Docked Applications** and **Portal Docked Applications** stay mounted at all times.
   - **Provider Menu and Panel Applications** are fetched when their menu loads and
     refreshed as the user navigates.
 - Embedded applications create no application record, so they don't appear under
@@ -551,8 +552,8 @@ load rather than a navigation: the pane is not on screen while the user is there
 returning to the EHR mounts it again from scratch, so `on_open()` fires rather than
 `on_context_change()`.
 
-The patient portal is outside the shell as well, so a docked pane cannot appear there. A
-Docked Application is a staff-facing surface only.
+The patient portal is outside the shell as well, so a docked pane doesn't appear there. To
+add a band to the portal, use a [Portal Docked Application](#portal-docked-applications).
 
 Because the pane stays mounted across every navigation inside the shell, it keeps its
 state there. A right chart pane, by contrast, closes when the user opens a different
@@ -641,6 +642,65 @@ mount it as a docked pane.
   }
 }
 ```
+
+## Portal Docked Applications
+
+A Portal Docked Application mounts a **band** across the top or bottom of the patient portal. The band spans the full window width and appears on every page a signed-in patient visits. It mounts once, so a patient moving between portal pages keeps the same band and whatever state it holds. Use one for content patients should always see, such as an announcement banner, office hours, or a support or chat bar.
+
+`PortalDockedApplication` is a [`DockedApplication`](#docked-applications) for the patient portal. It uses the same `DOCK_EDGE`, `DOCK_SIZE`, `PRIORITY`, `visible()`, and `on_open()` members, with the differences described below.
+
+### Implementing a Portal Docked Application
+
+Subclass `PortalDockedApplication`, set `DOCK_EDGE` to `DockEdge.TOP` or `DockEdge.BOTTOM`, set the band's height in `DOCK_SIZE`, and return the band's content from `on_open()`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+
+
+class OfficeHoursBand(PortalDockedApplication):
+    """Shows the clinic's office hours at the bottom of every portal page."""
+
+    NAME = "Office Hours"
+    IDENTIFIER = "my_plugin__office_hours_band"
+    DOCK_EDGE = DockEdge.BOTTOM
+    DOCK_SIZE = "64px"
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the band."""
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content="<p>Office hours: Monday to Friday, 9 AM to 5 PM</p>",
+            title="Office hours",
+        ).apply()
+```
+
+The portal renders the `url` or `content` of the [`LaunchModalEffect`](/sdk/layout-effect/#modals) that `on_open()` returns. As with a staff docked pane, `title` isn't displayed: it becomes the band's accessible name for screen readers. If `on_open()` returns no `url` or `content`, the portal shows no band for that edge.
+
+Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a [Docked Application](#manifest-configuration). It takes no `scope` or `icon`. Don't add it to the `applications` array: `portal_docked` isn't an application scope, so a manifest that lists it there fails validation.
+
+### How a band differs from a docked pane
+
+- **Edges.** Only `DockEdge.TOP` and `DockEdge.BOTTOM` are valid. A class that sets `LEFT` or `RIGHT` raises a `ValueError` when the portal asks for its docks, so its band never appears.
+- **One band per edge.** Each edge shows at most one band. When several Portal Docked Applications share an edge, the one with the lowest `PRIORITY` is shown, with ties broken by identifier, and the others are left out.
+- **Fixed height.** `DOCK_SIZE` is the band's height, given as a positive `px`, `rem`, `em`, or `%` value, such as `64px`, `4rem`, or `10%`. A `%` value is a share of the screen height. The portal leaves out a band whose `DOCK_SIZE` is any other value. Bands have no resize control. Because the portal is mostly used on phones, the bands together take at most 25% of the screen height, split evenly between them. A single band can be up to 25% tall, and when both edges have a band, each is capped at 12.5%. A taller `DOCK_SIZE` is cut to the cap.
+- **No context changes.** The portal asks for its bands once, when a signed-in patient loads it, and calls `on_open()` then. It doesn't call `on_context_change()` as the patient moves between pages.
+- **Sandboxed iframe.** The band loads in a sandboxed iframe that runs scripts, submits forms, opens new tabs, and follows a link the patient selects to navigate the portal. To grant a hosted `url` more capabilities, list it in the manifest's [`url_permissions`](/sdk/canvas_manifest/#url-permissions).
+
+### Band context
+
+`visible()` and `on_open()` receive the signed-in patient in `self.event.context`:
+
+| Key       | Value                      | Description                                                       |
+|-----------|----------------------------|-------------------------------------------------------------------|
+| `scope`   | `str`                      | Always `portal_docked`.                                           |
+| `user`    | `{"id": str, "type": str}` | The signed-in user. `type` is `Patient` and `id` is the patient's key. |
+| `patient` | `{"id": str}`              | The signed-in patient's key.                                      |
+
+Override `visible()` to show the band only to some patients. For example, look up the patient from `self.event.context["patient"]["id"]` and return `False` for patients who shouldn't see it.
+
+A Portal Docked Application never appears in the EHR, and a `DockedApplication` never appears in the portal.
 
 ## Provider Menu Applications
 
