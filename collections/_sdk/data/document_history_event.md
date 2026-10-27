@@ -96,6 +96,8 @@ When a review is entered in error, its `recorded` entry stays in the timeline, b
 | signers             | [Staff](/sdk/data-staff/#staff)[] (whose signatures the signed or recorded document carried) |
 | deleted_at          | DateTime (when the comment was hidden)                                               |
 | comment_hidden      | Boolean (`True` when `deleted_at` is set)                                            |
+| document            | [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) (the entry's document, or `None`) |
+| review              | The review command of a `recorded` or `entered_in_error` entry (`LabReview`, `ImagingReview`, `ReferralReview`, or `UncategorizedClinicalDocumentReview`), or `None` |
 
 ## Enumeration types
 
