@@ -1455,6 +1455,109 @@ class InvitePatient(BaseHandler):
 
 For a full, runnable plugin that mints a link, delivers it over a configurable provider, and reports the provider's delivery status, see the [patient_portal_link example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_link).
 
+## Searching for open appointment slots
+
+A plugin with its own booking screen can offer the same open appointment times as the native Canvas booking screens by calling `appointment_slots_http.search_slots()`. Canvas runs its own slot search: it expands recurring availability and its exceptions, subtracts booked appointments and holds, and applies the visit type. Your plugin doesn't rebuild that calculation from [Calendar](/sdk/data-calendar/) and [Appointment](/sdk/data-appointment/) records, and later fixes to the native search apply to your screen too.
+
+To change the slots the native scheduler offers patients instead of building your own screen, see [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling).
+
+```python?partial=true
+from canvas_sdk.utils.appointment_slots import Slot, SlotSearchError, appointment_slots_http
+```
+
+Like `patient_portal_http`, `appointment_slots_http` is imported from its own module, and it exposes only `search_slots`.
+
+### search_slots
+
+Searches for open appointment times and returns them as a list of `Slot` objects. Each call runs a new search.
+
+**Parameters**:
+
+| Name                     | Type                  | Required | Description |
+| :----------------------- | :-------------------- | :------- | :---------- |
+| `location_id`            | _string_              | `true`   | The `id` of the [PracticeLocation](/sdk/data-practicelocation/). |
+| `start`                  | _datetime_            | `true`   | The start of the search, with a time zone. Canvas rounds it up to the next `grid_minutes` stop. To require a minimum notice, add it here, for example `now + timedelta(hours=24)`. |
+| `end`                    | _datetime_            | `true`   | The end of the search, with a time zone. It must be after `start` and at most 31 days after it. |
+| `duration`               | _integer_             | `true`   | The visit length in minutes, from `1` to `1440`. |
+| `staff_ids`              | _list of strings_     | `false`  | The `id` of each [Staff](/sdk/data-staff/) member to search. Each must be a schedulable provider. Omit it to search every schedulable provider. |
+| `visit_type_id`          | _string_              | `false`  | The `id` of the visit type's [NoteType](/sdk/data-note/#notetype). Availability limited to other visit types is left out. |
+| `exclude_appointment_id` | _string_              | `false`  | The `id` of an [Appointment](/sdk/data-appointment/) being rescheduled. Its own time is returned as open. |
+| `grid_minutes`           | _integer_             | `false`  | The spacing of slot start times, from `1` to `60`. Defaults to `15`. |
+| `respect_holds`          | _boolean_             | `false`  | Whether to apply the same-day and next-day holds on provider calendars. Defaults to `True`. |
+
+**Returns**: a list of `Slot` objects, each an open time with one provider. A `Slot` can't be changed after it's created.
+
+| Attribute  | Type       | Description |
+| :--------- | :--------- | :---------- |
+| `staff_id` | _string_   | The `id` of the [Staff](/sdk/data-staff/) member the slot is with. |
+| `start`    | _datetime_ | When the appointment would start, in the instance's time zone. |
+| `end`      | _datetime_ | When the appointment would end, in the instance's time zone. |
+
+A slot isn't a hold, and another booking can take it after you search. Search again just before you book.
+
+**Errors**:
+
+- `ValueError`: `start` or `end` has no time zone. Pass a time-zone-aware datetime, such as `datetime.now(timezone.utc)`.
+- `SlotSearchError`: the search didn't complete. Catch this exception rather than the underlying `requests` exceptions, which a plugin can't catch. Its `status_code` and `message` attributes describe the cause:
+  - `400`: a parameter names a record Canvas doesn't have, or a value is outside the ranges above. The message names the parameter.
+  - `503`: Canvas couldn't read the provider calendars. Try the search again later.
+  - `0`: the plugin couldn't reach Canvas.
+
+**Example**:
+
+The following SimpleAPI route returns the 30-minute slots a logged-in patient can book at a location over the next week, starting 24 hours from now.
+
+```python
+from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+from canvas_sdk.utils.appointment_slots import SlotSearchError, appointment_slots_http
+
+
+class OpenSlots(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/slots"
+
+    def get(self) -> list[Response | Effect]:
+        location_id = self.request.query_params["location_id"]
+
+        # Patients must book at least 24 hours ahead.
+        start = datetime.now(timezone.utc) + timedelta(hours=24)
+
+        try:
+            slots = appointment_slots_http.search_slots(
+                location_id=location_id,
+                start=start,
+                end=start + timedelta(days=7),
+                duration=30,
+            )
+        except SlotSearchError as error:
+            # A 400 means the request itself needs fixing; anything else is worth retrying.
+            status = (
+                HTTPStatus.BAD_REQUEST
+                if error.status_code == 400
+                else HTTPStatus.SERVICE_UNAVAILABLE
+            )
+            return [JSONResponse({"error": error.message}, status_code=status)]
+
+        return [
+            JSONResponse(
+                {
+                    "slots": [
+                        {
+                            "staff_id": slot.staff_id,
+                            "start": slot.start.isoformat(),
+                            "end": slot.end.isoformat(),
+                        }
+                        for slot in slots
+                    ]
+                }
+            )
+        ]
+```
+
 <br/>
 <br/>
 <br/>
