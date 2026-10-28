@@ -42,15 +42,13 @@ The Organization admin gives each person the roles their work needs. Developers 
 - **Plugin developer**, to push plugin code to Canvas Platform
 - **Deploy manager**, to deploy plugins to your instances and set their variables
 
-### 3. Switch your workflow by December 14, 2026
+### 3. Canvas upgrades your plugins
 
-Once they have their roles, developers can update their development workflow and your CI pipelines as described below, at any time. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then.
+Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role is notified when the upgrade is complete.
 
-### 4. Canvas upgrades your plugins
+### 4. Switch your workflow by December 14, 2026
 
-Canvas upgrades each organization's plugins on a scheduled date, between 1am and 4am Pacific time. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. For up to 1 hour during that period, your plugins cannot receive new versions.
-
-Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role is notified at least 7 days before the upgrade, and you can request a reschedule. You're notified again when the upgrade is complete.
+Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then.
 
 ## Update your development workflow
 
@@ -138,16 +136,12 @@ Your Organization admin sets up access and roles in Canvas Platform. Each develo
 
 ### Will our plugins stop working during the upgrade?
 
-No. Your running plugins are not affected in any way. For up to 1 hour, between 1am and 4am Pacific time on your upgrade date, they cannot receive new versions. See [Canvas upgrades your plugins](#4-canvas-upgrades-your-plugins).
+No. Your running plugins are not affected in any way. See [Canvas upgrades your plugins](#3-canvas-upgrades-your-plugins).
 
 ### Do we have to wait for the upgrade before we switch to `canvas deploy`?
 
-No. Developers can sign in with `canvas login` and deploy with `canvas deploy` at any time, before or after Canvas upgrades your plugins.
-
-### What if our upgrade date doesn't work for us?
-
-You'll hear about it at least 7 days ahead, and you can request a reschedule. If you have questions before then, ask your Canvas contact.
+Technically, no. We recommend waiting until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle, so your team has as little work to do as possible.
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. `canvas logs`, `list`, `enable`, `disable`, `config list` and the `namespace` commands still sign in with it, and so do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) lists which commands use it.
+Yes. Every Canvas CLI command signs in through Canvas Platform, so once your development workflow and CI have switched, you can delete `~/.canvas/credentials.ini` and revoke the OAuth clients it named on each instance.
