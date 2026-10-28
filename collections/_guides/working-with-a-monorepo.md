@@ -4,7 +4,11 @@ guide_for:
 - /sdk/canvas_cli/
 ---
 
-If your plugins live in a repository with other code, such as a monorepo holding several plugins and services, `canvas deploy --snapshot` publishes each plugin from where it sits. Your repository stays the source of truth. Canvas Platform keeps one repository per plugin, and each snapshot of a changed package adds one commit to that plugin's `main` holding the package folder as committed in your repository. A snapshot of an unchanged package pushes nothing.
+Canvas manages plugin code as one git repository per plugin. Canvas Platform hosts that repository, `canvas init` creates its local copy with `origin` pointing at Canvas Platform, and `canvas deploy` pushes your commits to it, so the repository you work in and the plugin's repository on Canvas Platform share one history.
+
+That works well for a team that develops each plugin on its own. Other teams keep many plugins in one repository, often a monorepo beside shared code and services, and review and release them through that repository. A plain `canvas deploy` refuses a package inside such a repository, because it would push the whole repository as the plugin and point the repository's `origin` at Canvas Platform.
+
+`canvas deploy --snapshot` is for that case. It publishes each plugin from where it sits, and your repository stays the source of truth. Canvas Platform still keeps one repository per plugin: each snapshot of a changed package adds one commit to that plugin's `main` holding the package folder as committed in your repository, and a snapshot of an unchanged package pushes nothing.
 
 ## Lay out each plugin
 
