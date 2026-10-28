@@ -64,7 +64,7 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 <div style="text-align: center; margin: 1.5rem 0;">
 <svg viewBox="0 0 760 440" role="img" aria-labelledby="mr-flow-title mr-flow-desc" style="width: 100%; max-width: 720px; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <title id="mr-flow-title">Gated release from Canvas Studio through a monorepo</title>
-  <desc id="mr-flow-desc">1. Studio users build and test a plugin. 2. Publishing opens a pull request that writes the plugin into its folder in your repository. 3. Your engineers review it, edit it if needed, and merge it. 4. CI or an engineer runs canvas deploy with --snapshot, which adds one commit to the plugin's main on Canvas Platform and deploys it. 5. Studio reads the merged code from your repository, and the next iteration starts from it.</desc>
+  <desc id="mr-flow-desc">1. Studio users build and test a plugin. 2. Publishing opens a pull request that writes the plugin into its folder in your repository. 3. Your engineers review it, edit it if needed, and merge it. 4. CI or an engineer runs canvas deploy with --snapshot, which adds one commit to the plugin's main on Canvas Platform and deploys it. 5. Studio brings the snapshot on main into the project, and the next iteration starts from it.</desc>
   <defs>
     <marker id="mr-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
       <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
@@ -84,14 +84,14 @@ When your organization builds plugins in Canvas Studio with gated release pointe
     <line x1="215" y1="124" x2="281" y2="124" marker-end="url(#mr-arrow)"/>
     <line x1="380" y1="164" x2="380" y2="200" marker-end="url(#mr-arrow)"/>
     <line x1="475" y1="244" x2="541" y2="244" marker-end="url(#mr-arrow)"/>
-    <line x1="285" y1="276" x2="219" y2="334" stroke-dasharray="6 4" marker-end="url(#mr-arrow)"/>
+    <line x1="545" y1="278" x2="219" y2="352" stroke-dasharray="6 4" marker-end="url(#mr-arrow)"/>
     <line x1="120" y1="324" x2="120" y2="168" stroke-dasharray="6 4" marker-end="url(#mr-arrow)"/>
   </g>
   <g font-size="11" fill="#475569">
     <text x="248" y="116" text-anchor="middle">Publish</text>
     <text x="508" y="236" text-anchor="middle">--snapshot</text>
     <text x="640" y="304" text-anchor="middle">pushed by CI or an engineer</text>
-    <text x="262" y="322" text-anchor="middle">merged code</text>
+    <text x="410" y="328" text-anchor="middle">reviewed code</text>
     <text x="128" y="250">next iteration</text>
   </g>
   <!-- 1 -->
@@ -121,9 +121,9 @@ When your organization builds plugins in Canvas Studio with gated release pointe
   <!-- 5 -->
   <rect x="25" y="328" width="190" height="80" rx="8" fill="#ede9fe" stroke="#c4b5fd"/>
   <text x="120" y="350" text-anchor="middle" font-size="12.5" font-weight="600" fill="#5b21b6">5 · Studio picks it up</text>
-  <text x="120" y="368" text-anchor="middle" font-size="11" fill="#6d28d9">reads the merged code from</text>
-  <text x="120" y="383" text-anchor="middle" font-size="11" fill="#6d28d9">your repo when the project</text>
-  <text x="120" y="398" text-anchor="middle" font-size="11" fill="#6d28d9">opens and before publishing</text>
+  <text x="120" y="368" text-anchor="middle" font-size="11" fill="#6d28d9">brings the snapshot on</text>
+  <text x="120" y="383" text-anchor="middle" font-size="11" fill="#6d28d9">main into the project, and</text>
+  <text x="120" y="398" text-anchor="middle" font-size="11" fill="#6d28d9">the next iteration starts there</text>
 </svg>
 </div>
 
@@ -131,7 +131,7 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 2. **Pull request.** Publishing from Studio's Final Review opens a pull request in your repository (on GitLab, a merge request) that writes the plugin into its folder there.
 3. **Review and merge.** Your engineers review it like any other change. They can approve it as it is, push edits to its branch, or change the plugin after merging.
 4. **Snapshot.** Once it merges, CI or an engineer runs `canvas deploy <package folder> --snapshot`. The package folder is the one holding `CANVAS_MANIFEST.json` inside the folder Studio's pull request writes. Canvas Platform's `main` gets one commit with the plugin exactly as merged, and it deploys to the instances you name.
-5. **Studio picks it up.** Studio reads the merged plugin from your repository when the project is next opened and before every publish, so your engineers' edits become the starting point of the next iteration instead of being overwritten by it. If edits land after the project's testing was confirmed, Studio sends the project back to testing before it can be published again.
+5. **Studio picks it up.** Studio brings the snapshot on Canvas Platform's `main` into the project, so your engineers' edits become the starting point of the next iteration instead of being overwritten by it.
 
 ## When a snapshot stops
 
