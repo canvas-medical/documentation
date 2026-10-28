@@ -537,6 +537,15 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
 
 
+### Plugin Usage
+
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit. |
+
+
 ### Revenue / Payment Processor
 
 | Effect | Description |
