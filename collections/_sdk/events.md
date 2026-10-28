@@ -3562,7 +3562,7 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
 <table>
   <thead>
     <tr><th colspan="2">OBSERVATION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an observation is updated.</td></tr>
+    <tr><td colspan="2">Occurs when an observation is updated. An <a href='/sdk/effect-observation/#update--effect'>Observation <code>update()</code> effect</a> that changes nothing doesn't send this event.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -29034,6 +29034,46 @@ shape only; dynamic per-field entries appear alongside.
   </tbody>
 </table>
 
+<a id="patient_portal__widget_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__WIDGET_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when the Patient Portal landing page loads. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="patient_portal__get_theme_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_THEME_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when a Patient Portal page loads, including the login page. Return a <code>PatientPortalTheme</code> effect to theme the portal. See <a href='/sdk/patient-portal/#theme-the-patient-portal'>Theme the Patient Portal</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"business_line_id": str | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 ### Action Buttons Events
 
 For more information on handling these events, see <a href="/sdk/handlers-action-buttons" target="_blank">Action Buttons</a>.
@@ -29567,6 +29607,57 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
+    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "url": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
+  "claim": (optional)
+    "id": str
+  "claim_queue": (optional)
+    "dbid": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
+    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "staff":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a>
+  "patient":
+    "id": str
+    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Payment Processor Events
 
 These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see [Event Actor](#event-actor)). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
@@ -29721,58 +29812,6 @@ Apart from `success` and `error`, every value arrives as a string or `null`, inc
 "payment_card_id": str   # echoed, a <a href='/sdk/data-payment-card/'>PaymentCard</a> id under Stripe
 "claim_id": str          # echoed, a <a href='/sdk/data-claim/'>Claim</a> id, null when none
 "amount": str            # echoed, the dollar amount submitted</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
-    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "url": str
-  "patient":
-    "id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
-  "claim": (optional)
-    "id": str
-  "claim_queue": (optional)
-    "dbid": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
-    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "staff":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a>
-  "patient":
-    "id": str
-    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -30080,10 +30119,6 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 "results": list[dict]
 "user":
     "staff": str</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
-      <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>

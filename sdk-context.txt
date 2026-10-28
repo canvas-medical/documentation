@@ -1841,7 +1841,7 @@ handlers-applications).
      - `top`: The item will be placed on the top section.
      - `bottom`: The item will be placed in the bottom section - this section should display items that open in a new window.
   7. **menu_order** : How the items will be ordered in the menu. e.g 100, 200
-  8. **show_in_panel** : If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can set this attribute
+  8. **show_in_panel** : If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can set this attribute. A panel icon has no label, so Canvas shows the application's `name` in a tooltip when a user hovers over it
   9. **panel_priority** : How the applications will be ordered in the panel section. e.g 100, 200
 ##  Step 4: Overriding the Application Behavior 
 Developers must extend the `Application` class and override the `on_open` method to define the behavior when the app icon is clicked. Below is an example implementation:
@@ -6498,7 +6498,7 @@ Records an assessment of a patient's condition. Name the condition in one of two
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See Recording a condition and Updating or removing a condition for how it compares to the other condition commands.
 > **Info:** If your plugin relies on [`ASSESS_COMMAND__CONDITION_SELECTED`](/sdk/events/#assess_command__condition_selected) or [`ASSESS_COMMAND__ICD10_CODE_SELECTED`](/sdk/events/#assess_command__icd10_code_selected), set the condition with `edit()`. These events fire when an existing Assess command's condition changes, so originating an Assess with `condition_id` or `icd10_code` already set sends neither. To trigger them, originate the command without a condition, then `edit()` it to set one. An `edit()` with `icd10_code` sends `ASSESS_COMMAND__ICD10_CODE_SELECTED` even when the patient already has that condition charted. 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. In the chart, it's left off the Conditions list and out of the condition search in Update Diagnosis and Resolve Condition. An UpdateDiagnosis command can't name it by code either. Clinicians can still pick it as a Prescribe indication. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an UpdateDiagnosis command can name it by code. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
 Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
@@ -6528,7 +6528,7 @@ Assess a condition by ICD-10 code, whether or not the patient has it charted:
         narrative='unable to sleep lately'
     )
     ```
-Record a visit-only diagnosis as an encounter diagnosis, keeping it off the problem list:
+Record a visit-only diagnosis as an encounter diagnosis:
     ```python
     from canvas_sdk.commands import AssessCommand
     assess = AssessCommand(
@@ -7176,6 +7176,7 @@ Name | Type | Required to sign | Description
 `length_of_need` | _string_ | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written.  
 `service_provider` | _ServiceProvider_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers).  
 `ordering_provider_key` | _string_ | `true` | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed.  
 Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
 Canvas leaves a field empty when its value doesn't resolve. A `dme_product_id` resolves only to an active formulary product, and an `ordering_provider_key` only to an active staff member. Diagnosis codes that don't match an ICD-10 condition are dropped. The command can't be signed until every required field has a value. Signing also fails when the ordering provider isn't an active prescriber, because the printed order names them as the signer.
 Signing saves the item's formulary name and code and the indications with the order, along with the patient's latest height and weight. Later changes to the formulary or the patient's vitals don't change the printed order.
@@ -8171,7 +8172,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
-`condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's problem list. Encounter diagnoses recorded with Assess's `show_in_problem_list=False` don't match.  
+`condition_code` | _string_ | `true` | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's chart, including encounter diagnoses recorded with Assess's `show_in_problem_list=False`.  
 `new_condition_code` | _string_ | `true` | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  
 `background` | _string_ | `false` | Background information or notes related to the updated diagnosis (max length: 2048 characters).  
 `narrative` | _string_ | `false` | A narrative or explanation about the update (max length: 2048 characters).  
@@ -8225,6 +8226,81 @@ Name | Type | Required to commit | Description
         priority=GoalCommand.Priority.MEDIUM,
         progress='patient has slowed down progress and requesting to move due date out'
     )
+    ```
+* * *
+###  VisualExamFinding 
+Records a titled image of a clinical observation, with a narrative, on a note. The Visual Exam Finding command must be enabled on the instance to attach an image.
+**Command-specific parameters** :
+Name | Type | Description  
+---|---|---  
+`title` | _string_ | The title of the finding. Up to 255 characters.  
+`narrative` | _string_ | A description of the observation.  
+`image_upload_key` | _string_ | The upload key of a PNG or JPEG image, from a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas copies the file to the finding and then deletes the upload, so each key works only once. A key of `None` attaches no image. Not allowed in a recommendation, such as one on a protocol card.  
+The command supports `originate`, `edit`, `delete`, `commit`, and `enter_in_error`. To read findings, see [VisualExamFinding](/sdk/data-visual-exam-finding/).
+**Example** :
+    ```python
+    from canvas_sdk.commands import VisualExamFindingCommand
+    finding = VisualExamFindingCommand(
+        note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+        title='Rash',
+        narrative='Erythematous rash on the left forearm',
+        image_upload_key='acme/plugin-uploads/my_plugin/20261014T120000Z-abc-rash.jpg',
+    )
+    effect = finding.originate()
+    ```
+In a SimpleAPI handler, set `image_upload_key` to the `key` of the uploaded `StoredFilePart` rather than a literal string.
+**Example with an uploaded photo** :
+This SimpleAPI route adds a Visual Exam Finding to a note from a `multipart/form-data` request that carries the note's id, a title, a narrative, and the photo. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
+    ```python
+    from http import HTTPStatus
+    from canvas_sdk.commands import VisualExamFindingCommand
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
+    class VisualExamFindingAPI(APIKeyAuthMixin, SimpleAPI):
+        @api.post("/visual-exam-finding", file_uploads="stored")
+        def visual_exam_finding(self) -> list[Response | Effect]:
+            form = self.request.form_data()
+            image = form["image"]
+            if image.error:
+                return [JSONResponse({"error": "upload failed"}, status_code=HTTPStatus.BAD_GATEWAY)]
+            finding = VisualExamFindingCommand(
+                note_uuid=form["note_id"].value,
+                title=form["title"].value,
+                narrative=form["narrative"].value,
+                image_upload_key=image.key,
+            )
+            return [finding.originate(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
+    ```
+Call the route with a `multipart/form-data` POST, sending the photo as a file and the API key in the `Authorization` header:
+    ```shell
+    curl --request POST \
+         --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding' \
+         --header 'Authorization: <api-key>' \
+         --form 'note_id=8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47' \
+         --form 'title=Rash' \
+         --form 'narrative=Erythematous rash on the left forearm' \
+         --form 'image=@rash.jpg;type=image/jpeg'
+    ```
+The same request from a Python script, uploading a photo saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+    ```python
+    from pathlib import Path
+    import requests
+    url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding"
+    image_path = Path("rash.jpg")
+    with image_path.open("rb") as image:
+        response = requests.post(
+            url,
+            headers={"Authorization": "<api-key>"},
+            data={
+                "note_id": "8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+                "title": "Rash",
+                "narrative": "Erythematous rash on the left forearm",
+            },
+            files={"image": (image_path.name, image, "image/jpeg")},
+            timeout=30,
+        )
+    print(response.status_code)
     ```
 * * *
 ###  Vitals 
@@ -11844,6 +11920,7 @@ goals | [Goal](/sdk/data-goal/#goal)[]
 immunizations | [Immunization](/sdk/data-immunization/#immunization)[]  
 instructions | [Instruction](/sdk/data-instruction/#instruction)[]  
 linked_change_medications | [ChangeMedication](/sdk/data-change-medication/#changemedication)[]  
+linked_dme_orders | [DmeOrder](/sdk/data-dme/#dmeorder)[]  
 linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  
 linked_imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
 linked_lab_orders | [LabOrder](/sdk/data-labs/#laborder)[]  
@@ -13321,15 +13398,17 @@ detected_issue | [DetectedIssue](/sdk/data-detected-issue/#detectedissue)
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-command-type-setting/
 ##  Introduction 
-The `CommandTypeSetting` model holds one row per command type and whether it is turned on for the instance. An administrator turns command types on and off in Canvas. Use it to leave out commands a provider cannot add, for example to skip suggesting a follow-up when the follow-up command is turned off.
+The `CommandTypeSetting` model has one row for each command type available on the instance, with whether it is turned on. An administrator turns command types on and off in Canvas. Use it to leave out commands a provider cannot add, for example to skip suggesting a follow-up when the follow-up command is turned off.
+A command type that isn't available on the instance has no row. Treat a missing row the same as a command type that is turned off.
 ##  Basic usage 
-To read whether one command type is turned on, use the `get` method on the `CommandTypeSetting` model manager with its schema key:
+To check whether one command type is turned on, filter on its schema key and `active`:
     ```python
     from canvas_sdk.v1.data import CommandTypeSetting
-    follow_up = CommandTypeSetting.objects.get(schema_key="followUp")
-    if follow_up.active:
+    follow_up_on = CommandTypeSetting.objects.filter(schema_key="followUp", active=True).exists()
+    if follow_up_on:
         ...
     ```
+The check returns `False` both when the command type is turned off and when it has no row. A `get` call for a schema key with no row raises `CommandTypeSetting.DoesNotExist`.
 ##  Filtering 
 Command type settings can be filtered by any attribute that exists on the model.
 ###  Active command types 
@@ -13875,7 +13954,8 @@ model | String
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-coverage/
 ##  Introduction 
 The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated `EligibilitySummary`, which provides the most up-to-date copay and coinsurance values.
-Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
+To create or change coverages from a plugin, use the [Coverage effect](/sdk/effect-coverage/).
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images. Card images are captured via the Canvas iOS application, uploaded through the coverages modal, or attached by a plugin with the [Coverage effect](/sdk/effect-coverage/#card-images).
 ##  Usage 
 The `Coverage` model can be used to find all of the coverages defined in a Canvas instance, whether overall or for a particular patient. For example, to find all of the current coverages for a patient, the `Patient.coverages` method can be used:
     ```python
@@ -13967,7 +14047,7 @@ sub_group | String
 employer | String  
 coverage_start_date | Date  
 coverage_end_date | Date  
-coverage_rank | Integer  
+coverage_rank | CoverageRank  
 state | CoverageState  
 plan_type | CoverageType  
 coverage_type | TransactorCoverageType  
@@ -13984,6 +14064,7 @@ eligibility_responses | [EligibilityResponse](/sdk/data-eligibility-response/#el
 ###  Transactor 
 Field Name | Type  
 ---|---  
+id | UUID  
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
@@ -14067,6 +14148,14 @@ coverage | [Coverage](/sdk/data-coverage/#coverage)
 copay_cents | Integer  
 coinsurance | Integer  
 ##  Enumeration types 
+###  CoverageRank 
+Value | Name | Label  
+---|---|---  
+1 | PRIMARY | Primary  
+2 | SECONDARY | Secondary  
+3 | TERTIARY | Tertiary  
+4 | QUATERNARY | Quaternary  
+5 | QUINARY | Quinary  
 ###  CoverageStack 
 Value | Label  
 ---|---  
@@ -14521,6 +14610,12 @@ A `DmeOrder` is the [anchor object](/sdk/data-command/#the-anchor-object) of its
     command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
     order = command.anchor_object
     ```
+An order linked to an [assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) in the same note keeps that assessment on its `assessment` field. Read the orders linked to an assessment from the assessment's side with `linked_dme_orders`:
+    ```python
+    from canvas_sdk.v1.data import Assessment
+    assessment = Assessment.objects.get(id="9a4c2e7b-1f3d-4b6a-8e5c-0d2f7a9b1c34")
+    linked_orders = assessment.linked_dme_orders.all()
+    ```
 ##  Filtering 
 DME products and orders can be filtered by any attribute that exists on the model.
 ###  Products by code system 
@@ -14565,6 +14660,7 @@ entered_in_error | [CanvasUser](/sdk/data-canvasuser)
 deleted | Boolean  
 patient | [Patient](/sdk/data-patient/#patient)  
 note | [Note](/sdk/data-note/#note)  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 product | DmeProduct  
 item_name | String  
 item_code | String  
@@ -19528,6 +19624,7 @@ title | String
     ```
 ###  PatientIdentificationCard 
 Represents a patient identification card image (e.g., driver's license, insurance card).
+To create, update, or delete identification cards from a plugin, use the [PatientIdentificationCard effect](/sdk/effect-patient-identification-card/).
 Field Name | Type | Description  
 ---|---|---  
 dbid | Integer |   
@@ -22775,6 +22872,7 @@ The following code is an example of a custom `ValueSet` in use within a plugin:
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-visual-exam-finding/
 ##  Introduction 
 The `VisualExamFinding` model represents a visual exam finding captured on a note. Each finding consists of a titled image along with a narrative description of the clinical observation.
+To record a finding from a plugin, use the [VisualExamFinding command](/sdk/commands/#visualexamfinding).
 ##  Basic usage 
 To get a visual exam finding by identifier, use the `get` method on the `VisualExamFinding` model manager:
     ```python
@@ -23791,6 +23889,7 @@ The payment is always applied to the patient's account:
   - **Outstanding balance (default).** When no `claim_id` is given, the payment is allocated across the patient's outstanding balance. This is the only case where the amount is measured against a balance: the charge is rejected before the card is touched if the patient has no outstanding balance, and again if the amount exceeds it, so every charged dollar lands on a claim.
   - **Against a specific claim.** When `claim_id` is given and `copay` is left `false` (the default), the payment pays down that claim's non-copay line-item balances. The charge is rejected if the claim has nothing to charge against, but the amount is not capped at the claim's balance, so an amount above it leaves the claim in credit.
   - **As a copay on a claim.** When `claim_id` is given with `copay` set to `true`, the amount is recorded as a copay on that claim, posted to its copay line item. No balance is checked at all, so use this to collect a copay or prepayment against a claim that carries nothing to charge.
+For a complete plugin that collects appointment copays this way from the patient portal, see the [Appointment Copay Collection](/sdk/example-appointment_copay_collection/) example.
 ##  Reconciling the charge 
 Once the charge has been processed, Canvas emits a [`REVENUE__STORED_CARD__CHARGE_RESPONSE`](/sdk/events/#stored-card-charge-events) event carrying the outcome. It fires whether or not the card was charged, and nothing a handler returns changes the charge, so handle it to reconcile rather than to intervene.
 The event targets the patient that was charged: `self.event.target.id` is the patient id, and `self.event.target.instance` is the [Patient](/sdk/data-patient/#patient). Its actor is the one that emitted the originating effect.
@@ -25310,6 +25409,201 @@ Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` 
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-configure-command-buttons/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-coverage/
+The `Coverage` effect writes a patient's insurance coverage from a plugin, including the front and back images of the insurance card. Use it to capture insurance during intake, such as from a patient portal form where the patient photographs their card. You can also use it to keep coverages in step with an external system. The `CoverageReorder` effect changes the rank and stack of several coverages at once.
+Canvas applies the same rules to these effects as it does to the coverage form in the patient's chart. The effects also check most of those rules in your plugin before the effect is sent. An invalid coverage raises a validation error in your handler.
+To read coverages, see the [Coverage data model](/sdk/data-coverage/).
+##  Methods 
+Build a `Coverage` with the attributes you want to set, then return one of its methods from your handler.
+###  create() → Effect 
+Creates a coverage for a patient.
+  - `patient_id`, `issuer_id`, `coverage_rank`, `id_number`, and `patient_relationship_to_subscriber` are required.
+  - `coverage_id` must not be set.
+  - The patient must not already have a coverage with the same `coverage_rank` in the same stack. A coverage that ends today or earlier, in the instance's time zone, frees its rank. To replace a primary coverage, expire the old one with today's date, then create the new one the same day.
+  - `stack` defaults to `IN_USE`, and `coverage_start_date` defaults to today in the instance's time zone.
+  - Canvas requests an eligibility check after the coverage is saved.
+###  update() → Effect 
+Changes an existing coverage.
+  - `coverage_id` is required, and must be the id of an existing coverage.
+  - Only the attributes you set on the effect are changed. Setting an optional attribute to `None` clears it.
+  - The required attributes, `stack`, `subscriber_id`, and `coverage_start_date` cannot be set to `None` or an empty string.
+  - `patient_id` cannot be changed.
+  - If you change `issuer_id`, Canvas clears the coverage's `issuer_address_id`, `issuer_phone_id`, and `coverage_type`, unless you set new values in the same update.
+  - If another coverage in the same stack already holds the new rank, the coverage you updated takes it. The other coverage moves down one rank.
+  - Canvas requests a new eligibility check when the update changes `issuer_id`, `issuer_address_id`, `id_number`, `subscriber_id`, or `patient_relationship_to_subscriber`.
+###  expire(coverage_end_date) → Effect 
+Ends an existing coverage on `coverage_end_date`, a `datetime.date`. `coverage_id` is required. The end date must be on or after the coverage's start date; a coverage can end on the day it starts. Canvas records an audit event, as it does when a coverage is expired from the chart.
+###  remove() → Effect 
+Moves an existing coverage to the `REMOVED` stack. `coverage_id` is required. Canvas records an audit event.
+`create()`, `update()`, and `CoverageReorder` do not accept the `REMOVED` stack. Use `remove()` instead.
+###  remove_photo(side) → Effect 
+Removes the front or back card image from an existing coverage. `coverage_id` is required. Set `side` to `PhotoSide.FRONT` or `PhotoSide.BACK`.
+##  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`coverage_id` | `UUID` or `str` | The `id` of an existing [Coverage](/sdk/data-coverage/#coverage). Must be unset when creating a coverage. | For every method except `create()`  
+`patient_id` | `str` | The `id` of the [Patient](/sdk/data-patient/#patient) the coverage belongs to. | For `create()`  
+`issuer_id` | `UUID` or `str` | The `id` of the payer, a [Transactor](/sdk/data-coverage/#transactor). The coverage's plan type comes from the payer. | For `create()`  
+`issuer_address_id` | `UUID` or `str` or `None` | The `id` of a [TransactorAddress](/sdk/data-coverage/#transactoraddress) that belongs to the payer. | No  
+`issuer_phone_id` | `UUID` or `str` or `None` | The `id` of a [TransactorPhone](/sdk/data-coverage/#transactorphone) that belongs to the payer. | No  
+`patient_relationship_to_subscriber` | [`CoverageRelationshipCode`](/sdk/data-coverage/#coveragerelationshipcode) | The patient's relationship to the subscriber. See Subscribers. | For `create()`  
+`subscriber_id` | `str` | The `id` of the [Patient](/sdk/data-patient/#patient) who holds the policy. See Subscribers. | When the patient is not the subscriber  
+`subscriber_identifier` | `str` or `None` | The subscriber's identifier on the policy. Up to 100 characters. | No  
+`coverage_rank` | [`CoverageRank`](/sdk/data-coverage/#coveragerank) | The coverage's order within its stack: `PRIMARY` (1), `SECONDARY` (2), `TERTIARY` (3), `QUATERNARY` (4), or `QUINARY` (5). | For `create()`  
+`stack` | [`CoverageStack`](/sdk/data-coverage/#coveragestack) | `IN_USE` or `OTHER`. Defaults to `IN_USE` on create. | No  
+`coverage_type` | [`TransactorCoverageType`](/sdk/data-coverage/#transactorcoveragetype) or `None` | The type of coverage. | No  
+`id_number` | `str` | The member ID on the insurance card. Up to 100 characters. | For `create()`  
+`plan` | `str` or `None` | Plan name. Up to 255 characters. | No  
+`sub_plan` | `str` or `None` | Sub-plan name. Up to 255 characters. | No  
+`group` | `str` or `None` | Group number. Up to 255 characters. | No  
+`sub_group` | `str` or `None` | Sub-group number. Up to 255 characters. | No  
+`employer` | `str` or `None` | The subscriber's employer. Up to 255 characters. | No  
+`coverage_start_date` | `datetime.date` | The date the coverage starts. Must be on or before `coverage_end_date`. Defaults to today on create. | No  
+`coverage_end_date` | `datetime.date` or `None` | The date the coverage ends. | No  
+`comments` | `str` or `None` | Free-text comments. | No  
+`card_image_front_upload_key` | `str` or `None` | The upload key of the front image of the insurance card. See Card images. | No  
+`card_image_back_upload_key` | `str` or `None` | The upload key of the back image of the insurance card. See Card images. | No  
+`CoverageRank`, `CoverageRelationshipCode`, `CoverageStack`, `TransactorCoverageType`, and `Transactor` are imported from `canvas_sdk.v1.data.coverage`. `PhotoSide` is imported from `canvas_sdk.effects.coverage`.
+###  Subscribers 
+When `patient_relationship_to_subscriber` is `CoverageRelationshipCode.SELF`, the patient is the subscriber. Leave `subscriber_id` unset, or set it to the patient's `id`.
+For any other relationship, set `subscriber_id` to the `id` of a different patient, the person who holds the policy.
+##  Card images 
+Card images are PNG or JPEG files that a user uploads to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. Set `card_image_front_upload_key` and `card_image_back_upload_key` to the `key` of each uploaded `StoredFilePart`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
+Each key must come from a file your plugin uploaded, and each file must be a PNG or JPEG image. When the effect is applied, Canvas copies the file to the coverage and then deletes the upload, so each key works only once. If any part of the effect fails, Canvas saves none of it, including the card images.
+On `update()`, setting one image key replaces that side of the card and leaves the other side unchanged. A key of `None` attaches no image, so that side also keeps its current image. To remove an image, use `remove_photo()`.
+For working code, see Capture an insurance card from a form, which creates a coverage from uploaded card photos, and Expire or remove a coverage, or remove a card image, which removes one side of the card.
+##  Reordering coverages 
+`CoverageReorder` sets the rank and stack of several of a patient's coverages in one effect. Build it with the patient's `id` and an `ordering` list of `CoverageReorderEntry` objects, then return `apply()`.
+Attribute | Type | Description  
+---|---|---  
+`patient_id` | `str` | The `id` of the [Patient](/sdk/data-patient/#patient).  
+`ordering` | `list[CoverageReorderEntry]` | The new position of each coverage. Must contain at least one entry.  
+Each `CoverageReorderEntry` has these attributes, all required:
+Attribute | Type | Description  
+---|---|---  
+`coverage_id` | `UUID` or `str` | The `id` of one of the patient's [coverages](/sdk/data-coverage/#coverage).  
+`coverage_rank` | [`CoverageRank`](/sdk/data-coverage/#coveragerank) | The coverage's new rank.  
+`stack` | [`CoverageStack`](/sdk/data-coverage/#coveragestack) | The coverage's new stack: `IN_USE` or `OTHER`.  
+The ordering must follow these rules:
+  - Each coverage appears once and belongs to the patient.
+  - Within each stack, ranks are unique and consecutive, starting at 1.
+  - For each stack the ordering places a coverage in, the ordering lists every active coverage in that stack.
+For working code, see Swap primary and secondary coverages.
+##  Examples 
+###  Capture an insurance card from a form 
+This SimpleAPI route creates a primary coverage from a `multipart/form-data` request. The request carries the patient's id, the payer's id, the member ID, and photos of both sides of the card. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
+    ```python
+    from http import HTTPStatus
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.coverage import Coverage
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
+    from canvas_sdk.v1.data.coverage import CoverageRank, CoverageRelationshipCode
+    class InsuranceCardAPI(APIKeyAuthMixin, SimpleAPI):
+        @api.post("/insurance-card", file_uploads="stored")
+        def insurance_card(self) -> list[Response | Effect]:
+            form = self.request.form_data()
+            front = form["card_front"]
+            back = form["card_back"]
+            if front.error or back.error:
+                return [JSONResponse({"error": "upload failed"}, status_code=HTTPStatus.BAD_GATEWAY)]
+            coverage = Coverage(
+                patient_id=form["patient_id"].value,
+                issuer_id=form["payer_id"].value,
+                id_number=form["member_id"].value,
+                coverage_rank=CoverageRank.PRIMARY,
+                patient_relationship_to_subscriber=CoverageRelationshipCode.SELF,
+                card_image_front_upload_key=front.key,
+                card_image_back_upload_key=back.key,
+            )
+            return [coverage.create(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
+    ```
+Call the route with a `multipart/form-data` POST. Each form field name matches a key the handler reads, the two card photos are sent as files, and the API key goes in the `Authorization` header:
+    ```shell
+    curl --request POST \
+         --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/insurance-card' \
+         --header 'Authorization: <api-key>' \
+         --form 'patient_id=b80b1cdc2e6a4aca90ccebc02e683f35' \
+         --form 'payer_id=0f3b6c1e-9a2d-4e7b-8c5f-1d2e3a4b5c6d' \
+         --form 'member_id=W123456789' \
+         --form 'card_front=@card-front.jpg;type=image/jpeg' \
+         --form 'card_back=@card-back.jpg;type=image/jpeg'
+    ```
+The same request from a Python script, uploading two card photos saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+    ```python
+    from pathlib import Path
+    import requests
+    url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/insurance-card"
+    front_path = Path("card-front.jpg")
+    back_path = Path("card-back.jpg")
+    with front_path.open("rb") as front, back_path.open("rb") as back:
+        response = requests.post(
+            url,
+            headers={"Authorization": "<api-key>"},
+            data={
+                "patient_id": "b80b1cdc2e6a4aca90ccebc02e683f35",
+                "payer_id": "0f3b6c1e-9a2d-4e7b-8c5f-1d2e3a4b5c6d",
+                "member_id": "W123456789",
+            },
+            files={
+                "card_front": (front_path.name, front, "image/jpeg"),
+                "card_back": (back_path.name, back, "image/jpeg"),
+            },
+            timeout=30,
+        )
+    print(response.status_code)
+    ```
+Passing `files` makes `requests` send the request as `multipart/form-data`, with each `data` entry as a plain form field. Each file is a `(filename, file, content_type)` tuple; open it in binary mode.
+`curl --form` sends the request as `multipart/form-data` too. A browser form does the same with `enctype="multipart/form-data"`, or a `FormData` object passed to `fetch`. The route answers:
+  - `202 Accepted` when both photos were stored and the coverage effect was returned.
+  - `502 Bad Gateway` when a photo failed to store. Canvas returns this before calling the handler when every file fails; the handler returns it when only one does.
+  - `400 Bad Request` when the request isn't `multipart/form-data`.
+  - `401 Unauthorized` when the API key is missing or wrong.
+To find a payer's `id`, query the [Transactor](/sdk/data-coverage/#transactor) model:
+    ```python
+    from canvas_sdk.v1.data.coverage import Transactor
+    payer = Transactor.objects.filter(name__icontains="aetna", active=True).first()
+    ```
+###  Update a coverage 
+    ```python
+    from canvas_sdk.effects.coverage import Coverage
+    from canvas_sdk.v1.data.coverage import Coverage as CoverageModel
+    coverage = CoverageModel.objects.get(id="b3b5e4f6-1c2d-4e8a-9f0b-7a6c5d4e3f21")
+    # Change the group number and clear the comments
+    effect = Coverage(coverage_id=coverage.id, group="GRP-2027", comments=None).update()
+    ```
+###  Expire or remove a coverage, or remove a card image 
+    ```python
+    from datetime import date
+    from canvas_sdk.effects.coverage import Coverage, PhotoSide
+    coverage_id = "b3b5e4f6-1c2d-4e8a-9f0b-7a6c5d4e3f21"
+    expire = Coverage(coverage_id=coverage_id).expire(coverage_end_date=date(2026, 12, 31))
+    remove = Coverage(coverage_id=coverage_id).remove()
+    remove_back = Coverage(coverage_id=coverage_id).remove_photo(side=PhotoSide.BACK)
+    ```
+###  Swap primary and secondary coverages 
+    ```python
+    from canvas_sdk.effects.coverage import CoverageReorder, CoverageReorderEntry
+    from canvas_sdk.v1.data.coverage import CoverageRank, CoverageStack
+    effect = CoverageReorder(
+        patient_id="d7af3e356368446c85b40a5d6ff7288e",
+        ordering=[
+            CoverageReorderEntry(
+                coverage_id="b3b5e4f6-1c2d-4e8a-9f0b-7a6c5d4e3f21",
+                coverage_rank=CoverageRank.PRIMARY,
+                stack=CoverageStack.IN_USE,
+            ),
+            CoverageReorderEntry(
+                coverage_id="4a9e2c71-8d3b-4f5e-a6c0-1b2d3e4f5a6b",
+                coverage_rank=CoverageRank.SECONDARY,
+                stack=CoverageStack.IN_USE,
+            ),
+        ],
+    ).apply()
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-coverage/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-create-ccda-export/
 The `CreateCCDA` effect creates a C-CDA document for a patient with the provided XML content. This effect allows plugins to store C-CDA XML documents, which can be used for clinical document exchange, patient summaries, or referrals.
 This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
@@ -26731,12 +27025,36 @@ Creates the message and sends it in one operation.
 Changes an existing message.
   - `message_id` is required, and must be the id of an existing message.
   - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+  - `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See Attaching files.
   - `team_id` must not be set. Editing a message keeps its team. To change the team, use `AssignMessageTeam`.
 ###  send() → Effect 
 Sends a message that was already created, if you separated creating it from sending it.
   - Set `message_id` to the message to send.
+  - `attachment_upload_keys` must not be set. Attach files with `create()`, `create_and_send()`, or `edit()` before sending.
   - `team_id` must not be set. Use `AssignMessageTeam` to change the team.
   - When the recipient is a patient, the patient needs an eligible contact point. See Sending to a patient.
+##  Attaching files 
+To attach files to a message, set `attachment_upload_keys` to a list of upload keys. Each key is the `key` of a `StoredFilePart` that a user uploaded to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
+Attachments can be PNG, JPEG, or PDF files, and each key must come from a file your plugin uploaded. When the effect is applied, Canvas adds the files in the same transaction as the message, before the message is sent. Canvas then deletes the uploads, so each key works only once.
+This SimpleAPI route sends the files in a `multipart/form-data` request to a patient, from the logged-in staff member:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.note.message import Message
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    class SendFilesAPI(StaffSessionAuthMixin, SimpleAPI):
+        @api.post("/send-files", file_uploads="stored")
+        def send_files(self) -> list[Response | Effect]:
+            form = self.request.form_data()
+            message = Message(
+                content="Here is the form we discussed.",
+                sender_id=self.request.headers["canvas-logged-in-user-id"],
+                recipient_id=form["patient_id"].value,
+                attachment_upload_keys=[part.key for part in form.get_list("files") if not part.error],
+            )
+            return [message.create_and_send(), JSONResponse({})]
+    ```
+To read a message's attachments, see [MessageAttachment](/sdk/data-message/#messageattachment).
 ##  Sending to a patient 
 When `create_and_send()` or `send()` sends a message to a patient, Canvas notifies the patient the same way it does for a message sent from the chart: a text message or email to each of the patient's phone numbers and email addresses that is eligible. A contact point is eligible when all three of these are true:
   - `has_consent` is `True`
@@ -26763,6 +27081,7 @@ Attribute | Type | Description | Required
 `sender_id` | `str` or `UUID` | ID of the user (Patient or Staff) who is sending the message. | Yes  
 `recipient_id` | `str` or `UUID` | ID of the user (Patient or Staff) who will receive the message. | Yes  
 `read` | `datetime` or `None` | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No  
+`attachment_upload_keys` | `list[str]` or `None` | Upload keys of PNG, JPEG, or PDF files to attach. Not allowed with `send()`. See Attaching files. | No  
 `team_id` | `str` or `UUID` or `None` | ID of the [team](/sdk/data-team/) to assign the new message to. Not allowed with `edit()` or `send()`. See Assigning a message to a team. | No  
 ##  Validation & Errors 
 Before any effect is emitted, the model runs these checks:
@@ -26775,7 +27094,6 @@ Before any effect is emitted, the model runs these checks:
 ##  Caveats 
   - **Role Constraints:** Sender and Recipient must always be one of Patient or Staff. Patient-to-Patient messaging is not allowed.
   - **UI Refresh Required:** Due to system constraints, editing a message requires a manual UI refresh for updated content to display.
-  - **No Attachments Supported:** The Message effect does not yet support attachments.
   - **Immediate Post for Patient-to-Staff:** Messages created from a Patient to Staff cannot be drafted and will immediately appear in the timeline. This means that `CREATE_AND_SEND` and `SEND` effects will fail in these scenarios. You should only use the `CREATE` method for Patient-to-Staff messaging.
 ##  Example Usage 
     ```python
@@ -28001,6 +28319,7 @@ Create a new observation record.
 ###  update() → Effect 
 Update an existing observation.
   - Only fields marked dirty (modified on the model) are included in the update.
+  - If the update matches the stored observation, Canvas writes nothing and doesn't send an [OBSERVATION_UPDATED](/sdk/events/#observations) event. You can resend a whole observation, such as from a lab sync, without creating extra events for plugins that listen for changes. Codings, value codings, and components match in any order, and `effective_datetime` matches when it names the same instant in a different UTC offset.
 ####  Validation 
   - `observation_id` is **required** and must reference an existing observation
   - All other fields are optional; only dirty (modified) fields are updated
@@ -28269,6 +28588,103 @@ Attribute | Type | Description | Required
             return [effect.deactivate_member(patient_ids=[str(patient.id)])]
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-group/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient-identification-card/
+The `PatientIdentificationCard` effect adds, changes, or deletes an image of a patient's identification card, such as a driver's license, from a plugin. Use it to collect ID images during intake or registration. To read existing cards, see [PatientIdentificationCard](/sdk/data-patient/#patientidentificationcard) on the patient data model.
+Build a `PatientIdentificationCard` with the attributes you want to set, then return one of its methods from your handler: `create()`, `update()`, or `delete()`.
+##  Methods 
+###  create() → Effect 
+Creates an identification card for a patient.
+  - `patient_id` and `image_upload_key` are required.
+  - `card_id` must not be set.
+###  update() → Effect 
+Changes an existing identification card.
+  - `card_id` is required, and must be the `dbid` of an existing card.
+  - Only the attributes you set on the effect are changed.
+  - `patient_id` cannot be changed, and `active` cannot be set to `None`.
+###  delete() → Effect 
+Deletes an existing identification card. `card_id` is required.
+##  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`card_id` | `int` | The `dbid` of an existing [PatientIdentificationCard](/sdk/data-patient/#patientidentificationcard). Cards have no UUID, so they are identified by `dbid`. Must be unset when creating a card. | For `update()` and `delete()`  
+`patient_id` | `str` | The `id` of the [Patient](/sdk/data-patient/#patient) the card belongs to. | For `create()`  
+`image_upload_key` | `str` | The upload key of the card image. See Card image. | For `create()`  
+`title` | `str` or `None` | A label for the card, such as `"Driver license"`. Up to 255 characters. | No  
+`active` | `bool` | Whether the card is active. | No  
+##  Card image 
+The card image is a PNG or JPEG file that a user uploads to your plugin through a SimpleAPI route declared with `file_uploads="stored"`. Set `image_upload_key` to the `key` of the uploaded `StoredFilePart`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files).
+The key must come from a file your plugin uploaded, and the file must be a PNG or JPEG image. When the effect is applied, Canvas copies the file to the card and then deletes the upload, so each key works only once. On `update()`, setting `image_upload_key` replaces the card's image, and a key of `None` keeps the current image.
+For working code, see Upload an ID card from a form.
+##  Examples 
+###  Upload an ID card from a form 
+This SimpleAPI route creates an identification card from a `multipart/form-data` request that carries the patient's id, a title, and a photo of the card. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
+    ```python
+    from http import HTTPStatus
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient import PatientIdentificationCard
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
+    class IdentificationCardAPI(APIKeyAuthMixin, SimpleAPI):
+        @api.post("/identification-card", file_uploads="stored")
+        def identification_card(self) -> list[Response | Effect]:
+            form = self.request.form_data()
+            image = form["card_image"]
+            if image.error:
+                return [JSONResponse({"error": "upload failed"}, status_code=HTTPStatus.BAD_GATEWAY)]
+            card = PatientIdentificationCard(
+                patient_id=form["patient_id"].value,
+                image_upload_key=image.key,
+                title=form["title"].value,
+            )
+            return [card.create(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
+    ```
+Call the route with a `multipart/form-data` POST. Each form field name matches a key the handler reads, the card photo is sent as a file, and the API key goes in the `Authorization` header:
+    ```shell
+    curl --request POST \
+         --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/identification-card' \
+         --header 'Authorization: <api-key>' \
+         --form 'patient_id=b80b1cdc2e6a4aca90ccebc02e683f35' \
+         --form 'title=Driver license' \
+         --form 'card_image=@license.jpg;type=image/jpeg'
+    ```
+The same request from a Python script, uploading a photo saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+    ```python
+    from pathlib import Path
+    import requests
+    url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/identification-card"
+    image_path = Path("license.jpg")
+    with image_path.open("rb") as image:
+        response = requests.post(
+            url,
+            headers={"Authorization": "<api-key>"},
+            data={
+                "patient_id": "b80b1cdc2e6a4aca90ccebc02e683f35",
+                "title": "Driver license",
+            },
+            files={"card_image": (image_path.name, image, "image/jpeg")},
+            timeout=30,
+        )
+    print(response.status_code)
+    ```
+The route answers:
+  - `202 Accepted` when the photo was stored and the effect was returned.
+  - `502 Bad Gateway` when the photo failed to store.
+  - `400 Bad Request` when the request isn't `multipart/form-data`.
+  - `401 Unauthorized` when the API key is missing or wrong.
+###  Deactivate or delete a card 
+    ```python
+    from canvas_sdk.effects.patient import PatientIdentificationCard
+    from canvas_sdk.v1.data.patient import Patient
+    patient = Patient.objects.get(id="d7af3e356368446c85b40a5d6ff7288e")
+    card = patient.identification_cards.filter(active=True).first()
+    # Deactivate a card
+    deactivate = PatientIdentificationCard(card_id=card.dbid, active=False).update()
+    # Delete a card
+    delete = PatientIdentificationCard(card_id=card.dbid).delete()
+    ```
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-patient-identification-card/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-patient-metadata/
@@ -29861,6 +30277,47 @@ To record a rejection, pass a rejected state and, optionally, the reason:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-record-patient-consent/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-record-usage/
+The `RecordUsage` effect records units of work that a plugin charges for. A plugin priced per unit in its [manifest `catalog.pricing`](/sdk/canvas_manifest/#catalog), such as $0.50 a visit, returns one `RecordUsage` for each piece of that work, alongside the effects that do it. Canvas keeps each record on the instance, and Canvas Platform reads them a few minutes later to show what the units come to.
+Canvas fills in what the plugin does not choose:
+  - **The plugin.** The record is attributed to the plugin whose handler returned it. A plugin can record usage under its own name only.
+  - **The version.** The plugin version and package installed on the instance when the record is stored.
+  - **The time.** When Canvas applied the effect, so a handler never passes a timestamp.
+##  Counting once 
+`key` names the piece of work being counted, such as `visit:<note id>`. Canvas records a key once per plugin, so a handler that runs again for the same work (a retried event, a note signed twice) adds nothing. Choose a key that is the same every time the same work is counted and different for different work.
+##  Failed work is not counted 
+Canvas applies a plugin's `RecordUsage` effects after the plugin's other effects in the same response. When one of those other effects fails, the usage is kept with a withheld status, naming the effect that failed, and is not charged. A later run that does the work successfully can record the same key and is counted.
+An effect run later with [`set_async`](/sdk/effects/#async-execution) has no outcome yet when the usage is stored, so the unit is counted and the record names the deferred effect. A `RecordUsage` effect itself cannot be deferred: one with `set_async` is discarded.
+##  Units 
+`unit` must be one of the units the plugin's installed manifest lists in `catalog.pricing`, matched without regard to case or repeated whitespace. A record in any other unit, or in `token`, is discarded and logged, since the inference gateway meters tokens on its own. Units are recorded on every instance; the instance's stage decides what is charged.
+##  Methods 
+###  apply() → Effect 
+Records the usage.
+##  Attributes 
+Name | Type | Description | Required  
+---|---|---|---  
+`unit` | `str` | A unit from the plugin's manifest `catalog.pricing`, at most 40 characters. | Yes  
+`key` | `str` | Names the work being counted, so the same work is counted once. 1 to 256 characters. | Yes  
+`quantity` | `int` | How many units the work comes to, from 1 to 10,000. Defaults to 1. | No  
+##  Example 
+A plugin listed at a price per `visit` records one visit when a note is locked, keyed on the note so a note locked again is not counted twice:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.usage import RecordUsage
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class CountVisit(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            if self.event.context["state"] != "LKD":
+                return []
+            note_id = self.event.context["note_id"]
+            return [RecordUsage(unit="visit", key=f"visit:{note_id}").apply()]
+    ```
+A plugin recording several units of one piece of work passes `quantity`, such as `RecordUsage(unit="page", key=f"fax:{fax_id}", quantity=12)`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-record-usage/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-redirect/
 The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. In the patient portal, portal pages change in place instead (see Redirects in the patient portal). The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
 A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
@@ -31021,7 +31478,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Coverage Create, update, expire, remove, and reorder a patient's insurance coverages. ](/sdk/effect-coverage/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Identification Card Create, update, or delete a patient's identification card images. ](/sdk/effect-patient-identification-card/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Record Usage Record units of a plugin's work that its catalog listing prices. ](/sdk/effect-record-usage/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -31163,7 +31620,7 @@ CALENDAR__EVENT__CREATE | Create a calendar event.
 CALENDAR__EVENT__UPDATE | Update a calendar event.  
 CALENDAR__EVENT__DELETE | Delete a calendar event.  
 ###  Patients 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), [Patient Identification Card](/sdk/effect-patient-identification-card/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 Effect | Description  
 ---|---  
 CREATE_PATIENT | Create a patient.  
@@ -31177,6 +31634,19 @@ CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient.
 UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient.  
 DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient.  
 RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document.  
+CREATE_PATIENT_IDENTIFICATION_CARD | Add an identification card image for a patient.  
+UPDATE_PATIENT_IDENTIFICATION_CARD | Change a patient's identification card.  
+DELETE_PATIENT_IDENTIFICATION_CARD | Delete a patient's identification card.  
+###  Coverage 
+Check out the [Coverage Effect](/sdk/effect-coverage/) documentation.
+Effect | Description  
+---|---  
+CREATE_COVERAGE | Create an insurance coverage for a patient, with optional card images.  
+UPDATE_COVERAGE | Change an existing coverage.  
+EXPIRE_COVERAGE | End a coverage on a given date.  
+REMOVE_COVERAGE | Move a coverage to the removed stack.  
+REMOVE_COVERAGE_PHOTO | Remove the front or back card image from a coverage.  
+REORDER_COVERAGE | Change the rank and stack of a patient's coverages.  
 ###  Patient Groups 
 Check out the [Patient Group](/sdk/effect-patient-group/) documentation.
 Effect | Description  
@@ -31266,6 +31736,7 @@ Effect | Description
 PORTAL_WIDGET | Add widgets to the patient portal landing page.  
 SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items).  
 PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application.  
+PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal).  
 PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal.  
 PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card.  
 PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card.  
@@ -31290,6 +31761,11 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 Effect | Description  
 ---|---  
 HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior.  
+###  Plugin Usage 
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+Effect | Description  
+---|---  
+RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit.  
 ###  Revenue / Payment Processor 
 Effect | Description  
 ---|---  
@@ -31379,6 +31855,7 @@ Task | `*_TASK_COMMAND` |
 Uncategorized Document Review | `*_UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND` |   
 Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` |   
 Update Goal | `*_UPDATE_GOAL_COMMAND` |   
+Visual Exam Finding | `*_VISUAL_EXAM_FINDING_COMMAND` |   
 Vitals | `*_VITALS_COMMAND` |   
 ----- END PAGE https://docs.canvasmedical.com/sdk/effects/
 
@@ -33233,7 +33710,7 @@ Target object | Context object
        "id": pt_id  
 OBSERVATION_UPDATED  
 ---  
-Occurs when an observation is updated.  
+Occurs when an observation is updated. An [Observation `update()` effect](/sdk/effect-observation/#update--effect) that changes nothing doesn't send this event.  
 Target object | Context object  
     "id": observation_id
     "type": [Observation](/sdk/data-observation/#observation)
@@ -48106,6 +48583,24 @@ Target | Target type | Context object
     "login_method": str["credentials" |
                         "access_token" |
                         "registration"]  
+PATIENT_PORTAL__WIDGET_CONFIGURATION  
+---  
+Occurs when the Patient Portal landing page loads. See [Tailoring Portal Landing Page](/guides/custom-landing-page/) for examples of how to use this event.  
+Target | Target type | Context object  
+    patient_id
+| 
+    [Patient](/sdk/data-patient/)
+| 
+    None  
+PATIENT_PORTAL__GET_THEME_CONFIGURATION  
+---  
+Occurs when a Patient Portal page loads, including the login page. Return a `PatientPortalTheme` effect to theme the portal. See [Theme the Patient Portal](/sdk/patient-portal/#theme-the-patient-portal).  
+Target | Target type | Context object  
+    None
+| 
+    None
+| 
+    "business_line_id": str | null  
 ###  Action Buttons Events 
 For more information on handling these events, see [Action Buttons](/sdk/handlers-action-buttons).
 Action button and application events include context about the user who triggered them, so you can tailor behavior to the current user (for example, only showing a button to a specific staff member):
@@ -48367,6 +48862,34 @@ Target | Context object
       "user":
         "id": str
         "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)  
+APPLICATION__ON_CONTEXT_CHANGE  
+---  
+Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.  
+Target | Context object  
+    application_id
+| 
+      "url": str
+      "patient":
+        "id": str
+      "user":
+        "id": str
+        "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)
+      "claim": (optional)
+        "id": str
+      "claim_queue": (optional)
+        "dbid": str  
+APPLICATION__GET_NOTIFICATION_BADGE  
+---  
+Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding `compute_notification_badge()` on your [Application](/sdk/handlers-applications/#notification-badges) handler.  
+Target | Context object  
+    application_id
+| 
+      "staff":
+        "id": str
+        "type": [Staff](/sdk/data-staff/)
+      "patient":
+        "id": str
+        "type": [Patient](/sdk/data-patient/)  
 ###  Payment Processor Events 
 These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see Event Actor). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
 The `identifier` is the unique id of the payment processor handler the event is intended for. Canvas derives it from the handler's class (its module path and class name) and exposes it on the handler as `self.identifier`; it is the same value the handler advertises via the [`PaymentProcessorMetadata`](/sdk/payment-processor-effect/#paymentprocessormetadata) effect when responding to `REVENUE__PAYMENT_PROCESSOR__LIST`.
@@ -48449,35 +48972,6 @@ Target object | Context object
     "payment_card_id": str   # echoed, a [PaymentCard](/sdk/data-payment-card/) id under Stripe
     "claim_id": str          # echoed, a [Claim](/sdk/data-claim/) id, null when none
     "amount": str            # echoed, the dollar amount submitted  
-###  Patient Portal Events 
-APPLICATION__ON_CONTEXT_CHANGE  
----  
-Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.  
-Target | Context object  
-    application_id
-| 
-      "url": str
-      "patient":
-        "id": str
-      "user":
-        "id": str
-        "type": [Staff](/sdk/data-staff/) | [Patient](/sdk/data-patient/)
-      "claim": (optional)
-        "id": str
-      "claim_queue": (optional)
-        "dbid": str  
-APPLICATION__GET_NOTIFICATION_BADGE  
----  
-Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding `compute_notification_badge()` on your [Application](/sdk/handlers-applications/#notification-badges) handler.  
-Target | Context object  
-    application_id
-| 
-      "staff":
-        "id": str
-        "type": [Staff](/sdk/data-staff/)
-      "patient":
-        "id": str
-        "type": [Patient](/sdk/data-patient/)  
 ###  Patient Chart Configuration 
 PATIENT_CHART__CONDITIONS  
 ---  
@@ -48617,7 +49111,6 @@ Context object:
     "results": list[dict]
     "user":
         "staff": str  
-PATIENT_PORTAL__WIDGET_CONFIGURATION | Patient Portal landing page is loading. See [Tailoring Portal Landing Page](/guides/custom-landing-page/) for examples of how to use this event.  
 PATIENT_METADATA__GET_ADDITIONAL_FIELDS | Patient Profile is loading. See [How to add patient profile additional fields](/guides/profile-additional-fields/) for examples of how to use this event.   
 Context object: 
     "patient":
@@ -49126,6 +49619,318 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
             return [JSONResponse({"message": "Hello world!"})]
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/example-api_samples/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/example-appointment_copay_collection/
+> **Note:** [View the source](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/appointment_copay_collection) for this plugin on GitHub. 
+This plugin adds an **Appointment Copays** page to the patient portal, where a patient pays the copay for an upcoming appointment with a card saved to their account. The plugin charges the card with the [`ChargeStoredCard`](/sdk/effect-charge-stored-card/) effect and posts the payment to the copay line item on the appointment's claim. Canvas records it the same way as a copay that staff collect in **Collect payment**.
+##  SDK Features 
+  - Adds a patient portal menu item with a `portal_menu_item` [application](/sdk/handlers-applications/)
+  - Serves the page and its JSON endpoints from a [SimpleAPI](/sdk/handlers-simple-api-http/) handler authenticated with [`PatientSessionAuthMixin`](/sdk/handlers-simple-api-http/#patient-session)
+  - Charges a stored [PaymentCard](/sdk/data-payment-card/) as a copay on a [Claim](/sdk/data-claim/) with [`ChargeStoredCard`](/sdk/effect-charge-stored-card/#payment-allocation)
+  - Handles the [`REVENUE__STORED_CARD__CHARGE_RESPONSE`](/sdk/effect-charge-stored-card/#reconciling-the-charge) event and pushes the result to the open page with the [`Broadcast`](/sdk/handlers-simple-api-websocket/#broadcasting-messages) effect and a [WebSocket](/sdk/handlers-simple-api-websocket/) handler
+  - Reads per-visit-type copay amounts from a plugin [variable](/sdk/secrets/), with the copay on the patient's primary coverage ([`EligibilitySummary`](/sdk/data-coverage/#eligibilitysummary)) as the fallback
+##  How it works 
+  1. The patient selects **Appointment Copays** in the portal menu, and the page opens.
+  2. The page lists the patient's upcoming appointments, leaving out canceled and no-showed ones, with the copay status of each.
+  3. For an appointment with a copay due, the patient chooses a saved card and pays.
+  4. The plugin emits `ChargeStoredCard` with the appointment's `claim_id` and `copay=True`.
+  5. When Canvas finishes processing the charge, the plugin pushes the result to the open page over a WebSocket.
+A billable appointment has a claim from the moment it's booked, through its note (appointment → note → claim), so its copay can be paid before the visit.
+##  Copay amount 
+The plugin takes the copay amount from the first of these that has one:
+  1. The amount set for the appointment's note type in the `COPAY_AMOUNTS` plugin variable.
+  2. The copay on the patient's primary active coverage, from `EligibilitySummary.copay_cents`.
+Set `COPAY_AMOUNTS` to a JSON object that maps note type codes to dollar amounts:
+    ```json
+    {"office-visit": "25.00", "telehealth": "15.00"}
+    ```
+##  Appointment statuses 
+The plugin gives each appointment one of these statuses, and the patient can pay only an appointment whose copay is due. A due appointment shows the copay amount with a card picker and a pay button, or a prompt to add a card when the patient has none saved. Every other appointment shows its status label.
+Status | When it applies  
+---|---  
+Due | The note type is billable, the claim exists, no copay has been posted to it yet, and the plugin has a copay amount  
+Copay paid | The claim already has a copay payment  
+No payment needed for this visit | The note type isn't billable, so the appointment has no claim  
+Payment isn't available for this visit yet | The note type is billable, but the appointment has no active claim  
+No copay on file for this visit | Neither `COPAY_AMOUNTS` nor the primary coverage has an amount  
+##  CANVAS_MANIFEST.json 
+    ```json
+    {
+        "sdk_version": "0.1.4",
+        "plugin_version": "0.0.1",
+        "name": "appointment_copay_collection",
+        "description": "Patient portal page that collects an upcoming appointment's copay on a stored card and posts it to the appointment claim's COPAY line item.",
+        "components": {
+            "applications": [
+                {
+                    "class": "appointment_copay_collection.applications.copay_application:CopayApplication",
+                    "name": "Appointment Copays",
+                    "description": "Opens the page where a patient pays the copay for an upcoming appointment.",
+                    "scope": "portal_menu_item",
+                    "icon": "assets/icon.png"
+                }
+            ],
+            "handlers": [
+                {
+                    "class": "appointment_copay_collection.handlers.copay_api:CopayAPI",
+                    "description": "Serves the copay page, lists upcoming appointments, and emits ChargeStoredCard effects."
+                },
+                {
+                    "class": "appointment_copay_collection.handlers.charge_response:ChargeResponseHandler",
+                    "description": "Pushes the stored-card charge result to the patient's open copay page."
+                },
+                {
+                    "class": "appointment_copay_collection.handlers.copay_websocket:CopayWebSocket",
+                    "description": "Lets a logged-in patient subscribe to their own charge-result channel."
+                }
+            ],
+            "commands": [],
+            "content": [],
+            "effects": [],
+            "views": []
+        },
+        "variables": [
+            {
+                "name": "COPAY_AMOUNTS",
+                "default": "{}"
+            }
+        ],
+        "tags": {},
+        "references": [],
+        "license": "",
+        "diagram": false,
+        "readme": "./README.md"
+    }
+    ```
+##  applications/ 
+###  copay_application.py 
+`CopayApplication` registers the **Appointment Copays** menu item. When the patient opens it, `on_open` returns a `LaunchModalEffect` that shows the copay page as a full portal page.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import Application
+    class CopayApplication(Application):
+        """Patient portal menu item that opens the appointment copay page."""
+        def on_open(self) -> Effect:
+            """Open the copay page as a full portal page."""
+            return LaunchModalEffect(
+                url="/plugin-io/api/appointment_copay_collection/portal/page",
+                target=LaunchModalEffect.TargetType.PAGE,
+            ).apply()
+    ```
+##  handlers/ 
+###  copay_api.py 
+`CopayAPI` is a SimpleAPI handler with the `/portal` prefix. It uses `PatientSessionAuthMixin` and reads the logged-in patient's ID from the `canvas-logged-in-user-id` request header, so every lookup is scoped to that patient.
+**Endpoints**
+  - `GET /portal/page`: Renders the page, passing in the name of the patient's WebSocket channel.
+  - `GET /portal/copay.js` and `GET /portal/copay.css`: Serve the page's script and styles.
+  - `GET /portal/appointments`: Returns the patient's upcoming appointments, each with its status and copay amount, and the patient's saved cards with the default card first.
+  - `POST /portal/appointments/<appointment_id>/pay`: Takes a `payment_card_id` in the JSON body and charges that card for the appointment's copay.
+The page sends only the appointment and the card. The pay endpoint works out the amount and the claim again on the server for every payment, and responds with `202 Accepted` along with the `ChargeStoredCard` effect:
+  - `claim_id` is the appointment's claim, and `copay` is `True`, so the payment is posted to the claim's copay line item.
+  - `idempotency_key` is a `uuid5` built from the appointment, card, and amount. A repeated submission of the same payment uses the same key, so the processor treats it as a retry of one charge. See [Idempotency](/sdk/effect-charge-stored-card/#idempotency).
+  - `description` is `"Appointment copay"`.
+The response body carries the `idempotency_key`, which the page uses to match the charge result when it arrives.
+    ```python
+    from decimal import Decimal
+    from http import HTTPStatus
+    from typing import Any
+    from appointment_copay_collection.handlers.charge_response import channel_for
+    from appointment_copay_collection.services.copay import (
+        COPAY_AMOUNTS_VARIABLE,
+        CopayStatus,
+        charge_idempotency_key,
+        copay_rows,
+        parse_copay_amounts,
+        stored_cards,
+    )
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.payment import ChargeStoredCard
+    from canvas_sdk.effects.simple_api import HTMLResponse, JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPI, api
+    from canvas_sdk.templates import render_to_string
+    def _appointment_json(row: dict[str, Any]) -> dict[str, Any]:
+        """Serialize one copay row for the page."""
+        appointment = row["appointment"]
+        provider = appointment.provider
+        return {
+            "id": str(appointment.id),
+            "start_time": appointment.start_time.isoformat(),
+            "duration_minutes": appointment.duration_minutes,
+            "visit_type": appointment.note_type.name if appointment.note_type else None,
+            "provider": f"{provider.first_name} {provider.last_name}" if provider else None,
+            "location": appointment.location.full_name if appointment.location else None,
+            "status": row["status"],
+            "amount": str(row["amount"]) if row["amount"] is not None else None,
+        }
+    class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
+        """Serve the copay page and charge a stored card for an appointment's copay.
+        Every request is made by a logged-in patient, and every lookup is scoped to that patient,
+        so a patient can only see and pay for their own appointments.
+        """
+        PREFIX = "/portal"
+        @property
+        def patient_id(self) -> str:
+            """The id of the logged-in patient."""
+            return self.request.headers["canvas-logged-in-user-id"]
+        def _configured_amounts(self) -> dict[str, Decimal]:
+            return parse_copay_amounts(self.secrets.get(COPAY_AMOUNTS_VARIABLE))
+        @api.get("/page")
+        def page(self) -> list[Response | Effect]:
+            """Serve the copay page."""
+            return [
+                HTMLResponse(
+                    render_to_string("templates/copay.html", {"channel": channel_for(self.patient_id)}),
+                    status_code=HTTPStatus.OK,
+                )
+            ]
+        @api.get("/copay.js")
+        def script(self) -> list[Response | Effect]:
+            """Serve the page's script."""
+            return [
+                Response(
+                    render_to_string("templates/copay.js").encode(),
+                    status_code=HTTPStatus.OK,
+                    content_type="text/javascript",
+                )
+            ]
+        @api.get("/copay.css")
+        def styles(self) -> list[Response | Effect]:
+            """Serve the page's styles."""
+            return [
+                Response(
+                    render_to_string("templates/copay.css").encode(),
+                    status_code=HTTPStatus.OK,
+                    content_type="text/css",
+                )
+            ]
+        @api.get("/appointments")
+        def appointments(self) -> list[Response | Effect]:
+            """List the patient's upcoming appointments with their copay, plus their stored cards."""
+            rows = copay_rows(self.patient_id, self._configured_amounts())
+            return [
+                JSONResponse(
+                    {
+                        "appointments": [_appointment_json(row) for row in rows],
+                        "cards": stored_cards(self.patient_id),
+                    },
+                    status_code=HTTPStatus.OK,
+                )
+            ]
+        @api.post("/appointments/<appointment_id>/pay")
+        def pay(self) -> list[Response | Effect]:
+            """Charge the chosen stored card for the appointment's copay.
+            The amount and the claim are recomputed here rather than taken from the request, so the
+            page cannot change what is charged or where it is posted. The charge result arrives
+            later as a REVENUE__STORED_CARD__CHARGE_RESPONSE event.
+            """
+            appointment_id = self.request.path_params["appointment_id"]
+            body = self.request.json()
+            payment_card_id = body.get("payment_card_id") if isinstance(body, dict) else None
+            rows = copay_rows(self.patient_id, self._configured_amounts())
+            row = next((r for r in rows if str(r["appointment"].id) == appointment_id), None)
+            if row is None:
+                return [
+                    JSONResponse({"error": "Appointment not found."}, status_code=HTTPStatus.NOT_FOUND)
+                ]
+            if row["status"] != CopayStatus.DUE:
+                return [
+                    JSONResponse(
+                        {"error": "This appointment has no copay to pay.", "status": row["status"]},
+                        status_code=HTTPStatus.CONFLICT,
+                    )
+                ]
+            if not isinstance(payment_card_id, str) or payment_card_id not in {
+                card["id"] for card in stored_cards(self.patient_id)
+            }:
+                return [
+                    JSONResponse(
+                        {"error": "Choose one of your saved cards."},
+                        status_code=HTTPStatus.BAD_REQUEST,
+                    )
+                ]
+            amount = row["amount"]
+            idempotency_key = charge_idempotency_key(appointment_id, payment_card_id, amount)
+            return [
+                JSONResponse(
+                    {"idempotency_key": str(idempotency_key), "amount": str(amount)},
+                    status_code=HTTPStatus.ACCEPTED,
+                ),
+                ChargeStoredCard(
+                    patient_id=self.patient_id,
+                    payment_card_id=payment_card_id,
+                    amount=amount,
+                    idempotency_key=idempotency_key,
+                    claim_id=str(row["claim"].id),
+                    copay=True,
+                    description="Appointment copay",
+                ).apply(),
+            ]
+    ```
+###  charge_response.py 
+`ChargeResponseHandler` responds to `REVENUE__STORED_CARD__CHARGE_RESPONSE`. It broadcasts the outcome to the charged patient's channel, `copay-<patient_id>`, so the open page can show whether the payment went through.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import Broadcast
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    def channel_for(patient_id: str) -> str:
+        """Return the WebSocket channel a patient's copay page listens on."""
+        return f"copay-{patient_id}"
+    class ChargeResponseHandler(BaseHandler):
+        """Push the result of a stored-card charge to the patient's open copay page.
+        The page matches the result to its pending payment by idempotency key.
+        """
+        RESPONDS_TO = EventType.Name(EventType.REVENUE__STORED_CARD__CHARGE_RESPONSE)
+        def compute(self) -> list[Effect]:
+            """Broadcast the charge result on the patient's channel."""
+            context = self.event.context
+            patient_id = context.get("patient_id")
+            if not patient_id:
+                return []
+            error = context.get("error") or {}
+            return [
+                Broadcast(
+                    channel=channel_for(patient_id),
+                    message={
+                        "event_type": "charge_response",
+                        "idempotency_key": context.get("idempotency_key"),
+                        "success": bool(context.get("success")),
+                        "amount": context.get("amount"),
+                        "error_code": error.get("code"),
+                    },
+                ).apply()
+            ]
+    ```
+###  copay_websocket.py 
+`CopayWebSocket` is a `WebSocketAPI` handler. Its `authenticate` method accepts a connection when the logged-in user is a patient connecting to the channel named after them, the same `copay-<patient_id>` channel that `ChargeResponseHandler` broadcasts on.
+    ```python
+    from appointment_copay_collection.handlers.charge_response import channel_for
+    from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
+    class CopayWebSocket(WebSocketAPI):
+        """Let a logged-in patient subscribe to their own charge-result channel, and no other."""
+        def authenticate(self) -> bool:
+            """Accept only a patient connecting to the channel named after them."""
+            user = self.websocket.logged_in_user
+            return (
+                user is not None
+                and user["type"] == "Patient"
+                and self.websocket.channel == channel_for(user["id"])
+            )
+    ```
+##  services/ 
+###  copay.py 
+This module holds the logic the API handler uses:
+  - Parses `COPAY_AMOUNTS`, skipping entries whose amount isn't a positive number.
+  - Looks up the copay on the patient's primary, active, in-use coverage.
+  - Lists upcoming appointments, finds the newest active claim on each appointment's note, and checks the claims for an existing copay [`PatientPosting`](/sdk/data-posting/#patientposting) to set each appointment's status.
+  - Builds the idempotency key for a charge.
+  - Lists the patient's saved cards.
+##  templates/ 
+###  copay.html, copay.js, and copay.css 
+The page lists the appointments, offers a card picker and a pay button for each appointment with a copay due, and opens a WebSocket to the patient's channel. When a result arrives with the idempotency key of the pending payment, the page shows whether it succeeded. If no result arrives in time, the page tells the patient the payment is still processing.
+----- END PAGE https://docs.canvasmedical.com/sdk/example-appointment_copay_collection/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/example-aws_s3/
@@ -53205,7 +54010,7 @@ See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope 
 They are declared under `handlers` (not `applications`), take no `scope`, and create no application record. A `ProviderMenuApplication` is separate from a drawer application that uses the `provider_menu_item` scope, and a `PanelApplication` is separate from a drawer application shown with `show_in_panel`; each pair can coexist.
 See [Embedded Applications](/sdk/handlers-embedded-applications/) for the full guide.
 ##  Panel Display 
-If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can add the `show_in_panel` attribute. If you've added more than one application to that panel, you can set their priorities using the `panel_priority` attribute.
+If you want to increase your application's visibility and display it alongside other panel buttons (instead of in the applications drawer), you can add the `show_in_panel` attribute. If you've added more than one application to that panel, you can set their priorities using the `panel_priority` attribute. A panel icon has no label, so Canvas shows the application's `name` in a tooltip when a user hovers over the icon.
 For security reasons you also need to specify the domains that will be loaded within the iframe, or they will not be rendered. For more info on the format of the `url_permissions` field, check the [Additional Configuration](/sdk/layout-effect/#additional-configuration) for `LaunchModalEffect`.
 Here's what your `CANVAS_MANIFEST.json` might look like:
     ```json
@@ -54814,6 +55619,42 @@ If you know the name of the subparts you are looking for, you can also access th
     # Get all parts named "my-part-name"
     parts_all = form_data.get_list("my-part-name")
     ```
+####  Storing uploaded files 
+To save an uploaded file on a Canvas record, declare the route with `file_uploads="stored"`. Examples include an insurance card image on a coverage or an attachment on a message. Canvas then stores each file in a `multipart/form-data` request before your handler runs, and `form_data()` returns a `StoredFilePart` for each file field instead of the file's bytes. Pass the part's `key` to an effect that accepts upload keys:
+  - [`Coverage`](/sdk/effect-coverage/): `card_image_front_upload_key` and `card_image_back_upload_key`
+  - [`PatientIdentificationCard`](/sdk/effect-patient-identification-card/): `image_upload_key`
+  - [`Message`](/sdk/effect-messages/#attaching-files): `attachment_upload_keys`
+  - [`VisualExamFindingCommand`](/sdk/commands/#visualexamfinding): `image_upload_key`
+The file never passes through your plugin or the effect payload.
+`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods. Setting `FILE_UPLOADS` on a `SimpleAPIRoute` that has no `post` or `put` method raises a `PluginError` when the class is defined. The default is `"passthrough"`, which passes file bytes to your handler.
+A route declared with `file_uploads="stored"` takes `multipart/form-data` requests only. Canvas answers a request with any other content type with **400 Bad Request** without calling your handler.
+A `StoredFilePart` has these attributes:
+Attribute | Type | Description  
+---|---|---  
+`name` | `str` | The name of the form field.  
+`filename` | `str` | The filename the client sent.  
+`content_type` | `str` or `None` | The content type the client declared for the file.  
+`content_length` | `int` | The size of the file in bytes.  
+`key` | `str` or `None` | The key of the stored file. `None` when the upload failed.  
+`error` | `str` or `None` | A code such as `"s3_upload_failed"` when the upload failed; otherwise `None`.  
+Canvas stores each file separately, so one failed file doesn't stop the others in the request. When every file in the request fails, Canvas answers with **502 Bad Gateway** without calling your handler. Otherwise, failed uploads come back alongside successful ones, so check `error` before you read `key`:
+    ```python
+    from http import HTTPStatus
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+    class UploadAPI(StaffSessionAuthMixin, SimpleAPI):
+        @api.post("/upload", file_uploads="stored")
+        def upload(self) -> list[Response | Effect]:
+            part = self.request.form_data()["file"]
+            if part.error:
+                return [JSONResponse({"error": part.error}, status_code=HTTPStatus.BAD_GATEWAY)]
+            # Pass part.key to an effect that accepts upload keys
+            return [JSONResponse({"key": part.key})]
+    ```
+Pass each key to an effect from the plugin that uploaded the file, and upload a file of a type the effect accepts. When the effect is applied, Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
+The image keys on `Coverage` and `VisualExamFindingCommand` are optional, as is `image_upload_key` on a `PatientIdentificationCard` update. Setting one of these to `None` attaches no file and leaves any existing file in place. You can pass the key of a file input the user left empty without checking it first.
+When you switch an existing route to `file_uploads="stored"`, check for files with `part.is_file()` rather than `isinstance(part, FileFormPart)`. A `StoredFilePart` is not a `FileFormPart`, so an `isinstance` check skips every file.
 ###  Responses 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that return multiple response objects will return a **500 Internal Server Error** response back to the requester. If your endpoint does not provide a response object, then the requester will receive a **204 No Content** response.
 ####  Response types 
@@ -56159,6 +57000,62 @@ While a default homepage application is set, every visit to the portal home page
               ).apply()
             ]
     ```
+##  Theme the Patient Portal 
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
+Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
+###  Methods 
+####  apply() → Effect 
+Applies the theme. The effect raises a validation error that names the attribute at fault when:
+  - An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
+  - A value doesn't match its format or range in the Attributes table.
+  - `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+  - `font_source` is set without `font_family`.
+###  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`brand_color` | `str` | The brand color, as a six-digit hex color such as `"#0F766E"`. | No  
+`menu_background_color` | `str` | The background of the left navigation menu, as a six-digit hex color. | No  
+`menu_selected_background_color` | `str` | The background of the selected menu item, as a six-digit hex color. | No  
+`menu_text_color` | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No  
+`page_background_color` | `str` | The page background, as a six-digit hex color. | No  
+`corner_radius` | `int` | The corner radius, in pixels, from `0` to `24`. | No  
+`font_family` | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No  
+`font_source` | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No  
+`person_word` | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`. | No  
+`custom_css` | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No  
+Setting `font_family` replaces the portal's default webfont, including in questionnaire forms. The theme also applies in pop-up windows, such as questionnaire forms and the Session Expired notice.
+Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
+###  Color contrast 
+`apply()` doesn't check color contrast, so check that the colors you choose stay readable. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a contrast ratio of at least 4.5:1. The portal draws these colors together:
+  - Menu text on `menu_background_color`, and on `menu_selected_background_color`.
+  - Body text on `page_background_color`.
+  - `brand_color` links and section titles on `page_background_color`, and on the light brand tint behind section and accordion headers.
+  - White text on `brand_color`, on primary buttons and sent messages.
+  - `brand_color` text on `menu_selected_background_color`, when the menu keeps its default background.
+###  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class PortalThemeHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_THEME_CONFIGURATION)
+        def compute(self) -> list[Effect]:
+            return [
+                PatientPortalTheme(
+                    brand_color="#0F766E",
+                    page_background_color="#F0FDFA",
+                    # A dark menu: the portal picks white menu text.
+                    menu_background_color="#1F2937",
+                    corner_radius=8,
+                    font_family="Inter, sans-serif",
+                    font_source="https://fonts.googleapis.com/css2?family=Inter&display=swap",
+                    person_word="member",
+                ).apply()
+            ]
+    ```
 ##  Shape Self-Scheduling 
 When patients self-schedule, you can filter or reorder what they're offered _before they see it_ — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a`_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
 Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
@@ -56842,7 +57739,7 @@ This example shows a protocol that reacts to `LAB_REPORT_CREATED` events, uses `
                 ]
             return []
     ```
-![ProtocolCard]("/assets/images/sdk/handlers/protocol_card_example.png")
+![ProtocolCard](/assets/images/sdk/handlers/protocol_card_example.png)
 When a CQM protocol that returns a single ProtocolCard effect is uploaded to Canvas, you can select the protocol as an option in the Campaigns module and view the population of patients, create campaigns, etc. More details on Populations and Campaigns can be found [here](https://help.canvasmedical.com/articles/3097826946-campaigns-populations-patients).
 ###  Caveats & notes 
   - Timeframe: by default the protocol looks at the 1-year window prior to now. Override `timeframe` if your measure requires a broader or narrower lookback.
