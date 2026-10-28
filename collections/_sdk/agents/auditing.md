@@ -20,29 +20,30 @@ happen automatically for every run.
 
 Captured today:
 
-- **Run outcomes**: the plugin runner logs each run's start
-  (`agent_id`, `scope_key`, `run_id`), its completion with the number
-  of effects emitted, lock contention, and gateway failures by kind
-  (`LLM_UNAVAILABLE`, `LLM_REFUSED`). Unexpected exceptions go to
-  Sentry, tagged with the agent ID.
-- **Run duration**: a timing metric for every `RunAgent` call,
-  tagged with the `agent_id`.
+- **Run outcomes**: the platform logs each run's start (`agent_id`,
+  `scope_key`, `run_id`), its completion with the number of effects
+  emitted, runs that waited for their scope, and gateway failures by
+  kind (`LLM_UNAVAILABLE`, `LLM_REFUSED`, `LLM_NOT_CONFIGURED`).
+  Unexpected exceptions go to Sentry, tagged with the agent ID.
+- **Run duration**: a timing metric for every run, tagged with the
+  `agent_id`.
 - **LLM usage**: Canvas's inference gateway records every call in its
   usage ledger: model, token counts by cache class, and cost, against
-  your organization's inference account. It retains no request or
+  your organization's inference account, along with the instance,
+  plugin, agent, and `run_id` that made it. It retains no request or
   response bodies.
-- **Effect dispatch**: every effect the agent emits passes through
-  `handle_effect`, which carries the run's provenance (`plugin_name`,
-  `handler_name`, `actor`, `source`) onto the affected record.
+- **Effect audit**: each effect the agent returns is applied like any
+  other plugin effect and recorded in Canvas's security audit trail.
+  Those events name the clinician whose action started the run, your
+  plugin, and the agent class, and carry the `run_id` as their
+  correlation id, so one id joins a run's chart changes to its LLM
+  calls.
 
 Captured with V1:
 
 - **Run records**: a durable record per run with `agent_id`,
-  `scope_key`, `run_id`, status (success / error / locked), lock
-  outcome, start and end timestamps, and wall-clock duration.
-- **Per-call attribution**: each gateway usage record tied to the
-  plugin, agent, and run that made the call. The plugin runner sends
-  this attribution with every request today.
+  `scope_key`, `run_id`, status, how long it waited for its scope,
+  start and end timestamps, and wall-clock duration.
 - **Per-LLM-call latency**: wall-clock and time-to-first-token.
 - **Tool-call envelope**: name, arguments shape/hash, latency,
   error type for every tool the agent dispatches. Note: the
@@ -155,9 +156,8 @@ de-identification / right-to-be-forgotten obligations become
 expensive to honor on data you didn't need to keep.
 
 > **Coming soon**: per-table retention policy declared in
-> `CANVAS_MANIFEST.json` (`components.custom_data[].retention_days`).
-> The platform will run a daily prune job that drops rows older than
-> the declared cutoff. The platform sets a maximum cap by data class
+> `CANVAS_MANIFEST.json`. The platform will run a daily prune job that
+> drops rows older than the declared cutoff. The platform sets a maximum cap by data class
 > (e.g., 2 years for clinical-data-bearing tables, 90 days for purely
 > operational); you choose any duration up to that.
 
@@ -197,7 +197,7 @@ A useful test: if you removed your agent and replaced it with a
 different agent at the same trigger, which audit data would still
 be useful?
 
-- Cost, token counts, run durations, error rates, lock contention
+- Cost, token counts, run durations, error rates, scope contention
   — useful regardless of the agent. **Platform-owned.**
 - "The agent saw an A1c of 9.2 and proposed a recheck in 3 months"
   — only meaningful in the context of this specific agent and its

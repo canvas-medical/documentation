@@ -25,8 +25,8 @@ Examples:
 - **Note drafting** — read the chart on note creation, draft a Plan
   command on the new note for the clinician to edit and commit.
 - **Longitudinal care surveillance** — at note lock, check whether
-  recommendations from prior visits have been addressed, propose new
-  follow-up Tasks.
+  recommendations from prior visits have been addressed and stage
+  protocol cards for new follow-up.
 - **In-chart chat** — a clinician asks "what's this patient's A1c
   history?"; the agent reads the chart and answers, optionally staging
   prescriptions or lab orders the clinician then commits.
@@ -40,31 +40,17 @@ next" depends on chart context the rules engine can't enumerate.
 
 ## How a run executes
 
-An agent run is asynchronous and driven by the worker, even when the
-trigger is user-initiated (e.g., a chat message). The agent's logic
-runs on the plugin-runner pod, never on the web request thread.
+An agent run is asynchronous, even when the trigger is user-initiated
+(e.g., a chat message):
 
-```text
-plugin trigger handler        home-app web/worker            plugin-runner pod
-─────────────────────         ──────────────────             ─────────────────
-compute() →
-  RunAgentEffect ─────────→  RunAgentEffectInterpreter
-                               ↓
-                             run_agent Celery task ────→  PluginRunner.RunAgent
-                                                            ↓
-                                                          AgentPlugin.load_state
-                                                          AgentPlugin.run    ← LLM + tools
-                                                          AgentPlugin.save_state
-                                                            ↓
-                             handle_effect ←────────  emitted effects
-```
-
-A trigger emits a `RunAgentEffect`. The home-app interpreter enqueues a
-Celery task. The task makes a gRPC call to the plugin-runner, which
-instantiates your `AgentPlugin` subclass, acquires a per-`scope_key`
-lock, drives `load_state` → `run` → `save_state`, and streams emitted
-effects back to the home-app worker. The worker dispatches each effect
-through the existing `handle_effect` pipeline.
+1. A handler in your plugin returns a `RunAgentEffect` naming one of
+   your plugin's agents, a `scope_key`, and a small `trigger_payload`.
+2. Canvas queues the run on a background worker. Runs of the same agent
+   on the same `scope_key` go one at a time.
+3. The worker calls your agent's `load_state` → `run` → `save_state`.
+4. Each effect your agent returns is applied like any other plugin
+   effect. The next run on that `scope_key` starts only after these
+   effects have been applied, so it sees what this run did.
 
 Two invocation patterns share that path:
 
@@ -86,11 +72,11 @@ implement and what the platform does around it.
 | Platform owns | You own |
 |---|---|
 | Triggering, dispatch, lifecycle orchestration | Agent business logic (`run()`) |
-| Per-`scope_key` lock + retry on contention | State persistence (Custom Data tables you declare) |
+| One run at a time per agent and `scope_key`, with retry | State persistence (Custom Data tables you declare) |
 | LLM access: gateway credentials, metering, budgets | Tool implementations |
-| Cost / token / latency metrics | Run rationale and semantic audit (see [Auditing](/sdk/agents-auditing/)) |
+| Run duration metric; per-call tokens and cost at the gateway, by run | Run rationale and semantic audit (see [Auditing](/sdk/agents-auditing/)) |
 | Effect dispatch | Effect choice + idempotency keying |
-| Tool permission enforcement (manifest-driven) | Tool authorization policy (declared in your manifest) |
+| Tool grant enforcement: the agent sees only granted tools and can return only the effects they stage | Tool grant (declared in your manifest) |
 
 You declare an `AgentPlugin` subclass and its tool surface; the
 platform makes sure it runs safely.
@@ -102,7 +88,9 @@ plugin holds its own gateway key: declare an `INFERENCE_GATEWAY_KEY`
 variable with `"sensitive": true` in your manifest (see
 [Manifest declaration](#manifest-declaration)), and set its value when
 you install the plugin, as with any other
-[plugin secret](/sdk/secrets/).
+[plugin secret](/sdk/secrets/). Gateway keys are issued per organization
+in Canvas Platform, each with its own spending limit; your Canvas team
+can issue one for your plugin.
 
 Before each run, the platform builds the `LLMGateway` it passes to
 `run()` from the instance's gateway URL and your plugin's
@@ -129,14 +117,15 @@ exception handling works unchanged:
 
 | Status | Cause |
 |---|---|
+| 401 `authentication_error` | The key is missing, revoked, or not enabled for inference |
 | 402 `billing_error` | The organization's budget or a key's monthly limit is reached |
 | 404 `not_found_error` | The model is not available to the organization |
 | 400 `invalid_request_error` | A feature the gateway does not serve (code execution, containers, skills, the Files API, the MCP connector, the priority service tier) or a malformed request |
 
 Let these errors propagate out of `run()`. The platform retries a run
 when the gateway is unreachable, rate-limited (429), or returns a
-server error, and records a refusal as a failed run without retrying
-it. If the instance has no gateway URL configured, or your plugin's
+server error, and records a refusal (any status above) as a failed run
+without retrying it. If the instance has no gateway URL configured, or your plugin's
 `INFERENCE_GATEWAY_KEY` isn't set, the run fails before your agent is
 instantiated.
 
@@ -151,14 +140,11 @@ top-level `variables`:
   "components": {
     "agents": [
       {
-        "class": "my_plugin.agents.chart_summary:ChartSummary",
-        "description": "Drafts a Plan command on the new note",
+        "class": "my_plugin.agents.advisor:LongitudinalCareAdvisor",
+        "description": "Tracks follow-up across visits with protocol cards",
         "tools": {
-          "allowed": [
-            "find_medications",
-            "find_conditions",
-            "originate_plan"
-          ]
+          "allowed": ["@clinical_reads", "@clinical_alerts"],
+          "denied": ["remove_banner_alert"]
         }
       }
     ]
@@ -169,18 +155,21 @@ top-level `variables`:
 }
 ```
 
-`tools.allowed` is the contract between you, the EHR administrator
-reviewing your plugin, and the runtime. The platform reads it at load
-time and scopes the agent's tool registry before `run()` fires — the
-agent literally cannot see or invoke tools you didn't declare. See
-[Tools](/sdk/agents-tools/) for the full pattern.
+`tools` is the contract between you, the EHR administrator reviewing
+your plugin, and the runtime. Before `run()` fires, the platform scopes
+the agent's tool registry to the tools granted here (names and
+`@category` groups, minus anything in `denied`). After the run, it
+drops any effect the agent returns that no granted tool stages, even
+one the agent built directly. An agent with no `tools.allowed` gets no
+tools and can return no effects. See [Tools](/sdk/agents-tools/) for
+the full pattern.
 
 ## Where to next
 
 <ul>
-  <li><a href="/sdk/agents-quick-start/"><strong>Quick start</strong></a> — minimal working agent in ~50 lines.</li>
+  <li><a href="/sdk/agents-quick-start/"><strong>Quick start</strong></a> — an agent that tracks follow-up across visits with protocol cards.</li>
   <li><a href="/sdk/agents-lifecycle/"><strong>Lifecycle</strong></a> — what your subclass implements; the order the runtime calls things.</li>
-  <li><a href="/sdk/agents-managing-state/"><strong>Managing state</strong></a> — three persistence patterns: stateless, snapshot, event-sourced.</li>
+  <li><a href="/sdk/agents-managing-state/"><strong>Managing state</strong></a> — three persistence patterns: stateless, snapshot, and state kept in the chart.</li>
   <li><a href="/sdk/agents-tools/"><strong>Tools</strong></a> — read tools, effect tools, and manifest-driven permissions.</li>
   <li><a href="/sdk/agents-prompts/"><strong>Prompts</strong></a> — system prompts in a clinical setting.</li>
   <li><a href="/sdk/agents-testing/"><strong>Testing</strong></a> — patterns for unit-testing agents and tools without real provider calls.</li>

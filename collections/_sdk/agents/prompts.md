@@ -42,8 +42,8 @@ What to put in it:
 What to leave out:
 
 - **PHI**. The system prompt is reused across runs; it shouldn't
-  carry patient-specific information. That belongs in the in-
-  dialogue prompt or as tool results.
+  carry patient-specific information. Chart facts reach the model as
+  tool results, scoped to the run's patient, when it asks for them.
 - **Generic safety boilerplate**. The model already knows it
   shouldn't recommend self-harm. Phrases like "be safe and ethical"
   do nothing and use up your prompt budget. Mention only
@@ -75,17 +75,19 @@ the output format, and tells the model when to stop. ~80 words.
 
 ## In-dialogue prompt
 
-The first user message is your hook for the specific run. Patient
-identity, the trigger context, what the clinician wants.
+The first user message is your hook for the specific run: the trigger
+context and what the clinician wants. Leave out the patient's name and
+other identifiers. The tools are already scoped to the run's patient,
+so the model doesn't need to know who it is.
 
 ```python
 messages = [
     {
         "role": "user",
         "content": (
-            f"Draft a follow-up Plan for patient {patient.first_name} "
-            f"{patient.last_name}. Inspect the chart with the read "
-            "tools, then call `originate_plan` once with your draft."
+            "Draft a follow-up Plan for this encounter. Inspect the chart "
+            "with the read tools, then call `originate_plan` once with "
+            "your draft."
         ),
     }
 ]

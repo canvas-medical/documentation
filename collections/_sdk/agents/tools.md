@@ -81,7 +81,7 @@ tools.extend(standard_tools)  # adopt the SDK catalog
     },
     prefetch_related=("codings",),
     model=Condition,
-    returns_description="Each row: id, code, display, onset_date.",
+    returns_description="Array of objects with `id`, `code`, `display`, `onset_date`.",
     categories=("clinical_reads",),
 )
 def _serialize_chronic_condition(condition):
@@ -159,8 +159,14 @@ tools.add_effect_tool(
 - **`add_effect_tool`** — patient-scoped Effects that aren't pinned
   to a specific note (tasks, banner alerts, protocol cards). Auto-
   injects `patient_id` from ctx onto the Effect; `inject_ctx={}` to
-  opt out (e.g., for `update_task` which is identified by `task_id`,
-  not derived from the current patient).
+  opt out (e.g., for `update_task`, which is identified by `task_id`).
+  A tool that takes a record id from the model should check the record
+  belongs to `ctx["patient_id"]` in `pre_build` and raise otherwise, as
+  the SDK's task, assessment, and stop-medication tools do.
+
+Both write helpers record the effect type they stage, which is what
+lets granting the tool let the agent return that effect (see
+[Permissions](#manifest-driven-permissions)).
 
 ### Escape hatch: `@tools.tool`
 
@@ -187,6 +193,11 @@ The SDK's `get_patient_demographics` is registered this way for
 exactly this reason — it returns one dict, not a list, so it doesn't
 fit `filter_search_tool`.
 
+A raw tool that stages effects must declare their types with
+`effect_types`, for example `effect_types=("CREATE_TASK",)`. An agent
+can return only the effect types its granted tools declare, so an
+undeclared effect is dropped. An unknown name fails at import.
+
 ## Executor signature
 
 The helpers generate executors with this signature behind the scenes;
@@ -206,6 +217,9 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
   Common keys:
   - `patient_id` — string UUID of the patient this run is scoped to.
   - `note_id` — for triggered agents that target a specific note.
+  - `staff_id` — for user-initiated agents, the clinician who asked.
+    Message drafts are attributed to them, and originate tools use only
+    their open note.
   - `effects` — the list to append staged Effects to (used by effect tools).
 
 Use `ctx` for anything the model shouldn't choose — patient scoping,
@@ -221,9 +235,9 @@ Declare the registry as a class attribute on your `AgentPlugin`
 subclass:
 
 ```python
-from my_plugin.agents.chart_summary_tools import tools as _registered_tools
+from my_plugin.agents.advisor_tools import tools as _registered_tools
 
-class ChartSummary(AgentPlugin):
+class LongitudinalCareAdvisor(AgentPlugin):
     tools = _registered_tools
 
     def run(self, state, gateway, trigger_payload):
@@ -315,9 +329,11 @@ At run time the platform:
    to nothing. The result becomes `self.tools_allowed`.
 3. Replaces `self.tools` with a *scoped* registry containing only
    those tools — disallowed entries aren't in the registry at all.
+4. After `run()` returns, drops any effect the agent returned whose
+   type no granted tool stages.
 
-An agent entry with no `tools.allowed` is not filtered: `self.tools`
-stays the agent's full class-level registry.
+An agent entry with no `tools.allowed` gets no tools, and so can
+return no effects.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
@@ -327,15 +343,11 @@ parameter to remember — the registry itself is pre-filtered.
 
 **Why this matters**: the manifest is the single source of truth.
 The EHR administrator reviewing your plugin can read the manifest
-and know exactly which tools each agent can use. The agent code
-can't widen that surface — even accidentally — because `self.tools`
-is the only handle the platform hands it.
-
-A determined plugin author could `from my_plugin.agents.chart_chat_tools
-import tools` directly and reach the unfiltered registry. That gap
-will close in a future release via sandbox-level isolation; for now,
-treat the unfiltered registry as platform-internal. The underscore-
-prefixed import convention is meant to remind future-you.
+and know what each agent can do. Step 4 holds even for agent code that
+builds an effect directly or calls the imported, unscoped registry:
+an agent granted only `@clinical_reads` and `@clinical_alerts` can
+stage protocol cards and banners, but any task, command, or message it
+returns is dropped.
 
 ## Tool surface design tips
 
@@ -355,6 +367,10 @@ prefixed import convention is meant to remind future-you.
 - **Enforce scope in `ctx`, never in `arguments`.** `patient_id`
   comes from the platform's `ctx`; the model can't switch patients
   via tool arguments.
+- **Check record ids the model supplies.** The model reads chart text,
+  including patient-written messages, so treat an id it passes (a task,
+  a condition, a medication) as untrusted and confirm it belongs to
+  `ctx["patient_id"]` before staging anything.
 - **Return JSON-serializable values.** The agent's loop typically
   does `json.dumps(result, default=str)` to feed it back to the
   model.
@@ -396,7 +412,7 @@ list to opt out of specific tools within a granted category:
 <!-- AUTOGEN:categories START -->
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (24 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (9 tools): `originate_review_note`, `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`
+- **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
 - **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
 - **`@message_reads`** (1 tool): `find_messages`
 - **`@message_writes`** (1 tool): `originate_message`
@@ -518,7 +534,7 @@ Search the patient's immunization history. Returns each entry with `display` (va
 | `given_on_or_after` | string (date) | no | ISO 8601 date. Only return immunizations with date_ordered >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `display`, `code`, `given_on`, `status`.
+**Returns:** Array of objects with `id`, `display`, `code`, `date_administered`, `status`, `manufacturer`, `lot_number`.
 
 **Backing data model:** `Immunization`.
 
@@ -536,7 +552,7 @@ Search the patient's recorded vital signs — blood pressure, heart rate, temper
 | `observed_on_or_after` | string (date) | no | ISO 8601 date. Only return measurements with effective_datetime >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 10. |
 
-**Returns:** Array of objects with `id`, `name`, `value`, `units`, `observed_at`.
+**Returns:** Array of objects with `id`, `name`, `value`, `units`, `code`, `date` (ISO 8601).
 
 **Backing data model:** `Observation`.
 
@@ -555,7 +571,7 @@ Search tasks linked to the current patient (clinician follow-ups, outreach remin
 | `due_on_or_after` | string (date) | no | ISO 8601 date. Only return tasks with due >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `title`, `status`, `due` (ISO 8601), `assignee_name`, `team_name`, `labels`, `created`.
+**Returns:** Array of objects with `id`, `title`, `status`, `due` (ISO 8601), `task_type`.
 
 **Backing data model:** `Task`.
 
@@ -593,7 +609,7 @@ Search the patient's appointments. Returns each appointment with `id`, `status`,
 | `starts_on_or_before` | string (date) | no | ISO 8601 date. Only return appointments with start_time <= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `start_time` (ISO 8601), `status`, `appointment_type`, `provider_name`, `note_type`.
+**Returns:** Array of objects with `id`, `status`, `start_time` (ISO 8601), `duration_minutes`, `provider_name`, `description`.
 
 **Backing data model:** `Appointment`.
 
@@ -611,7 +627,7 @@ Search the patient's encounters. Returns each encounter with `id`, `state`, `med
 | `started_on_or_after` | string (date) | no | ISO 8601 date. Only return encounters with start_time >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `state` (new|locked|unlocked|...), `note_type`, `started_at`, `provider_name`.
+**Returns:** Array of objects with `id`, `state` (new|locked|unlocked|...), `medium`, `start_time`, `end_time`.
 
 **Backing data model:** `Encounter`.
 
@@ -639,7 +655,7 @@ Search the patient's notes (encounter documents). Each row has `id`, `title`, `n
 
 **Category:** `@clinical_reads`
 
-Return metadata for the patient's current open note (the most-recent note in a mutable state — NEW, UNLOCKED, or CONVERTED). Use this when the user references 'this note' or 'the open note' and the agent needs the note_id to drill into it or stage a command on it. Returns the same row shape as one find_notes entry, or null if no open note exists.
+Return metadata for the patient's current open note (the most-recent note in a mutable state — NEW, UNLOCKED, or CONVERTED), limited to the requesting clinician's notes when there is one. Use this when the user references 'this note' or 'the open note' and the agent needs the note_id to drill into it or stage a command on it. Returns the same row shape as one find_notes entry, or null if no open note exists.
 
 **Arguments:** none.
 
@@ -675,7 +691,7 @@ Search the patient's care-plan goals. Returns each goal with `goal_statement`, `
 | `priority` | string (enum) | no | Filter to a specific GoalPriority value ('high-priority', 'medium-priority', 'low-priority'). One of: `high-priority`, `medium-priority`, `low-priority`. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `goal_statement`, `lifecycle_status`, `achievement_status`, `priority`, `start_date`, `due_date`.
+**Returns:** Array of objects with `id`, `goal_statement`, `lifecycle_status`, `achievement_status`, `priority`, `start_date`, `due_date`, `progress`.
 
 **Backing data model:** `Goal`.
 
@@ -693,7 +709,7 @@ Search the patient's imaging reports. Returns each report with `id`, `name` (tes
 | `assigned_on_or_after` | string (date) | no | ISO 8601 date. Only return reports with assigned_date >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `name`, `result_status`, `assigned_at`, `narrative`.
+**Returns:** Array of objects with `id`, `name`, `assigned_date`, `source`, `requires_signature`.
 
 **Backing data model:** `ImagingReport`.
 
@@ -712,7 +728,7 @@ Search the patient's outgoing referrals. Returns each referral with `id`, `clini
 | `referred_on_or_after` | string (date) | no | ISO 8601 date. Only return referrals with date_referred >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `service_provider_name`, `clinical_question`, `priority`, `status`, `originated_at`.
+**Returns:** Array of objects with `id`, `clinical_question`, `priority`, `notes`, `date_referred`, `service_provider_name`, `forwarded`.
 
 **Backing data model:** `Referral`.
 
@@ -730,7 +746,7 @@ Return the staff members on the patient's care team. Each result has `staff_name
 | `status` | string (enum) | no | Filter to a specific CareTeamMembershipStatus value (e.g., 'active', 'inactive', 'suspended', 'proposed'). One of: `proposed`, `active`, `suspended`, `inactive`, `entered-in-error`. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `staff_name`, `role`, `lead`, `status`.
+**Returns:** Array of objects with `id`, `staff_name`, `role_display`, `role_code`, `status`, `is_lead`.
 
 **Backing data model:** `CareTeamMembership`.
 
@@ -824,7 +840,7 @@ Search the patient's recorded medication statements — patient-reported or self
 | `started_on_or_after` | string (date) | no | ISO 8601 date. Only return statements with start_date >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `medication_name`, `narrative`, `recorded_at`.
+**Returns:** Array of objects with `id`, `medication_name`, `start_date`, `end_date`, `dose_form`, `dose_route`, `dose_frequency_interval`, `sig_original_input`.
 
 **Backing data model:** `MedicationStatement`.
 
@@ -861,7 +877,7 @@ Search the patient's prescription records (actual Rx events — distinct from `f
 | `written_on_or_after` | string (date) | no | ISO 8601 date. Only return prescriptions with written_date >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `medication_name`, `status`, `written_date`, `dispensed_date`, `quantity_to_dispense`, `days_supply`, `is_refill`, `sig_original_input`.
+**Returns:** Array of objects with `id`, `medication_name`, `status`, `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`.
 
 **Backing data model:** `Prescription`.
 
@@ -879,7 +895,7 @@ Search the patient's completed and in-progress questionnaire responses (Intervie
 | `progress_status` | string | no | Filter to a specific progress_status code (e.g., 'F' for finished/complete, 'S' for started, 'N' for new). Case-insensitive. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `name`, `progress_status`, `questionnaire_names`, `answered_at`, and `responses` (per-question array of `question`, `response_text`, `response_value`).
+**Returns:** Array of objects with `id`, `name`, `status`, `progress_status`, `questionnaire_names`, `answered_at`, and `responses` (per-question array of `question`, `response_text`, `response_value`).
 
 **Backing data model:** `Interview`.
 
@@ -949,26 +965,6 @@ Return basic demographics for the current patient: legal name, preferred name, M
 **Arguments:** none.
 
 **Returns:** Object with `first_name`, `middle_name`, `last_name`, `preferred_name`, `mrn`, `birth_date`, `age_years`, `sex_at_birth`, `gender_identity`, `preferred_pronouns`, `deceased`.
-
-#### `originate_review_note`
-
-**Category:** `@clinical_writes`
-
-Stage a draft review-category note for the patient with a single Plan command containing the narrative. NEVER commits — the note + plan draft sit unsigned for the clinician to review, edit, and sign. Use when the clinician asks to draft a chart-review note, lab-review note, or similar narrative summary that isn't tied to a live visit. Before calling: (1) `find_note_types(category='review')` to get a `note_type_id`; (2) `find_practice_locations` to get a `practice_location_id`. Patient + requesting-staff come from the agent's scope automatically.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `narrative` | string | yes | The body of the Plan command on the new note. Plain prose, no markdown. This is what becomes the note's primary content. |
-| `note_type_id` | string | yes | UUID of a NoteType row with category='review' — get from `find_note_types(category='review')`. The customer's review note type IDs vary; don't guess. |
-| `practice_location_id` | string | yes | UUID of a PracticeLocation row — get from `find_practice_locations`. The customer's locations vary; don't guess. |
-| `title` | string | no | Optional note title (e.g., 'Lab review — 2026-05-15'). Falls back to the NoteType's default if omitted. |
-| `datetime_of_service` | string (date-time) | no | Optional ISO 8601 datetime. Defaults to now if omitted. Use for back-dated reviews. |
-
-**Returns:** `{ok: true, note_id: <uuid>, command: 'plan', committed: false}`. Two effects are bundled: CREATE_NOTE for the review shell and the Plan command originating onto it. Clinician reviews/edits/signs.
-
-**Backing Command:** `PlanCommand`.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -1253,4 +1249,24 @@ Stage a draft message from the requesting staff to this patient for the staff to
 **Returns:** `{ok: true, status: 'draft'}`. The draft sits unsent in the staff's outbox; the clinician reviews and decides whether to send.
 
 **Backing Effect:** `Message`.
+
+#### `originate_review_note`
+
+**Category:** `@clinical_writes`
+
+Stage a draft review-category note for the patient with a single Plan command containing the narrative. NEVER commits — the note + plan draft sit unsigned for the clinician to review, edit, and sign. Use when the clinician asks to draft a chart-review note, lab-review note, or similar narrative summary that isn't tied to a live visit. Before calling: (1) `find_note_types(category='review')` to get a `note_type_id`; (2) `find_practice_locations` to get a `practice_location_id`. Patient + requesting-staff come from the agent's scope automatically.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `narrative` | string | yes | The body of the Plan command on the new note. Plain prose, no markdown. This is what becomes the note's primary content. |
+| `note_type_id` | string | yes | UUID of a NoteType row with category='review' — get from `find_note_types(category='review')`. The customer's review note type IDs vary; don't guess. |
+| `practice_location_id` | string | yes | UUID of a PracticeLocation row — get from `find_practice_locations`. The customer's locations vary; don't guess. |
+| `title` | string | no | Optional note title (e.g., 'Lab review — 2026-05-15'). Falls back to the NoteType's default if omitted. |
+| `datetime_of_service` | string (date-time) | no | Optional ISO 8601 datetime. Defaults to now if omitted. Use for back-dated reviews. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command: 'plan', committed: false}`. Two effects are bundled: CREATE_NOTE for the review shell and the Plan command originating onto it. Clinician reviews/edits/signs.
+
+**Backing Command:** `PlanCommand`.
 <!-- AUTOGEN:writes END -->

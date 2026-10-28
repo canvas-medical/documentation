@@ -1,13 +1,15 @@
 ---
 title: "Quick Start"
 slug: "agents-quick-start"
-excerpt: "Build a minimal agent that drafts a Plan command on note creation."
+excerpt: "Build an agent that tracks follow-up across visits with protocol cards."
 ---
 
-This walks through the smallest possible agent — a triggered, stateless
-one that reads the chart on note creation and drafts a Plan command for
-the clinician to edit and commit. ~50 lines of agent code, plus a
-manifest entry and a trigger handler.
+This walks through a version of the reference plugin's
+`LongitudinalCareAdvisor`. When a clinician locks a note, the agent
+reviews the visit against the protocol cards it staged on earlier
+visits, marks the ones the visit addressed as satisfied, and stages
+cards for any new follow-up. It uses only the SDK's tools and keeps its
+state in the chart itself, so it needs no Custom Data tables.
 
 Agents reach Anthropic through Canvas's inference gateway. Your plugin
 declares an `INFERENCE_GATEWAY_KEY` secret for its gateway key, and the
@@ -16,82 +18,79 @@ platform hands your agent a client built from it (see
 
 ## 1. Register a tool catalog
 
-Tools are pre-declared at module-import time and registered into a
-`ToolRegistry`. Start with the SDK's `standard_tools` (clinical reads
-with patient-scope built in) and layer your own.
+Tools are declared at module-import time in a `ToolRegistry`. This
+agent needs nothing beyond the SDK's `standard_tools`: patient-scoped
+chart reads, plus `add_or_update_protocol_card` to stage and update
+cards.
 
-`chart_summary_tools.py`:
+`my_plugin/agents/advisor_tools.py`:
 
 ```python
 from canvas_sdk.agents import ToolRegistry, standard_tools
-from canvas_sdk.commands import PlanCommand
 
 tools = ToolRegistry()
-tools.extend(standard_tools)  # find_medications, find_conditions, etc.
-
-
-@tools.tool(
-    name="originate_plan",
-    description=(
-        "Stage a Plan command on the patient's current note. Call this "
-        "exactly once with the narrative as plain text — no preamble, "
-        "no headings, no markdown, <= 3 sentences."
-    ),
-    input_schema={
-        "type": "object",
-        "properties": {
-            "narrative": {"type": "string"},
-        },
-        "required": ["narrative"],
-    },
-)
-def _originate_plan(arguments, *, ctx):
-    """Stage a draft Plan command into the agent's effects accumulator."""
-    effects = ctx["effects"]
-    note_id = ctx["note_id"]
-    narrative = arguments["narrative"].strip()
-    effects.append(PlanCommand(note_uuid=note_id, narrative=narrative).originate())
-    return {"ok": True}
+tools.extend(standard_tools)
 ```
 
-See [Tools](/sdk/agents-tools/) for the full registry / executor /
-permission model.
+Your manifest decides which of these tools the agent may use (step 4).
+See [Tools](/sdk/agents-tools/) for writing your own.
 
 ## 2. Implement the agent
 
-`chart_summary.py`:
+`my_plugin/agents/advisor.py`:
 
 ```python
+import json
 from typing import Any, cast
 
 from anthropic.types import ToolUseBlock
 
-from my_plugin.agents.chart_summary_tools import tools as _registered_tools
 from canvas_sdk.agents import AgentPlugin, AgentRunResult, AgentState, LLMGateway
 from canvas_sdk.effects import Effect
-from canvas_sdk.v1.data import Patient
+from canvas_sdk.v1.data import ProtocolCurrent
+from my_plugin.agents.advisor_tools import tools as _registered_tools
+
+PLUGIN_NAME = "my_plugin"
 
 SYSTEM_PROMPT = (
-    "You are a clinical documentation assistant drafting a follow-up "
-    "Plan-section narrative for a newly-created encounter note. You "
-    "have read tools to inspect the patient's chart. Read the chart, "
-    "draft a concise Plan grounded in what you found, then call "
-    "`originate_plan` exactly once with the narrative as plain text "
-    "(<= 3 sentences, no preamble, no headings, no markdown)."
+    "You are a longitudinal care advisor reviewing a patient's just-completed "
+    "encounter. You maintain a small set of protocol cards on the patient that "
+    "represent open clinical recommendations from prior visits.\n\n"
+    "The user message lists the cards you staged before. For each one: if this "
+    "visit addressed it, update it with the same `card_key` and "
+    "`status='satisfied'`; if it no longer applies, use `status='not_relevant'`; "
+    "otherwise leave it alone.\n\n"
+    "Then call `add_or_update_protocol_card` for new follow-up this visit implies, "
+    "with no `card_key`, `status='due'`, a short `title`, and a `narrative`. Stage "
+    "three or fewer new cards. Check the chart with the read tools before you act, "
+    "and end your turn when you are done."
 )
 
-MAX_TURNS = 8
+MAX_TURNS = 10
 
 
-class ChartSummary(AgentPlugin):
-    """Drafts a Plan command for a new note via tool-driven chart reads."""
+def _existing_cards(patient_id: str) -> str:
+    """List the cards this plugin staged on earlier visits, for the user message."""
+    cards = ProtocolCurrent.objects.filter(
+        patient__id=patient_id, plugin_name=PLUGIN_NAME
+    ).order_by("-created")
+    if not cards:
+        return "No protocol cards from earlier visits."
+    lines = ["Protocol cards from earlier visits:"]
+    for card in cards:
+        lines.append(f"- card_key={card.protocol_key!r} status={card.status!r} title={card.title!r}")
+    return "\n".join(lines)
 
-    # The platform scopes this to the manifest's tools.allowed before
-    # run() fires. Always use `self.tools`, not the imported `_registered_tools`.
+
+class LongitudinalCareAdvisor(AgentPlugin):
+    """Reviews each locked note against the patient's open protocol cards."""
+
+    # The platform replaces this with the tools your manifest grants before
+    # run() fires. Always call self.tools, never the imported registry.
     tools = _registered_tools
 
     def load_state(self, scope_key: str) -> AgentState:
-        """Stateless agent — no prior state to load."""
+        """The cards are the state, and run() reads them from the chart."""
         return AgentState()
 
     def run(
@@ -101,21 +100,18 @@ class ChartSummary(AgentPlugin):
         trigger_payload: dict[str, Any],
     ) -> AgentRunResult:
         patient_id = trigger_payload["patient_id"]
-        note_id = trigger_payload["note_id"]
-        patient = Patient.objects.get(id=patient_id)
-
-        # Effects accumulator + per-run context for tools.
         effects: list[Effect] = []
-        tool_ctx = {"patient_id": patient_id, "note_id": note_id, "effects": effects}
+        # The model never sees ctx. It scopes every tool to this patient and
+        # collects the effects the tools stage.
+        tool_ctx = {"patient_id": patient_id, "note_id": trigger_payload["note_id"], "effects": effects}
 
         client = gateway.client()
         messages: list[dict[str, Any]] = [
             {
                 "role": "user",
                 "content": (
-                    f"Draft a follow-up Plan for {patient.first_name} "
-                    f"{patient.last_name}. Inspect the chart with the "
-                    "read tools, then call `originate_plan` once."
+                    "The patient just had a visit complete (note locked). Review the "
+                    f"chart for follow-up needs.\n\n{_existing_cards(patient_id)}"
                 ),
             }
         ]
@@ -123,60 +119,58 @@ class ChartSummary(AgentPlugin):
         for _ in range(MAX_TURNS):
             response = client.messages.create(
                 model=gateway.model,
-                max_tokens=1024,
+                max_tokens=4096,
                 system=SYSTEM_PROMPT,
                 tools=cast(Any, self.tools.definitions()),
                 messages=cast(Any, messages),
             )
             messages.append({"role": "assistant", "content": response.content})
 
-            if response.stop_reason == "end_turn":
+            tool_uses = [b for b in response.content if isinstance(b, ToolUseBlock)]
+            if response.stop_reason not in ("tool_use", "max_tokens") or not tool_uses:
                 break
 
-            if response.stop_reason == "tool_use":
-                tool_results = []
-                for block in response.content:
-                    if not isinstance(block, ToolUseBlock):
-                        continue
-                    try:
-                        result = self.tools.execute(
-                            block.name, dict(block.input), ctx=tool_ctx
-                        )
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": str(result),
-                        })
-                    except Exception as exc:
-                        tool_results.append({
-                            "type": "tool_result",
-                            "tool_use_id": block.id,
-                            "content": f"Tool failed: {exc}",
-                            "is_error": True,
-                        })
-                messages.append({"role": "user", "content": tool_results})
-                continue
-
-            break
+            tool_results = []
+            for block in tool_uses:
+                try:
+                    result = self.tools.execute(block.name, dict(block.input), ctx=tool_ctx)
+                    content, is_error = json.dumps(result, default=str), False
+                except Exception as exc:
+                    content, is_error = f"Tool execution failed: {exc!s}", True
+                tool_results.append(
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": content,
+                        "is_error": is_error,
+                    }
+                )
+            messages.append({"role": "user", "content": tool_results})
 
         return AgentRunResult(state=state, effects=effects)
 
     def save_state(self, scope_key: str, state: AgentState) -> None:
-        """Stateless — nothing to persist."""
+        """Nothing to write: the protocol card effects are the state."""
         return None
 ```
 
 The `AgentPlugin` contract is three methods: `load_state`, `run`, and
-`save_state`. For this stateless agent both `load_state` and
-`save_state` are no-ops. The `run()` method drives the tool-use loop
-and accumulates effects.
+`save_state`. This agent's state is the protocol cards themselves, so
+`load_state` and `save_state` do nothing and `run()` reads the cards
+from the chart. A failed tool call goes back to the model as an
+`is_error` result so it can try again, rather than ending the run.
+
+The agent stages cards rather than draft commands because a locked note
+can't take new commands. A card can still carry commands the clinician
+runs in one click; see `add_or_update_protocol_card` in the
+[catalog](/sdk/agents-tools/#the-sdk-standard_tools-catalog).
 
 ## 3. Trigger the agent
 
-Agents don't subscribe to events directly. A regular handler does, and
-emits a `RunAgentEffect` from `compute()`.
+Agents don't subscribe to events. A regular handler does, and emits a
+`RunAgentEffect` from `compute()`.
 
-`triggers.py`:
+`my_plugin/handlers/advisor_trigger.py`:
 
 ```python
 from canvas_sdk.effects import Effect
@@ -186,37 +180,35 @@ from canvas_sdk.handlers.base import BaseHandler
 from canvas_sdk.v1.data.note import CurrentNoteStateEvent, NoteStates
 
 
-class ChartSummaryTrigger(BaseHandler):
-    """Fires the ChartSummary agent when a note is created."""
+class LongitudinalCareAdvisorTrigger(BaseHandler):
+    """Runs the advisor when a note is locked."""
 
     RESPONDS_TO = [EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)]
 
     def compute(self) -> list[Effect]:
-        # Only fire on note creation (NEW state).
         state = CurrentNoteStateEvent.objects.values_list("state", flat=True).get(
             id=self.event.target.id
         )
-        if state != NoteStates.NEW:
-            return []
-
         note_id = self.context.get("note_id")
         patient_id = self.context.get("patient_id")
-        if not (note_id and patient_id):
+        if state != NoteStates.LOCKED or not (note_id and patient_id):
             return []
 
         return [
             RunAgentEffect(
-                agent_id="my_plugin.agents.chart_summary:ChartSummary",
-                scope_key=f"my_plugin:chart_summary:patient:{patient_id}",
+                agent_id="my_plugin.agents.advisor:LongitudinalCareAdvisor",
+                scope_key=f"patient:{patient_id}",
                 trigger_payload={"patient_id": patient_id, "note_id": note_id},
             ).apply()
         ]
 ```
 
-`agent_id` is the colon-separated module path + class name.
-`scope_key` is yours to shape — by convention, prefix with plugin name
-and agent identity so two agents on the same patient don't serialize
-against each other. The platform uses it as the lock key.
+`agent_id` is the agent's module path and class name, separated by a
+colon; a plugin can only run its own agents. `scope_key` decides which
+runs wait for each other. Runs of this agent on the same patient go one
+at a time, and the next one starts only after the previous run's cards
+have landed, so two notes locked in quick succession don't stage the
+same card twice. See [Concurrency](/sdk/agents-lifecycle/#concurrency).
 
 ## 4. Wire it up in the manifest
 
@@ -225,22 +217,16 @@ against each other. The platform uses it as the lock key.
   "components": {
     "handlers": [
       {
-        "class": "my_plugin.triggers:ChartSummaryTrigger",
-        "description": "Emits RunAgentEffect on note creation"
+        "class": "my_plugin.handlers.advisor_trigger:LongitudinalCareAdvisorTrigger",
+        "description": "Runs the longitudinal care advisor when a note is locked"
       }
     ],
     "agents": [
       {
-        "class": "my_plugin.agents.chart_summary:ChartSummary",
-        "description": "Drafts a Plan command on the new note",
+        "class": "my_plugin.agents.advisor:LongitudinalCareAdvisor",
+        "description": "Tracks follow-up across visits with protocol cards",
         "tools": {
-          "allowed": [
-            "find_medications",
-            "find_conditions",
-            "find_lab_results",
-            "get_patient_demographics",
-            "originate_plan"
-          ]
+          "allowed": ["@clinical_reads", "@clinical_alerts"]
         }
       }
     ]
@@ -251,26 +237,29 @@ against each other. The platform uses it as the lock key.
 }
 ```
 
-The `tools.allowed` list authorizes tools by name or by `@category`,
-and an optional `tools.denied` list subtracts from it. The platform
-reads both and scopes `self.tools` at run time (see
-[Tools](/sdk/agents-tools/)).
+`tools.allowed` grants the chart reads and the alert tools (banner
+alerts and protocol cards) by `@category`. It also bounds what the
+agent can do: the platform drops any effect the agent returns that no
+granted tool stages, so this agent can stage cards and banners but not
+commands, tasks, or messages. An agent with no `tools.allowed` gets no
+tools at all. See [Tools](/sdk/agents-tools/#manifest-driven-permissions).
 
-## 5. Install + test
+## 5. Install and try it
 
 ```bash
 canvas install my_plugin --host <your-instance> --secret INFERENCE_GATEWAY_KEY=<your-gateway-key>
 ```
 
-Create a new note in the chart. Within a few seconds the agent should
-run on the worker, call the chart-read tools, and stage a draft Plan
-command on the new note.
+Lock a note on a test patient. Within a few seconds the agent runs on
+the worker, reads the chart, and stages protocol cards for the follow-up
+it found. Lock another note on the same patient and it updates those
+cards instead of repeating them.
 
 ## Next steps
 
 - [Lifecycle](/sdk/agents-lifecycle/) — what the platform calls on
   your subclass and in what order.
-- [Managing state](/sdk/agents-managing-state/) — for agents that
-  need to remember things across runs.
+- [Managing state](/sdk/agents-managing-state/) — when your agent needs
+  to remember more than the chart records.
 - [Tools](/sdk/agents-tools/) — designing your own read and effect tools.
 - [Prompts](/sdk/agents-prompts/) — system-prompt patterns for clinical agents.

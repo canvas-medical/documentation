@@ -6,58 +6,61 @@ excerpt: "Patterns for testing AgentPlugin subclasses, tools, and the LLM loop w
 
 `AgentPlugin` is a regular Python class — `load_state`, `run`, and
 `save_state` are testable directly, without spinning up the
-plugin-runner harness. The only real friction is that `run()`
-typically calls Anthropic, which you don't want firing in your unit
-tests. Stub the LLM client and your agent becomes deterministically
-testable.
+plugin-runner. The only real friction is that `run()` typically calls
+Anthropic, which you don't want firing in your unit tests. Stub the
+LLM client and your agent becomes deterministically testable.
 
-This page assumes you have the general SDK testing setup from
-[Testing Utilities](/sdk/testing-utils/). The patterns below build on
-that.
+This page assumes the general SDK testing setup from
+[Testing Utilities](/sdk/testing-utils/): `pytest` with the
+`canvas[test-utils]` extra, and the model factories in
+`canvas_sdk.test_utils.factories`. The examples test the agent from the
+[Quick Start](/sdk/agents-quick-start/) and the tools defined on the
+[Tools](/sdk/agents-tools/) page.
 
-## Test the executor of each tool first
+## Test each tool you write
 
-Tool executors are pure functions: `fn(arguments, *, ctx) -> Any`.
-They're the easiest part of an agent to test, and the most worth
-testing because the executor is where your business logic lives.
+A tool runs through its registry with `tools.execute(name, arguments,
+ctx=...)`, so you can test it without the model. Tools are where your
+business logic lives, which makes them the most worth testing.
 
 ```python
-from my_plugin.agents.chart_summary_tools import (
-    _originate_plan,
-    _list_active_conditions,
-)
+import pytest
+
+from canvas_sdk.test_utils.factories import PatientFactory, TaskFactory
+from my_plugin.agents.tools import tools
 
 
-def test_originate_plan_appends_effect_to_accumulator():
-    """The tool stages a Plan command effect and returns ok."""
+def test_create_followup_task_stages_one_labeled_task():
+    """The tool stages an AddTask effect and returns its id to the model."""
     effects = []
-    ctx = {"patient_id": "p1", "note_id": "n1", "effects": effects}
 
-    result = _originate_plan({"narrative": "Recheck A1c in 3 months"}, ctx=ctx)
+    result = tools.execute(
+        "create_followup_task",
+        {"title": "Call patient about the A1c"},
+        ctx={"patient_id": "b80b1cdc2e6a4aca90ccebc02e683f35", "effects": effects},
+    )
 
-    assert result == {"ok": True}
+    assert result["ok"] is True
     assert len(effects) == 1
-    # The effect is what the platform will dispatch after run() returns.
 
 
-def test_list_active_conditions_filters_to_patient(patient_factory, condition_factory):
-    """Tool reads are patient-scoped via ctx — model arguments can't widen."""
-    target = patient_factory()
-    other = patient_factory()
-    condition_factory(patient=target, code="E11.9", display="Type 2 diabetes")
-    condition_factory(patient=other, code="I10", display="Hypertension")
+@pytest.mark.django_db
+def test_update_task_refuses_another_patients_task():
+    """A task id the model supplies must belong to the run's patient."""
+    other_patients_task = TaskFactory.create()
+    effects = []
 
-    result = _list_active_conditions({}, ctx={"patient_id": target.id})
-
-    codes = {c["code"] for c in result}
-    assert codes == {"E11.9"}
+    with pytest.raises(ValueError, match="not found for this patient"):
+        tools.execute(
+            "update_task",
+            {"task_id": str(other_patients_task.id), "status": "CLOSED"},
+            ctx={"patient_id": PatientFactory.create().id, "effects": effects},
+        )
+    assert effects == []
 ```
 
-The second test uses `factory_boy`-style fixtures from
-`canvas[test-utils]` (see [Testing Utilities](/sdk/testing-utils/)).
-Tool tests against real data are the most valuable layer — they
-catch ORM-level bugs (wrong filter, wrong relation traversal) that
-mocked-data tests miss.
+Tests against real rows (the second test) catch ORM-level bugs, such as
+a wrong filter or relation, that tests with mocked data miss.
 
 ## Stubbing the `LLMGateway`
 
@@ -71,8 +74,7 @@ from unittest.mock import MagicMock
 import pytest
 from anthropic.types import TextBlock, ToolUseBlock
 
-from canvas_sdk.agents import AgentState, LLMGateway
-from my_plugin.agents.chart_summary import ChartSummary
+from canvas_sdk.agents import LLMGateway
 
 
 @pytest.fixture
@@ -91,7 +93,7 @@ def gateway(mock_client):
 
 
 def _response(*, content, stop_reason):
-    """Build a minimal Anthropic-shaped response object for the loop to consume."""
+    """A minimal Anthropic-shaped response for the loop to consume."""
     response = MagicMock()
     response.content = content
     response.stop_reason = stop_reason
@@ -99,211 +101,161 @@ def _response(*, content, stop_reason):
 
 
 def _tool_use(name, input_dict, *, block_id="tu_1"):
-    block = MagicMock(spec=ToolUseBlock)
-    block.type = "tool_use"
-    block.id = block_id
-    block.name = name
-    block.input = input_dict
-    return block
+    return ToolUseBlock(id=block_id, name=name, input=input_dict, type="tool_use")
 
 
 def _text(text):
-    block = MagicMock(spec=TextBlock)
-    block.type = "text"
-    block.text = text
-    return block
+    return TextBlock(text=text, type="text")
 ```
 
-These three helpers (`_response`, `_tool_use`, `_text`) are typically
-the only LLM-mocking infrastructure you need. To exercise the real
-Anthropic client instead, construct a real
-`LLMGateway(base_url=..., api_key=...)` and point `base_url` at a local
-stub server that returns Anthropic-shaped JSON.
+These helpers are typically the only LLM-mocking infrastructure you
+need. `_tool_use` and `_text` build real Anthropic blocks, so the
+agent's `isinstance` checks behave as they do against the API.
 
 ## Driving the run loop in tests
 
-The pattern: queue the responses you want the mock Anthropic client
-to return, then drive `run()` and assert on the result.
+Queue the responses you want the mock client to return, then drive
+`run()` and assert on the result. Grant the agent its tools the way the
+platform does (see [the next section](#simulating-the-platforms-tool-grant)).
 
-```python
-def test_run_drafts_plan_from_tool_results(mock_client, gateway, patient_factory):
-    """Two-turn run: agent calls a read tool, then originates the Plan."""
-    patient = patient_factory()
-
-    # Turn 1: model calls find_conditions.
-    # Turn 2: model calls originate_plan with a narrative, then ends.
+```python?partial=true
+@pytest.mark.django_db
+def test_run_stages_a_card_for_new_follow_up(mock_client, gateway):
+    """Two tool turns: the advisor reads the chart, then stages a card."""
+    patient = PatientFactory.create()
     mock_client.messages.create.side_effect = [
-        _response(
-            content=[_tool_use("find_conditions", {}, block_id="tu_1")],
-            stop_reason="tool_use",
-        ),
+        _response(content=[_tool_use("find_conditions", {}, block_id="tu_1")], stop_reason="tool_use"),
         _response(
             content=[
                 _tool_use(
-                    "originate_plan",
-                    {"narrative": "Recheck A1c in 3 months."},
+                    "add_or_update_protocol_card",
+                    {"title": "Recheck A1c", "narrative": "Last A1c was 9.2.", "status": "due"},
                     block_id="tu_2",
-                ),
+                )
             ],
             stop_reason="tool_use",
         ),
         _response(content=[_text("done")], stop_reason="end_turn"),
     ]
+    agent = _granted(LongitudinalCareAdvisor, ["@clinical_reads", "@clinical_alerts"])
 
-    agent = ChartSummary()
-    result = agent.run(
-        AgentState(),
-        gateway,
-        {"patient_id": patient.id, "note_id": "note-uuid"},
-    )
+    result = agent.run(AgentState(), gateway, {"patient_id": patient.id, "note_id": "note-uuid"})
 
-    # The accumulator should have the originated Plan command.
     assert len(result.effects) == 1
-    # Three turns happened: find_conditions, originate_plan, end_turn.
     assert mock_client.messages.create.call_count == 3
 ```
 
 Walk-through:
 - The `side_effect` is a list — each call to `messages.create()`
-  pops the next response.
-- `tool_use` responses cause the agent's loop to dispatch the named
-  tool through `self.tools.execute(...)` and append the result on the
+  returns the next response.
+- `tool_use` responses make the agent's loop dispatch the named tool
+  through `self.tools.execute(...)` and send the result back on the
   next turn.
 - `end_turn` exits the loop.
-- The accumulator (`result.effects`) holds whatever effect tools
-  staged during the run.
+- `result.effects` holds whatever the tools staged during the run.
 
-## Simulating the platform's manifest-scoping
+## Simulating the platform's tool grant
 
-Recall that the platform replaces `agent.tools` with a scoped view
-before `run()` fires. In tests you do this yourself if you want to
-exercise the filter, resolving names and `@category` groups the same
-way the platform does.
+Before `run()` fires, the platform replaces `agent.tools` with the
+tools the manifest grants. After `run()`, it drops any returned effect
+whose type no granted tool stages. Do the same in tests to exercise the
+grant:
 
-```python
-def _make_agent(agent_cls, tools_allowed=None, tools_denied=None):
-    """Instantiate an agent the way the platform would."""
+```python?partial=true
+def _granted(agent_cls, allowed, denied=None):
+    """Instantiate an agent with the tools a manifest grant would give it."""
     agent = agent_cls()
-    if tools_allowed is not None:
-        agent.tools_allowed = agent_cls.tools.resolve_allowed(
-            tools_allowed, denied=tools_denied
-        )
-        agent.tools = agent_cls.tools.scope(agent.tools_allowed)
+    agent.tools_allowed = agent_cls.tools.resolve_allowed(allowed, denied=denied)
+    agent.tools = agent_cls.tools.scope(agent.tools_allowed)
     return agent
-```
 
-Use this anywhere `tools.allowed` matters to what you're testing:
 
-```python
-def test_run_cannot_use_disallowed_tool(gateway):
-    """When the manifest withholds a tool, the agent can't call it."""
-    agent = _make_agent(ChartSummary, tools_allowed={"find_conditions"})
+def _kept_by_platform(agent, effects):
+    """The effects the platform would apply from a run of this agent."""
+    granted = agent.tools.effect_types()
+    return [e for e in effects if EffectType.Name(e.type) in granted]
 
-    # find_conditions is in the scope, originate_plan is not.
-    assert {"find_conditions"} == {
-        d["name"] for d in agent.tools.definitions()
-    }
+
+def test_reads_only_grant_cannot_stage_cards():
+    """Granted only chart reads, the advisor can neither call nor return card effects."""
+    agent = _granted(LongitudinalCareAdvisor, ["@clinical_reads"])
+
+    assert "add_or_update_protocol_card" not in {d["name"] for d in agent.tools.definitions()}
     with pytest.raises(ValueError, match="Unknown tool"):
-        agent.tools.execute("originate_plan", {"narrative": "..."}, ctx={})
+        agent.tools.execute("add_or_update_protocol_card", {}, ctx={})
+    assert agent.tools.effect_types() == frozenset()
 ```
 
-The scoped registry doesn't contain disallowed entries at all — a
-test for "the agent shouldn't be able to do X" can assert on
-`Unknown tool` rather than checking permission state.
+`EffectType` is in `canvas_sdk.effects`. The scoped registry doesn't
+contain ungranted tools at all, so a test for "the agent shouldn't be
+able to do X" can assert on `Unknown tool` rather than checking
+permission state.
 
 ## State transitions
 
 For agents that aren't stateless, test `load_state` and `save_state`
-independently of `run()`. They're plain methods.
+independently of `run()`. They're plain methods. This example uses the
+per-clinician chat agent from
+[Managing State](/sdk/agents-managing-state/#pattern-2-snapshot):
 
-```python
-def test_load_state_returns_existing_messages(patient_factory, conversation_factory):
-    """load_state pulls the conversation snapshot for this patient."""
-    patient = patient_factory()
-    conversation_factory(
-        patient=patient,
-        messages=[{"role": "user", "content": "hi"}],
-    )
+```python?partial=true
+@pytest.mark.django_db
+def test_each_clinician_has_their_own_conversation():
+    """One clinician's chat never becomes another's context."""
+    patient = PatientFactory.create()
+    first, second = StaffFactory.create(), StaffFactory.create()
+    agent = ChatAgent()
+    first_key = chat_scope_key(patient.id, first.id)
 
-    state = ChartChatAgent().load_state(
-        f"my_plugin:chart_chat:patient:{patient.id}"
-    )
+    state = agent.load_state(first_key)
+    state.data["messages"] = [{"role": "user", "content": "How is her A1c trending?"}]
+    agent.save_state(first_key, state)
 
-    assert state.data["messages"] == [{"role": "user", "content": "hi"}]
-    assert state.data["patient_id"] == patient.id
-
-
-def test_save_state_writes_back_appended_messages(patient_factory):
-    """save_state persists the (mutated) state.data['messages'] list."""
-    patient = patient_factory()
-    state = AgentState(
-        data={
-            "patient_id": patient.id,
-            "messages": [
-                {"role": "user", "content": "hi"},
-                {"role": "assistant", "content": "hello"},
-            ],
-        }
-    )
-
-    ChartChatAgent().save_state(
-        f"my_plugin:chart_chat:patient:{patient.id}",
-        state,
-    )
-
-    from my_plugin.models import Conversation
-    row = Conversation.objects.get(patient__id=patient.id)
-    assert len(row.messages) == 2
+    assert agent.load_state(chat_scope_key(patient.id, second.id)).data["messages"] == []
+    assert len(agent.load_state(first_key).data["messages"]) == 1
 ```
 
-End-to-end coverage of the snapshot pattern: write a `load_state →
-run → save_state` test that mocks the Anthropic loop and asserts on
-the final row in your CustomModel table.
+Tests that read or write your plugin's Custom Data need its tables in
+the test database. The reference plugin's
+[`tests/conftest.py`](https://github.com/canvas-medical/canvas-plugins/blob/main/example-plugins/agent_runner_poc/tests/conftest.py)
+has a session fixture that creates them from your `CustomModel`
+classes.
 
 ## Testing lifecycle hooks
 
-If you've overridden `on_run_start` / `on_run_end` / `on_run_error`
-(for example, via a `RunLoggingMixin`), invoke them directly. The
-platform's `_invoke_agent_hook` helper that swallows hook
-exceptions doesn't change their signatures.
+If you've overridden `on_run_start` / `on_run_end` / `on_run_error`,
+call them directly. The platform logs and swallows exceptions from
+hooks, but that doesn't change their signatures.
 
-```python
-def test_on_run_end_writes_audit_row(patient_factory):
+```python?partial=true
+@pytest.mark.django_db
+def test_on_run_end_writes_audit_row():
     agent = MyAgent()
     agent.on_run_start("scope-key-1")
 
     agent.on_run_end(AgentRunResult(state=AgentState(), effects=[]))
 
-    from my_plugin.models import AgentRunLog
     row = AgentRunLog.objects.get(scope_key="scope-key-1")
     assert row.status == "success"
     assert row.duration_ms is not None
 ```
 
-If you want to verify the platform's "swallow hook exceptions"
-behavior in your own code, raise from the hook and assert that
-something downstream still works. (You usually don't need to — the
-SDK's plugin-runner tests cover that path.)
+## End-to-end runs
 
-## Integration tests through the plugin-runner
-
-For end-to-end coverage — a real `RunAgentEffect` flowing from a
-trigger through Celery and the gRPC RunAgent RPC — Canvas's
-plugin test fixtures install your plugin into a test plugin-runner
-and let you assert on emitted effects via `handle_effect`.
-This is heavier than the unit patterns above and typically saved
-for a handful of golden-path scenarios per agent. See
-[Testing Utilities](/sdk/testing-utils/) for the full setup.
+The unit and run-loop tests above cover your code. To see a real run —
+the trigger firing, the run queued on the worker, the gateway call,
+the effects landing in the chart — install the plugin on a development
+instance with its `INFERENCE_GATEWAY_KEY` set and trigger it there.
+Save that for a handful of golden-path scenarios per agent.
 
 A useful split:
 
-- **Unit** — individual tool executors, `load_state`/`save_state`,
-  lifecycle hooks. Fast, no Anthropic mock needed.
-- **Run-loop** — `run()` with a mocked Anthropic client. Exercises
-  the tool-use dispatch and the effects accumulator.
-- **Integration** — one or two end-to-end runs per agent, asserting
-  that effects land where they should. Slow; uses the test
-  plugin-runner.
+- **Unit** — individual tools, `load_state`/`save_state`, lifecycle
+  hooks. Fast, no Anthropic mock needed.
+- **Run-loop** — `run()` with a mocked Anthropic client. Exercises the
+  tool-use dispatch, the tool grant, and the effects it returns.
+- **End-to-end** — a few runs per agent on a development instance,
+  checking that effects land where they should.
 
 ## Don't pin to real provider responses
 
