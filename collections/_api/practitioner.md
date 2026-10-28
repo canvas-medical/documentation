@@ -42,7 +42,7 @@ sections:
                 description: Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
                 create_description: >-
                   Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br>
-                  The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name.
+                  The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name. A username is up to 150 characters of letters, digits, and `@`, `.`, `+`, `-`, or `_`.
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -93,6 +93,7 @@ sections:
                       - name: system
                         description: The system url of the coding.
                         type: string
+                        required_in: create, update
                         enum_options: 
                           - value: http://schemas.canvasmedical.com/fhir/roles
                       - name: code
@@ -253,7 +254,9 @@ sections:
                 attributes:
                   - name: system
                     type: string
+                    required_in: create, update
                     description: The `system` attribute specifies the namespace in which the identifier value is unique. 
+                    create_and_update_description: Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
                     enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url
                   - name: value
@@ -290,13 +293,22 @@ sections:
                     description: End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
                 type: json
-                description: A component of the Practitioner's license object that defines the license issuing authority short name.
+                required_in: create, update
+                description: The authority that issued the Practitioner's license.
                 attributes:
                   - name: display
                     type: string
-                    description: The display text of the license's short name.
+                    required_in: create, update
+                    description: The full name of the issuing authority, such as `MD University Los Angeles`.
                   - name: extension
                     type: array[json]
+                    required_in: create, update
+                    description: The issuing authority's short name, the state that issued the license, and whether the license is primary.
+                    create_and_update_description: >-
+                      The issuing authority's short name, the state that issued the license, and whether the license is primary.<br><br>
+                      Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.<br><br>
+                      For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.<br><br>
+                      Mark at most one license of each license type as primary with the `license-primary` extension.
                     attributes:
                       - name: url
                         type: string
