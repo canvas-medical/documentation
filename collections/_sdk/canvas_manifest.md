@@ -226,16 +226,16 @@ The `questionnaires` list points at YAML templates in the plugin package. Canvas
 
 ### Agents
 
-The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the tools each one may call. A handler starts an agent by returning a `RunAgentEffect` whose `agent_id` matches the agent's `class`.
+The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the tools each one may call. A handler in the same plugin starts an agent by returning a `RunAgentEffect` whose `agent_id` matches the agent's `class`. A plugin can't run another plugin's agents.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `class` | string | Yes | Import path to the `AgentPlugin` subclass, in `package.module:ClassName` form. |
 | `description` | string | Yes | What the agent does. |
 | `meta` | object | No | Agent metadata. |
-| `tools` | object | No | The tools from the agent's tool registry it may call. See [Tools](/sdk/agents-tools/). |
-| `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent can call every tool in its registry. |
-| `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed`. Applies only when `allowed` is set. |
+| `tools` | object | No | The tools from the agent's tool registry it may call. The agent can return only the effect types its granted tools stage. See [Tools](/sdk/agents-tools/). |
+| `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent gets no tools and can return no effects. |
+| `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed` after its `@category` groups are expanded. |
 
 Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key. Declare it as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY`, and set its value on each instance where the plugin runs. If the key isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
 
