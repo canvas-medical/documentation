@@ -5,6 +5,9 @@
 
   &__container {
     width: 100%;
+    // The layouts scroll the article inside a container with no bottom padding,
+    // so without this the last line sits against the bottom edge of the window.
+    padding-bottom: 4rem;
     &__inner {
       // @TODO: removed in designs, but may be useful later
       // padding-left: $container-padding;
