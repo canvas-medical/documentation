@@ -39,7 +39,10 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
               - name: valueString
                 type: string
-                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                description: Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                create_description: >-
+                  Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br>
+                  The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name.
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -94,7 +97,7 @@ sections:
                           - value: http://schemas.canvasmedical.com/fhir/roles
                       - name: code
                         required_in: create, update
-                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
                         type: string
                       - name: display
                         description: The display name of the coding.
@@ -255,6 +258,7 @@ sections:
                       - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url
                   - name: value
                     type: string
+                    required_in: create, update
                     description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
                 type: json
@@ -278,9 +282,11 @@ sections:
                 attributes:
                   - name: start
                     type: string
+                    required_in: create, update
                     description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
                   - name: end
                     type: string
+                    required_in: create, update
                     description: End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
                 type: json
