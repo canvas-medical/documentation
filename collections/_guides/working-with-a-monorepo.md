@@ -40,7 +40,7 @@ $ canvas deploy plugins/acme__intake --snapshot --instance acme-staging
 
 ## Deploy from CI
 
-A pipeline signs in as a [service account](/sdk/canvas_cli/#service-accounts-for-cicd): create one on the Credentials page in Canvas Platform, store its token as a CI secret, and expose it as `CANVAS_PLATFORM_TOKEN`. A snapshot works from a shallow checkout and needs no git identity on the runner. This GitHub Actions workflow deploys one plugin whenever a change to it merges:
+A pipeline signs in as a [service account](/sdk/canvas_cli/#service-accounts-for-cicd): create one on the Credentials page in Canvas Platform, store its token as a CI secret, and expose it as `CANVAS_PLATFORM_TOKEN`. A snapshot needs no git identity on the runner. Check out the full history so `deploy` can check that the snapshot does not [roll the plugin back](#when-a-snapshot-stops); `filter: blob:none` leaves out file contents the check does not need. This GitHub Actions workflow deploys one plugin whenever a change to it merges:
 
 ```yaml
 on:
@@ -53,6 +53,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
       - run: pip install canvas
       - run: canvas deploy plugins/acme__intake --snapshot --instance acme-staging
         env:
@@ -141,8 +144,8 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 
 `deploy --snapshot` exits non-zero without pushing when:
 
-- **The package has uncommitted changes**, or holds a git submodule, a symbolic link or a Git LFS file. Commit the changes, or replace those entries with regular files.
-- **HEAD is behind the last snapshot.** Update the checkout, for example with `git pull`, and deploy again.
+- **The package has uncommitted changes**, or holds a git submodule, a symbolic link or a file stored through a filter driver such as Git LFS or git-crypt. Commit the changes, or replace those entries with regular files.
+- **HEAD lacks changes the last snapshot deployed**, which would roll the plugin back. `deploy` lists the package files that the last deployed commit changed and HEAD does not. Update the checkout to include those changes, for example with `git pull`, and deploy again. A branch that was deployed and then squash- or rebase-merged passes.
 - **`main` on Canvas Platform has changes the snapshot would replace**, such as an edit to the plugin's catalog listing made in Canvas Platform. `deploy` lists the files. To keep the changes, `canvas clone` the plugin, copy its versions of those files into your repository, commit them, and deploy again. To replace them, run the deploy at a terminal and confirm.
 
 The [`canvas deploy` reference](/sdk/canvas_cli/#deploying-from-a-larger-repository) covers each case in full.
