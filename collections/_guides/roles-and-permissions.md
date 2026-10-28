@@ -30,6 +30,28 @@ Some capabilities are gated by **named feature permissions** rather than by a re
 activation, and prescription cancellation among them. These behave identically in
 evaluation; they simply gate a feature rather than a model.
 
+### Removing admin console access
+
+Staff users can open the admin console by default. To take it away from a user without
+changing anything else they can do in Canvas, add the **Denied access to the admin
+(overrides all other permissions)** permission (`api.deny_admin_access`) to a role the user
+holds. Unlike other permissions, it removes access rather than granting it.
+
+No default role carries this permission. An administrator with Staff Permissions Access can
+create a dedicated role for it, such as "No admin console access", and assign that role to the
+users who shouldn't open the admin console. Adding it to a role many users share, such as
+Clinical, removes the admin console from everyone in that role.
+
+A user who holds this permission:
+
+- Is sent to the admin sign-in page, which says they aren't authorized, when they open any
+  admin console page
+- Can't read plugin logs, either in the admin console or through the plugin logs API
+- Doesn't see **Settings** in the provider menu, even when a plugin's
+  [provider menu configuration](/sdk/layout-effect/#provider-menu-configuration) lists it
+
+Superusers keep admin console access even when they hold this permission.
+
 ## Default roles
 
 Every Canvas instance is provisioned with the roles below. They are grouped here by what
