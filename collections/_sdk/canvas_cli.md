@@ -258,7 +258,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
-- `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Prints the pushed commit and the `canvas deploy --ref` command that installs it on an instance. Takes no `--instance`, `--ref` or `--no-push`.
+- `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
 
@@ -278,6 +278,14 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+
+With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
+Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
+To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
+```
 
 **Waiting for the outcome**
 
