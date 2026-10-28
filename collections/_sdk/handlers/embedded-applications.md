@@ -680,6 +680,16 @@ class OfficeHoursBand(PortalDockedApplication):
         ).apply()
 ```
 
+#### Class attributes
+
+| Attribute    | Required | Description |
+|--------------|----------|-------------|
+| `NAME`       | Required | A name for the band. The portal doesn't display it. |
+| `IDENTIFIER` | Optional | A unique key for the application, in the recommended `plugin_name__app_name` format. When omitted, it's derived from the class's module and name. It breaks a `PRIORITY` tie, and it's the band's accessible name when the effect has no `title`. |
+| `DOCK_EDGE`  | Required | `DockEdge.TOP` or `DockEdge.BOTTOM`. See [DockEdge](#dockedge). |
+| `DOCK_SIZE`  | Required | The band's fixed height, as a positive `px`, `rem`, `em`, or `%` value, such as `64px`. See [Fixed height](#how-a-band-differs-from-a-docked-pane). |
+| `PRIORITY`   | Optional | An integer that picks which band an edge shows when several share it. The lowest value wins. Defaults to `0`. |
+
 The portal renders the `url` or `content` of the [`LaunchModalEffect`](/sdk/layout-effect/#modals) that `on_open()` returns. As with a staff docked pane, `title` isn't displayed: it becomes the band's accessible name for screen readers. If `on_open()` returns no `url` or `content`, the portal shows no band for that edge.
 
 Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a [Docked Application](#manifest-configuration). It takes no `scope` or `icon`. Don't add it to the `applications` array: `portal_docked` isn't an application scope, so a manifest that lists it there fails validation.
