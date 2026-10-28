@@ -16,7 +16,7 @@ To implement a custom section you need two things:
 1. A `PatientChartSummaryConfiguration` handler that includes the section in the layout.
 2. A `PatientChartSummaryCustomSectionHandler` subclass that returns the section content.
 
-Both handlers must be registered in `CANVAS_MANIFEST.json`.
+Both handlers must be registered in [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers).
 
 ## Creating a Custom Section Handler
 
@@ -24,7 +24,7 @@ Subclass `PatientChartSummaryCustomSectionHandler` and:
 
 1. Set `SECTION_KEY` to the unique identifier of your section. This must match the key used in `PatientChartSummaryConfiguration.CustomSection`.
 2. Implement `handle()` to return a `PatientChartSummaryCustomSection` effect.
-3. The patient key is available via `self.target`. Use it to scope database queries to the current patient.
+3. The patient id is available via `self.target`. Use it to scope database queries to the current patient.
 4. The logged-in user is available via `self.actor`. Use it to tailor the section content to the specific staff member viewing the chart.
 
 ```python

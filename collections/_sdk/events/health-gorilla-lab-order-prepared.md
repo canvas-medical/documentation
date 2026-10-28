@@ -18,7 +18,7 @@ path.
 This complements
 [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/), which fires *before* the
 build and lets a plugin inject overrides via
-[`HealthGorillaLabOrderOverride`](/sdk/effects/health-gorilla-lab-order-override).
+[`HealthGorillaLabOrderOverride`](/sdk/effect-health-gorilla-lab-order-override/).
 The pair gives a plugin both an inject hook and a verify hook on every
 outbound HG order.
 
@@ -60,5 +60,5 @@ class LogHGPayload(BaseHandler):
 ## Related
 
 - [`LAB_ORDER_COMMAND__PRE_SEND`](/sdk/events/) — fires *before* the build, accepts override effects
-- [`HealthGorillaLabOrderOverride`](/sdk/effects/health-gorilla-lab-order-override) — the override effect returned from PRE_SEND
+- [`HealthGorillaLabOrderOverride`](/sdk/effect-health-gorilla-lab-order-override/) — the override effect returned from PRE_SEND
 - [HG `RequestGroup` profile](https://developer.healthgorilla.com/docs/requestgroup)

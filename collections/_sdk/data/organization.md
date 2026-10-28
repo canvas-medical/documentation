@@ -48,6 +48,11 @@ organization = Organization.objects.first()
 | group_npi_number      | String                                              |
 | group_taxonomy_number | String                                              |
 | include_zz_qualifier  | Boolean                                             |
+| main_location         | [PracticeLocation](/sdk/data-practicelocation/#practicelocation)            |
+| practice_locations    | QuerySet[[PracticeLocation](/sdk/data-practicelocation/#practicelocation)]  |
+| addresses             | QuerySet[[OrganizationAddress](#organizationaddress)]                       |
+| telecom               | QuerySet[[OrganizationContactPoint](#organizationcontactpoint)]             |
+| business_lines        | QuerySet[[BusinessLine](/sdk/data-business-line/#businessline)]             |
 
 ## OrganizationAddress
 
@@ -59,6 +64,8 @@ The `OrganizationAddress` model represents a physical or mailing address associa
 | -------------------- | --------------------------------------------------------------------------- |
 | id                   | UUID                                                                        |
 | dbid                 | Integer                                                                     |
+| created              | DateTime                                                                    |
+| modified             | DateTime                                                                    |
 | organization         | [Organization](#organization)                                               |
 | use                  | [AddressUseWithBilling](/sdk/data-enumeration-types/#addressusewithbilling) |
 | type                 | [AddressType](/sdk/data-enumeration-types/#addresstype)                     |
@@ -86,6 +93,8 @@ The `OrganizationContactPoint` model represents a contact method (such as phone,
 | ------------ | --------------------------------------------------------------------- |
 | id           | UUID                                                                  |
 | dbid         | Integer                                                               |
+| created      | DateTime                                                              |
+| modified     | DateTime                                                              |
 | organization | [Organization](#organization)                                         |
 | system       | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value        | String                                                                |

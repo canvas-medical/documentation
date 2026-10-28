@@ -84,12 +84,16 @@ Please note that the content of each `value` field can contain any value that is
 | taxonomy_number           | String                                                |
 | include_zz_qualifier      | Boolean                                               |
 | addresses                 | [PracticeLocationAddress](#practicelocationaddress[]) |
+| settings                  | [PracticeLocationSetting](#practicelocationsetting[]) |
+| telecom                   | [PracticeLocationContactPoint](#practicelocationcontactpoint[]) |
 
 ### PracticeLocationAddress
 
 | Field Name        | Type                                                      |
 | ----------------- | --------------------------------------------------------- |
 | dbid              | Integer                                                   |
+| created           | DateTime                                                  |
+| modified          | DateTime                                                  |
 | practice_location | [PracticeLocation](#practicelocation)                     |
 | line1             | String                                                    |
 | line2             | String                                                    |
@@ -111,6 +115,8 @@ Please note that the content of each `value` field can contain any value that is
 | Field Name        | Type                                  |
 | ----------------- | ------------------------------------- |
 | dbid              | Integer                               |
+| created           | DateTime                              |
+| modified          | DateTime                              |
 | practice_location | [PracticeLocation](#practicelocation) |
 | name              | String                                |
 | value             | JSON                                  |
@@ -125,6 +131,8 @@ The `PracticeLocationContactPoint` model represents a contact method (such as ph
 | ----------------- | --------------------------------------------------------------------- |
 | id                | UUID                                                                  |
 | dbid              | Integer                                                               |
+| created           | DateTime                                                              |
+| modified          | DateTime                                                              |
 | practice_location | [PracticeLocation](#practicelocation)                                 |
 | system            | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value             | String                                                                |

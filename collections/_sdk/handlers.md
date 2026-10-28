@@ -7,6 +7,8 @@ The handlers module lets you define reactions to events.
 
 Handlers respond to [Events](/sdk/events/) and return zero, one, or many [Effects](/sdk/effects/).
 
+{% include compute-availability-warning.html %}
+
 There are some special types of handlers, like [Protocols](/sdk/protocols/)
 and [CronTasks](/sdk/handlers-crontask/). These offer a differentiated
 interface for their particular use-cases. For example, CronTasks only ever
@@ -24,7 +26,7 @@ following accessors:
   - Identifying information to help you reference the subject of the event
 - `self.secrets`
   - Configuration key-value store for your plugin
-  - Secrets have their keys defined in the `CANVAS_MANIFEST.json` and their
+  - Secrets have their keys defined in the [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables) and their
     values are set by the Canvas instance administrator after installing your
 plugin via the Canvas UI on your plugin's configuration page
 - `self.environment`

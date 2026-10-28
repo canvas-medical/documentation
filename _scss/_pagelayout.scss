@@ -37,16 +37,22 @@
             overflow-y: auto;
         }
         &__content {
-            max-width: 800px;
-            min-width: 70%;
+            // Fills the space between the nav and the side panels at every
+            // window width. min-width: 0 lets wide tables and code blocks
+            // scroll inside the column instead of stretching it.
+            flex: 1 1 auto;
+            min-width: 0;
+            max-width: 1400px;
+            padding: 0 clamp(20px, 3vw, 56px);
             @media (max-width: $breakpoint-md) {
                 padding: 20px;
-            }    
+            }
             @media (max-width: $breakpoint-sm) {
                 min-width: 70%;
             }
         }
         .sidepanels {
+            flex: 0 0 250px;
             min-width: 250px;
             position: sticky;
             top: 20px; /* Adjust the top spacing */
@@ -71,6 +77,12 @@
             justify-content: center;
             max-height: var(--body-height);
             overflow-y: auto;
+            > .article {
+                flex: 1 1 auto;
+                min-width: 0;
+                max-width: 1800px;
+                padding: 0 clamp(8px, 2vw, 40px);
+            }
         }
         &__hidden {
             display: none;

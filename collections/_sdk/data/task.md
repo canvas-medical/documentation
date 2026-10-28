@@ -146,6 +146,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | creator    | [Staff](/sdk/data-staff/#staff)       |
 | assignee   | [Staff](/sdk/data-staff/#staff)       |
 | patient    | [Patient](/sdk/data-patient/#patient) |
+| team       | [Team](/sdk/data-team/)               |
 | task_type  | [TaskType](#tasktype)                 |
 | tag        | String                                |
 | title      | String                                |
@@ -166,11 +167,11 @@ committed_note_tasks = NoteTask.objects.committed()
 | dbid              | Integer                                 |
 | created           | DateTime                                |
 | modified          | DateTime                                |
-| originator        | [CanvasUser](/sdk/data-canvas-user/)    |
-| committer         | [CanvasUser](/sdk/data-canvas-user/)    |
-| entered_in_error  | [CanvasUser](/sdk/data-canvas-user/)    |
-| deleted           | Boolean                                 |
+| originator        | [CanvasUser](/sdk/data-canvasuser/)    |
+| committer         | [CanvasUser](/sdk/data-canvasuser/)    |
+| entered_in_error  | [CanvasUser](/sdk/data-canvasuser/)    |
 | note              | [Note](/sdk/data-note/#note)            |
+| assessment        | [Assessment](/sdk/data-assessment/#assessment) |
 | task              | [Task](#task)                           |
 | patient           | [Patient](/sdk/data-patient/#patient)   |
 | original_title    | String                                  |
@@ -179,7 +180,6 @@ committed_note_tasks = NoteTask.objects.committed()
 | original_role     | [CareTeamRole](/sdk/data-care-team/#careteamrole) |
 | original_due      | DateTime                                |
 | internal_comment  | String                                  |
-| labels            | [TaskLabel](#tasklabel)[]               |
 
 ### TaskComment
 
@@ -192,6 +192,7 @@ committed_note_tasks = NoteTask.objects.committed()
 | creator    | [Staff](/sdk/data-staff/#staff) |
 | task       | [Task](/sdk/data-task/#task)    |
 | body       | String                          |
+| referral   | [Referral](/sdk/data-referral/) |
 
 ### TaskLabel
 
@@ -199,6 +200,8 @@ committed_note_tasks = NoteTask.objects.committed()
 | ---------------- | --------------------------------------------------- |
 | id               | UUID                                                |
 | dbid             | Integer                                             |
+| created          | DateTime                                            |
+| modified         | DateTime                                            |
 | tasks            | M2M                                                 |
 | position         | Integer                                             |
 | color            | [ColorEnum](/sdk/data-enumeration-types/#colorenum) |
@@ -207,6 +210,17 @@ committed_note_tasks = NoteTask.objects.committed()
 | active           | Boolean                                             |
 | modules          | [TaskLabelModule](#tasklabelmodule)                 |
 | claims           | [Claim](/sdk/data-claim)[]                          |
+| appointments     | [Appointment](/sdk/data-appointment/)[]             |
+
+### TaskTaskLabel
+
+The join between a task and a [TaskLabel](#tasklabel). Reach the labels on a task through its `labels` attribute rather than querying this model.
+
+| Field Name | Type                    |
+| ---------- | ----------------------- |
+| dbid       | Integer                 |
+| task       | [Task](#task)           |
+| task_label | [TaskLabel](#tasklabel) |
 
 ### TaskMetadata
 
@@ -265,10 +279,11 @@ for metadata in task_metadata:
 
 ### TaskLabelModule
 
-| Value  | Label  |
-| ------ | ------ |
-| claims | Claims |
-| tasks  | Tasks  |
+| Value        | Label        |
+| ------------ | ------------ |
+| claims       | Claims       |
+| tasks        | Tasks        |
+| appointments | Appointments |
 
 <br/>
 <br/>

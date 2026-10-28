@@ -9,7 +9,9 @@ hidden: false
 
 The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and coinsurance values.
 
-Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
+To create or change coverages from a plugin, use the [Coverage effect](/sdk/effect-coverage/).
+
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images. Card images are captured via the Canvas iOS application, uploaded through the coverages modal, or attached by a plugin with the [Coverage effect](/sdk/effect-coverage/#card-images).
 
 ## Usage
 
@@ -60,6 +62,27 @@ if coverage.snapshot:
         print(image.image_url)  # Presigned S3 URL for the insurance card image
 ```
 
+## Eligibility status
+
+`Coverage.eligibility_status` returns the [`EligibilityResponseStatus`](/sdk/data-eligibility-response/#eligibilityresponsestatus) of the coverage's most recent [`EligibilityResponse`](/sdk/data-eligibility-response/#eligibilityresponse). It returns `UNKNOWN` when the coverage has never been checked (it has no eligibility responses):
+
+```python?partial=true
+from canvas_sdk.v1.data.coverage import Coverage
+from canvas_sdk.v1.data.eligibility_response import EligibilityResponseStatus
+
+coverage = Coverage.objects.get(id="a74592ae-8a6c-4d0e-be07-99d3fb3713d1")
+if coverage.eligibility_status == EligibilityResponseStatus.ACTIVE:
+    print("Coverage is active")
+```
+
+`Coverage.eligibility_status` returns `NOT_APPLICABLE` for a self-pay coverage, meaning one whose issuer has a `payer_id` of `PATIENT`. It resolves this case before consulting the stored eligibility responses, so a stale `FAILED` response left on a self-pay coverage is never surfaced.
+
+That is also what [`Transactor.supports_eligibility_check`](#transactor) reports: it is `False` for the self-pay payer, whose `payer_id` is `PATIENT`, and `True` for every other issuer.
+
+Because it is computed on each access rather than stored, `eligibility_status` cannot be used in `filter()`. Filter on the coverage's [eligibility responses](/sdk/data-eligibility-response/#eligibilityresponse) instead, or read the property once you have the coverage in hand.
+
+A single [`EligibilityResponse.status`](/sdk/data-eligibility-response/#eligibilityresponse), by contrast, never resolves to `UNKNOWN` — that value belongs to the coverage, which has no response to defer to. To react to eligibility changes rather than poll for them, subscribe to the [eligibility response events](/sdk/events/#eligibility-responses). Those fire only when a response is saved, so a coverage that has never been checked emits no event at all: a plugin that has to catch never-verified coverages should read `eligibility_status` rather than rely on the events alone.
+
 ## Filtering
 
 The `filter` method can be used to filter by desired attributes. The following examples show commonly used operations to filter coverage data:
@@ -97,6 +120,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | patient                            | [Patient](/sdk/data-patient/#patient)                 |
 | guarantor                          | [Patient](/sdk/data-patient/#patient)                 |
 | subscriber                         | [Patient](/sdk/data-patient/#patient)                 |
+| subscriber_identifier              | String                                                |
 | patient_relationship_to_subscriber | [CoverageRelationshipCode](#coveragerelationshipcode) |
 | issuer                             | [Transactor](#transactor)                             |
 | id_number                          | String                                                |
@@ -107,7 +131,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | employer                           | String                                                |
 | coverage_start_date                | Date                                                  |
 | coverage_end_date                  | Date                                                  |
-| coverage_rank                      | Integer                                               |
+| coverage_rank                      | [CoverageRank](#coveragerank)                         |
 | state                              | [CoverageState](#coveragestate)                       |
 | plan_type                          | [CoverageType](#coveragetype)                         |
 | coverage_type                      | [TransactorCoverageType](#transactorcoveragetype)     |
@@ -117,12 +141,19 @@ The `filter` method can be used to filter by desired attributes. The following e
 | stack                              | [CoverageStack](#coveragestack)                       |
 | snapshot                           | [Snapshot](/sdk/data-snapshot/#snapshot)               |
 | eligibility_summary                | [EligibilitySummary](#eligibilitysummary)             |
+| eligibility_status                 | [EligibilityResponseStatus](/sdk/data-eligibility-response/#eligibilityresponsestatus) (computed) |
+| claim_coverages                    | [ClaimCoverage](/sdk/data-claim/#claimcoverage)[]     |
+| requests                           | [EligibilityRequest](/sdk/data-eligibility-response/#eligibilityrequest)[]   |
+| eligibility_responses              | [EligibilityResponse](/sdk/data-eligibility-response/#eligibilityresponse)[] |
 
 ### Transactor
 
 | Field Name                   | Type                                                |
 | ---------------------------- | --------------------------------------------------- |
+| id                           | UUID                                                |
 | dbid                         | Integer                                             |
+| created                      | DateTime                                            |
+| modified                     | DateTime                                            |
 | payer_id                     | String                                              |
 | name                         | String                                              |
 | type                         | String                                              |
@@ -144,12 +175,16 @@ The `filter` method can be used to filter by desired attributes. The following e
 | description                  | String                                              |
 | active                       | Boolean                                             |
 | use_provider_for_eligibility | Boolean                                             |
+| supports_eligibility_check   | Boolean (computed)                                  |
 | use_for_submission           | [Transactor](#transactor)                           |
 | used_for_submission_by       | [Transactor](#transactor)[]                         |
 | coverage_types               | [TransactorCoverageType](#transactorcoveragetype)[] |
+| vaccines                     | [Vaccine](/sdk/data-vaccine/#vaccine)[]             |
 | addresses                    | [TransactorAddress](#transactoraddress)[]           |
 | coverages                    | [Coverage](#coverage)[]                             |
 | phones                       | [TransactorPhone](#transactorphone)[]               |
+| specific_charges             | [PayorSpecificCharge](/sdk/data-payor-specific-charge/#payorspecificcharge)[] |
+| remits                       | [BaseRemittanceAdvice](/sdk/data-posting/#baseremittanceadvice)[] |
 
 ### TransactorAddress
 
@@ -206,6 +241,16 @@ The `filter` method can be used to filter by desired attributes. The following e
 | coinsurance | Integer                                  |
 
 ## Enumeration types
+
+### CoverageRank
+
+| Value | Name       | Label      |
+| ----- | ---------- | ---------- |
+| 1     | PRIMARY    | Primary    |
+| 2     | SECONDARY  | Secondary  |
+| 3     | TERTIARY   | Tertiary   |
+| 4     | QUATERNARY | Quaternary |
+| 5     | QUINARY    | Quinary    |
 
 ### CoverageStack
 

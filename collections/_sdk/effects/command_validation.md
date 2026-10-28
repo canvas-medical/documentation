@@ -12,25 +12,41 @@ The `CommandValidationErrorEffect` returns structured error messages that are di
 
 In both cases you build a `CommandValidationErrorEffect`, attach one or more error messages, and return it from your handler.
 
+<!-- source: discussion #1513 -->
+<!-- source: discussion #822 -->
+Validating a command is the supported way to require fields, or to run any custom validation such as checking a free-text date entered in a questionnaire, **before a command is committed**. It is different from validating a note before it is locked: pre-lock validation only stops the note from being locked, and the command underneath it, such as a questionnaire, is still committed. Command validation blocks the commit itself and shows the error to the user. The [`command-validation` example plugin](https://github.com/Medical-Software-Foundation/canvas/tree/main/extensions/command-validation/command_validation) can be tailored to require every question on a questionnaire to be answered, or to check only specific questions or questionnaires.
+
 Where these errors are enforced differs by event: `__POST_VALIDATION` errors block a commit **only in the Canvas UI**, while `__PRE_DELETE` errors block a deletion through **both** the Canvas UI and the SDK [commands module](/sdk/commands/). Each section below covers the specifics.
 
 ## The effect
 
 ### CommandValidationErrorEffect
 
-The `CommandValidationErrorEffect` class accepts an optional list of `ValidationError` objects during initialization:
+Build a `CommandValidationErrorEffect`, add one or more errors, then return its `apply()` from your handler.
 
-| Attribute | Type                     | Required | Description                                            |
-| --------- | ------------------------ | -------- | ------------------------------------------------------ |
-| `errors`  | list[ValidationError]    | optional | List of validation errors to be displayed to the user. |
+#### Methods
+
+##### add_error(message: str | ValidationError) → CommandValidationErrorEffect
+
+Appends an error, given as a message or a [`ValidationError`](#validationerror), and returns the effect, so calls can be chained.
+
+##### apply() → Effect
+
+Shows the errors to the user. See [Validate a command](#validate-a-command) and [Block a deletion](#block-a-deletion) for what the errors block in each case.
+
+#### Attributes
+
+| Attribute | Type                                          | Description                                            | Required |
+| --------- | --------------------------------------------- | ------------------------------------------------------ | -------- |
+| `errors`  | `list[`[`ValidationError`](#validationerror)`]` | List of validation errors to be displayed to the user. | No       |
 
 ### ValidationError
 
 Each `ValidationError` object represents a single validation error message:
 
-| Attribute | Type   | Required | Description                         |
-| --------- | ------ | -------- | ----------------------------------- |
-| `message` | String | required | The validation error message to display. Must not be empty. |
+| Attribute | Type  | Description                                                 | Required |
+| --------- | ----- | ----------------------------------------------------------- | -------- |
+| `message` | `str` | The validation error message to display. Must not be empty. | Yes      |
 
 ### Building the errors
 
@@ -60,15 +76,66 @@ return [effect.apply()]
 
 ## Validate a command
 
-Use `CommandValidationErrorEffect` with a command's `__POST_VALIDATION` event to check the command as it is entered and surface problems before it is committed. Every command type fires this event, following the pattern:
+Use `CommandValidationErrorEffect` with a command's `__POST_VALIDATION` event to check the command as it is entered and surface problems before it is committed. These events follow the pattern:
 
 `{COMMAND_KEY}_COMMAND__POST_VALIDATION`
 
-For example:
+The following command types fire `__POST_VALIDATION` and can be validated with this effect:
 
-- `PLAN_COMMAND__POST_VALIDATION`
-- `PRESCRIBE_COMMAND__POST_VALIDATION`
+- `ADD_CONDITION_COMMAND__POST_VALIDATION`
+- `ADJUST_PRESCRIPTION_COMMAND__POST_VALIDATION`
+- `ALLERGY_COMMAND__POST_VALIDATION`
+- `APPROVE_REFILL_COMMAND__POST_VALIDATION`
+- `ASSESS_CODING_GAP_COMMAND__POST_VALIDATION`
+- `ASSESS_COMMAND__POST_VALIDATION`
+- `CANCEL_PRESCRIPTION_COMMAND__POST_VALIDATION`
+- `CHANGE_MEDICATION_COMMAND__POST_VALIDATION`
+- `CHART_SECTION_REVIEW_COMMAND__POST_VALIDATION`
+- `CLIPBOARD_COMMAND__POST_VALIDATION`
+- `CLOSE_GOAL_COMMAND__POST_VALIDATION`
+- `CREATE_CODING_GAP_COMMAND__POST_VALIDATION`
+- `DEFER_CODING_GAP_COMMAND__POST_VALIDATION`
+- `DENY_REFILL_COMMAND__POST_VALIDATION`
 - `DIAGNOSE_COMMAND__POST_VALIDATION`
+- `EDUCATIONAL_MATERIAL_COMMAND__POST_VALIDATION`
+- `FAMILY_HISTORY_COMMAND__POST_VALIDATION`
+- `FOLLOW_UP_COMMAND__POST_VALIDATION`
+- `GOAL_COMMAND__POST_VALIDATION`
+- `HISTORY_OF_PRESENT_ILLNESS_COMMAND__POST_VALIDATION`
+- `IMAGING_ORDER_COMMAND__POST_VALIDATION`
+- `IMMUNIZATION_STATEMENT_COMMAND__POST_VALIDATION`
+- `IMMUNIZE_COMMAND__POST_VALIDATION`
+- `INSTRUCT_COMMAND__POST_VALIDATION`
+- `LAB_ORDER_COMMAND__POST_VALIDATION`
+- `MEDICAL_HISTORY_COMMAND__POST_VALIDATION`
+- `MEDICATION_STATEMENT_COMMAND__POST_VALIDATION`
+- `ORDER_DME_COMMAND__POST_VALIDATION`
+- `PERFORM_COMMAND__POST_VALIDATION`
+- `PHYSICAL_EXAM_COMMAND__POST_VALIDATION`
+- `PLAN_COMMAND__POST_VALIDATION`
+- `POC_LAB_TEST_COMMAND__POST_VALIDATION`
+- `PRESCRIBE_COMMAND__POST_VALIDATION`
+- `QUESTIONNAIRE_COMMAND__POST_VALIDATION`
+- `REASON_FOR_VISIT_COMMAND__POST_VALIDATION`
+- `REFERENCE_COMMAND__POST_VALIDATION`
+- `REFER_COMMAND__POST_VALIDATION`
+- `REFILL_COMMAND__POST_VALIDATION`
+- `REMOVE_ALLERGY_COMMAND__POST_VALIDATION`
+- `REMOVE_PAST_MEDICAL_HISTORY_COMMAND__POST_VALIDATION`
+- `RESOLVE_CONDITION_COMMAND__POST_VALIDATION`
+- `ROS_COMMAND__POST_VALIDATION`
+- `SNOOZE_PROTOCOL_COMMAND__POST_VALIDATION`
+- `STOP_MEDICATION_COMMAND__POST_VALIDATION`
+- `STRUCTURED_ASSESSMENT_COMMAND__POST_VALIDATION`
+- `SURGICAL_HISTORY_COMMAND__POST_VALIDATION`
+- `TASK_COMMAND__POST_VALIDATION`
+- `UPDATE_DIAGNOSIS_COMMAND__POST_VALIDATION`
+- `UPDATE_GOAL_COMMAND__POST_VALIDATION`
+- `VALIDATE_CODING_GAP_COMMAND__POST_VALIDATION`
+- `VISUAL_EXAM_FINDING_COMMAND__POST_VALIDATION`
+- `VITALS_COMMAND__POST_VALIDATION`
+
+The Custom Command, Imaging Review, Lab Review, Referral Review, Uncategorized Document Review commands do **not** fire `__POST_VALIDATION`, so they can't be validated with this effect.
 
 The following handler validates a Plan command to ensure it meets specific requirements:
 
@@ -120,6 +187,10 @@ class MyHandler(BaseHandler):
 
 When validation errors are returned, the Canvas UI shows them to the user — the command's action buttons are disabled and the messages appear as a tooltip — so the command can't be committed there. Multiple errors can be returned at once, and all are displayed.
 
+On a Refill command, the error disables the command's **REVIEW** button, so the user can't reach **Sign and send**, **Sign**, or **Print**. The message appears as a tooltip on the disabled button. The [`example_commands` example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_commands) blocks every refill this way; add a condition to its handler to block refills selectively.
+
+Return the error from the `__POST_VALIDATION` event, not `__PRE_COMMIT`. On a Refill command, a validation error returned from `REFILL_COMMAND__PRE_COMMIT` is ignored, and the refill commits anyway.
+
 > **Note:** `__POST_VALIDATION` only gates committing **in the Canvas UI**. A `.commit()` made through the SDK [commands module](/sdk/commands/) is **not** blocked by these errors — the command still commits. Use it as a UI guardrail, not as an enforced rule on SDK-driven commits. (Blocking a deletion, below, *does* work through both the UI and the SDK.)
 
 ## Block a deletion
@@ -127,6 +198,65 @@ When validation errors are returned, the Canvas UI shows them to the user — th
 Return a `CommandValidationErrorEffect` from a command's `__PRE_DELETE` handler to block its deletion. Unlike `__POST_VALIDATION`, this works through **both** the Canvas UI and the SDK [commands module](/sdk/commands/): the deletion is aborted, the surrounding transaction is rolled back, and the error messages are returned to whatever initiated the delete — a [`delete()`](/sdk/commands/) call or a delete in the UI. For SDK-initiated deletes, the error is written to `canvas logs`. Pre-delete events follow the pattern:
 
 `{COMMAND_KEY}_COMMAND__PRE_DELETE`
+
+`__PRE_DELETE` is fired by the following command types (every command except Chart Section Review):
+
+- `ADD_CONDITION_COMMAND__PRE_DELETE`
+- `ADJUST_PRESCRIPTION_COMMAND__PRE_DELETE`
+- `ALLERGY_COMMAND__PRE_DELETE`
+- `APPROVE_REFILL_COMMAND__PRE_DELETE`
+- `ASSESS_CODING_GAP_COMMAND__PRE_DELETE`
+- `ASSESS_COMMAND__PRE_DELETE`
+- `CANCEL_PRESCRIPTION_COMMAND__PRE_DELETE`
+- `CHANGE_MEDICATION_COMMAND__PRE_DELETE`
+- `CLIPBOARD_COMMAND__PRE_DELETE`
+- `CLOSE_GOAL_COMMAND__PRE_DELETE`
+- `CREATE_CODING_GAP_COMMAND__PRE_DELETE`
+- `CUSTOM_COMMAND_COMMAND__PRE_DELETE`
+- `DEFER_CODING_GAP_COMMAND__PRE_DELETE`
+- `DENY_REFILL_COMMAND__PRE_DELETE`
+- `DIAGNOSE_COMMAND__PRE_DELETE`
+- `EDUCATIONAL_MATERIAL_COMMAND__PRE_DELETE`
+- `FAMILY_HISTORY_COMMAND__PRE_DELETE`
+- `FOLLOW_UP_COMMAND__PRE_DELETE`
+- `GOAL_COMMAND__PRE_DELETE`
+- `HISTORY_OF_PRESENT_ILLNESS_COMMAND__PRE_DELETE`
+- `IMAGING_ORDER_COMMAND__PRE_DELETE`
+- `IMAGING_REVIEW_COMMAND__PRE_DELETE`
+- `IMMUNIZATION_STATEMENT_COMMAND__PRE_DELETE`
+- `IMMUNIZE_COMMAND__PRE_DELETE`
+- `INSTRUCT_COMMAND__PRE_DELETE`
+- `LAB_ORDER_COMMAND__PRE_DELETE`
+- `LAB_REVIEW_COMMAND__PRE_DELETE`
+- `MEDICAL_HISTORY_COMMAND__PRE_DELETE`
+- `MEDICATION_STATEMENT_COMMAND__PRE_DELETE`
+- `ORDER_DME_COMMAND__PRE_DELETE`
+- `PERFORM_COMMAND__PRE_DELETE`
+- `PHYSICAL_EXAM_COMMAND__PRE_DELETE`
+- `PLAN_COMMAND__PRE_DELETE`
+- `POC_LAB_TEST_COMMAND__PRE_DELETE`
+- `PRESCRIBE_COMMAND__PRE_DELETE`
+- `QUESTIONNAIRE_COMMAND__PRE_DELETE`
+- `REASON_FOR_VISIT_COMMAND__PRE_DELETE`
+- `REFERENCE_COMMAND__PRE_DELETE`
+- `REFERRAL_REVIEW_COMMAND__PRE_DELETE`
+- `REFER_COMMAND__PRE_DELETE`
+- `REFILL_COMMAND__PRE_DELETE`
+- `REMOVE_ALLERGY_COMMAND__PRE_DELETE`
+- `REMOVE_PAST_MEDICAL_HISTORY_COMMAND__PRE_DELETE`
+- `RESOLVE_CONDITION_COMMAND__PRE_DELETE`
+- `ROS_COMMAND__PRE_DELETE`
+- `SNOOZE_PROTOCOL_COMMAND__PRE_DELETE`
+- `STOP_MEDICATION_COMMAND__PRE_DELETE`
+- `STRUCTURED_ASSESSMENT_COMMAND__PRE_DELETE`
+- `SURGICAL_HISTORY_COMMAND__PRE_DELETE`
+- `TASK_COMMAND__PRE_DELETE`
+- `UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND__PRE_DELETE`
+- `UPDATE_DIAGNOSIS_COMMAND__PRE_DELETE`
+- `UPDATE_GOAL_COMMAND__PRE_DELETE`
+- `VALIDATE_CODING_GAP_COMMAND__PRE_DELETE`
+- `VISUAL_EXAM_FINDING_COMMAND__PRE_DELETE`
+- `VITALS_COMMAND__PRE_DELETE`
 
 The following handler prevents deletion of a Refer command once its priority has been set to `Urgent` or `STAT`, so high-priority referrals can't be removed by mistake. The command's field values are available on the event context, so no extra lookup is needed:
 

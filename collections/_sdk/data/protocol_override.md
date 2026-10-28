@@ -96,7 +96,6 @@ adjustments = (
 | dbid             | Integer                               |
 | created          | DateTime                              |
 | modified         | DateTime                              |
-| deleted          | Boolean                               |
 | committer        | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error | [CanvasUser](/sdk/data-canvasuser)    |
 | patient          | [Patient](/sdk/data-patient/#patient) |

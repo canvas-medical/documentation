@@ -4,7 +4,7 @@ slug: "secrets"
 hidden: false
 ---
 
-Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's `CANVAS_MANIFEST.json` as **variables**, set at install time or through the Admin UI, and read from `self.secrets` at runtime.
+Canvas provides a secure key-value store that lets your plugins access configuration data — including sensitive secrets such as API tokens — without hardcoding values into source files. Configuration values are declared in your plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#variables) as **variables**, set at install time or through the Admin UI, and read from `self.secrets` at runtime.
 
 Each variable can be marked **sensitive** (treated like a secret: not displayed in admin or CLI listings) or **non-sensitive** (a regular configuration value, displayed in plaintext for verification). All variable values are write-only through the CLI and API.
 
@@ -58,28 +58,29 @@ It emits a deprecation warning during `canvas validate-manifest` and is mapped i
 
 ### Configuring Variables from the CLI
 
-Set values during install or update them later. Use `--variable` for non-sensitive values and `--secret` for sensitive values; both flags accept `KEY=value` pairs.
+Set values with [`canvas config set`](/sdk/canvas_cli/#canvas-config-set), passing `KEY=value` pairs. Each value keeps the sensitivity the manifest declares for it.
 
-Provide values during install:
-
-```console
-$ canvas install <plugin_name> --secret API_TOKEN=your_api_token_value --variable LOG_LEVEL=info
-```
-
-Update values on an installed plugin:
+For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform stores the values for each instance and a configure deployment brings them to the running plugin:
 
 ```console
-$ canvas config set <plugin_name> API_TOKEN=abc123 LOG_LEVEL=warn
+$ canvas config set acme__my_plugin API_TOKEN=abc123 LOG_LEVEL=info --instance acme-staging
 ```
 
-Pass multiple values by repeating the flag:
+Values stored for an instance before the plugin is installed there wait for its first deploy, so a plugin that needs a value from its first run can have it set first:
 
 ```console
-$ canvas install <plugin_name> \
-  --secret API_TOKEN=abc123 \
-  --secret WEBHOOK_SECRET=xyz \
-  --variable LOG_LEVEL=info
+$ canvas deploy my-plugin/acme__my_plugin --push-only
+$ canvas config set acme__my_plugin API_TOKEN=abc123 --instance acme-staging
+$ canvas deploy my-plugin/acme__my_plugin --instance acme-staging
 ```
+
+Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset):
+
+```console
+$ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
+```
+
+{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install --secret</code> and <code>--variable</code> set values while installing straight onto an instance with <code>credentials.ini</code>. Support ends on December 14, 2026; see <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
 
 #### Listing configured values
 
@@ -134,3 +135,16 @@ class MyHandler(BaseHandler):
 ```
 
 This access pattern is unchanged from earlier Canvas versions, so migrating a plugin from the legacy `secrets:` array to the new `variables:` schema requires no handler code changes.
+
+<!-- source: discussion #618 -->
+> **Both steps are required.** `self.secrets["KEY"]` returns a value only after you have:
+>
+> 1. Declared the key in `CANVAS_MANIFEST.json`.
+> 2. Set a value for it, with the CLI or on the plugin configuration page in the Admin UI (`/admin/plugin_io/plugin/`).
+>
+> If either step is missing, the lookup returns no value.
+
+<!-- source: discussion #1415 -->
+### Configuring SimpleAPI credentials
+
+A SimpleAPI route that authenticates with [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins) reads its key from the `simpleapi-api-key` secret, unless the route sets a different name in `API_KEY_SECRET_NAME`. Declare that secret, set its value in the secrets Admin UI, then send the **same** value in the `Authorization` header of each request to the route. If the configured secret and the header value do not match, or the secret has no value set, the endpoint responds with `401 Unauthorized` ("Provided credentials are invalid").

@@ -96,6 +96,16 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 | responsibilities | Array[[TeamResponsibility](#teamresponsibility)] |
 | members          | [Staff](/sdk/data-staff/#staff)[]                |
 | group_id         | UUID                                             |
+| telecom          | [TeamContactPoint](#teamcontactpoint)[]          |
+| tasks            | [Task](/sdk/data-task/#task)[]                   |
+| document_references | [DocumentReference](/sdk/data-document-reference/#documentreference)[] |
+| integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |
+| uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[] |
+| referralreport_set | [ReferralReport](/sdk/data-referral/#referralreport)[] |
+| assigned_messages | [Message](/sdk/data-message/#message)[] |
+| labreport_set | [LabReport](/sdk/data-labs/#labreport)[] |
+| imagingreport_set | [ImagingReport](/sdk/data-imaging/#imagingreport)[] |
+| patientadministrativedocument_set | [PatientAdministrativeDocument](/sdk/data-patient-administrative-document/#patientadministrativedocument)[] |
 
 ### TeamContactPoint
 
@@ -103,6 +113,8 @@ teams = Team.objects.filter(created__gt="2025-01-01")
 |------------|-----------------------------------------------------------------------|
 | id         | UUID                                                                  |
 | dbid       | Integer                                                               |
+| created    | DateTime                                                              |
+| modified   | DateTime                                                              |
 | system     | [ContactPointSystem](/sdk/data-enumeration-types/#contactpointsystem) |
 | value      | String                                                                |
 | use        | [ContactPointUse](/sdk/data-enumeration-types/#contactpointuse)       |

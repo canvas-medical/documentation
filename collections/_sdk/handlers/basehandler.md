@@ -10,6 +10,8 @@ are interested in, then provide the code to execute when one of those events
 is emitted. All the [handlers](/sdk/handlers/) inherit from `BaseHandler`, and
 many of yours will too.
 
+{% include compute-availability-warning.html %}
+
 ## Handling Events With `BaseHandler`
 
 To create a class that responds to one or more events, inherit from
@@ -48,6 +50,62 @@ of course. You have access to event information with `self.event`,
 `self.target`, and`self.context`, as well as configuration information for
 your plugin with `self.secrets` and for the running instance with `self.environment`. You can use
 our [Data Module](/sdk/data/) to retrieve additional information at runtime.
+
+## Keep your handler fast
+
+Your handler's entry point — `compute()` here, or `handle()` for an
+[Action Button](/sdk/handlers-action-buttons/) — runs synchronously on a bounded
+pool of plugin workers that is shared across your whole Canvas instance. Whatever
+you do inside it occupies one of those workers until it returns. Fast handlers free their worker
+in milliseconds; slow handlers hold it, and a handler that blocks on a slow or
+unavailable external dependency holds it for a long time. When enough handlers
+are blocked at once, the pool is exhausted and the instance can no longer
+respond to requests — providers experience this as the entire application
+becoming inaccessible, not just your plugin.
+
+This matters most when your handler responds to a high-frequency event (for
+example, a note-state-change or task event that fires throughout the day) and
+does work that can hang:
+
+- **Calls to external HTTP APIs**, including LLM providers. These are the most
+  common cause of instance-wide slowdowns, because a single provider-side
+  outage turns every one of your handler invocations into a multi-second (or
+  multi-minute) hang at the same time.
+- **Long timeouts combined with retries.** A 300&nbsp;second timeout retried a
+  few times can pin one worker for over ten minutes per event.
+- **Inefficient database queries.** Unbounded result sets, N+1 query patterns,
+  and missing `select_related`/`prefetch_related` turn a fast-looking handler
+  into a slow one as a patient's or instance's data grows. Filter and paginate
+  with the [Data Module](/sdk/data/), fetch only the fields you need, and follow
+  foreign keys with `select_related`/`prefetch_related` instead of looping.
+- **Heavy synchronous computation** that doesn't yield.
+
+### Move slow work off the synchronous path
+
+The platform can run effects asynchronously so they don't block the event that
+produced them:
+
+- Chain [`.set_async()`](/sdk/effects/#async-execution) on any effect to have
+  the platform run it as a deferred task, with optional delay and retries. This
+  is the right tool for **fire-and-forget side effects** (kick off a webhook,
+  schedule a downstream write).
+- Use the [`HttpRequestEffect`](/sdk/effect-http-request/) to have the platform
+  make an HTTP call on your behalf — chained with `.set_async()` so the
+  platform's async runner manages the delay, retries, and backoff instead of
+  your handler blocking on the network.
+
+Note that `set_async()` defers *effects*, not `compute()` itself — `compute()`
+always runs synchronously. A raw blocking call made *inside* `compute()` (for
+example, a `requests.post(...)` directly to a third-party API) still pins the
+worker, regardless of whether the effects you return are async. If your handler
+needs to "call an external service, read the result, then decide what to do,"
+decompose it: a thin synchronous handler that emits an async effect to a
+[SimpleAPI](/sdk/handlers-simple-api/) callback route, and let that route do the
+slow work off the event path and apply its effects when it finishes.
+
+If you genuinely cannot move the work off the synchronous path, at minimum cut
+the reach of a failure: use a short timeout, limit retries, and gate the handler
+so it only runs for the cases that truly need it.
 
 <br/>
 <br/>

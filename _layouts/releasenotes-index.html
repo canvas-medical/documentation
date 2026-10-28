@@ -12,7 +12,7 @@ layout: default
           {{ content }}
         </div>
 
-        {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | sort: "date" | reverse %}
+        {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | reverse %}
 
 
         {% for item in posts %}
@@ -57,6 +57,8 @@ layout: default
               <span class="tag-breaking-change">{{ tag }}</span>
               {% elsif tag == "plugins" %}
               <span class="tag-plugins">{{ tag }}</span>
+              {% elsif tag == "data" %}
+              <span class="tag-data">{{ tag }}</span>
               {% else %}
                 <span class="tag-default">{{ tag }}</span>
               {% endif %}

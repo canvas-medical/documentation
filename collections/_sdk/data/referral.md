@@ -86,6 +86,55 @@ referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 tasks = referral.get_task_objects().all()
 ```
 
+The `task_list` computed property returns the same related tasks as a `list[Task]`:
+
+```python
+from canvas_sdk.v1.data.referral import Referral
+
+referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+tasks = referral.task_list
+```
+
+## Review assignment
+
+A referral report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import ReferralReport, Staff
+
+referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the referral report is assigned to
+reviewers = referral_report.reviewers.all()
+team = referral_report.team
+
+# Every referral report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = ReferralReport.objects.filter(reviewers__id=staff.id)
+```
+
+## The document reference
+
+`ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
+
+To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, ReferralReport
+
+report = ReferralReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="referralreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=report.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>." %}
+
 ## Attributes
 
 ### Referral
@@ -97,11 +146,11 @@ tasks = referral.get_task_objects().all()
 | created               | DateTime                                                       |
 | modified              | DateTime                                                       |
 | originator            | [CanvasUser](/sdk/data-canvasuser)                             |
-| deleted               | Boolean                                                        |
 | committer             | [CanvasUser](/sdk/data-canvasuser)                             |
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
 | note                  | [Note](/sdk/data-note/#note)                                   |
+| assessment            | [Assessment](/sdk/data-assessment/#assessment) |
 | assessments           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | clinical_question     | String                                                         |
@@ -111,8 +160,11 @@ tasks = referral.get_task_objects().all()
 | date_referred         | DateTime                                                       |
 | internal_comment      | String                                                         |
 | forwarded             | Boolean                                                        |
+| ignored               | Boolean                                                        |
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
+| reports               | [ReferralReport](#referralreport)[]                            |
+| action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
 
 ### ReferralReport
 
@@ -130,6 +182,7 @@ tasks = referral.get_task_objects().all()
 | assigned_date      | DateTime                                                              |
 | team_assigned_date | DateTime                                                              |
 | team               | [Team](/sdk/data-team/#team)                                          |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |
 | patient            | [Patient](/sdk/data-patient/#patient)                                 |
 | referral           | [Referral](#referral)                                                 |
 | specialty          | String                                                                |
@@ -148,7 +201,6 @@ tasks = referral.get_task_objects().all()
 | created                       | DateTime                               |
 | modified                      | DateTime                               |
 | originator                    | [CanvasUser](/sdk/data-canvasuser)     |
-| deleted                       | Boolean                                |
 | committer                     | [CanvasUser](/sdk/data-canvasuser)     |
 | entered_in_error              | [CanvasUser](/sdk/data-canvasuser)     |
 | internal_comment              | String                                 |
@@ -157,12 +209,15 @@ tasks = referral.get_task_objects().all()
 | note                          | [Note](/sdk/data-note/#note)                |
 | patient                       | [Patient](/sdk/data-patient/#patient)  |
 | patient_communication_method  | String                                 |
+| reports                       | [ReferralReport](#referralreport)[]    |
 
 ### ReferralReportCoding
 
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | report        | [ReferralReport](#referralreport) |
 | system        | String                            |
 | version       | String                            |

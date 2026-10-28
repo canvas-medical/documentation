@@ -165,14 +165,18 @@ The following effects are available to be applied in Canvas.
 | PATIENT_CHART_SUMMARY__CUSTOM_SECTION       | Can be used to serve content for a custom patient chart summary section. Check out [Patient Chart Summary Custom Section](/sdk/patient-chart-summary-custom-section-effect/). |
 | SHOW_PATIENT_PROFILE_SECTIONS               | Can be used to reorder or hide sections in the patient profile. Check out [Layout Effects](/sdk/layout-effect/#patient-profile). |
 | SHOW_PANEL_SECTIONS                         | Can be used to reorder or hide sections in the side panel. Check out [Layout Effects](/sdk/layout-effect/#panel-configuration). |
-| SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS  | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration/).                                    |
+| SHOW_PATIENT_NOTE_HEADER_DROPDOWN_SECTIONS  | Can be used to hide items in the note header triple dot button dropdown. Check out [this effect class](/sdk/layout-effect/#patient-note-header-dropdown-configuration).                                    |
+| SHOW_PROVIDER_MENU_ITEMS                    | Can be used to hide items in the provider (hamburger) menu. Check out [Layout Effects](/sdk/layout-effect/#provider-menu-configuration). |
 | PATIENT_CHART__GROUP_ITEMS                  | Can be used to group items within a specific patient chart section. Check out [Patient Chart Group](/sdk/patient-chart-group-effect/). |
 | PATIENT_TIMELINE__CONFIGURATION             | Can be used to configure the patient timeline display. Check out [Patient Timeline](/sdk/effect-patient-timeline/). |
 | HOMEPAGE_CONFIGURATION                      | Can be used to configure the homepage layout. Check out [Default Homepage](/sdk/default-homepage-effect/). |
 | SHOW_ACTION_BUTTON                          | Can be used to show an action button. Check out [Action Buttons](/sdk/handlers-action-buttons/) and [LaunchModalEffects](/sdk/layout-effect/#modals). |
+| RELOAD_ACTION_BUTTONS                       | Can be used to refresh a note's or patient's action buttons so they re-evaluate against the latest data. Check out [Reload Action Buttons](/sdk/effect-reload-action-buttons/). |
 | SHOW_APPLICATION                            | Can be used to show a custom application. Check out [Applications](/sdk/handlers-applications/)  and [LaunchModalEffects](/sdk/layout-effect/#modals). |
 | SET_APPLICATION_NOTIFICATION_BADGE          | Can be used to display or update a notification badge count on an application icon. Check out [Application Notification Badge](/sdk/effect-application-notification-badge/). |
 | REDIRECT_CONTEXT                            | Returned from a [`SSO__GET_POST_LOGIN_REDIRECT`](/sdk/events/) handler to override the URL the user lands on after SAML SSO login. See [SSO Capabilities](/sdk/sso/#redirect_context). |
+| REDIRECT                                    | Navigate the browser to an allowlisted external URL, internal Canvas page, or application from any handler (e.g. after a note is signed). Check out [Redirect](/sdk/effect-redirect/). |
+| PHONE_DIAL__CONFIGURATION                   | Make the phone numbers in a patient chart clickable so a plugin can dial them or handle the click. Check out [Phone Dial Configuration](/sdk/effect-phone-dial-configuration/). |
 | PATIENT_CHART__CONFIGURE_COMMAND_BUTTONS   | Can be used to hide or disable command buttons in specific patient chart locations. Check out [Configure Command Buttons](/sdk/effect-configure-command-buttons/).            |
 
 ### Search Results
@@ -252,6 +256,21 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | GENERATE_FULL_CHART_PDF   | Generate a full chart PDF for a patient.                                                                                                                                                              |
 | NOTE_RESTRICTIONS         | Communicate whether a note is restricted for the requesting user, whether its content should be blurred, or what banner message to display. See [Note Restrictions](/sdk/effect-note-restrictions/). |
 | NOTE_RESTRICTIONS_UPDATED | Signal that note restrictions have changed, triggering an immediate real-time permission refetch on all users currently viewing that note. See [Note Restrictions](/sdk/effect-note-restrictions/). |
+| NOTE_FOOTER__CONFIGURATION | Configure a note's footer — for example, hide Canvas's default state-transition buttons so a plugin can supply its own. See [Note Footer Configuration](/sdk/effect-note-footer-configuration/). |
+| NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/). |
+
+
+### Faxes
+
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
+
+| Effect | Description |
+|---|---|
+| FAX_NOTE | Fax a note to an external recipient. |
+| FAX_REFERRAL | Fax a referral and its attachments. |
+| FAX_IMAGING_ORDER | Fax an imaging order. |
+| FAX_LAB_ORDER | Fax a lab order's requisition form. |
+| FAX_LETTER | Fax a letter and its attachments. |
 
 
 ### Appointments
@@ -292,7 +311,7 @@ Check out the [Appointment Metadata Create Form](/sdk/appointment-metadata-creat
 
 ### Schedule Events
 
-Check out the [Schedule Event Effects](/sdk/effect-notes/#schedule-event-effects) documentation.
+Check out the [Schedule Event Effects](/sdk/effect-notes/#scheduleevent-effect) documentation.
 
 | Effect | Description |
 |---|---|
@@ -316,7 +335,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), and [Patient Facility Address](/sdk/effect-patient-facility-address/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), [Patient Identification Card](/sdk/effect-patient-identification-card/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -330,6 +349,23 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | CREATE_PATIENT_FACILITY_ADDRESS | Create a facility address for a patient. |
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
+| RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
+| CREATE_PATIENT_IDENTIFICATION_CARD | Add an identification card image for a patient. |
+| UPDATE_PATIENT_IDENTIFICATION_CARD | Change a patient's identification card. |
+| DELETE_PATIENT_IDENTIFICATION_CARD | Delete a patient's identification card. |
+
+### Coverage
+
+Check out the [Coverage Effect](/sdk/effect-coverage/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_COVERAGE | Create an insurance coverage for a patient, with optional card images. |
+| UPDATE_COVERAGE | Change an existing coverage. |
+| EXPIRE_COVERAGE | End a coverage on a given date. |
+| REMOVE_COVERAGE | Move a coverage to the removed stack. |
+| REMOVE_COVERAGE_PHOTO | Remove the front or back card image from a coverage. |
+| REORDER_COVERAGE | Change the rank and stack of a patient's coverages. |
 
 
 ### Patient Groups
@@ -363,6 +399,7 @@ Check out the [Message Effects](/sdk/effect-messages/) documentation.
 | SEND_MESSAGE | Send a message. |
 | CREATE_AND_SEND_MESSAGE | Create and send a message in one step. |
 | EDIT_MESSAGE | Edit a message. |
+| [ASSIGN_MESSAGE_TEAM](/sdk/effect-messages/#assigning-a-message-to-a-team) | Assign a message to a team, change its team, or unassign it. |
 
 
 ### Observations
@@ -376,12 +413,25 @@ Check out the [Observation Effects](/sdk/effect-observation/) documentation.
 | ENTER_IN_ERROR_OBSERVATION | Mark an observation as entered in error. |
 
 
+### Lab Reports
+
+Check out the [Lab Report Effects](/sdk/effect-lab-report/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_LAB_REPORT | Create a lab report decoupled from its results (no order, PDF, or values required). |
+| UPDATE_LAB_REPORT | Update lab report metadata, such as its name or effective date. |
+| ENTER_IN_ERROR_LAB_REPORT | Mark a lab report as entered in error. |
+| ATTACH_LAB_REPORT_RESULTS | Attach lab tests and values to an existing report (additive). |
+
+
 ### Questionnaire
 
 Check out the [Questionnaire Effects](/sdk/effect-questionnaires/) documentation.
 
 | Effect | Description |
 |---|---|
+| CREATE_QUESTIONNAIRE | Create a questionnaire at runtime from a plugin. |
 | CREATE_QUESTIONNAIRE_RESULT | Create a questionnaire result. |
 
 
@@ -393,6 +443,17 @@ Check out the [Compound Medication Effects](/sdk/effect-compound-medication/) do
 |---|---|
 | CREATE_COMPOUND_MEDICATION | Create a compound medication. |
 | UPDATE_COMPOUND_MEDICATION | Update a compound medication. |
+
+
+### Service Providers
+
+Check out the [Service Provider Effects](/sdk/effect-service-provider/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_SERVICE_PROVIDER | Create a service provider, or update a matching one. |
+| UPDATE_SERVICE_PROVIDER | Update a service provider. |
+| DEACTIVATE_SERVICE_PROVIDER | Deactivate a service provider without deleting it. |
 
 
 ### External Events
@@ -441,6 +502,7 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
 | SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
+| PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal). |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
@@ -475,10 +537,20 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
 
 
+### Plugin Usage
+
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit. |
+
+
 ### Revenue / Payment Processor
 
 | Effect | Description |
 |---|---|
+| REVENUE__STORED_CARD__CHARGE | Charge a patient's stored payment card on file. Check out [Charge Stored Card](/sdk/effect-charge-stored-card/). |
 | REVENUE__PAYMENT_PROCESSOR__METADATA | Advertises a custom payment processor to Canvas. Use the [PaymentProcessorMetadata](/sdk/payment-processor-effect/#paymentprocessormetadata) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__FORM | Returns the HTML form used to collect and tokenize card details. Use the [PaymentProcessorForm](/sdk/payment-processor-effect/#paymentprocessorform) class in the effects module. |
 | REVENUE__PAYMENT_PROCESSOR__CREDIT_CARD_TRANSACTION | Returns the result of charging a card. Use the [CardTransaction](/sdk/payment-processor-effect/#cardtransaction) class in the effects module. |
@@ -507,7 +579,7 @@ Check out the [Data Integration Effects](/sdk/effect-data-integration/) document
 | ASSIGN_DOCUMENT_REVIEWER     | Assign a staff member or team as reviewer to a document in the Data Integration queue.                      |
 | CATEGORIZE_DOCUMENT          | Categorize a document in the Data Integration queue into a specific document type.                          |
 | JUNK_DOCUMENT                | Mark a document in the Data Integration queue as junk (spam).                                               |
-| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient key.                                  |
+| LINK_DOCUMENT_TO_PATIENT     | Link a document in the Data Integration queue to a patient by patient id.                                  |
 | REMOVE_DOCUMENT_FROM_PATIENT | Remove or unlink a document from a patient in the Data Integration queue.                                   |
 | UPDATE_DOCUMENT_FIELDS       | Prefill template field values on a document in the Data Integration queue (`PrefillDocumentFields` class).  |
 
@@ -527,11 +599,14 @@ Command effects follow a consistent naming pattern: `{ACTION}_{COMMAND_TYPE}_COM
 | ENTER_IN_ERROR | Mark a committed command as entered in error. |
 | SEND | Transmit a committed command to an external system (prescribe, refill, adjust prescription, lab orders only). |
 | REVIEW | Place a command into review status (prescribe, refill, adjust prescription only). |
+| DELEGATE | Delegate the order to someone else to complete (imaging order, refer only). |
+| SIGN | Sign the order (imaging order, order DME, refer only). |
 
 The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and `ENTER_IN_ERROR` actions unless noted otherwise:
 
 | Command Type | Effect Prefix | Notes |
 |---|---|---|
+| Add Condition | `*_ADD_CONDITION_COMMAND` | |
 | Adjust Prescription | `*_ADJUST_PRESCRIPTION_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Allergy | `*_ALLERGY_COMMAND` | |
 | Assess | `*_ASSESS_COMMAND` | |
@@ -545,24 +620,28 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Follow Up | `*_FOLLOW_UP_COMMAND` | |
 | Goal | `*_GOAL_COMMAND` | |
 | HPI | `*_HPI_COMMAND` | |
-| Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND |
+| Imaging Order | `*_IMAGING_ORDER_COMMAND` | No COMMIT or SEND. Supports DELEGATE and SIGN |
 | Imaging Review | `*_IMAGING_REVIEW_COMMAND` | |
 | Immunization Statement | `*_IMMUNIZATION_STATEMENT_COMMAND` | |
+| Immunize | `*_IMMUNIZE_COMMAND` | |
 | Instruct | `*_INSTRUCT_COMMAND` | |
 | Lab Order | `*_LAB_ORDER_COMMAND` | Also supports SEND |
 | Lab Review | `*_LAB_REVIEW_COMMAND` | |
 | Medical History | `*_MEDICAL_HISTORY_COMMAND` | |
 | Medication Statement | `*_MEDICATION_STATEMENT_COMMAND` | |
+| Order DME | `*_ORDER_DME_COMMAND` | Also supports SIGN |
 | Perform | `*_PERFORM_COMMAND` | |
 | Plan | `*_PLAN_COMMAND` | |
 | POC Lab Test | `*_POC_LAB_TEST_COMMAND` | |
 | Prescribe | `*_PRESCRIBE_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Questionnaire | `*_QUESTIONNAIRE_COMMAND` | |
 | Reason For Visit | `*_REASON_FOR_VISIT_COMMAND` | ORIGINATE, EDIT, DELETE only |
-| Refer | `*_REFER_COMMAND` | No COMMIT |
+| Refer | `*_REFER_COMMAND` | No COMMIT. Supports DELEGATE and SIGN |
+| Reference | `*_REFERENCE_COMMAND` | EDIT does not refresh the rendered table |
 | Referral Review | `*_REFERRAL_REVIEW_COMMAND` | |
 | Refill | `*_REFILL_COMMAND` | No COMMIT. Supports SEND and REVIEW |
 | Remove Allergy | `*_REMOVE_ALLERGY_COMMAND` | |
+| Remove Past Medical History | `*_REMOVE_PAST_MEDICAL_HISTORY_COMMAND` | |
 | Resolve Condition | `*_RESOLVE_CONDITION_COMMAND` | |
 | Review of Systems | `*_ROS_COMMAND` | |
 | Stop Medication | `*_STOP_MEDICATION_COMMAND` | |
@@ -572,6 +651,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Uncategorized Document Review | `*_UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND` | |
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
+| Visual Exam Finding | `*_VISUAL_EXAM_FINDING_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
 
 

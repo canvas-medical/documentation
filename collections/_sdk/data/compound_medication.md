@@ -67,11 +67,15 @@ controlled_active = CompoundMedication.objects.filter(
 | Field Name               | Type                                                        |
 | ------------------------ | ----------------------------------------------------------- |
 | dbid                     | Integer                                                     |
+| created                  | DateTime                                                    |
+| modified                 | DateTime                                                    |
+| id                       | UUID                                                        |
 | active                   | Boolean                                                     |
 | formulation              | String                                                      |
 | potency_unit_code        | [PotencyUnit](#potencyunit)                                 |
 | controlled_substance     | [ControlledSubstanceSchedule](#controlledsubstanceschedule) |
 | controlled_substance_ndc | String                                                      |
+| compound_medication      | QuerySet[[Prescription](/sdk/data-prescription/#prescription)] |
 
 ## Enumeration types
 

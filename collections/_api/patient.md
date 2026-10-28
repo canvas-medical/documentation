@@ -11,6 +11,12 @@ sections:
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-patient.html)<br><br>
           Canvas supports a number of FHIR extensions on this resource. See the `extension` attribute below for the full list of supported extension URLs and their value shapes. The `birthsex` extension is **required** on create and update.
 
+        # sources: discussions #1293, #1401, #1538, #483
+        additional_information: |-
+          - Manage a patient's patient-group membership with the FHIR [Group](/api/group) endpoints, or from a plugin with the SDK [Patient Group effect](/sdk/effect-patient-group/). Group create and update take the complete `member` array, so read the current group, change the member list (append a patient to add, filter a reference out to remove), and send the whole list back.
+          - External identifiers you send on create or update (for example, an MRN from your own system) are stored and returned on a later Read, but they are not shown anywhere in the Canvas UI. The Canvas MRN itself is system-issued and cannot be set or overwritten.
+          - Setting `active` to `false` hides the patient from the default patient list in the Canvas UI, which is a common way to hide duplicate records; clinical users can still search all patients, including inactive ones. FHIR Patient Search returns inactive patients by default; add `active=true` to exclude them.
+          - Leave out the `photo` block entirely when you are not supplying a photo. A `photo` entry whose `data` is null makes the create request return a 500, even though the patient is still created.
         attributes:
           - name: resourceType
             type: string
@@ -19,7 +25,7 @@ sections:
           - name: id
             type: string
             exclude_in: create
-            description_for_all_endpoints: Canvas-issued unique identifier (UUID) for this Patient. Also referred to as the patient key in Canvas.
+            description_for_all_endpoints: Canvas-issued unique identifier (UUID) for this Patient. It is the same id that appears in the URL of the patient's chart.
             update_description: Must match the ID in the path parameter.
           - name: text
             type: json
@@ -32,7 +38,7 @@ sections:
               Canvas-supported FHIR extensions on this resource. Each entry has a `url` identifying the extension, plus either a `valueX` field or — for compound extensions (**race**, **ethnicity**, **tribal-affiliation**, **preferred-pharmacy**) — a nested `extension` array carrying the value. The `url` is matched as an exact string. <br><br>
               The **birthsex** extension (`http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex`) is **required** on create and update.
             update_description: >-
-              <b>Replace semantics on update:</b> the **preferred-pharmacy**, **patient-default-provider**, and **patient-default-location** extensions follow delete-on-omission — if not included in the request, the stored value is dropped.
+              <b>Replace semantics on update:</b> the **preferred-pharmacy**, **patient-default-provider**, **patient-default-location**, and **business-line** extensions follow delete-on-omission — if not included in the request, the stored value is dropped. To keep a patient's current values, read the patient first and send these extensions back on the update.
             attributes:
               - name: url
                 type: string
@@ -340,7 +346,7 @@ sections:
                 required_in: create, update
                 description: >-
                   Given names. The first item populates the patient's first name; remaining items are joined with a space and stored as the middle name. <br><br>
-                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name.
+                  For a **nickname** entry, only the first item is read and stored as the patient's preferred name. Surrounding whitespace is trimmed, and a value that is empty or whitespace-only is stored as an empty preferred name.
               - name: prefix
                 type: array[string]
                 description: Parts that come before the name (e.g., "Dr.", "Mr."). Stored but not displayed in the Canvas UI.
@@ -462,12 +468,12 @@ sections:
                     description: Inclusive end date.
           - name: photo
             type: array[json]
-            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI.
+            description_for_all_endpoints: Patient photo. Displayed as the avatar in the Canvas UI. Omit the block when not supplying a photo.
             attributes:
               - name: data
                 type: string
                 exclude_in: read, search
-                description: Base64-encoded image content. Use on create or update to upload a photo.
+                description: Base64-encoded image content. Use on create or update to upload a photo. Do not send a `photo` entry with null `data`.
               - name: url
                 type: string
                 exclude_in: create, update
@@ -626,7 +632,7 @@ sections:
               Search for patients based on references from other resources using the FHIR reverse-chaining syntax. Currently supported for CareTeam, e.g. <code>_has:CareTeam:participant:member=Practitioner/{practitioner_id}</code>.
           - name: _id
             type: string
-            description: A Canvas-issued unique identifier known as the patient key. This can be found in the URL of the patient's chart.
+            description: A Canvas-issued unique identifier for the patient. This can be found in the URL of the patient's chart.
           - name: _revinclude
             type: string
             description: Standard FHIR `_revinclude` parameter.
@@ -693,7 +699,7 @@ sections:
             • If the <code>id</code> is included in an entry, Canvas updates the matching record. <br>
             • If the <code>id</code> is omitted, Canvas creates a new record. <br>
             • If an entry returned via Search/Read is **not** included in the update body, it is deleted (with the exception of <code>identifier</code>, which is only deleted when its <code>period.end</code> is in the future). <br><br>
-            The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>default-provider</code>, and <code>default-location</code> extensions — their values are dropped if those extensions are not present on update. <br><br>
+            The same delete-on-omission behavior applies to the <code>preferred-pharmacy</code>, <code>patient-default-provider</code>, <code>patient-default-location</code>, and <code>business-line</code> extensions — their values are dropped if those extensions are not present on update. To keep a patient's current values, read the patient first and send these extensions back on the update. <br><br>
             <b>Other fields</b><br><br>
             Any field that is required on create is also required on update. Optional fields that are not included in the update body retain their stored values.
         search:

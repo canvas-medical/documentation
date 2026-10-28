@@ -17,7 +17,7 @@ Follow the instructions in
 [Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
-Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
+Open [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/) in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
 value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 
@@ -378,6 +378,59 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
+#### Storing uploaded files
+
+To save an uploaded file on a Canvas record, declare the route with `file_uploads="stored"`. Examples include an insurance card image on a coverage or an attachment on a message. Canvas then stores each file in a `multipart/form-data` request before your handler runs, and `form_data()` returns a `StoredFilePart` for each file field instead of the file's bytes. Pass the part's `key` to an effect that accepts upload keys:
+
+- [`Coverage`](/sdk/effect-coverage/): `card_image_front_upload_key` and `card_image_back_upload_key`
+- [`PatientIdentificationCard`](/sdk/effect-patient-identification-card/): `image_upload_key`
+- [`Message`](/sdk/effect-messages/#attaching-files): `attachment_upload_keys`
+- [`VisualExamFindingCommand`](/sdk/commands/#visualexamfinding): `image_upload_key`
+
+The file never passes through your plugin or the effect payload.
+
+`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods. Setting `FILE_UPLOADS` on a `SimpleAPIRoute` that has no `post` or `put` method raises a `PluginError` when the class is defined. The default is `"passthrough"`, which passes file bytes to your handler.
+
+A route declared with `file_uploads="stored"` takes `multipart/form-data` requests only. Canvas answers a request with any other content type with **400 Bad Request** without calling your handler.
+
+A `StoredFilePart` has these attributes:
+
+| Attribute        | Type            | Description                                                                 |
+|------------------|-----------------|-----------------------------------------------------------------------------|
+| `name`           | `str`           | The name of the form field.                                                 |
+| `filename`       | `str`           | The filename the client sent.                                               |
+| `content_type`   | `str` or `None` | The content type the client declared for the file.                          |
+| `content_length` | `int`           | The size of the file in bytes.                                              |
+| `key`            | `str` or `None` | The key of the stored file. `None` when the upload failed.                  |
+| `error`          | `str` or `None` | A code such as `"s3_upload_failed"` when the upload failed; otherwise `None`. |
+
+Canvas stores each file separately, so one failed file doesn't stop the others in the request. When every file in the request fails, Canvas answers with **502 Bad Gateway** without calling your handler. Otherwise, failed uploads come back alongside successful ones, so check `error` before you read `key`:
+
+```python
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+
+
+class UploadAPI(StaffSessionAuthMixin, SimpleAPI):
+    @api.post("/upload", file_uploads="stored")
+    def upload(self) -> list[Response | Effect]:
+        part = self.request.form_data()["file"]
+        if part.error:
+            return [JSONResponse({"error": part.error}, status_code=HTTPStatus.BAD_GATEWAY)]
+
+        # Pass part.key to an effect that accepts upload keys
+        return [JSONResponse({"key": part.key})]
+```
+
+Pass each key to an effect from the plugin that uploaded the file, and upload a file of a type the effect accepts. When the effect is applied, Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
+
+The image keys on `Coverage` and `VisualExamFindingCommand` are optional, as is `image_upload_key` on a `PatientIdentificationCard` update. Setting one of these to `None` attaches no file and leaves any existing file in place. You can pass the key of a file input the user left empty without checking it first.
+
+When you switch an existing route to `file_uploads="stored"`, check for files with `part.is_file()` rather than `isinstance(part, FileFormPart)`. A `StoredFilePart` is not a `FileFormPart`, so an `isinstance` check skips every file.
+
 ### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that
@@ -448,6 +501,8 @@ class MyAPI(SimpleAPIRoute):
             )
         ]
 ```
+
+When an `HTMLResponse` includes data from patients, integrations, or other external sources, build it with `render_to_string` and follow [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely). Never include secrets in an HTML response.
 
 #### Returning Effects
 
@@ -764,4 +819,112 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
         return [
             JSONResponse({"message": "Hello world!"})
         ]
+```
+
+## Acting as a Canvas user
+
+By default, a SimpleAPI request isn't tied to a specific person, so any effects it
+returns — such as creating, locking, or signing a note — are recorded as Canvas Bot
+rather than a clinician.
+
+To have a request run **as a specific Canvas staff member** — for example, so a note
+is signed under the treating provider's name — call the endpoint with an access token
+obtained through the
+[Authorization Code flow](/api/customer-authentication#authorization-code). That flow
+issues a token that represents the staff member who signed in and approved it. Send it
+as a Bearer token in the `Authorization` header, and Canvas identifies the user from
+the token and treats the request as coming from them, so any effects the handler
+returns are attributed to that staff member.
+
+```bash
+curl --request POST \
+  --url 'https://example.canvasmedical.com/plugin-io/api/my_plugin/note/<note-id>/sign' \
+  --header 'Authorization: Bearer <access-token>'
+```
+
+In this example the note is signed and recorded in Canvas as signed by the staff
+member who authorized the access token, not by Canvas Bot.
+
+## Common use cases
+
+SimpleAPI is the supported way to react to external (non-Canvas) events and to
+expose functionality that the FHIR API does not cover. A few recurring patterns:
+
+<!-- source: discussion #536 -->
+### Reacting to external events
+
+Effects such as Protocol Cards can normally only be created in response to
+internal Canvas events. To create one from an outside trigger, expose a
+SimpleAPI endpoint that accepts the external request and returns the
+corresponding effect. This makes SimpleAPI the supported entry point for any
+workflow that needs to be initiated from outside of Canvas.
+
+<!-- source: discussion #1164 -->
+### Originating commands that have no FHIR resource
+
+Many commands, such as HPI, Assessment, and Plan, have no FHIR resource, because
+the standard has nothing at that level of detail. To write them from outside
+Canvas, expose a SimpleAPI endpoint that originates the commands with the classes
+in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/)
+builds such an endpoint for you: it reads the request body onto a command,
+validates it, and writes the command to the note. Use `Command.objects` from the
+data module to check for an existing command or to find one to edit.
+
+<!-- source: discussion #708 -->
+### Calling SimpleAPI from an external application
+
+External applications, such as a Node.js service, integrate with Canvas by
+calling the SimpleAPI endpoints you define in your plugin. Each endpoint returns
+[effects](/sdk/effects/) that make the change in Canvas.
+
+<!-- source: discussion #735 -->
+### Creating or updating patients from a third-party webhook
+
+To process a third-party webhook, such as a form submission, point it at a
+SimpleAPI `POST` endpoint. Your handler controls how the incoming data maps onto
+the patient, so it can transform fields, check them, and save values the FHIR API
+can't, such as custom patient metadata. Build a [Patient effect](/sdk/effect-patient/)
+from the request body, including any custom values in its `metadata`, and return
+its `create()` or `update()`. The patient and their metadata are saved together.
+
+<!-- source: discussion #1242 -->
+### Serving plugin frontends without leaking secrets
+
+If your plugin serves an HTML/JS UI (for example a vitals chart), do **not**
+embed secrets or credentials in client-side JavaScript to call third-party APIs
+directly. Instead, have your JavaScript call a SimpleAPI endpoint provided by the
+same plugin and protected with the [staff session authentication mixin](#staff-session).
+The plugin's Python code holds the secrets and makes the authenticated outbound
+request. This works as long as the HTML/JS is served from the plugin. See the
+[vitals visualizer example plugin](/sdk/example-vitals_visualizer_plugin/#vitals_visualizationhtml)
+for a working implementation.
+
+## Troubleshooting
+
+<!-- source: discussion #858 -->
+### A SimpleAPI endpoint returns 404
+
+A 404 from an endpoint you believe is deployed usually means the plugin failed to
+load at reload time even though the deploy appeared to succeed — a runtime error
+when the plugins reload on the server. Keep two shells open: deploy in one and run
+`canvas logs` in the other to catch the load failure (and the line number) as it
+happens. Note also that the **plugin name cannot contain a hyphen** (`-`); use
+underscores in both the plugin name and the class path, or routing will 404.
+
+<!-- source: discussion #551 -->
+### 503 responses when originating many commands
+
+If you receive intermittent **503 No server is available** responses while issuing
+many command requests, have your client retry with
+[exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff#Rate_limiting).
+To reduce the number of round trips, expose a SimpleAPI endpoint that originates
+and commits each command in one effect with `originate(commit=True)`:
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+
+# inside a SimpleAPI route; note_uuid identifies the target note
+command = PlanCommand(note_uuid=note_uuid)
+
+return [command.originate(commit=True)]
 ```

@@ -7,21 +7,39 @@ hidden: false
 
 The `ExternalEvent` effect provides a way to create and update external clinical events within the Canvas platform. External events represent clinical encounters from external data sources such as ADT (Admission, Discharge, Transfer) feeds, enabling tracking of patient visits that occur outside of Canvas.
 
+Build an `ExternalEvent` with the [attributes](#attributes) you want to set, then return one of its two methods from your handler: `create()` for a new external event, or `update()` for an existing one.
+
+## Methods
+
+### create() → Effect
+
+Creates an external event.
+
+- `patient_id`, `visit_identifier`, `message_control_id`, and `event_type` are required.
+- `external_event_id` must not be set.
+
+### update() → Effect
+
+Updates an existing external event.
+
+- `external_event_id` is required, and must be the id of an existing external event.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+
 ## Attributes
 
-| Name                         | Type                      | Description                                                                                          |
-|------------------------------|---------------------------|------------------------------------------------------------------------------------------------------|
-| `external_event_id`          | `str` or `UUID` or `None` | Unique identifier of an existing external event. Must be unset when creating; required when updating. |
-| `patient_id`                 | `str` or `None`           | ID of the patient for this event. Required when creating.                                            |
-| `visit_identifier`           | `str` or `None`           | Identifier for the visit/encounter. Required when creating.                                          |
-| `message_control_id`         | `str` or `None`           | Unique identifier for the message (e.g., HL7 message control ID). Required when creating.            |
-| `event_type`                 | `str` or `None`           | Type of event (e.g., "ADT^A01" for admission). Required when creating.                               |
-| `event_datetime`             | `datetime` or `None`      | Date and time when the event occurred.                                                               |
-| `event_cancelation_datetime` | `datetime` or `None`      | Date and time when the event was cancelled. Set this to mark an event as cancelled.                  |
-| `message_datetime`           | `datetime` or `None`      | Date and time when the message was sent.                                                             |
-| `information_source`         | `str` or `None`           | Source of the event information (e.g., hospital name, system name).                                  |
-| `facility_name`              | `str` or `None`           | Name of the facility where the event occurred.                                                       |
-| `raw_message`                | `str` or `None`           | Raw message content (e.g., original HL7 message).                                                    |
+| Attribute                    | Type                      | Description                                                                          | Required |
+|------------------------------|---------------------------|--------------------------------------------------------------------------------------|----------|
+| `external_event_id`          | `str` or `UUID` or `None` | Unique identifier of an existing external event. Must be unset when creating.        | For `update()` |
+| `patient_id`                 | `str` or `None`           | ID of the patient for this event.                                                    | For `create()` |
+| `visit_identifier`           | `str` or `None`           | Identifier for the visit/encounter.                                                  | For `create()` |
+| `message_control_id`         | `str` or `None`           | Unique identifier for the message (e.g., HL7 message control ID).                    | For `create()` |
+| `event_type`                 | `str` or `None`           | Type of event (e.g., "ADT^A01" for admission).                                        | For `create()` |
+| `event_datetime`             | `datetime` or `None`      | Date and time when the event occurred.                                               | No       |
+| `event_cancelation_datetime` | `datetime` or `None`      | Date and time when the event was cancelled. Set this to mark an event as cancelled.  | No       |
+| `message_datetime`           | `datetime` or `None`      | Date and time when the message was sent.                                             | No       |
+| `information_source`         | `str` or `None`           | Source of the event information (e.g., hospital name, system name).                  | No       |
+| `facility_name`              | `str` or `None`           | Name of the facility where the event occurred.                                       | No       |
+| `raw_message`                | `str` or `None`           | Raw message content (e.g., original HL7 message).                                    | No       |
 
 ## Validation & Errors
 
@@ -37,23 +55,6 @@ Before any effect is emitted, the model runs these checks:
 ### Update Validation
 - **external_event_id** is **required** and must reference an existing external event
 - All other fields are optional; only dirty (modified) fields are updated
-
-## Effect Methods
-
-### `create()`
-
-Create a new external event record.
-
-- **Effect Type:** `CREATE_EXTERNAL_EVENT`
-- **Payload:** `{ "data": { patient_id, visit_identifier, message_control_id, event_type, ... } }`
-
-### `update()`
-
-Update an existing external event.
-
-- **Effect Type:** `UPDATE_EXTERNAL_EVENT`
-- **Payload:** `{ "data": { external_event_id, <dirty_fields> } }`
-- Only fields marked dirty (modified on the model) are included in the update.
 
 ## Example Usage
 

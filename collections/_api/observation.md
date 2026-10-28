@@ -6,6 +6,8 @@ sections:
       - type: apidoc
         name: Observation
         article: "a"
+        # REVIEW: clinical-accuracy sign-off required
+        # source: discussion #538
         description: >-
           Measurements and simple assertions made about a patient, device or other subject.<br><br>
           Canvas supports the following US Core Profiles for Observations:<br>
@@ -42,9 +44,9 @@ sections:
             1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)<br>
             2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`). <br>
             3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it. <br>
-            4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`). 
+            4. Once weight and either height or pediatric body length are entered on a patient's chart, Canvas calculates one body size observation, chosen by the patient's age on the date the vitals were recorded (category coding will be `vital-signs`): Weight-for-Length Percentile for patients under 24 months, BMI for Age Percentile from 24 months up to the 20th birthday, and Body Mass Index (kg/m2) for patients 20 and older. Percentiles come from WHO growth charts under 24 months and CDC growth charts from 24 months on. If the instance has no growth chart data for the patient's sex and age or length, no percentile observation is created. This also applies to the Head Occipital-Frontal Circumference Percentile. <br>
             5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`). <br>
-            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`).
+            6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`). Canvas lab orders are placed with a lab-specific identifier or a CPT code rather than a LOINC code, so treat the lab vendor as the source of truth for a result's LOINC code. When you create lab results through the API, prefer the vendor's specific LOINC code over a generic laboratory result code, because what is ordered can differ slightly from what the lab performs.
               
         attributes:
           - name: resourceType
@@ -185,9 +187,11 @@ sections:
                     type: string
                     enum_options: 
                       - value: Any LOINC codes from Vital Panel or Vital Signs captured in the Observation Create / Vital Command
+                      - value: "88658-0 (LOINC code for Supplemental Oxygen). This vital sign is read-only over FHIR: it can only be captured through the Vitals command, not created through this endpoint. Its value is returned as a `valueCodeableConcept` holding an answer code from LOINC answer list LL4908-1, rather than as a `valueQuantity` or `valueString` like the other vital signs."
                       - value: Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems
                       - value: Any code from a Questionnaire Scoring Result
                       - value: "Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference)"
+                      - value: 39156-5 (LOINC code for Body Mass Index)
                       - value: 59576-9 (LOINC code for BMI for Age Percentile)
                       - value: 77606-2 (LOINC code for Weight-for-Length Percentile)
                       - value: Any LOINC codes from Lab Report Values captured 
@@ -304,7 +308,7 @@ sections:
           - name: valueCodeableConcept
             type: json
             exclude_in: create
-            description: Actual result.<br><br>Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.
+            description: Actual result.<br><br>Used for observations with a selected coding like Questionnaire Responses showing the answer to a specific question. This comes from Questionnaires, Structured Assessment, Physical Exam, and Review of Systems in Canvas.<br><br>Also used for the **supplemental oxygen** vital sign (88658-0), whose value is an answer code from LOINC answer list LL4908-1 (`LA28684-1` Continuously depending on high oxygen flow, `LA28685-8` Continuously depending on low oxygen flow, `LA28686-6` Intermittent oxygen consumption). Supplemental oxygen is read-only over FHIR — it is not in the list of vital sign codes supported in create.
             attributes:
               - name: coding
                 description: Code defined by a terminology system. Codings are used when the Observation comes from a QuestionnaireResponse.
@@ -583,6 +587,8 @@ sections:
               | pulse rhythm                   | 8884-9     |              |                           |
 
             *If an oxygen saturation vital sign is created, an oxygen saturation (arterial) vital sign code is also automatically generated.<br><br>
+
+            A vital sign code that is not listed in the table above is rejected with a 405 and the message `Sign is not supported by Canvas`. In particular, **supplemental oxygen (88658-0) cannot be created through this endpoint** — it can only be captured through the Vitals command in Canvas. Supplemental oxygen observations are still returned by read and search, where the value appears as a `valueCodeableConcept`.<br><br>
         
             **Additional examples**
 

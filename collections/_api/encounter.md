@@ -204,7 +204,16 @@ sections:
             description: >-
               Reason the encounter takes place (reference). <br><br>
 
-              In Canvas this represents any encounters that were diagnosed, assessed, or indicated during the encounter.
+              In Canvas this represents the conditions that were **created** during the encounter, via the
+              Diagnose command or another command that creates a condition. <br><br>
+
+              This list does **not** include conditions that were only assessed during the encounter. An Assess
+              command records an assessment against a condition that already exists in the chart, and it does not
+              change which encounter that condition belongs to, so an encounter whose only condition activity was
+              an Assess returns an empty `reasonReference`. To retrieve the conditions assessed during an encounter,
+              use the [Assessment](/sdk/data-assessment) model in the Canvas SDK, which links each assessment to
+              both the note it was documented on and the condition it assessed. For the diagnoses associated with a
+              billed service, use `diagnosis` and `item.diagnosisSequence` on the [Claim](/api/claim) resource.
             attributes: 
                 - name: reference
                   type: string

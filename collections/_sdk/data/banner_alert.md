@@ -42,6 +42,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | Field Name  | Type                                            |
 | ----------- | ----------------------------------------------- |
 | dbid        | Integer                                         |
+| id          | UUID                                            |
 | created     | DateTime                                        |
 | modified    | DateTime                                        |
 | patient     | [Patient](/sdk/data-patient/#patient)           |

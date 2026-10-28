@@ -69,7 +69,6 @@ committed_devices = Device.objects.committed()
 | entered_in_error            | [CanvasUser](/sdk/data-canvasuser)    |
 | patient                     | [Patient](/sdk/data-patient/#patient) |
 | note_id                     | Integer                               |
-| deleted                     | Boolean                               |
 | labeled_contains_NRL        | Boolean                               |
 | assigning_authority         | String                                |
 | scoping_entity              | String                                |

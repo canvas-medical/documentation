@@ -1,45 +1,54 @@
 ---
 title: "Embedded Applications"
 slug: "handlers-embedded-applications"
-excerpt: "Handler-based applications that render inside a note or replace the scheduling modal."
+excerpt: "Handler-based applications that render inside a note, replace the scheduling modal, dock a persistent pane to a window edge or a band to the patient portal, or launch from the provider menu or panel bar."
 hidden: false
 ---
 
-Embedded applications render **inside a specific Canvas surface** — a tab within
-a note, or the scheduling modal — rather than as an icon in the app drawer. They
-are ordinary [handlers](/sdk/handlers-basehandler/): you subclass a base class,
-register it under `handlers` in your `CANVAS_MANIFEST.json`, and Canvas renders
+Each embedded application belongs to **a specific Canvas surface**, such as a
+note, the scheduling modal, or the provider side menu. Embedded applications are
+ordinary [handlers](/sdk/handlers-basehandler/). You subclass a base class,
+register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders
 it in the appropriate surface.
 
-There are two kinds:
+There are six kinds:
 
-| Base class            | Surface                                                  |
-|-----------------------|----------------------------------------------------------|
-| `NoteApplication`     | A tab within a patient's note                            |
-| `SchedulingApplication` | Replaces the built-in scheduling modal at every entry point |
+| Base class                | Surface                                                  |
+|---------------------------|----------------------------------------------------------|
+| [`NoteApplication`](#note-applications)         | A tab within a patient's note                            |
+| [`SchedulingApplication`](#scheduling-applications)   | Replaces the built-in scheduling modal at every entry point |
+| [`DockedApplication`](#docked-applications)       | A persistent pane pinned to a window edge, always visible |
+| [`PortalDockedApplication`](#portal-docked-applications) | A persistent band across the top or bottom of the patient portal |
+| [`ProviderMenuApplication`](#provider-menu-applications) | An entry in the provider side menu (the navigation sidebar, also called the hamburger menu) |
+| [`PanelApplication`](#panel-applications)        | An entry in the panel bar or the app drawer              |
 
 ## How embedded applications work
 
 Embedded applications are [handlers](/sdk/handlers-basehandler/). You build one
-by subclassing `NoteApplication` or `SchedulingApplication` and registering it
-under `handlers` in your `CANVAS_MANIFEST.json` — everything else is inherited
-from that parent class.
+by subclassing one of the base classes above and registering it under `handlers`
+in your `CANVAS_MANIFEST.json`. The surface comes from that parent class.
 
 Because the parent class defines the behavior, there's very little to configure:
 
-- The **surface** comes from the class you inherit — `NoteApplication` renders as
-  a tab in a note, and `SchedulingApplication` replaces the scheduling modal. You
-  don't set a `scope` or an `icon`.
-- Canvas **renders them on demand**: when a note opens or a scheduling action is
-  triggered, Canvas asks which embedded application is installed for that surface
-  and renders the one your handler returns. They aren't persisted as drawer
-  applications, so they don't appear in the app drawer or under
+- The **surface** comes from the class you inherit. You don't set a `scope`. The
+  provider menu and the panel bar each take a few extra class attributes, such as
+  an icon URL, described in their own sections below.
+- When Canvas renders each kind:
+  - **Note and Scheduling Applications** render on demand. When a note opens or a
+    scheduling action is triggered, Canvas asks which embedded application is
+    installed for that surface, then renders what your handler returns.
+  - **Docked Applications** and **Portal Docked Applications** stay mounted at all times.
+  - **Provider Menu and Panel Applications** are fetched when their menu loads and
+    refreshed as the user navigates.
+- Embedded applications create no application record, so they don't appear under
   Plugins_IO > Applications.
+- Only a Panel Application can appear in the app drawer, as described in
+  [Panel Applications](#panel-applications).
 - If no embedded application is installed for a surface, Canvas falls back to its
-  built-in behavior — an unmodified note, or the built-in scheduling modal.
+  built-in behavior: an unmodified note, or the built-in scheduling modal.
 
-Since the surface and scope are inherited from the parent class, register these
-under `handlers` rather than `applications`.
+Since the surface is inherited from the parent class, register these under
+`handlers` rather than `applications`.
 
 ## Note Applications
 
@@ -114,7 +123,7 @@ Both `on_open()` and `handle()` have access to context data through `self.event.
 |-----------|---------------------------------------------------|
 | `note_id` | The database ID of the current note               |
 | `note`    | A dict containing the note's external `id` (UUID) |
-| `patient` | A dict containing the patient's `id` (key)        |
+| `patient` | A dict containing the patient's `id`             |
 | `user`    | Information about the current user                |
 
 #### `on_open()` — recommended
@@ -182,6 +191,8 @@ class ConditionalIntakeApp(NoteApplication):
 ### Opening by Default
 
 You can make a Note Application tab open automatically when a note is first viewed by overriding `open_by_default()`. If multiple applications return `True`, the first one (by priority order) will be opened.
+
+When a user opens a note from a command permalink, the note starts on the built-in Note tab instead, so the linked command is visible. Opening the note any other way still opens the default application.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -328,3 +339,822 @@ override.
 ```
 
 When installed, this application replaces the built-in scheduling modal. If no scheduling application is installed, the existing built-in modal continues to work unchanged.
+
+## Docked Applications
+
+A Docked Application mounts as a persistent **docked pane** pinned to a window edge. It stays in place as the user moves between pages, including between a patient chart and global pages, rather than opening fresh each time.
+
+Reach for a docked pane when a surface needs to follow the user instead of being opened and re-opened: a telephony or messaging bar that has to survive navigation mid-call, a live worklist the user works through while moving between charts, or an ambient scribe that keeps recording as the clinician moves around a note. Because the pane stays mounted, whatever state it holds survives that navigation, whether that's a scroll position, a half-filled form, or an open connection. A right chart pane keeps its state only while the user stays in one patient's chart. It closes when they open a different patient or leave the chart, while a docked pane stays open.
+
+### Implementing a Docked Application
+
+A Docked Application is a handler that inherits from `DockedApplication`, declares the pane's
+placement as class attributes, and implements `on_open()` to mount the pane's content:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockedApplication, DockEdge
+from canvas_sdk.templates import render_to_string
+from canvas_sdk.v1.data.task import Task, TaskStatus
+
+
+class TaskDock(DockedApplication):
+    """Docked application that keeps the signed-in user's open tasks on screen."""
+
+    NAME = "My Tasks"
+    IDENTIFIER = "my_plugin__task_dock"
+    DOCK_EDGE = DockEdge.RIGHT
+    DOCK_SIZE = "320px"
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Mount the docked pane's content."""
+        user_id = self.event.context.get("user", {}).get("id")
+        tasks = Task.objects.filter(assignee__id=user_id, status=TaskStatus.OPEN).order_by("due")
+
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content=render_to_string("templates/task_dock.html", {"tasks": tasks}),
+            title="My Tasks",
+        ).apply()
+```
+
+The pane's markup lives in a Django template in your plugin rather than in a Python string, rendered by [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates). Here that template is `templates/task_dock.html`:
+{% raw %}
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Tasks</title>
+  </head>
+  <body>
+    <h1>My Tasks</h1>
+    <ul>
+      {% for task in tasks %}
+        <li>{{ task.title }} (due {{ task.due }})</li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>
+```
+
+{% endraw %}
+
+`on_open()` returns a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with `target` set to `LaunchModalEffect.TargetType.DOCKED_PANE`. That target is what mounts the effect's rendered `content` (or a `url`) in the pane rather than in a modal. Canvas draws no chrome around a docked pane, so `title` is never displayed: it becomes the pane's accessible name for screen readers.
+
+There is no app drawer entry that opens a docked pane and no Canvas-provided control that closes or minimizes it. For the staff who get one, the pane is simply on screen for the whole session, and which staff those are is the plugin's decision: see [Controlling who gets a pane](#controlling-who-gets-a-pane). The pane's own content can remove itself at runtime, which is how a plugin offers its own collapse or close control. See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing).
+
+#### Class attributes
+
+| Attribute    | Required | Description                                                         |
+|--------------|----------|---------------------------------------------------------------------|
+| `NAME`       | Required | The display title for the pane                                      |
+| `IDENTIFIER` | Optional | A unique key for the application. When omitted, the identifier defaults to one derived automatically from the class's module and name. Set it explicitly in the recommended `plugin_name__app_name` format to give the application a stable, readable identifier. |
+| `DOCK_EDGE`  | Required | Which window edge to pin the pane to, given as a [`DockEdge`](#dockedge) value |
+| `DOCK_SIZE`  | Required | The pane's initial size and the initial ceiling for the plugin's own resize requests, as a CSS length string (for example, `320px`). See [Sizing, Resizing, and Collapsing](#sizing-resizing-and-collapsing). |
+| `PRIORITY`   | Optional | An integer controlling stacking order when multiple panes share an edge — lower values sit nearer the window edge. Defaults to `0`. See [Multiple Docked Panes](#multiple-docked-panes). |
+
+#### DockEdge
+
+`DockEdge` is an enum of the four window edges a pane can be pinned to.
+
+| Name     | Value    | Edge to pin to            |
+|----------|----------|---------------------------|
+| `LEFT`   | `left`   | Left edge of the window   |
+| `RIGHT`  | `right`  | Right edge of the window  |
+| `TOP`    | `top`    | Top edge of the window    |
+| `BOTTOM` | `bottom` | Bottom edge of the window |
+
+#### Controlling who gets a pane
+
+A docked pane is not all-or-nothing across an instance. Override `visible()` to decide,
+per staff member, whether the pane exists for them at all:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Only dock the pane for the care coordination team."""
+    staff_id = self.event.context.get("user", {}).get("id")
+
+    return Staff.objects.filter(id=staff_id, teams__name="Care Coordination").exists()
+```
+
+Returning `False` means that user gets no pane: Canvas never calls `on_open()` for them
+and sends them no context changes. `visible()` defaults to `True`, so a Docked
+Application that does not override it docks for everyone.
+
+Two things to know about when this runs. Canvas asks for docked applications once as the
+EHR shell loads, so `visible()` is evaluated then and not again as the user navigates
+inside the shell. A change in the answer therefore takes effect on that user's next full
+page load. And the context `visible()` receives holds only `scope` and `user`, with no
+`patient` or `note`, because the question being asked is which panes this session gets
+rather than what is on screen. Gate on the staff member, or on anything you can look up
+from them, rather than on what they are currently viewing.
+
+Do not use `on_open()` for this. Returning no docked-pane effect from `on_open()` also
+leaves the pane unmounted, but panes are mounted once per session and never retried, so
+the pane stays gone for the rest of the session with no way back.
+
+### Pane Context and Navigation
+
+Like other embedded applications, a Docked Application reads request context from
+`self.event.context`. It receives that context twice over: once when the pane first
+mounts, through [`on_open()`](#on_open), and again on each navigation, through
+[`on_context_change()`](#on_context_change). Both entry points get the same three keys:
+
+| Key       | Value                       | Description                                                                                                                                                                    |
+|-----------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `url`     | `str`                       | The path of the Canvas page the user is on. Always one of the [pages a pane sees](#pages-a-pane-sees).                                                                          |
+| `user`    | `{"id": str, "type": str}`  | The signed-in user, always present. `id` is the [Staff](/sdk/data-staff/#staff) id; `type` is the name of the person record behind the login, which is `Staff` in the EHR.     |
+| `patient` | `{"id": str}`               | The patient whose chart is open. Present only on a `/patient/<patient id>` path and absent entirely elsewhere, so read it as `self.event.context.get("patient", {})`.          |
+
+On a patient chart the whole context looks like this:
+
+```python?partial=true
+{
+    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35",
+    "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+    "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
+}
+```
+
+On the schedule, where no patient is in the path, the `patient` key is simply not there:
+
+```python?partial=true
+{
+    "url": "/schedule",
+    "user": {"id": "5eede137ecfe4124b8b773040e33be14", "type": "Staff"},
+}
+```
+
+#### `on_open()`
+
+Fires once, when the pane mounts, and returns the effect that gives the pane its content:
+
+```python?partial=true
+def on_open(self) -> Effect | list[Effect]:
+    url = self.event.context.get("url")
+    user_id = self.event.context.get("user", {}).get("id")
+    patient_id = self.event.context.get("patient", {}).get("id")
+    ...
+```
+
+#### `on_context_change()`
+
+Fires on each navigation after that, with the new `url` and the `patient` derived from
+the new path. This is how a pane stays context-aware as the user moves around Canvas.
+
+It defaults to a no-op, so a pane that does not override it keeps whatever it last
+rendered. Override it to return the plugin's own content or hosted URL, rebuilt from the
+new context, such as a hosted URL that carries the new patient id:
+
+```python?partial=true
+def on_context_change(self) -> Effect | list[Effect]:
+    patient_id = self.event.context.get("patient", {}).get("id", "")
+    return LaunchModalEffect(
+        target=LaunchModalEffect.TargetType.DOCKED_PANE,
+        url=f"https://task-dock.example.com/panel?patient={patient_id}",
+    ).apply()
+```
+
+The pane's document reloads only when `on_context_change()` returns a different `url` or
+`content`. Returning the same `url` or `content` as before leaves the pane's current
+document in place, preserving its scroll position and state, and so does returning no
+effect at all (`None` or an empty list). Whether to reload is your plugin's choice.
+
+#### Pages a pane sees
+
+`url` is the path of the Canvas page around the pane, never the URL loaded inside the
+pane's own iframe. A pane navigating its own document is invisible to Canvas and produces
+no context change, and neither does a change to the page URL's hash.
+
+Docked panes mount in the EHR shell, so `url` is always one of the paths that shell
+routes. Some of these pages are gated by permission or by a feature flag, so which of
+them a given user reaches will vary:
+
+| Path                      | Page                                                                    |
+|---------------------------|-------------------------------------------------------------------------|
+| `/patient/<patient id>`   | A patient's chart, including its sub-paths. The only path that carries a `patient` in context |
+| `/schedule`               | The schedule calendar                                                   |
+| `/patients`               | The patient list                                                        |
+| `/panel`                  | A patient panel                                                         |
+| `/populations`            | Population health                                                       |
+| `/campaigns`              | Campaigns                                                               |
+| `/revenue`                | Revenue and claims                                                      |
+| `/data-integration`       | Data integration                                                        |
+| `/questionnaire-builder`  | The questionnaire builder                                               |
+| `/application`            | A full-page plugin application                                          |
+| `/403`                    | Permission denied                                                       |
+
+Everything else on the domain sits outside that shell, including `/admin`, `/login`,
+`/app/...`, `/companion/...` and `/plugin-io/...`. Moving to one of those is a full page
+load rather than a navigation: the pane is not on screen while the user is there, and
+returning to the EHR mounts it again from scratch, so `on_open()` fires rather than
+`on_context_change()`.
+
+The patient portal is outside the shell as well, so a docked pane doesn't appear there. To
+add a band to the portal, use a [Portal Docked Application](#portal-docked-applications).
+
+Because the pane stays mounted across every navigation inside the shell, it keeps its
+state there. A right chart pane, by contrast, closes when the user opens a different
+patient or leaves the chart.
+
+### Multiple Docked Panes
+
+Docked panes stack rather than being limited to one per edge. Each edge holds up to
+two panes. When an edge already holds its two panes, an additional pane for that edge
+is not displayed — it is ignored rather than raising an install-time error.
+
+<p>
+  <object alt="Two Canvas windows: two panes sharing the right edge stack top to bottom, and two panes sharing the bottom edge sit side by side, each pair splitting one track evenly" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-panes-sharing-an-edge.svg" style="width: 100%; max-width: 760px;"></object>
+</p>
+
+Panes sharing an edge share a single track, and they split it evenly. On a left or
+right edge they stack top to bottom, each as wide as the track; on a top or bottom edge
+they sit side by side, each as tall as it. So two panes on one edge each get half the
+length of that edge, and the edge itself is only as thick as the larger of their two
+`DOCK_SIZE` values, since those sizes are alternatives rather than additions.
+
+Which pane comes first is decided by priority: the lower `PRIORITY` value goes first,
+which means the top of the stack on a left or right edge and the left-hand position on
+a top or bottom edge. Panes with equal priority are ordered by their identifier. This
+mirrors the way the `PRIORITY` class attribute orders Note Application tabs. To get a
+predictable order, set an explicit `PRIORITY` on each pane, and set an explicit
+`IDENTIFIER` rather than relying on the auto-derived one.
+
+Panes cannot crowd Canvas out of its own window. The left and right panes together
+take up at most half the window's width, and the top and bottom panes together at most
+half its height. If the panes on one of those pairs would exceed their half, all of
+them are scaled down in proportion rather than any one being dropped.
+
+### Sizing, Resizing, and Collapsing
+
+<p>
+  <object alt="A pane docked to the right edge at DOCK_SIZE, and the same pane collapsed by its plugin to a thin rail" type="image/svg+xml" data="/assets/images/sdk/handlers/docked-pane-sizing.svg" style="width: 100%; max-width: 720px;"></object>
+</p>
+
+`DOCK_SIZE` sets the pane's initial size — its width on the `LEFT` and `RIGHT` edges,
+its height on the `TOP` and `BOTTOM` edges — and the initial ceiling for the plugin's
+own resize requests. The user and the plugin resize the pane under different rules.
+
+A user can resize a pane by dragging its edge or with the keyboard arrow keys, using
+the standard splitter the pane exposes. A user resize can make the pane larger or
+smaller than `DOCK_SIZE`: it stops at 48px, and at the half-the-window limit described
+above, but is not otherwise bound by `DOCK_SIZE`. The size a user drags to becomes the
+pane's new ceiling, replacing `DOCK_SIZE`, and is stored in the browser
+(`localStorage`) keyed by the pane's identifier, so it survives page reload and
+navigation. Once a user has resized a pane, that persisted size takes precedence on
+future loads, so changing `DOCK_SIZE` in a later plugin version does not affect panes a
+user has already resized, until the stored size is cleared.
+
+There is no host-provided control to close or minimize the pane. A plugin can,
+however, resize or collapse its own pane from inside its iframe (for example, by
+collapsing it to a thin rail). A plugin's own resize can shrink the pane freely, down
+to a thin rail. It cannot grow the pane past the current ceiling: a request at or above
+the ceiling is clamped to the ceiling rather than applied as given, so a plugin restores
+the pane to its full (ceiling) size by requesting any value at or above it. A
+plugin-driven resize is not bound by the 48px floor that applies to user resizing.
+
+A pane is removed only when the plugin's own content requests it, by posting the same
+`CLOSE_MODAL` message that applications use to dismiss modals. See
+[Closing Modals from Applications](/sdk/layout-effect/#closing-modals-from-applications)
+for the full mechanism. Once removed, nothing re-mounts the pane short of a page reload.
+
+A docked pane cannot navigate the host application directly; navigation is issued
+through a redirect effect. It does not reset the session idle-logout timer.
+
+### Manifest Configuration
+
+Register your Docked Application under the `handlers` section of your
+`CANVAS_MANIFEST.json`. As with Note and Scheduling Applications, there is **no**
+`scope` or `icon` — inheriting from `DockedApplication` is what tells Canvas to
+mount it as a docked pane.
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.task_dock:TaskDock",
+        "description": "Open task list docked to the right edge."
+      }
+    ]
+  }
+}
+```
+
+## Portal Docked Applications
+
+A Portal Docked Application mounts a **band** across the top or bottom of the patient portal. The band spans the full window width and appears on every page a signed-in patient visits. It mounts once, so a patient moving between portal pages keeps the same band and whatever state it holds. Use one for content patients should always see, such as an announcement banner, office hours, or a support or chat bar.
+
+<p>
+  <object alt="Two patient portal phone screens: a single band docked to the bottom edge takes up to 25% of the screen height, and bands on both the top and bottom edges take up to 12.5% each" type="image/svg+xml" data="/assets/images/sdk/handlers/portal-docked-bands.svg" style="width: 100%; max-width: 760px;"></object>
+</p>
+
+`PortalDockedApplication` is a [`DockedApplication`](#docked-applications) for the patient portal. It uses the same `DOCK_EDGE`, `DOCK_SIZE`, `PRIORITY`, `visible()`, and `on_open()` members, with the differences described below.
+
+### Implementing a Portal Docked Application
+
+Subclass `PortalDockedApplication`, set `DOCK_EDGE` to `DockEdge.TOP` or `DockEdge.BOTTOM`, set the band's height in `DOCK_SIZE`, and return the band's content from `on_open()`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+
+
+class OfficeHoursBand(PortalDockedApplication):
+    """Shows the clinic's office hours at the bottom of every portal page."""
+
+    NAME = "Office Hours"
+    IDENTIFIER = "my_plugin__office_hours_band"
+    DOCK_EDGE = DockEdge.BOTTOM
+    DOCK_SIZE = "64px"
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the band."""
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content="<p>Office hours: Monday to Friday, 9 AM to 5 PM</p>",
+            title="Office hours",
+        ).apply()
+```
+
+#### Class attributes
+
+| Attribute    | Required | Description |
+|--------------|----------|-------------|
+| `NAME`       | Required | A name for the band. The portal doesn't display it. |
+| `IDENTIFIER` | Optional | A unique key for the application, in the recommended `plugin_name__app_name` format. When omitted, it's derived from the class's module and name. It breaks a `PRIORITY` tie, and it's the band's accessible name when the effect has no `title`. |
+| `DOCK_EDGE`  | Required | `DockEdge.TOP` or `DockEdge.BOTTOM`. See [DockEdge](#dockedge). |
+| `DOCK_SIZE`  | Required | The band's fixed height, as a positive `px`, `rem`, `em`, or `%` value, such as `64px`. See [Fixed height](#how-a-band-differs-from-a-docked-pane). |
+| `PRIORITY`   | Optional | An integer that picks which band an edge shows when several share it. The lowest value wins. Defaults to `0`. |
+
+The portal renders the `url` or `content` of the [`LaunchModalEffect`](/sdk/layout-effect/#modals) that `on_open()` returns. As with a staff docked pane, `title` isn't displayed: it becomes the band's accessible name for screen readers. If `on_open()` returns no `url` or `content`, the portal shows no band for that edge.
+
+Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a [Docked Application](#manifest-configuration). It takes no `scope` or `icon`. Don't add it to the `applications` array: `portal_docked` isn't an application scope, so a manifest that lists it there fails validation.
+
+### How a band differs from a docked pane
+
+- **Edges.** Only `DockEdge.TOP` and `DockEdge.BOTTOM` are valid. A class that sets `LEFT` or `RIGHT` raises a `ValueError` when the portal asks for its docks, so its band never appears.
+- **One band per edge.** Each edge shows at most one band. When several Portal Docked Applications share an edge, the one with the lowest `PRIORITY` is shown, with ties broken by identifier, and the others are left out.
+- **Fixed height.** `DOCK_SIZE` is the band's height, given as a positive `px`, `rem`, `em`, or `%` value, such as `64px`, `4rem`, or `10%`. A `%` value is a share of the screen height. The portal leaves out a band whose `DOCK_SIZE` is any other value. Bands have no resize control. Because the portal is mostly used on phones, the bands together take at most 25% of the screen height, split evenly between them. A single band can be up to 25% tall, and when both edges have a band, each is capped at 12.5%. A taller `DOCK_SIZE` is cut to the cap.
+- **No context changes.** The portal asks for its bands once, when a signed-in patient loads it, and calls `on_open()` then. It doesn't call `on_context_change()` as the patient moves between pages.
+- **Sandboxed iframe.** The band loads in a sandboxed iframe that runs scripts, submits forms, opens new tabs, and follows a link the patient selects to navigate the portal. To grant a hosted `url` more capabilities, list it in the manifest's [`url_permissions`](/sdk/canvas_manifest/#url-permissions).
+
+### Band context
+
+`visible()` and `on_open()` receive the signed-in patient in `self.event.context`:
+
+| Key       | Value                      | Description                                                       |
+|-----------|----------------------------|-------------------------------------------------------------------|
+| `scope`   | `str`                      | Always `portal_docked`.                                           |
+| `user`    | `{"id": str, "type": str}` | The signed-in user. `type` is `Patient` and `id` is the patient's key. |
+| `patient` | `{"id": str}`              | The signed-in patient's key.                                      |
+
+Override `visible()` to show the band only to some patients. Returning `False` means that patient gets no band, and Canvas doesn't call `on_open()` for them. The portal asks once, when the patient loads it, so a change in the answer takes effect on their next full page load.
+
+#### Showing a band to some patients
+
+This band reminds a patient of an appointment in the next 7 days. `visible()` reads the patient from `patient`, so patients with no upcoming appointment never see it:
+
+```python
+import arrow
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+
+
+class AppointmentReminderBand(PortalDockedApplication):
+    """Reminds patients of an appointment in the next 7 days."""
+
+    NAME = "Appointment reminder"
+    IDENTIFIER = "my_plugin__appointment_reminder_band"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+
+    def upcoming_appointment(self) -> Appointment | None:
+        """The patient's next appointment in the coming week, if any."""
+        patient_id = self.event.context["patient"]["id"]
+        now = arrow.utcnow()
+
+        return (
+            Appointment.objects.filter(
+                patient__id=patient_id,
+                start_time__range=(now.datetime, now.shift(days=7).datetime),
+            )
+            .exclude(status=AppointmentProgressStatus.CANCELLED)
+            .order_by("start_time")
+            .first()
+        )
+
+    def visible(self) -> bool:
+        """Show the band only to patients with an upcoming appointment."""
+        return self.upcoming_appointment() is not None
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the reminder."""
+        appointment = self.upcoming_appointment()
+        when = arrow.get(appointment.start_time).format("dddd, MMMM D [at] h:mm A") if appointment else ""
+
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content=f"<p>Your next appointment is {when}.</p>",
+            title="Appointment reminder",
+        ).apply()
+```
+
+#### Sharing visibility with a staff docked pane
+
+One plugin can show the same notice to staff in a [docked pane](#docked-applications) and to patients in a portal band. `scope` tells a shared `visible()` which one Canvas is asking about, and `user` says who is signed in. In this example, staff without a clinical role, such as the front desk, see a clinic closure notice in the EHR. Patients see it in the portal only when they have an appointment on the closure date:
+
+```python
+import datetime
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockedApplication, DockEdge, PortalDockedApplication
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+from canvas_sdk.v1.data.staff import Staff
+
+CLOSURE_DATE = datetime.date(2026, 11, 26)
+CLOSURE_NOTICE = "<p>The clinic is closed Thursday, November 26.</p>"
+
+
+class ClosureNoticeVisibility:
+    """The visibility rule both closure notices share."""
+
+    def visible(self) -> bool:
+        """Show the notice to front desk staff and to patients booked on the closure date."""
+        context = self.event.context
+        user = context["user"]
+
+        if context["scope"] == "portal_docked":
+            return user["type"] == "Patient" and (
+                Appointment.objects.filter(
+                    patient__id=context["patient"]["id"],
+                    start_time__date=CLOSURE_DATE,
+                )
+                .exclude(status=AppointmentProgressStatus.CANCELLED)
+                .exists()
+            )
+
+        staff = Staff.objects.filter(id=user["id"]).first()
+
+        return staff is not None and staff.top_clinical_role is None
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the notice."""
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content=CLOSURE_NOTICE,
+            title="Clinic closure",
+        ).apply()
+
+
+class ClosureNoticePane(ClosureNoticeVisibility, DockedApplication):
+    """The closure notice for staff, docked to the top of the EHR."""
+
+    NAME = "Clinic closure"
+    IDENTIFIER = "my_plugin__closure_notice_pane"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+
+
+class ClosureNoticeBand(ClosureNoticeVisibility, PortalDockedApplication):
+    """The closure notice for patients, across the top of the portal."""
+
+    NAME = "Clinic closure"
+    IDENTIFIER = "my_plugin__closure_notice_band"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+```
+
+The staff pane's context has no `patient`, so the shared `visible()` reads `patient` only when `scope` is `portal_docked`.
+
+A Portal Docked Application never appears in the EHR, and a `DockedApplication` never appears in the portal.
+
+## Provider Menu Applications
+
+A provider menu application adds an entry to the **provider side menu**, the
+navigation sidebar also called the hamburger menu. A provider can open the menu
+from any page in the EHR. Use one when a plugin needs a launch point that isn't
+tied to a patient chart or a note.
+
+### Implementing a Provider Menu Application
+
+Subclass `ProviderMenuApplication` and implement `on_open()` to return the effect
+that runs when the entry is clicked, typically a
+[`LaunchModalEffect`](/sdk/layout-effect/#modals):
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import MenuPosition, ProviderMenuApplication
+
+
+class CareGaps(ProviderMenuApplication):
+    """Provider menu entry that opens the care-gaps worklist."""
+
+    NAME = "Care gaps"
+    IDENTIFIER = "my_plugin__care_gaps"
+    MENU_POSITION = MenuPosition.BOTTOM
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the worklist when the menu entry is clicked."""
+        return LaunchModalEffect(
+            url="https://care-gaps.example.com/worklist",
+            title="Care gaps",
+        ).apply()
+```
+
+Configure the entry with these class attributes:
+
+| Attribute       | Required | Description |
+|-----------------|----------|-------------|
+| `NAME`          | Required | The label shown for the menu entry. |
+| `IDENTIFIER`    | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
+| `MENU_POSITION` | Optional | The group the entry joins, as a [`MenuPosition`](#menuposition) value. Defaults to `MenuPosition.TOP`. |
+| `ICON_URL`      | Optional | Not displayed. The provider menu shows only the `NAME` label, so setting this has no visible effect. |
+| `PRIORITY`      | Optional | An integer that orders entries within a group. Lower values appear first. Entries sort together with `provider_menu_item` drawer applications, which are ordered by their `menu_order` manifest field. Defaults to `0`. |
+
+{% include alert.html type="info" content="<b>Don't confuse <code>ProviderMenuApplication</code> with the <code>provider_menu_item</code> drawer scope.</b> A <code>ProviderMenuApplication</code> is a handler registered under <code>handlers</code>, configured with Python class attributes such as <code>MENU_POSITION</code>. <code>provider_menu_item</code> is a manifest scope for a drawer application in the <code>applications</code> array, configured with manifest fields such as <code>icon</code> (see <a href='/sdk/handlers-applications/#application-scopes'>Application Scopes</a>). Both place an entry in the provider menu, and they can coexist." %}
+
+### MenuPosition
+
+`MenuPosition` is an enum of the two groups in the provider menu:
+
+| Name     | Value    | Group                       |
+|----------|----------|-----------------------------|
+| `TOP`    | `top`    | Top of the provider menu    |
+| `BOTTOM` | `bottom` | Bottom of the provider menu |
+
+Any other `MENU_POSITION` value raises a `ValueError` when Canvas loads the menu.
+
+### Visibility
+
+Provider menu and panel applications decide whether their entry appears by
+overriding `visible()`. Return `True` to show the entry and `False` to hide it.
+The default returns `True`, so the entry appears for every user on every page.
+
+Canvas calls `visible()` when the menu loads and again each time the user
+navigates to another page, so an entry can appear on some pages and not others.
+`on_context_change()` is separate: it runs only while your application is open,
+not each time the menu refreshes its entries.
+
+`visible()` reads the page and the user from `self.event.context`:
+
+```python?partial=true
+# On a patient chart
+{
+    "user": {"type": "Staff", "id": "4150cd20de8a470aa570a852859ac87e"},
+    "url": "/patient/b80b1cdc2e6a4aca90ccebc02e683f35",
+    "patient": {"id": "b80b1cdc2e6a4aca90ccebc02e683f35"},
+}
+
+# On any other page
+{
+    "user": {"type": "Staff", "id": "4150cd20de8a470aa570a852859ac87e"},
+    "url": "/schedule",
+}
+```
+
+| Key       | Description |
+|-----------|-------------|
+| `user`    | The signed-in user. `id` is the [Staff](/sdk/data-staff/) id. |
+| `url`     | The path of the current page, without the domain. See [Pages a pane sees](#pages-a-pane-sees) for the paths Canvas sends. |
+| `patient` | Present only on a patient chart. `id` is the patient's id. |
+
+Show the entry only on patient charts:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only while a patient chart is open."""
+    return self.event.context.get("patient") is not None
+```
+
+Show the entry only to staff with a given role, using the
+[Staff](/sdk/data-staff/) data model:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import ProviderMenuApplication
+from canvas_sdk.v1.data import Staff
+
+ALLOWED_ROLE_CODES = ["MD", "NP"]
+
+
+class CareGaps(ProviderMenuApplication):
+    """Provider menu entry that only prescribers can see."""
+
+    NAME = "Care gaps"
+    IDENTIFIER = "my_plugin__care_gaps"
+
+    def visible(self) -> bool:
+        """Show the entry only to staff who hold an allowed role."""
+        staff_id = self.event.context.get("user", {}).get("id")
+        if not staff_id:
+            return False
+
+        return Staff.objects.filter(
+            id=staff_id,
+            roles__internal_code__in=ALLOWED_ROLE_CODES,
+        ).exists()
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the worklist, or an access message for staff without a role."""
+        if not self.visible():
+            return LaunchModalEffect(
+                content="<p>You don't have access to Care gaps.</p>",
+                title="Care gaps",
+            ).apply()
+
+        return LaunchModalEffect(
+            url="https://care-gaps.example.com/worklist",
+            title="Care gaps",
+        ).apply()
+```
+
+Role codes come from your instance's staff role setup, so use the
+`internal_code` values your instance's [staff roles](/sdk/data-staff/#staffrole)
+carry. To allow a fixed list
+of people instead, compare `staff_id` against a set of Staff ids.
+
+{% include alert.html type="warning" content="<b>Hiding an entry only removes it from the menu.</b> Canvas doesn't call <code>visible()</code> when an application opens, so a user who has a link to it can still open it. An open application's URL carries its identifier, base64-encoded, as <code>#application=&lt;encoded identifier&gt;</code>, and loading that URL runs <code>on_open()</code> directly. If the content itself must be restricted, run the same check in <code>on_open()</code> and return a message instead of the content when it fails. The example above does this by calling <code>self.visible()</code> from <code>on_open()</code>, which works because the open event carries the same <code>user</code> context." %}
+
+### Badges
+
+Override `compute_notification_badge()`, inherited from `Application` and
+described under
+[Notification Badges](/sdk/handlers-applications/#notification-badges), to show a
+count on the entry. Return a non-negative integer, or `None` (the default) for no
+badge. A count of `0` shows no badge.
+
+Canvas computes the count when the menu loads, not on each navigation. To change
+the count after load, emit an
+[`ApplicationNotificationBadge`](/sdk/effect-application-notification-badge/)
+effect for the application's `identifier`, as described under
+[Live updates](/sdk/handlers-applications/#live-updates).
+
+### Manifest Configuration
+
+Register your provider menu application under the `handlers` section of your
+`CANVAS_MANIFEST.json`:
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.care_gaps:CareGaps",
+        "description": "Care-gaps worklist in the provider menu."
+      }
+    ]
+  }
+}
+```
+
+## Panel Applications
+
+A panel application adds an entry beside the panel buttons, both inside and
+outside patient charts. By default, the entry appears in the app drawer with its
+icon and name, alongside drawer applications. Set `SHOW_IN_DRAWER = False` to
+show the icon directly in the panel bar instead. The panel bar shows only the
+icon, with no label, so every panel application sets an `ICON_URL`.
+
+### Implementing a Panel Application
+
+Subclass `PanelApplication`, set `ICON_URL`, and implement `on_open()` to return
+the effect that runs when the icon is clicked:
+
+```python?partial=true
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import PanelApplication
+
+
+class Inbox(PanelApplication):
+    """Panel bar entry that opens the messaging inbox."""
+
+    NAME = "Inbox"
+    IDENTIFIER = "my_plugin__inbox"
+    ICON_URL = "https://assets.example.com/inbox-icon.png"
+    SHOW_IN_DRAWER = False
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Launch the inbox when the panel icon is clicked."""
+        return LaunchModalEffect(
+            url="https://inbox.example.com",
+            title="Inbox",
+        ).apply()
+```
+
+Configure the entry with these class attributes:
+
+| Attribute        | Required | Description |
+|------------------|----------|-------------|
+| `NAME`           | Required | The entry's name, shown under the icon in the app drawer. The panel bar shows only the icon. |
+| `ICON_URL`       | Required | The icon shown for the entry, as an `https://` URL or a `data:` URI. A path to a file in your plugin package does not work. See [Panel Icons](#panel-icons). |
+| `IDENTIFIER`     | Optional | A unique key for the application. Recommended in the `plugin_name__app_name` format; when omitted, it defaults to one derived from the class's module and name. |
+| `SHOW_IN_DRAWER` | Optional | When `True` (the default), the entry appears in the app drawer. When `False`, the icon shows directly in the panel bar. |
+| `PRIORITY`       | Optional | An integer that orders entries. Lower values appear first. Entries sort together with drawer applications, which are ordered by their `panel_priority` manifest field. Defaults to `0`. |
+
+A `PanelApplication` subclass without an `ICON_URL` raises `ImproperlyConfigured`
+when the class is defined, so the plugin fails to load rather than showing an
+entry with nothing to click. To share behavior across several panel entries,
+define an intermediate base class with `abstract = True`. That class may omit
+`ICON_URL`, but each subclass of it must set one:
+
+```python?partial=true
+class InboxBase(PanelApplication):
+    abstract = True
+
+    def on_open(self) -> Effect | list[Effect]:
+        return LaunchModalEffect(url="https://inbox.example.com").apply()
+
+
+class TeamInbox(InboxBase):
+    NAME = "Team inbox"
+    ICON_URL = "https://assets.example.com/team-inbox-icon.png"
+```
+
+Panel applications support `visible()` and notification badges as described
+under [Visibility](#visibility) and [Badges](#badges).
+
+### Panel Icons
+
+Canvas uses the `ICON_URL` string as the icon's image source, exactly as you set
+it. This differs from the `icon` field of a drawer application in the manifest,
+which is a path to a file in your plugin package that Canvas uploads and stores
+when the plugin is installed. A `PanelApplication` creates no application record,
+so nothing uploads its icon, and a package path such as `assets/inbox.png`
+doesn't load.
+
+`ICON_URL` takes either of these:
+
+- **An `https://` URL** to an image hosted outside Canvas:
+
+  ```python?partial=true
+  ICON_URL = "https://assets.example.com/inbox-icon.png"
+  ```
+
+- **A `data:` URI** that holds the image itself, which keeps the icon inside your
+  plugin code. An SVG can be written inline with its special characters
+  percent-encoded (`<` as `%3C`, `>` as `%3E`, `#` as `%23`):
+
+  ```python?partial=true
+  ICON_URL = (
+      "data:image/svg+xml,"
+      "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E"
+      "%3Ccircle cx='12' cy='12' r='10' fill='%23336699'/%3E"
+      "%3C/svg%3E"
+  )
+  ```
+
+  A PNG works as a base64-encoded `data:image/png;base64,...` string.
+
+Canvas has no fallback for an icon that fails to load, so a broken URL shows a
+broken image in the panel bar. Host the image somewhere that stays available.
+
+### Patient Charts and Other Pages
+
+A panel application has one scope for every page, so it has no equivalent of a
+drawer application's `patient_specific` and `global` scopes. Its entry appears
+in the panel bar on patient charts and on every other page unless `visible()`
+says otherwise. Its context includes a `patient` only on a patient chart, so
+check for one to choose where the entry appears:
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only on patient charts, like a patient_specific application."""
+    return self.event.context.get("patient") is not None
+```
+
+```python?partial=true
+def visible(self) -> bool:
+    """Show the entry only outside patient charts, like a global application."""
+    return self.event.context.get("patient") is None
+```
+
+To show the entry on every page, leave `visible()` as it is.
+
+### Manifest Configuration
+
+Register your panel application under the `handlers` section of your
+`CANVAS_MANIFEST.json`:
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.apps.inbox:Inbox",
+        "description": "Messaging inbox in the panel bar."
+      }
+    ]
+  }
+}
+```

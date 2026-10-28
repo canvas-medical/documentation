@@ -336,9 +336,29 @@ for report in unreviewed_reports:
     print(f"Report from {report.date_performed} - {report.values.count()} values")
 ```
 
+#### Finding Lab Reports Assigned to a Reviewer
+
+A lab report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import LabReport, Staff
+
+lab_report = LabReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the lab report is assigned to
+reviewers = lab_report.reviewers.all()
+team = lab_report.team
+
+# Every lab report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = LabReport.objects.filter(reviewers__id=staff.id)
+```
+
 ### Filtering Lab Results by Abnormal Values
 
-A common use case is to identify abnormal lab values that may require clinical attention:
+<!-- source: discussion #750 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+A common use case is to alert a care team when an abnormal result arrives. Listen for [`LAB_REPORT_CREATED`](/sdk/events/#labs) (and the other [Lab events](/sdk/events/#labs) or [Imaging Report events](/sdk/events/#imaging-reports)) to react to new results, then inspect each [`LabValue`](#labvalue)'s `abnormal_flag` field — per Canvas, a value is flagged abnormal when `abnormal_flag` is set (non-null and non-empty). A common use case is to identify abnormal lab values that may require clinical attention:
 
 ```python
 from canvas_sdk.v1.data.lab import LabReport, LabValue
@@ -372,6 +392,43 @@ committed_orders = LabOrder.objects.committed()
 committed_order_reasons = LabOrderReason.objects.committed()
 ```
 
+<!-- source: discussion #472 -->
+<!-- REVIEW: clinical-accuracy sign-off required -->
+### POC (point-of-care) Lab Test results
+
+A [POC Lab Test](/sdk/commands/#poclabtest) command records its results as a [`LabReport`](#labreport). The command's `Command` record, with a `schema_key` of `pocLabTest`, points at that report through `anchor_object`, so you can move from the command to its results:
+
+```python
+from canvas_sdk.v1.data.command import Command
+
+command = Command.objects.get(id="c1b5a4d2-7e3f-4a8b-9c6d-2f1e0a9b8c7d")
+lab_report = command.anchor_object
+```
+
+To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
+
+## The document reference
+
+`LabReport` carries the report's values and review state, not a file. When the report is reviewed, Canvas renders it to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report.
+
+To find it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
+
+```python
+from canvas_sdk.v1.data import ContentType, DocumentReference, LabReport
+
+report = LabReport.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+content_type = ContentType.objects.filter(app_label="api", model="labreport").first()
+
+document = DocumentReference.objects.filter(
+    content_type=content_type, object_id=report.dbid
+).first()
+
+url = document.document_url if document else None
+```
+
+{% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>. A report that has not been reviewed yet has no document reference, so handle <code>None</code>." %}
+
 ## Attributes
 
 ### LabReport
@@ -386,6 +443,10 @@ committed_order_reasons = LabOrderReason.objects.committed()
 | junked               | Boolean                               |
 | requires_signature   | Boolean                               |
 | assigned_date        | DateTime                              |
+| assigned_by          | [CanvasUser](/sdk/data-canvasuser)    |
+| reviewers            | [Staff](/sdk/data-staff/#staff)[]     |
+| team                 | [Team](/sdk/data-team/#team)          |
+| team_assigned_date   | DateTime                              |
 | patient              | [Patient](/sdk/data-patient/#patient) |
 | transmission_type    | [TransmissionType](#transmissiontype) |
 | for_test_only        | Boolean                               |
@@ -399,11 +460,13 @@ committed_order_reasons = LabOrderReason.objects.committed()
 | originator           | [CanvasUser](/sdk/data-canvasuser)    |
 | committer            | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error     | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted              | Boolean                               |
 | values               | [LabValue](#labvalue)[]               |
 | tests                | [LabTest](#labtest)[]                 |
+| ordered_tests        | [LabTest](#labtest)[]                 |
+| result_tests         | [LabTest](#labtest)[]                 |
 | remarks              | [LabReportRemark](#labreportremark)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
+| laborder_set         | [LabOrder](#laborder)[]               |
 
 ### LabReportRemark
 
@@ -438,7 +501,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                      | DateTime                              |
 | modified                     | DateTime                              |
 | originator                   | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted                      | Boolean                               |
 | committer                    | [CanvasUser](/sdk/data-canvasuser)    |
 | entered_in_error             | [CanvasUser](/sdk/data-canvasuser)    |
 | internal_comment             | String                                |
@@ -448,7 +510,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | patient                      | [Patient](/sdk/data-patient/#patient) |
 | patient_communication_method | String                                |
 | reports                      | [LabReport](#labreport)[]             |
-| tests                        | [LabTest](#labtest)[]                 |
 
 ### LabValue
 
@@ -491,11 +552,11 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created                   | DateTime                                          |
 | modified                  | DateTime                                          |
 | originator                | [CanvasUser](/sdk/data-canvasuser)                |
-| deleted                   | Boolean                                           |
 | committer                 | [CanvasUser](/sdk/data-canvasuser)                |
 | entered_in_error          | [CanvasUser](/sdk/data-canvasuser)                |
 | patient                   | [Patient](/sdk/data-patient/#patient)             |
 | note                      | [Note](/sdk/data-note/#note)                      |
+| assessment                | [Assessment](/sdk/data-assessment/#assessment) |
 | ontology_lab_partner      | String                                            |
 | ordering_provider         | [Staff](/sdk/data-staff/#staff)                   |
 | comment                   | String                                            |
@@ -516,6 +577,8 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | reasons                   | [LabOrderReason](#laborderreason)[]               |
 | tests                     | [LabTest](#labtest)[]                             |
 | reports                   | [LabReport](#labreport)[]                         |
+| laborder_set              | [LabOrder](#laborder)[]                           |
+| action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
 
 ### LabOrderReason
 
@@ -525,7 +588,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | created           | DateTime                                              |
 | modified          | DateTime                                              |
 | originator        | [CanvasUser](/sdk/data-canvasuser)                    |
-| deleted           | Boolean                                               |
 | committer         | [CanvasUser](/sdk/data-canvasuser)                    |
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                    |
 | order             | [LabOrder](#laborder)                                 |
@@ -539,10 +601,6 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | dbid               | Integer                               |
 | created            | DateTime                              |
 | modified           | DateTime                              |
-| originator         | [CanvasUser](/sdk/data-canvasuser)    |
-| deleted            | Boolean                               |
-| committer          | [CanvasUser](/sdk/data-canvasuser)    |
-| entered_in_error   | [CanvasUser](/sdk/data-canvasuser)    |
 | reason             | [LabOrderReason](#laborderreason)     |
 | condition          | [Condition](/sdk/data-condition)      |
 

@@ -26,11 +26,32 @@ Stay up to date on the latest important dates for the Canvas platform.
   </thead>
   <tbody>
     <tr>
+      <td>Diagnose command and <code>DiagnoseCommand</code></td>
+      <td style="color: orange;">Deprecation</td>
+      <td>The Assess Condition command now records new conditions as well as conditions already on the chart, and reuses a charted condition instead of adding a duplicate. We plan to retire the Diagnose command in a future release. Existing Diagnose commands in notes stay as they are, and Diagnose remains available until then. Plugins should use <a href="/sdk/commands/#assess"><code>AssessCommand</code></a> with <code>icd10_code</code> for new work; <code>DiagnoseCommand</code> keeps working for now and will be deprecated when Diagnose is retired. You may want to update clinician training materials that mention Diagnose. <a href="/release-notes/1-367-0/">Read more.</a></td>
+      <td>TBD</td>
+      <td></td>
+    </tr>
+    <tr>
       <td>Workflow SDK</td>
       <td style="color: green;">New Version</td>
-      <td>The Workflow SDK has been deprecated, and will only receive fixes for defects or security issues. We are replacing its functionality with the Canvas SDK and its plugins, and will not set a date for the removal of the Workflow SDK until the Canvas SDK reaches feature parity. At that time we will present a migration plan to convert Workflow SDK Protocols into Canvas Plugins.</td>
+      <td>The Workflow SDK is deprecated and receives only fixes for defects or security issues. Build new logic as Canvas SDK plugins. Uploading new protocol code returns an error. If you still use the Workflow SDK, reach out to Canvas support and we can help you migrate to plugins.</td>
       <td></td>
-      <td>TBD<br/>(Not Soon)</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>Canvas CLI: Installing plugins with <code>canvas install</code> and <code>credentials.ini</code></td>
+      <td style="color: red;">Breaking Change</td>
+      <td>Installing plugins straight onto an instance with <code>canvas install</code>, using the instance credentials in <code>~/.canvas/credentials.ini</code>, is deprecated, and support for it ends on 12/14/2026. Deploy plugins through Canvas Platform with <code>canvas login</code> and <code>canvas deploy</code> instead. Moving a plugin to Canvas Platform includes renaming it with your organization's prefix. <a href="/guides/moving-to-canvas-platform/">Read more.</a></td>
+      <td></td>
+      <td>12/14/2026</td>
+    </tr>
+    <tr>
+      <td>Read-only replica: Clinical note body structure</td>
+      <td style="color: red;">Breaking Change</td>
+      <td>Canvas is changing how a clinical note stores its body, with every existing note migrated onto the new structure. Instances without a read-only replica are turned on first, on 09/21/2026, and instances with one a week later, on 09/28/2026. Nothing looks different in the chart, and the Note API, FHIR, and the plugin SDK need no change. An integration reading note bodies from the read-only replica needs a query change: on a migrated note the <code>body</code> column is empty and the lines move to <code>body_content</code> and <code>body_order</code>, with <code>checksum</code> no longer maintained. <a href="/release-notes/note-v2-2026-09-15/">Read more.</a></td>
+      <td><small>09/21/2026 <br> (09/28/2026 with a read-only replica)</small></td>
+      <td></td>
     </tr>
     <tr>
       <td>FHIR API: Setting appointment location using the location integer value</td>

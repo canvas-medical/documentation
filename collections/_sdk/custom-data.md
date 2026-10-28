@@ -119,8 +119,10 @@ intend to query.
 
 ## Limitations (for Safety)
 
-* Values stored in `text` and `json` fields may not exceed 1mb as measured by character count.
-* Bulk operations (e.g., `bulk_create`) are limited to 10,000 records at a time.
+* Values stored in `text` and `json` fields may not exceed 1mb as measured by character count. Going over raises `FieldValueTooLarge`.
+* Bulk operations (e.g., `bulk_create`) are limited to 10,000 records at a time. Going over raises `BulkOperationTooLarge`.
+
+Both are subclasses of `ValueError`, so a single `except ValueError:` catches either.
 
 ## See Also
 
@@ -133,7 +135,7 @@ intend to query.
 - [Sharing Data](/sdk/custom-data-sharing-data/) - Sharing data with other plugins and external services
 - [Data Models](/sdk/data/) - Core SDK data models
 - [Caching API](/sdk/caching) - Auto-expiring transient data
-- [Canvas CLI](/sdk/canvas_cli/#simple-api-endpoints) - Simple API for sharing data between plugins
+- [Simple API](/sdk/handlers-simple-api/) - Simple API for sharing data between plugins
 - [Secrets](/sdk/secrets/) - Managing API keys and sensitive configuration
 
 <br/>

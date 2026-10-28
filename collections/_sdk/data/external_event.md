@@ -130,21 +130,21 @@ visits = ExternalVisit.objects.filter(facility_name="General Hospital")
 
 ### ExternalEvent
 
-| Field Name                   | Type                                        |
-|------------------------------|---------------------------------------------|
-| id                           | UUID                                        |
-| dbid                         | Integer                                     |
-| created                      | DateTime                                    |
-| modified                     | DateTime                                    |
-| external_visit               | [ExternalVisit](#externalvisit)             |
-| patient                      | [Patient](/sdk/data-patient/#patient)       |
-| message_control_id           | String                                      |
-| message_datetime             | DateTime                                    |
-| event_type                   | String                                      |
-| event_datetime               | DateTime                                    |
-| event_cancelation_datetime   | DateTime                                    |
-| raw_message                  | String                                      |
-| cancelled                    | Boolean (property)                          |
+| Field Name                 | Type                                  | Description                                               |
+|----------------------------|---------------------------------------|-----------------------------------------------------------|
+| id                         | UUID                                  |                                                           |
+| dbid                       | Integer                               |                                                           |
+| created                    | DateTime                              |                                                           |
+| modified                   | DateTime                              |                                                           |
+| external_visit             | [ExternalVisit](#externalvisit)       |                                                           |
+| patient                    | [Patient](/sdk/data-patient/#patient) |                                                           |
+| message_control_id         | String                                |                                                           |
+| message_datetime           | DateTime                              |                                                           |
+| event_type                 | String                                |                                                           |
+| event_datetime             | DateTime                              |                                                           |
+| event_cancelation_datetime | DateTime                              |                                                           |
+| raw_message                | String                                |                                                           |
+| cancelled                  | Boolean (computed)                    | `True` when the event has an `event_cancelation_datetime` |
 
 ### ExternalVisit
 
@@ -158,6 +158,7 @@ visits = ExternalVisit.objects.filter(facility_name="General Hospital")
 | visit_identifier   | String                                |
 | information_source | String                                |
 | facility_name      | String                                |
+| visit_events       | QuerySet[[ExternalEvent](#externalevent)] |
 
 ## Common Event Types
 

@@ -33,7 +33,7 @@ provider surface only.
 Canvas plugins contribute embedded apps through the `Application` handler —
 a Python class with an `on_open()` method that returns a URL for Canvas to
 iframe into its UI. Which surface your app appears on is controlled by the
-`scope` value in your plugin's `CANVAS_MANIFEST.json`. Companion apps work
+`scope` value in your plugin's [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications). Companion apps work
 exactly the same way; they just use one of three companion-specific `scope`
 values. If you haven't built an embedded app before, start with the
 [Applications](/sdk/handlers-applications/) page — this page assumes you
@@ -148,7 +148,7 @@ the built-in Timeline tab, and when the user taps it, your handler's
 ### Event context
 
 ```python?partial=true
-self.event.context["patient"]["id"]  # Patient key (UUID string)
+self.event.context["patient"]["id"]  # Patient id (UUID string)
 ```
 
 ### Use cases
@@ -229,7 +229,7 @@ the note are passed in the event context.
 ### Event context
 
 ```python?partial=true
-self.event.context["patient"]["id"]  # Patient key (UUID string)
+self.event.context["patient"]["id"]  # Patient id (UUID string)
 self.event.context["note"]["id"]     # Note UUID
 ```
 
