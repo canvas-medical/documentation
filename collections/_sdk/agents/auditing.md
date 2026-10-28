@@ -121,6 +121,13 @@ Hooked up via the lifecycle surface (see
 [Lifecycle](/sdk/agents-lifecycle/)):
 
 ```python
+from datetime import UTC, datetime
+
+from canvas_sdk.agents import AgentPlugin
+
+from my_plugin.models.run_log import AgentRunLog
+
+
 class MyAgent(AgentPlugin):
     def on_run_start(self, scope_key):
         self._run_log = AgentRunLog.objects.create(

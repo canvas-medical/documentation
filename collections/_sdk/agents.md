@@ -72,7 +72,7 @@ implement and what the platform does around it.
 | Platform owns | You own |
 |---|---|
 | Triggering, dispatch, lifecycle orchestration | Agent business logic (`run()`) |
-| One run at a time per agent and `scope_key`, with retry | State persistence (Custom Data tables you declare) |
+| One run at a time per agent and `scope_key`, with retry | State persistence (see [Managing State](/sdk/agents-managing-state/)) |
 | LLM access: gateway credentials, metering, budgets | Tool implementations |
 | Run duration metric; per-call tokens and cost at the gateway, by run | Run rationale and semantic audit (see [Auditing](/sdk/agents-auditing/)) |
 | Effect dispatch | Effect choice + idempotency keying |

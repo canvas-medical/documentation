@@ -100,6 +100,10 @@ The body of your agent. Drive the tool-use loop, accumulate effects,
 update `state` in place. Return an `AgentRunResult(state=..., effects=[...])`.
 
 ```python
+from canvas_sdk.agents import AgentRunResult
+from canvas_sdk.effects import Effect
+
+
 def run(self, state, gateway, trigger_payload):
     effects: list[Effect] = []
     tool_ctx = {"patient_id": trigger_payload["patient_id"], "effects": effects}
@@ -192,10 +196,16 @@ namespace by customer.
 ## The `AgentRunResult` shape
 
 ```python
+from dataclasses import dataclass, field
+
+from canvas_sdk.agents import AgentState
+from canvas_sdk.effects import Effect
+
+
 @dataclass
 class AgentRunResult:
     state: AgentState
-    effects: list[Effect]
+    effects: list[Effect] = field(default_factory=list)
 ```
 
 `state` is what `save_state` will persist. `effects` is what the
