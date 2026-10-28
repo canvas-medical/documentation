@@ -175,7 +175,7 @@ Applications add entry points to the Canvas UI. See [Applications](/sdk/handlers
 }
 ```
 
-Embedded applications (note applications, scheduling applications, and docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
+Embedded applications (note applications, scheduling applications, docked applications, and portal docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
 
 ### Commands
 
@@ -357,7 +357,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out. |
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
-| `pricing` | array | No | What Canvas charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge. |
+| `pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge. |
 | `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas. |
 | `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase. |
 | `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works. |

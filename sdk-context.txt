@@ -2603,7 +2603,8 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
   - **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 ###  `canvas uninstall`
 Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see Instance API credentials).
-> **Warning:** Uninstalling a plugin deletes the [banner alerts](/sdk/effect-banner-alerts/) it added to patient charts and [claims](/sdk/effect-claims/#add-banner). Disabling a plugin hides them until it's enabled again. 
+> **Warning:** Uninstalling a plugin deletes its secrets and the [banner alerts](/sdk/effect-banner-alerts/) it added to patient charts and [claims](/sdk/effect-claims/#add-banner). Disabling a plugin hides those banner alerts until it's enabled again. 
+The plugin's [custom data](/sdk/custom-data-namespace-lifecycle/) stays on the instance after an uninstall: its namespace, with every `CustomModel` table and `AttributeHub` in it, is kept, because another plugin may share the namespace. A plugin deployed with `canvas deploy` regains access to that data on its next deploy. A plugin installed with `canvas install` loses its namespace keys along with its other secrets, so save them before uninstalling; see [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin). To delete the data itself, drop the namespace with [`canvas namespace drop`](/sdk/custom-data-namespace-lifecycle/#dropping-a-namespace).
 **Usage** :
     ```console
     $ canvas uninstall [OPTIONS] NAME
@@ -2986,7 +2987,7 @@ Field | Type | Required | Description
       }
     }
     ```
-Embedded applications (note applications, scheduling applications, and docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
+Embedded applications (note applications, scheduling applications, docked applications, and portal docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
 ###  Commands 
 The `commands` list declares [custom commands](/sdk/commands-custom-command/): commands with plugin-rendered HTML content that can be added to a note.
 Field | Type | Required | Description  
@@ -3134,7 +3135,7 @@ Field | Type | Required | Description
 `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out.  
 `keywords` | array | No | Free search terms, separate from Tags: lowercase letters, digits and hyphens, up to 32 characters each.  
 `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40.  
-`pricing` | array | No | What Canvas charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. Leave `pricing` out for a plugin with no charge.  
+`pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. Leave `pricing` out for a plugin with no charge.  
 `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas.  
 `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase.  
 `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works.  
@@ -6661,7 +6662,7 @@ The `family_history` parameter accepts either:
     - Supported systems: `SNOMED`, `UNSTRUCTURED`
     - Required fields: `system`, `code`
     - Optional field: `display`
-The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
+The `relative` parameter also searches and selects the first result when a string is provided. Results list the shortest matching term first, so `"Sister"` selects Sister rather than Half-sister. Pass the full relationship term (for example, `"Paternal Grandfather"` or `"Maternal Grandfather"`) rather than a partial word.
 **Example** :
     ```python
     from canvas_sdk.commands import FamilyHistoryCommand
@@ -15072,6 +15073,25 @@ eligibility_or_benefit_information | List (computed)
     from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
     failed = EligibilityResponse.objects.exclude(errors=None).exclude(errors=[])
     ```
+`valid_request` is `False` when a check got no answer for the coverage but a later request might. Canvas saves a response with `valid_request` set to `False` in these cases:
+  - The request to Claim.MD timed out or failed before a response came back.
+  - Claim.MD returned an HTTP error.
+  - Claim.MD returned HTTP 200 with neither an eligibility result nor an error.
+  - Claim.MD reported that no valid eligibility response came back.
+  - Claim.MD reported that the policy reached its inquiry limit.
+  - Claim.MD reported that the account key was missing or invalid.
+For these responses, `x12_response` holds the body Claim.MD returned. It is empty when the request timed out or failed before a response came back. Most of these responses have a non-empty `errors`, so their `status` is `FAILED`. A response for an HTTP 200 with nothing in it has an empty `errors`, so it doesn't match the `failed` filter above. Filter on `valid_request` to find it. Every other response has `valid_request` set to `True`, including payer rejections and other Claim.MD rejections.
+Canvas's daily eligibility check skips a coverage only when the coverage has a response from the past week with `valid_request` set to `True`. A coverage whose recent responses all have `valid_request` set to `False` is checked again on the next run.
+To separate checks that can be retried from checks that Claim.MD or the payer rejected, filter on `valid_request` as well:
+    ```python
+    from canvas_sdk.v1.data.eligibility_response import EligibilityResponse
+    retryable = EligibilityResponse.objects.filter(valid_request=False)
+    rejected = (
+        EligibilityResponse.objects.filter(valid_request=True)
+        .exclude(errors=None)
+        .exclude(errors=[])
+    )
+    ```
 ##  Enumeration types 
 ###  EligibilityResponseStatus 
 Name | Value  
@@ -21317,6 +21337,7 @@ value | String
 ##  Introduction 
 The `RefillRequest` model represents an incoming request to refill a patient's medication — for example, a renewal request received electronically from a pharmacy. Each request carries the raw request payload in its `content` attribute, the associated patient and staff member, the medication codings that describe the requested drug (`RefillRequestCoding`), and the prescription(s) written in response.
 An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
+`patient` is the chart the request is filed on, which isn't always the chart the original prescription was written for. Canvas matches an incoming request to the original prescription's chart. If that chart has since been deactivated, Canvas files the request on the one active chart with the same name and date of birth. Canvas leaves `patient` unset when no active chart matches, when more than one matches, or when the request's name and date of birth don't match the deactivated chart. Staff then link the request to a chart manually. Check `patient` for `None` before you use it. The key of the chart Canvas matched the request to is in `content`, as described in Message content.
 ##  Basic usage 
 To get a refill request by identifier, use the `get` method on the `RefillRequest` model manager:
     ```python
@@ -21362,6 +21383,7 @@ The `RefillRequestCoding` entries represent the coding of the requested drug (fo
 The `message_id` and `content` attributes carry the details of the inbound eRx message.
 `message_id` is the eRx (NCPDP SCRIPT / Surescripts) message identifier of the inbound refill-renewal request itself.
 `content` is a JSON field holding the parsed inbound NCPDP SCRIPT refill-renewal request payload. It is a free-form, unstructured representation whose exact shape can vary between messages. The information typically available includes:
+  - the patient as reported by the pharmacy (name, date of birth, gender, phone), along with `patient_key`, the key of the chart Canvas matched the request to. This key can differ from `patient` when that chart was deactivated, and it can be null when Canvas matched no chart.
   - the pharmacy (name, NCPDP ID, phone, address)
   - the prescriber as reported by the sender (name, NPI, SPI, and a sender-supplied identifier)
   - the dispensed and prescribed medication details (drug description, NDC, quantity, days supply, directions, number of refills, substitution allowance, written date, and similar)
@@ -23041,7 +23063,14 @@ Because the parts sit alongside the whole in `reading.signs`, iterating a readin
 Not every value is produced by every workflow, so which ones you see depends on how the vitals were recorded:
   - **The[Vitals](/sdk/commands/#vitals) command** writes `height`, `weight`, `waist_circumference`, `body_temperature`, `blood_pressure`, `systole`, `diastole`, `pulse`, `pulse_rhythm`, `respiration_rate`, `oxygen_saturation`, `inhaled_oxygen_concentration`, `inhaled_oxygen_flow_rate`, `supplemental_oxygen` and `note`. Blood pressure is stored three times over — once as the combined `blood_pressure` reading and once each as `systole` and `diastole`.
   - **A committed pediatric physical exam questionnaire** records `length` and `head_circumference_tape_measure`, taken from the answers carrying those LOINC codes.
-Derived measurements are **not** `VitalSign` records. When a height, weight or length is recorded, Canvas calculates BMI from the height and weight and stores the results — the BMI-for-age, head-circumference and weight-for-height percentiles — as [Observation](/sdk/data-observation/) records attached to the reading, because each is computed from more than one measurement. Read them there rather than looking for a `sign`.
+Derived measurements are **not** `VitalSign` records. Canvas stores them as [Observation](/sdk/data-observation/) records, so read them there rather than looking for a `sign`. Each one's `is_member_of` points to the reading's Vital Signs Panel observation.
+When a reading has a weight and a height or length, Canvas derives one body size observation from them. The patient's age on the date the reading was recorded decides which one. It is attached to the reading, because it is computed from more than one measurement.
+Age at reading | Observation | LOINC | Unit  
+---|---|---|---  
+Under 24 months | Weight-for-Length Percentile, from WHO charts | 77606-2 | `%`  
+24 months up to the 20th birthday | BMI for Age Percentile, from CDC charts | 59576-9 | `%`  
+20 years and older | Body Mass Index, rounded to one decimal place | 39156-5 | `kg/m2`  
+A recorded head circumference also produces a head circumference percentile observation, attached to that `VitalSign`. Percentiles are read from the growth chart data loaded in the instance. When no chart data covers the patient's sex and age or length, Canvas creates no percentile observation for the reading.
 Value | Label  
 ---|---  
 blood_pressure | Blood Pressure  
@@ -30277,6 +30306,47 @@ To record a rejection, pass a rejected state and, optionally, the reason:
 ----- END PAGE https://docs.canvasmedical.com/sdk/effect-record-patient-consent/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-record-usage/
+The `RecordUsage` effect records units of work that a plugin charges for. A plugin priced per unit in its [manifest `catalog.pricing`](/sdk/canvas_manifest/#catalog), such as $0.50 a visit, returns one `RecordUsage` for each piece of that work, alongside the effects that do it. Canvas keeps each record on the instance, and Canvas Platform reads them a few minutes later to show what the units come to.
+Canvas fills in what the plugin does not choose:
+  - **The plugin.** The record is attributed to the plugin whose handler returned it. A plugin can record usage under its own name only.
+  - **The version.** The plugin version and package installed on the instance when the record is stored.
+  - **The time.** When Canvas applied the effect, so a handler never passes a timestamp.
+##  Counting once 
+`key` names the piece of work being counted, such as `visit:<note id>`. Canvas records a key once per plugin, so a handler that runs again for the same work (a retried event, a note signed twice) adds nothing. Choose a key that is the same every time the same work is counted and different for different work.
+##  Failed work is not counted 
+Canvas applies a plugin's `RecordUsage` effects after the plugin's other effects in the same response. When one of those other effects fails, the usage is kept with a withheld status, naming the effect that failed, and is not charged. A later run that does the work successfully can record the same key and is counted.
+An effect run later with [`set_async`](/sdk/effects/#async-execution) has no outcome yet when the usage is stored, so the unit is counted and the record names the deferred effect. A `RecordUsage` effect itself cannot be deferred: one with `set_async` is discarded.
+##  Units 
+`unit` must be one of the units the plugin's installed manifest lists in `catalog.pricing`, matched without regard to case or repeated whitespace. A record in any other unit, or in `token`, is discarded and logged, since the inference gateway meters tokens on its own. Units are recorded on every instance; the instance's stage decides what is charged.
+##  Methods 
+###  apply() → Effect 
+Records the usage.
+##  Attributes 
+Name | Type | Description | Required  
+---|---|---|---  
+`unit` | `str` | A unit from the plugin's manifest `catalog.pricing`, at most 40 characters. | Yes  
+`key` | `str` | Names the work being counted, so the same work is counted once. 1 to 256 characters. | Yes  
+`quantity` | `int` | How many units the work comes to, from 1 to 10,000. Defaults to 1. | No  
+##  Example 
+A plugin listed at a price per `visit` records one visit when a note is locked, keyed on the note so a note locked again is not counted twice:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.usage import RecordUsage
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    class CountVisit(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            if self.event.context["state"] != "LKD":
+                return []
+            note_id = self.event.context["note_id"]
+            return [RecordUsage(unit="visit", key=f"visit:{note_id}").apply()]
+    ```
+A plugin recording several units of one piece of work passes `quantity`, such as `RecordUsage(unit="page", key=f"fax:{fax_id}", quantity=12)`.
+----- END PAGE https://docs.canvasmedical.com/sdk/effect-record-usage/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/effect-redirect/
 The `RedirectEffect` tells the Canvas frontend to navigate the browser to a destination. The plugin returns the effect from a handler and the frontend performs a full-page navigation. In the patient portal, portal pages change in place instead (see Redirects in the patient portal). The headline use case is sending a user onward after a note is signed — for example, navigating back to a work queue to pick up the next patient.
 A redirect is delivered only to the **acting user** who triggered the handler — and only to that user's browser. Because of that, it takes effect only when the handler runs in the context of a real user with an active browser session. Return it from user-initiated handlers — a note state-change (sign/lock) handler, an action-button handler, an application handler, or an authenticated [SimpleAPI](/sdk/handlers-simple-api/) call. If a handler has no user actor — for example a `CronTask`, other background processing, or any event whose actor defaults to canvas-bot — there is no browser to navigate and the redirect is silently ignored. See [Event Actor](/sdk/events/#event-actor) for which events carry an actor.
@@ -31437,7 +31507,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
-[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Coverage Create, update, expire, remove, and reorder a patient's insurance coverages. ](/sdk/effect-coverage/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Identification Card Create, update, or delete a patient's identification card images. ](/sdk/effect-patient-identification-card/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
+[ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Coverage Create, update, expire, remove, and reorder a patient's insurance coverages. ](/sdk/effect-coverage/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Identification Card Create, update, or delete a patient's identification card images. ](/sdk/effect-patient-identification-card/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Record Usage Record units of a plugin's work that its catalog listing prices. ](/sdk/effect-record-usage/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
 ##  Effect Types 
 The following effects are available to be applied in Canvas.
 ###  Banner Alerts & Protocol Cards 
@@ -31720,6 +31790,11 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 Effect | Description  
 ---|---  
 HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior.  
+###  Plugin Usage 
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+Effect | Description  
+---|---  
+RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit.  
 ###  Revenue / Payment Processor 
 Effect | Description  
 ---|---  
@@ -53955,10 +54030,11 @@ A `full_chart` application is also the way to give custom patient data its own l
 Provider companion applications run in the Canvas provider companion — a mobile-optimized, provider-facing surface. They use the `Application` handler with one of three companion scopes (`provider_companion_global`, `provider_companion_patient_specific`, `provider_companion_note_specific`) declared in the manifest. The legacy `provider_companion` scope continues to work and is treated the same as `provider_companion_global`.
 See [Provider Companion](/sdk/companion/) for the full guide — scope-by-scope examples, event context, code sharing across scopes, originating commands from a note, modal dismissal, and mobile UX guidance.
 ##  Embedded Applications 
-**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. There are five kinds:
+**Embedded applications** are handler-based applications that render inside a specific Canvas surface rather than appearing in the app drawer. There are six kinds:
   - Note Applications, which add tabs inside a note
   - Scheduling Applications, which replace the built-in scheduling modal
   - Docked Applications, which pin a persistent pane to a window edge
+  - Portal Docked Applications, which add a band across the top or bottom of the patient portal
   - Provider Menu Applications, which add an entry to the provider side menu
   - Panel Applications, which add an icon to the panel bar
 They are declared under `handlers` (not `applications`), take no `scope`, and create no application record. A `ProviderMenuApplication` is separate from a drawer application that uses the `provider_menu_item` scope, and a `PanelApplication` is separate from a drawer application shown with `show_in_panel`; each pair can coexist.
@@ -54168,12 +54244,13 @@ Here's what this scheduled task would output in the logs:
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/handlers-embedded-applications/
 Each embedded application belongs to **a specific Canvas surface** , such as a note, the scheduling modal, or the provider side menu. Embedded applications are ordinary [handlers](/sdk/handlers-basehandler/). You subclass a base class, register it under `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers), and Canvas renders it in the appropriate surface.
-There are five kinds:
+There are six kinds:
 Base class | Surface  
 ---|---  
 `NoteApplication` | A tab within a patient's note  
 `SchedulingApplication` | Replaces the built-in scheduling modal at every entry point  
 `DockedApplication` | A persistent pane pinned to a window edge, always visible  
+`PortalDockedApplication` | A persistent band across the top or bottom of the patient portal  
 `ProviderMenuApplication` | An entry in the provider side menu (the navigation sidebar, also called the hamburger menu)  
 `PanelApplication` | An entry in the panel bar or the app drawer  
 ##  How embedded applications work 
@@ -54182,7 +54259,7 @@ Because the parent class defines the behavior, there's very little to configure:
   - The **surface** comes from the class you inherit. You don't set a `scope`. The provider menu and the panel bar each take a few extra class attributes, such as an icon URL, described in their own sections below.
   - When Canvas renders each kind: 
     - **Note and Scheduling Applications** render on demand. When a note opens or a scheduling action is triggered, Canvas asks which embedded application is installed for that surface, then renders what your handler returns.
-    - **Docked Applications** stay mounted at all times.
+    - **Docked Applications** and **Portal Docked Applications** stay mounted at all times.
     - **Provider Menu and Panel Applications** are fetched when their menu loads and refreshed as the user navigates.
   - Embedded applications create no application record, so they don't appear under Plugins_IO > Applications.
   - Only a Panel Application can appear in the app drawer, as described in Panel Applications.
@@ -54525,7 +54602,7 @@ Path | Page
 `/application` | A full-page plugin application  
 `/403` | Permission denied  
 Everything else on the domain sits outside that shell, including `/admin`, `/login`, `/app/...`, `/companion/...` and `/plugin-io/...`. Moving to one of those is a full page load rather than a navigation: the pane is not on screen while the user is there, and returning to the EHR mounts it again from scratch, so `on_open()` fires rather than `on_context_change()`.
-The patient portal is outside the shell as well, so a docked pane cannot appear there. A Docked Application is a staff-facing surface only.
+The patient portal is outside the shell as well, so a docked pane doesn't appear there. To add a band to the portal, use a Portal Docked Application.
 Because the pane stays mounted across every navigation inside the shell, it keeps its state there. A right chart pane, by contrast, closes when the user opens a different patient or leaves the chart.
 ###  Multiple Docked Panes 
 Docked panes stack rather than being limited to one per edge. Each edge holds up to two panes. When an edge already holds its two panes, an additional pane for that edge is not displayed — it is ignored rather than raising an install-time error.
@@ -54552,6 +54629,143 @@ Register your Docked Application under the `handlers` section of your `CANVAS_MA
       }
     }
     ```
+##  Portal Docked Applications 
+A Portal Docked Application mounts a **band** across the top or bottom of the patient portal. The band spans the full window width and appears on every page a signed-in patient visits. It mounts once, so a patient moving between portal pages keeps the same band and whatever state it holds. Use one for content patients should always see, such as an announcement banner, office hours, or a support or chat bar.
+`PortalDockedApplication` is a `DockedApplication` for the patient portal. It uses the same `DOCK_EDGE`, `DOCK_SIZE`, `PRIORITY`, `visible()`, and `on_open()` members, with the differences described below.
+###  Implementing a Portal Docked Application 
+Subclass `PortalDockedApplication`, set `DOCK_EDGE` to `DockEdge.TOP` or `DockEdge.BOTTOM`, set the band's height in `DOCK_SIZE`, and return the band's content from `on_open()`:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+    class OfficeHoursBand(PortalDockedApplication):
+        """Shows the clinic's office hours at the bottom of every portal page."""
+        NAME = "Office Hours"
+        IDENTIFIER = "my_plugin__office_hours_band"
+        DOCK_EDGE = DockEdge.BOTTOM
+        DOCK_SIZE = "64px"
+        def on_open(self) -> Effect | list[Effect]:
+            """Render the band."""
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DOCKED_PANE,
+                content="<p>Office hours: Monday to Friday, 9 AM to 5 PM</p>",
+                title="Office hours",
+            ).apply()
+    ```
+####  Class attributes 
+Attribute | Required | Description  
+---|---|---  
+`NAME` | Required | A name for the band. The portal doesn't display it.  
+`IDENTIFIER` | Optional | A unique key for the application, in the recommended `plugin_name__app_name` format. When omitted, it's derived from the class's module and name. It breaks a `PRIORITY` tie, and it's the band's accessible name when the effect has no `title`.  
+`DOCK_EDGE` | Required | `DockEdge.TOP` or `DockEdge.BOTTOM`. See DockEdge.  
+`DOCK_SIZE` | Required | The band's fixed height, as a positive `px`, `rem`, `em`, or `%` value, such as `64px`. See Fixed height.  
+`PRIORITY` | Optional | An integer that picks which band an edge shows when several share it. The lowest value wins. Defaults to `0`.  
+The portal renders the `url` or `content` of the [`LaunchModalEffect`](/sdk/layout-effect/#modals) that `on_open()` returns. As with a staff docked pane, `title` isn't displayed: it becomes the band's accessible name for screen readers. If `on_open()` returns no `url` or `content`, the portal shows no band for that edge.
+Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way as a Docked Application. It takes no `scope` or `icon`. Don't add it to the `applications` array: `portal_docked` isn't an application scope, so a manifest that lists it there fails validation.
+###  How a band differs from a docked pane 
+  - **Edges.** Only `DockEdge.TOP` and `DockEdge.BOTTOM` are valid. A class that sets `LEFT` or `RIGHT` raises a `ValueError` when the portal asks for its docks, so its band never appears.
+  - **One band per edge.** Each edge shows at most one band. When several Portal Docked Applications share an edge, the one with the lowest `PRIORITY` is shown, with ties broken by identifier, and the others are left out.
+  - **Fixed height.** `DOCK_SIZE` is the band's height, given as a positive `px`, `rem`, `em`, or `%` value, such as `64px`, `4rem`, or `10%`. A `%` value is a share of the screen height. The portal leaves out a band whose `DOCK_SIZE` is any other value. Bands have no resize control. Because the portal is mostly used on phones, the bands together take at most 25% of the screen height, split evenly between them. A single band can be up to 25% tall, and when both edges have a band, each is capped at 12.5%. A taller `DOCK_SIZE` is cut to the cap.
+  - **No context changes.** The portal asks for its bands once, when a signed-in patient loads it, and calls `on_open()` then. It doesn't call `on_context_change()` as the patient moves between pages.
+  - **Sandboxed iframe.** The band loads in a sandboxed iframe that runs scripts, submits forms, opens new tabs, and follows a link the patient selects to navigate the portal. To grant a hosted `url` more capabilities, list it in the manifest's [`url_permissions`](/sdk/canvas_manifest/#url-permissions).
+###  Band context 
+`visible()` and `on_open()` receive the signed-in patient in `self.event.context`:
+Key | Value | Description  
+---|---|---  
+`scope` | `str` | Always `portal_docked`.  
+`user` | `{"id": str, "type": str}` | The signed-in user. `type` is `Patient` and `id` is the patient's key.  
+`patient` | `{"id": str}` | The signed-in patient's key.  
+Override `visible()` to show the band only to some patients. Returning `False` means that patient gets no band, and Canvas doesn't call `on_open()` for them. The portal asks once, when the patient loads it, so a change in the answer takes effect on their next full page load.
+####  Showing a band to some patients 
+This band reminds a patient of an appointment in the next 7 days. `visible()` reads the patient from `patient`, so patients with no upcoming appointment never see it:
+    ```python
+    import arrow
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+    from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+    class AppointmentReminderBand(PortalDockedApplication):
+        """Reminds patients of an appointment in the next 7 days."""
+        NAME = "Appointment reminder"
+        IDENTIFIER = "my_plugin__appointment_reminder_band"
+        DOCK_EDGE = DockEdge.TOP
+        DOCK_SIZE = "48px"
+        def upcoming_appointment(self) -> Appointment | None:
+            """The patient's next appointment in the coming week, if any."""
+            patient_id = self.event.context["patient"]["id"]
+            now = arrow.utcnow()
+            return (
+                Appointment.objects.filter(
+                    patient__id=patient_id,
+                    start_time__range=(now.datetime, now.shift(days=7).datetime),
+                )
+                .exclude(status=AppointmentProgressStatus.CANCELLED)
+                .order_by("start_time")
+                .first()
+            )
+        def visible(self) -> bool:
+            """Show the band only to patients with an upcoming appointment."""
+            return self.upcoming_appointment() is not None
+        def on_open(self) -> Effect | list[Effect]:
+            """Render the reminder."""
+            appointment = self.upcoming_appointment()
+            when = arrow.get(appointment.start_time).format("dddd, MMMM D [at] h:mm A") if appointment else ""
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DOCKED_PANE,
+                content=f"<p>Your next appointment is {when}.</p>",
+                title="Appointment reminder",
+            ).apply()
+    ```
+####  Sharing visibility with a staff docked pane 
+One plugin can show the same notice to staff in a docked pane and to patients in a portal band. `scope` tells a shared `visible()` which one Canvas is asking about, and `user` says who is signed in. In this example, staff without a clinical role, such as the front desk, see a clinic closure notice in the EHR. Patients see it in the portal only when they have an appointment on the closure date:
+    ```python
+    import datetime
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import DockedApplication, DockEdge, PortalDockedApplication
+    from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+    from canvas_sdk.v1.data.staff import Staff
+    CLOSURE_DATE = datetime.date(2026, 11, 26)
+    CLOSURE_NOTICE = "<p>The clinic is closed Thursday, November 26.</p>"
+    class ClosureNoticeVisibility:
+        """The visibility rule both closure notices share."""
+        def visible(self) -> bool:
+            """Show the notice to front desk staff and to patients booked on the closure date."""
+            context = self.event.context
+            user = context["user"]
+            if context["scope"] == "portal_docked":
+                return user["type"] == "Patient" and (
+                    Appointment.objects.filter(
+                        patient__id=context["patient"]["id"],
+                        start_time__date=CLOSURE_DATE,
+                    )
+                    .exclude(status=AppointmentProgressStatus.CANCELLED)
+                    .exists()
+                )
+            staff = Staff.objects.filter(id=user["id"]).first()
+            return staff is not None and staff.top_clinical_role is None
+        def on_open(self) -> Effect | list[Effect]:
+            """Render the notice."""
+            return LaunchModalEffect(
+                target=LaunchModalEffect.TargetType.DOCKED_PANE,
+                content=CLOSURE_NOTICE,
+                title="Clinic closure",
+            ).apply()
+    class ClosureNoticePane(ClosureNoticeVisibility, DockedApplication):
+        """The closure notice for staff, docked to the top of the EHR."""
+        NAME = "Clinic closure"
+        IDENTIFIER = "my_plugin__closure_notice_pane"
+        DOCK_EDGE = DockEdge.TOP
+        DOCK_SIZE = "48px"
+    class ClosureNoticeBand(ClosureNoticeVisibility, PortalDockedApplication):
+        """The closure notice for patients, across the top of the portal."""
+        NAME = "Clinic closure"
+        IDENTIFIER = "my_plugin__closure_notice_band"
+        DOCK_EDGE = DockEdge.TOP
+        DOCK_SIZE = "48px"
+    ```
+The staff pane's context has no `patient`, so the shared `visible()` reads `patient` only when `scope` is `portal_docked`.
+A Portal Docked Application never appears in the EHR, and a `DockedApplication` never appears in the portal.
 ##  Provider Menu Applications 
 A provider menu application adds an entry to the **provider side menu** , the navigation sidebar also called the hamburger menu. A provider can open the menu from any page in the EHR. Use one when a plugin needs a launch point that isn't tied to a patient chart or a note.
 ###  Implementing a Provider Menu Application 
@@ -56284,7 +56498,7 @@ Attribute | Type | Description | Required
   - `RIGHT_CHART_PANE_LARGE`: Like above, but a bit wider. A right chart pane opened in a patient's chart stays open while the user moves around that chart. This includes the chart, Profile, Documents, application tabs, and diagnostics. The content inside the pane isn't reloaded, so it keeps its state. The pane closes when the user opens a different patient or leaves the chart.
   - `PAGE`: Opens the content as a full page.
   - `NOTE`: Opens the content within a note tab (used with Note Applications).
-  - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`.
+  - `DOCKED_PANE`: Opens the content in a persistent pane pinned to an edge of the window. This target is returned by a [Docked Application](/sdk/handlers-embedded-applications/#docked-applications), which sets `DOCK_EDGE` and `DOCK_SIZE`, or by a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications), which adds a band to the top or bottom of the patient portal.
 ###  Example 
     ```python
     from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -56868,6 +57082,8 @@ Attribute | Type | Description | Required
             ]
     ```
 For a full walkthrough with examples, see the [Custom Landing Page guide](/guides/custom-landing-page/). Example plugins: [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin), and the MSF [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) (a "Need to be seen today?" widget).
+##  Add a Band to Every Portal Page 
+To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
 ##  Customize Appointment Cards 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
@@ -59203,6 +59419,7 @@ Search SNOMED family relationships (mother, father, sibling, …).
 Parameter | Type | Description  
 ---|---|---  
 `term__icontains` | string | Case-insensitive substring match on the relationship term.  
+Results are ordered by term length, shortest first, so an exact match comes before longer terms that contain it. For example, `sister` returns Sister before Half-sister.
     ```python
     from urllib.parse import urlencode
     from canvas_sdk.utils.http import ontologies_http
