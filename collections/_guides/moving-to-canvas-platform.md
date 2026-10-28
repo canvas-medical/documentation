@@ -79,7 +79,7 @@ intake-plugin/            # repository root
 └── tests/
 ```
 
-If the package is not in a git repository yet, `canvas deploy` offers to create one at its parent directory. If the package sits inside a larger repository with other code, move it into a repository of its own first, since `deploy` refuses a package nested deeper than that. Add a `.gitignore` for virtual environments and local secrets, because the repository is what gets deployed.
+If the package is not in a git repository yet, `canvas deploy` offers to create one at its parent directory. If the package sits inside a larger repository with other code, such as a monorepo, either move it into a repository of its own or deploy it with `canvas deploy --snapshot`, which pushes only the committed package folder and leaves the larger repository's remotes alone. [Deploying from a monorepo](/sdk/canvas_cli/#deploying-from-a-monorepo) covers how snapshots work. Add a `.gitignore` for virtual environments and local secrets, because the repository is what gets deployed.
 
 If the plugin already has its own repository on GitHub or elsewhere, rename that remote before the first deploy. `canvas deploy` points the repository's `origin` remote at Canvas Platform, replacing whatever `origin` pointed to:
 

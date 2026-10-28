@@ -63,7 +63,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-- Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history.
+- Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history. A [`--snapshot`](#deploying-from-a-monorepo) deploy from a monorepo works from a shallow checkout.
 - The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
 
 - When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
@@ -259,6 +259,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
 - `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+- `--snapshot`: Push the committed package of a plugin that sits inside a larger repository, such as a monorepo, as one new commit on `main`, without changing that repository's remotes. See [Deploying from a monorepo](#deploying-from-a-monorepo). Combines with `--instance` and `--push-only`; takes no `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
 
@@ -306,7 +307,7 @@ paperwork-eviscerator/          # repository root
 └── tests/
 ```
 
-`canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. A package nested deeper inside a larger repository is refused; move it into its own repository, or `canvas clone` it.
+`canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. To deploy a package nested deeper inside a larger repository, pass `--snapshot`.
 
 Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
 
@@ -317,6 +318,31 @@ A plugin that reads another plugin's [custom data](/sdk/custom-data-sharing-data
 **Validate first**
 
 Run [`canvas validate`](#canvas-validate) before you deploy. It runs the manifest checks, the static lint, and sandbox-load validation locally, where errors are faster to fix than after a push.
+
+#### Deploying from a monorepo
+
+When a plugin's package lives inside a larger repository, such as a monorepo whose `origin` is your own git host, deploy it with `--snapshot`. The package can sit at any depth in that repository:
+
+```console
+$ canvas deploy plugins/acme__intake --snapshot --instance acme-staging
+```
+
+Deploy builds and pushes the snapshot in a temporary repository, so your repository's `origin`, git config and index stay as they are.
+
+- Only the package folder ships. The package as committed at HEAD replaces the package folder on the plugin's `main` on Canvas Platform, as one new commit. Other files at the root of the plugin's Canvas Platform repository stay as they are, and sibling plugins and other code in your repository are not sent.
+- When the package is unchanged since the last snapshot, nothing is pushed and deploy uses the commit already on `main`.
+- The commit is authored as the person or service account signed in to Canvas Platform, so a CI job needs no git identity. It carries `Monorepo-Commit: <sha>` and `Monorepo-Path: <path>` trailers that name the commit and folder it came from.
+- The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or CI job land on the same `main`.
+- A CI job can deploy a snapshot from a shallow checkout.
+
+Deploy stops before pushing when:
+
+- The package has uncommitted changes. Deploy never commits in your repository, even with `--yes`, so commit them and run deploy again.
+- The package contains a submodule, a symbolic link or a Git LFS file. None of them would reach an instance as its content. Deploy lists each path; replace them with regular committed files.
+- HEAD does not contain the commit `main` was last snapshotted from, so pushing would roll the plugin back. Update your checkout, for example with `git pull`, and run deploy again. When the checkout does not have that commit, as in a shallow CI checkout, deploy says it could not check and continues.
+- Files in the package on `main` changed since the last snapshot, for example a [catalog listing](/sdk/canvas_manifest/#catalog) edited in Canvas Platform, and the snapshot would replace them. Deploy lists the files. At a terminal it asks whether to replace them; otherwise it stops. To keep Canvas Platform's versions, copy them into your repository (`canvas clone` checks them out), commit them, and deploy again. Until a plugin has its first snapshot, every package file already on `main` counts as changed on Canvas Platform.
+
+Deploy also warns when HEAD is not on any remote branch of your repository, since that code has not been through your repository's review.
 
 ### `canvas clone`
 
