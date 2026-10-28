@@ -69,6 +69,24 @@ def authenticate(self) -> bool:
 
 For a connection from the patient portal, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
 
+To accept connections from a family member or representative, set `PORTAL_ACCESS` on your handler to the lowest access level it needs in each area, as on a [SimpleAPI](/sdk/handlers-simple-api-http/#family-portal-access). They connect when `authenticate()` accepts them and they have at least that level in every area it names:
+
+```python
+from canvas_sdk.handlers.simple_api import PortalAccessLevel
+from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
+
+
+class CopayWebSocket(WebSocketAPI):
+    PORTAL_ACCESS = {
+        "appointments": PortalAccessLevel.VIEW,
+        "billing": PortalAccessLevel.VIEW,
+    }
+
+    def authenticate(self) -> bool:
+        user = self.websocket.logged_in_user
+        return user is not None and user["type"] == "Patient"
+```
+
 #### APIKey-Based (External Clients)
 For external tools or scripts, pass an auth key as a query parameter:
 

@@ -20,7 +20,7 @@ Plugins receive the patient whose chart the portal is open on, which isn't alway
 - The `user` in the event context of a `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application).
 - The target of portal events, such as `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, and `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION`.
 
-To find out who is using the chart and what they can do there, read `portal_access` on [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) or the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object). It gives the family member's or representative's user ID and their access level (none, view, or act) in appointments, messaging, clinical, and billing.
+To find out who is using the chart and what they can do there, read `portal_access` on [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) or the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object). It gives the family member's or representative's user ID and their access level (none, view, or act) in appointments, messaging, clinical, and billing. To serve family members and representatives from a SimpleAPI or WebSocket API, declare the access your routes need with `PORTAL_ACCESS`, as [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access) describes.
 
 A handler that looks up the patient from these values works with the chart the portal is open on. When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
 
