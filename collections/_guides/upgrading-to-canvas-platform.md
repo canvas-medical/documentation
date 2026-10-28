@@ -16,7 +16,7 @@ Automated pipelines make the same switch, signing in with a service account toke
 
 {% include alert.html type="info" content="<b><code>canvas install</code> and <code>credentials.ini</code> keep working until December 14, 2026.</b> Switch your development workflow and CI to <code>canvas login</code> and <code>canvas deploy</code> before then." %}
 
-{% include alert.html type="info" content="<b>This guide replaces an earlier version.</b> From October 16 to October 28, 2026, this page described a much more costly and complicated upgrade, in which you renamed every plugin, moved each into its own repository, and switched your integrations to new URLs. We've worked hard to simplify it. If you started on those steps, the <a href='#faqs'>FAQs</a> cover where that leaves you." %}
+{% include alert.html type="info" content="<b>This guide replaces an earlier version.</b> From October 16 to October 28, 2026, this page described a more complicated upgrade. We've worked hard to simplify it. Common questions are answered in the <a href='#faqs'>FAQs</a> section below." %}
 
 ## Why the change
 
