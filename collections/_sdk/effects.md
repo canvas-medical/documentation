@@ -260,6 +260,19 @@ Check out the [Note Effects](/sdk/effect-notes/) documentation.
 | NOTE__CUSTOM_CONTENT | Render a custom content block inside a note, above the note body or within a note section. Available on instances in the [revamped note beta program](/product-updates/note-revamp/). See [Note Custom Content](/sdk/effect-note-custom-content/). |
 
 
+### Faxes
+
+Check out the [Fax Effects](/sdk/effect-fax/) documentation.
+
+| Effect | Description |
+|---|---|
+| FAX_NOTE | Fax a note to an external recipient. |
+| FAX_REFERRAL | Fax a referral and its attachments. |
+| FAX_IMAGING_ORDER | Fax an imaging order. |
+| FAX_LAB_ORDER | Fax a lab order's requisition form. |
+| FAX_LETTER | Fax a letter and its attachments. |
+
+
 ### Appointments
 
 Check out the [Appointment Effects](/sdk/effect-notes/#appointment-effect), [Appointment Labels](/sdk/effect-appointment-labels/), and [Appointment Metadata](/sdk/effect-appointment-metadata/) documentation.
@@ -322,7 +335,7 @@ Check out the [Create Calendar](/sdk/calendar-create-effect/) and [Manage Calend
 
 ### Patients
 
-Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
+Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/effect-patient-metadata/), [Patient External ID](/sdk/effect-create-patient-external-identifier/), [Patient Facility Address](/sdk/effect-patient-facility-address/), [Patient Identification Card](/sdk/effect-patient-identification-card/), and [Record Patient Consent](/sdk/effect-record-patient-consent/) documentation.
 
 | Effect | Description |
 |---|---|
@@ -337,6 +350,22 @@ Check out the [Patient Effects](/sdk/effect-patient/), [Patient Metadata](/sdk/e
 | UPDATE_PATIENT_FACILITY_ADDRESS | Update a facility address for a patient. |
 | DELETE_PATIENT_FACILITY_ADDRESS | Delete a facility address for a patient. |
 | RECORD_PATIENT_CONSENT | Record a patient's decision on a consent and file the signed document. |
+| CREATE_PATIENT_IDENTIFICATION_CARD | Add an identification card image for a patient. |
+| UPDATE_PATIENT_IDENTIFICATION_CARD | Change a patient's identification card. |
+| DELETE_PATIENT_IDENTIFICATION_CARD | Delete a patient's identification card. |
+
+### Coverage
+
+Check out the [Coverage Effect](/sdk/effect-coverage/) documentation.
+
+| Effect | Description |
+|---|---|
+| CREATE_COVERAGE | Create an insurance coverage for a patient, with optional card images. |
+| UPDATE_COVERAGE | Change an existing coverage. |
+| EXPIRE_COVERAGE | End a coverage on a given date. |
+| REMOVE_COVERAGE | Move a coverage to the removed stack. |
+| REMOVE_COVERAGE_PHOTO | Remove the front or back card image from a coverage. |
+| REORDER_COVERAGE | Change the rank and stack of a patient's coverages. |
 
 
 ### Patient Groups
@@ -370,6 +399,7 @@ Check out the [Message Effects](/sdk/effect-messages/) documentation.
 | SEND_MESSAGE | Send a message. |
 | CREATE_AND_SEND_MESSAGE | Create and send a message in one step. |
 | EDIT_MESSAGE | Edit a message. |
+| [ASSIGN_MESSAGE_TEAM](/sdk/effect-messages/#assigning-a-message-to-a-team) | Assign a message to a team, change its team, or unassign it. |
 
 
 ### Observations
@@ -472,6 +502,7 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
 | SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
+| PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal). |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
@@ -504,6 +535,15 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | Effect | Description |
 |---|---|
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
+
+
+### Plugin Usage
+
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit. |
 
 
 ### Revenue / Payment Processor
@@ -611,6 +651,7 @@ The following command types support `ORIGINATE`, `EDIT`, `DELETE`, `COMMIT`, and
 | Uncategorized Document Review | `*_UNCATEGORIZED_DOCUMENT_REVIEW_COMMAND` | |
 | Update Diagnosis | `*_UPDATE_DIAGNOSIS_COMMAND` | |
 | Update Goal | `*_UPDATE_GOAL_COMMAND` | |
+| Visual Exam Finding | `*_VISUAL_EXAM_FINDING_COMMAND` | |
 | Vitals | `*_VITALS_COMMAND` | |
 
 

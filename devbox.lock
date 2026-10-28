@@ -62,27 +62,6 @@
         }
       }
     },
-    "ruby_3_1@latest": {
-      "last_modified": "2023-09-27T18:02:17Z",
-      "plugin_version": "0.0.2",
-      "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#ruby",
-      "source": "devbox-search",
-      "version": "3.1.4",
-      "systems": {
-        "aarch64-darwin": {
-          "store_path": "/nix/store/mva5k2vrfz42a7k8zrwq0zxkgn4dwjzl-ruby-3.1.4"
-        },
-        "aarch64-linux": {
-          "store_path": "/nix/store/r9pzs21sn0r7qbhwvd1x2d9waccjnrwc-ruby-3.1.4"
-        },
-        "x86_64-darwin": {
-          "store_path": "/nix/store/7xb6s42vk99ay217r7v6kgjsf7wmggnk-ruby-3.1.4"
-        },
-        "x86_64-linux": {
-          "store_path": "/nix/store/5xbwwbyjmc1xvjzhghk6r89rn4ylidv8-ruby-3.1.4"
-        }
-      }
-    },
     "yarn@latest": {
       "last_modified": "2023-09-27T18:02:17Z",
       "resolved": "github:NixOS/nixpkgs/517501bcf14ae6ec47efd6a17dda0ca8e6d866f9#yarn",
