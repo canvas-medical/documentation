@@ -984,7 +984,7 @@ class IncidentToHandler(BaseHandler):
 
 ### Assign
 
-`assign(*, assignee_id: str | None = None, team_id: str | None = None) → Effect`
+`assign(*, assignee_id: str | None = None, team_id: str | UUID | None = None) → Effect`
 
 Assigns a claim to a staff member or a team, so the claim has an owner responsible for working it. A claim has one owner at a time: assigning a staff member removes any team assignment, and assigning a team removes any staff assignment. Calling `assign()` with neither parameter clears the assignment, the same as [`unassign()`](#unassign).
 
@@ -995,14 +995,12 @@ When the assignment changes, Canvas emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/ev
 | Parameter     | Type            | Description                                                         | Required |
 | ------------- | --------------- | ------------------------------------------------------------------- | -------- |
 | `assignee_id` | `str` or `None` | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign    | No       |
-| `team_id`     | `str` or `None` | The `id` of the [Team](/sdk/data-team/) to assign                   | No       |
+| `team_id`     | `UUID`, `str`, or `None` | The `id` of the [Team](/sdk/data-team/#team) to assign     | No       |
 
 #### Implementation Details
 
-- Validates `claim_id` is provided and that the associated claim exists
-- Validates that `assignee_id` and `team_id` aren't both provided
-- If `assignee_id` is provided, validates that the Staff record exists
-- If `team_id` is provided, validates that the Team record exists
+- Pass `assignee_id` to assign a staff member, or `team_id` to assign a team, but not both in the same call.
+- Reassigning a claim replaces its current owner.
 
 #### Example Usage
 
@@ -1056,10 +1054,6 @@ class AssignClaimToProviderHandler(BaseHandler):
 `unassign() → Effect`
 
 Clears a claim's assignment, whether the claim is assigned to a staff member or a team. Like [`assign()`](#assign), it emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event when the assignment changes.
-
-#### Implementation Details
-
-- Validates `claim_id` is provided and that the associated claim exists
 
 #### Example Usage
 
