@@ -106,15 +106,22 @@ sections:
           - name: identifier
             type: array[json]
             description: A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+            create_description: >-
+              The practitioner's NPI number. The NPI is optional, so you can create a practitioner without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.
+            update_description: >-
+              The practitioner's NPI number. The NPI is optional, so you can send an update without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.<br><br>
+              If you omit `identifier` during an update, Canvas removes the practitioner's stored NPI. To keep the NPI, send it in every update.
             attributes:
               - name: system
                 type: string
                 description: The `system` attribute specifies the namespace in which the identifier value is unique. 
+                create_and_update_description: Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
                 enum_options:
                   - value: http://hl7.org/fhir/sid/us-npi
               - name: value
                 type: string
                 description: Practitioner's NPI number. Its value must be a 10 digit number.
+                create_and_update_description: The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
           - name: active
             type: boolean
             description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
