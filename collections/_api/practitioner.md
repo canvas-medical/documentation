@@ -39,10 +39,11 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
               - name: valueString
                 type: string
-                description: Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                description_for_all_endpoints: Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
                 create_description: >-
-                  Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br>
                   The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name. A username is up to 150 characters of letters, digits, and `@`, `.`, `+`, `-`, or `_`.
+                update_description: >-
+                  You can't change a practitioner's username. If you send the username extension, its `valueString` must match the practitioner's current username, or the update fails with a 422 error. If you omit the username extension, the username stays the same.
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
