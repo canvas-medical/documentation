@@ -42,7 +42,7 @@ Stay up to date on the latest important dates for the Canvas platform.
     <tr>
       <td>Canvas CLI: Installing plugins with <code>canvas install</code> and <code>credentials.ini</code></td>
       <td style="color: red;">Breaking Change</td>
-      <td>Installing plugins straight onto an instance with <code>canvas install</code>, using the instance credentials in <code>~/.canvas/credentials.ini</code>, is deprecated, and support for it ends on 12/14/2026. Deploy plugins through Canvas Platform with <code>canvas login</code> and <code>canvas deploy</code> instead. Moving a plugin to Canvas Platform includes renaming it with your organization's prefix. <a href="/guides/moving-to-canvas-platform/">Read more.</a></td>
+      <td>Installing plugins straight onto an instance with <code>canvas install</code>, using the instance credentials in <code>~/.canvas/credentials.ini</code>, is deprecated, and support for it ends on 12/14/2026. Sign in with <code>canvas login</code> and deploy plugins with <code>canvas deploy</code> instead, from your machine and from CI. Your plugins keep their names, variables and URLs, and Canvas handles the rest of the upgrade. <a href="/guides/upgrading-to-canvas-platform/">Read more.</a></td>
       <td></td>
       <td>12/14/2026</td>
     </tr>

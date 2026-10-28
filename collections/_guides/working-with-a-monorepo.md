@@ -12,7 +12,7 @@ That works well for a team that develops each plugin on its own. Other teams kee
 
 ## Lay out each plugin
 
-Each plugin's package folder, the folder holding `CANVAS_MANIFEST.json`, can sit anywhere in your repository. Name it after the plugin's publisher-prefixed name, `<org prefix>__<package>`, and use that name for the manifest `name` and the package's imports:
+Each plugin's package folder, the folder holding `CANVAS_MANIFEST.json`, can sit anywhere in your repository. Give it the same name as the manifest `name`. Existing plugins keep the names they have, and for a new plugin, `canvas init` recommends a name with your organization's prefix, `<org prefix>__<package>`:
 
 ```text
 your-repo/
@@ -26,7 +26,7 @@ your-repo/
 └── services/                      # stays in your repository
 ```
 
-A snapshot ships only the package folder. Tests, other plugins and the rest of your repository never reach Canvas Platform. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so rename plugins in one reviewed change before the first deploy, and every checkout and pipeline then deploys to the same place.
+A snapshot ships only the package folder. Tests, other plugins and the rest of your repository never reach Canvas Platform. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so every checkout and pipeline that deploys a plugin deploys to the same place.
 
 ## Deploy from your machine
 
