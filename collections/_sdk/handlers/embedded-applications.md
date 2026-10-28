@@ -712,7 +712,127 @@ Register the class under `handlers` in your `CANVAS_MANIFEST.json`, the same way
 | `user`    | `{"id": str, "type": str}` | The signed-in user. `type` is `Patient` and `id` is the patient's key. |
 | `patient` | `{"id": str}`              | The signed-in patient's key.                                      |
 
-Override `visible()` to show the band only to some patients. For example, look up the patient from `self.event.context["patient"]["id"]` and return `False` for patients who shouldn't see it.
+Override `visible()` to show the band only to some patients. Returning `False` means that patient gets no band, and Canvas doesn't call `on_open()` for them. The portal asks once, when the patient loads it, so a change in the answer takes effect on their next full page load.
+
+#### Showing a band to some patients
+
+This band reminds a patient of an appointment in the next 7 days. `visible()` reads the patient from `patient`, so patients with no upcoming appointment never see it:
+
+```python
+import arrow
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockEdge, PortalDockedApplication
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+
+
+class AppointmentReminderBand(PortalDockedApplication):
+    """Reminds patients of an appointment in the next 7 days."""
+
+    NAME = "Appointment reminder"
+    IDENTIFIER = "my_plugin__appointment_reminder_band"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+
+    def upcoming_appointment(self) -> Appointment | None:
+        """The patient's next appointment in the coming week, if any."""
+        patient_id = self.event.context["patient"]["id"]
+        now = arrow.utcnow()
+
+        return (
+            Appointment.objects.filter(
+                patient__id=patient_id,
+                start_time__range=(now.datetime, now.shift(days=7).datetime),
+            )
+            .exclude(status=AppointmentProgressStatus.CANCELLED)
+            .order_by("start_time")
+            .first()
+        )
+
+    def visible(self) -> bool:
+        """Show the band only to patients with an upcoming appointment."""
+        return self.upcoming_appointment() is not None
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the reminder."""
+        appointment = self.upcoming_appointment()
+        when = arrow.get(appointment.start_time).format("dddd, MMMM D [at] h:mm A") if appointment else ""
+
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content=f"<p>Your next appointment is {when}.</p>",
+            title="Appointment reminder",
+        ).apply()
+```
+
+#### Sharing visibility with a staff docked pane
+
+One plugin can show the same notice to staff in a [docked pane](#docked-applications) and to patients in a portal band. `scope` tells a shared `visible()` which one Canvas is asking about, and `user` says who is signed in. In this example, staff without a clinical role, such as the front desk, see a clinic closure notice in the EHR. Patients see it in the portal only when they have an appointment on the closure date:
+
+```python
+import datetime
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import DockedApplication, DockEdge, PortalDockedApplication
+from canvas_sdk.v1.data.appointment import Appointment, AppointmentProgressStatus
+from canvas_sdk.v1.data.staff import Staff
+
+CLOSURE_DATE = datetime.date(2026, 11, 26)
+CLOSURE_NOTICE = "<p>The clinic is closed Thursday, November 26.</p>"
+
+
+class ClosureNoticeVisibility:
+    """The visibility rule both closure notices share."""
+
+    def visible(self) -> bool:
+        """Show the notice to front desk staff and to patients booked on the closure date."""
+        context = self.event.context
+        user = context["user"]
+
+        if context["scope"] == "portal_docked":
+            return user["type"] == "Patient" and (
+                Appointment.objects.filter(
+                    patient__id=context["patient"]["id"],
+                    start_time__date=CLOSURE_DATE,
+                )
+                .exclude(status=AppointmentProgressStatus.CANCELLED)
+                .exists()
+            )
+
+        staff = Staff.objects.filter(id=user["id"]).first()
+
+        return staff is not None and staff.top_clinical_role is None
+
+    def on_open(self) -> Effect | list[Effect]:
+        """Render the notice."""
+        return LaunchModalEffect(
+            target=LaunchModalEffect.TargetType.DOCKED_PANE,
+            content=CLOSURE_NOTICE,
+            title="Clinic closure",
+        ).apply()
+
+
+class ClosureNoticePane(ClosureNoticeVisibility, DockedApplication):
+    """The closure notice for staff, docked to the top of the EHR."""
+
+    NAME = "Clinic closure"
+    IDENTIFIER = "my_plugin__closure_notice_pane"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+
+
+class ClosureNoticeBand(ClosureNoticeVisibility, PortalDockedApplication):
+    """The closure notice for patients, across the top of the portal."""
+
+    NAME = "Clinic closure"
+    IDENTIFIER = "my_plugin__closure_notice_band"
+    DOCK_EDGE = DockEdge.TOP
+    DOCK_SIZE = "48px"
+```
+
+The staff pane's context has no `patient`, so the shared `visible()` reads `patient` only when `scope` is `portal_docked`.
 
 A Portal Docked Application never appears in the EHR, and a `DockedApplication` never appears in the portal.
 
