@@ -24,7 +24,7 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.2"
+          ruby-version: ".ruby-version"
           bundler-cache: true
       - name: Build Jekyll site
         run: bundle exec jekyll build

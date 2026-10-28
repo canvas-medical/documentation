@@ -59,6 +59,11 @@ If the plugin declares [`custom_data`](/sdk/canvas_manifest/#custom-data):
 
 See [Custom data on Canvas Platform](/sdk/custom-data-sharing-data/#custom-data-on-canvas-platform) for how plugins share a namespace.
 
+If the plugin has [SimpleAPI](/sdk/handlers-simple-api-http/) routes, their URLs change with the name. An instance sends each request under `/plugin-io/api/<plugin name>/` only to the plugin with that exact name, so `/plugin-io/api/intake/...` becomes `/plugin-io/api/acme__intake/...`. The old path has no alias or redirect. Before you switch an instance over:
+
+- Update every URL in the plugin's own code that includes the old name, such as application and modal URLs, links in rendered HTML, and calls from front-end JavaScript.
+- Plan when external systems that call the plugin, such as webhooks and partner integrations, switch to the new path. The old path stops answering when step 5 disables the old plugin, and the new path answers once the renamed plugin is deployed, so neither path answers between those two commands.
+
 Then run [`canvas validate`](/sdk/canvas_cli/#canvas-validate) on the renamed package.
 
 ### 3. Give the plugin its own repository
@@ -115,6 +120,10 @@ $ canvas uninstall intake --host acme-staging
 ```
 
 `canvas deploy` waits up to 300 seconds for each instance's outcome and exits non-zero unless every instance succeeds in that time.
+
+{% include alert.html type="warning" content="<b>Uninstalling the old plugin deletes its banner alerts.</b> Banners on patient charts and claims belong to the plugin that added them. They're hidden while the old plugin is disabled, and <code>canvas uninstall</code> deletes them. To keep them, have the renamed plugin read the old plugin's banners with <a href='/sdk/data-banner-alert/'><code>BannerAlert</code></a> or <a href='/sdk/data-claim/#claimbanneralert'><code>ClaimBannerAlert</code></a>, filtered on <code>plugin_name='intake'</code> and <code>status='active'</code>, and add them again with <a href='/sdk/effect-banner-alerts/'><code>AddBannerAlert</code></a> or <a href='/sdk/effect-claims/#add-banner'><code>ClaimEffect.add_banner()</code></a> before you uninstall the old plugin." %}
+
+{% include alert.html type="info" content="<b>Protocol cards aren't deleted, but they stop showing.</b> A patient's chart shows only <a href='/sdk/effect-protocol-cards/'>protocol cards</a> from enabled plugins, so the old plugin's cards disappear when you disable it. Uninstalling it leaves them hidden. The renamed plugin's cards appear as it adds them." %}
 
 Repeat steps 4 and 5 for each instance that runs the plugin. From now on, ship changes with `canvas deploy`.
 

@@ -109,12 +109,22 @@ class MyHandler(BaseHandler):
 
 For a full walkthrough with examples, see the [Custom Landing Page guide](/guides/custom-landing-page/). Example plugins: [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin), and the MSF [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) (a "Need to be seen today?" widget).
 
+## Add a Band to Every Portal Page
+
+To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
+
 ## Customize Appointment Cards
 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments.
 Each appointment can be customized individually, allowing each one to have its own unique settings.
 
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+
+- With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
+- A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
+- Some appointments never offer either action, and Canvas doesn't fire the event for them. These are appointments that are canceled, marked as a no-show, or checked in, and appointments whose note is signed, locked, or deleted. A patient also can't cancel an appointment that has already started.
 
 MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
 
@@ -239,9 +249,92 @@ class MyHandler(BaseHandler):
 
 ```
 
+## Theme the Patient Portal
+
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
+
+Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
+
+### Methods
+
+#### apply() → Effect
+
+Applies the theme. The effect raises a validation error that names the attribute at fault when:
+
+- An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
+- A value doesn't match its format or range in the Attributes table.
+- `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+- `font_source` is set without `font_family`.
+
+### Attributes
+
+| Attribute                        | Type  | Description                                                                                                                                              | Required |
+|----------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `brand_color`                    | `str` | The brand color, as a six-digit hex color such as `"#0F766E"`.                                                                                           | No       |
+| `menu_background_color`          | `str` | The background of the left navigation menu, as a six-digit hex color.                                                                                    | No       |
+| `menu_selected_background_color` | `str` | The background of the selected menu item, as a six-digit hex color.                                                                                      | No       |
+| `menu_text_color`                | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No       |
+| `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
+| `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
+| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No       |
+| `font_source`                    | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No       |
+| `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
+| `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
+
+Setting `font_family` replaces the portal's default webfont, including in questionnaire forms. The theme also applies in pop-up windows, such as questionnaire forms and the Session Expired notice.
+
+Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
+
+### Color contrast
+
+`apply()` doesn't check color contrast, so check that the colors you choose stay readable. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a contrast ratio of at least 4.5:1. The portal draws these colors together:
+
+- Menu text on `menu_background_color`, and on `menu_selected_background_color`.
+- Body text on `page_background_color`.
+- `brand_color` links and section titles on `page_background_color`, and on the light brand tint behind section and accordion headers.
+- White text on `brand_color`, on primary buttons and sent messages.
+- `brand_color` text on `menu_selected_background_color`, when the menu keeps its default background.
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class PortalThemeHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_THEME_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [
+            PatientPortalTheme(
+                brand_color="#0F766E",
+                page_background_color="#F0FDFA",
+                # A dark menu: the portal picks white menu text.
+                menu_background_color="#1F2937",
+                corner_radius=8,
+                font_family="Inter, sans-serif",
+                font_source="https://fonts.googleapis.com/css2?family=Inter&display=swap",
+                person_word="member",
+            ).apply()
+        ]
+```
+
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
+
+Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
+
+- Self-scheduling turned on for the patient. See `can_schedule_appointments` in [Configuring the Patient Portal](#configuring-the-patient-portal).
+- A start time in the future.
+- A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
 
@@ -463,9 +556,34 @@ A patient can download the after-visit summary of their own locked notes from th
 
 - The PDF is the same after-visit summary a clinician prints from the note.
 - Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
-- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
 
-Each download also fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which summaries a patient has received. The event targets the patient, and its context carries the `document` (`"after_visit_summary"`) and the `note_id`. It is sent after the PDF is served, so a handler can't delay or block the download.
+## Link to Lab and Imaging Requisitions
+
+A patient can download the requisition of their own lab and imaging orders from the portal. As with [after-visit summaries](#link-to-after-visit-summaries), the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+
+| Order   | Portal URL                                   | PDF the patient gets                                                                                                                                                       |
+|---------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lab     | `/app/laborder/<order id>/requisition`       | The requisition a clinician prints from the order. For an order sent electronically through Health Gorilla, the patient gets Health Gorilla's requisition form, as staff do. |
+| Imaging | `/app/imagingorder/<order id>/requisition`   | The "Prepare for your imaging test" letter staff print for the patient.                                                                                                    |
+
+`<order id>` is the `id` of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder).
+
+- Only the patient the order belongs to can open it, and only once the order is committed and not entered in error. Any other order id returns a 404 error.
+- By default, patients can download the requisition only while the order is open. A lab order is open until the chart shows all of its reports received. An imaging order is open until it has a result, not counting results deleted in Data Integration. To let patients download the requisitions of completed orders too, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to set `PATIENT_PORTAL_REQUISITION_ORDER_STATES` to **Open and completed orders**.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
+
+## Track Document Downloads
+
+Each after-visit summary or requisition download fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which documents a patient has received. The event targets the patient. It is sent after the PDF is served, so a handler can't delay or block the download.
+
+The event context names the `document` and the record it came from:
+
+| `document`              | Record key | Record                                                  |
+|-------------------------|------------|---------------------------------------------------------|
+| `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
+| `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
+| `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
 
 ```python
 from canvas_sdk.effects import Effect
@@ -474,14 +592,17 @@ from canvas_sdk.handlers import BaseHandler
 from logger import log
 
 
-class TrackSummaryDownloads(BaseHandler):
+class TrackDocumentDownloads(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
 
     def compute(self) -> list[Effect]:
-        if self.context.get("document") != "after_visit_summary":
-            return []
+        document = self.context.get("document")
 
-        log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        if document == "after_visit_summary":
+            log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        elif document in ("lab_requisition", "imaging_requisition"):
+            log.info(f"{document} downloaded for order {self.context['order_id']}")
+
         return []
 ```
 

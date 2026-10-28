@@ -79,6 +79,7 @@ $ tree paperwork-eviscerator/
 paperwork-eviscerator/
 ├── acme__paperwork_eviscerator
 │    ├── CANVAS_MANIFEST.json
+│    ├── OVERVIEW.md
 │    ├── README.md
 │    └── handlers
 │         ├── __init__.py
@@ -88,7 +89,7 @@ paperwork-eviscerator/
     ├── __init__.py
     └── test_models.py
 
-5 directories, 9 files
+5 directories, 10 files
 ```
 
 ### CANVAS_MANIFEST.json
@@ -144,6 +145,13 @@ will be initialized on plugin install, and can be set with [`canvas config set`]
 
 Share details about the purpose of your plugins and how it works in this
 README file.
+
+### OVERVIEW.md
+
+This file is the overview on your plugin's page in the Canvas Platform plugin
+catalog, written for the person deciding whether to install it. Canvas Platform
+renders it as markdown. Delete it to leave the plugin without an overview. See
+[Catalog](/sdk/canvas_manifest/#catalog) in the Canvas Manifest reference.
 
 ### handlers/event_handlers.py
 

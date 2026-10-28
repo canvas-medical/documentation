@@ -1860,10 +1860,11 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
   </tbody>
 </table>
 
+<a id="condition_updated"></a>
 <table>
   <thead>
     <tr><th colspan="2">CONDITION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when a condition is updated for a patient.</td></tr>
+    <tr><td colspan="2">Occurs when a condition is updated for a patient, including when committing an <a href="/sdk/commands/#assess">Assess</a> command moves it onto or off the problem list.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2964,6 +2965,37 @@ Surescripts response events fire when the platform receives a response from Sure
 
 <table>
   <thead>
+    <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": message_id
+"type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
+      <td><pre>"message": <a href='/sdk/data-message/#message'>Message</a>
+  "id": message_id
+  "sender": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
+  "recipient": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
+  "read": datetime str | null
+"team": <a href='/sdk/data-team/'>Team</a> | null
+  "id": team_id
+  "name": str
+"previous_team": <a href='/sdk/data-team/'>Team</a> | null
+  "id": team_id
+  "name": str
+"patient": <a href='/sdk/data-patient/'>Patient</a>
+  "id": pt_id
+"assigned_at": datetime str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">MESSAGE_TRANSMISSION_CREATED</th></tr>
     <tr><td colspan="2">Occurs when a message transmission record is created. Message transmissions track delivery attempts and status for messages sent through various channels (SMS, email, etc.).</td></tr>
   </thead>
@@ -3297,6 +3329,195 @@ Surescripts response events fire when the platform receives a response from Sure
   </tbody>
 </table>
 
+#### Faxed Documents
+
+Canvas records an action event each time a note, referral, imaging order, lab order, or integration task is faxed, including faxes a plugin sends with the [Fax Note effect](/sdk/effect-notes/#fax-note). Letters have their own [letter action events](#letters).
+
+- The `_CREATED` event fires when the fax is submitted. `delivered_by_fax` on the target is still `None`.
+- The `_UPDATED` event fires when the faxing service reports the outcome. Read `delivered_by_fax` and `fax_result_msg` on the target; see [delivery status](/sdk/data-fax/#delivery-status).
+
+A later report that changes the outcome or its message fires `_UPDATED` again, so a plugin that retries failed faxes should retry each action event only once.
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a note is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">NOTE_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a note fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": note_action_event_id
+"type": <a href='/sdk/data-fax/#noteactionevent'>NoteActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a referral is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">REFERRAL_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a referral fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": referral_action_event_id
+"type": <a href='/sdk/data-fax/#referralactionevent'>ReferralActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an imaging order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">IMAGING_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an imaging order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": imaging_order_action_event_id
+"type": <a href='/sdk/data-fax/#imagingorderactionevent'>ImagingOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when a lab order is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">LAB_ORDER_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether a lab order fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": lab_order_action_event_id
+"type": <a href='/sdk/data-fax/#laborderactionevent'>LabOrderActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when an integration task is faxed.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">INTEGRATION_TASK_ACTION_EVENT_UPDATED</th></tr>
+    <tr><td colspan="2">Occurs when the faxing service reports whether an integration task fax was delivered.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": integration_task_action_event_id
+"type": <a href='/sdk/data-fax/#integrationtaskactionevent'>IntegrationTaskActionEvent</a></pre></td>
+      <td><pre>empty</pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Observations
 
 <table>
@@ -3321,7 +3542,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">OBSERVATION_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when an observation is updated.</td></tr>
+    <tr><td colspan="2">Occurs when an observation is updated. An <a href='/sdk/effect-observation/#update--effect'>Observation <code>update()</code> effect</a> that changes nothing doesn't send this event.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -5679,6 +5900,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5716,6 +5938,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5749,6 +5972,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5777,6 +6001,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5805,6 +6030,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5854,6 +6080,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5882,6 +6109,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5910,6 +6138,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5938,6 +6167,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5966,6 +6196,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -5994,6 +6225,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6022,6 +6254,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6050,6 +6283,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6078,6 +6312,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6106,6 +6341,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -6134,6 +6370,7 @@ class FollowUpDateInPlan(BaseHandler):
   "approximate_date_of_onset":
     "input": str
     "date": str
+  "show_in_problem_list": bool
   "background": str
   "status": str
   "narrative": str
@@ -28738,7 +28975,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__DOCUMENT_DOWNLOADED</th></tr>
-    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as whether they downloaded their after-visit summary. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. A signed-in patient downloads the after-visit summary of their own locked note at <code>/app/note/&lt;note_id&gt;/aftervisitsummary</code>, so a plugin can link a patient to their summary. Any other note ID returns a 404 error.</td></tr>
+    <tr><td colspan="3">Occurs when a patient downloads a clinical document from the Patient Portal. Use it to keep your own record of what a patient has received, such as an after-visit summary or a lab requisition. The event is queued asynchronously once the document is generated, so a handler can't delay or block the download. See <a href='/sdk/patient-portal/#track-document-downloads'>Track Document Downloads</a> for the documents that fire it and the context each one carries.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -28749,8 +28986,9 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"document": str["after_visit_summary"]
-"note_id": str</pre></td>
+      <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
+"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
+"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
     </tr>
   </tbody>
 </table>
@@ -28772,6 +29010,46 @@ shape only; dynamic per-field entries appear alongside.
       <td><pre>"login_method": str["credentials" |
                     "access_token" |
                     "registration"]</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="patient_portal__widget_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__WIDGET_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when the Patient Portal landing page loads. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>None</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<a id="patient_portal__get_theme_configuration"></a>
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_THEME_CONFIGURATION</th></tr>
+    <tr><td colspan="3">Occurs when a Patient Portal page loads, including the login page. Return a <code>PatientPortalTheme</code> effect to theme the portal. See <a href='/sdk/patient-portal/#theme-the-patient-portal'>Theme the Patient Portal</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>None</pre></td>
+      <td><pre>None</pre></td>
+      <td><pre>"business_line_id": str | null</pre></td>
     </tr>
   </tbody>
 </table>
@@ -29309,6 +29587,57 @@ For more information on these events, see <a href="/sdk/handlers-applications" t
   </tbody>
 </table>
 
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
+    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "url": str
+  "patient":
+    "id": str
+  "user":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
+  "claim": (optional)
+    "id": str
+  "claim_queue": (optional)
+    "dbid": str</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
+    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>application_id</pre></td>
+      <td><pre>
+  "staff":
+    "id": str
+    "type": <a href='/sdk/data-staff/'>Staff</a>
+  "patient":
+    "id": str
+    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Payment Processor Events
 
 These events drive the custom [Payment Processor](/sdk/handlers-payment-processors/) handlers. They are dispatched as a user moves through a payment workflow, and the actor that initiated the workflow is set on each event (see [Event Actor](#event-actor)). Every event other than `REVENUE__PAYMENT_PROCESSOR__LIST` includes the `identifier` of the processor it targets, so a handler only acts when the identifier matches its own.
@@ -29463,58 +29792,6 @@ Apart from `success` and `error`, every value arrives as a string or `null`, inc
 "payment_card_id": str   # echoed, a <a href='/sdk/data-payment-card/'>PaymentCard</a> id under Stripe
 "claim_id": str          # echoed, a <a href='/sdk/data-claim/'>Claim</a> id, null when none
 "amount": str            # echoed, the dollar amount submitted</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-### Patient Portal Events
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__ON_CONTEXT_CHANGE</th></tr>
-    <tr><td colspan="2">Occurs when a user navigates to a different URL while an application is open. Currently supported for revenue workflows.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "url": str
-  "patient":
-    "id": str
-  "user":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a> | <a href='/sdk/data-patient/'>Patient</a>
-  "claim": (optional)
-    "id": str
-  "claim_queue": (optional)
-    "dbid": str</pre></td>
-    </tr>
-  </tbody>
-</table>
-
-<table>
-  <thead>
-    <tr><th colspan="2">APPLICATION__GET_NOTIFICATION_BADGE</th></tr>
-    <tr><td colspan="2">Occurs when Canvas loads applications and requests the current notification badge count. Respond by overriding <code>compute_notification_badge()</code> on your <a href="/sdk/handlers-applications/#notification-badges">Application</a> handler.</td></tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Target</td>
-      <td>Context object</td>
-    </tr>
-    <tr>
-      <td><pre>application_id</pre></td>
-      <td><pre>
-  "staff":
-    "id": str
-    "type": <a href='/sdk/data-staff/'>Staff</a>
-  "patient":
-    "id": str
-    "type": <a href='/sdk/data-patient/'>Patient</a></pre></td>
     </tr>
   </tbody>
 </table>
@@ -29822,10 +30099,6 @@ For more information on these events, see <a href="/sdk/sso/" target="_blank">SS
 "results": list[dict]
 "user":
     "staff": str</pre></td>
-    </tr>
-    <tr>
-      <td>PATIENT_PORTAL__WIDGET_CONFIGURATION</td>
-      <td>Patient Portal landing page is loading. See <a href="{% link _guides/custom-landing-page.md %}" target="_blank">Tailoring Portal Landing Page</a> for examples of how to use this event.</td>
     </tr>
     <tr>
       <td>PATIENT_METADATA__GET_ADDITIONAL_FIELDS</td>

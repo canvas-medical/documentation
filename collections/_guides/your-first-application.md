@@ -84,7 +84,7 @@ handlers-applications).
    - `top`: The item will be placed on the top section.
    - `bottom`: The item will be placed in the bottom section - this section should display items that open in a new window.
 7. **menu_order**: How the items will be ordered in the menu. e.g 100, 200
-8. **show_in_panel**: If you want to increase your application’s visibility and display it alongside other panel buttons (instead of in the applications drawer), you can set this attribute
+8. **show_in_panel**: If you want to increase your application’s visibility and display it alongside other panel buttons (instead of in the applications drawer), you can set this attribute. A panel icon has no label, so Canvas shows the application's `name` in a tooltip when a user hovers over it
 9. **panel_priority**: How the applications will be ordered in the panel section. e.g 100, 200
 
 ## Step 4: Overriding the Application Behavior

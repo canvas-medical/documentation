@@ -12,7 +12,7 @@ layout: default
           {{ content }}
         </div>
 
-        {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | sort: "date" | reverse %}
+        {% assign posts = site.release-notes | where_exp: "post", "post.hidden != true" | reverse %}
 
 
         {% for item in posts %}

@@ -382,9 +382,9 @@ Commands have two types of actions:
 | `carry_forward` | Populates the command with the last known data for this command type and patient, letting users quickly recreate a similar command from a previous entry. |
 
 <!-- source: discussion #1046 -->
-A printed note groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
+How a printed note orders its commands depends on the note's format. A note in the older format, or any note on an instance outside the [revamped note beta program](/product-updates/note-revamp/), groups its commands by section in SOAP order, and this sorting can't be turned off. Within each section, commands print in a fixed order by command type, not in the order they were entered.
 
-On instances in the [revamped note beta program](/product-updates/note-revamp/), a note in the revamped format prints one Assessment & Plan heading in place of separate Assessment, Procedures, and Plan headings. The commands under it keep the order the provider gave them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. Faxed notes and the patient's entire-record print use the same layout. A note in the older format, or on an instance outside the beta program, prints those sections under separate headings.
+A note in the revamped format prints the sections it shows on screen, History, Exam, and Assessment & Plan, in the note's SOAP or APSO order. Within each section, commands print in the order the provider arranged them in the note. Each Assess command prints with the commands [linked to it](/sdk/data-assessment/#commands-linked-to-an-assessment) indented below it. The Internal section isn't printed, and free text prints under a Notes heading after the sections. Faxed notes and the patient's entire-record print use the same layout.
 
 To control the print layout yourself, build a plugin that adds an [action button](/sdk/handlers-action-buttons/) with a custom print template. The [patient-visit-summary](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-visit-summary) extension does this: staff choose and reorder the sections of a note, preview the result, and print it or save it as a PDF.
 
@@ -456,7 +456,7 @@ and whether it is surgical.
 
 | Command | Use it when |
 |:--------|:------------|
-| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. |
+| [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
 | [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
@@ -652,7 +652,7 @@ allergy = AllergyCommand(
 
 Records an assessment of a patient's condition. Name the condition in one of two ways:
 
-- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one on the problem list.
+- `icd10_code` (recommended) assesses a condition by its ICD-10 code, whether or not it's already on the chart, so there's no need to look up a condition id first. If the patient already has a charted condition with that code, the assessment uses it, preferring an active condition over a resolved one. Committing the command makes a resolved condition active again. Codes match regardless of dots and case, so `M54.50` and `M5450` name the same condition. If the patient has no charted condition with that code, committing the command records a new one, on the problem list unless `show_in_problem_list` is `False`.
 - `condition_id` assesses a specific condition already on the patient's chart.
 
 Set one or the other, not both. You can originate an Assess with neither, for example to leave an empty command for the user to complete, but committing it needs a condition. See [Recording a condition](#recording-a-condition) and [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
@@ -661,6 +661,10 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
 
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` moves an encounter diagnosis back onto the problem list. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code. A commit that changes the status sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+
+Entering in error an Assess that changed the status resets the condition's status. The condition takes the status set by the most recently committed Assess that changed it and isn't entered in error. If none remains, it goes back to the status it had before any Assess changed it.
+
 **Command-specific parameters**:
 
 | Name                        | Type          | Required to commit | Description                                                                |
@@ -668,6 +672,7 @@ Entering a committed Assess in error also enters in error the condition its comm
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
 | `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
 | `narrative`                 | _string_      | `false`  | The narrative for the current assessment (max 2048 characters; values exceeding the limit raise a validation error instead of being truncated). |
@@ -694,6 +699,19 @@ assess = AssessCommand(
     approximate_date_of_onset=date(2012, 1, 1),
     background='lifted heavy box',
     narrative='unable to sleep lately'
+)
+```
+
+Record a visit-only diagnosis as an encounter diagnosis:
+
+```python
+from canvas_sdk.commands import AssessCommand
+
+assess = AssessCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    icd10_code='J02.9',
+    show_in_problem_list=False,
+    narrative='sore throat for two days'
 )
 ```
 
@@ -877,7 +895,7 @@ The `family_history` parameter accepts either:
   - Required fields: `system`, `code`
   - Optional field: `display`
 
-The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
+The `relative` parameter also searches and selects the first result when a string is provided. Results list the shortest matching term first, so `"Sister"` selects Sister rather than Half-sister. Pass the full relationship term (for example, `"Paternal Grandfather"` or `"Maternal Grandfather"`) rather than a partial word.
 
 **Example**:
 
@@ -1559,19 +1577,20 @@ medication_statement_unstructured = MedicationStatementCommand(
 
 Orders durable medical equipment (DME), such as a wheelchair, catheter, or shower chair, from a note and sends the order to a supplier. Order a product from your DME formulary with `dme_product_id`, or describe an off-formulary item with `free_text_item`.
 
-Admins manage the formulary in the Django Admin UI under **DME Products**, where each product's external ID appears in the `externally_exposable_id` column. Formulary exports include the same column.
+Admins manage the formulary in the Django Admin UI under **DME Products**. In a plugin, look up a product and its ID with the [DmeProduct](/sdk/data-dme/#dmeproduct) data model, as the example below does.
 
 **Command-specific parameters**:
 
 | Name                    | Type                                  | Required to sign | Description |
 |:------------------------|:--------------------------------------|:-----------------|:------------|
-| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | External ID of an active product in your DME formulary. Can't be combined with `free_text_item`. |
+| `dme_product_id`        | _string_                              | `true`, unless `free_text_item` is set | The `id` of an active [DmeProduct](/sdk/data-dme/#dmeproduct) in your DME formulary. Can't be combined with `free_text_item`. |
 | `free_text_item`        | _string_                              | `true`, unless `dme_product_id` is set | Description of an off-formulary item (max length: 255 characters). Can't be combined with `dme_product_id`. |
 | `diagnosis_codes`       | _list[string]_                        | `true`  | ICD-10 Diagnosis codes justifying the order. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `quantity`              | _integer_                             | `true`  | Number of units ordered. Must be at least 1. |
 | `length_of_need`        | _string_                              | `false` | How long the patient needs the equipment, such as `"6 months"` or `"Lifetime"` (max length: 255 characters). Canvas prints this text on the order as written. |
 | `service_provider`      | _[ServiceProvider](#serviceprovider)_ | `false` | The supplier the order is sent to. Search with the [contacts endpoint](/sdk/utils/#searching-for-contacts-and-service-providers). |
 | `ordering_provider_key` | _string_                              | `true`  | The [Staff](/sdk/data-staff/#staff) `id` of the provider ordering the equipment. The staff member must be active and able to prescribe. |
+| `assessment_id`         | _string_                              | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). Linking also adds the assessed condition's ICD-10 codes to `diagnosis_codes` unless they're already listed. |
 
 Setting both `dme_product_id` and `free_text_item`, a `quantity` below 1, or a `length_of_need` longer than 255 characters raises a validation error when you create the command object.
 
@@ -1596,6 +1615,7 @@ Suppliers you create with the [ServiceProvider effect](/sdk/effect-service-provi
 ```python
 from canvas_sdk.commands import OrderDmeCommand
 from canvas_sdk.commands.constants import ServiceProvider
+from canvas_sdk.v1.data import DmeProduct
 
 supplier = ServiceProvider(
     first_name="Acme",
@@ -1605,10 +1625,13 @@ supplier = ServiceProvider(
     business_fax="5555550100",
 )
 
-# A product from the DME formulary
+# A product from the DME formulary, looked up by its HCPCS code.
+# get() raises an error unless exactly one active product has this code.
+wheelchair = DmeProduct.objects.get(code="K0001", active=True)
+
 formulary_order = OrderDmeCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
-    dme_product_id="0f2c1c1e-3d1a-4a5b-9a51-5c3c2d1b0a99",
+    dme_product_id=str(wheelchair.id),
     diagnosis_codes=["N186"],
     quantity=1,
     length_of_need="Lifetime",
@@ -1888,7 +1911,7 @@ def compute():
 | `fdb_code`                  | _string_                      | `false`* | The [FDB code](/sdk/utils/#fdb_code) of the medication.             |
 | `compound_medication_id`    | _string_                      | `false`* | The id of an existing [CompoundMedication](/sdk/data-compound-medication/#compoundmedication) to prescribe.             |
 | `compound_medication_data`  | [`CompoundMedicationData`](#prescribe-compoundmedicationdata)      | `false`* | Data for creating a new compound medication inline.                 |
-| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be [Conditions](/sdk/data-condition/#condition) on the patient's active problem list.  |
+| `icd10_codes`               | _list[string]_                | `false`  | List of ICD-10 codes (maximum 2) associated with the prescription. Must be active [Conditions](/sdk/data-condition/#condition) on the patient's chart, including encounter diagnoses kept off the problem list.  |
 | `sig`                       | _string_                      | `true`   | Administration instructions/details of the medication. Up to 1000 characters — see [Limits](#prescribe-limits). |
 | `days_supply`               | _integer_                     | `false`  | Number of days the prescription is intended to cover.               |
 | `quantity_to_dispense`      | _Decimal \| float \| integer_ | `true`   | The amount of medication to dispense. Must be greater than zero — see [Limits](#prescribe-limits). |
@@ -2939,7 +2962,7 @@ Replaces an existing diagnosis with a different code, carrying the original's hi
 
 | Name                 | Type     | Required to commit | Description                                                       |
 |----------------------|----------|----------|-------------------------------------------------------------------|
-| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match a [Condition](/sdk/data-condition/#condition) already on that patient's chart.              |
+| `condition_code`     | _string_ | `true`   | The ICD-10 code of the existing diagnosis to update. Must match an active [Condition](/sdk/data-condition/#condition) on that patient's chart, including encounter diagnoses recorded with Assess's `show_in_problem_list=False`. |
 | `new_condition_code` | _string_ | `true`   | The new ICD-10 code to replace the existing diagnosis, looked up via [`GET /icd/condition/`](/sdk/utils/#get-icdcondition--icd-10-conditions).  |
 | `background`         | _string_ | `false`  | Background information or notes related to the updated diagnosis (max length: 2048 characters). |
 | `narrative`          | _string_ | `false`  | A narrative or explanation about the update (max length: 2048 characters). |
@@ -3010,6 +3033,106 @@ update_goal = UpdateGoalCommand(
     priority=GoalCommand.Priority.MEDIUM,
     progress='patient has slowed down progress and requesting to move due date out'
 )
+```
+
+---
+
+### VisualExamFinding
+
+Records a titled image of a clinical observation, with a narrative, on a note. The Visual Exam Finding command must be enabled on the instance to attach an image.
+
+**Command-specific parameters**:
+
+| Name               | Type     | Description |
+|:-------------------|:---------|:------------|
+| `title`            | _string_ | The title of the finding. Up to 255 characters. |
+| `narrative`        | _string_ | A description of the observation. |
+| `image_upload_key` | _string_ | The upload key of a PNG or JPEG image, from a SimpleAPI route declared with `file_uploads="stored"`. See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas copies the file to the finding and then deletes the upload, so each key works only once. A key of `None` attaches no image. Not allowed in a recommendation, such as one on a protocol card. |
+
+The command supports `originate`, `edit`, `delete`, `commit`, and `enter_in_error`. To read findings, see [VisualExamFinding](/sdk/data-visual-exam-finding/).
+
+**Example**:
+
+```python
+from canvas_sdk.commands import VisualExamFindingCommand
+
+finding = VisualExamFindingCommand(
+    note_uuid='8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47',
+    title='Rash',
+    narrative='Erythematous rash on the left forearm',
+    image_upload_key='acme/plugin-uploads/my_plugin/20261014T120000Z-abc-rash.jpg',
+)
+effect = finding.originate()
+```
+
+In a SimpleAPI handler, set `image_upload_key` to the `key` of the uploaded `StoredFilePart` rather than a literal string.
+
+**Example with an uploaded photo**:
+
+This SimpleAPI route adds a Visual Exam Finding to a note from a `multipart/form-data` request that carries the note's id, a title, a narrative, and the photo. The route uses the [API key mixin](/sdk/handlers-simple-api-http/#api-key-1), so declare the `simpleapi-api-key` secret in your manifest and set it on your instance:
+
+```python
+from http import HTTPStatus
+
+from canvas_sdk.commands import VisualExamFindingCommand
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import APIKeyAuthMixin, SimpleAPI, api
+
+
+class VisualExamFindingAPI(APIKeyAuthMixin, SimpleAPI):
+    @api.post("/visual-exam-finding", file_uploads="stored")
+    def visual_exam_finding(self) -> list[Response | Effect]:
+        form = self.request.form_data()
+        image = form["image"]
+        if image.error:
+            return [JSONResponse({"error": "upload failed"}, status_code=HTTPStatus.BAD_GATEWAY)]
+
+        finding = VisualExamFindingCommand(
+            note_uuid=form["note_id"].value,
+            title=form["title"].value,
+            narrative=form["narrative"].value,
+            image_upload_key=image.key,
+        )
+        return [finding.originate(), JSONResponse({}, status_code=HTTPStatus.ACCEPTED)]
+```
+
+Call the route with a `multipart/form-data` POST, sending the photo as a file and the API key in the `Authorization` header:
+
+```shell
+curl --request POST \
+     --url 'https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding' \
+     --header 'Authorization: <api-key>' \
+     --form 'note_id=8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47' \
+     --form 'title=Rash' \
+     --form 'narrative=Erythematous rash on the left forearm' \
+     --form 'image=@rash.jpg;type=image/jpeg'
+```
+
+The same request from a Python script, uploading a photo saved on disk, using the [`requests`](https://requests.readthedocs.io/) library:
+
+```python
+from pathlib import Path
+
+import requests
+
+url = "https://<instance-name>.canvasmedical.com/plugin-io/api/<plugin-name>/visual-exam-finding"
+image_path = Path("rash.jpg")
+
+with image_path.open("rb") as image:
+    response = requests.post(
+        url,
+        headers={"Authorization": "<api-key>"},
+        data={
+            "note_id": "8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+            "title": "Rash",
+            "narrative": "Erythematous rash on the left forearm",
+        },
+        files={"image": (image_path.name, image, "image/jpeg")},
+        timeout=30,
+    )
+
+print(response.status_code)
 ```
 
 ---

@@ -418,6 +418,10 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 
 Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
+{% include alert.html type="warning" content="Uninstalling a plugin deletes its secrets and the <a href='/sdk/effect-banner-alerts/'>banner alerts</a> it added to patient charts and <a href='/sdk/effect-claims/#add-banner'>claims</a>. Disabling a plugin hides those banner alerts until it's enabled again." %}
+
+The plugin's [custom data](/sdk/custom-data-namespace-lifecycle/) stays on the instance after an uninstall: its namespace, with every `CustomModel` table and `AttributeHub` in it, is kept, because another plugin may share the namespace. A plugin deployed with `canvas deploy` regains access to that data on its next deploy. A plugin installed with `canvas install` loses its namespace keys along with its other secrets, so save them before uninstalling; see [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin). To delete the data itself, drop the namespace with [`canvas namespace drop`](/sdk/custom-data-namespace-lifecycle/#dropping-a-namespace).
+
 **Usage**:
 
 ```console

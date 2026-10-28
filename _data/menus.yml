@@ -554,6 +554,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Theming the Patient Portal"
+    url: /guides/theme-the-patient-portal/
+    description: Give the patient portal your practice's colors, font, corner radius and wording
+    uses:
+      - sdk
+
   - title: "Creating Webhooks"
     url: /guides/creating-webhooks-with-the-canvas-sdk/
     description: Make automatic API requests based on Canvas events
@@ -838,6 +844,8 @@ charting:
     url: /sdk/example-vitals_visualizer_plugin/
 
 portal_customization:
+  - title: "Appointment Copay Collection"
+    url: /sdk/example-appointment_copay_collection/
   - title: "Customize with Widgets"
     url: /sdk/example-portal-customization-widgets/
   - title: "Launch an Application"
@@ -940,6 +948,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Coverage"
+    url: /sdk/effect-coverage/
+    description: Create, update, expire, remove, and reorder a patient's insurance coverages.
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
@@ -961,6 +972,9 @@ effects_module:
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
+  - title: "Fax"
+    url: /sdk/effect-fax/
+    description: Fax a note, referral, imaging order, lab order or letter.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
@@ -1015,6 +1029,9 @@ effects_module:
   - title: "Patient Group"
     url: /sdk/effect-patient-group/
     description: Interact with patient group data.
+  - title: "Patient Identification Card"
+    url: /sdk/effect-patient-identification-card/
+    description: Create, update, or delete a patient's identification card images.
   - title: "Patient Metadata"
     url: /sdk/effect-patient-metadata/
     description: Interact with patient metadata.
@@ -1039,6 +1056,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Record Usage"
+    url: /sdk/effect-record-usage/
+    description: Record units of a plugin's work that its catalog listing prices.
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
@@ -1124,6 +1144,9 @@ data_module:
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
+  - title: "CommandTypeSetting"
+    url: /sdk/data-command-type-setting/
+    description: Whether each command type is turned on for the instance.
   - title: "CommonEnumerationTypes"
     url: /sdk/data-enumeration-types/
     description: Common choice classes used in multiple models.
@@ -1157,6 +1180,9 @@ data_module:
   - title: "DiagnosticView"
     url: /sdk/data-diagnostic-view/
     description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
+  - title: "DME"
+    url: /sdk/data-dme/
+    description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
@@ -1196,6 +1222,9 @@ data_module:
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Google Calendar"
+    url: /sdk/data-google-calendar/
+    description: Provider busy time and connection status from native Google Calendar sync.
   - title: "Group"
     url: /sdk/data-group/
     description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.

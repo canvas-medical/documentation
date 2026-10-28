@@ -181,7 +181,7 @@ sections:
                                 - value: 'Out of Pocket (Stop Loss)'
                                 - value: 'Limitations'
                                 - value: 'Contact following entity for eligibility or benefit information'
-                                - value: '<information_type> (Incomplete information)'
+                                - value: '&lt;information_type&gt; (Incomplete information)'
                             - name: allowedString
                               type: string
                               description: Benefits allowed. <br><br>Used for Co-Insurance benefit types.
