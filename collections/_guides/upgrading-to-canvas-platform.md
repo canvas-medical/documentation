@@ -150,4 +150,4 @@ You'll hear about it at least 7 days ahead, and you can request a reschedule. If
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. `canvas logs`, `list`, `enable`, `disable`, `config list` and the `namespace` commands still sign in with it. [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) lists which commands use it.
+Not yet. `canvas logs`, `list`, `enable`, `disable`, `config list` and the `namespace` commands still sign in with it, and so do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) lists which commands use it.

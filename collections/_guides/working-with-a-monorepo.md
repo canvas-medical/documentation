@@ -12,7 +12,7 @@ That works well for a team that develops each plugin on its own. Other teams kee
 
 ## Lay out each plugin
 
-Each plugin's package folder, the folder holding `CANVAS_MANIFEST.json`, can sit anywhere in your repository. Give it the same name as the manifest `name`. Existing plugins keep the names they have, and for a new plugin, `canvas init` recommends a name with your organization's prefix, `<org prefix>__<package>`:
+Each plugin's package folder, the folder holding `CANVAS_MANIFEST.json`, can sit anywhere in your repository. Give it the same name as the manifest `name`. Existing plugins keep the names they have. Signed in with `canvas login`, `canvas init` names a new plugin with your organization's prefix, `<org prefix>__<package>`:
 
 ```text
 your-repo/
