@@ -40,6 +40,7 @@ When a handler is invoked, the `websocket` object is available as an attribute o
 - `headers`: A dictionary of headers associated with the connection
 - `api_key`: The api key, if present
 - `logged_in_user`: A dictionary like `{ "id": ..., "type": ... }` if a logged-in user is present
+- `portal_access`: For a connection from the patient portal, who is using the chart and their access level in each area. It has the same attributes as [`SessionCredentials.portal_access`](/sdk/handlers-simple-api-http/#session) on SimpleAPI requests.
 
 You can access this object within your handler methods using `self.websocket`.
 

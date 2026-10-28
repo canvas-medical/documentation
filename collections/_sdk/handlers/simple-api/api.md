@@ -662,6 +662,14 @@ class MyAPI(SimpleAPIRoute):
 
 For a patient portal session, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
 
+`credentials.portal_access` tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object with:
+
+- `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
+- `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
+- `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`.
+
+When `acting_user_id` is `None`, every area is `ACT`. Otherwise each area has the level the family member or representative was given, and an area with no level is `NONE`. For an example that checks a level, see [Patient Session](#patient-session).
+
 ##### Custom
 
 It's also possible to create custom authentication schemes. There are two ways to do this.
@@ -820,6 +828,33 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
     def get(self) -> list[Response | Effect]:
         return [
             JSONResponse({"message": "Hello world!"})
+        ]
+```
+
+`PatientSessionAuthMixin` also admits a family member or representative using the portal on a patient's chart. To require a level of access in one area, subclass the mixin and check [`portal_access`](#session) after `super().authenticate(credentials)`. This route requires `ACT` access to billing:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import (
+    PatientSessionAuthMixin,
+    PortalAccessLevel,
+    SessionCredentials,
+    SimpleAPIRoute,
+)
+
+
+class PayBalanceAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/pay-balance"
+
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        return super().authenticate(credentials) and credentials.portal_access.allows(
+            "billing", PortalAccessLevel.ACT
+        )
+
+    def post(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Payment started"})
         ]
 ```
 
