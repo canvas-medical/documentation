@@ -647,6 +647,10 @@ mount it as a docked pane.
 
 A Portal Docked Application mounts a **band** across the top or bottom of the patient portal. The band spans the full window width and appears on every page a signed-in patient visits. It mounts once, so a patient moving between portal pages keeps the same band and whatever state it holds. Use one for content patients should always see, such as an announcement banner, office hours, or a support or chat bar.
 
+<p>
+  <object alt="Two patient portal phone screens: a single band docked to the bottom edge takes up to 25% of the screen height, and bands on both the top and bottom edges take up to 12.5% each" type="image/svg+xml" data="/assets/images/sdk/handlers/portal-docked-bands.svg" style="width: 100%; max-width: 760px;"></object>
+</p>
+
 `PortalDockedApplication` is a [`DockedApplication`](#docked-applications) for the patient portal. It uses the same `DOCK_EDGE`, `DOCK_SIZE`, `PRIORITY`, `visible()`, and `on_open()` members, with the differences described below.
 
 ### Implementing a Portal Docked Application
