@@ -37,6 +37,11 @@ changing anything else they can do in Canvas, add the **Denied access to the adm
 (overrides all other permissions)** permission (`api.deny_admin_access`) to a role the user
 holds. Unlike other permissions, it removes access rather than granting it.
 
+No default role carries this permission. An administrator with Staff Permissions Access can
+create a dedicated role for it, such as "No admin console access", and assign that role to the
+users who shouldn't open the admin console. Adding it to a role many users share, such as
+Clinical, removes the admin console from everyone in that role.
+
 A user who holds this permission:
 
 - Is sent to the admin sign-in page, which says they aren't authorized, when they open any
