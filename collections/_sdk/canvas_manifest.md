@@ -175,7 +175,7 @@ Applications add entry points to the Canvas UI. See [Applications](/sdk/handlers
 }
 ```
 
-Embedded applications (note applications, scheduling applications, and docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
+Embedded applications (note applications, scheduling applications, docked applications, and portal docked applications) are declared under `handlers`, not `applications`, and take no `scope` or `icon`. See [Embedded Applications](/sdk/handlers-embedded-applications/).
 
 ### Commands
 
