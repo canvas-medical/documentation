@@ -33,14 +33,13 @@ evaluation; they simply gate a feature rather than a model.
 ### Removing admin console access
 
 Staff users can open the admin console by default. To take it away from a user without
-changing anything else they can do in Canvas, add the **Denied access to the admin
-(overrides all other permissions)** permission (`api.deny_admin_access`) to a role the user
-holds. Unlike other permissions, it removes access rather than granting it.
+changing anything else they can do in Canvas, give them the **Denied access to the admin
+(overrides all other permissions)** permission (`api.deny_admin_access`). Unlike other
+permissions, it removes access rather than granting it.
 
-No default role carries this permission. An administrator with Staff Permissions Access can
-create a dedicated role for it, such as "No admin console access", and assign that role to the
-users who shouldn't open the admin console. Adding it to a role many users share, such as
-Clinical, removes the admin console from everyone in that role.
+No default role carries this permission. To use it, ask Canvas Support to add a role that holds
+it on your instance. An administrator with Staff Permissions Access can then assign that role to
+the users who shouldn't open the admin console, in **Practice: Staff Permissions**.
 
 A user who holds this permission:
 
