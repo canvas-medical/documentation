@@ -178,10 +178,9 @@ def test_each_clinician_has_their_own_conversation():
 ```
 
 Tests that read or write your plugin's Custom Data need its tables in
-the test database. The reference plugin's
-[`tests/conftest.py`](https://github.com/canvas-medical/canvas-plugins/blob/main/example-plugins/agent_runner_poc/tests/conftest.py)
-has a session fixture that creates them from your `CustomModel`
-classes.
+the test database. `pytest-canvas` 0.2.0 and later, which the
+`canvas[test-utils]` extra installs, creates them from the
+`CustomModel` classes in your plugin's `models/` directory.
 
 ## Testing lifecycle hooks
 
