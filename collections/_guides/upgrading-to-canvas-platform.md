@@ -140,7 +140,7 @@ No, not in any way. The upgrade happens on a different system from the one your 
 
 ### Do we have to wait for the upgrade before we switch to `canvas deploy`?
 
-Technically, no. We recommend waiting until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle, so your team has as little work to do as possible.
+Yes. Wait until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle.
 
 ### Can we delete `credentials.ini` after we switch?
 
