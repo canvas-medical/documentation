@@ -666,9 +666,9 @@ For a patient portal session, `id` is the key of the patient whose chart the por
 
 - `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
 - `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
-- `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`.
+- `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.
 
-When `acting_user_id` is `None`, every area is `ACT`. Otherwise each area has the level the family member or representative was given, and an area with no level is `NONE`. To serve family members and representatives from your routes, see [Family portal access](#family-portal-access).
+For a patient on their own chart, every area is `ACT`, and for a session that isn't a patient's, every area is `NONE`. When `acting_user_id` is set, each area has the level the family member or representative was given, and an area with no level or an unrecognized one is `NONE`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if credentials.portal_access.level("billing"):` checks for any billing access. To serve family members and representatives from your routes, see [Family portal access](#family-portal-access).
 
 ##### Custom
 
