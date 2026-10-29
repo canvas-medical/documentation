@@ -20,13 +20,24 @@ happen automatically for every run.
 
 Captured today:
 
-- **Run outcomes**: the platform logs each run's start (`agent_id`,
-  `scope_key`, `run_id`), its completion with the number of effects
-  emitted, runs that waited for their scope, and gateway failures by
-  kind (`LLM_UNAVAILABLE`, `LLM_REFUSED`, `LLM_NOT_CONFIGURED`).
-  Unexpected exceptions go to Sentry, tagged with the agent ID.
-- **Run duration**: a timing metric for every run, tagged with the
-  `agent_id`.
+- **Run records**: one `AgentRun` record per run, which your plugin
+  can read (see [Reading run records](#reading-run-records) below).
+  It holds the agent, the triggering handler, the scope, the run's
+  subject by id, and the run's status: `queued`, `running`,
+  `succeeded`, `failed`, `refused`, `abandoned`, or `gave_up`. It
+  also holds why a run failed or was refused, when it was queued,
+  started, and finished, how many times it waited for its scope, how
+  many model calls it made, how its last tool loop ended, and how many
+  effects it returned, had dropped by its tool grant, and applied.
+  Runs that never reach your agent are recorded too: a subject that
+  fails the platform's checks, a run that gave up waiting for its
+  scope, and one whose worker died.
+- **Tool-call envelope**: for every tool call `run_tool_loop` makes,
+  sub-agents included, the tool's name, whether it succeeded, the
+  exception type when it did not, and how long it took. Arguments and
+  results are left out: they carry chart content, and only you know
+  what is worth keeping (see below). An agent that calls the model
+  without `run_tool_loop` gets a record without these.
 - **LLM usage**: Canvas's inference gateway records every call in its
   usage ledger: model, token counts by cache class, and cost, against
   your organization's inference account, along with the instance,
@@ -36,21 +47,17 @@ Captured today:
   other plugin effect and recorded in Canvas's security audit trail.
   Those events name the clinician whose action started the run, your
   plugin, and the agent class, and carry the `run_id` as their
-  correlation id, so one id joins a run's chart changes to its LLM
-  calls.
+  correlation id, so one id joins a run's record, its chart changes,
+  and its LLM calls.
+- **Logs and errors**: the platform logs each run's start and finish,
+  and unexpected exceptions go to Sentry, tagged with the agent ID.
 
-Captured with V1:
+The platform records these itself, around and inside the tool loop,
+so agent code can neither skip nor alter them.
 
-- **Run records**: a durable record per run with `agent_id`,
-  `scope_key`, `run_id`, status, how long it waited for its scope,
-  start and end timestamps, and wall-clock duration.
+Coming soon:
+
 - **Per-LLM-call latency**: wall-clock and time-to-first-token.
-- **Tool-call envelope**: name, arguments shape/hash, latency,
-  error type for every tool the agent dispatches. Note: the
-  envelope is structural metadata; the tool's *result content* is
-  plugin-owned (see below) because only you know what's worth
-  keeping and what counts as PHI you don't want sitting in
-  platform audit storage.
 
 The skeleton is the safety net. Even if your plugin captured zero
 domain audit data, the platform's records answer: how many times did
@@ -59,10 +66,33 @@ much did it cost. That's enough to investigate basic ops questions
 or notice that an agent is misbehaving. It is *not* enough to answer
 "why did the agent recommend X for this patient" — that's your job.
 
-Retention for platform-captured data is platform-set (long enough
-for billing reconciliation and compliance, with the same
-de-identification and right-to-be-forgotten guarantees that apply to
-other Canvas-held data).
+Run records are kept for 90 days. The platform stores them by day
+and drops each day once all of it is older than that.
+
+### Reading run records
+
+`AgentRun` and `AgentRunToolCall` are read-only data models. A run's
+record has the `run_id` its `RunAgentEffect` generated, so a handler
+can return that id to a UI and the UI can follow the run:
+
+```python?partial=true
+from canvas_sdk.effects.agent import RunAgentEffect
+from canvas_sdk.v1.data import AgentRun
+
+run = RunAgentEffect(
+    agent_id="my_plugin.agents.chat:ChatAgent",
+    scope=RunAgentEffect.Scope.PATIENT_AND_STAFF,
+    patient_id=patient_id,
+    trigger_payload={"user_message": message},
+)
+# Return str(run.run_id) with the 202, then, when the UI asks:
+record = AgentRun.objects.filter(id=run_id, plugin_name="my_plugin").first()
+record.status       # "queued" until the run starts, then "running", then final
+record.error_kind   # for a failed run, such as "LLM_REFUSED"
+record.tool_calls.values_list("name", "ok")
+```
+
+Inside a run, the agent has its record's id as `self.run_id`.
 
 ## Plugin-owned audit (semantic)
 
@@ -91,72 +121,39 @@ to answer.
 
 ### Recommended pattern
 
-The reference plugin demonstrates one shape: a Custom Data table
-with one row per agent invocation, written by lifecycle hooks:
+Keep a Custom Data table of what only your agent knows, one row per
+run, keyed by `self.run_id` so it joins the platform's record. The
+status, timing, and counts are already on that record, so your row
+holds the meaning:
 
 ```python
-from django.db.models import DateTimeField, IntegerField, JSONField, TextField
+from django.db.models import JSONField, TextField
 
 from canvas_sdk.v1.data.base import CustomModel
 
 
-class AgentRunLog(CustomModel):
-    """One row per AgentPlugin invocation. Plugin-owned semantic audit."""
+class AdvisorDecision(CustomModel):
+    """Why one run of the advisor did what it did. Plugin-owned semantic audit."""
 
-    agent_class_name = TextField()
-    scope_key = TextField()
-    status = TextField()                       # "running" | "success" | "error"
-    started_at = DateTimeField(auto_now_add=True)
-    completed_at = DateTimeField(null=True)
-    duration_ms = IntegerField(null=True)
-    llm_turns = IntegerField(null=True)
-    error_type = TextField(blank=True, default="")
-    error_message = TextField(blank=True, default="")
-    # Add the fields your agent's questions actually need:
+    run_id = TextField()
     rationale = TextField(blank=True, default="")
     grounding_facts = JSONField(default=dict)
 ```
 
-Hooked up via the lifecycle surface (see
-[Lifecycle](/sdk/agents-lifecycle/)):
+Write it from `run()`, where the reasoning is, or from a lifecycle hook
+(see [Lifecycle](/sdk/agents-lifecycle/#optional-hooks)):
 
-```python
-from datetime import UTC, datetime
-
-from canvas_sdk.agents import AgentPlugin
-
-from my_plugin.models.run_log import AgentRunLog
-
-
-class MyAgent(AgentPlugin):
-    def on_run_start(self, scope_key):
-        self._run_log = AgentRunLog.objects.create(
-            agent_class_name=self.__class__.__name__,
-            scope_key=scope_key,
-            status="running",
-        )
-
-    def on_turn(self, turn_index):
-        # run_tool_loop calls this before each model call, counting from 0.
-        self._run_log.llm_turns = turn_index + 1
-
-    def on_run_end(self, result):
-        self._run_log.status = "success"
-        self._run_log.completed_at = datetime.now(UTC)
-        # ... other fields ...
-        self._run_log.save()
-
-    def on_run_error(self, exc):
-        self._run_log.status = "error"
-        self._run_log.error_type = type(exc).__name__
-        self._run_log.error_message = str(exc)[:500]
-        self._run_log.save()
+```python?partial=true
+def on_run_end(self, result):
+    AdvisorDecision.objects.create(
+        run_id=self.run_id,
+        rationale=self._rationale,
+        grounding_facts=self._grounding_facts,
+    )
 ```
 
 Lifecycle hook failures are caught and logged by the platform — a
-broken audit path can't crash the underlying run. See
-[Lifecycle](/sdk/agents-lifecycle/#optional-hooks) for the full
-contract.
+broken audit path can't crash the underlying run.
 
 ## Retention is your decision, with a ceiling
 
@@ -214,7 +211,7 @@ be useful?
   — only meaningful in the context of this specific agent and its
   decision logic. **Plugin-owned.**
 
-When in doubt, capture the structural fact in your audit row even
-if you think the platform does too. The platform's records are
-optimized for billing and ops, not for your debugging — and your
-table is closer to where your agent's logic lives.
+Your audit row can leave out what the run record already holds and
+join it on `run_id` instead. Keep a structural fact in your row when
+you need it beyond the run record's 90 days, or alongside the
+reasoning it explains.

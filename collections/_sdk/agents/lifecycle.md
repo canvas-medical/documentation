@@ -41,7 +41,10 @@ step is platform-driven:
    belong to that patient, and a patient whose portal action started the
    run may only name themselves. The staff member whose action started
    the run becomes the subject's `staff_id`. A subject that fails a
-   check is refused and the run is never queued.
+   check is refused and the run is never queued. Either way the run
+   gets a record under its effect's `run_id`, which the platform keeps
+   current through the steps below (see
+   [Auditing](/sdk/agents-auditing/#reading-run-records)).
 2. **Derive the scope key** from the effect's `scope` and the subject,
    or from its `scope_id` for a `KEY` scope. See
    [Concurrency](#concurrency) below.
@@ -62,8 +65,8 @@ step is platform-driven:
    to the result, and replaces `agent.tools` with a scoped view
    containing only those tools. An agent entry with no `tools.allowed`
    gets no tools.
-8. **Set `agent.subject`** to the checked subject. See
-   [The run's subject](#the-runs-subject) below.
+8. **Set `agent.subject`** to the checked subject, and `agent.run_id`
+   to the run's id. See [The run's subject](#the-runs-subject) below.
 9. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
 10. **Call `load_state(scope_key)`** to get the run's starting state.
 11. **Call `run(state, gateway, trigger_payload)`** — the body of your

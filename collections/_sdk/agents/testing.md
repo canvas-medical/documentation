@@ -229,19 +229,22 @@ classes.
 
 If you've overridden `on_run_start` / `on_run_end` / `on_run_error`,
 call them directly. The platform logs and swallows exceptions from
-hooks, but that doesn't change their signatures.
+hooks, but that doesn't change their signatures. Set `run_id` the way
+the platform would when your hook writes it, as the
+[Auditing](/sdk/agents-auditing/#recommended-pattern) pattern does:
 
 ```python?partial=true
 @pytest.mark.django_db
-def test_on_run_end_writes_audit_row():
+def test_on_run_end_records_the_decision():
     agent = MyAgent()
-    agent.on_run_start("scope-key-1")
+    agent.run_id = "6f1c2a8e-0d5b-4b9a-9a52-1c3f6a0e2b7d"
+    agent._rationale = "Last A1c was 9.2 with no recheck since March."
+    agent._grounding_facts = {}
 
     agent.on_run_end(AgentRunResult(state=AgentState(), effects=[]))
 
-    row = AgentRunLog.objects.get(scope_key="scope-key-1")
-    assert row.status == "success"
-    assert row.duration_ms is not None
+    row = AdvisorDecision.objects.get(run_id=agent.run_id)
+    assert row.rationale.startswith("Last A1c")
 ```
 
 ## End-to-end runs
