@@ -63,7 +63,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-- Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history. [`--snapshot`](#deploying-from-a-larger-repository) pushes a new commit instead, so a pipeline that deploys from a larger repository works from a shallow checkout and needs no git identity.
+- Check out the full history (`fetch-depth: 0` in GitHub Actions). `canvas deploy` pushes the checkout to the plugin's repository on Canvas Platform, and git refuses to push a shallow clone to a repository that lacks its history. [`--snapshot`](#deploying-from-a-larger-repository) pushes a new commit instead and needs no git identity. Give it full history too, without file contents if the repository is large (`fetch-depth: 0` with `filter: blob:none`): its rollback check needs the commit `main` was last deployed from, and it skips that check in a shallow checkout.
 - The push to Canvas Platform's `main` is not forced, so it is refused when Canvas Platform's `main` has a commit the checkout lacks, such as one a developer deployed from their machine without pushing it to the repository the pipeline checks out. Once a pipeline deploys a plugin, deploy it only from the pipeline.
 
 - When `CANVAS_PLATFORM_TOKEN` is set, every command uses it in place of a `canvas login` session, including the git pushes `canvas deploy` makes. It takes precedence over a session already stored on the machine, so a runner always acts as its service account.
@@ -321,7 +321,7 @@ $ canvas deploy plugins/acme__intake --snapshot --instance acme-staging
 
 With `--snapshot`, `deploy`:
 
-1. Refuses uncommitted changes in the package rather than committing them, even with `--yes`. It also refuses a package holding a git submodule, a symbolic link, or a Git LFS file, which would not reach an instance as their content.
+1. Refuses uncommitted changes in the package rather than committing them, even with `--yes`. It also refuses a package holding a git submodule, a symbolic link, or a file stored through a git filter such as Git LFS or git-crypt, which would not reach an instance as their content.
 2. Builds one new commit on top of Canvas Platform's `main` whose package folder is the package as committed at HEAD. Files on `main` beside the package folder are kept. If the package is unchanged, nothing is pushed and the commit already on `main` is deployed.
 3. Pushes that commit from a temporary repository, so the larger repository's `origin`, git config and index are never changed. It then deploys the commit, or stops there with `--push-only`.
 
@@ -336,7 +336,7 @@ Monorepo-Path: plugins/acme__intake
 
 `deploy --snapshot` stops instead of pushing in two cases:
 
-- **HEAD is behind the last snapshot.** When the checkout has the commit that `main` was last snapshotted from and HEAD does not contain it, deploying would roll the plugin back. Update the checkout and run it again. A shallow checkout usually lacks that commit, so `deploy` says it could not check and continues.
+- **HEAD lacks changes `main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
 - **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. Before the first snapshot, every package file already on `main` counts as such a change.
 
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
