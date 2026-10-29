@@ -175,7 +175,8 @@ Every tool call gets a context the model never sees, which
 | `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` |
 
 Pass `ctx={...}` to add agent-specific keys. Those keys cannot replace
-any key in the table, so a tool always acts on the run's own patient.
+any key in the table: passing one raises `ValueError`. A tool always
+acts on the run's own patient.
 
 Along the way it:
 
@@ -261,7 +262,13 @@ never wait on each other, whatever their scope.
 | `NOTE` | Runs on the same note; the same patient's other notes run concurrently | `patient_id` and `note_id` |
 | `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
+A `RunAgentEffect` missing a field its scope requires raises
+`ValueError` when you build it. A `PATIENT_AND_STAFF` run that no staff
+member started is refused, and the run is never queued.
+
 ```python?partial=true
+from canvas_sdk.effects.agent import RunAgentEffect
+
 RunAgentEffect(
     agent_id="my_plugin.agents.advisor:Advisor",
     scope=RunAgentEffect.Scope.PATIENT,

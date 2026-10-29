@@ -284,6 +284,8 @@ dispatch each `ToolUseBlock` through the registry the same way it does:
 ```python
 import json
 
+tool_ctx = self.tool_context(gateway)  # once per run, before the first tool call
+
 try:
     result = self.tools.execute(block.name, dict(block.input), ctx=tool_ctx)
     tool_results.append({
