@@ -1476,7 +1476,7 @@ Searches for open appointment times and returns them as a list of `Slot` objects
 | Name                     | Type                  | Required | Description |
 | :----------------------- | :-------------------- | :------- | :---------- |
 | `location_id`            | _string_              | `true`   | The `id` of the [PracticeLocation](/sdk/data-practicelocation/). |
-| `start`                  | _datetime_            | `true`   | The start of the search, with a time zone. Canvas rounds it up to the next `grid_minutes` stop. To require a minimum notice, add it here, for example `now + timedelta(hours=24)`. |
+| `start`                  | _datetime_            | `true`   | The start of the search, with a time zone. Canvas returns only the slots that start at or after it. To require a minimum notice, add it here, for example `now + timedelta(hours=24)`. |
 | `end`                    | _datetime_            | `true`   | The end of the search, with a time zone. It must be after `start` and at most 31 days after it. |
 | `duration`               | _integer_             | `true`   | The visit length in minutes, from `1` to `1440`. |
 | `staff_ids`              | _list of strings_     | `false`  | The `id` of each [Staff](/sdk/data-staff/) member to search. Each must be a schedulable provider. Omit it to search every schedulable provider. |
