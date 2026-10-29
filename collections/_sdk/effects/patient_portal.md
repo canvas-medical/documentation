@@ -11,7 +11,7 @@ The Canvas SDK allows you to configure and extend the patient portal. This page 
 
 With family portal access, staff give a family member or another representative portal access to a patient's chart. A parent who is also a patient can open their child's chart as well as their own, and a representative with no chart of their own uses the portal for the chart they were given. Canvas turns family portal access on for each instance.
 
-A portal login can have several charts: its own, if it has one, and each chart it was given access to. The portal is open on one of them at a time, and the login can switch between them. Each browser tab stays on the chart it shows.
+A portal login can have several charts: its own, if it has one, and each chart it was given access to. The portal is open on one of them at a time, and the login can switch between them. Each browser tab shows one chart. Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
 
 Plugins receive the patient whose chart the portal is open on, which isn't always the person signed in. Canvas identifies that patient in:
 
