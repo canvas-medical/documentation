@@ -840,7 +840,7 @@ With [family portal access](/sdk/patient-portal/#family-portal-access), a family
 - `PORTAL_ACCESS` on the handler covers every route on it. On a `SimpleAPIRoute`, it covers every method.
 - The `portal_access` argument of a route decorator, such as `@api.post`, replaces `PORTAL_ACCESS` for that route.
 
-A family member or representative reaches a route when your `authenticate` method accepts them and they have at least the declared level in every area the declaration names. A declaration doesn't change how patients on their own chart, staff, and requests without a session are authenticated.
+A route serves family members and representatives only when it has a declaration, from `PORTAL_ACCESS` or its own `portal_access`. They reach it when your `authenticate` method accepts them and they have at least the declared level in every area the declaration names. A declaration doesn't change how patients on their own chart, staff, and requests without a session are authenticated.
 
 This handler serves family members who can view appointments and billing, and requires `ACT` access to billing to pay:
 
