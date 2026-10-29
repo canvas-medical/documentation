@@ -1949,7 +1949,7 @@ The Canvas CLI deploys plugins through [Canvas Platform](https://platform.canvas
     ```
 `canvas login` opens your browser and lists each organization you belong to with its plugin prefix. Every plugin you publish is named with that prefix, such as `acme__paperwork_eviscerator`. Publishing a plugin needs the Plugin developer role in the organization, and deploying it needs Deploy manager.
 Run `canvas whoami` at any time to check which platform you are signed in to and as whom. If you run `canvas init` while signed out, it says so and creates a plugin that `canvas deploy` refuses, so sign in first.
-> **Info:** Configuring the CLI with OAuth client credentials in `~/.canvas/credentials.ini` is deprecated, and support ends on December 14, 2026. See [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
+> **Info:** Configuring the CLI with OAuth client credentials in `~/.canvas/credentials.ini` is deprecated, and support ends on December 14, 2026. See [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/). 
 ##  3\. Initialize a new plugin 
 The Canvas CLI gives you a great head start when creating a plugin. Simply run `canvas init`, and answer the prompt to name your plugin.
     ```sh
@@ -2338,7 +2338,7 @@ Value | Description
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/canvas_cli/
-> **Warning:** The Canvas CLI signs in with `canvas login` and ships plugins with `canvas deploy`. Instance API credentials in `credentials.ini` and `canvas install` are deprecated, and support for them ends on **December 14, 2026**. See [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
+> **Warning:** The Canvas CLI signs in with `canvas login` and ships plugins with `canvas deploy`. Instance API credentials in `credentials.ini` and `canvas install` are deprecated, and support for them ends on **December 14, 2026**. See [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/). 
 ##  Getting Started 
 ###  Installation using `pip`
 To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11, 3.12, or 3.13 is required.
@@ -2384,7 +2384,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
   - `CANVAS_PLATFORM_URL` points the job at a platform other than https://platform.canvasmedical.com.
 **Rotate or revoke it.** The token does not refresh. Rotating it on the Credentials page ends the old token, and revoking the service account ends it for good; either way the CLI's next request says that Canvas Platform did not accept `CANVAS_PLATFORM_TOKEN`. `canvas logout` signs out only a browser session and leaves the token alone.
 ###  Instance API credentials (`credentials.ini`): deprecated 
-> **Warning:** **Deprecated:** authenticating the Canvas CLI with OAuth client credentials in `~/.canvas/credentials.ini`, and installing plugins with `canvas install`, are deprecated. Support ends on **December 14, 2026**. Sign in with `canvas login` and deploy with `canvas deploy` instead. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/) walks through the switch. 
+> **Warning:** **Deprecated:** authenticating the Canvas CLI with OAuth client credentials in `~/.canvas/credentials.ini`, and installing plugins with `canvas install`, are deprecated. Support ends on **December 14, 2026**. Sign in with `canvas login` and deploy with `canvas deploy` instead. [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/) walks through the switch. 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in Which plugins go through Canvas Platform.
 The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
@@ -2573,7 +2573,7 @@ Clone a plugin's repository from Canvas Platform with `origin` and the credentia
 **Options** :
   - `--help`: Show this message and exit.
 ###  `canvas install`
-> **Warning:** **Deprecated:** `canvas install` uploads a plugin straight onto an instance using `credentials.ini`. Support ends on **December 14, 2026**. Use `canvas deploy`, and see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
+> **Warning:** **Deprecated:** `canvas install` uploads a plugin straight onto an instance using `credentials.ini`. Support ends on **December 14, 2026**. Use `canvas deploy`, and see [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/). 
 Install a plugin into a Canvas instance.
 **Usage** :
     ```console
@@ -10508,7 +10508,7 @@ For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Ca
   - The first plugin that declares `"access": "read_write"` for a namespace on an instance creates it there and owns it.
   - Another plugin that declares the same namespace, to read or to write, needs consent from the organization that runs the instance. `canvas deploy` shows each consent request and asks you to answer it; the deployment starts once every request is approved, and an approval stands for later deploys to that instance.
   - Leave `namespace_read_access_key` and `namespace_read_write_access_key` out of the manifest's `variables`. Canvas Platform supplies them, refuses a manifest that declares them, and refuses `canvas config set` for them.
-  - A namespace that already exists on an instance, created by a plugin installed with `canvas install`, needs its keys recorded with Canvas Platform before a deploy can use it. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) covers that step.
+  - A namespace that already exists on an instance, created by a plugin installed with `canvas install`, keeps its data and its keys. Canvas records those keys with Canvas Platform when it upgrades your organization's plugins; see [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/).
 ###  Access keys for plugins installed with `canvas install` (deprecated) 
 > **Warning:** `canvas install` is deprecated, and support ends on December 14, 2026. The rest of this section describes how plugins installed straight onto an instance share a namespace. Plugins deployed with `canvas deploy` share a namespace as described in Custom data on Canvas Platform. 
 ####  Discovering Access Keys 
@@ -58615,7 +58615,7 @@ Clear a value with [`canvas config unset`](/sdk/canvas_cli/#canvas-config-unset)
     ```console
     $ canvas config unset acme__my_plugin LOG_LEVEL --instance acme-staging
     ```
-> **Warning:** **Deprecated:** `canvas install --secret` and `--variable` set values while installing straight onto an instance with `credentials.ini`. Support ends on December 14, 2026; see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/). 
+> **Warning:** **Deprecated:** `canvas install --secret` and `--variable` set values while installing straight onto an instance with `credentials.ini`. Support ends on December 14, 2026; see [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/). 
 ####  Listing configured values 
 Run `canvas config list <plugin_name>` to see which variables are configured for a plugin. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed in the listing.
     ```console
