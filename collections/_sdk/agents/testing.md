@@ -8,7 +8,7 @@ excerpt: "Patterns for testing AgentPlugin subclasses, tools, and the LLM loop w
 `save_state` are testable directly, without spinning up the
 plugin-runner. The only real friction is that `run()` typically calls
 Anthropic, which you don't want firing in your unit tests. Stub the
-LLM client and your agent becomes deterministically testable.
+LLM gateway and your agent becomes deterministically testable.
 
 This page assumes the general SDK testing setup from
 [Testing Utilities](/sdk/testing-utils/): `pytest` with the
@@ -62,127 +62,83 @@ def test_update_task_refuses_another_patients_task():
 Tests against real rows (the second test) catch ORM-level bugs, such as
 a wrong filter or relation, that tests with mocked data miss.
 
-## Stubbing the `LLMGateway`
+## Running an agent against a fake gateway
 
-Inside `run()`, your agent gets its Anthropic client from
-`gateway.client()`. Pass `run()` a stand-in gateway whose `client()`
-returns a mock, so no network call happens.
+`canvas_sdk.test_utils.agents` runs an agent the way the platform does,
+with a fake inference gateway in place of Anthropic:
 
-```python
-from unittest.mock import MagicMock
+- `FakeGateway(*replies)` answers each model call with the next reply,
+  or raises it when it is an exception, such as an outage. It keeps a
+  copy of each request on `gateway.requests`, so a test can check what
+  the agent sent the model.
+- `reply(*blocks)` builds a model reply from `text(...)` and
+  `tool_use(name, input)` blocks. Its stop reason is `tool_use` when it
+  calls a tool and `end_turn` otherwise; pass `stop_reason=` to test
+  another.
+- `prepare_agent(AgentClass, allowed=..., denied=..., subject=...)`
+  sets up the agent as the platform does before a run: it applies the
+  manifest's tool grant, sets `self.subject`, and gives the run an id.
+- `run_agent(agent, gateway, trigger_payload)` calls the lifecycle
+  methods and hooks in the platform's order and returns what the run
+  did: the effects the platform would apply (`run.effects`), the ones
+  the grant drops (`run.dropped`), the model calls, the tool calls, and
+  how the last tool loop ended. Unlike the platform, an exception from
+  the run reaches your test.
 
+The blocks are real Anthropic types, so the tool loop behaves as it
+does against the API.
+
+```python?partial=true
 import pytest
-from anthropic.types import TextBlock, ToolUseBlock
 
-from canvas_sdk.agents import LLMGateway
+from canvas_sdk.agents import RunSubject
+from canvas_sdk.effects import EffectType
+from canvas_sdk.test_utils.agents import FakeGateway, prepare_agent, reply, run_agent, text, tool_use
+from canvas_sdk.test_utils.factories import PatientFactory
+from my_plugin.agents.advisor import LongitudinalCareAdvisor
 
-
-@pytest.fixture
-def mock_client():
-    """The client the agent receives from gateway.client(); queue responses on it."""
-    return MagicMock()
-
-
-@pytest.fixture
-def gateway(mock_client):
-    """A stand-in gateway whose client() returns mock_client."""
-    gateway = MagicMock(spec=LLMGateway)
-    gateway.model = "claude-sonnet-4-6"
-    gateway.client.return_value = mock_client
-    return gateway
+# The advisor's grant in CANVAS_MANIFEST.json.
+GRANT = ["@clinical_reads", "@clinical_alerts"]
 
 
-def _response(*, content, stop_reason):
-    """A minimal Anthropic-shaped response for the loop to consume."""
-    response = MagicMock()
-    response.content = content
-    response.stop_reason = stop_reason
-    return response
-
-
-def _tool_use(name, input_dict, *, block_id="tu_1"):
-    return ToolUseBlock(id=block_id, name=name, input=input_dict, type="tool_use")
-
-
-def _text(text):
-    return TextBlock(text=text, type="text")
-```
-
-These helpers are typically the only LLM-mocking infrastructure you
-need. `_tool_use` and `_text` build real Anthropic blocks, so the
-agent's `isinstance` checks behave as they do against the API.
-
-## Driving the run loop in tests
-
-Queue the responses you want the mock client to return, then drive
-`run()` and assert on the result. Grant the agent its tools the way the
-platform does (see [the next section](#simulating-the-platforms-tool-grant)).
-
-```python?partial=true
 @pytest.mark.django_db
-def test_run_stages_a_card_for_new_follow_up(mock_client, gateway):
-    """Two tool turns: the advisor reads the chart, then stages a card."""
-    patient = PatientFactory.create()
-    mock_client.messages.create.side_effect = [
-        _response(content=[_tool_use("find_conditions", {}, block_id="tu_1")], stop_reason="tool_use"),
-        _response(
-            content=[
-                _tool_use(
-                    "add_or_update_protocol_card",
-                    {"title": "Recheck A1c", "narrative": "Last A1c was 9.2.", "status": "due"},
-                    block_id="tu_2",
-                )
-            ],
-            stop_reason="tool_use",
+def test_the_advisor_stages_a_card_for_new_follow_up():
+    """The advisor reads the chart, then stages a card the platform applies."""
+    agent = prepare_agent(
+        LongitudinalCareAdvisor,
+        allowed=GRANT,
+        subject=RunSubject(patient_id=PatientFactory.create().id),
+    )
+    gateway = FakeGateway(
+        reply(tool_use("find_conditions")),
+        reply(
+            tool_use(
+                "add_or_update_protocol_card",
+                {"title": "Recheck A1c", "narrative": "Last A1c was 9.2.", "status": "due"},
+            )
         ),
-        _response(content=[_text("done")], stop_reason="end_turn"),
-    ]
-    agent = _granted(LongitudinalCareAdvisor, ["@clinical_reads", "@clinical_alerts"])
-    # The subject the platform would set from the trigger's RunAgentEffect.
-    agent.subject = RunSubject(patient_id=patient.id)
+        reply(text("Staged one card.")),
+    )
 
-    result = agent.run(AgentState(), gateway, {})
+    run = run_agent(agent, gateway)
 
-    assert len(result.effects) == 1
-    assert mock_client.messages.create.call_count == 3
+    assert [effect.type for effect in run.effects] == [EffectType.ADD_OR_UPDATE_PROTOCOL_CARD]
+    assert [call.name for call in run.tool_calls] == ["find_conditions", "add_or_update_protocol_card"]
 ```
 
-Walk-through:
-- The `side_effect` is a list — each call to `messages.create()`
-  returns the next response.
-- `tool_use` responses make the agent's loop dispatch the named tool
-  through `self.tools.execute(...)` and send the result back on the
-  next turn.
-- `end_turn` exits the loop.
-- `result.effects` holds whatever the tools staged during the run.
-- `RunSubject` is in `canvas_sdk.agents`. Set `staff_id` on it to test a
-  run a staff member started.
+Set `staff_id` on the `RunSubject` to test a run a staff member
+started.
 
-## Simulating the platform's tool grant
+## Testing the tool grant
 
-Before `run()` fires, the platform replaces `agent.tools` with the
-tools the manifest grants. After `run()`, it drops any returned effect
-whose type no granted tool stages. Do the same in tests to exercise the
-grant:
+`prepare_agent` scopes `agent.tools` to the grant exactly as the
+platform does, and `run_agent` drops returned effects no granted tool
+stages. A test for "the agent can't do X" can check either:
 
 ```python?partial=true
-def _granted(agent_cls, allowed, denied=None):
-    """Instantiate an agent with the tools a manifest grant would give it."""
-    agent = agent_cls()
-    agent.tools_allowed = agent_cls.tools.resolve_allowed(allowed, denied=denied)
-    agent.tools = agent_cls.tools.scope(agent.tools_allowed)
-    return agent
-
-
-def _kept_by_platform(agent, effects):
-    """The effects the platform would apply from a run of this agent."""
-    granted = agent.tools.effect_types()
-    return [e for e in effects if EffectType.Name(e.type) in granted]
-
-
-def test_reads_only_grant_cannot_stage_cards():
+def test_a_reads_only_grant_cannot_stage_cards():
     """Granted only chart reads, the advisor can neither call nor return card effects."""
-    agent = _granted(LongitudinalCareAdvisor, ["@clinical_reads"])
+    agent = prepare_agent(LongitudinalCareAdvisor, allowed=["@clinical_reads"])
 
     assert "add_or_update_protocol_card" not in {d["name"] for d in agent.tools.definitions()}
     with pytest.raises(ValueError, match="Unknown tool"):
@@ -190,10 +146,9 @@ def test_reads_only_grant_cannot_stage_cards():
     assert agent.tools.effect_types() == frozenset()
 ```
 
-`EffectType` is in `canvas_sdk.effects`. The scoped registry doesn't
-contain ungranted tools at all, so a test for "the agent shouldn't be
-able to do X" can assert on `Unknown tool` rather than checking
-permission state.
+The scoped registry doesn't contain ungranted tools at all, so a model
+asking for one gets an `Unknown tool` error back, which `run.tool_calls`
+records as a failed call.
 
 ## State transitions
 
@@ -207,9 +162,12 @@ per-clinician chat agent from
 def test_each_clinician_has_their_own_conversation():
     """One clinician's chat never becomes another's context."""
     patient = PatientFactory.create()
-    first, second = ChatAgent(), ChatAgent()
-    first.subject = RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
-    second.subject = RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+    first = prepare_agent(
+        ChatAgent, subject=RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+    )
+    second = prepare_agent(
+        ChatAgent, subject=RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+    )
 
     state = first.load_state("patient_and_staff")
     state.data["messages"] = [{"role": "user", "content": "How is her A1c trending?"}]
@@ -258,8 +216,8 @@ Save that for a handful of golden-path scenarios per agent.
 A useful split:
 
 - **Unit** — individual tools, `load_state`/`save_state`, lifecycle
-  hooks. Fast, no Anthropic mock needed.
-- **Run-loop** — `run()` with a mocked Anthropic client. Exercises the
+  hooks. Fast, no gateway needed.
+- **Run-loop** — `run_agent` with a `FakeGateway`. Exercises the
   tool-use dispatch, the tool grant, and the effects it returns.
 - **End-to-end** — a few runs per agent on a development instance,
   checking that effects land where they should.
@@ -269,8 +227,8 @@ A useful split:
 It's tempting to record real Anthropic responses and replay them.
 That's a brittle test foundation — the model's tool-call sequence
 varies run-to-run, the response shape evolves with API versions, and
-the cost is borne by your CI. Hand-built canned responses (the
-`_response` / `_tool_use` / `_text` helpers above) give you tests
+the cost is borne by your CI. Hand-built canned replies (`reply`,
+`tool_use`, and `text` above) give you tests
 that exercise *your* loop logic, not the model's tendencies.
 
 Real-provider tests belong in an evals harness — a small set of
