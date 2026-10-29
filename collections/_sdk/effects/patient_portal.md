@@ -758,6 +758,7 @@ Canvas sends the subject and body you return in place of the defaults. The sende
 - Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
 - Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
 - When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+- Don't return a `SendInviteEffect` from this handler. It would send another login email and fire the event again, so Canvas drops it. See [Disallowed Effect/Event Combinations](/sdk/effects/#disallowed-effectevent-combinations).
 - Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
 
 #### Methods

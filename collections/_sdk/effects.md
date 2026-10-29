@@ -120,6 +120,7 @@ Canvas prevents certain combinations of events and effects to avoid infinite loo
 |------------|------------------------|
 | `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
 | `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+| `PATIENT_PORTAL__GET_LOGIN_EMAIL` | `PATIENT_PORTAL__SEND_INVITE` |
 
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 
