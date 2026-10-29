@@ -42,8 +42,9 @@ step is platform-driven:
    run may only name themselves. The staff member whose action started
    the run becomes the subject's `staff_id`. A subject that fails a
    check is refused and the run is never queued.
-2. **Derive the scope key** from the effect's `scope` and the subject.
-   See [Concurrency](#concurrency) below.
+2. **Derive the scope key** from the effect's `scope` and the subject,
+   or from its `scope_id` for a `KEY` scope. See
+   [Concurrency](#concurrency) below.
 3. **Take the run's scope.** A background worker claims the scope for
    this agent and scope key. If another run holds it, this run waits
    and retries with backoff.
@@ -110,8 +111,9 @@ A run doesn't have to be about a patient. An agent that works on a
 clinician's inbox, a claim, or the whole instance leaves `patient_id`
 unset and picks the `STAFF`, `KEY`, or `AGENT` scope. In such a run,
 standard tools that only make sense on a patient return an error to the
-model saying the run is not about a patient. Your own patient tools can
-do the same with `require_patient_id(ctx)` from `canvas_sdk.agents`.
+model, so it never reads an empty chart as a patient with no records.
+Your own patient tools can do the same with `require_patient_id(ctx)`
+from `canvas_sdk.agents`.
 
 ```python?partial=true
 def load_state(self, scope_key):
@@ -271,8 +273,9 @@ never wait on each other, whatever their scope.
 | `KEY` | Runs naming the same `scope_id`, for something that is neither a patient nor a note, such as `f"claim:{claim_id}"` | `scope_id` |
 | `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
-A `RunAgentEffect` missing a field its scope requires raises
-`ValueError` when you build it. A `PATIENT_AND_STAFF` or `STAFF` run that
+A `RunAgentEffect` missing a field its scope requires, or carrying a
+`scope_id` with any scope other than `KEY`, raises `ValueError` when you
+build it. A `PATIENT_AND_STAFF` or `STAFF` run that
 no staff member started is refused, and the run is never queued.
 
 `scope_id` decides only which runs wait on each other. It gives the
