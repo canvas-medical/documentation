@@ -134,9 +134,9 @@ No. Your plugins keep reading and writing the same custom data, and Canvas handl
 
 Your Organization admin sets up access and roles in Canvas Platform. Each developer runs `canvas login` once per machine and uses `canvas deploy` where they used `canvas install`. Each pipeline gets a service account token and the same command change. Canvas handles every other part of the upgrade.
 
-### Will our plugins stop working during the upgrade?
+### Will our plugins stop running or be degraded during the system upgrade?
 
-No. Your running plugins are not affected in any way. See [Canvas upgrades your plugins](#3-canvas-upgrades-your-plugins).
+No, not in any way. The upgrade happens on a different system from the one your plugins run on, so nothing changes about your running plugins or your data.
 
 ### Do we have to wait for the upgrade before we switch to `canvas deploy`?
 
