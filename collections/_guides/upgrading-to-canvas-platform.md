@@ -102,7 +102,7 @@ A GitHub Actions job for a plugin with its own repository:
     CANVAS_PLATFORM_TOKEN: {% raw %}${{ secrets.CANVAS_PLATFORM_TOKEN }}{% endraw %}
 ```
 
-`fetch-depth: 0` checks out the full history, which the push to Canvas Platform needs. A pipeline that deploys from a monorepo uses `--snapshot` instead and works from a shallow checkout; [Working with a monorepo](/guides/working-with-a-monorepo/#deploy-from-ci) has an example. [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) covers rotating and revoking the token.
+`fetch-depth: 0` checks out the full history, which the push to Canvas Platform needs. A pipeline that deploys from a monorepo uses `--snapshot` instead. It needs full history too, for the check that stops a deploy from rolling the plugin back, but not file contents; [Working with a monorepo](/guides/working-with-a-monorepo/#deploy-from-ci) has an example. [Service accounts for CI/CD](/sdk/canvas_cli/#service-accounts-for-cicd) covers rotating and revoking the token.
 
 ## FAQs
 
