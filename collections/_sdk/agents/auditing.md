@@ -136,6 +136,10 @@ class MyAgent(AgentPlugin):
             status="running",
         )
 
+    def on_turn(self, turn_index):
+        # run_tool_loop calls this before each model call, counting from 0.
+        self._run_log.llm_turns = turn_index + 1
+
     def on_run_end(self, result):
         self._run_log.status = "success"
         self._run_log.completed_at = datetime.now(UTC)

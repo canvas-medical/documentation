@@ -142,9 +142,9 @@ Along the way it:
 - runs each tool call through `self.tools` and sends a failure back to
   the model as an error result, so the model can recover;
 - runs complete tool calls in a turn the token limit cut off;
-- sends the model only the newest part of a long history that fits one
-  call, while returning all of it (`history_chars=None` sends
-  everything);
+- sends the model only the newest part of a long history that fits a
+  size budget (`history_chars`, 300,000 characters by default), while
+  returning all of it (`history_chars=None` sends everything);
 - marks the system prompt for prompt caching (`cache_system=False` to
   turn that off);
 - answers any tool call left open when the model stops unexpectedly,

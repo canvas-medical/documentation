@@ -174,7 +174,9 @@ The stable parts of a typical agent call are the system prompt and
 the tool definitions. For chat-shaped agents, most of the message
 history is also stable turn-to-turn (only the last user message and
 the new assistant turn change). Mark a cache breakpoint on the last
-block of the stable prefix:
+block of the stable prefix. `run_tool_loop` marks the system prompt
+this way by default (pass `cache_system=False` to turn that off). If
+you call the model yourself, set the marker as shown here:
 
 ```python
 client.messages.create(
