@@ -334,10 +334,19 @@ Monorepo-Commit: 3f9a1c2e7b40d8e1a6c5f4b3a2918e7d6c5b4a39
 Monorepo-Path: plugins/acme__intake
 ```
 
+A commit on `main` tagged `snapshot-baseline/<name>` also counts as a snapshot. Canvas Studio tags the commit it starts a plugin's `main` from this way, so the first snapshot from your repository starts from Studio's commit instead of treating every file on `main` as a change. `deploy` starts from the newest commit on `main`'s first-parent history that carries a `Monorepo-Commit` trailer or a baseline tag. Lightweight and annotated tags both count. A tagged commit without a trailer names no source commit, so `deploy` skips the rollback check described below.
+
+To mark a commit on `main` as the starting point yourself, tag it in a [`canvas clone`](#canvas-clone) checkout and push the tag:
+
+```console
+$ git tag snapshot-baseline/<sha> <sha>
+$ git push origin snapshot-baseline/<sha>
+```
+
 `deploy --snapshot` stops instead of pushing in two cases:
 
 - **HEAD lacks changes `main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
-- **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. Before the first snapshot, every package file already on `main` counts as such a change.
+- **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. When `main` has no snapshot and no baseline tag yet, every package file already on `main` counts as such a change.
 
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
 

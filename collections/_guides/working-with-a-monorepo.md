@@ -140,6 +140,8 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 4. **Snapshot.** Once it merges, CI or an engineer runs `canvas deploy <package folder> --snapshot`. The package folder is the one holding `CANVAS_MANIFEST.json` inside the folder Studio's pull request writes. Canvas Platform's `main` gets one commit with the plugin exactly as merged, and it deploys to the instances you name.
 5. **Studio picks it up.** Studio brings the snapshot on Canvas Platform's `main` into the project, so your engineers' edits become the starting point of the next iteration instead of being overwritten by it.
 
+Studio tags the commit it starts the plugin's `main` from with a `snapshot-baseline/` tag, so the first snapshot after Studio's pull request merges counts its changes from that commit. Without the tag, every package file already on `main` would count as a change the snapshot replaces, and a CI deploy would stop. To mark a starting point on a `main` that has none, see the [`canvas deploy` reference](/sdk/canvas_cli/#deploying-from-a-larger-repository).
+
 ## When a snapshot stops
 
 `deploy --snapshot` exits non-zero without pushing when:
