@@ -216,7 +216,9 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
 - `ctx` — the platform's per-run context, built from the run's subject.
   The model never sees this. Its keys:
   - `patient_id` — string UUID of the patient the run is about, checked
-    by the platform.
+    by the platform. `None` for a run that isn't about a patient; read it
+    with `require_patient_id(ctx)` in a tool that needs one, so the model
+    gets an error rather than an empty result.
   - `note_id` — the note the run is about, or for a run a staff member
     started, that staff member's open note on the patient.
   - `staff_id` — the staff member whose action started the run. Message

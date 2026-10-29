@@ -106,6 +106,13 @@ Your agent reads the subject from `self.subject` rather than from
 keys. `run_tool_loop` hands the subject to every tool, so the standard
 tools read, write, and check ownership against the platform's patient.
 
+A run doesn't have to be about a patient. An agent that works on a
+clinician's inbox, a claim, or the whole instance leaves `patient_id`
+unset and picks the `STAFF`, `KEY`, or `AGENT` scope. In such a run,
+standard tools that only make sense on a patient return an error to the
+model saying the run is not about a patient. Your own patient tools can
+do the same with `require_patient_id(ctx)` from `canvas_sdk.agents`.
+
 ```python?partial=true
 def load_state(self, scope_key):
     messages = load_conversation(self.subject.patient_id, self.subject.staff_id)
@@ -260,11 +267,17 @@ never wait on each other, whatever their scope.
 | `PATIENT` | Runs on the same patient | `patient_id` |
 | `PATIENT_AND_STAFF` | Runs on the same patient started by the same staff member, such as one clinician's chat | `patient_id`, and a run a staff member started |
 | `NOTE` | Runs on the same note; the same patient's other notes run concurrently | `patient_id` and `note_id` |
+| `STAFF` | Runs started by the same staff member, such as an agent that works through one clinician's inbox | a run a staff member started |
+| `KEY` | Runs naming the same `scope_id`, for something that is neither a patient nor a note, such as `f"claim:{claim_id}"` | `scope_id` |
 | `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
 A `RunAgentEffect` missing a field its scope requires raises
-`ValueError` when you build it. A `PATIENT_AND_STAFF` run that no staff
-member started is refused, and the run is never queued.
+`ValueError` when you build it. A `PATIENT_AND_STAFF` or `STAFF` run that
+no staff member started is refused, and the run is never queued.
+
+`scope_id` decides only which runs wait on each other. It gives the
+agent's tools nothing, so a run's patient always comes from its checked
+`patient_id`.
 
 ```python?partial=true
 from canvas_sdk.effects.agent import RunAgentEffect
