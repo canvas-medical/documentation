@@ -59,6 +59,11 @@ If the plugin declares [`custom_data`](/sdk/canvas_manifest/#custom-data):
 
 See [Custom data on Canvas Platform](/sdk/custom-data-sharing-data/#custom-data-on-canvas-platform) for how plugins share a namespace.
 
+If the plugin has [SimpleAPI](/sdk/handlers-simple-api-http/) routes, their URLs change with the name. An instance sends each request under `/plugin-io/api/<plugin name>/` only to the plugin with that exact name, so `/plugin-io/api/intake/...` becomes `/plugin-io/api/acme__intake/...`. The old path has no alias or redirect. Before you switch an instance over:
+
+- Update every URL in the plugin's own code that includes the old name, such as application and modal URLs, links in rendered HTML, and calls from front-end JavaScript.
+- Plan when external systems that call the plugin, such as webhooks and partner integrations, switch to the new path. The old path stops answering when step 5 disables the old plugin, and the new path answers once the renamed plugin is deployed, so neither path answers between those two commands.
+
 Then run [`canvas validate`](/sdk/canvas_cli/#canvas-validate) on the renamed package.
 
 ### 3. Give the plugin its own repository
@@ -74,7 +79,7 @@ intake-plugin/            # repository root
 └── tests/
 ```
 
-If the package is not in a git repository yet, `canvas deploy` offers to create one at its parent directory. If the package sits inside a larger repository with other code, move it into a repository of its own first, since `deploy` refuses a package nested deeper than that. Add a `.gitignore` for virtual environments and local secrets, because the repository is what gets deployed.
+If the package is not in a git repository yet, `canvas deploy` offers to create one at its parent directory. If the package sits inside a larger repository with other code, such as a monorepo, either move it into a repository of its own or deploy it from where it is with `canvas deploy --snapshot`; see [Working with a monorepo](/guides/working-with-a-monorepo/). Add a `.gitignore` for virtual environments and local secrets, because the repository is what gets deployed.
 
 If the plugin already has its own repository on GitHub or elsewhere, rename that remote before the first deploy. `canvas deploy` points the repository's `origin` remote at Canvas Platform, replacing whatever `origin` pointed to:
 

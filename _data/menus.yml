@@ -541,6 +541,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Working with a Monorepo"
+    url: /guides/working-with-a-monorepo/
+    description: Deploy plugins from a repository shared with other code, from your machine or CI, and through Canvas Studio's gated release
+    uses:
+      - sdk
+
   - title: "Choosing Your Patient Experience"
     url: /guides/choosing-your-patient-experience/
     description: Decide whether to use, extend, or replace the built-in patient portal
@@ -551,6 +557,12 @@ guides_list:
   - title: "Building a Custom Portal Landing Page"
     url: /guides/custom-landing-page/
     description: Customize a patient's landing page with interactive and relevant widgets
+    uses:
+      - sdk
+
+  - title: "Theming the Patient Portal"
+    url: /guides/theme-the-patient-portal/
+    description: Give the patient portal your practice's colors, font, corner radius and wording
     uses:
       - sdk
 
@@ -838,6 +850,8 @@ charting:
     url: /sdk/example-vitals_visualizer_plugin/
 
 portal_customization:
+  - title: "Appointment Copay Collection"
+    url: /sdk/example-appointment_copay_collection/
   - title: "Customize with Widgets"
     url: /sdk/example-portal-customization-widgets/
   - title: "Launch an Application"
@@ -1048,6 +1062,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Record Usage"
+    url: /sdk/effect-record-usage/
+    description: Record units of a plugin's work that its catalog listing prices.
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.

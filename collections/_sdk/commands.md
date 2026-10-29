@@ -895,7 +895,7 @@ The `family_history` parameter accepts either:
   - Required fields: `system`, `code`
   - Optional field: `display`
 
-The `relative` parameter also searches and selects the first result when a string is provided. Use specific terms (e.g., `"Paternal Grandfather"`, `"Maternal Grandfather"`) to avoid ambiguous matches.
+The `relative` parameter also searches and selects the first result when a string is provided. Results list the shortest matching term first, so `"Sister"` selects Sister rather than Half-sister. Pass the full relationship term (for example, `"Paternal Grandfather"` or `"Maternal Grandfather"`) rather than a partial word.
 
 **Example**:
 
