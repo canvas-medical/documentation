@@ -535,8 +535,8 @@ guides_list:
     uses:
       - sdk
 
-  - title: "Moving to Canvas Platform"
-    url: /guides/moving-to-canvas-platform/
+  - title: "Upgrading to Canvas Platform"
+    url: /guides/upgrading-to-canvas-platform/
     description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
     uses:
       - sdk

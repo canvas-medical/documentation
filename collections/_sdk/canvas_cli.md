@@ -2,7 +2,7 @@
 title: "Canvas CLI"
 ---
 
-{% include alert.html type="warning" content="The Canvas CLI signs in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and ships plugins with <a href='#canvas-deploy'><code>canvas deploy</code></a>. Instance API credentials in <code>credentials.ini</code> and <code>canvas install</code> are deprecated, and support for them ends on <b>December 14, 2026</b>. See <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
+{% include alert.html type="warning" content="The Canvas CLI signs in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and ships plugins with <a href='#canvas-deploy'><code>canvas deploy</code></a>. Instance API credentials in <code>credentials.ini</code> and <code>canvas install</code> are deprecated, and support for them ends on <b>December 14, 2026</b>. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 ## Getting Started
 
@@ -74,7 +74,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 ### Instance API credentials (`credentials.ini`): deprecated
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a> walks through the switch." %}
+{% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a> walks through the switch." %}
 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
@@ -370,7 +370,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 ### `canvas install`
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
+{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 Install a plugin into a Canvas instance.
 
