@@ -49,8 +49,6 @@ A user who holds this permission:
 - Doesn't see **Settings** in the provider menu, even when a plugin's
   [provider menu configuration](/sdk/layout-effect/#provider-menu-configuration) lists it
 
-Superusers keep admin console access even when they hold this permission.
-
 ## Default roles
 
 Every Canvas instance is provisioned with the roles below. They are grouped here by what
