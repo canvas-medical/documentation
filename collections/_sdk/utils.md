@@ -1482,7 +1482,7 @@ Searches for open appointment times and returns them as a list of `Slot` objects
 | `staff_ids`              | _list of strings_     | `false`  | The `id` of each [Staff](/sdk/data-staff/) member to search. Each must be a schedulable provider. Omit it to search every schedulable provider. |
 | `visit_type_id`          | _string_              | `false`  | The `id` of the visit type's [NoteType](/sdk/data-note/#notetype). Availability limited to other visit types is left out. |
 | `exclude_appointment_id` | _string_              | `false`  | The `id` of an [Appointment](/sdk/data-appointment/) being rescheduled. Its own time is returned as open. |
-| `grid_minutes`           | _integer_             | `false`  | The spacing of slot start times, from `1` to `60`. Defaults to `15`. |
+| `grid_minutes`           | _integer_             | `false`  | The spacing of slot start times, from `1` to `60`. Defaults to `15`. Canvas also offers back-to-back starts from the beginning of each open period, so some starts fall between grid stops, such as one right after a booking ends. |
 | `respect_holds`          | _boolean_             | `false`  | Whether to apply the same-day and next-day holds on provider calendars. Defaults to `True`. |
 
 **Returns**: a list of `Slot` objects, each an open time with one provider. A `Slot` can't be changed after it's created.
