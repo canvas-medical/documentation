@@ -564,7 +564,7 @@ Search the patient's recorded vital signs — blood pressure, heart rate, temper
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `name_contains` | string | no | Case-insensitive substring match on the observation's name (e.g., 'blood pressure', 'weight', 'temperature', 'pulse'). |
+| `name_contains` | string | no | Case-insensitive match on the observation's name, treating spaces, underscores, and hyphens alike. Canvas records vitals under names such as 'blood_pressure', 'pulse', 'body_temperature', 'respiration_rate', 'oxygen_saturation', 'weight', and 'height'; 'blood pressure' matches 'blood_pressure'. |
 | `observed_on_or_after` | string (date) | no | ISO 8601 date. Only return measurements with effective_datetime >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 10. |
 
