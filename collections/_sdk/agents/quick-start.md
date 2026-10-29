@@ -40,10 +40,7 @@ See [Tools](/sdk/agents-tools/) for writing your own.
 `my_plugin/agents/advisor.py`:
 
 ```python
-import json
-from typing import Any, cast
-
-from anthropic.types import ToolUseBlock
+from typing import Any
 
 from canvas_sdk.agents import AgentPlugin, AgentRunResult, AgentState, LLMGateway
 from canvas_sdk.effects import Effect
@@ -105,8 +102,7 @@ class LongitudinalCareAdvisor(AgentPlugin):
         # collects the effects the tools stage.
         tool_ctx = {"patient_id": patient_id, "note_id": trigger_payload["note_id"], "effects": effects}
 
-        client = gateway.client()
-        messages: list[dict[str, Any]] = [
+        messages = [
             {
                 "role": "user",
                 "content": (
@@ -115,37 +111,11 @@ class LongitudinalCareAdvisor(AgentPlugin):
                 ),
             }
         ]
-
-        for _ in range(MAX_TURNS):
-            response = client.messages.create(
-                model=gateway.model,
-                max_tokens=4096,
-                system=SYSTEM_PROMPT,
-                tools=cast(Any, self.tools.definitions()),
-                messages=cast(Any, messages),
-            )
-            messages.append({"role": "assistant", "content": response.content})
-
-            tool_uses = [b for b in response.content if isinstance(b, ToolUseBlock)]
-            if response.stop_reason not in ("tool_use", "max_tokens") or not tool_uses:
-                break
-
-            tool_results = []
-            for block in tool_uses:
-                try:
-                    result = self.tools.execute(block.name, dict(block.input), ctx=tool_ctx)
-                    content, is_error = json.dumps(result, default=str), False
-                except Exception as exc:
-                    content, is_error = f"Tool execution failed: {exc!s}", True
-                tool_results.append(
-                    {
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": content,
-                        "is_error": is_error,
-                    }
-                )
-            messages.append({"role": "user", "content": tool_results})
+        # Calls the model with this agent's granted tools until it ends its turn,
+        # running each tool call it makes with tool_ctx.
+        self.run_tool_loop(
+            gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages, max_turns=MAX_TURNS
+        )
 
         return AgentRunResult(state=state, effects=effects)
 
@@ -157,8 +127,15 @@ class LongitudinalCareAdvisor(AgentPlugin):
 The `AgentPlugin` contract is three methods: `load_state`, `run`, and
 `save_state`. This agent's state is the protocol cards themselves, so
 `load_state` and `save_state` do nothing and `run()` reads the cards
-from the chart. A failed tool call goes back to the model as an
-`is_error` result so it can try again, rather than ending the run.
+from the chart.
+
+`run_tool_loop` does the back-and-forth with the model: it calls the
+model with the agent's granted tools, runs each tool call through
+`self.tools`, sends the results back, and repeats until the model ends
+its turn or `max_turns` is reached. A failed tool call goes back to the
+model as an error so it can try again, rather than ending the run. See
+[Lifecycle](/sdk/agents-lifecycle/#running-the-model-with-run_tool_loop)
+for everything it handles.
 
 The agent stages cards rather than draft commands because a locked note
 can't take new commands. A card can still carry commands the clinician

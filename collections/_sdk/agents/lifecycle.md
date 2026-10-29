@@ -99,7 +99,7 @@ shape. Use it as the key into your storage.
 The body of your agent. Drive the tool-use loop, accumulate effects,
 update `state` in place. Return an `AgentRunResult(state=..., effects=[...])`.
 
-```python
+```python?partial=true
 from canvas_sdk.agents import AgentRunResult
 from canvas_sdk.effects import Effect
 
@@ -107,7 +107,7 @@ from canvas_sdk.effects import Effect
 def run(self, state, gateway, trigger_payload):
     effects: list[Effect] = []
     tool_ctx = {"patient_id": trigger_payload["patient_id"], "effects": effects}
-    # ... LLM loop using self.tools ...
+    self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
     return AgentRunResult(state=state, effects=effects)
 ```
 
@@ -116,6 +116,46 @@ returns and `save_state()` commits — the platform owns *when* effects
 emit; your agent owns *what*. Save and dispatch both happen while the
 run holds its scope, so the next run on that scope starts from the
 state and chart this run left behind.
+
+### Running the model with `run_tool_loop`
+
+Most agents spend `run()` in the same loop: call the model, run the
+tools it asks for, send the results back, and repeat until it finishes.
+`self.run_tool_loop` does that with the agent's granted tools:
+
+```python?partial=true
+result = self.run_tool_loop(
+    gateway,
+    ctx=tool_ctx,               # passed to every tool; the model never sees it
+    system=SYSTEM_PROMPT,
+    messages=messages,          # the conversation so far, ending with the turn to answer
+    max_turns=8,                # optional; also max_tokens, model, history_chars, cache_system
+)
+result.text       # the model's last reply, stripped
+result.messages   # messages plus every new turn, as JSON-safe dicts you can store
+result.turns      # how many model calls it made
+result.stopped    # "end_turn", "max_turns", or "unexpected"
+```
+
+Along the way it:
+
+- runs each tool call through `self.tools` and sends a failure back to
+  the model as an error result, so the model can recover;
+- runs complete tool calls in a turn the token limit cut off;
+- sends the model only the newest part of a long history that fits one
+  call, while returning all of it (`history_chars=None` sends
+  everything);
+- marks the system prompt for prompt caching (`cache_system=False` to
+  turn that off);
+- answers any tool call left open when the model stops unexpectedly,
+  so a stored transcript is always valid to send again;
+- calls `on_turn` before each model call;
+- lets errors from the inference gateway propagate, so the platform can
+  retry an outage and record a refusal.
+
+`canvas_sdk.agents.run_tool_loop` is the same loop as a function that
+takes `tools` explicitly, for code without an agent instance; sub-agents
+use it.
 
 ### `save_state(scope_key, state) -> None`
 
@@ -137,7 +177,7 @@ subclass to capture observability data without polluting `run()`.
 | `on_run_start(scope_key)` | After instantiation, before `load_state` | The scope_key for this run |
 | `on_run_end(result)` | After `save_state` succeeds | The `AgentRunResult` |
 | `on_run_error(exc)` | If any of `load_state` / `run` / `save_state` raises | The exception |
-| `on_turn(turn_index)` | Per-turn (not wired in preview — coming soon) | The turn number |
+| `on_turn(turn_index)` | Before each model call `run_tool_loop` makes | The turn number, from 0 |
 
 ```python?partial=true
 def on_run_start(self, scope_key):

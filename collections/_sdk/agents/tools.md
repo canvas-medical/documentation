@@ -241,14 +241,15 @@ class LongitudinalCareAdvisor(AgentPlugin):
     tools = _registered_tools
 
     def run(self, state, gateway, trigger_payload):
-        # self.tools is the manifest-scoped view — already filtered.
-        # Use it, not the imported _registered_tools.
-        client.messages.create(tools=self.tools.definitions(), messages=messages)
-        result = self.tools.execute(name, args, ctx=tool_ctx)
+        # run_tool_loop offers the model self.tools, the manifest-scoped view,
+        # and runs each tool call it makes with tool_ctx.
+        self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
 ```
 
 Inside `run()`, always use `self.tools` — that's the platform-scoped
-view (see [Permissions](#manifest-driven-permissions)). The
+view (see [Permissions](#manifest-driven-permissions)).
+`self.run_tool_loop` uses it for you; see
+[Lifecycle](/sdk/agents-lifecycle/#running-the-model-with-run_tool_loop). The
 underscore on `_registered_tools` is a convention to signal "don't
 reach for me directly."
 
@@ -268,8 +269,9 @@ Hand this list to `client.messages.create(tools=...)`.
 
 ## Dispatching a tool call
 
-When the model returns a `ToolUseBlock`, dispatch it through the
-registry:
+`run_tool_loop` dispatches tool calls for you. If you call the model
+yourself, dispatch each `ToolUseBlock` through the registry the same
+way it does:
 
 ```python
 try:

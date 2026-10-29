@@ -55,7 +55,6 @@ ids in the `scope_key`:
 ```python?partial=true
 from django.db.models import DO_NOTHING, ForeignKey, JSONField
 
-from canvas_sdk.agents import window_messages
 from canvas_sdk.v1.data.base import CustomModel
 
 
@@ -86,10 +85,9 @@ class ChatAgent(AgentPlugin):
         })
 
     def run(self, state, gateway, trigger_payload):
-        messages = state.data["messages"]
-        messages.append({"role": "user", "content": trigger_payload["user_message"]})
-        # ... LLM loop: send window_messages(messages), and append the
-        # assistant turns and tool blocks to messages ...
+        messages = [*state.data["messages"], {"role": "user", "content": trigger_payload["user_message"]}]
+        result = self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
+        state.data["messages"] = result.messages  # the history plus this run's turns
         return AgentRunResult(state=state, effects=effects)
 
     def save_state(self, scope_key, state):
@@ -110,10 +108,12 @@ can't interleave with another run that read the same baseline.
 
 **Keep the history within one model call.** A conversation that grows
 without bound eventually exceeds the model's context window, and every
-call after that is refused. Send the model `window_messages(messages)`,
-which keeps the newest turns that fit a size budget, starts on a plain
-user message so a tool result is never sent without its tool call, and
-always keeps the latest question. Keep storing the full history.
+call after that is refused. `run_tool_loop` sends the model only the
+newest turns that fit a size budget, starting on a plain user message
+so a tool result is never sent without its tool call, and always
+keeping the latest question; it still returns the full history for you
+to store. If you call the model yourself, `window_messages(messages)`
+does the same trimming.
 
 The snapshot pattern is also where **prompt caching** pays off most
 — the system prompt, tool definitions, and the prefix of the message
