@@ -44,12 +44,15 @@ An agent run is asynchronous, even when the trigger is user-initiated
 (e.g., a chat message):
 
 1. A handler in your plugin returns a `RunAgentEffect` naming one of
-   your plugin's agents, a `scope_key`, and a small `trigger_payload`.
-2. Canvas queues the run on a background worker. Runs of the same agent
-   on the same `scope_key` go one at a time.
-3. The worker calls your agent's `load_state` → `run` → `save_state`.
+   your plugin's agents, the patient and note the run is about, a
+   `scope`, and a small `trigger_payload`.
+2. Canvas checks the run's subject, adds the staff member whose action
+   started it, and queues the run on a background worker. Runs of the
+   same agent on the same scope go one at a time.
+3. The worker calls your agent's `load_state` → `run` → `save_state`,
+   with the subject on `self.subject`.
 4. Each effect your agent returns is applied like any other plugin
-   effect. The next run on that `scope_key` starts only after these
+   effect. The next run on that scope starts only after these
    effects have been applied, so it sees what this run did.
 
 Two invocation patterns share that path:
@@ -72,7 +75,8 @@ implement and what the platform does around it.
 | Platform owns | You own |
 |---|---|
 | Triggering, dispatch, lifecycle orchestration | Agent business logic (`run()`) |
-| One run at a time per agent and `scope_key`, with retry | State persistence (see [Managing State](/sdk/agents-managing-state/)) |
+| The run's subject: checking the patient and note, identifying the requesting staff member | Which patient and note a run is about |
+| One run at a time per agent and scope, with retry | State persistence (see [Managing State](/sdk/agents-managing-state/)) |
 | LLM access: gateway credentials, metering, budgets | Tool implementations |
 | Run duration metric; per-call tokens and cost at the gateway, by run | Run rationale and semantic audit (see [Auditing](/sdk/agents-auditing/)) |
 | Effect dispatch | Effect choice + idempotency keying |

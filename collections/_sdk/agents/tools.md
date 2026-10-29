@@ -213,21 +213,28 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
 
 - `arguments` — the model's `tool_use.input` dict. The model chose
   these values from the input schema. Validate as needed before use.
-- `ctx` — the platform's per-run context. The model never sees this.
-  Common keys:
-  - `patient_id` — string UUID of the patient this run is scoped to.
-  - `note_id` — for triggered agents that target a specific note.
-  - `staff_id` — for user-initiated agents, the clinician who asked.
-    Message drafts are attributed to them, and originate tools use only
-    their open note.
+- `ctx` — the platform's per-run context, built from the run's subject.
+  The model never sees this. Its keys:
+  - `patient_id` — string UUID of the patient the run is about, checked
+    by the platform.
+  - `note_id` — the note the run is about, or for a run a staff member
+    started, that staff member's open note on the patient.
+  - `staff_id` — the staff member whose action started the run. Message
+    drafts are attributed to them. `None` for a run nobody on staff
+    started.
   - `effects` — the list to append staged Effects to (used by effect tools).
+  - `gateway`, `parent_tools` — the run's gateway and the agent's granted
+    tools, for tools that run sub-agents.
+  - Any agent-specific keys the agent passed to `run_tool_loop(ctx=...)`.
 
 Use `ctx` for anything the model shouldn't choose — patient scoping,
 note targeting, the effects accumulator. Never trust `arguments` for
 scope (a malicious or hallucinating model could try to switch
 patients via an argument). The SDK's `standard_tools` enforce scope
 this way: `find_medications` reads `ctx["patient_id"]` and filters
-the query on it regardless of what the model passes.
+the query on it regardless of what the model passes. The agent cannot
+replace `patient_id`, `staff_id`, or `note_id`, so that filter is always
+the patient the platform checked.
 
 ## Attaching tools to an agent
 
@@ -242,8 +249,9 @@ class LongitudinalCareAdvisor(AgentPlugin):
 
     def run(self, state, gateway, trigger_payload):
         # run_tool_loop offers the model self.tools, the manifest-scoped view,
-        # and runs each tool call it makes with tool_ctx.
-        self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
+        # and runs each tool call it makes with the run's ctx.
+        result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
+        return AgentRunResult(state=state, effects=result.effects)
 ```
 
 Inside `run()`, always use `self.tools` — that's the platform-scoped
@@ -270,8 +278,8 @@ Hand this list to `client.messages.create(tools=...)`.
 ## Dispatching a tool call
 
 `run_tool_loop` dispatches tool calls for you. If you call the model
-yourself, dispatch each `ToolUseBlock` through the registry the same
-way it does:
+yourself, build the context once with `self.tool_context(gateway)` and
+dispatch each `ToolUseBlock` through the registry the same way it does:
 
 ```python
 import json

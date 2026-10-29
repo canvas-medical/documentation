@@ -28,8 +28,8 @@ class PlanDrafter(AgentPlugin):
         return AgentState()
 
     def run(self, state, gateway, trigger_payload):
-        # ... LLM loop, accumulate effects ...
-        return AgentRunResult(state=state, effects=effects)
+        result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
+        return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key, state):
         return None
@@ -49,8 +49,9 @@ The full message history (user turns + assistant turns + tool calls +
 tool results) lives in a single JSON column. Reading the row and
 writing it back is one round-trip each. The reference plugin's chat
 agent keeps one conversation per patient and clinician, so one
-clinician's questions never become another's context, and puts both
-ids in the `scope_key`:
+clinician's questions never become another's context. Its handler
+emits the run with `scope=RunAgentEffect.Scope.PATIENT_AND_STAFF`, and
+the agent reads both from `self.subject`:
 
 ```python?partial=true
 from django.db.models import DO_NOTHING, ForeignKey, JSONField
@@ -66,42 +67,33 @@ class Conversation(CustomModel):
     messages = JSONField(default=list)
 
 
-def chat_scope_key(patient_id, staff_id):
-    return f"patient:{patient_id}:staff:{staff_id}"
-
-
 class ChatAgent(AgentPlugin):
     tools = _registered_tools
 
     def load_state(self, scope_key):
-        _, patient_id, _, staff_id = scope_key.split(":")
         conversation = Conversation.objects.filter(
-            patient__id=patient_id, staff__id=staff_id
+            patient__id=self.subject.patient_id, staff__id=self.subject.staff_id
         ).first()
-        return AgentState(data={
-            "patient_id": patient_id,
-            "staff_id": staff_id,
-            "messages": list(conversation.messages) if conversation else [],
-        })
+        return AgentState(data={"messages": list(conversation.messages) if conversation else []})
 
     def run(self, state, gateway, trigger_payload):
         messages = [*state.data["messages"], {"role": "user", "content": trigger_payload["user_message"]}]
-        result = self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
+        result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
         state.data["messages"] = result.messages  # the history plus this run's turns
-        return AgentRunResult(state=state, effects=effects)
+        return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key, state):
         conversation, _ = Conversation.objects.get_or_create(
-            patient=PatientProxy.objects.get(id=state.data["patient_id"]),
-            staff=StaffProxy.objects.get(id=state.data["staff_id"]),
+            patient=PatientProxy.objects.get(id=self.subject.patient_id),
+            staff=StaffProxy.objects.get(id=self.subject.staff_id),
         )
         conversation.messages = state.data["messages"]
         conversation.save()
 ```
 
-Take the patient and clinician from the scope, as above, rather than
-from `trigger_payload`, so the chart the run reads and the record it
-saves always belong to the same patient.
+The tools, the conversation the run loads, and the record it saves all
+use `self.subject`, so they always belong to the same patient and
+clinician.
 
 Because runs on the same scope go one at a time, `load → run → save`
 can't interleave with another run that read the same baseline.
@@ -144,11 +136,13 @@ class LongitudinalCareAdvisor(AgentPlugin):
         return AgentState()  # the cards are the state
 
     def run(self, state, gateway, trigger_payload):
-        patient_id = trigger_payload["patient_id"]
-        cards = ProtocolCurrent.objects.filter(patient__id=patient_id, plugin_name="my_plugin")
+        cards = ProtocolCurrent.objects.filter(
+            patient__id=self.subject.patient_id, plugin_name="my_plugin"
+        )
         # ... brief the model with the cards; it updates them by card_key and
         # stages new ones through add_or_update_protocol_card ...
-        return AgentRunResult(state=state, effects=effects)
+        result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
+        return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key, state):
         return None  # the effects are the writes

@@ -43,7 +43,6 @@ See [Tools](/sdk/agents-tools/) for writing your own.
 from typing import Any
 
 from canvas_sdk.agents import AgentPlugin, AgentRunResult, AgentState, LLMGateway
-from canvas_sdk.effects import Effect
 from canvas_sdk.v1.data import ProtocolCurrent
 from my_plugin.agents.advisor_tools import tools as _registered_tools
 
@@ -96,28 +95,25 @@ class LongitudinalCareAdvisor(AgentPlugin):
         gateway: LLMGateway,
         trigger_payload: dict[str, Any],
     ) -> AgentRunResult:
-        patient_id = trigger_payload["patient_id"]
-        effects: list[Effect] = []
-        # The model never sees ctx. It scopes every tool to this patient and
-        # collects the effects the tools stage.
-        tool_ctx = {"patient_id": patient_id, "note_id": trigger_payload["note_id"], "effects": effects}
-
+        # The platform checked the patient and note the trigger named and set
+        # them on self.subject.
+        cards = _existing_cards(self.subject.patient_id)
         messages = [
             {
                 "role": "user",
                 "content": (
                     "The patient just had a visit complete (note locked). Review the "
-                    f"chart for follow-up needs.\n\n{_existing_cards(patient_id)}"
+                    f"chart for follow-up needs.\n\n{cards}"
                 ),
             }
         ]
-        # Calls the model with this agent's granted tools until it ends its turn,
-        # running each tool call it makes with tool_ctx.
-        self.run_tool_loop(
-            gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages, max_turns=MAX_TURNS
+        # Calls the model with this agent's granted tools until it ends its turn.
+        # Every tool acts on self.subject's patient.
+        result = self.run_tool_loop(
+            gateway, system=SYSTEM_PROMPT, messages=messages, max_turns=MAX_TURNS
         )
 
-        return AgentRunResult(state=state, effects=effects)
+        return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key: str, state: AgentState) -> None:
         """Nothing to write: the protocol card effects are the state."""
@@ -174,18 +170,21 @@ class LongitudinalCareAdvisorTrigger(BaseHandler):
         return [
             RunAgentEffect(
                 agent_id="my_plugin.agents.advisor:LongitudinalCareAdvisor",
-                scope_key=f"patient:{patient_id}",
-                trigger_payload={"patient_id": patient_id, "note_id": note_id},
+                scope=RunAgentEffect.Scope.PATIENT,
+                patient_id=patient_id,
+                note_id=note_id,
             ).apply()
         ]
 ```
 
 `agent_id` is the agent's module path and class name, separated by a
-colon; a plugin can only run its own agents. `scope_key` decides which
-runs wait for each other. Runs of this agent on the same patient go one
-at a time, and the next one starts only after the previous run's cards
-have landed, so two notes locked in quick succession don't stage the
-same card twice. See [Concurrency](/sdk/agents-lifecycle/#concurrency).
+colon; a plugin can only run its own agents. `patient_id` and `note_id`
+are the run's subject: the platform checks them and hands them to the
+agent as `self.subject`. `scope` decides which runs wait for each
+other. Runs of this agent on the same patient go one at a time, and the
+next one starts only after the previous run's cards have landed, so two
+notes locked in quick succession don't stage the same card twice. See
+[Concurrency](/sdk/agents-lifecycle/#concurrency).
 
 ## 4. Wire it up in the manifest
 

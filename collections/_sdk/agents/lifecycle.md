@@ -37,40 +37,49 @@ class MyAgent(AgentPlugin):
 When a handler returns a `RunAgentEffect`, the following happens. Each
 step is platform-driven:
 
-1. **Take the run's scope.** A background worker claims the scope for
-   this agent and `scope_key`. If another run holds it, this run waits
-   and retries with backoff. See [Concurrency](#concurrency) below.
-2. **Check ownership.** The agent must belong to the plugin whose
+1. **Check the run's subject.** The patient must exist, the note must
+   belong to that patient, and a patient whose portal action started the
+   run may only name themselves. The staff member whose action started
+   the run becomes the subject's `staff_id`. A subject that fails a
+   check is refused and the run is never queued.
+2. **Derive the scope key** from the effect's `scope` and the subject.
+   See [Concurrency](#concurrency) below.
+3. **Take the run's scope.** A background worker claims the scope for
+   this agent and scope key. If another run holds it, this run waits
+   and retries with backoff.
+4. **Check ownership.** The agent must belong to the plugin whose
    handler returned the effect; a plugin can't run another plugin's
    agents.
-3. **Build the `LLMGateway`** from the instance's inference gateway URL
+5. **Build the `LLMGateway`** from the instance's inference gateway URL
    and your plugin's `INFERENCE_GATEWAY_KEY` secret, attributed to your
    plugin, this agent, and this run. If either is unset, the run stops
    here with `error_kind="LLM_NOT_CONFIGURED"`.
-4. **Instantiate your subclass** (`agent_class()` with no arguments).
-5. **Apply the manifest tool grant.** The platform expands
+6. **Instantiate your subclass** (`agent_class()` with no arguments).
+7. **Apply the manifest tool grant.** The platform expands
    `tools.allowed` (tool names and `@category` groups) against
    `agent.tools`, subtracts `tools.denied`, sets `agent.tools_allowed`
    to the result, and replaces `agent.tools` with a scoped view
    containing only those tools. An agent entry with no `tools.allowed`
    gets no tools.
-6. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
-7. **Call `load_state(scope_key)`** to get the run's starting state.
-8. **Call `run(state, gateway, trigger_payload)`** — the body of your
-   agent.
-9. **Call `save_state(scope_key, result.state)`** with the updated
-   state from your `AgentRunResult`.
-10. **Call `on_run_end(result)`** (optional hook).
-11. **Filter and stamp the emitted effects.** Any effect whose type no
+8. **Set `agent.subject`** to the checked subject. See
+   [The run's subject](#the-runs-subject) below.
+9. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
+10. **Call `load_state(scope_key)`** to get the run's starting state.
+11. **Call `run(state, gateway, trigger_payload)`** — the body of your
+    agent.
+12. **Call `save_state(scope_key, result.state)`** with the updated
+    state from your `AgentRunResult`.
+13. **Call `on_run_end(result)`** (optional hook).
+14. **Filter and stamp the emitted effects.** Any effect whose type no
     granted tool stages is dropped. The rest are stamped with
     provenance (`plugin_name`, `handler_name` set to the agent class,
     `actor`, `source`).
-12. **Apply the effects** through the same pipeline as any plugin
+15. **Apply the effects** through the same pipeline as any plugin
     effect, recording them in the audit trail as requested by the user
     whose action started the run.
-13. **Release the scope**, so the next run on it can start.
+16. **Release the scope**, so the next run on it can start.
 
-If any of steps 7–9 raises, `on_run_error(exc)` fires, the exception
+If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
 is captured to Sentry, and the run returns `success=False`. Errors from
 the inference gateway are classified rather than captured: an outage
 (`error_kind="LLM_UNAVAILABLE"`) is retried, and a refusal
@@ -82,6 +91,27 @@ passes to the next run. When the instance is already running its share
 of agents, a new run waits and retries rather than taking workers that
 event handlers need.
 
+## The run's subject
+
+`self.subject` is a `RunSubject` holding who and what the run is about:
+
+| Field | Where it comes from |
+|---|---|
+| `patient_id` | The effect's `patient_id`, checked to exist |
+| `note_id` | The effect's `note_id`, checked to belong to the patient |
+| `staff_id` | The staff member whose action emitted the effect; `None` for a run a patient, a schedule, or a system event started |
+
+Your agent reads the subject from `self.subject` rather than from
+`trigger_payload`, which rejects `patient_id`, `staff_id`, and `note_id`
+keys. `run_tool_loop` hands the subject to every tool, so the standard
+tools read, write, and check ownership against the platform's patient.
+
+```python?partial=true
+def load_state(self, scope_key):
+    messages = load_conversation(self.subject.patient_id, self.subject.staff_id)
+    return AgentState(data={"messages": messages})
+```
+
 ## The three methods you implement
 
 ### `load_state(scope_key) -> AgentState`
@@ -91,8 +121,8 @@ start from — read from your Custom Data tables, deserialize a JSON
 blob, query the chart, whatever makes sense. Return `AgentState()`
 (empty) if your agent is stateless.
 
-`scope_key` is the same string the trigger emitted; you control its
-shape. Use it as the key into your storage.
+`scope_key` is the key the platform derived from the effect's `scope`.
+Most agents key their storage on `self.subject` instead.
 
 ### `run(state, gateway, trigger_payload) -> AgentRunResult`
 
@@ -101,14 +131,11 @@ update `state` in place. Return an `AgentRunResult(state=..., effects=[...])`.
 
 ```python?partial=true
 from canvas_sdk.agents import AgentRunResult
-from canvas_sdk.effects import Effect
 
 
 def run(self, state, gateway, trigger_payload):
-    effects: list[Effect] = []
-    tool_ctx = {"patient_id": trigger_payload["patient_id"], "effects": effects}
-    self.run_tool_loop(gateway, ctx=tool_ctx, system=SYSTEM_PROMPT, messages=messages)
-    return AgentRunResult(state=state, effects=effects)
+    result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
+    return AgentRunResult(state=state, effects=result.effects)
 ```
 
 The `effects` list is what the platform will dispatch *after* `run()`
@@ -126,16 +153,29 @@ tools it asks for, send the results back, and repeat until it finishes.
 ```python?partial=true
 result = self.run_tool_loop(
     gateway,
-    ctx=tool_ctx,               # passed to every tool; the model never sees it
     system=SYSTEM_PROMPT,
     messages=messages,          # the conversation so far, ending with the turn to answer
     max_turns=8,                # optional; also max_tokens, model, history_chars, cache_system
 )
 result.text       # the model's last reply, stripped
 result.messages   # messages plus every new turn, as JSON-safe dicts you can store
+result.effects    # the effects the tools staged, to return from run()
 result.turns      # how many model calls it made
 result.stopped    # "end_turn", "max_turns", or "unexpected"
 ```
+
+Every tool call gets a context the model never sees, which
+`self.tool_context(gateway)` builds:
+
+| Key | Value |
+|---|---|
+| `patient_id`, `staff_id` | From `self.subject` |
+| `note_id` | `self.subject.note_id`, or for a run a staff member started, that staff member's open note on the patient |
+| `effects` | A new list the tools append to; returned as `result.effects` |
+| `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` |
+
+Pass `ctx={...}` to add agent-specific keys. Those keys cannot replace
+any key in the table, so a tool always acts on the run's own patient.
 
 Along the way it:
 
@@ -154,8 +194,8 @@ Along the way it:
   retry an outage and record a refusal.
 
 `canvas_sdk.agents.run_tool_loop` is the same loop as a function that
-takes `tools` explicitly, for code without an agent instance; sub-agents
-use it.
+takes `tools` and `ctx` explicitly, for code without an agent instance;
+sub-agents use it with their parent's context.
 
 ### `save_state(scope_key, state) -> None`
 
@@ -164,8 +204,8 @@ back to wherever you read it from. For stateless agents this is a
 no-op.
 
 `save_state` runs while the run holds its scope. A concurrent
-`RunAgentEffect` for the same agent and `scope_key` waits until this
-run's effects have been applied.
+`RunAgentEffect` for the same agent and scope waits until this run's
+effects have been applied.
 
 ## Optional hooks
 
@@ -200,34 +240,34 @@ between platform-owned and plugin-owned audit data.
 
 ## Concurrency
 
-The platform runs one invocation at a time per agent and `scope_key`.
-A second `RunAgentEffect` for the same agent and `scope_key` waits,
-retrying with backoff for up to about 10 minutes, until the first run's
-effects have been applied.
+The platform runs one invocation at a time per agent and scope. A
+second `RunAgentEffect` for the same agent and scope waits, retrying
+with backoff for up to about 10 minutes, until the first run's effects
+have been applied.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
 state the previous run wrote through its effects, such as protocol
 cards or tasks.
 
-**Picking a `scope_key`**: encode whatever should serialize. The scope
-already includes your plugin and agent, so two agents never wait on
-each other. Common shapes:
+**Picking a `scope`**: choose what should serialize, and the platform
+derives the key from the run's subject. Runs of two different agents
+never wait on each other, whatever their scope.
 
-```python
-# Patient-scoped — two runs on the same patient serialize.
-f"patient:{patient_id}"
+| `RunAgentEffect.Scope` | Runs that wait on each other | Requires |
+|---|---|---|
+| `PATIENT` | Runs on the same patient | `patient_id` |
+| `PATIENT_AND_STAFF` | Runs on the same patient started by the same staff member, such as one clinician's chat | `patient_id`, and a run a staff member started |
+| `NOTE` | Runs on the same note; the same patient's other notes run concurrently | `patient_id` and `note_id` |
+| `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
-# Encounter-scoped — runs on the same encounter serialize, but the same
-# patient on different encounters can run concurrently.
-f"encounter:{encounter_id}"
-
-# One clinician's conversation about one patient.
-f"patient:{patient_id}:staff:{staff_id}"
-
-# Instance-wide — only one run of this agent at a time. Useful for cron
-# jobs you want strictly serialized.
-"nightly_review"
+```python?partial=true
+RunAgentEffect(
+    agent_id="my_plugin.agents.advisor:Advisor",
+    scope=RunAgentEffect.Scope.PATIENT,
+    patient_id=patient_id,
+    note_id=note_id,
+)
 ```
 
 Each Canvas instance serializes its own runs, so you don't need to

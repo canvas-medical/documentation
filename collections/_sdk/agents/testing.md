@@ -138,8 +138,10 @@ def test_run_stages_a_card_for_new_follow_up(mock_client, gateway):
         _response(content=[_text("done")], stop_reason="end_turn"),
     ]
     agent = _granted(LongitudinalCareAdvisor, ["@clinical_reads", "@clinical_alerts"])
+    # The subject the platform would set from the trigger's RunAgentEffect.
+    agent.subject = RunSubject(patient_id=patient.id)
 
-    result = agent.run(AgentState(), gateway, {"patient_id": patient.id, "note_id": "note-uuid"})
+    result = agent.run(AgentState(), gateway, {})
 
     assert len(result.effects) == 1
     assert mock_client.messages.create.call_count == 3
@@ -153,6 +155,8 @@ Walk-through:
   next turn.
 - `end_turn` exits the loop.
 - `result.effects` holds whatever the tools staged during the run.
+- `RunSubject` is in `canvas_sdk.agents`. Set `staff_id` on it to test a
+  run a staff member started.
 
 ## Simulating the platform's tool grant
 
@@ -203,16 +207,16 @@ per-clinician chat agent from
 def test_each_clinician_has_their_own_conversation():
     """One clinician's chat never becomes another's context."""
     patient = PatientFactory.create()
-    first, second = StaffFactory.create(), StaffFactory.create()
-    agent = ChatAgent()
-    first_key = chat_scope_key(patient.id, first.id)
+    first, second = ChatAgent(), ChatAgent()
+    first.subject = RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+    second.subject = RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
 
-    state = agent.load_state(first_key)
+    state = first.load_state("patient_and_staff")
     state.data["messages"] = [{"role": "user", "content": "How is her A1c trending?"}]
-    agent.save_state(first_key, state)
+    first.save_state("patient_and_staff", state)
 
-    assert agent.load_state(chat_scope_key(patient.id, second.id)).data["messages"] == []
-    assert len(agent.load_state(first_key).data["messages"]) == 1
+    assert second.load_state("patient_and_staff").data["messages"] == []
+    assert len(first.load_state("patient_and_staff").data["messages"]) == 1
 ```
 
 Tests that read or write your plugin's Custom Data need its tables in
