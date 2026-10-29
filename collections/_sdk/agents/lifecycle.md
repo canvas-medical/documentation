@@ -251,9 +251,9 @@ between platform-owned and plugin-owned audit data.
 ## Concurrency
 
 The platform runs one invocation at a time per agent and scope. A
-second `RunAgentEffect` for the same agent and scope waits, retrying
-with backoff for up to about 10 minutes, until the first run's effects
-have been applied.
+second `RunAgentEffect` for the same agent and scope waits until the
+first run's effects have been applied, retrying with randomized backoff
+for at most about 10 minutes, and about 5 on average, before it gives up.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
