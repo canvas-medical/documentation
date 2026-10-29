@@ -144,4 +144,4 @@ Technically, no. We recommend waiting until you're notified that your organizati
 
 ### Can we delete `credentials.ini` after we switch?
 
-Yes. Every Canvas CLI command signs in through Canvas Platform, so once your development workflow and CI have switched, you can delete `~/.canvas/credentials.ini` and revoke the OAuth clients it named on each instance.
+Wait until December 14, 2026, or until Canvas gives you specific direction. Until then, keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance.
