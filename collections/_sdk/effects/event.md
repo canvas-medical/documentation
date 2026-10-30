@@ -16,6 +16,7 @@ Build an `Event` with the [attributes](#attributes) you want to set, then return
 Creates the event on a calendar.
 
 - `calendar_id`, `title`, `starts_at`, and `ends_at` are required.
+- `event_id` is optional. Set it to a new UUID, and Canvas gives the event that id. Store the id so your plugin can update or delete the event later. When `event_id` isn't set, Canvas generates the id.
 
 ### update() → Effect
 
@@ -34,7 +35,7 @@ Deletes an existing event.
 | Attribute              | Type                                       | Description                                                                                         | Required                           |
 |------------------------|--------------------------------------------|-----------------------------------------------------------------------------------------------------|------------------------------------|
 | `calendar_id`          | `str \| UUID \| None`                      | The id of the calendar where the event will be created.                                             | For `create()`                     |
-| `event_id`             | `str \| UUID \| None`                      | The id of the event to update or delete.                                                            | For `update()` and `delete()`      |
+| `event_id`             | `str \| UUID \| None`                      | The id of the event. For `create()`, a new UUID to give the event. For `update()` and `delete()`, the id of an existing event. | For `update()` and `delete()`      |
 | `title`                | `str \| None`                              | The title of the event.                                                                             | For `create()` and `update()`      |
 | `starts_at`            | `datetime \| None`                         | The start date and time of the event.                                                               | For `create()` and `update()`      |
 | `ends_at`              | `datetime \| None`                         | The end date and time of the event.                                                                 | For `create()` and `update()`      |
@@ -72,6 +73,7 @@ An enumeration of days of the week for recurring events:
 ```python
 from canvas_sdk.effects.calendar import Event, EventRecurrence, DaysOfWeek
 from datetime import datetime
+from uuid import uuid4
 
 # Create a one-time event
 Event(
@@ -94,14 +96,24 @@ Event(
     allowed_note_types=["100", "101"]
 ).create()
 
+# Create an event with an id you choose, so you can update or delete it later
+event_id = str(uuid4())
+Event(
+    event_id=event_id,
+    calendar_id="calendar-uuid",
+    title="Team Sync",
+    starts_at=datetime(2025, 1, 16, 9, 0),
+    ends_at=datetime(2025, 1, 16, 10, 0)
+).create()
+
 # Update an existing event
 Event(
-    event_id="event-uuid",
+    event_id=event_id,
     title="Updated Meeting Title",
-    starts_at=datetime(2025, 1, 15, 15, 0),
-    ends_at=datetime(2025, 1, 15, 16, 0)
+    starts_at=datetime(2025, 1, 16, 15, 0),
+    ends_at=datetime(2025, 1, 16, 16, 0)
 ).update()
 
 # Delete an event
-Event(event_id="event-uuid").delete()
+Event(event_id=event_id).delete()
 ```
