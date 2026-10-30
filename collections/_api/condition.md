@@ -143,7 +143,8 @@ sections:
                     Identifies where the definition of the code comes from.<br><br>
                     The codes `encounter-diagnosis` and `problem-list-item` are paired with the system `http://terminology.hl7.org/CodeSystem/condition-category`.<br><br>
                     The code `health-concern` is paired with the system `http://hl7.org/fhir/us/core/CodeSystem/condition-category`.<br><br>
-                    The codes `sdoh`, `functional-status`, `disability-status`, and `cognitive-status` are paired with the system `http://hl7.org/fhir/us/core/CodeSystem/us-core-category`. Please note that these codings are only optionally included as a secondary codeable concept for problem list items or health concerns.
+                    The codes `sdoh`, `functional-status`, `disability-status`, and `cognitive-status` are paired with the system `http://hl7.org/fhir/us/core/CodeSystem/us-core-category`. Please note that these codings are only optionally included as a secondary codeable concept for problem list items or health concerns.<br><br>
+                    A condition can have more than one category. A condition assessed in a note has `encounter-diagnosis`, and also `problem-list-item` when it's on the problem list. The Canvas chart lists an active condition only when its categories include `problem-list-item` or `health-concern`, so include one of them when you create a condition that belongs on the chart. An active condition with `encounter-diagnosis` alone is recorded for a visit and doesn't appear in the chart's Conditions list.
                   type: array[json]
                   required_in: create, update
                   attributes: 
