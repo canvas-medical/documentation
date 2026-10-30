@@ -269,7 +269,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### CoverageType
 
-A coverage's `plan_type` comes from its payer's [TransactorType](#transactortype) and is set again whenever the coverage's payer changes. Each transactor type maps to the plan type with the same value, except `automobile`, which maps to `motorvehicle`. A transactor type with no matching plan type maps to `other`.
+A coverage's `plan_type` comes from its payer's [TransactorType](#transactortype) and is set again whenever the coverage's payer changes. Each transactor type maps to the plan type with the same value, except `automobile`, which maps to `motorvehicle`. Any other value maps to `other`.
 
 | Value              | Label                     |
 | ------------------ | ------------------------- |
