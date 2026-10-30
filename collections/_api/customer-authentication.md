@@ -26,6 +26,7 @@ layout: apipage
 
 
   - You'll need to set a name for the app, set the `Client type` to `Confidential`, choose one of the `Authorization grant types`, and set the `Redirect URIs` if needed. Leave the `Algorithm` at `No OIDC support` for now.
+  - Leave `Hash client secret` unchecked. Canvas uses the stored client secret for bulk FHIR export and token introspection, and `HS256` token signing requires an unhashed secret. A hashed secret also can't be viewed again after you save the application.
   - Here's how it should look if you created a new "Test Application" with the `client-credentials` grant type:
 <img src="/assets/images/6190a01-Screenshot_2021-10-26_at_16.26.59.png" alt="Application Example" style="width: 50%;" />
 
@@ -160,7 +161,7 @@ curl --request POST '{YOUR_CANVAS_EHR_INSTANCE}/auth/token/' \
 --data-urlencode 'scope={SCOPES}'
 ```
 
-**Note:** The `scope` parameter must match the scopes from the original authorization (or be a subset). If omitted, Canvas will attempt to use the application's default allowed scopes, but this may fail with `invalid_scope` if the defaults don't match the original grant.
+**Note:** The `scope` parameter is optional. If you omit it, the new access token keeps the scopes from the original authorization. If you include it, it must match those scopes or be a subset of them.
 
 This returns a new `access_token` and a **new** `refresh_token`. The previous refresh token is consumed and cannot be reused. Store the new refresh token for the next refresh cycle.
 
