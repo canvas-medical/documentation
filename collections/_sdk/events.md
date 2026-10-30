@@ -28995,6 +28995,30 @@ shape only; dynamic per-field entries appear alongside.
 
 <table>
   <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_LOGIN_EMAIL</th></tr>
+    <tr><td colspan="3">Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a <code>SendInviteEffect</code>, or a login link the patient requests from the portal login page. Return a <code>LoginEmailContent</code> effect to replace the email's subject and body. See <a href='/sdk/patient-portal/#customize-the-login-email'>Customize the Login Email</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"link_type": str["invite" |
+                 "reset"]
+"login_url": str
+"practice_location_id": str, the id of the <a href='/sdk/data-practicelocation/'>PracticeLocation</a> the email is sent from
+"default_subject": str
+"default_body": str, HTML</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="3">PATIENT_PORTAL__POST_LOGIN</th></tr>
     <tr><td colspan="3">Occurs once, right after a patient logs in to the Patient Portal. Return a <code>LaunchModalEffect</code> with the <code>DEFAULT_MODAL</code> target to open a modal over the page the patient lands on. See <a href='/sdk/patient-portal/#show-a-modal-after-login'>Show a Modal After Login</a>.</td></tr>
   </thead>
