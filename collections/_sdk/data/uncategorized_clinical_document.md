@@ -66,7 +66,7 @@ assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
 
 ## Delegations
 
-When staff send a document to a provider for signature, Canvas records a delegation, and records another when the signed document goes back to the sender. The delegations for a document are available through two accessors:
+When staff send a document to a provider for signature, Canvas records a delegation, and records another when the provider signs the document and Canvas returns it. The delegations for a document are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument

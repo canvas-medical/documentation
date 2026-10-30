@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `DocumentReviewDelegation` model records each step of the send-for-signature flow on a reviewable document: a Lab, Imaging, Consult/Referral, or Uncategorized review. Staff prepare a form by marking where the signature and date go, then select **SEND FOR SIGNATURE** to send it to a provider. Canvas records a delegation to that provider, with the sender as `on_behalf_of`. When the provider selects **SIGN FORM**, Canvas stamps the provider's own saved signature and the date into the form and returns it to the sender. That return is recorded as a route-back delegation, and `is_route_back` is `True`.
+The `DocumentReviewDelegation` model records each step of the send-for-signature flow on a reviewable document: a Lab, Imaging, Consult/Referral, or Uncategorized review. Staff prepare a form by marking where the signature and date go, then select **SEND FOR SIGNATURE** to send it to a provider. Canvas records a delegation to that provider, with the sender as `on_behalf_of`. When the provider selects **SIGN FORM**, Canvas stamps the provider's own saved signature and the date into the form and returns it to the sender. A form that no one sent for signature goes back to whoever reassigned it to the provider. When that person is the provider, is inactive, or can no longer see the patient, the form goes to the staff member who created the document instead. The return is recorded as a route-back delegation whose recipient is also its `on_behalf_of`, so `is_route_back` is `True`. When no one can take the form back, it stays with the provider and the active delegation ends.
 
 Each document has at most one **active** delegation (`is_active`). Earlier delegations stay in the table as inactive rows. The active delegation ends when the document changes hands any other way, when its review command is committed, or when it's marked as not needing review.
 
@@ -66,7 +66,7 @@ awaiting_signature = DocumentReviewDelegation.objects.filter(
 
 ## Route-back
 
-Use the `is_route_back` property to tell whether a delegation returned the signed document to whoever sent it, rather than sending it to a provider to sign:
+Use the `is_route_back` property to tell whether a delegation returned the signed document to its sender or creator, rather than sending it to a provider to sign:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument
@@ -75,7 +75,7 @@ document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733
 
 delegation = document.active_delegation
 if delegation and delegation.is_route_back:
-    ...  # the signed form is back with its sender
+    ...  # the signed form is back with its sender or creator
 ```
 
 ## Attributes
@@ -91,9 +91,9 @@ if delegation and delegation.is_route_back:
 | content_type       | [ContentType](/sdk/data-content-type/) (the document's type)    |
 | object_id          | Integer (the document's `dbid`)                                 |
 | delegated_by       | [Staff](/sdk/data-staff/#staff) (who sent the form, or the provider returning it signed) |
-| delegated_to_staff | [Staff](/sdk/data-staff/#staff) (the provider asked to sign, or the sender a signed form returns to) |
+| delegated_to_staff | [Staff](/sdk/data-staff/#staff) (the provider asked to sign, or the staff member a signed form returns to) |
 | delegated_to_team  | [Team](/sdk/data-team/#team) (recipient team, on delegations recorded before send for signature) |
-| on_behalf_of       | [Staff](/sdk/data-staff/#staff) (who sent the form for signature) |
+| on_behalf_of       | [Staff](/sdk/data-staff/#staff) (who sent the form for signature; on a route-back, the staff member it returns to) |
 | signature_consent  | Boolean (grants nothing; each staff member places only their own signature) |
 | comment            | String (the comment left with the request)                      |
 | is_active          | Boolean (the delegation is still in effect)                     |

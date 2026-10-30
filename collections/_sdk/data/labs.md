@@ -409,7 +409,7 @@ To react to new POC Lab Test results, listen for the [POC Lab Test command event
 
 ## Delegations
 
-When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the signed report goes back to the sender. The delegations for a lab report are available through two accessors:
+When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a lab report are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import LabReport

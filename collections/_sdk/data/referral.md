@@ -115,7 +115,7 @@ assigned = ReferralReport.objects.filter(reviewers__id=staff.id)
 
 ## Delegations
 
-When staff send a referral report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the signed report goes back to the sender. The delegations for a referral report are available through two accessors:
+When staff send a referral report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a referral report are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import ReferralReport

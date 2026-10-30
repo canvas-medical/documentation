@@ -80,7 +80,7 @@ for event in recorded:
 | `reassigned` | Staff reassign the document, including reviewer or team changes from the card's dropdowns. | `recipient_staff` and `recipient_team` hold the new assignment; `comment` holds any comment. `actor` is empty when the change came from an API client or a plugin. |
 | `commented` | Staff add a comment without changing who holds the document. | `comment` |
 | `sent_for_signature` | Staff send a prepared form to a provider to sign. The document keeps its team. | `recipient_staff` holds the provider and `recipient_team` the document's team; `comment` holds any comment. A [DocumentReviewDelegation](/sdk/data-document-review-delegation/) records the same request. |
-| `signed` | The provider holding the document signs it with **SIGN FORM**. When the form goes back to whoever sent it, a `reassigned` entry follows. | `actor` and `signers` hold the provider. |
+| `signed` | The provider holding the document signs it with **SIGN FORM**. When Canvas returns the signed form to its sender, or to the document's creator, a `reassigned` entry follows. | `actor` and `signers` hold the provider. |
 | `signature_removed` | Staff remove a signature from a signed form so they can edit it again. Canvas restores the version from just before signing. | `actor` |
 | `recorded` | The document's review command is recorded. Recording again adds a new entry. | `signers`, `review_content_type`, and `review_object_id` |
 | `entered_in_error` | The document's review command is entered in error. | `review_content_type` and `review_object_id` |
