@@ -241,6 +241,12 @@ Real-world examples (MSF):
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
 
+### Add a band to every page
+
+Keep something in front of patients on every page they visit: an announcement banner, a support footer, or a toolbar for your program. A Portal Docked Application mounts your content in a full-width band across the top or bottom of every signed-in portal page, and it stays on screen as patients move around the portal.
+
+See [Portal Docked Applications](/sdk/handlers-embedded-applications/#portal-docked-applications).
+
 ### Collect insurance cards and photo IDs
 
 Let patients send what your front desk usually chases down at check-in: photos of their insurance card, a driver's license or other photo ID, or a document their care team asked for. Add an upload step to one of your own portal pages, such as an intake wizard or a pre-visit checklist, and the files land on the patient's record in Canvas without staff scanning or re-keying anything.

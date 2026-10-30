@@ -535,9 +535,15 @@ guides_list:
     uses:
       - sdk
 
-  - title: "Moving to Canvas Platform"
-    url: /guides/moving-to-canvas-platform/
+  - title: "Upgrading to Canvas Platform"
+    url: /guides/upgrading-to-canvas-platform/
     description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
+    uses:
+      - sdk
+
+  - title: "Working with a Monorepo"
+    url: /guides/working-with-a-monorepo/
+    description: Deploy plugins from a repository shared with other code, from your machine or CI, and through Canvas Studio's gated release
     uses:
       - sdk
 
@@ -1056,6 +1062,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Record Usage"
+    url: /sdk/effect-record-usage/
+    description: Record units of a plugin's work that its catalog listing prices.
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
