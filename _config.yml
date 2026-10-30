@@ -91,7 +91,6 @@ feed:
 
 
 ### Build settings
-minify_html: false
 plugins:
   - jekyll-algolia
   - jekyll-feed
@@ -101,12 +100,18 @@ plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
   - jekyll-tabs
-  - octopress-minify-html
 
 ### Exclude from processing
 exclude:
   - .devbox
   - .venv
+  - build-image
+  - CLAUDE.md
+  - CODEOWNERS
+  - EVENT_TODOS.txt
+  - devbox.json
+  - devbox.lock
+  - scripts
   - Gemfile
   - Gemfile.lock
   - README.md
@@ -120,6 +125,7 @@ exclude:
   - generate-context.py
   - generate-llms.py
   - icon.png
+  - minify-site.py
   - mypy.ini
   - node_modules
   - pyproject.toml

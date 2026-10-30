@@ -6456,6 +6456,9 @@ Search for Claim resources.
 _id 
 string 
 The Canvas resource identifier of the Claim
+created 
+date 
+Filter by `created`, which is the date of service of the note the claim is associated with. Use this parameter to retrieve only claims within a date range, such as claims added since your last sync. See [Date Filtering](/api/date-filtering) for more information.
 patient 
 string 
 The patient reference associated to the Claim in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
@@ -13603,7 +13606,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete information) 
+  - <information_type> (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   
@@ -13864,7 +13867,7 @@ Plain text representation of the concept.
   - Out of Pocket (Stop Loss) 
   - Limitations 
   - Contact following entity for eligibility or benefit information 
-  - (Incomplete information) 
+  - <information_type> (Incomplete information) 
 allowedString 
 string 
 Benefits allowed.   
@@ -14862,7 +14865,7 @@ The request requires user authorization.
     - **Authorization Code** : Usually used for web/native applications since it requires a user to log in to the system.
 ##  Registering a third-party application on Canvas 
   - Registering a third-party application is always the first step.
-  - To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
+  - To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role, or membership in a group with the **Can register and manage OAuth applications** permission. Canvas support sets up the group, and you add staff to it in **Staff Permissions**.
   - Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
   - In order to do so, you'll need to: 
     1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page: ![Authorization Page](/assets/images/ed67823-Screenshot_2021-10-26_at_16.22.31.png)
@@ -15014,6 +15017,7 @@ A token carries a patient context in these cases:
   - It comes from an authorization code flow whose `launch` context names a patient.
 These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staff APIs include the `/api` endpoints, the [Note API](/api/note/), the [Letter API](/api/letter/), and the plugin install and management endpoints. Canvas also refuses tokens on staff APIs when the user they act as isn't a staff member, such as a patient.
 A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
+FHIR operations, such as [Create Lab Report](/api/diagnosticreport-operations/) and [Add Claim Activity Log Item](/api/claim-operations/), also need a token without a patient context, including when an app is launched from a patient's chart.
 ##  Scopes 
 Scopes control which parts of the API the token can access.
   - **Client Credentials Flow:** Scopes are optional. If omitted, the token is issued with the OAuth application's configured allowed scopes.
@@ -15049,7 +15053,7 @@ Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
 **`system/`** — same set as `user/` plus `Task` (full access). Read-only resources match `user/`. `system/Plugins.*` grants full access to plugin install/list/management endpoints. These endpoints accept only a client credentials token. Canvas refuses an authorization code token even when it carries `system/Plugins.*`.
 **`patient/`** — restricted to the launch-context patient. Writable: `Appointment`, `Communication`, `Consent`, `Coverage`, `Media`, `MedicationStatement`, `Patient`, `PaymentNotice`, `QuestionnaireResponse`. All others read-only. Additional read-only resources beyond the user/system list: `Appointment`, `Communication`, `Consent`, `Media`, `MedicationStatement`, `PaymentNotice`, `Schedule`, `Slot`.
 ###  Operation scopes 
-Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
+Some FHIR operations require a dedicated scope in addition to the resource scope. An operation scope covers only its operation: reading or writing the resource itself still needs a resource scope. Available under both `user/` and `system/`:
 Scope suffix | Operation  
 ---|---  
 `Claim.add-activity-log-item` | Add an activity log entry to a Claim  
@@ -15078,6 +15082,7 @@ Example: `"?date=eq2021-01-01"`
 You can supply multiple date search parameters to search in a range. For example if we want to find all the records within 2024-04-11 and 2024-04-20, we can pass `?date=ge2024-04-11&date=le2024-04-20`
 The API endpoints that support date search parameters include:
   - [Appointment](/api/appointment/) (/Appointment) - Filter by appointment date
+  - [Claim](/api/claim/) (/Claim) - Filter by created date (the date of service of the claim's note)
   - [Consent](/api/consent/) (/Consent) - Filter by consent date
   - [DetectedIssue](/api/detectedissue/) (/DetectedIssue) - Filter by identified date
   - [DiagnosticReport](/api/diagnosticreport/) (/DiagnosticReport) - Filter by report date
@@ -24715,7 +24720,7 @@ The request requires user authorization.
 This API allows customers to create letters. The effect of creating a letter is the same as creating a letter in the user interface. Content can be added using HTML & CSS. Placeholders created in Canvas will not be respected.
 ##  Authentication 
 The Letter API uses the existing Canvas OAuth authentication flow, so you can simply post to the existing auth token endpoint /auth/token/
-This endpoint was built as an addition to the Note API and uses the user/Note.write scope. This scope will not be in OAuth applications that were created prior to the release of the Note API. To get access:
+This endpoint was built as an addition to the Note API, and creating a letter needs the `user/Note.write` scope. This scope will not be in OAuth applications that were created prior to the release of the Note API. To get access:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
 Like the Note API, the Letter API is a staff API. It refuses tokens with a patient context and tokens that act as a user who isn't a staff member, with `401 Unauthorized`. See [Tokens with a patient context](/api/customer-authentication/#tokens-with-a-patient-context).
@@ -28728,6 +28733,7 @@ The request requires user authorization.
 This API allows customers to create and update notes. The effect of creating a note is the same as creating a note in the user interface (for example for a note with category "encounter" will create an encounter, a note that is billable will create a claim). Not all note attributes can be modified on update. For example, note type cannot be changed after note creation.
 ##  Authentication 
 The Note API uses the existing OAuth authentication flow from the FHIR API, so you can simply post to the existing auth token endpoint /auth/token/
+Read and search requests need the `user/Note.read` scope. Create and update requests need `user/Note.write`.
 The `user/Note.read` and `user/Note.write` scopes are available in the existing OAuth authentication flow used by the FHIR API. These scopes will not be in OAuth applications that were created prior to the release of this feature. Therefore to get access, you have two options:
   - Create a new [OAuth application](/api/customer-authentication)
   - Ask Canvas to add the new scopes to an existing OAuth application
@@ -28951,7 +28957,7 @@ Here are some Canvas specific workflows where observations will be created:
   1. Documenting Vitals via our [Vital Command](https://canvas-medical.help.usepylon.com/articles/9426091672-command-vitals) (category coding will be `vital-signs`)  
   2. Submitting a Questionnaire, Review Of System (ROS), Structured Assessment (SA), or a Physical Exam will result in an observation for each question answered if the question's code system is LOINC or SNOMED (category coding will be `social-history`).   
   3. There is a specific Physical Exam to capture Pediatric Vitals. Upon submission of the Exam, associated observations for Body Length, Head Circumference, and Head Occipital-Frontal Circumference Percentile (category coding will be `vital-signs`) will be created along with the observations for the answers of the exam (category coding will be `social-history`). Please contact Customer Support for help loading this Exam into your instance if you want to utilize it.   
-  4. Once weight and either height or pediatric body length is entered on a patients chart, the vital observations of BMI for Age Percentile (for patients 2 years or older) and Weight-for-Length Percentile will be calculated (category coding will be `vital-signs`).
+  4. Once weight and either height or pediatric body length are entered on a patient's chart, Canvas calculates one body size observation, chosen by the patient's age on the date the vitals were recorded (category coding will be `vital-signs`): Weight-for-Length Percentile for patients under 24 months, BMI for Age Percentile from 24 months up to the 20th birthday, and Body Mass Index (kg/m2) for patients 20 and older. Percentiles come from WHO growth charts under 24 months and CDC growth charts from 24 months on. If the instance has no growth chart data for the patient's sex and age or length, no percentile observation is created. This also applies to the Head Occipital-Frontal Circumference Percentile.   
   5. Submitting a Questionnaire that has custom scoring defined will result in an observation containing the scored value (category coding will be `survey`).   
   6. When a lab report is created in Canvas through [DI](https://canvas-medical.help.usepylon.com/articles/1652834476-labs-lab-reports), API, integration with HG, or [POC Lab Test Command](https://canvas-medical.help.usepylon.com/articles/7060961677-point-of-care-poc-tests), there will be resulting Observations made (category coding will be `laboratory`). Canvas lab orders are placed with a lab-specific identifier or a CPT code rather than a LOINC code, so treat the lab vendor as the source of truth for a result's LOINC code. When you create lab results through the API, prefer the vendor's specific LOINC code over a generic laboratory result code, because what is ordered can differ slightly from what the lab performs.
 **Related guides:**
@@ -29269,6 +29275,7 @@ The code of the observation.
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
+  - 39156-5 (LOINC code for Body Mass Index) 
   - 59576-9 (LOINC code for BMI for Age Percentile) 
   - 77606-2 (LOINC code for Weight-for-Length Percentile) 
   - Any LOINC codes from Lab Report Values captured 
@@ -29679,6 +29686,7 @@ The code of the observation.
   - Any LOINC or SNOMED code from questions filled out through a Questionnaire, Structured Assessment, Physical Exam, Review of Systems 
   - Any code from a Questionnaire Scoring Result 
   - Pediatric Vital observations: 8306-3 (Body Length), 8289-1 (Head Occipital-Frontal Circumference Percentile), and 8287-5 (Head Circumference) 
+  - 39156-5 (LOINC code for Body Mass Index) 
   - 59576-9 (LOINC code for BMI for Age Percentile) 
   - 77606-2 (LOINC code for Weight-for-Length Percentile) 
   - Any LOINC codes from Lab Report Values captured 
@@ -37272,8 +37280,9 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
+The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name. A username is up to 150 characters of letters, digits, and `@`, `.`, `+`, `-`, or `_`.
 valueUrl 
 string 
 Value of extension.  
@@ -37310,28 +37319,28 @@ valueCoding
 json required
 Click to view child attributes
 system 
-string 
+string required
 The system url of the coding.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string required
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
 identifier 
 array[json] 
-A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+The practitioner's NPI number. The NPI is optional, so you can create a practitioner without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.
 Click to view child attributes
 system 
 string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/us-npi 
 value 
 string 
-Practitioner's NPI number. Its value must be a 10 digit number.
+The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
 active 
 boolean 
 A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
@@ -37414,12 +37423,12 @@ array[json] required
 This component identifies the issuing authority of the Practitioner's qualification (license).
 Click to view child attributes
 system 
-string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+string required
+Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url 
 value 
-string 
+string required
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
 json 
@@ -37441,20 +37450,24 @@ json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
-string 
+string required
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
-string 
+string required
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+json required
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
-string 
-The display text of the license's short name.
+string required
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
-array[json] 
+array[json] required
+The issuing authority's short name, the state that issued the license, and whether the license is primary.  
+Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.  
+For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.  
+Mark at most one license of each license type as primary with the `license-primary` extension.
 Click to view child attributes
 url 
 string 
@@ -37512,8 +37525,8 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
 valueUrl 
 string 
 Value of extension.  
@@ -37559,7 +37572,7 @@ The system url of the coding.
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string 
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
@@ -37704,13 +37717,14 @@ string
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
 json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
 string 
-The display text of the license's short name.
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
 array[json] 
+The issuing authority's short name, the state that issued the license, and whether the license is primary.
 Click to view child attributes
 url 
 string 
@@ -37760,8 +37774,9 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
+You can't change a practitioner's username. If you send the username extension, its `valueString` must match the practitioner's current username, or the update fails with a 422 error. If you omit the username extension, the username stays the same.
 valueUrl 
 string 
 Value of extension.  
@@ -37798,28 +37813,29 @@ valueCoding
 json required
 Click to view child attributes
 system 
-string 
+string required
 The system url of the coding.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string required
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
 identifier 
 array[json] 
-A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+The practitioner's NPI number. The NPI is optional, so you can send an update without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.  
+If you omit `identifier` during an update, Canvas removes the practitioner's stored NPI. To keep the NPI, send it in every update.
 Click to view child attributes
 system 
 string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
 **Value Options Supported:**
   - http://hl7.org/fhir/sid/us-npi 
 value 
 string 
-Practitioner's NPI number. Its value must be a 10 digit number.
+The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
 active 
 boolean 
 A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
@@ -37913,12 +37929,12 @@ array[json] required
 This component identifies the issuing authority of the Practitioner's qualification (license).
 Click to view child attributes
 system 
-string 
-The `system` attribute specifies the namespace in which the identifier value is unique.
+string required
+Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
 **Value Options Supported:**
   - http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url 
 value 
-string 
+string required
 The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
 code 
 json 
@@ -37940,20 +37956,24 @@ json required
 A component of the Practitioner's license that defines validity period of the license with starting and the ending dates.
 Click to view child attributes
 start 
-string 
+string required
 Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 end 
-string 
+string required
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
-json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+json required
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
-string 
-The display text of the license's short name.
+string required
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
-array[json] 
+array[json] required
+The issuing authority's short name, the state that issued the license, and whether the license is primary.  
+Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.  
+For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.  
+Mark at most one license of each license type as primary with the `license-primary` extension.
 Click to view child attributes
 url 
 string 
@@ -38057,8 +38077,8 @@ Identifies the meaning of the extension
 valueString 
 string 
 Value of extension.  
-The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
-A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`.   
+A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
 valueUrl 
 string 
 Value of extension.  
@@ -38104,7 +38124,7 @@ The system url of the coding.
   - http://schemas.canvasmedical.com/fhir/roles 
 code 
 string 
-The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
 display 
 string 
 The display name of the coding.
@@ -38249,13 +38269,14 @@ string
 End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
 issuer 
 json 
-A component of the Practitioner's license object that defines the license issuing authority short name.
+The authority that issued the Practitioner's license.
 Click to view child attributes
 display 
 string 
-The display text of the license's short name.
+The full name of the issuing authority, such as `MD University Los Angeles`.
 extension 
 array[json] 
+The issuing authority's short name, the state that issued the license, and whether the license is primary.
 Click to view child attributes
 url 
 string 
@@ -46827,7 +46848,7 @@ SMART on FHIR applications adhere to a standards-based approach to authenticatio
 ##  Where can I get a SMART app? 
 We've provided an example SMART app [here](https://github.com/canvas-medical/example-smart-on-fhir-app). You can fork it and customize, or just use ours as-is. We use GitHub pages to host it at `https://canvas-medical.github.io/example-smart-on-fhir-app/`. Please ensure the client id [listed in `launch.html`](https://github.com/canvas-medical/example-smart-on-fhir-app/blob/205b14ed8d4f4d9c57fd11a26f9a22c800f38c29/launch.html#L15) matches the client id for the credentials you configure in the next step.
 ##  Configuring credentials 
-The first step to embedding a SMART application is to configure OAuth credentials for it to use. Navigate to `<YOUR_CANVAS_URL>/auth/applications/register/` and choose `Public` client type, `Authorization code` grant type, the `RSA` algorithm, and set the redirect uri for your SMART application. Registering an application takes the Administrative Developer or Clinical Developer role; see [Registering a third-party application on Canvas](/api/customer-authentication/#registering-a-third-party-application-on-canvas).
+The first step to embedding a SMART application is to configure OAuth credentials for it to use. Navigate to `<YOUR_CANVAS_URL>/auth/applications/register/` and choose `Public` client type, `Authorization code` grant type, the `RSA` algorithm, and set the redirect uri for your SMART application. Registering an application takes the Administrative Developer or Clinical Developer role, or a group with the **Can register and manage OAuth applications** permission; see [Registering a third-party application on Canvas](/api/customer-authentication/#registering-a-third-party-application-on-canvas).
 ![OAuth Configuration](/assets/images/guides/embedding-a-smart-app/SMART_OAuth.png)
 ##  Creating an application 
 We encourage you to read our more comprehensive guide on [creating applications via the Canvas SDK](/guides/your-first-application/), but we can provide an abridged version here.
@@ -47187,7 +47208,7 @@ This guide demonstrates how to build an external application that integrates wit
   5. **Save** the application
   6. Copy the **Client ID** \- you'll need this in the next step
 ###  Step 2. Deploy the Plugin 
-Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform) for the places the name appears). Then deploy it and set the Client ID:
     ```bash
     canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
     canvas config set acme__note_management_app client_id=<YOUR_CLIENT_ID> --instance <YOUR_INSTANCE>

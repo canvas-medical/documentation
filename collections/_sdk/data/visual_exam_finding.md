@@ -9,6 +9,8 @@ hidden: false
 
 The `VisualExamFinding` model represents a visual exam finding captured on a note. Each finding consists of a titled image along with a narrative description of the clinical observation.
 
+To record a finding from a plugin, use the [VisualExamFinding command](/sdk/commands/#visualexamfinding).
+
 ## Basic usage
 
 To get a visual exam finding by identifier, use the `get` method on the `VisualExamFinding` model manager:

@@ -435,6 +435,8 @@ for photo in patient.photos.all():
 
 Represents a patient identification card image (e.g., driver's license, insurance card).
 
+To create, update, or delete identification cards from a plugin, use the [PatientIdentificationCard effect](/sdk/effect-patient-identification-card/).
+
 | Field Name | Type                | Description      |
 |------------|---------------------|------------------|
 | dbid       | Integer             |                  |

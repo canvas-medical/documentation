@@ -552,6 +552,8 @@ class MyHandler(BaseHandler):
 
 Adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
 
+{% include alert.html type="warning" content="A claim banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and <a href='/sdk/canvas_cli/#canvas-uninstall'>uninstalling</a> it deletes them." %}
+
 #### Parameters
 
 | Parameter   | Type                                                     | Description                                    | Required |
