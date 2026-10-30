@@ -289,7 +289,7 @@ To try plugin work that hasn't merged on a test instance, without putting it on 
 $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
 ```
 
-`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. When you name another instance, the push still happens, and `deploy` exits non-zero with a message that lists the test instances you can deploy the commit to.
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. When any instance you name isn't one of them, the push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name.
 
