@@ -1,5 +1,5 @@
-name: Merge Release Branch and Tag Main
-description: Merges release branch into the main branch and tags it
+name: Merge Release Branch
+description: Squash-merges the release PR into the main branch
 
 inputs:
   release_name:
@@ -7,7 +7,7 @@ inputs:
     required: true
     type: string
   dry_run:
-    description: Just run through the motions, but don't merge/tag/close/create/etc...
+    description: Just run through the motions, but don't merge
     type: boolean
     required: false
     default: false
@@ -15,53 +15,25 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Initialize Inputs
-      id: initialize-inputs
-      shell: bash
-      run: |
-        echo "RELEASE_NAME=${{ inputs.release_name }}" | tee -a $GITHUB_ENV
-        echo "DRY_RUN=${{ inputs.dry_run }}" | tee -a $GITHUB_ENV
-        echo "VERSION_TAG=$(echo ${{ inputs.release_name }} | sed 's/[\/\.]/-/g')" | tee -a $GITHUB_ENV # replace "/" and "." with "-"
     - name: Validate release_name
       id: validate-release_name
       shell: bash
+      env:
+        RELEASE_NAME: ${{ inputs.release_name }}
       run: |
-        echo $RELEASE_NAME | grep ^[release/]
-        echo
-    - id: checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        ref: main
-    - id: config-git-user
-      shell: bash
-      run: |
-        git config --global user.email "github-actions@canvasmedical.com"
-        git config --global user.name "GitHub Actions"
-    - name: merge release branch
+        [[ "$RELEASE_NAME" =~ ^release/[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "release_name must look like release/1.2.3, got: $RELEASE_NAME"; exit 1; }
+    # Squash-merging the release PR lands the whole release on main as one commit titled
+    # after the PR, and goes through the main ruleset's required checks like any other PR.
+    - name: squash-merge the release PR
       id: merge-release-branch
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_REPO: ${{ github.repository }}
+        RELEASE_NAME: ${{ inputs.release_name }}
+        DRY_RUN: ${{ inputs.dry_run }}
       run: |
-        git checkout ${{ env.RELEASE_NAME }}
-        echo "RELEASE_SHA=$(git show -s --format="%H" ${{ env.RELEASE_NAME }})" | tee -a $GITHUB_ENV
-        git checkout main
-        git merge ${{ env.RELEASE_NAME }}
-    - name: tag the version
-      id: tag-new-version
-      shell: bash
-      run: |
-        git tag ${{ env.VERSION_TAG }}
-    - name: push the merge and tag
-      id: push-the-merge-and-tag
-      if: ${{ !env.DRY_RUN || env.DRY_RUN == 'false' }}
-      shell: bash
-      run: |
-        git push origin main
-        git push origin ${{ env.VERSION_TAG }}
-    - name: delete release branch
-      id: delete-release-branch
-      if: ${{ env.DEVELOP_SHA == env.RELEASE_SHA }}
-      shell: bash
-      run: |
-        echo "Here's where we delete the release branch"
-        echo "git push origin --delete ${{ env.RELEASE_NAME }}"
+        gh pr view "$RELEASE_NAME" --json number,title,state,mergeStateStatus
+        if [ "$DRY_RUN" != "true" ]; then
+          gh pr merge "$RELEASE_NAME" --squash
+        fi
