@@ -46,6 +46,8 @@ The results table shows columns for `@timestamp`, `level`, `source`, `plugin`, a
 
 Run `canvas logs --help` to see all options.
 
+Signed in to Canvas Platform, `canvas logs` reads an instance Canvas Platform manages without `credentials.ini`. See [`canvas logs`](/sdk/canvas_cli/#canvas-logs) for how the CLI picks its credential for each instance.
+
 
 ### Common Filters & Examples
 

@@ -76,9 +76,9 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a> walks through the switch." %}
 
-With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
+With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage, and `logs` for an instance Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
-A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
+A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once. The CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform), and per instance for [`canvas logs`](#canvas-logs).
 
 The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
 
@@ -686,6 +686,13 @@ CANVAS_MANIFEST.json must live inside the plugin's package directory (the direct
 ### `canvas logs`
 
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
+
+`canvas logs` chooses its credential per instance:
+
+- **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, so a long history read or a live follow keeps running.
+- **Any other instance**, such as `localhost` or an instance Canvas Platform does not manage, or any instance when you're not signed in: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+
+When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits. It doesn't switch to `credentials.ini` on its own. To read that instance's logs with `credentials.ini`, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 **Usage**:
 
