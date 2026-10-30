@@ -1753,14 +1753,16 @@ Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound fax
   </tbody>
 </table>
 
-#### Document Review Delegation
+<a id="document-review-delegation"></a>
 
-The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's review is delegated to another staff member or team, or routed back to its owner. It is a review-workflow event, separate from the Data Integration document-lifecycle events above.
+#### Document Hand-off
+
+These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncategorized review from the document review screen or the document's card. They are review-workflow events, separate from the Data Integration document-lifecycle events above. They fire for documents created in the chart as well as for inbound documents. Each hand-off is also recorded as a [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 <table>
   <thead>
-    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
-    <tr><td colspan="2">Occurs when an uncategorized clinical document review is delegated to another staff member or team from the document review surface, or routed back to its owner. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>signature_consent</code> indicates whether the recipient may apply the owner's signature; <code>routed_back</code> is true when the document was returned to its owner; <code>comment</code> carries the delegator's instructions.</td></tr>
+    <tr><th colspan="2">DOCUMENT_REASSIGNED</th></tr>
+    <tr><td colspan="2">Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. <code>reviewer</code> and <code>team</code> hold the new assignment, and either can be null. <code>reassigned_by</code> is null when the change came from outside a staff session, such as an API client or a plugin. It also fires when staff send a form to a provider for signature, with <code>sent_for_signature</code> set to true, and when Canvas returns a signed form. Both of those hand-offs also fire DOCUMENT_DELEGATED.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -1768,9 +1770,85 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
       <td>Context object</td>
     </tr>
     <tr>
-      <td><pre>"id": document_id
-"type": <a href="/sdk/data-integration-task/">IntegrationTask</a></pre></td>
-      <td><pre>"document": <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a>
+      <td><pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"reassigned_at": datetime str
+"reassigned_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"previous_reviewer": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"previous_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
+  "name": str
+"comment": str
+"sent_for_signature": bool
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_COMMENT_ADDED</th></tr>
+    <tr><td colspan="2">Occurs when staff add a comment to a reviewable document without changing who holds it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"commented_at": datetime str
+"commented_by": <a href="/sdk/data-staff/#staff">Staff</a>
+  "type": str ("STAFF")
+  "id": staff_id
+  "name": str
+"comment": str
+"patient": <a href="/sdk/data-patient/#patient">Patient</a>
+  "id": pt_id</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">DOCUMENT_DELEGATED</th></tr>
+    <tr><td colspan="2">Occurs when staff send a reviewable document to a provider for signature, and again when the provider signs it and Canvas returns it. A signed form goes back to whoever sent it for signature. When that person can't take it, because they're the provider, are inactive, or can no longer see the patient, it goes to the staff member who created the document. When no one can take it, the form stays with the provider and this event doesn't fire. A DOCUMENT_REASSIGNED event fires for the same hand-off. The target is always the report. <code>document</code> holds the inbound document metadata when the report came in through Data Integration, and is null otherwise, such as for a document created in the chart or an electronic lab report. <code>delegated_by</code> is the sender, or the provider returning the signed form. <code>delegated_to</code> is the provider asked to sign, or the staff member the signed form returns to. <code>on_behalf_of</code> is the staff member who sent the form for signature, or, on a route-back, the staff member it returns to. <code>routed_back</code> is true when the signed form went back to its sender or creator. <code>comment</code> carries the comment left with the request. <code>signature_consent</code> is always false, because each staff member places only their own signature. <code>delegated_to_team</code> is null for these hand-offs.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": report_id
+"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+      <td><pre>"report":
+  "id": report_id
+  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+"document":
   "id": document_id
   "channel": str
   "status": str
@@ -1787,6 +1865,10 @@ The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's r
 "delegated_to": <a href="/sdk/data-staff/#staff">Staff</a> or <a href="/sdk/data-team/#team">Team</a>
   "type": str ("STAFF" or "TEAM")
   "id": staff_or_team_id
+  "name": str
+"delegated_to_team": <a href="/sdk/data-team/#team">Team</a>
+  "type": str ("TEAM")
+  "id": team_id
   "name": str
 "on_behalf_of": <a href="/sdk/data-staff/#staff">Staff</a>
   "type": str ("STAFF")

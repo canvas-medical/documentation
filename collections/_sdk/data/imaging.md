@@ -139,6 +139,24 @@ staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
 ```
 
+## Delegations
+
+When staff send an imaging report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for an imaging report are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import ImagingReport
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The full delegation history, oldest first.
+history = imaging_report.delegations
+
+# The active delegation, or None when no delegation is in effect.
+current = imaging_report.active_delegation
+```
+
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
+
 ## The document reference
 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
