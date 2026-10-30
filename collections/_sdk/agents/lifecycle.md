@@ -97,16 +97,19 @@ the inference gateway are classified rather than captured: an outage
 
 A run gets 10 minutes. The tool loop starts no model call in its last
 30 seconds, and gives each call no more than the time left, split
-across its retries; a run that reaches that point stops and is
-abandoned: its state is not saved and its effects are not applied, and
-the scope passes to the next run.
+across its retries. A run that reaches that point stops: its state is
+not saved, its effects are not applied, and the scope passes to the
+next run. Its record shows it as `failed`, and a run still going when
+the 10 minutes end shows as `abandoned`.
 
-A run makes at most `max_model_calls` model calls, sub-agents included:
-40 by default, set as a class attribute on your `AgentPlugin` subclass.
-Reaching it ends the tool loop with `stopped="call_limit"`, which the
-run's record shows as how its last tool loop ended. When the instance is already running its share
-of agents, a new run waits and retries rather than taking workers that
-event handlers need.
+The tool loop makes at most `max_model_calls` model calls per run,
+sub-agents included: 40 by default, set as a class attribute on your
+`AgentPlugin` subclass. Reaching it ends the tool loop with
+`stopped="call_limit"`, which the run's record shows as how its last
+tool loop ended.
+
+When the instance is already running its share of agents, a new run
+waits and retries rather than taking workers that event handlers need.
 
 ## The run's subject
 

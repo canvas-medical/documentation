@@ -26,11 +26,11 @@ Captured today:
   subject by id, and the run's status: `queued`, `running`,
   `succeeded`, `failed`, `refused`, `abandoned`, or `gave_up`; a run
   whose worker stopped reads as `abandoned` as soon as its hold on the
-  scope expires. It
-  also holds why a run failed or was refused, when it was queued,
-  started, and finished, how many times it waited for its scope, how
-  many model calls it made, how its last tool loop ended, and how many
-  effects it returned, had dropped by its tool grant, and applied.
+  scope expires. It also holds why a run failed or was refused, when
+  it was queued, started, and finished, how many times it waited for
+  its scope or a free worker, how many model calls it made, how its
+  last tool loop ended, and how many effects it returned, had dropped
+  by its tool grant, and applied.
   Runs that never reach your agent are recorded too: a subject that
   fails the platform's checks, a run that gave up waiting for its
   scope, and one whose worker died.
@@ -39,7 +39,8 @@ Captured today:
   exception type when it did not, and how long it took. Arguments and
   results are left out: they carry chart content, and only you know
   what is worth keeping (see below). An agent that calls the model
-  without `run_tool_loop` gets a record without these.
+  without `run_tool_loop` gets a record without these, and without
+  its model-call count or how its tool loop ended.
 - **LLM usage**: Canvas's inference gateway records every call in its
   usage ledger: model, token counts by cache class, and cost, against
   your organization's inference account. It retains no request or
@@ -74,9 +75,10 @@ and drops each day once all of it is older than that.
 
 ### Reading run records
 
-`AgentRun` and `AgentRunToolCall` are read-only data models. A run's
-record has the `run_id` its `RunAgentEffect` generated, so a handler
-can return that id to a UI and the UI can follow the run:
+`AgentRun` and `AgentRunToolCall` are data models in
+`canvas_sdk.v1.data`. A run's record has the `run_id` its
+`RunAgentEffect` generated, so a handler can return that id to a UI and
+the UI can follow the run:
 
 ```python?partial=true
 from canvas_sdk.effects.agent import RunAgentEffect
