@@ -3558,6 +3558,88 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
   </tbody>
 </table>
 
+#### Portal Invitations
+
+These events follow a patient portal invite or password reset link through its life. Each one targets the link's <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a> record. They don't fire for portal notification links.
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas creates a portal invite or password reset link, either to send it itself or for a plugin that mints it with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"origin": str, <code>native</code> when Canvas sends the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_OPENED</th></tr>
+    <tr><td colspan="2">Occurs the first time the link is opened successfully. Later opens of the same link don't send it again.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CLAIMED</th></tr>
+    <tr><td colspan="2">Occurs when the link is used to set a password.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code> or <code>different_account</code></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Protocol Overrides
 
 <table>
