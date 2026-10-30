@@ -5,8 +5,7 @@ date: 2026-10-30
 layout: productupdates
 tags: sdk
 feed_summary: |
-  • Canvas now upgrades your organization's plugins to Canvas Platform for you, and they keep running as they do today.
-  • Keep using canvas install and credentials.ini until Canvas tells you your plugins are upgraded, then switch before December 14, 2026.
+  Canvas now upgrades your organization's plugins to Canvas Platform for you, and they keep running as they do today. Keep using canvas install and credentials.ini until Canvas tells you your plugins are upgraded, then switch before December 14, 2026.
 ---
 
 This is an update to the [Canvas Platform change we announced October 16](/release-notes/canvas-cli-platform-2026-10-16/). We've simplified the upgrade: Canvas now upgrades your organization's plugins for you, and they keep running exactly as they do today. The renaming and repository steps in the October 16 announcement no longer apply, and plugins you already renamed keep working as they are.
