@@ -537,6 +537,15 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
 
 
+### Agents
+
+Check out the [Agent Runner Framework](/sdk/agents/) documentation.
+
+| Effect | Description |
+|---|---|
+| RUN_AGENT | Start an agent run. Use the `RunAgentEffect` class in `canvas_sdk.effects.agent`. The platform runs the agent in a background worker and applies the effects the agent returns. |
+
+
 ### Plugin Usage
 
 Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
