@@ -23,7 +23,7 @@ A tool runs through its registry with `tools.execute(name, arguments,
 ctx=...)`, so you can test it without the model. Tools are where your
 business logic lives, which makes them the most worth testing.
 
-```python
+```python?partial=true
 import pytest
 
 from canvas_sdk.test_utils.factories import PatientFactory, TaskFactory

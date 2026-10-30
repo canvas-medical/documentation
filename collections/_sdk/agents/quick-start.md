@@ -39,7 +39,7 @@ See [Tools](/sdk/agents-tools/) for writing your own.
 
 `my_plugin/agents/advisor.py`:
 
-```python
+```python?partial=true
 from typing import Any
 
 from canvas_sdk.agents import AgentPlugin, AgentRunResult, AgentState, LLMGateway

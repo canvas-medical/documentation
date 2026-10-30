@@ -178,7 +178,7 @@ block of the stable prefix. `run_tool_loop` marks the system prompt
 this way by default (pass `cache_system=False` to turn that off). If
 you call the model yourself, set the marker as shown here:
 
-```python
+```python?partial=true
 client.messages.create(
     model=gateway.model,
     system=[

@@ -24,7 +24,9 @@ Captured today:
   can read (see [Reading run records](#reading-run-records) below).
   It holds the agent, the triggering handler, the scope, the run's
   subject by id, and the run's status: `queued`, `running`,
-  `succeeded`, `failed`, `refused`, `abandoned`, or `gave_up`. It
+  `succeeded`, `failed`, `refused`, `abandoned`, or `gave_up`; a run
+  whose worker stopped reads as `abandoned` as soon as its hold on the
+  scope expires. It
   also holds why a run failed or was refused, when it was queued,
   started, and finished, how many times it waited for its scope, how
   many model calls it made, how its last tool loop ended, and how many
@@ -40,15 +42,13 @@ Captured today:
   without `run_tool_loop` gets a record without these.
 - **LLM usage**: Canvas's inference gateway records every call in its
   usage ledger: model, token counts by cache class, and cost, against
-  your organization's inference account, along with the instance,
-  plugin, agent, and `run_id` that made it. It retains no request or
+  your organization's inference account. It retains no request or
   response bodies.
 - **Effect audit**: each effect the agent returns is applied like any
   other plugin effect and recorded in Canvas's security audit trail.
   Those events name the clinician whose action started the run, your
   plugin, and the agent class, and carry the `run_id` as their
-  correlation id, so one id joins a run's record, its chart changes,
-  and its LLM calls.
+  correlation id, so one id joins a run's record and its chart changes.
 - **Logs and errors**: the platform logs each run's start and finish,
   and unexpected exceptions go to Sentry, tagged with the agent ID.
 
@@ -58,6 +58,9 @@ so agent code can neither skip nor alter them.
 Coming soon:
 
 - **Per-LLM-call latency**: wall-clock and time-to-first-token.
+- **LLM call attribution**: the gateway's usage ledger records the
+  instance, plugin, agent, and `run_id` behind each call, so the
+  `run_id` also joins a run to its LLM calls.
 
 The skeleton is the safety net. Even if your plugin captured zero
 domain audit data, the platform's records answer: how many times did

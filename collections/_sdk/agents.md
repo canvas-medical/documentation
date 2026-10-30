@@ -110,8 +110,11 @@ response = client.messages.create(
 )
 ```
 
-The client sends your plugin's key, along with headers that attribute
-each call to your plugin, agent, and run.
+The client sends your plugin's key, along with headers naming your
+plugin, agent, and run.
+
+> **Coming soon**: the gateway records those names on each call in its
+> usage ledger.
 
 The gateway meters every call against your organization's inference
 account and enforces its budget and model allowlist. `gateway.model`

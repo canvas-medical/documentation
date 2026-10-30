@@ -164,6 +164,12 @@ tools.add_effect_tool(
   belongs to `ctx["patient_id"]` in `pre_build` and raise otherwise, as
   the SDK's task, assessment, and stop-medication tools do.
 
+Neither helper accepts a field that would set what the run supplies: a
+field named, or mapped with `command_field`, onto an injected kwarg
+(`patient_id` by default for `add_effect_tool`, the note for
+`originate_command_tool`) raises `ValueError` when the tool is
+registered.
+
 Both write helpers record the effect type they stage, which is what
 lets granting the tool let the agent return that effect (see
 [Permissions](#manifest-driven-permissions)).
@@ -175,7 +181,7 @@ reads that return a fixed-shape object, custom workflows that span
 multiple Effects, integrations with non-Canvas APIs — drop down to
 the raw decorator and hand-build the executor:
 
-```python
+```python?partial=true
 @tools.tool(
     name="get_visit_pattern",
     description="Return a summary of the patient's visit frequency.",
@@ -243,7 +249,7 @@ the patient the platform checked.
 Declare the registry as a class attribute on your `AgentPlugin`
 subclass:
 
-```python
+```python?partial=true
 from my_plugin.agents.advisor_tools import tools as _registered_tools
 
 class LongitudinalCareAdvisor(AgentPlugin):
@@ -283,7 +289,7 @@ Hand this list to `client.messages.create(tools=...)`.
 yourself, build the context once with `self.tool_context(gateway)` and
 dispatch each `ToolUseBlock` through the registry the same way it does:
 
-```python
+```python?partial=true
 import json
 
 tool_ctx = self.tool_context(gateway)  # once per run, before the first tool call

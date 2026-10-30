@@ -38,10 +38,16 @@ When a handler returns a `RunAgentEffect`, the following happens. Each
 step is platform-driven:
 
 1. **Check the run's subject.** The patient must exist, the note must
-   belong to that patient, and a patient whose portal action started the
-   run may only name themselves. The staff member whose action started
-   the run becomes the subject's `staff_id`. A subject that fails a
-   check is refused and the run is never queued. Either way the run
+   belong to that patient, and a user who is not staff, such as a
+   patient acting in the portal, may only name their own patient record.
+   The staff member whose action started the run becomes the subject's
+   `staff_id`. An effect with no Canvas user behind it, such as one from
+   a SimpleAPI route with API-key authentication or a webhook, runs as
+   Canvas Bot, and its `patient_id` is accepted once that patient exists:
+   your plugin vouches for it, so check it before returning the effect.
+   The `trigger_payload` cannot carry `patient_id`, `staff_id`, or
+   `note_id` of its own. A subject that fails a check is refused and the
+   run is never queued. Either way the run
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
    [Auditing](/sdk/agents-auditing/#reading-run-records)).
@@ -89,9 +95,16 @@ the inference gateway are classified rather than captured: an outage
 (`error_kind="LLM_UNAVAILABLE"`) is retried, and a refusal
 (`error_kind="LLM_REFUSED"`) fails the run without a retry.
 
-A run gets 10 minutes. One still running after that is abandoned: its
-state is not saved and its effects are not applied, and the scope
-passes to the next run. When the instance is already running its share
+A run gets 10 minutes. The tool loop starts no model call in its last
+30 seconds, and gives each call no more than the time left, split
+across its retries; a run that reaches that point stops and is
+abandoned: its state is not saved and its effects are not applied, and
+the scope passes to the next run.
+
+A run makes at most `max_model_calls` model calls, sub-agents included:
+40 by default, set as a class attribute on your `AgentPlugin` subclass.
+Reaching it ends the tool loop with `stopped="call_limit"`, which the
+run's record shows as how its last tool loop ended. When the instance is already running its share
 of agents, a new run waits and retries rather than taking workers that
 event handlers need.
 
@@ -173,7 +186,7 @@ result.text       # the model's last reply, stripped
 result.messages   # messages plus every new turn, as JSON-safe dicts you can store
 result.effects    # the effects the tools staged, to return from run()
 result.turns      # how many model calls it made
-result.stopped    # "end_turn", "max_turns", or "unexpected"
+result.stopped    # "end_turn", "max_turns", "call_limit", or "unexpected"
 ```
 
 Every tool call gets a context the model never sees, which
@@ -194,6 +207,8 @@ Along the way it:
 
 - runs each tool call through `self.tools` and sends a failure back to
   the model as an error result, so the model can recover;
+- cuts a tool result longer than 50,000 characters, telling the model
+  so and how to narrow the request;
 - runs complete tool calls in a turn the token limit cut off;
 - sends the model only the newest part of a long history that fits a
   size budget (`history_chars`, 300,000 characters by default), while
@@ -203,8 +218,9 @@ Along the way it:
 - answers any tool call left open when the model stops unexpectedly,
   so a stored transcript is always valid to send again;
 - calls `on_turn` before each model call;
-- lets errors from the inference gateway propagate, so the platform can
-  retry an outage and record a refusal.
+- lets errors from the inference gateway propagate, including those from
+  a sub-agent a tool runs, so the platform can retry an outage and
+  record a refusal.
 
 `canvas_sdk.agents.run_tool_loop` is the same loop as a function that
 takes `tools` and `ctx` explicitly, for code without an agent instance;
@@ -255,8 +271,11 @@ between platform-owned and plugin-owned audit data.
 
 The platform runs one invocation at a time per agent and scope. A
 second `RunAgentEffect` for the same agent and scope waits until the
-first run's effects have been applied, retrying with randomized backoff
-for at most about 10 minutes, and about 5 on average, before it gives up.
+first run's effects have been applied, retrying with randomized backoff,
+about 5 minutes in total on average. If another run still holds the
+scope when those retries run out, it waits once more, until that hold
+expires, so a run whose worker stopped never blocks the scope for good;
+after that it gives up.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
@@ -281,9 +300,15 @@ A `RunAgentEffect` missing a field its scope requires, or carrying a
 build it. A `PATIENT_AND_STAFF` or `STAFF` run that
 no staff member started is refused, and the run is never queued.
 
-`scope_id` decides only which runs wait on each other. It gives the
-agent's tools nothing, so a run's patient always comes from its checked
-`patient_id`.
+The scope decides only which runs wait on each other. `scope_id` gives
+the agent's tools nothing, so a run's patient always comes from its
+checked `patient_id`. Nor does the scope decide which state a run sees:
+`load_state` receives the scope key and nothing else. `KEY` and `AGENT`
+leave the patient out of the key, so an agent that keeps per-patient
+state under those scopes must key that state by
+`self.subject.patient_id`. An `AGENT`-scoped chat agent that stored its
+history under the scope key alone would load one patient's conversation
+into the next patient's run.
 
 ```python?partial=true
 from canvas_sdk.effects.agent import RunAgentEffect
