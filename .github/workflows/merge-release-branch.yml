@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: Just run through the motions, but don't merge/tag/close/create/etc...
+        description: Just run through the motions, but don't merge
         type: boolean
         required: false
         default: false
