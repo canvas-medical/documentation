@@ -3564,7 +3564,7 @@ These events follow a patient portal invite or password reset link through its l
 
 <table>
   <thead>
-    <tr><th colspan="2">INVITATION_CREATED</th></tr>
+    <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
     <tr><td colspan="2">Occurs when Canvas creates a portal invite or password reset link, either to send it itself or for a plugin that mints it with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>.</td></tr>
   </thead>
   <tbody>
@@ -3584,7 +3584,7 @@ These events follow a patient portal invite or password reset link through its l
 
 <table>
   <thead>
-    <tr><th colspan="2">INVITATION_OPENED</th></tr>
+    <tr><th colspan="2">PORTAL_INVITATION_OPENED</th></tr>
     <tr><td colspan="2">Occurs the first time the link is opened successfully. Later opens of the same link don't send it again.</td></tr>
   </thead>
   <tbody>
@@ -3603,7 +3603,7 @@ These events follow a patient portal invite or password reset link through its l
 
 <table>
   <thead>
-    <tr><th colspan="2">INVITATION_CLAIMED</th></tr>
+    <tr><th colspan="2">PORTAL_INVITATION_CLAIMED</th></tr>
     <tr><td colspan="2">Occurs when the link is used to set a password.</td></tr>
   </thead>
   <tbody>
@@ -3622,7 +3622,7 @@ These events follow a patient portal invite or password reset link through its l
 
 <table>
   <thead>
-    <tr><th colspan="2">INVITATION_REJECTED</th></tr>
+    <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
     <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>.</td></tr>
   </thead>
   <tbody>

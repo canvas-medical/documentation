@@ -77,6 +77,7 @@ A link that Canvas couldn't use when someone opened it records the time and reas
 | Field Name                 | Type                                                                    | Description                                                                          |
 |----------------------------|-------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
 | id                         | UUID                                                                    | The `target` ID on [portal invitation events](/sdk/events/#portal-invitations)       |
+| dbid                       | Integer                                                                 |                                                                                      |
 | created                    | DateTime                                                                | When the link was created                                                            |
 | modified                   | DateTime                                                                |                                                                                      |
 | user                       | [CanvasUser](/sdk/data-canvasuser/)                                     | The user the link signs in                                                           |
