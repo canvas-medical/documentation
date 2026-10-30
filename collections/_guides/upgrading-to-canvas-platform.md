@@ -144,4 +144,4 @@ Yes. Wait until you're notified that your organization has been upgraded to the 
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. Some commands, such as `canvas logs` and the `canvas namespace` commands, still connect to an instance with those credentials.
+Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. Some commands, such as the `canvas namespace` commands, still connect to an instance with those credentials. `canvas logs` uses them for an instance Canvas Platform does not manage.
