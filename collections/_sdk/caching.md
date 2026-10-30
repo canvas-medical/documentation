@@ -59,6 +59,14 @@ Call it from a handler as `get_access_token(self.secrets)`.
 
 ---
 
+## Capacity and eviction
+
+All plugins on a Canvas instance share one cache. Each plugin reads and writes only its own keys, but every plugin's entries count toward one limit of 1,000,000 entries. When a write finds the cache over that limit, Canvas first deletes expired entries. If the cache is still over the limit, Canvas deletes about a third of the remaining entries, whichever plugin owns them.
+
+Because a key can disappear before its TTL ends, handle a missing key as a cache miss and rebuild the value. Store data that must not be lost in [Custom Data](/sdk/custom-data/).
+
+---
+
 ## Supported Methods
 
 ### `get(key: str, default: Any | None = None) -> Any`
