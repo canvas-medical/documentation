@@ -568,6 +568,7 @@ Check out the [Surescripts Effects](/sdk/effect-surescripts/) documentation.
 | SEND_SURESCRIPTS_ELIGIBILITY_REQUEST | Can be used to send a Surescripts eligibility request. See [Eligibility](/sdk/effect-surescripts/#eligibility). |
 | SEND_SURESCRIPTS_BENEFITS_REQUEST | Can be used to send a Surescripts benefits request. See [Benefits](/sdk/effect-surescripts/#benefits). |
 | SEND_SURESCRIPTS_MEDICATION_HISTORY_REQUEST | Can be used to send a Surescripts medication history request. See [Medication History](/sdk/effect-surescripts/#medication-history). |
+| SURESCRIPTS_BENEFITS_COORDINATION_OVERRIDE | Overrides the BIN, PCN, group ID, or member ID sent with a new prescription. Return it from a `PRESCRIBE_COMMAND__PRE_SEND` handler. See [Benefits coordination override](/sdk/effect-surescripts/#benefits-coordination-override). |
 
 
 ### Data Integration
