@@ -87,7 +87,21 @@ Subclasses should populate the `Meta` inner class. Common meta fields include:
   - Parses comparison-style numeric strings that may include relational prefixes like `<`, `<=`, `>` or `>=`. Returns a float adjusted slightly (±1e-6) for strict `<` or `>` operators so comparisons can be expressed without ambiguity. If parsing fails, returns `0`.
 
 - `patient_id_from_target()` -> str
-  - Extracts and caches the patient id from a protocol event target for supported event types. The method supports a variety of patient-centric event targets (Conditions, LabOrders, LabReports, Medications, Patient create/update events, and ProtocolOverride events). The first call will fetch and cache the patient id to avoid repeated DB lookups. If an unsupported event type is provided a `ValueError` is raised.
+  - Returns the id of the patient that the event's target record belongs to. For `PATIENT_*` events, the target is the patient. For other supported events, the method looks up the target record and returns its patient. The first call caches the patient id, so later calls don't query the database again. Supported events:
+
+    | Events | Target record |
+    | --- | --- |
+    | `CONDITION_ASSESSED`, `CONDITION_CREATED`, `CONDITION_RESOLVED`, `CONDITION_UPDATED` | [Condition](/sdk/data-condition/) |
+    | `INSTRUCTION_CREATED`, `INSTRUCTION_UPDATED` | [Instruction](/sdk/data-instruction/) |
+    | `INTERVIEW_CREATED`, `INTERVIEW_UPDATED` | [Interview](/sdk/data-questionnaire/) |
+    | `LAB_ORDER_CREATED`, `LAB_ORDER_UPDATED` | [LabOrder](/sdk/data-labs/) |
+    | `LAB_REPORT_CREATED`, `LAB_REPORT_UPDATED` | [LabReport](/sdk/data-labs/) |
+    | `MEDICATION_LIST_ITEM_CREATED`, `MEDICATION_LIST_ITEM_UPDATED` | [Medication](/sdk/data-medication/) |
+    | `PATIENT_CREATED`, `PATIENT_UPDATED` | [Patient](/sdk/data-patient/) |
+    | `PROTOCOL_OVERRIDE_CREATED`, `PROTOCOL_OVERRIDE_DELETED`, `PROTOCOL_OVERRIDE_UPDATED` | [ProtocolOverride](/sdk/data-protocol-override/) |
+    | `REFERRAL_REPORT_CREATED`, `REFERRAL_REPORT_UPDATED` | [ReferralReport](/sdk/data-referral/) |
+
+  - The method raises a `ValueError` when the event type isn't in this table, or when the target record has no patient. An interview, for example, can exist without a patient.
 
 ### Example — react to a lab report
 
@@ -163,5 +177,5 @@ When a CQM protocol that returns a single ProtocolCard effect is uploaded to Can
 ### Caveats & notes
 
 - Timeframe: by default the protocol looks at the 1-year window prior to now. Override `timeframe` if your measure requires a broader or narrower lookback.
-- patient id resolution: `patient_id_from_target()` supports only the event types enumerated by the implementation; verify the event you plan to subscribe to maps to a supported model. When used heavily, this method avoids extra DB queries by caching the patient id on the instance.
+- Patient id resolution: `patient_id_from_target()` supports only the events listed under [Key methods](#key-methods). Check that the events your protocol responds to are listed there.
 - Event-driven handlers should avoid expensive synchronous DB operations inside their event handler. When possible, emit Effects that are handled asynchronously by the platform.
