@@ -1330,6 +1330,9 @@ data_module:
   - title: "PluginCommand"
     url: /sdk/data-plugin-command/
     description: Custom commands registered by plugins via the manifest configuration.
+  - title: "PortalInvitation"
+    url: /sdk/data-portal-invitation/
+    description: Patient portal invite and password reset links, with when each was opened, claimed, or refused.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
