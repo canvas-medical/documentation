@@ -28983,7 +28983,9 @@ See Creating a patient for an example.
 ###  update() → Effect 
 Updates an existing patient record.
   - `patient_id` is required, and must be the id of an existing patient.
-  - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+  - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values, and so does the patient's business line, which the effect has no attribute for.
+  - To remove a patient's default location or default provider, set `default_location_id` or `default_provider_id` to `None`.
+  - `addresses`, `external_identifiers`, and `previous_names` replace the stored values when you set them, so pass the complete list you want the patient to have. An external identifier you leave out of the list is deleted, unless it has already expired.
 See Updating a patient for an example.
 Both methods check that `default_location_id` and `default_provider_id`, when set, refer to an existing practice location and staff member.
 ##  Attributes 
@@ -56496,6 +56498,7 @@ Hiding `SCHEDULE` does not change where providers land after logging in — that
     ```
 Hiding `SCHEDULE` also leaves the Appointments filter in the side panel in place. Removing the scheduling experience end to end means coordinating three independent controls: this effect for the menu item, `PanelConfiguration` for the Appointments filter, and [`DefaultHomepageEffect`](/sdk/default-homepage-effect/) for the landing page.
 Omitting `SETTINGS` or `MULTI_FACTOR_AUTHENTICATION` hides the links to the admin site and to multi-factor authentication setup, so make sure your users have another route to them if they need one.
+Listing `SETTINGS` doesn't show it to a user whose role carries the permission that [removes admin console access](/guides/roles-and-permissions/#removing-admin-console-access).
 ##  Modals 
 The `LaunchModalEffect` class allows you to launch modals in Canvas, providing a flexible way to display content or navigate to external resources.
 ###  Methods 
