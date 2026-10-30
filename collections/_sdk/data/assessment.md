@@ -81,7 +81,7 @@ committed_assessments = Assessment.objects.committed()
 
 ### Commands linked to an assessment
 
-Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to an assessment made in the same note. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
+Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
 
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked. [Carrying a command forward](/sdk/commands/#command-actions) into a new note copies its data but not its link, so the new command starts with no `assessment`.
 
