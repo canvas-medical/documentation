@@ -660,6 +660,16 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+For a patient portal session, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+
+`credentials.portal_access` tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object with:
+
+- `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
+- `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
+- `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.
+
+For a patient on their own chart, every area is `ACT`, and for a session that isn't a patient's, every area is `NONE`. When `acting_user_id` is set, each area has the level the family member or representative was given, and an area with no level or an unrecognized one is `NONE`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if credentials.portal_access.level("billing"):` checks for any billing access. To serve family members and representatives from your routes, see [Family portal access](#family-portal-access).
+
 ##### Custom
 
 It's also possible to create custom authentication schemes. There are two ways to do this.
@@ -820,6 +830,62 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
             JSONResponse({"message": "Hello world!"})
         ]
 ```
+
+`PatientSessionAuthMixin` checks that the session is a patient's. To also serve a family member or representative using the portal on a patient's chart, declare the access your routes need, as [Family portal access](#family-portal-access) describes.
+
+#### Family portal access
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member or representative uses the portal on a patient's chart with the access staff gave them in each area: appointments, messaging, clinical, and billing. To serve them from your API, declare the lowest access level your routes need in each area:
+
+- `PORTAL_ACCESS` on the handler covers every route on it. On a `SimpleAPIRoute`, it covers every method.
+- The `portal_access` argument of a route decorator, such as `@api.post`, replaces `PORTAL_ACCESS` for that route.
+
+A route serves family members and representatives only when it has a declaration, from `PORTAL_ACCESS` or its own `portal_access`. They reach it when your `authenticate` method accepts them and they have at least the declared level in every area the declaration names. A declaration doesn't change how patients on their own chart, staff, and requests without a session are authenticated.
+
+This handler serves family members who can view appointments and billing, and requires `ACT` access to billing to pay:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import (
+    PatientSessionAuthMixin,
+    PortalAccessLevel,
+    SimpleAPI,
+    api,
+)
+
+
+class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
+    PREFIX = "/copay"
+    PORTAL_ACCESS = {
+        "appointments": PortalAccessLevel.VIEW,
+        "billing": PortalAccessLevel.VIEW,
+    }
+
+    @api.get("/balance")
+    def balance(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"balance": "0.00"})
+        ]
+
+    @api.post(
+        "/pay",
+        portal_access={
+            "appointments": PortalAccessLevel.VIEW,
+            "billing": PortalAccessLevel.ACT,
+        },
+    )
+    def pay(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Payment started"})
+        ]
+```
+
+A level can be a `PortalAccessLevel` or its value: `"none"`, `"view"`, or `"act"`. An unknown area or level raises a `PluginError` when the plugin loads.
+
+To check access in your route instead, declare an empty mapping, `PORTAL_ACCESS = {}`. It serves every family member and representative your `authenticate` method accepts, and your route reads `self.request.portal_access`, the same [`PortalAccess`](#session) object as `credentials.portal_access`.
+
+`logged_in_user["id"]` names the patient whose chart it is. When `portal_access.acting_user_id` is set, attribute what the request does to that user, not to the patient.
 
 ## Acting as a Canvas user
 
