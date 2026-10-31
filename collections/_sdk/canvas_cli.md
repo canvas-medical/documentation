@@ -78,6 +78,8 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
+From December 14, 2026, Canvas instances refuse the commands among these that change a plugin directly: `canvas install`, `enable`, `disable`, and `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each one fails with an error that points to `canvas deploy`. `list`, `config list`, `logs` and the `namespace` commands keep working with `credentials.ini`.
+
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
 
 The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
@@ -114,7 +116,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 `--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
 
-An instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
+Until December 14, 2026, an instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 
 git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
 
