@@ -132,6 +132,8 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | snoozed_until              | Date                                                  |                                           |
 | patient_balance            | Decimal                                               |                                           |
 | aggregate_coverage_balance | Decimal                                               |                                           |
+| assignee                   | [Staff](/sdk/data-staff/#staff)                       | Staff member the claim is assigned to     |
+| team                       | [Team](/sdk/data-team/#team)                          | Team the claim is assigned to             |
 | created                    | DateTime                                              |                                           |
 | modified                   | DateTime                                              |                                           |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |

@@ -489,6 +489,7 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 | ADD_CLAIM_BANNER_ALERT | Add a banner alert to a claim. |
 | REMOVE_CLAIM_BANNER_ALERT | Remove a banner alert from a claim. |
 | UPDATE_CLAIM_PROVIDER | Update the provider on a claim. |
+| UPDATE_CLAIM_ASSIGNEE | Assign a claim to a staff member or team, or clear the assignment. |
 | UPSERT_CLAIM_METADATA | Add or update metadata on a claim. |
 | UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim. |
 
