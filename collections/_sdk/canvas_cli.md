@@ -258,8 +258,9 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
-- `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-- `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, leaving that repository's remotes and config alone. See [Deploying from a larger repository](#deploying-from-a-larger-repository). Takes no `--ref` or `--no-push`.
+- `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+- `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main`, and deploy that commit to your organization's test instances. Name a branch other than `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+- `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See [Deploying from a larger repository](#deploying-from-a-larger-repository). Takes no `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
 
@@ -276,9 +277,21 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
 2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+4. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+
+**Deploying a branch to test instances**
+
+To try plugin work that hasn't merged on a test instance, without putting it on `main`, push it to its own branch with `--branch`:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
+```
+
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. When any instance you name isn't one of them, the push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+
+`deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name.
 
 **Waiting for the outcome**
 
@@ -338,6 +351,8 @@ Monorepo-Path: plugins/acme__intake
 
 - **HEAD lacks changes `main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
 - **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. Before the first snapshot, every package file already on `main` counts as such a change.
+
+With `--branch`, the snapshot commit goes to that branch. If the branch exists on Canvas Platform, the commit builds on the branch's tip, and both checks compare against the branch: a snapshot from a checkout that lacks what the branch was last deployed from stops, while edits made on `main` after the branch was pushed don't. A new branch builds on `main` and is checked against `main`. If the package matches `main`, the new branch points at `main`'s commit. When the second check stops on a branch, `canvas clone` the plugin and `git checkout` that branch to get Canvas Platform's versions of the files.
 
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
 
