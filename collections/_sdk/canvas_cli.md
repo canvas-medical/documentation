@@ -28,7 +28,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
   Acme Health (acme): plugin prefix acme__
 ```
 
-`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
 A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
 
@@ -279,6 +279,14 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+
+With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
+Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
+To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
+```
 
 **Waiting for the outcome**
 
