@@ -356,8 +356,8 @@ At run time the platform:
    [propose their changes](/sdk/agents-lifecycle/#approve-before-write)
    for the requester to approve instead of making them.
 5. After `run()` returns, drops any effect the agent returned whose
-   type no granted tool stages, and any effect a tool in `tools.approve`
-   stages that is not wrapped in a proposal.
+   type no granted tool stages. An effect type that only tools in
+   `tools.approve` stage is kept only when it's wrapped in a proposal.
 
 An agent entry with no `tools.allowed` gets no tools, and so can
 return no effects.

@@ -244,19 +244,21 @@ but never the SSN, date of birth, phone, or address the claim carries.
 A tool that commits a change, rather than drafting one for a clinician to
 finish, can wait for the requester to approve each change it makes. List
 it, or a `@category` of them, under `tools.approve` in the agent's
-manifest entry:
+manifest entry. Here `commit_assessment` stands for a tool your plugin
+registers, since no standard tool commits a command:
 
 ```json
 "tools": {
-  "allowed": ["@chart_reads", "@task_writes", "commit_assessment"],
+  "allowed": ["@clinical_reads", "@task_writes", "commit_assessment"],
   "approve": ["@task_writes", "commit_assessment"]
 }
 ```
 
 The tool code does not change. When the model calls a listed tool, the
 effects it stages become proposals, and the model receives
-`{"status": "awaiting_approval", "proposal_ids": [...], ...}` instead of
-the tool's own result, so it can tell the user what is waiting. A tool
+`{"status": "awaiting_approval", "proposal_ids": [...], "tool_result": ...}`,
+with the tool's own result under `tool_result`, so it can tell the user
+what is waiting. A tool
 that stages nothing, such as one that refused its input, returns its own
 result. Sub-agents scoped from the agent's tools propose the same way.
 
@@ -264,8 +266,8 @@ When the run ends, the platform checks each proposed change against the
 requester's permissions, like any effect, and holds it as an
 `AgentRunProposal` for one hour:
 
-- **Who decides:** only the requester, the staff member the run acted
-  for. A run with no requester cannot propose.
+- **Who decides:** only the requester, the user the run acted for. A run
+  that no user started, such as a Canvas Bot run, cannot propose.
 - **How:** your plugin draws the change, such as a card in its chat, and
   returns a `DecideAgentProposal` effect from a SimpleAPI route, an
   application, or an action button when the requester approves or
@@ -283,38 +285,43 @@ requester's permissions, like any effect, and holds it as an
 
 A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
 change could not apply when approved), or `expired`. Approval is per
-tool: an effect a listed tool stages cannot also be returned bare, and
-the platform drops it if it is.
+tool: the platform drops an effect a listed tool stages if the agent
+returns it bare, unless a granted tool that doesn't need approval stages
+the same effect type.
 
 ```python?partial=true
+from http import HTTPStatus
+
 from canvas_sdk.effects.agent import DecideAgentProposal
+from canvas_sdk.effects.simple_api import JSONResponse
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 from canvas_sdk.v1.data import AgentRunProposal
 
 
-@api.get("/proposals")
-def proposals(self):
-    staff_id = self.request.headers["canvas-logged-in-user-id"]
-    pending = AgentRunProposal.objects.filter(
-        run__id=self.request.query_params["run_id"],
-        staff__id=staff_id,
-        status="pending",
-    )
-    return [JSONResponse({"proposals": [
-        {"id": str(p.id), "tool": p.tool, "arguments": p.arguments} for p in pending
-    ]})]
+class ProposalsAPI(StaffSessionAuthMixin, SimpleAPI):
+    @api.get("/proposals")
+    def proposals(self):
+        staff_id = self.request.headers["canvas-logged-in-user-id"]
+        pending = AgentRunProposal.objects.filter(
+            run__id=self.request.query_params["run_id"],
+            staff__id=staff_id,
+            status="pending",
+        )
+        return [JSONResponse({"proposals": [
+            {"id": str(p.id), "tool": p.tool, "arguments": p.arguments} for p in pending
+        ]})]
 
-
-@api.post("/decide")
-def decide(self):
-    body = self.request.json()
-    return [
-        JSONResponse({"status": "decided"}, status_code=HTTPStatus.ACCEPTED),
-        DecideAgentProposal(
-            proposal_id=body["proposal_id"],
-            decision=body["decision"],  # "approve" or "deny"
-            reason=body.get("reason", ""),
-        ).apply(),
-    ]
+    @api.post("/decide")
+    def decide(self):
+        body = self.request.json()
+        return [
+            JSONResponse({"status": "decided"}, status_code=HTTPStatus.ACCEPTED),
+            DecideAgentProposal(
+                proposal_id=body["proposal_id"],
+                decision=body["decision"],  # "approve" or "deny"
+                reason=body.get("reason", ""),
+            ).apply(),
+        ]
 ```
 
 ## The three methods you implement
