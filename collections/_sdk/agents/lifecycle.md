@@ -120,7 +120,7 @@ tool loop ended.
 
 When the instance is already running its share of agents, a new run
 waits and retries rather than taking workers that event handlers need.
-Runs a person is waiting on go ahead of batch work while they wait; see
+Runs a person is waiting on go ahead of batch work; see
 [Runs for many patients](#runs-for-many-patients).
 
 ## The run's subject
@@ -455,13 +455,15 @@ Runs on different patients don't wait on each other. Keep each
 `run.run_id` to follow the runs through their `AgentRun` records.
 
 Runs a person is waiting on go ahead of batch work. A run is
-interactive when a user started it from a SimpleAPI route, an
+interactive when a signed-in user started it from a SimpleAPI route, an
 application, or an action button, and they have no other run of the
 same agent still waiting. Everything else waits behind interactive
-runs: runs from event handlers, schedules, and webhooks, and every run
-after the first when a user's request starts many. A large batch never
-holds up anyone's chat, though it takes longer to finish while people
-are using the agents. A run already started is not interrupted.
+runs: runs from event handlers, schedules, and webhooks; Canvas Bot runs,
+such as those from an API-key SimpleAPI route; and every run
+after the first when a user's request starts many. A chat's run doesn't
+wait behind a large batch, though the batch takes longer to finish while
+people are using the agents. A run already started isn't interrupted,
+so a chat can still wait for a worker to free up.
 
 ## The `AgentRunResult` shape
 
