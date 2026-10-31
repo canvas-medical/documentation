@@ -79,7 +79,8 @@ step is platform-driven:
    requester [could not use](#acting-for-the-requester), sets
    `agent.tools_allowed` to the result, and replaces `agent.tools` with
    a scoped view containing only those tools. An agent entry with no
-   `tools.allowed` gets no tools.
+   `tools.allowed` gets no tools. Granted tools named in `tools.approve`
+   [propose their changes](#approve-before-write) instead of making them.
 9. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
 10. **Call `load_state(scope_key)`** to get the run's starting state.
 11. **Call `run(state, gateway, trigger_payload)`** — the body of your
@@ -96,7 +97,8 @@ step is platform-driven:
     `error_kind="PERMISSION_DENIED"` and none of its effects apply.
     Otherwise they apply through the same pipeline as any plugin
     effect, recorded in the audit trail as requested by the user whose
-    action started the run.
+    action started the run. Proposed changes are held for the requester
+    to [approve or deny](#approve-before-write).
 16. **Release the scope**, so the next run on it can start.
 
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
@@ -170,8 +172,9 @@ and nothing more. The platform enforces this in three places:
   could not use, so the model never offers them.
 - **Effects:** before applying a run's effects, the platform checks each
   against the permission the chart checks for that action and the
-  patients it touches. An effect type the chart has no counterpart for,
-  such as committing a command, is refused.
+  patients it touches. An effect type the chart has no counterpart for
+  is refused, and committing a command applies only once the requester
+  [approves it](#approve-before-write).
 
 The standard tools need only what the chart needs. Updating a task or
 commenting on one needs `api.change_task`, and drafting a review note
@@ -235,6 +238,84 @@ A claims tool that takes a `claim_id` defaults to the run's claim, so a
 chat opened from a claim acts on that claim unless the model names
 another. `get_claim` returns the patient's name and sex from the claim
 but never the SSN, date of birth, phone, or address the claim carries.
+
+### Approve before write
+
+A tool that commits a change, rather than drafting one for a clinician to
+finish, can wait for the requester to approve each change it makes. List
+it, or a `@category` of them, under `tools.approve` in the agent's
+manifest entry:
+
+```json
+"tools": {
+  "allowed": ["@chart_reads", "@task_writes", "commit_assessment"],
+  "approve": ["@task_writes", "commit_assessment"]
+}
+```
+
+The tool code does not change. When the model calls a listed tool, the
+effects it stages become proposals, and the model receives
+`{"status": "awaiting_approval", "proposal_ids": [...], ...}` instead of
+the tool's own result, so it can tell the user what is waiting. A tool
+that stages nothing, such as one that refused its input, returns its own
+result. Sub-agents scoped from the agent's tools propose the same way.
+
+When the run ends, the platform checks each proposed change against the
+requester's permissions, like any effect, and holds it as an
+`AgentRunProposal` for one hour:
+
+- **Who decides:** only the requester, the staff member the run acted
+  for. A run with no requester cannot propose.
+- **How:** your plugin draws the change, such as a card in its chat, and
+  returns a `DecideAgentProposal` effect from a SimpleAPI route, an
+  application, or an action button when the requester approves or
+  denies it. A decision from an event handler or another plugin is
+  refused.
+- **What applies:** an approval checks the requester's permissions and
+  patient groups again and applies exactly the stored change, recorded
+  in the audit trail as the requester's action correlated with the run.
+  A second decision on the same proposal applies nothing.
+- **Drafts apply at once:** a proposal of a draft, such as an originated
+  command or a drafted message, applies without waiting, since a person
+  still commits, signs, or sends it.
+- **Commits need approval:** a committed command is the user attesting
+  to it, so an agent's commit applies only through an approved proposal.
+
+A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
+change could not apply when approved), or `expired`. Approval is per
+tool: an effect a listed tool stages cannot also be returned bare, and
+the platform drops it if it is.
+
+```python?partial=true
+from canvas_sdk.effects.agent import DecideAgentProposal
+from canvas_sdk.v1.data import AgentRunProposal
+
+
+@api.get("/proposals")
+def proposals(self):
+    staff_id = self.request.headers["canvas-logged-in-user-id"]
+    pending = AgentRunProposal.objects.filter(
+        run__id=self.request.query_params["run_id"],
+        staff__id=staff_id,
+        status="pending",
+    )
+    return [JSONResponse({"proposals": [
+        {"id": str(p.id), "tool": p.tool, "arguments": p.arguments} for p in pending
+    ]})]
+
+
+@api.post("/decide")
+def decide(self):
+    body = self.request.json()
+    return [
+        JSONResponse({"status": "decided"}, status_code=HTTPStatus.ACCEPTED),
+        DecideAgentProposal(
+            proposal_id=body["proposal_id"],
+            decision=body["decision"],  # "approve" or "deny"
+            reason=body.get("reason", ""),
+        ).apply(),
+    ]
+```
 
 ## The three methods you implement
 

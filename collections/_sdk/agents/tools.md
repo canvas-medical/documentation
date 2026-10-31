@@ -351,8 +351,13 @@ At run time the platform:
    to nothing. The result becomes `self.tools_allowed`.
 3. Replaces `self.tools` with a *scoped* registry containing only
    those tools — disallowed entries aren't in the registry at all.
-4. After `run()` returns, drops any effect the agent returned whose
-   type no granted tool stages.
+4. Marks the granted tools named in `tools.approve` (names and
+   `@category` groups, resolved the same way) to
+   [propose their changes](/sdk/agents-lifecycle/#approve-before-write)
+   for the requester to approve instead of making them.
+5. After `run()` returns, drops any effect the agent returned whose
+   type no granted tool stages, and any effect a tool in `tools.approve`
+   stages that is not wrapped in a proposal.
 
 An agent entry with no `tools.allowed` gets no tools, and so can
 return no effects.

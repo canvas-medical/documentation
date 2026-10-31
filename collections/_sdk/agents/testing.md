@@ -75,9 +75,12 @@ with a fake inference gateway in place of Anthropic:
   `tool_use(name, input)` blocks. Its stop reason is `tool_use` when it
   calls a tool and `end_turn` otherwise; pass `stop_reason=` to test
   another.
-- `prepare_agent(AgentClass, allowed=..., denied=..., subject=...)`
+- `prepare_agent(AgentClass, allowed=..., denied=..., approve=..., subject=...)`
   sets up the agent as the platform does before a run: it applies the
-  manifest's tool grant, sets `self.subject`, and gives the run an id.
+  manifest's tool grant, including the tools that
+  [need approval](/sdk/agents-lifecycle/#approve-before-write), sets
+  `self.subject`, and gives the run an id. A tool in `approve` stages a
+  `PROPOSE_AGENT_ACTION` effect in `run.effects` in place of its change.
 - `run_agent(agent, gateway, trigger_payload)` calls the lifecycle
   methods and hooks in the platform's order and returns what the run
   did: the effects the platform would apply (`run.effects`), the ones
