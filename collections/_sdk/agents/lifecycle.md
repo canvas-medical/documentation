@@ -120,6 +120,8 @@ tool loop ended.
 
 When the instance is already running its share of agents, a new run
 waits and retries rather than taking workers that event handlers need.
+Runs a person is waiting on go ahead of batch work while they wait; see
+[Runs for many patients](#runs-for-many-patients).
 
 ## The run's subject
 
@@ -424,6 +426,42 @@ RunAgentEffect(
 
 Each Canvas instance serializes its own runs, so you don't need to
 namespace by customer.
+
+### Runs for many patients
+
+A run is about one subject, so work across many patients, such as
+reviewing every patient overdue for a screening, is many runs: return
+one `RunAgentEffect` per patient, each with the `PATIENT` scope.
+
+```python?partial=true
+from canvas_sdk.effects.agent import RunAgentEffect
+
+def compute(self):
+    runs = [
+        RunAgentEffect(
+            agent_id="my_plugin.agents.gap_review:GapReview",
+            scope=RunAgentEffect.Scope.PATIENT,
+            patient_id=patient.id,
+        )
+        for patient in overdue_patients()
+    ]
+    return [run.apply() for run in runs]
+```
+
+Each run is checked, recorded, and run on its own. A staff member's
+runs are refused for patients their patient groups hide, and the rest
+proceed; each run's effects apply or not for its own patient only.
+Runs on different patients don't wait on each other. Keep each
+`run.run_id` to follow the runs through their `AgentRun` records.
+
+Runs a person is waiting on go ahead of batch work. A run is
+interactive when a user started it from a SimpleAPI route, an
+application, or an action button, and they have no other run of the
+same agent still waiting. Everything else waits behind interactive
+runs: runs from event handlers, schedules, and webhooks, and every run
+after the first when a user's request starts many. A large batch never
+holds up anyone's chat, though it takes longer to finish while people
+are using the agents. A run already started is not interrupted.
 
 ## The `AgentRunResult` shape
 
