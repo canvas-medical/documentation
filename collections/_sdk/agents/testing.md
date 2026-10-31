@@ -126,8 +126,11 @@ def test_the_advisor_stages_a_card_for_new_follow_up():
     assert [call.name for call in run.tool_calls] == ["find_conditions", "add_or_update_protocol_card"]
 ```
 
-Set `staff_id` on the `RunSubject` to test a run a staff member
-started.
+Pass `requester=RunRequester(staff_id=...)` to test a run a staff
+member started, and `capabilities=[Capability.REVENUE]` to test one the
+platform granted a capability. Give the requester `permissions=` to test
+what a staff member without some permission sees: `prepare_agent` hides
+the tools they could not use, as the platform does.
 
 ## Testing the tool grant
 
@@ -163,10 +166,14 @@ def test_each_clinician_has_their_own_conversation():
     """One clinician's chat never becomes another's context."""
     patient = PatientFactory.create()
     first = prepare_agent(
-        ChatAgent, subject=RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+        ChatAgent,
+        subject=RunSubject(patient_id=patient.id),
+        requester=RunRequester(staff_id=StaffFactory.create().id),
     )
     second = prepare_agent(
-        ChatAgent, subject=RunSubject(patient_id=patient.id, staff_id=StaffFactory.create().id)
+        ChatAgent,
+        subject=RunSubject(patient_id=patient.id),
+        requester=RunRequester(staff_id=StaffFactory.create().id),
     )
 
     state = first.load_state("patient_and_staff")

@@ -23,7 +23,8 @@ Captured today:
 - **Run records**: one `AgentRun` record per run, which your plugin
   can read (see [Reading run records](#reading-run-records) below).
   It holds the agent, the triggering handler, the scope, the run's
-  subject by id, and the run's status: `queued`, `running`,
+  patient and requester, the capabilities it was granted, and the
+  run's status: `queued`, `running`,
   `succeeded`, `failed`, `refused`, `abandoned`, or `gave_up`; a run
   whose worker stopped reads as `abandoned` as soon as its hold on the
   scope expires. It also holds why a run failed or was refused, when
@@ -31,6 +32,9 @@ Captured today:
   its scope or a free worker, how many model calls it made, how its
   last tool loop ended, and how many effects it returned, had dropped
   by its tool grant, and applied.
+  The rest of the run's subject, such as its note or claim, is one
+  `AgentRunSubject` row per kind, so `AgentRun.objects.filter(subjects__kind="claim", subjects__ref_id=claim_id)`
+  finds the runs about a claim.
   Runs that never reach your agent are recorded too: a subject that
   fails the platform's checks, a run that gave up waiting for its
   scope, and one whose worker died.
@@ -75,7 +79,7 @@ and drops each day once all of it is older than that.
 
 ### Reading run records
 
-`AgentRun` and `AgentRunToolCall` are data models in
+`AgentRun`, `AgentRunSubject`, and `AgentRunToolCall` are data models in
 `canvas_sdk.v1.data`. A run's record has the `run_id` its
 `RunAgentEffect` generated, so a handler can return that id to a UI and
 the UI can follow the run:
@@ -93,7 +97,7 @@ run = RunAgentEffect(
 # Return str(run.run_id) with the 202, then, when the UI asks:
 record = AgentRun.objects.filter(id=run_id, plugin_name="my_plugin").first()
 record.status       # "queued" until the run starts, then "running", then final
-record.error_kind   # for a failed run, such as "LLM_REFUSED"
+record.error_kind   # for a failed run, such as "LLM_REFUSED" or "PERMISSION_DENIED"
 record.tool_calls.values_list("name", "ok")
 ```
 

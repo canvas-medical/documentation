@@ -38,15 +38,19 @@ When a handler returns a `RunAgentEffect`, the following happens. Each
 step is platform-driven:
 
 1. **Check the run's subject.** The patient must exist, the note must
-   belong to that patient, and a user who is not staff, such as a
-   patient acting in the portal, may only name their own patient record.
-   The staff member whose action started the run becomes the subject's
-   `staff_id`. An effect with no Canvas user behind it, such as one from
+   belong to that patient, a user who is not staff, such as a patient
+   acting in the portal, may only name their own patient record, and a
+   staff member's patient groups must let them see the patient.
+   The staff member whose action started the run becomes the run's
+   requester, and the run [acts for them](#acting-for-the-requester). An effect with no Canvas user behind it, such as one from
    a SimpleAPI route with API-key authentication or a webhook, runs as
    Canvas Bot, and its `patient_id` is accepted once that patient exists:
    your plugin vouches for it, so check it before returning the effect.
-   The `trigger_payload` cannot carry `patient_id`, `staff_id`, or
-   `note_id` of its own. A subject that fails a check is refused and the
+   The platform grants the run its [capabilities](#capabilities) from
+   the requester's permissions, and a `claim_id` must name an existing
+   claim, which needs the `REVENUE` capability.
+   The `trigger_payload` cannot carry `patient_id`, `staff_id`,
+   `note_id`, or `claim_id` of its own. A subject that fails a check is refused and the
    run is never queued. Either way the run
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
@@ -65,14 +69,17 @@ step is platform-driven:
    plugin, this agent, and this run. If either is unset, the run stops
    here with `error_kind="LLM_NOT_CONFIGURED"`.
 6. **Instantiate your subclass** (`agent_class()` with no arguments).
-7. **Apply the manifest tool grant.** The platform expands
+7. **Set `agent.subject`, `agent.requester`, and `agent.capabilities`**
+   to the checked subject, the requester with their permissions, and the
+   granted capabilities, and `agent.run_id` to the run's id. See
+   [The run's subject](#the-runs-subject) below.
+8. **Apply the manifest tool grant.** The platform expands
    `tools.allowed` (tool names and `@category` groups) against
-   `agent.tools`, subtracts `tools.denied`, sets `agent.tools_allowed`
-   to the result, and replaces `agent.tools` with a scoped view
-   containing only those tools. An agent entry with no `tools.allowed`
-   gets no tools.
-8. **Set `agent.subject`** to the checked subject, and `agent.run_id`
-   to the run's id. See [The run's subject](#the-runs-subject) below.
+   `agent.tools`, subtracts `tools.denied`, removes the tools the
+   requester [could not use](#acting-for-the-requester), sets
+   `agent.tools_allowed` to the result, and replaces `agent.tools` with
+   a scoped view containing only those tools. An agent entry with no
+   `tools.allowed` gets no tools.
 9. **Call `on_run_start(scope_key)`** (optional hook; default no-op).
 10. **Call `load_state(scope_key)`** to get the run's starting state.
 11. **Call `run(state, gateway, trigger_payload)`** — the body of your
@@ -84,9 +91,12 @@ step is platform-driven:
     granted tool stages is dropped. The rest are stamped with
     provenance (`plugin_name`, `handler_name` set to the agent class,
     `actor`, `source`).
-15. **Apply the effects** through the same pipeline as any plugin
-    effect, recording them in the audit trail as requested by the user
-    whose action started the run.
+15. **Check and apply the effects.** Every effect must be one the
+    requester could make in the chart; if any is not, the run fails with
+    `error_kind="PERMISSION_DENIED"` and none of its effects apply.
+    Otherwise they apply through the same pipeline as any plugin
+    effect, recorded in the audit trail as requested by the user whose
+    action started the run.
 16. **Release the scope**, so the next run on it can start.
 
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
@@ -113,22 +123,26 @@ waits and retries rather than taking workers that event handlers need.
 
 ## The run's subject
 
-`self.subject` is a `RunSubject` holding who and what the run is about:
+The platform sets three things on the agent before any hook fires:
 
-| Field | Where it comes from |
-|---|---|
-| `patient_id` | The effect's `patient_id`, checked to exist |
-| `note_id` | The effect's `note_id`, checked to belong to the patient |
-| `staff_id` | The staff member whose action emitted the effect; `None` for a run a patient, a schedule, or a system event started |
+| Attribute | Field | Where it comes from |
+|---|---|---|
+| `self.subject` (`RunSubject`) | `patient_id` | The effect's `patient_id`, checked to exist |
+| | `note_id` | The effect's `note_id`, checked to belong to the patient |
+| | `claim_id` | The effect's `claim_id`, checked to exist |
+| `self.requester` (`RunRequester`) | `staff_id` | The staff member whose action emitted the effect; `None` for a run a patient, a schedule, or a system event started |
+| | `permissions` | The staff member's permissions, such as `"api.change_task"`; empty for a run a patient started; `None` when permissions do not limit the run (see [Acting for the requester](#acting-for-the-requester)) |
+| `self.capabilities` | | The [capabilities](#capabilities) the platform granted the requester |
 
-Your agent reads the subject from `self.subject` rather than from
-`trigger_payload`, which rejects `patient_id`, `staff_id`, and `note_id`
-keys. `run_tool_loop` hands the subject to every tool, so the standard
+Your agent reads these from the agent rather than from
+`trigger_payload`, which rejects `patient_id`, `staff_id`, `note_id`,
+and `claim_id` keys. `run_tool_loop` hands the subject to every tool, so the standard
 tools read, write, and check ownership against the platform's patient.
 
 A run doesn't have to be about a patient. An agent that works on a
-clinician's inbox, a claim, or the whole instance leaves `patient_id`
-unset and picks the `STAFF`, `KEY`, or `AGENT` scope. In such a run,
+clinician's inbox or the whole instance leaves `patient_id` unset and
+picks the `STAFF`, `KEY`, or `AGENT` scope, and one opened from a claim
+picks `CLAIM`. In such a run,
 standard tools that only make sense on a patient return an error to the
 model, so it never reads an empty chart as a patient with no records.
 Your own patient tools can do the same with `require_patient_id(ctx)`
@@ -136,9 +150,89 @@ from `canvas_sdk.agents`.
 
 ```python?partial=true
 def load_state(self, scope_key):
-    messages = load_conversation(self.subject.patient_id, self.subject.staff_id)
+    messages = load_conversation(self.subject.patient_id, self.requester.staff_id)
     return AgentState(data={"messages": messages})
 ```
+
+### Acting for the requester
+
+A run a staff member started, whether from a chat or by an action that
+triggered it, acts for them: it may do what they could do in the chart,
+and nothing more. The platform enforces this in three places:
+
+- **Patients:** the run's patient must be one their patient groups let
+  them see, and every effect may touch only patients they can see.
+- **Tools:** a tool declares the permission the chart checks for the
+  same action with `required_permissions`, and the capability it needs
+  with `required_capabilities`. The platform hides tools the requester
+  could not use, so the model never offers them.
+- **Effects:** before applying a run's effects, the platform checks each
+  against the permission the chart checks for that action and the
+  patients it touches. An effect type the chart has no counterpart for,
+  such as committing a command, is refused.
+
+The standard tools need only what the chart needs. Updating a task or
+commenting on one needs `api.change_task`, and drafting a review note
+needs `api.add_note`. Creating a task, drafting a message or any
+command, and adding a banner or protocol card need only access to the
+patient. The [tools catalog](/sdk/agents-tools/) lists each tool's
+requirements.
+
+A run a patient started holds no staff permissions, so tools that need
+one are hidden, and its effects may change only the patient's own
+records. A run no user started, such as one from a webhook or an
+API-key route, runs as Canvas Bot and acts with your plugin's authority,
+as a handler's effects do; a superuser's run is not limited by
+permissions.
+
+Declare what your own tool needs the same way, so it is hidden from
+requesters who could not use it:
+
+```python?partial=true
+@tools.tool(
+    name="close_task",
+    description="...",
+    input_schema={...},
+    effect_types=("UPDATE_TASK",),
+    required_permissions=("api.change_task",),
+)
+def close_task(arguments, *, ctx):
+    ...
+```
+
+### Capabilities
+
+Some tools act beyond one patient's chart, so they work only for a run
+the platform grants the matching `Capability`. The platform decides a
+run's capabilities from the permissions of the staff member who started
+it; a run a patient or Canvas Bot started has none.
+`self.capabilities` holds the grant.
+
+| `Capability` | Granted when the requester | Opens |
+|---|---|---|
+| `REVENUE` | holds the Revenue access permission, which the revenue pages require, and patient groups leave them able to see every patient | the claims tools, and runs with a `claim_id` |
+
+A tool that needs a capability declares it, and the platform hides it
+from runs without it:
+
+```python?partial=true
+from canvas_sdk.agents import Capability
+
+
+@tools.tool(
+    name="claims_for_payer",
+    description="...",
+    input_schema={...},
+    required_capabilities=(Capability.REVENUE,),
+)
+def claims_for_payer(arguments, *, ctx):
+    ...
+```
+
+A claims tool that takes a `claim_id` defaults to the run's claim, so a
+chat opened from a claim acts on that claim unless the model names
+another. `get_claim` returns the patient's name and sex from the claim
+but never the SSN, date of birth, phone, or address the claim carries.
 
 ## The three methods you implement
 
@@ -197,8 +291,11 @@ Every tool call gets a context the model never sees, which
 
 | Key | Value |
 |---|---|
-| `patient_id`, `staff_id` | From `self.subject` |
+| `patient_id`, `claim_id` | From `self.subject` |
+| `staff_id` | From `self.requester` |
 | `note_id` | `self.subject.note_id`, or for a run a staff member started, that staff member's open note on the patient |
+| `permissions` | `self.requester.permissions` |
+| `capabilities` | `self.capabilities` |
 | `effects` | A new list the tools append to; returned as `result.effects` |
 | `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` |
 
@@ -295,7 +392,8 @@ never wait on each other, whatever their scope.
 | `PATIENT_AND_STAFF` | Runs on the same patient started by the same staff member, such as one clinician's chat | `patient_id`, and a run a staff member started |
 | `NOTE` | Runs on the same note; the same patient's other notes run concurrently | `patient_id` and `note_id` |
 | `STAFF` | Runs started by the same staff member, such as an agent that works through one clinician's inbox | a run a staff member started |
-| `KEY` | Runs naming the same `scope_id`, for something that is neither a patient nor a note, such as `f"claim:{claim_id}"` | `scope_id` |
+| `CLAIM` | Runs on the same claim, such as one claim's chat | `claim_id`, and the [`REVENUE` capability](#capabilities) |
+| `KEY` | Runs naming the same `scope_id`, for something none of the above covers, such as `f"appointment:{appointment_id}"` | `scope_id` |
 | `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
 A `RunAgentEffect` missing a field its scope requires, or carrying a

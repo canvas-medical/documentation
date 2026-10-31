@@ -432,6 +432,8 @@ list to opt out of specific tools within a granted category:
 ```
 
 <!-- AUTOGEN:categories START -->
+- **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
+- **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (24 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
@@ -987,6 +989,105 @@ Return basic demographics for the current patient: legal name, preferred name, M
 **Arguments:** none.
 
 **Returns:** Object with `first_name`, `middle_name`, `last_name`, `preferred_name`, `mrn`, `birth_date`, `age_years`, `sex_at_birth`, `gender_identity`, `preferred_pronouns`, `deceased`.
+
+#### `find_claims`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Search claims with optional filters, most recently created first. Excludes trashed claims unless `queue` names the trash queue. Each row has the claim's `id`, its queue, patient, date of service, current payer, assignee or team, balances, and labels. Use get_claim for one claim's full detail. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `queue` | string | no | Queue `name` or `display_name` from find_claim_queues, matched case-insensitively. |
+| `patient_id` | string | no | Only claims for this patient's `id`. |
+| `assignee_id` | string | no | Only claims assigned to this staff `id`, from find_claim_assignees. |
+| `team_id` | string | no | Only claims assigned to this team `id`, from find_claim_assignees. |
+| `unassigned` | boolean | no | When true, only claims with no assignee and no team. |
+| `label` | string | no | Only claims carrying this label name, matched case-insensitively. |
+| `payer_name_contains` | string | no | Case-insensitive substring of the current payer's name. |
+| `min_balance` | number | no | Only claims whose patient plus coverage balance is at least this. |
+| `service_on_or_after` | string (date) | no | ISO 8601 date; only claims whose note's date of service is on or after it. |
+| `service_on_or_before` | string (date) | no | ISO 8601 date; only claims whose note's date of service is on or before it. |
+| `limit` | integer | no | Maximum results. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `queue`, `queue_display`, `patient_id`, `patient_name`, `date_of_service`, `payer_name`, `assignee`, `team`, `patient_balance`, `coverage_balance` (decimal strings), `labels`, `snoozed_until`.
+
+#### `get_claim`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Return one claim's full detail: queue, assignee, balances, narrative, coverages, providers, diagnosis codes, active line items with modifiers and diagnosis pointers, labels, active banners, and recent comments. Omit `claim_id` for the claim the agent was opened from. The patient section carries the name and sex only. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** Object with the find_claims row fields plus `narrative`, `account_number`, `prior_auth`, `total_charges`, `patient` (`first_name`, `last_name`, `sex`), `coverages`, `provider`, `diagnosis_codes`, `line_items`, `banners`, and `recent_comments`.
+
+#### `summarize_claims`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Count claims and total their balances per queue, excluding trashed claims. Optionally limited to one assignee or team. Use this for questions like 'how many claims are waiting on coding review' or 'what is my open balance'. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `assignee_id` | string | no | Only claims assigned to this staff `id`. |
+| `team_id` | string | no | Only claims assigned to this team `id`. |
+
+**Returns:** Array, in queue order, of objects with `queue`, `queue_display`, `count`, `patient_balance`, and `coverage_balance` (decimal strings).
+
+#### `find_claim_queues`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+List the instance's claim queues in workflow order. move_claim_to_queue and find_claims take a queue's `name`. Requires the run's revenue capability.
+
+**Arguments:** none.
+
+**Returns:** Array of objects with `name`, `display_name`, and `description`.
+
+#### `find_claim_labels`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+List the active labels configured for claims. add_claim_labels accepts only these names. Requires the run's revenue capability.
+
+**Arguments:** none.
+
+**Returns:** Array of objects with `name` and `color`.
+
+#### `find_claim_assignees`
+
+**Category:** `@claims_reads`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Find active staff members and teams a claim can be assigned to, by name. assign_claim takes a staff member's or a team's `id`. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `name_contains` | string | no | Case-insensitive substring of the staff member's or team's name. |
+
+**Returns:** Object with `staff` (array of `id`, `name`) and `teams` (array of `id`, `name`), each capped at 25.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -1053,6 +1154,8 @@ Create a follow-up Task for the patient — appears in the clinician's task queu
 
 **Category:** `@task_writes`
 
+**Offered only to runs with:** `api.change_task`. The platform hides it from other runs.
+
 Update an existing task — typically to close it (status=COMPLETED), reopen it (status=OPEN), or change its title/due. The task_id must come from a prior `find_tasks` or `create_task` call; this tool does not look tasks up by content. Title is truncated to 200 chars. Only the fields you supply are updated; omitted fields are left as-is.
 
 **Arguments:**
@@ -1071,6 +1174,8 @@ Update an existing task — typically to close it (status=COMPLETED), reopen it 
 #### `add_task_comment`
 
 **Category:** `@task_writes`
+
+**Offered only to runs with:** `api.change_task`. The platform hides it from other runs.
 
 Add a comment to an existing task — use to explain *why* a task was created/closed or to add context the clinician should see when they pick up the task. The task_id must come from a prior find_tasks or create_task call.
 
@@ -1276,6 +1381,8 @@ Stage a draft message from the requesting staff to this patient for the staff to
 
 **Category:** `@clinical_writes`
 
+**Offered only to runs with:** `api.add_note`. The platform hides it from other runs.
+
 Stage a draft review-category note for the patient with a single Plan command containing the narrative. NEVER commits — the note + plan draft sit unsigned for the clinician to review, edit, and sign. Use when the clinician asks to draft a chart-review note, lab-review note, or similar narrative summary that isn't tied to a live visit. Before calling: (1) `find_note_types(category='review')` to get a `note_type_id`; (2) `find_practice_locations` to get a `practice_location_id`. Patient + requesting-staff come from the agent's scope automatically.
 
 **Arguments:**
@@ -1291,4 +1398,142 @@ Stage a draft review-category note for the patient with a single Plan command co
 **Returns:** `{ok: true, note_id: <uuid>, command: 'plan', committed: false}`. Two effects are bundled: CREATE_NOTE for the review shell and the Plan command originating onto it. Clinician reviews/edits/signs.
 
 **Backing Command:** `PlanCommand`.
+
+#### `move_claim_to_queue`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Move a claim to another queue, such as from coding review to queued for submission. Takes a queue `name` or `display_name` from find_claim_queues. Trashing a claim is left to a person. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `queue` | string | yes | Target queue `name` or `display_name`. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, queue}` with the queue's `name`.
+
+#### `assign_claim`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Assign a claim to a staff member or a team, given exactly one `id` from find_claim_assignees. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `staff_id` | string | no | The staff member's `id`. |
+| `team_id` | string | no | The team's `id`. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, assignee}` with the staff member's or team's name.
+
+#### `unassign_claim`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Clear a claim's assignee or team. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id}`.
+
+#### `add_claim_labels`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Add labels to a claim. Only labels find_claim_labels lists are accepted; creating a new label is left to a person. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `labels` | array of string | yes | Label names, from find_claim_labels. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, labels}`.
+
+#### `remove_claim_labels`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Remove labels from a claim. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `labels` | array of string | yes | Label names, from find_claim_labels. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, labels}`.
+
+#### `add_claim_comment`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Add a comment to a claim's comment thread, visible to everyone working the claim. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `comment` | string | yes | The comment text. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id}`.
+
+#### `add_claim_banner`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Show a banner on a claim, such as a reminder that a prior authorization is pending. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `key` | string | yes | Identifier for the banner; remove_claim_banner takes it. |
+| `narrative` | string | yes | Banner text, at most 90 characters. |
+| `intent` | string (enum) | yes | Severity: info, warning, or alert. One of: `info`, `warning`, `alert`. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, key}`.
+
+#### `remove_claim_banner`
+
+**Category:** `@claims_writes`
+
+**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+
+Remove a claim banner by its `key`, from get_claim's `banners`. Requires the run's revenue capability.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `key` | string | yes | The banner's `key`. |
+| `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
+
+**Returns:** `{ok, claim_id, key}`.
 <!-- AUTOGEN:writes END -->

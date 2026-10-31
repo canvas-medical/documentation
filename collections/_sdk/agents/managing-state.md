@@ -51,7 +51,8 @@ writing it back is one round-trip each. The reference plugin's chat
 agent keeps one conversation per patient and clinician, so one
 clinician's questions never become another's context. Its handler
 emits the run with `scope=RunAgentEffect.Scope.PATIENT_AND_STAFF`, and
-the agent reads both from `self.subject`:
+the agent reads the patient from `self.subject` and the clinician from
+`self.requester`:
 
 ```python?partial=true
 from django.db.models import DO_NOTHING, ForeignKey, JSONField
@@ -72,7 +73,7 @@ class ChatAgent(AgentPlugin):
 
     def load_state(self, scope_key):
         conversation = Conversation.objects.filter(
-            patient__id=self.subject.patient_id, staff__id=self.subject.staff_id
+            patient__id=self.subject.patient_id, staff__id=self.requester.staff_id
         ).first()
         return AgentState(data={"messages": list(conversation.messages) if conversation else []})
 
@@ -85,15 +86,15 @@ class ChatAgent(AgentPlugin):
     def save_state(self, scope_key, state):
         conversation, _ = Conversation.objects.get_or_create(
             patient=PatientProxy.objects.get(id=self.subject.patient_id),
-            staff=StaffProxy.objects.get(id=self.subject.staff_id),
+            staff=StaffProxy.objects.get(id=self.requester.staff_id),
         )
         conversation.messages = state.data["messages"]
         conversation.save()
 ```
 
 The tools, the conversation the run loads, and the record it saves all
-use `self.subject`, so they always belong to the same patient and
-clinician.
+use `self.subject` and `self.requester`, so they always belong to the
+same patient and clinician.
 
 Because runs on the same scope go one at a time, `load → run → save`
 can't interleave with another run that read the same baseline.
