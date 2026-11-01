@@ -305,9 +305,13 @@ requester's permissions, like any effect, and holds it as an
   A second decision on the same proposal applies nothing.
 - **Drafts apply at once:** a proposal of a draft, such as an originated
   command or a drafted message, applies without waiting, since a person
-  still commits, signs, or sends it.
+  still commits, signs, or sends it. So does a change to a draft: a
+  command's `edit()` applies only to a staged command and `delete()`
+  never to a committed one, so neither reaches past a draft.
 - **Commits need approval:** a committed command is the user attesting
   to it, so an agent's commit applies only through an approved proposal.
+  That includes `originate(commit=True)`, which drafts and commits a
+  command in one effect.
 
 A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
 change could not apply when approved), or `expired`. Approval is per
