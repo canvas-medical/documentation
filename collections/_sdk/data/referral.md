@@ -135,6 +135,21 @@ url = document.document_url if document else None
 
 {% include alert.html type="info" content="<code>object_id</code> holds the related record's integer <code>dbid</code>, not its UUID <code>id</code>." %}
 
+### The incoming fax or upload
+
+A report filed from an incoming fax or upload links to it through `integration_task_review`, the [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) of the document. The review's `task` is the [IntegrationTask](/sdk/data-integration-task/#accessing-the-document-file), whose `document_url` points to the file as Canvas received it. The field can be `None`, so check it before reading the task.
+
+```python
+from canvas_sdk.v1.data import ReferralReport
+
+report = ReferralReport.objects.select_related("integration_task_review__task").get(
+    id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+)
+
+review = report.integration_task_review
+url = review.task.document_url if review else None
+```
+
 ## Attributes
 
 ### Referral
@@ -185,6 +200,7 @@ url = document.document_url if document else None
 | reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |
 | patient            | [Patient](/sdk/data-patient/#patient)                                 |
 | referral           | [Referral](#referral)                                                 |
+| integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) |
 | specialty          | String                                                                |
 | comment            | String                                                                |
 | priority           | Boolean                                                               |
