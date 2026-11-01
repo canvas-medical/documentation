@@ -233,6 +233,7 @@ The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the
 | `class` | string | Yes | Import path to the `AgentPlugin` subclass, in `package.module:ClassName` form. |
 | `description` | string | Yes | What the agent does. |
 | `meta` | object | No | Agent metadata. |
+| `progress` | string | No | How much of a run's progress the person waiting on it sees: `status` (heartbeats only, the default) or `activity` (adds a label as each tool starts and finishes). See [Showing a run's progress](/sdk/agents-lifecycle/#showing-a-runs-progress). |
 | `run_seconds` | integer | No | How long each run may take, in seconds, from 1 to 1800. Defaults to 600 (10 minutes). A value above the default makes each run an extended run, and the plugin runner admits only a few of those at a time. See [Lifecycle](/sdk/agents-lifecycle/). |
 | `tools` | object | No | The tools from the agent's tool registry it may call. The agent can return only the effect types its granted tools stage. See [Tools](/sdk/agents-tools/). |
 | `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent gets no tools and can return no effects. |
