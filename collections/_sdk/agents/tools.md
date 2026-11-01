@@ -376,6 +376,42 @@ an agent granted only `@clinical_reads` and `@clinical_alerts` can
 stage protocol cards and banners, but any task, command, or message it
 returns is dropped.
 
+## Citing what the tools read
+
+A reply can cite the chart records it draws on, so a user can check each
+statement against the record behind it. The model writes `[[cite:<id>]]`
+after a statement, with the `id` of a row a read tool returned; add
+`CITATION_GUIDANCE` to your system prompt to ask for that.
+`canvas_sdk.agents.citations` turns the markers into numbered references:
+
+- `Sources(tools)` collects, from a conversation's stored messages, every
+  row a citable tool returned. Add the messages in order with `add` or
+  `add_all`.
+- `cite(text, sources)` replaces each marker with `[1]`, `[2]`, … and
+  returns a `Citation` per cited record. A marker whose id no tool returned
+  is removed, so a citation is always a row the tool read.
+- A `Citation` (`to_dict()` for JSON) describes the record from that row:
+  `kind` (such as "Lab result"), `label`, `detail`, `date`, and for a note
+  its `note_dbid`, which a chart surface can navigate to. It never carries
+  text the model wrote.
+
+```python?partial=true
+from canvas_sdk.agents.citations import Sources, cite
+
+sources = Sources(tools)
+for message in conversation:
+    if message["role"] == "assistant":
+        text, citations = cite(reply_text(message), sources)
+        render(text, [citation.to_dict() for citation in citations])
+    sources.add(message)
+```
+
+A tool registered with `filter_search_tool(model=...)` is citable, keyed by
+the `id` in each row it returns. Pass `citable=False` for a tool that reads
+configuration rather than the patient's records, as the standard
+`find_note_types`, `find_practice_locations`, `find_lab_partners`, and
+`find_lab_partner_tests` do.
+
 ## Tool surface design tips
 
 - **Be specific in `description`.** The model picks tools based on
