@@ -481,7 +481,7 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (27 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
 - **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
 - **`@document_reads`** (1 tool): `read_document`
@@ -770,7 +770,7 @@ Search the patient's care-plan goals. Returns each goal with `goal_statement`, `
 
 **Category:** `@clinical_reads`
 
-Search the patient's imaging reports. Returns each report with `id`, `name` (test or modality, e.g., 'Chest X-ray'), `assigned_date` (ISO 8601 or null), `source` (e.g., 'internal', 'external'), and `requires_signature` (bool). Patient scope is enforced and junked reports are excluded. Defaults to the 25 most-recent reports.
+Search the patient's imaging reports. Returns each report with `id`, `name` (test or modality, e.g., 'Chest X-ray'), `date` (when the study was done, ISO 8601 or null), `assigned_date` (ISO 8601 or null), `source` (e.g., 'internal', 'external'), `requires_signature` (bool), and `has_file`. What the radiologist found is in the report's file: read it with `read_document`. Patient scope is enforced and junked reports are excluded. Defaults to the 25 most-recent reports.
 
 **Arguments:**
 
@@ -780,7 +780,7 @@ Search the patient's imaging reports. Returns each report with `id`, `name` (tes
 | `assigned_on_or_after` | string (date) | no | ISO 8601 date. Only return reports with assigned_date >= this value. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `name`, `assigned_date`, `source`, `requires_signature`.
+**Returns:** Array of objects with `id`, `name`, `date`, `assigned_date`, `source`, `requires_signature`, `has_file`.
 
 **Backing data model:** `ImagingReport`.
 
@@ -856,13 +856,13 @@ Search the patient's history: past surgeries (`surgical`), conditions in their r
 
 **Category:** `@document_reads`
 
-Read a document's attached file and answer a question from it, with page numbers. Use it when the answer is in what the document says, e.g. 'what did cardiology recommend' or 'what did the discharge summary say about her medications'. Takes the `id` of a consult report or outside record from `find_documents` that `has_file`. Reads the whole file with a separate model call, so it is slow and costly: ask one focused question, and do not call it for every document.
+Read a document's attached file and answer a question from it, with page numbers. Use it when the answer is in what the document says, e.g. 'what did cardiology recommend', 'what did the MRI show', or 'what did the discharge summary say about her medications'. Takes the `id` of a consult report or outside record from `find_documents`, or of an imaging report from `find_imaging_reports`, that `has_file`. Reads the whole file with a separate model call, so it is slow and costly: ask one focused question, and do not call it for every document.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `document_id` | string | yes | The `id` of a document from `find_documents`. |
+| `document_id` | string | yes | The `id` of a document from `find_documents` or an imaging report from `find_imaging_reports`. |
 | `question` | string | yes | What to find in the document, in the clinician's words. |
 
 **Returns:** Object with `ok`, `document_id`, `name`, `answer` (the answer, with page numbers), and `note`; `ok: false` with `error` when the document has no readable file.
@@ -1001,20 +1001,54 @@ Search external healthcare events recorded for the patient — typically HL7 fee
 
 **Category:** `@clinical_reads`
 
-Search the patient's prescription records (actual Rx events — distinct from `find_medications` which surfaces the medication list). Each result has `medication_name`, `status`, `written_date` (ISO 8601), `dispensed_date` (ISO 8601 or null), `end_date` (ISO 8601 or null), `sig_original_input`, `dose_form`, `dose_route`, `dose_frequency_interval`, and `is_refill`. Patient scope is enforced. Defaults to committed prescriptions ordered most-recent first.
+Search the prescriptions written for the patient here (actual Rx events, distinct from `find_medications`, which is the medication list, and from `find_pharmacy_fills`, which is what pharmacies dispensed). Each result has `medication_name`, `status` (where the prescription stands on its way to the pharmacy), `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills` (refills allowed), `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response` (set when the prescription answers a pharmacy's refill request: Approved, Denied, ...), and `error` (why sending failed, when `status` is error). Patient scope is enforced. Defaults to committed prescriptions ordered most-recent first.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `name_contains` | string | no | Case-insensitive substring match on the medication's first-coding display. |
-| `status` | string | no | Filter to a specific prescription status (e.g., 'active', 'completed', 'cancelled'). Case-insensitive. |
+| `status` | string (enum) | no | Only prescriptions with this status: e.g. 'error' for prescriptions the pharmacy never received, 'delivered' for those it did. One of: `open`, `pending`, `ultimately-accepted`, `error`, `cancel-requested`, `canceled`, `cancel-denied`, `received`, `signed`, `inqueue`, `transmitted`, `delivered`. |
 | `written_on_or_after` | string (date) | no | ISO 8601 date. Only return prescriptions with written_date >= this. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `id`, `medication_name`, `status`, `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`.
+**Returns:** Array of objects with `id`, `medication_name`, `status`, `written_date`, `dispensed_date`, `end_date`, `sig_original_input`, `dispense_quantity`, `days_supply`, `refills`, `pharmacy`, `prescriber`, `dose_form`, `dose_route`, `dose_frequency_interval`, `is_refill`, `response`, `error`, `note_dbid`.
 
 **Backing data model:** `Prescription`.
+
+#### `find_pharmacy_fills`
+
+**Category:** `@clinical_reads`
+
+Search what pharmacies dispensed to the patient, from the pharmacy network's medication history: whatever prescriber wrote it, here or elsewhere. Use it for 'is she filling her statin', 'when did he last pick up his inhaler', or 'who else prescribes for this patient'. Each fill has `drug`, `last_fill_date`, `days_supply`, `supply_ends` (last fill plus days supply), `quantity`, `refills_remaining`, `fill_number`, `sig`, `pharmacy`, `prescriber`, `written_date`, and `retrieved` (when the history was requested). The history is only on file once someone requests it for the patient and is current as of `retrieved`; no results means no history is on file, not that nothing was filled.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `name_contains` | string | no | Case-insensitive substring match on the drug description. |
+| `filled_on_or_after` | string (date) | no | ISO 8601 date. Only fills last filled on or after this date. |
+| `limit` | integer | no | Maximum results to return. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `drug`, `last_fill_date`, `days_supply`, `supply_ends`, `quantity`, `refills_remaining`, `fill_number`, `sig`, `pharmacy`, `prescriber`, `written_date`, `retrieved`.
+
+**Backing data model:** `MedicationHistoryMedication`.
+
+#### `find_pharmacy_requests`
+
+**Category:** `@clinical_reads`
+
+List what pharmacies have asked the practice about the patient's prescriptions, newest first: refill requests (renew a prescription that has run out of refills) and change requests (a generic or therapeutic substitution, a prior authorization, a clarification). Each has the medication, what the pharmacy asked, when it arrived, and `status`: waiting (nobody has answered), answered (with the prescriber's `response`), or ignored (set aside without an answer). Use it for 'any refill requests waiting', 'did we answer the pharmacy about her lisinopril', or 'why did the pharmacy ask for a prior auth'.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `kind` | string (enum) | no | Only refill requests or only change requests. Omit for both. One of: `refill`, `change`. |
+| `status` | string (enum) | no | Only requests with this status, e.g. 'waiting'. One of: `waiting`, `answered`, `ignored`. |
+| `limit` | integer | no | Maximum requests of each kind. Defaults to 15. |
+
+**Returns:** Array of objects with `id`, `type` (Refill request, Change request), `received`, `medication`, `pharmacy`, `status` (waiting|answered|ignored), `response`, and `note_dbid` (the note the answer was made in); refills add `sig`, `quantity`, `days_supply`, and `last_fill_date`; changes add `change` (what kind) and `requested` (the medications the pharmacy proposed).
 
 #### `find_questionnaire_responses`
 
