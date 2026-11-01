@@ -481,7 +481,7 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (26 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_reads`** (27 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
 - **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
 - **`@document_reads`** (1 tool): `read_document`
@@ -522,7 +522,7 @@ Search the patient's medications with optional filters. Returns each matching me
 
 **Category:** `@clinical_reads`
 
-Search the patient's conditions with optional filters. Returns each matching condition with `code` (the first coding's identifier — typically ICD-10), `display`, `clinical_status` (active, resolved, remission, relapse, investigative), `onset_date` (ISO 8601 or null), and `resolution_date` (ISO 8601 or null). Defaults to active conditions only, ordered most-recently-onset first.
+Search the patient's conditions with optional filters. Returns each matching condition with `code` (the first coding's identifier — typically ICD-10), `display`, `clinical_status` (active, resolved, remission, relapse, investigative), `onset_date` (ISO 8601 or null), and `resolution_date` (ISO 8601 or null). Defaults to active conditions only, ordered most-recently-onset first. Past surgeries are not conditions here: read them with `find_history`.
 
 **Arguments:**
 
@@ -542,7 +542,7 @@ Search the patient's conditions with optional filters. Returns each matching con
 
 **Category:** `@clinical_reads`
 
-Search the patient's committed lab results. Returns each matching value with `test` (lab name), `value`, `units`, `abnormal_flag` (e.g. 'H', 'L', or null when normal), and `date` (the report's original_date, ISO 8601). Defaults to the 10 most-recent results.
+Search the patient's committed lab results. Returns each matching value with `test` (lab name), `value`, `units`, `abnormal_flag` (e.g. 'H', 'L', or null when normal), `reference_range` (as the lab reported it, or null), and `date` (the report's original_date, ISO 8601). Defaults to the 10 most-recent results.
 
 **Arguments:**
 
@@ -553,7 +553,7 @@ Search the patient's committed lab results. Returns each matching value with `te
 | `abnormal_only` | boolean | no | When true, restrict to values with a non-empty abnormal_flag. Useful for spotting out-of-range results quickly. |
 | `limit` | integer | no | Max results. Defaults to 10. |
 
-**Returns:** Array of objects with `id`, `test`, `value`, `units`, `abnormal_flag` (e.g. 'H', 'L', or null), `date`.
+**Returns:** Array of objects with `id`, `test`, `value`, `units`, `abnormal_flag` (e.g. 'H', 'L', or null), `reference_range`, `date`.
 
 **Backing data model:** `LabValue`.
 
@@ -835,6 +835,22 @@ List consult reports (letters and visit notes specialists send back, filed on th
 | `limit` | integer | no | Maximum documents of each kind. Defaults to 15. |
 
 **Returns:** Array of objects with `id`, `type` (Consult report, Outside record), `name`, `date`, `received`, `review` (reviewed|in review|not reviewed), `comment`, and `has_file`; consult reports add `from`, `referral_id`, and `note_dbid` (the review note); outside records add `category`.
+
+#### `find_history`
+
+**Category:** `@clinical_reads`
+
+Search the patient's history: past surgeries (`surgical`), conditions in their relatives (`family`), vaccines recorded as given elsewhere (`immunization`; `find_immunizations` has those given at the practice), and procedures done at the practice (`procedure`). Use it for 'has she had her gallbladder out', 'any family history of colon cancer', 'when was her last tetanus shot'. Each entry has its name, a date where one was recorded, and the note it was recorded in.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `kind` | string (enum) | no | Only one kind of history. Omit for all four. One of: `surgical`, `family`, `immunization`, `procedure`. |
+| `name_contains` | string | no | Case-insensitive match on the surgery, condition, vaccine, or procedure name (e.g. 'cholecystectomy', 'colon', 'tetanus'). |
+| `limit` | integer | no | Maximum entries of each kind. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `type` (Surgical history, Family history, Immunization history, Procedure), `name`, `note_dbid`, and `comment`; surgeries add `date` (when it was done), family history adds `relation`, immunizations add `date` and `evidence`, and procedures add `date`, `status`, and `provider`.
 
 #### `read_document`
 
