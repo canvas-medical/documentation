@@ -415,7 +415,8 @@ configuration rather than the patient's records, as the standard
 `find_lab_partner_tests` do. A tool registered with `@tools.tool` is citable
 when it passes `cites="<record type>"`, which names its rows' record type;
 the standard `find_open_loops` cites its rows as `"OpenLoop"`,
-`find_documents` as `"Document"`, and `find_history` as `"History"`.
+`find_documents` as `"Document"`, `find_history` as `"History"`, and
+`find_pharmacy_requests` as `"PharmacyRequest"`.
 
 ## Tool surface design tips
 
