@@ -807,7 +807,7 @@ Search the patient's outgoing referrals. Returns each referral with `id`, `clini
 
 **Category:** `@clinical_reads`
 
-Reconcile the patient's lab orders, imaging orders, and referrals with what came back: for each order, whether its result (or a referral's consult note) arrived, whether anyone reviewed it, and how many days it has waited. Use it to answer 'did the labs come back', 'was the study done', 'did we get the consult note', and to brief a clinician on what is still open since a visit. Status is `awaiting_result`, `awaiting_review`, or `closed`; only open orders are returned unless include_closed is true. Newest orders first.
+Reconcile the patient's lab orders, imaging orders, and referrals with what came back: for each order, whether its result (or a referral's consult report) arrived, whether anyone reviewed it, and how many days it has waited. Use it to answer 'did the labs come back', 'was the study done', 'did we get the consult report', and to brief a clinician on what is still open since a visit. Status is `awaiting_result`, `awaiting_review`, or `closed`; only open orders are returned unless include_closed is true. Newest orders first.
 
 **Arguments:**
 
@@ -822,34 +822,34 @@ Reconcile the patient's lab orders, imaging orders, and referrals with what came
 
 **Category:** `@clinical_reads`
 
-List consult notes (specialists' reports back on a referral) and outside records (documents from other providers filed on the chart) for the patient, newest first. Each has its name or specialty, dates, review status, and the staff comment; a consult note also has the values entered when it was filed. The documents' full text is not included: it lives in the attached file. Use this for 'did the cardiology note come in', 'what outside records do we have', and to find a document before quoting what staff noted about it.
+List consult reports (letters and visit notes specialists send back, filed on the chart) and outside records (documents from other providers) for the patient, newest first. Each has its specialty or name, dates, review status, a short staff comment made when it was filed, and whether a file is attached. What a document says is only in its file: read it with `read_document`. Use this for 'did the cardiology report come in', 'what outside records do we have', and to find a document to read.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `kind` | string (enum) | no | Only consult notes or only outside records. Omit for both. One of: `consult_note`, `outside_record`. |
+| `kind` | string (enum) | no | Only consult reports or only outside records. Omit for both. One of: `consult_report`, `outside_record`. |
 | `name_contains` | string | no | Case-insensitive match on the specialty or document name, category, or staff comment (e.g. 'cardiology', 'echo', 'discharge'). |
 | `dated_on_or_after` | string (date) | no | ISO 8601 date. Only documents dated on or after it. |
 | `unreviewed_only` | boolean | no | When true, only documents nobody has finished reviewing. |
 | `limit` | integer | no | Maximum documents of each kind. Defaults to 15. |
 
-**Returns:** Array of objects with `id`, `type` (Consult note, Outside record), `name`, `date`, `received`, `review` (reviewed|in review|not reviewed), and `comment`; consult notes add `from`, `values` (`name`, `value`), `referral_id`, and `note_dbid` (the review note); outside records add `category` and `has_file`.
+**Returns:** Array of objects with `id`, `type` (Consult report, Outside record), `name`, `date`, `received`, `review` (reviewed|in review|not reviewed), `comment`, and `has_file`; consult reports add `from`, `referral_id`, and `note_dbid` (the review note); outside records add `category`.
 
 #### `read_document`
 
 **Category:** `@document_reads`
 
-Read an outside record's attached file and answer a question from it, with page numbers. Use it when the answer is in the document's text rather than in what `find_documents` returns, e.g. 'what did the discharge summary say about her medications'. Takes the `id` of an outside record from `find_documents` that `has_file`. Reads the whole file with a separate model call, so it is slow and costly: ask one focused question, and do not call it for every document.
+Read a document's attached file and answer a question from it, with page numbers. Use it when the answer is in what the document says, e.g. 'what did cardiology recommend' or 'what did the discharge summary say about her medications'. Takes the `id` of a consult report or outside record from `find_documents` that `has_file`. Reads the whole file with a separate model call, so it is slow and costly: ask one focused question, and do not call it for every document.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `document_id` | string | yes | The `id` of an outside record from `find_documents`. |
+| `document_id` | string | yes | The `id` of a document from `find_documents`. |
 | `question` | string | yes | What to find in the document, in the clinician's words. |
 
-**Returns:** Object with `ok`, `document_id`, `name`, and `answer` (the answer, with page numbers); `ok: false` with `error` when the record has no readable file.
+**Returns:** Object with `ok`, `document_id`, `name`, `answer` (the answer, with page numbers), and `note`; `ok: false` with `error` when the document has no readable file.
 
 #### `find_care_team_members`
 
