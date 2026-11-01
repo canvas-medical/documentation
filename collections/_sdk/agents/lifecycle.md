@@ -112,7 +112,32 @@ A run gets 10 minutes. The tool loop starts no model call in its last
 across its retries. A run that reaches that point stops: its state is
 not saved, its effects are not applied, and the scope passes to the
 next run. Its record shows it as `failed`, and a run still going when
-the 10 minutes end shows as `abandoned`.
+its time ends shows as `abandoned`.
+
+An agent whose work takes longer, such as reconciling hundreds of
+outside records, can ask for more time per run with `run_seconds` in
+its manifest entry, up to 1,800 (30 minutes):
+
+```json
+{
+  "class": "my_plugin.agents.reconcile:ReconcileAgent",
+  "description": "Reconciles outside records against the chart",
+  "run_seconds": 1200,
+  "tools": {"allowed": ["@clinical_reads"]}
+}
+```
+
+`canvas validate` rejects a value above 1,800, and the platform holds
+every run to that ceiling whatever the manifest says. A run of an agent
+that asks for more than the default 10 minutes is an extended run: the
+plugin runner admits only a few at a time (one by default, and always
+fewer than its agent runs in total), so long runs cannot take every
+agent thread from the chats people are waiting on. An extended run that
+finds them all taken waits and retries like any other run turned away
+by a busy runner, and if it never gets one its record shows it gave up
+with `error_kind="EXTENDED_RUNS_BUSY"`. Ask only for the time the work
+needs: the run's scope stays held, and an agent thread busy, for as
+long as it runs.
 
 The tool loop makes at most `max_model_calls` model calls per run,
 sub-agents included: 40 by default, set as a class attribute on your
@@ -397,8 +422,13 @@ Along the way it:
 
 - runs each tool call through `self.tools` and sends a failure back to
   the model as an error result, so the model can recover;
-- cuts a tool result longer than 50,000 characters, telling the model
-  so and how to narrow the request;
+- cuts a tool result longer than the tool's limit, telling the model
+  so and how to narrow the request. The limit is 50,000 characters
+  unless the tool registers its own with `max_result_chars` (see
+  [Tools](/sdk/agents-tools/#result-size));
+- in a platform run, cuts any tool result past the run's total of
+  600,000 characters of tool output, sub-agents included, and tells the
+  model to answer from what it has;
 - runs complete tool calls in a turn the token limit cut off;
 - sends the model only the newest part of a long history that fits a
   size budget (`history_chars`, 300,000 characters by default), while

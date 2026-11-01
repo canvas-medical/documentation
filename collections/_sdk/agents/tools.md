@@ -316,6 +316,35 @@ blocks rather than crashing the run — the model will self-correct on
 the next turn (typically by trying different arguments or a
 different tool).
 
+## Result size
+
+`run_tool_loop` sends the model at most 50,000 characters of one tool's
+result and cuts the rest, with a note saying so. A tool whose answer
+cannot be split, such as one patient's full set of outside records, can
+register a larger limit with `max_result_chars`, on `@tools.tool` or
+`filter_search_tool`, up to 200,000:
+
+```python?partial=true
+@tools.tool(
+    name="get_outside_records",
+    description="Every outside record on file for the patient, with its codes.",
+    input_schema={"type": "object", "properties": {}},
+    categories=("clinical_reads",),
+    max_result_chars=200_000,
+)
+def get_outside_records(arguments, *, ctx):
+    ...
+```
+
+A limit above 200,000 raises `ValueError` when the tool registers, so
+`canvas validate` reports it before install. Every result stays in the
+conversation and is sent again on each later model call, so a larger
+limit costs input tokens for the rest of the run; prefer filters or a
+lower `limit` when the model rarely needs everything. In a platform
+run, the results of all tool calls, sub-agents included, add up to at
+most 600,000 characters, and a result past that is cut with a note
+telling the model to answer from what it has.
+
 ## Manifest-driven permissions
 
 The agent's `tools.allowed` declaration in `CANVAS_MANIFEST.json` is
