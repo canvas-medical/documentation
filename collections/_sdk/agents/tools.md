@@ -347,8 +347,8 @@ telling the model to answer from what it has.
 
 ## Progress labels
 
-For an agent whose manifest sets `"progress": "activity"`, the person
-waiting on a run sees a label as each tool starts and finishes (see
+For an agent whose manifest sets `progress` to `activity` or `reply`, the
+person waiting on a run sees a label as each tool starts and finishes (see
 [Showing a run's progress](/sdk/agents-lifecycle/#showing-a-runs-progress)).
 Give a tool its label with `progress_label`, on `@tools.tool` or
 `filter_search_tool`, naming what it does and never its arguments:

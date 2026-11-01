@@ -514,8 +514,9 @@ fields:
 | `ok` | For a tool event, whether the tool succeeded. Always `false` on `tool_started` |
 | `text` | For `text`, the reply text written since the last `text` message |
 
-How much is sent is set by `progress` in the agent's manifest entry, and
-the platform drops anything above it before it leaves the plugin runner:
+How much is sent is set by `progress` in the agent's manifest entry. Each
+level includes the ones before it, and the platform drops anything above
+the agent's level before it leaves the plugin runner:
 
 - `status` (the default): heartbeats only, every 2 seconds while nothing
   else is sent. Enough to show the run is alive.
@@ -524,7 +525,8 @@ the platform drops anything above it before it leaves the plugin runner:
 - `reply`: adds the reply text as the model writes it. `run_tool_loop`
   streams each model call and sends `turn_started` as it begins, then
   `text` messages; clear what you have shown on `turn_started`, since only
-  the last call's text becomes the reply. Text from sub-agents is never
+  the last call's text becomes the reply. Text from sub-agents, and from a
+  model call a tool makes, such as `read_document`'s reader, is never
   sent. Citation markers and fenced blocks are only meaningful in the
   finished reply, so leave them out of the preview and render the saved
   reply once the run finishes.
