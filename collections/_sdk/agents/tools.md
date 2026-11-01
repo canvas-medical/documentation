@@ -232,7 +232,8 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
     started.
   - `effects` — the list to append staged Effects to (used by effect tools).
   - `gateway`, `parent_tools` — the run's gateway and the agent's granted
-    tools, for tools that run sub-agents.
+    tools, for tools that run sub-agents or make a model call of their own,
+    as the standard `read_document` does.
   - Any agent-specific keys the agent passed to `run_tool_loop(ctx=...)`.
 
 Use `ctx` for anything the model shouldn't choose — patient scoping,
@@ -413,7 +414,8 @@ configuration rather than the patient's records, as the standard
 `find_note_types`, `find_practice_locations`, `find_lab_partners`, and
 `find_lab_partner_tests` do. A tool registered with `@tools.tool` is citable
 when it passes `cites="<record type>"`, which names its rows' record type;
-the standard `find_open_loops` cites its rows as `"OpenLoop"`.
+the standard `find_open_loops` cites its rows as `"OpenLoop"`, and
+`find_documents` cites its rows as `"Document"`.
 
 ## Tool surface design tips
 

@@ -387,7 +387,7 @@ Every tool call gets a context the model never sees, which
 | `permissions` | `self.requester.permissions` |
 | `capabilities` | `self.capabilities` |
 | `effects` | A new list the tools append to; returned as `result.effects` |
-| `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` |
+| `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` or make a model call of their own, as `read_document` does |
 
 Pass `ctx={...}` to add agent-specific keys. Those keys cannot replace
 any key in the table: passing one raises `ValueError`. A tool always
