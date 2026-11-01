@@ -536,8 +536,8 @@ list to opt out of specific tools within a granted category:
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
-- **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
+- **`@clinical_writes`** (18 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`
+- **`@config_reads`** (5 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@message_reads`** (1 tool): `find_messages`
 - **`@message_writes`** (1 tool): `originate_message`
@@ -1287,6 +1287,21 @@ Find active staff members and teams a claim can be assigned to, by name. assign_
 | `name_contains` | string | no | Case-insensitive substring of the staff member's or team's name. |
 
 **Returns:** Object with `staff` (array of `id`, `name`) and `teams` (array of `id`, `name`), each capped at 25.
+
+#### `find_clinical_codes`
+
+**Category:** `@config_reads`
+
+Look up the codes a history command needs, by name, from Canvas's own vocabularies, as the chart's pickers do. `kind` is what to look up: `medical_history` (past conditions, for `originate_medical_history`), `condition` (ICD-10 diagnoses), `medication` (FDB, for `originate_medication_statement`), `allergen` (for `originate_allergy`), `family_history` and `surgical_history` (SNOMED, for the history tools), or `immunization` (CVX and CPT, for `originate_immunization_statement`). Use the codes it returns exactly; never write a code from memory. When several candidates fit, ask the clinician which one they mean.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `kind` | string (enum) | yes |  One of: `condition`, `medical_history`, `medication`, `allergen`, `family_history`, `surgical_history`, `immunization`. |
+| `query` | string | yes | The name to search for, e.g. 'penicillin' or 'appendectomy'. |
+
+**Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), or `cvx_code` and `cpt_code` (immunization).
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -1424,7 +1439,7 @@ Stage a draft Plan command on the patient's current open note for the clinician 
 |---|---|---|---|
 | `narrative` | string | yes | The plan text. Plain prose; no markdown. Keep it concise — this becomes the body of the Plan command on the note. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `PlanCommand`.
 
@@ -1444,7 +1459,7 @@ Stage a draft Prescribe command on the patient's current open note for the clini
 | `days_supply` | integer | no | Days supply for the prescription. Optional. |
 | `refills` | integer | no | Refills (0 = no refills). Optional. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `PrescribeCommand`.
 
@@ -1464,7 +1479,7 @@ Stage a draft Lab Order command on the patient's current open note for the clini
 | `comment` | string | no | Optional free-text instructions to the lab. |
 | `fasting_required` | boolean | no | Whether the patient needs to fast before collection. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `LabOrderCommand`.
 
@@ -1483,7 +1498,7 @@ Stage a draft Diagnose command on the patient's current open note for the clinic
 | `background` | string | no | Optional background/context for the diagnosis. |
 | `approximate_date_of_onset` | string (date) | no | ISO 8601 date of approximate onset. Optional. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `DiagnoseCommand`.
 
@@ -1503,7 +1518,7 @@ Stage a draft Goal command on the patient's current open note for the clinician 
 | `due_date` | string (date) | no | ISO 8601 target date for the goal. Optional. |
 | `progress` | string | no | Optional free-text note about current progress. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `GoalCommand`.
 
@@ -1522,7 +1537,7 @@ Stage a draft Assess command on the patient's current open note — the clinicia
 | `narrative` | string | no | Today's assessment narrative for this condition. |
 | `background` | string | no | Optional background/context. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `AssessCommand`.
 
@@ -1539,7 +1554,7 @@ Stage a draft Follow-Up command on the patient's current open note to schedule a
 | `requested_date` | string (date) | no | ISO 8601 target date for the follow-up. |
 | `comment` | string | no | Free-text reason for the follow-up (visible to scheduling). E.g., 'recheck BP after med adjustment'. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `FollowUpCommand`.
 
@@ -1556,7 +1571,7 @@ Stage a draft Stop-Medication command on the patient's current open note to disc
 | `medication_id` | string | yes | UUID of the medication to stop — from a prior find_medications call (the row's `id` field). |
 | `rationale` | string | no | Reason for stopping (e.g., 'side effects', 'completed course', 'ineffective'). Visible to anyone reviewing the chart. |
 
-**Returns:** `{ok: true, note_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit.
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `StopMedicationCommand`.
 
@@ -1735,4 +1750,180 @@ Remove a claim banner by its `key`, from get_claim's `banners`. Requires the run
 | `claim_id` | string | no | The claim's `id`, from find_claims. Omit to act on the claim the agent was opened from. |
 
 **Returns:** `{ok, claim_id, key}`.
+
+#### `originate_medical_history`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Medical History command recording a past or ongoing condition on the patient's open note. NEVER commits. Look the condition up first with `find_clinical_codes` (kind 'medical_history') and pass its `icd10_code` and `display`; the tool refuses a code whose entry would not resolve.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `icd10_code` | string | yes | ICD-10 code from find_clinical_codes (kind 'medical_history'). |
+| `display` | string | no | The `display` that came with the code. |
+| `approximate_start_date` | string (date) | no | ISO 8601 date it began, if known. |
+| `approximate_end_date` | string (date) | no | ISO 8601 date it ended, if it has. |
+| `show_on_condition_list` | boolean | no | Whether it appears on the conditions list. Defaults to true. |
+| `comments` | string | no | Optional comment, up to 1000 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `MedicalHistoryCommand`.
+
+#### `originate_medication_statement`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Medication Statement recording a medication the patient takes (prescribed elsewhere, or over the counter) on the patient's open note. NEVER commits, and never prescribes. Look the medication up with `find_clinical_codes` (kind 'medication') and pass its `fdb_code` and `display`. Refuses a medication already on the list, and a controlled substance, which the clinician records themselves.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `fdb_code` | string | yes | FDB code from find_clinical_codes (kind 'medication'). |
+| `display` | string | no | The `display` that came with the code. |
+| `sig` | string | no | How the patient takes it, e.g. '1 tablet daily'. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `MedicationStatementCommand`.
+
+#### `originate_allergy`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Allergy command on the patient's open note. NEVER commits. Look the allergen up with `find_clinical_codes` (kind 'allergen') and pass its `concept_id` and `concept_type`. Refuses an allergen already on the list.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `concept_id` | integer | yes | Allergen concept id from find_clinical_codes (kind 'allergen'). |
+| `concept_type` | integer | yes | The `concept_type` that came with it. |
+| `severity` | string (enum) | no | Severity, if known. One of: `mild`, `moderate`, `severe`. |
+| `narrative` | string | no | The reaction, in words, up to 512 chars. |
+| `approximate_date` | string (date) | no | ISO 8601 date of onset, if known. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `AllergyCommand`.
+
+#### `originate_family_history`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Family History command on the patient's open note. NEVER commits. Look the condition up with `find_clinical_codes` (kind 'family_history') and pass its `snomed_code` and `display`, with the relative.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `snomed_code` | string | yes | SNOMED code from find_clinical_codes (kind 'family_history'). |
+| `display` | string | no | The `display` that came with it. |
+| `relative` | string | yes | The relative, e.g. 'mother'. |
+| `note` | string | no | Optional note, up to 512 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `FamilyHistoryCommand`.
+
+#### `originate_surgical_history`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Past Surgical History command on the patient's open note. NEVER commits. Look the procedure up with `find_clinical_codes` (kind 'surgical_history') and pass its `snomed_code` and `display`.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `snomed_code` | string | yes | SNOMED code from find_clinical_codes (kind 'surgical_history'). |
+| `display` | string | no | The `display` that came with it. |
+| `approximate_date` | string (date) | no | ISO 8601 date of the surgery, if known. |
+| `comment` | string | no | Optional comment, up to 1000 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `PastSurgicalHistoryCommand`.
+
+#### `originate_immunization_statement`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Immunization Statement recording a vaccine given elsewhere on the patient's open note. NEVER commits. Look the vaccine up with `find_clinical_codes` (kind 'immunization') and pass its `cvx_code`, `cpt_code`, and `display`.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `cvx_code` | string | yes | CVX code from find_clinical_codes (kind 'immunization'). |
+| `cpt_code` | string | yes | The `cpt_code` that came with it. |
+| `display` | string | no | The `display` that came with it. |
+| `approximate_date` | string (date) | no | ISO 8601 date it was given, if known. |
+| `comments` | string | no | Optional comment, up to 255 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `ImmunizationStatementCommand`.
+
+#### `originate_vitals`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Vitals command on the patient's open note. NEVER commits. A Vitals command records its readings as taken now, so use it only for readings taken today; never for older readings. Pass at least one reading, in US units.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `height` | integer | no | Inches. |
+| `weight_lbs` | integer | no | Pounds. |
+| `body_temperature` | number | no | Degrees Fahrenheit. |
+| `blood_pressure_systole` | integer | no | Systolic mmHg. |
+| `blood_pressure_diastole` | integer | no | Diastolic mmHg. |
+| `pulse` | integer | no | Beats/min. |
+| `respiration_rate` | integer | no | Breaths/min. |
+| `oxygen_saturation` | integer | no | SpO2 percent. |
+| `note` | string | no | Optional note, up to 150 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `VitalsCommand`.
+
+#### `originate_resolve_condition`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Resolve Condition command marking one of the patient's conditions resolved, on the patient's open note. NEVER commits. Requires `condition_id` from `find_conditions`.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `condition_id` | string | yes | The condition's `id` from find_conditions. |
+| `rationale` | string | no | Why it is resolved, up to 1024 chars. |
+| `show_in_condition_list` | boolean | no | Whether it stays on the conditions list as resolved. Defaults to false. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `ResolveConditionCommand`.
+
+#### `originate_remove_allergy`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Remove Allergy command taking an allergy off the patient's list, on the patient's open note. NEVER commits. Requires `allergy_id` from `find_allergies`.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `allergy_id` | string | yes | The allergy's `id` from find_allergies. |
+| `narrative` | string | no | Why it is removed, up to 512 chars. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `RemoveAllergyCommand`.
 <!-- AUTOGEN:writes END -->
