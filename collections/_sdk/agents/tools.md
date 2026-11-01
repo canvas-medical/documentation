@@ -388,8 +388,8 @@ after a statement, with the `id` of a row a read tool returned; add
   row a citable tool returned. Add the messages in order with `add` or
   `add_all`.
 - `cite(text, sources)` replaces each marker with `[1]`, `[2]`, … and
-  returns a `Citation` per cited record. A marker whose id no tool returned
-  is removed, so a citation is always a row the tool read.
+  returns a `Citation` per cited record. A marker whose id no citable tool
+  returned is removed, so a citation is always a row a tool read.
 - A `Citation` (`to_dict()` for JSON) describes the record from that row:
   `kind` (such as "Lab result"), `label`, `detail`, `date`, and for a note
   its `note_dbid`, which a chart surface can navigate to. It never carries
