@@ -479,9 +479,10 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (25 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_reads`** (26 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
 - **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
+- **`@document_reads`** (1 tool): `read_document`
 - **`@message_reads`** (1 tool): `find_messages`
 - **`@message_writes`** (1 tool): `originate_message`
 - **`@task_reads`** (1 tool): `find_tasks`
@@ -814,6 +815,39 @@ Reconcile the patient's lab orders, imaging orders, and referrals with what came
 | `include_closed` | boolean | no | When true, also return orders already resulted and reviewed. |
 
 **Returns:** Array of objects with `id` (the order or referral), `type` (Lab order, Imaging order, Referral), `item`, `ordered_on`, `ordered_by`, `status` (awaiting_result|awaiting_review|closed), `resulted_on`, `days_waiting`, `summary`, `note_dbid` (the note it was ordered on), plus `pending_tests` for lab orders and `clinical_question` for referrals.
+
+#### `find_documents`
+
+**Category:** `@clinical_reads`
+
+List consult notes (specialists' reports back on a referral) and outside records (documents from other providers filed on the chart) for the patient, newest first. Each has its name or specialty, dates, review status, and the staff comment; a consult note also has the values entered when it was filed. The documents' full text is not included: it lives in the attached file. Use this for 'did the cardiology note come in', 'what outside records do we have', and to find a document before quoting what staff noted about it.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `kind` | string (enum) | no | Only consult notes or only outside records. Omit for both. One of: `consult_note`, `outside_record`. |
+| `name_contains` | string | no | Case-insensitive match on the specialty or document name, category, or staff comment (e.g. 'cardiology', 'echo', 'discharge'). |
+| `dated_on_or_after` | string (date) | no | ISO 8601 date. Only documents dated on or after it. |
+| `unreviewed_only` | boolean | no | When true, only documents nobody has finished reviewing. |
+| `limit` | integer | no | Maximum documents of each kind. Defaults to 15. |
+
+**Returns:** Array of objects with `id`, `type` (Consult note, Outside record), `name`, `date`, `received`, `review` (reviewed|in review|not reviewed), and `comment`; consult notes add `from`, `values` (`name`, `value`), `referral_id`, and `note_dbid` (the review note); outside records add `category` and `has_file`.
+
+#### `read_document`
+
+**Category:** `@document_reads`
+
+Read an outside record's attached file and answer a question from it, with page numbers. Use it when the answer is in the document's text rather than in what `find_documents` returns, e.g. 'what did the discharge summary say about her medications'. Takes the `id` of an outside record from `find_documents` that `has_file`. Reads the whole file with a separate model call, so it is slow and costly: ask one focused question, and do not call it for every document.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `document_id` | string | yes | The `id` of an outside record from `find_documents`. |
+| `question` | string | yes | What to find in the document, in the clinician's words. |
+
+**Returns:** Object with `ok`, `document_id`, `name`, and `answer` (the answer, with page numbers); `ok: false` with `error` when the record has no readable file.
 
 #### `find_care_team_members`
 
