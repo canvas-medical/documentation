@@ -233,9 +233,11 @@ The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the
 | `class` | string | Yes | Import path to the `AgentPlugin` subclass, in `package.module:ClassName` form. |
 | `description` | string | Yes | What the agent does. |
 | `meta` | object | No | Agent metadata. |
+| `run_seconds` | integer | No | How long each run may take, in seconds, from 1 to 1800. Defaults to 600 (10 minutes). A value above the default makes each run an extended run, and the plugin runner admits only a few of those at a time. See [Lifecycle](/sdk/agents-lifecycle/). |
 | `tools` | object | No | The tools from the agent's tool registry it may call. The agent can return only the effect types its granted tools stage. See [Tools](/sdk/agents-tools/). |
 | `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent gets no tools and can return no effects. |
 | `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed` after its `@category` groups are expanded. |
+| `tools.approve` | array of strings | No | Tool names and `@category` groups whose staged effects become proposals that the requester approves or denies before they apply. See [Approve before write](/sdk/agents-lifecycle/#approve-before-write). |
 
 Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key. Declare it as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY`, and set its value on each instance where the plugin runs. If the key isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
 
