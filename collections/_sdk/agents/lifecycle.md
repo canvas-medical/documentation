@@ -130,9 +130,10 @@ its manifest entry, up to 1,800 (30 minutes):
 `canvas validate` rejects a value above 1,800, and the platform holds
 every run to that ceiling whatever the manifest says. A run of an agent
 that asks for more than the default 10 minutes is an extended run: the
-plugin runner admits only a few at a time (one by default, and always
-fewer than its agent runs in total), so long runs cannot take every
-agent thread from the chats people are waiting on. An extended run that
+plugin runner admits only a few at a time (one by default, and fewer
+than its agent runs in total whenever it serves more than one), so
+long runs cannot take every agent thread from the chats people are
+waiting on. An extended run that
 finds them all taken waits and retries like any other run turned away
 by a busy runner, and if it never gets one its record shows it gave up
 with `error_kind="EXTENDED_RUNS_BUSY"`. Ask only for the time the work
