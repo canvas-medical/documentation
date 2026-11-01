@@ -536,7 +536,7 @@ list to opt out of specific tools within a granted category:
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (18 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`
+- **`@clinical_writes`** (20 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`
 - **`@config_reads`** (5 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@message_reads`** (1 tool): `find_messages`
@@ -1926,4 +1926,33 @@ Stage a draft Remove Allergy command taking an allergy off the patient's list, o
 **Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `RemoveAllergyCommand`.
+
+#### `edit_staged_command`
+
+**Category:** `@clinical_writes`
+
+Change fields on a staged (uncommitted) draft command in the patient's open note. NEVER commits. `command_id` is the `command_id` an `originate_*` tool returned in an earlier run, or a command's `uuid` from `get_note_content`. Pass `fields` with the new values, named as the matching `originate_*` tool names its arguments. Only these fields can change, by command: plan: narrative; prescribe: sig, days_supply, refills; labOrder: comment, fasting_required; diagnose: today_assessment, background, approximate_date_of_onset; goal: goal_statement, priority, achievement_status, due_date, progress; assess: status, narrative, background; followUp: requested_date, comment; stopMedication: rationale; medicalHistory: approximate_start_date, approximate_end_date, show_on_condition_list, comments; medicationStatement: sig; allergy: severity, narrative, approximate_date; familyHistory: relative, note; surgicalHistory: approximate_date, comment; immunizationStatement: approximate_date, comments; vitals: height, weight_lbs, body_temperature, blood_pressure_systole, blood_pressure_diastole, pulse, respiration_rate, oxygen_saturation, note; resolveCondition: rationale, show_in_condition_list; removeAllergy: narrative. To change anything else (the medication, condition, code, or allergen itself), use `delete_staged_command` and stage a new draft. A draft this run staged cannot be edited; delete it and stage it again.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `command_id` | string | yes | The draft command's id. |
+| `fields` | object | yes | The fields to change and their new values. |
+
+**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', changed: [<field>], committed: false}`.
+
+#### `delete_staged_command`
+
+**Category:** `@clinical_writes`
+
+Delete a staged (uncommitted) draft command from the patient's open note. `command_id` is the `command_id` an `originate_*` tool returned, in this run or an earlier one, or a command's `uuid` from `get_note_content`. A committed command, or one on another note, cannot be deleted. Use it to replace a draft staged with the wrong item: delete it, then stage the right one.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `command_id` | string | yes | The draft command's id. |
+
+**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`.
 <!-- AUTOGEN:writes END -->
