@@ -391,9 +391,10 @@ after a statement, with the `id` of a row a read tool returned; add
   returns a `Citation` per cited record. A marker whose id no citable tool
   returned is removed, so a citation is always a row a tool read.
 - A `Citation` (`to_dict()` for JSON) describes the record from that row:
-  `kind` (such as "Lab result"), `label`, `detail`, `date`, and for a note
-  its `note_dbid`, which a chart surface can navigate to. It never carries
-  text the model wrote.
+  `kind` (such as "Lab result"), `label`, `detail`, `date`, and a
+  `note_dbid` for a note, or for a record whose row names the note it was
+  made on (such as an order from `find_open_loops`), which a chart surface
+  can navigate to. It never carries text the model wrote.
 
 ```python?partial=true
 from canvas_sdk.agents.citations import Sources, cite
@@ -410,7 +411,9 @@ A tool registered with `filter_search_tool(model=...)` is citable, keyed by
 the `id` in each row it returns. Pass `citable=False` for a tool that reads
 configuration rather than the patient's records, as the standard
 `find_note_types`, `find_practice_locations`, `find_lab_partners`, and
-`find_lab_partner_tests` do.
+`find_lab_partner_tests` do. A tool registered with `@tools.tool` is citable
+when it passes `cites="<record type>"`, which names its rows' record type;
+the standard `find_open_loops` cites its rows as `"OpenLoop"`.
 
 ## Tool surface design tips
 
@@ -476,7 +479,7 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (24 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_reads`** (25 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (9 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`
 - **`@config_reads`** (4 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`
 - **`@message_reads`** (1 tool): `find_messages`
@@ -796,6 +799,21 @@ Search the patient's outgoing referrals. Returns each referral with `id`, `clini
 **Returns:** Array of objects with `id`, `clinical_question`, `priority`, `notes`, `date_referred`, `service_provider_name`, `forwarded`.
 
 **Backing data model:** `Referral`.
+
+#### `find_open_loops`
+
+**Category:** `@clinical_reads`
+
+Reconcile the patient's lab orders, imaging orders, and referrals with what came back: for each order, whether its result (or a referral's consult note) arrived, whether anyone reviewed it, and how many days it has waited. Use it to answer 'did the labs come back', 'was the study done', 'did we get the consult note', and to brief a clinician on what is still open since a visit. Status is `awaiting_result`, `awaiting_review`, or `closed`; only open orders are returned unless include_closed is true. Newest orders first.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `ordered_on_or_after` | string (date) | no | ISO 8601 date. Only orders placed on or after this date; pass the last visit's date of service for 'since the last visit'. Defaults to 180 days ago. |
+| `include_closed` | boolean | no | When true, also return orders already resulted and reviewed. |
+
+**Returns:** Array of objects with `id` (the order or referral), `type` (Lab order, Imaging order, Referral), `item`, `ordered_on`, `ordered_by`, `status` (awaiting_result|awaiting_review|closed), `resulted_on`, `days_waiting`, `summary`, `note_dbid` (the note it was ordered on), plus `pending_tests` for lab orders and `clinical_question` for referrals.
 
 #### `find_care_team_members`
 
