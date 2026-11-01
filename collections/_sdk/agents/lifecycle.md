@@ -502,7 +502,8 @@ plugin's websocket route:
 The platform admits only the person who started the run to that channel,
 without calling your plugin's `authenticate`, and only the platform can
 send to it: a `Broadcast` to a channel starting `agent-run-` is refused.
-Each message is JSON under `message`:
+Each websocket message is a JSON object whose `message` key holds these
+fields:
 
 | Field | Value |
 |---|---|
@@ -510,7 +511,7 @@ Each message is JSON under `message`:
 | `phase` | `thinking` during a model call, `working` while tools run |
 | `elapsed_ms` | Time since the run started |
 | `label` | For a tool event, the tool's progress label, such as `Reading lab results` |
-| `ok` | For `tool_finished`, whether the tool succeeded |
+| `ok` | For a tool event, whether the tool succeeded. Always `false` on `tool_started` |
 
 How much is sent is set by `progress` in the agent's manifest entry, and
 the platform drops anything above it before it leaves the plugin runner:
@@ -531,8 +532,8 @@ the platform drops anything above it before it leaves the plugin runner:
 
 Tool arguments and results are never sent, at any level. Treat the stream
 as a preview: the run's record and your saved state stay the source of
-truth, so a pane that cannot open the channel still polls for the result
-as before.
+truth, so a pane that can't open the channel can still poll for the
+result.
 
 ## Concurrency
 

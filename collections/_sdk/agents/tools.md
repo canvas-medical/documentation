@@ -365,8 +365,9 @@ def get_outside_records(arguments, *, ctx):
 ```
 
 `tools.set_progress_labels({...})` labels tools registered through a helper
-that takes no `progress_label`. A tool without a label shows `Looking
-something up`, and every tool in `standard_tools` has one.
+that takes no `progress_label`, such as `originate_command_tool`. It raises
+`ValueError` for a name that isn't a registered tool. A tool without a label
+shows `Looking something up`, and every tool in `standard_tools` has one.
 
 ## Manifest-driven permissions
 
