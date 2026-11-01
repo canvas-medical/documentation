@@ -345,6 +345,29 @@ run, the results of all tool calls, sub-agents included, add up to at
 most 600,000 characters, and a result past that is cut with a note
 telling the model to answer from what it has.
 
+## Progress labels
+
+For an agent whose manifest sets `"progress": "activity"`, the person
+waiting on a run sees a label as each tool starts and finishes (see
+[Showing a run's progress](/sdk/agents-lifecycle/#showing-a-runs-progress)).
+Give a tool its label with `progress_label`, on `@tools.tool` or
+`filter_search_tool`, naming what it does and never its arguments:
+
+```python?partial=true
+@tools.tool(
+    name="get_outside_records",
+    description="Every outside record on file for the patient, with its codes.",
+    input_schema={"type": "object", "properties": {}},
+    progress_label="Reading outside records",
+)
+def get_outside_records(arguments, *, ctx):
+    ...
+```
+
+`tools.set_progress_labels({...})` labels tools registered through a helper
+that takes no `progress_label`. A tool without a label shows `Looking
+something up`, and every tool in `standard_tools` has one.
+
 ## Manifest-driven permissions
 
 The agent's `tools.allowed` declaration in `CANVAS_MANIFEST.json` is

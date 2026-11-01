@@ -488,6 +488,52 @@ observability path can't crash the underlying run.
 See [Auditing](/sdk/agents-auditing/) for the recommended split
 between platform-owned and plugin-owned audit data.
 
+## Showing a run's progress
+
+A person waiting on a run, such as a clinician in a chat pane, can see that
+it is working. While the run is in progress the platform streams its
+progress to the run's websocket channel, `agent-run-<run_id>`, on your
+plugin's websocket route:
+
+```text
+/plugin-io/ws/<plugin_name>/agent-run-<run_id>/
+```
+
+The platform admits only the person who started the run to that channel,
+without calling your plugin's `authenticate`, and only the platform can
+send to it: a `Broadcast` to a channel starting `agent-run-` is refused.
+Each message is JSON under `message`:
+
+| Field | Value |
+|---|---|
+| `kind` | `heartbeat`, `tool_started`, or `tool_finished` |
+| `phase` | `thinking` during a model call, `working` while tools run |
+| `elapsed_ms` | Time since the run started |
+| `label` | For a tool event, the tool's progress label, such as `Reading lab results` |
+| `ok` | For `tool_finished`, whether the tool succeeded |
+
+How much is sent is set by `progress` in the agent's manifest entry, and
+the platform drops anything above it before it leaves the plugin runner:
+
+- `status` (the default): heartbeats only, every 2 seconds while nothing
+  else is sent. Enough to show the run is alive.
+- `activity`: adds an event as each tool starts and finishes, carrying
+  its label.
+
+```json
+{
+  "class": "my_plugin.agents.chat:ChatAgent",
+  "description": "Chart chat",
+  "progress": "activity",
+  "tools": {"allowed": ["@clinical_reads"]}
+}
+```
+
+Tool arguments and results are never sent, at any level. Treat the stream
+as a preview: the run's record and your saved state stay the source of
+truth, so a pane that cannot open the channel still polls for the result
+as before.
+
 ## Concurrency
 
 The platform runs one invocation at a time per agent and scope. A
