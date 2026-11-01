@@ -317,7 +317,8 @@ requester's permissions, like any effect, and holds it as an
   `attach_results()` put results in the chart with no draft for a person
   to commit, so an agent's lab report applies only through an approved
   proposal. A report and its results can be proposed in the same run;
-  approve the report before its results.
+  approve the report first. Approving the results before their report
+  exists marks that proposal `failed`.
 
 A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
 change could not apply when approved), or `expired`. Approval is per
