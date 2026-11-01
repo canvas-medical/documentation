@@ -507,11 +507,12 @@ fields:
 
 | Field | Value |
 |---|---|
-| `kind` | `heartbeat`, `tool_started`, or `tool_finished` |
-| `phase` | `thinking` during a model call, `working` while tools run |
+| `kind` | `heartbeat`, `tool_started`, `tool_finished`, `turn_started`, or `text` |
+| `phase` | `thinking` during a model call, `writing` once its reply text arrives, `working` while tools run |
 | `elapsed_ms` | Time since the run started |
 | `label` | For a tool event, the tool's progress label, such as `Reading lab results` |
 | `ok` | For a tool event, whether the tool succeeded. Always `false` on `tool_started` |
+| `text` | For `text`, the reply text written since the last `text` message |
 
 How much is sent is set by `progress` in the agent's manifest entry, and
 the platform drops anything above it before it leaves the plugin runner:
@@ -520,6 +521,13 @@ the platform drops anything above it before it leaves the plugin runner:
   else is sent. Enough to show the run is alive.
 - `activity`: adds an event as each tool starts and finishes, carrying
   its label.
+- `reply`: adds the reply text as the model writes it. `run_tool_loop`
+  streams each model call and sends `turn_started` as it begins, then
+  `text` messages; clear what you have shown on `turn_started`, since only
+  the last call's text becomes the reply. Text from sub-agents is never
+  sent. Citation markers and fenced blocks are only meaningful in the
+  finished reply, so leave them out of the preview and render the saved
+  reply once the run finishes.
 
 ```json
 {
