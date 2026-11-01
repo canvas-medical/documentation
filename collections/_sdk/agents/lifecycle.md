@@ -311,7 +311,13 @@ requester's permissions, like any effect, and holds it as an
 - **Commits need approval:** a committed command is the user attesting
   to it, so an agent's commit applies only through an approved proposal.
   That includes `originate(commit=True)`, which drafts and commits a
-  command in one effect.
+  command in one effect, and a custom command, which is committed as
+  soon as it is originated.
+- **Lab reports need approval:** a `LabReport`'s `create()` and
+  `attach_results()` put results in the chart with no draft for a person
+  to commit, so an agent's lab report applies only through an approved
+  proposal. A report and its results can be proposed in the same run;
+  approve the report before its results.
 
 A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
 change could not apply when approved), or `expired`. Approval is per
