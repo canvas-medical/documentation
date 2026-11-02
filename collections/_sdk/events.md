@@ -1791,10 +1791,18 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
       <td><pre>"report":
   "id": report_id
-  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
 "reassigned_at": datetime str
 "reassigned_by": <a href="/sdk/data-staff/#staff">Staff</a>
   "type": str ("STAFF")
@@ -1836,10 +1844,18 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
       <td><pre>"report":
   "id": report_id
-  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
 "commented_at": datetime str
 "commented_by": <a href="/sdk/data-staff/#staff">Staff</a>
   "type": str ("STAFF")
@@ -1864,10 +1880,18 @@ These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncat
     </tr>
     <tr>
       <td><pre>"id": report_id
-"type": <a href="/sdk/data-labs/#labreport">LabReport</a>, <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>, <a href="/sdk/data-referral/#referralreport">ReferralReport</a>, or <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
+"type": one of
+  <a href="/sdk/data-labs/#labreport">LabReport</a>
+  <a href="/sdk/data-imaging/#imagingreport">ImagingReport</a>
+  <a href="/sdk/data-referral/#referralreport">ReferralReport</a>
+  <a href="/sdk/data-uncategorized-clinical-document/">UncategorizedClinicalDocument</a></pre></td>
       <td><pre>"report":
   "id": report_id
-  "type": str ("LabReport", "ImagingReport", "ReferralReport", or "UncategorizedClinicalDocument")
+  "type": str, one of
+    "LabReport"
+    "ImagingReport"
+    "ReferralReport"
+    "UncategorizedClinicalDocument"
 "document":
   "id": document_id
   "channel": str
