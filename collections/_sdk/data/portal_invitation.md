@@ -5,7 +5,7 @@ excerpt: "A patient portal invite or password reset link, with when it was opene
 hidden: false
 ---
 
-The `PortalInvitation` model represents a patient portal invite or password reset link that Canvas created for a user. Canvas creates one each time it sends a portal link, including through [Send Invite](/sdk/patient-portal/#send-invite), and each time a plugin mints a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link). The user is usually a patient, or a representative's login when a patient shares portal access. Use it to see whether a patient opened their link, set a password with it, or let it expire, and to find patients who need a new link.
+The `PortalInvitation` model represents a patient portal invite or password reset link that Canvas created for a user. Canvas creates one each time it creates a portal link to send, including through [Send Invite](/sdk/patient-portal/#send-invite), even when the send then fails, and each time a plugin mints a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link). The user is usually a patient, or a representative's login when a patient shares portal access. Use it to see whether a patient opened their link, set a password with it, or let it expire, and to find patients who need a new link.
 
 The model records the link's history, not the link: you can't read its URL from it. To react to a link as its state changes, handle the [portal invitation events](/sdk/events/#portal-invitations).
 

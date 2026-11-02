@@ -3565,7 +3565,7 @@ These events follow a patient portal invite or password reset link through its l
 <table>
   <thead>
     <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when Canvas creates a portal invite or password reset link, either to send it itself or for a plugin that mints it with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3577,10 +3577,12 @@ These events follow a patient portal invite or password reset link through its l
 "type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
       <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
 "patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
-"origin": str, <code>native</code> when Canvas sends the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
+"origin": str, <code>native</code> when Canvas sent the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
     </tr>
   </tbody>
 </table>
+
+{% include alert.html type="warning" content="A handler for <code>PORTAL_INVITATION_CREATED</code> can't return <code>SendInviteEffect</code>. Sending an invite creates a new link, which would fire the event again. When a plugin returns that effect for this event, Canvas drops all the effects the plugin returned for it." %}
 
 <table>
   <thead>
