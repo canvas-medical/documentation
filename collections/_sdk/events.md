@@ -1254,6 +1254,26 @@ To keep an external system in sync with appointment changes made in the Canvas U
 
 <table>
   <thead>
+    <tr><th colspan="2">CLAIM_ASSIGNEE_CHANGED</th></tr>
+    <tr><td colspan="2">Occurs when a claim is assigned to a staff member or team, reassigned, or unassigned, including through <a href="/sdk/effect-claims/#assign"><code>ClaimEffect.assign</code></a> and <a href="/sdk/effect-claims/#unassign"><code>ClaimEffect.unassign</code></a>. It also fires when a claim is created with an owner, with both <code>previous</code> values <code>null</code>. The context holds the assignment from before the change. A claim has one owner at a time, so at most one of <code>assignee</code> and <code>team</code> is set, and both are <code>null</code> when the claim was unassigned. To read the new assignment, get the claim and check its <a href="/sdk/data-claim/#claim"><code>assignee</code> and <code>team</code></a> attributes.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": claim_id
+"type": <a href='/sdk/data-claim/#claim'>Claim</a></pre></td>
+      <td><pre>"previous":
+  "assignee": <a href='/sdk/data-staff/#staff'>staff_id</a> | null
+  "team": <a href='/sdk/data-team/#team'>team_id</a> | null</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
     <tr><th colspan="2">CLAIM_BALANCE_CHANGED</th></tr>
     <tr><td colspan="2">Occurs when a claim's patient balance or aggregate coverage balance changes. Use it to follow payments as they post and to see when the amount the patient or their insurance owes changes. A balance can change from:
 <ul>
