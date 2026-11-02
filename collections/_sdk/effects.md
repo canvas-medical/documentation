@@ -544,6 +544,7 @@ Check out the [Agent Runner Framework](/sdk/agents/) documentation.
 | Effect | Description |
 |---|---|
 | RUN_AGENT | Start an agent run. Use the `RunAgentEffect` class in `canvas_sdk.effects.agent`. The platform runs the agent in a background worker and applies the effects the agent returns. |
+| DECIDE_AGENT_PROPOSAL | Approve or deny a change an agent proposed, from a request the user the agent acted for made. Use the `DecideAgentProposal` class in `canvas_sdk.effects.agent`. See [Approve before write](/sdk/agents-lifecycle/#approve-before-write). |
 
 
 ### Plugin Usage
