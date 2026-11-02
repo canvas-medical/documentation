@@ -213,8 +213,8 @@ requirements.
 A run a patient started holds no staff permissions, so tools that need
 one are hidden, and its effects may change only the patient's own
 records. Within their own chart it may do what needs no staff
-permission: draft, edit, or delete a draft command, create a task, and
-add a banner or protocol card. Grant a patient-facing agent only the
+permission: draft a message or any command, edit or delete a draft
+command, create a task, add or remove a banner, and add a protocol card. Grant a patient-facing agent only the
 tools its job needs. A run no user started, such as one from a webhook or an
 API-key route, runs as Canvas Bot and acts with your plugin's authority,
 as a handler's effects do, except that it cannot commit a command or add
