@@ -28,13 +28,15 @@ A [notification badge](/sdk/handlers-applications/#notification-badges) update f
 
 A message that a family member sends from the portal is filed on the chart the portal is open on. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
 
-The built-in Messaging page follows the family member's messaging access on the chart:
+The built-in portal pages follow the family member's access in their area on the chart. With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
 
-- **None:** the Messaging item doesn't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes `MESSAGING`.
-- **View:** the page shows the chart's messages without the form for sending one.
-- **Act:** the page shows the messages and the form.
+| Area | Built-in pages (menu items) | View | Act |
+|---|---|---|---|
+| Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, without booking, canceling, or rescheduling | The appointments, with booking, canceling, and rescheduling |
+| Messaging | Messaging (`MESSAGING`) | The chart's messages, without the form for sending one | The messages and the form |
+| Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. Health records can be viewed, downloaded, and generated, but not transmitted, and My Health has no Upload Records button. | The records, with Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on |
 
-The ready-made `MESSAGING` [landing page widget](#portal-landing-page-widgets) offers to send a message, so it appears only with act access.
+The ready-made [landing page widgets](#portal-landing-page-widgets) follow the same access. `APPOINTMENTS` doesn't appear without appointments access, and `MESSAGING` offers to send a message, so it appears only with act access in messaging.
 
 ## Configure Portal Menu Items
 
