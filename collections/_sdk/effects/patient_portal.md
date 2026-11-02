@@ -35,6 +35,7 @@ The built-in portal pages follow the family member's access in their area on the
 | Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, without booking, canceling, or rescheduling | The appointments, with booking, canceling, and rescheduling |
 | Messaging | Messaging (`MESSAGING`) | The chart's messages, without the form for sending one | The messages and the form |
 | Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. Health records can be viewed, downloaded, and generated, but not transmitted, and My Health has no Upload Records button. | The records, with Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on |
+| Billing | Payments (`PAYMENTS`) | The chart's balance, installment plan, and statements, without ways to pay or saved payment methods | The balance and statements, with Pay Now and saved payment methods when card payments are set up, or otherwise a number to call to pay |
 
 The ready-made [landing page widgets](#portal-landing-page-widgets) follow the same access. `APPOINTMENTS` doesn't appear without appointments access, and `MESSAGING` offers to send a message, so it appears only with act access in messaging.
 
