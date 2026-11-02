@@ -28,6 +28,14 @@ A [notification badge](/sdk/handlers-applications/#notification-badges) update f
 
 A message that a family member sends from the portal is filed on the chart the portal is open on. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
 
+The built-in Messaging page follows the family member's messaging access on the chart:
+
+- **None:** the Messaging item doesn't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes `MESSAGING`.
+- **View:** the page shows the chart's messages without the form for sending one.
+- **Act:** the page shows the messages and the form.
+
+The ready-made `MESSAGING` [landing page widget](#portal-landing-page-widgets) offers to send a message, so it appears only with act access.
+
 ## Configure Portal Menu Items
 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
