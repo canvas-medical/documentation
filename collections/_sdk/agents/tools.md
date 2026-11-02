@@ -515,7 +515,7 @@ tools = ToolRegistry()
 )
 def _serialize_attempt(attempt):
     return {
-        "id": str(attempt.id),
+        "id": str(attempt.dbid),
         "channel": attempt.channel,
         "attempted_at": attempt.attempted_at.isoformat(),
         "answered": attempt.answered,
