@@ -106,7 +106,7 @@ sections:
                         - value: CREATE
                         - value: UPDATE
           - name: agent
-            description: Actor involved. <br><br>The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer. 
+            description: Actor involved. <br><br>The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer. 
             type: array[json]
             attributes:
                 - name: type
@@ -158,10 +158,10 @@ sections:
                   attributes:
                     - name: reference
                       type: string
-                      description: The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+                      description: The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. When the committer or originator is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
                     - name: type
                       type: string
-                      description: Type the reference refers to (e.g. "Practitioner", "Organization").
+                      description: Type the reference refers to (e.g. "Practitioner", "Patient", "Organization").
                     - name: display
                       type: string
                       description: Text alternative for the resource.
