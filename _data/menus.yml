@@ -535,9 +535,15 @@ guides_list:
     uses:
       - sdk
 
-  - title: "Moving to Canvas Platform"
-    url: /guides/moving-to-canvas-platform/
+  - title: "Upgrading to Canvas Platform"
+    url: /guides/upgrading-to-canvas-platform/
     description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
+    uses:
+      - sdk
+
+  - title: "Working with a Monorepo"
+    url: /guides/working-with-a-monorepo/
+    description: Deploy plugins from a repository shared with other code, from your machine or CI, and through Canvas Studio's gated release
     uses:
       - sdk
 

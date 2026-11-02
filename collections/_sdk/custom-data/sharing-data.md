@@ -34,7 +34,7 @@ For a plugin deployed with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Ca
 - The first plugin that declares `"access": "read_write"` for a namespace on an instance creates it there and owns it.
 - Another plugin that declares the same namespace, to read or to write, needs consent from the organization that runs the instance. `canvas deploy` shows each consent request and asks you to answer it; the deployment starts once every request is approved, and an approval stands for later deploys to that instance.
 - Leave `namespace_read_access_key` and `namespace_read_write_access_key` out of the manifest's `variables`. Canvas Platform supplies them, refuses a manifest that declares them, and refuses `canvas config set` for them.
-- A namespace that already exists on an instance, created by a plugin installed with `canvas install`, needs its keys recorded with Canvas Platform before a deploy can use it. [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) covers that step.
+- A namespace that already exists on an instance, created by a plugin installed with `canvas install`, keeps its data and its keys. Canvas records those keys with Canvas Platform when it upgrades your organization's plugins; see [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/).
 
 ### Access keys for plugins installed with `canvas install` (deprecated)
 
