@@ -9,6 +9,8 @@ feed_summary: |
   • Before then: sign in with canvas login, deploy with canvas deploy, and switch CI pipelines to a service account. Plugins keep their names, and Canvas handles the rest.
 ---
 
+{% include alert.html type="info" content="<strong>Update, October 30, 2026:</strong> the upgrade is simpler. Canvas upgrades your organization's plugins for you, and the renaming and repository steps below no longer apply. See <a href='/release-notes/canvas-platform-upgrade-2026-10-30/'>the October 30 update</a>." %}
+
 Starting December 14, 2026, the Canvas CLI signs in through [Canvas Platform](https://platform.canvasmedical.com). After this date, `credentials.ini` and `canvas install` will stop working.
 
 _Updated October 28, 2026: the upgrade is simpler than this note first described. Plugins are not renamed or moved, and Canvas handles the upgrade of your plugins._
