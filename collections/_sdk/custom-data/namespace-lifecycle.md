@@ -87,7 +87,7 @@ inspect what's in a namespace and clean it up without having to connect to the d
 
 ## CLI Commands
 
-All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. They connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until they move to your Canvas Platform sign-in, before December 14, 2026.
+All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. When you're signed in to Canvas Platform and it manages the instance, the commands go through Canvas Platform. Otherwise they connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. See [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform). The dry run and confirmation steps below work the same either way.
 
 ### Listing Namespaces
 
