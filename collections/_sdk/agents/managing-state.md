@@ -80,7 +80,8 @@ class ChatAgent(AgentPlugin):
     def run(self, state, gateway, trigger_payload):
         messages = [*state.data["messages"], {"role": "user", "content": trigger_payload["user_message"]}]
         result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
-        state.data["messages"] = result.messages  # the history plus this run's turns
+        # The history plus this run's turns, trimmed so the stored row stays bounded.
+        state.data["messages"] = window_messages(result.messages)
         return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key, state):
@@ -105,8 +106,9 @@ call after that is refused. `run_tool_loop` sends the model only the
 newest turns that fit a size budget, starting on a plain user message
 so a tool result is never sent without its tool call, and always
 keeping the latest question; it still returns the full history for you
-to store. If you call the model yourself, `window_messages(messages)`
-does the same trimming.
+to store. Store it through `window_messages` too, as above, so the
+saved conversation stays bounded as well. If you call the model
+yourself, `window_messages(messages)` does the same trimming.
 
 The snapshot pattern is also where **prompt caching** pays off most
 — the system prompt, tool definitions, and the prefix of the message

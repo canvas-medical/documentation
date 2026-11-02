@@ -30,9 +30,9 @@ Examples:
 - **In-chart chat** — a clinician asks "what's this patient's A1c
   history?"; the agent reads the chart and answers, optionally staging
   prescriptions or lab orders the clinician then commits.
-- **Background risk stratification** — periodic CronTask emits a
-  `RunAgentEffect`; the agent reviews open patients and creates Tasks
-  for those who match a clinical pattern.
+- **Background risk stratification** — a periodic CronTask emits one
+  `RunAgentEffect` per open patient; each run reviews its patient and
+  creates a Task when they match a clinical pattern.
 
 Agents are distinct from handlers because they reason; handlers do
 fixed transformations. Reach for an agent when "what should happen
@@ -111,10 +111,9 @@ response = client.messages.create(
 ```
 
 The client sends your plugin's key, along with headers naming your
-plugin, agent, and run.
-
-> **Coming soon**: the gateway records those names on each call in its
-> usage ledger.
+instance, plugin, agent, and run. The gateway records those names on
+each call in its usage ledger, so a run's `run_id` joins it to its LLM
+calls, and keeps them from Anthropic.
 
 The gateway meters every call against your organization's inference
 account and enforces its budget and model allowlist. `gateway.model`
@@ -131,8 +130,9 @@ exception handling works unchanged:
 
 Let these errors propagate out of `run()`. The platform retries a run
 when the gateway is unreachable, rate-limited (429), or returns a
-server error, and records a refusal (any status above) as a failed run
-without retrying it. If the instance has no gateway URL configured, or your plugin's
+server error, up to twice (30 and then 60 seconds later) before
+recording it as failed, and records a refusal (any status above) as a
+failed run without retrying it. If the instance has no gateway URL configured, or your plugin's
 `INFERENCE_GATEWAY_KEY` isn't set, the run fails before your agent is
 instantiated.
 

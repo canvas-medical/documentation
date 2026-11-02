@@ -181,6 +181,7 @@ you call the model yourself, set the marker as shown here:
 ```python?partial=true
 client.messages.create(
     model=gateway.model,
+    max_tokens=1024,
     system=[
         {
             "type": "text",

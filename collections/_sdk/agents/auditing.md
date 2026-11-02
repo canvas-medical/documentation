@@ -54,6 +54,9 @@ Captured today:
   Those events name the clinician whose action started the run, your
   plugin, and the agent class, and carry the `run_id` as their
   correlation id, so one id joins a run's record and its chart changes.
+- **LLM call attribution**: the gateway's usage ledger records the
+  instance, plugin, agent, and `run_id` behind each call, so the
+  `run_id` also joins a run to its LLM calls.
 - **Logs and errors**: the platform logs each run's start and finish,
   and unexpected exceptions go to Sentry, tagged with the agent ID.
 
@@ -63,9 +66,6 @@ so agent code can neither skip nor alter them.
 Coming soon:
 
 - **Per-LLM-call latency**: wall-clock and time-to-first-token.
-- **LLM call attribution**: the gateway's usage ledger records the
-  instance, plugin, agent, and `run_id` behind each call, so the
-  `run_id` also joins a run to its LLM calls.
 
 The skeleton is the safety net. Even if your plugin captured zero
 domain audit data, the platform's records answer: how many times did
@@ -105,6 +105,7 @@ Inside a run, the agent has its record's id as `self.run_id`.
 
 A change an agent [proposed for approval](/sdk/agents-lifecycle/#approve-before-write)
 is an `AgentRunProposal`, reachable from its run as `record.proposals`.
+A plugin reads the run records and proposals of its own agents.
 It records the tool and arguments that proposed it, the effect types of
 the changes that apply together on approval (`effect_types`, in order),
 the staff member who decides it, its `status`, when it was decided

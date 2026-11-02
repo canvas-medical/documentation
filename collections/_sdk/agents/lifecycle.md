@@ -104,7 +104,8 @@ step is platform-driven:
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
 is captured to Sentry, and the run returns `success=False`. Errors from
 the inference gateway are classified rather than captured: an outage
-(`error_kind="LLM_UNAVAILABLE"`) is retried, and a refusal
+(`error_kind="LLM_UNAVAILABLE"`) is retried up to twice, 30 and then
+60 seconds later, and a refusal
 (`error_kind="LLM_REFUSED"`) fails the run without a retry.
 
 A run gets 10 minutes. The tool loop starts no model call in its last
@@ -211,7 +212,10 @@ requirements.
 
 A run a patient started holds no staff permissions, so tools that need
 one are hidden, and its effects may change only the patient's own
-records. A run no user started, such as one from a webhook or an
+records. Within their own chart it may do what needs no staff
+permission: draft, edit, or delete a draft command, create a task, and
+add a banner or protocol card. Grant a patient-facing agent only the
+tools its job needs. A run no user started, such as one from a webhook or an
 API-key route, runs as Canvas Bot and acts with your plugin's authority,
 as a handler's effects do, except that it cannot commit a command or add
 a lab report, which need a user's approval, or return an effect the
@@ -299,7 +303,9 @@ any effect, and holds each proposal as an `AgentRunProposal` for one
 hour:
 
 - **Who decides:** only the requester, the user the run acted for. A run
-  that no user started, such as a Canvas Bot run, cannot propose.
+  that no user started, such as a Canvas Bot run, cannot propose, and a
+  decision an agent returns is refused, so an agent never decides its own
+  proposal.
 - **How:** your plugin draws the change, such as a card in its chat, and
   returns a `DecideAgentProposal` effect from a SimpleAPI route, an
   application, or an action button when the requester approves or

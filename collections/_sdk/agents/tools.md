@@ -316,7 +316,62 @@ except Exception as exc:
 Errors should go back to the model as `is_error=True` `tool_result`
 blocks rather than crashing the run — the model will self-correct on
 the next turn (typically by trying different arguments or a
-different tool).
+different tool). A call that raises keeps none of the effects it
+staged before raising, so a retry never duplicates them. A tool built
+for the run's patient raises in a run that is not about one.
+
+`run_tool_loop` also handles a turn cut off by `max_tokens`: the tool
+calls before the last run, and the last, where generation stopped and
+whose input may be incomplete, is answered with an error asking the
+model to make it again.
+
+## Sub-agents
+
+A tool can fan out to focused sub-agents, each with its own persona,
+a subset of the agent's granted tools, and its own turn limit, and
+return what they found. `run_subagent` runs one; `run_subagents` runs
+several at once and returns `{spec.name: final_text}`:
+
+```python?partial=true
+from canvas_sdk.agents import SubAgentSpec, run_subagents
+
+SPECS = [
+    SubAgentSpec(
+        name="labs",
+        system_prompt="Summarize the patient's lab trends in two sentences.",
+        allowed_tool_names=frozenset({"find_lab_results"}),
+    ),
+    SubAgentSpec(
+        name="medications",
+        system_prompt="List the patient's active medications and recent changes.",
+        allowed_tool_names=frozenset({"find_medications", "find_prescriptions"}),
+    ),
+]
+
+
+@tools.tool(name="chart_overview", description="...", input_schema={"type": "object"})
+def chart_overview(arguments, *, ctx):
+    return run_subagents(
+        SPECS,
+        "Review this patient's chart.",
+        parent_tools=ctx["parent_tools"],
+        parent_ctx=ctx,
+        gateway=ctx["gateway"],
+    )
+```
+
+- A sub-agent's tools are its `allowed_tool_names` intersected with the
+  agent's grant, and keep the grant's approval, so fanning out never
+  widens what the agent may do.
+- Effects a sub-agent's tools stage go into the run's effects, like the
+  agent's own.
+- Every sub-agent's model calls count toward the run's
+  `max_model_calls`, and the run's deadline applies to them.
+- `run_subagents` runs at most `max_parallel` (default 4, at most 8)
+  at once. A sub-agent that fails returns a `"(sub-agent ... failed:
+  ...)"` string; a gateway error or the run's deadline ends the run.
+- A sub-agent that stops before ending its turn returns `""`. Its text
+  is for the parent, so none of it streams to the person waiting.
 
 ## Result size
 
@@ -410,7 +465,9 @@ At run time the platform:
 4. Marks the granted tools named in `tools.approve` (names and
    `@category` groups, resolved the same way) to
    [propose their changes](/sdk/agents-lifecycle/#approve-before-write)
-   for the requester to approve instead of making them.
+   for the requester to approve instead of making them. Approval covers
+   the change, not just the tool: any other granted tool that stages an
+   effect type a listed tool stages proposes too.
 5. After `run()` returns, drops any effect the agent returned whose
    type no granted tool stages. An effect type that only tools in
    `tools.approve` stage is kept only when it's wrapped in a proposal.
@@ -432,7 +489,7 @@ parameter to remember — the registry itself is pre-filtered.
 
 **Why this matters**: the manifest is the single source of truth.
 The EHR administrator reviewing your plugin can read the manifest
-and know what each agent can do. Step 4 holds even for agent code that
+and know what each agent can do. Step 5 holds even for agent code that
 builds an effect directly or calls the imported, unscoped registry:
 an agent granted only `@clinical_reads` and `@clinical_alerts` can
 stage protocol cards and banners, but any task, command, or message it
