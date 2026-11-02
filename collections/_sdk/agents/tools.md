@@ -479,6 +479,92 @@ the standard `find_open_loops` cites its rows as `"OpenLoop"`,
 `find_documents` as `"Document"`, `find_history` as `"History"`, and
 `find_pharmacy_requests` as `"PharmacyRequest"`.
 
+## Reading your plugin's Custom Data
+
+An agent runs with its plugin's [Custom Data](/sdk/custom-data/)
+namespace and the access its manifest declares, as a handler does, so a
+tool can read your plugin's own tables. A `filter_search_tool` over a
+`CustomModel` is the usual shape:
+
+```python?partial=true
+from canvas_sdk.agents import FilterSpec, ToolRegistry
+from my_plugin.models import OutreachAttempt
+
+tools = ToolRegistry()
+
+
+@tools.filter_search_tool(
+    name="find_outreach_attempts",
+    description=(
+        "Search this plugin's record of outreach to the patient: each call, "
+        "text, or letter, when it was made, and whether the patient answered."
+    ),
+    queryset_factory=lambda args, pid: OutreachAttempt.objects.filter(patient__id=pid),
+    filters={
+        "channel": FilterSpec(
+            type="string",
+            description="Only attempts on this channel.",
+            enum=["call", "text", "letter"],
+            apply=lambda qs, v: qs.filter(channel=v),
+        ),
+    },
+    ordering=("-attempted_at",),
+    model=OutreachAttempt,
+    returns_description="Array of objects with `id`, `channel`, `attempted_at`, `answered`.",
+    progress_label="Reading outreach attempts",
+)
+def _serialize_attempt(attempt):
+    return {
+        "id": str(attempt.id),
+        "channel": attempt.channel,
+        "attempted_at": attempt.attempted_at.isoformat(),
+        "answered": attempt.answered,
+    }
+```
+
+The SDK scopes its own tools to the run's patient; a tool over your
+tables is scoped only by the query you write:
+
+- **Filter by the run's patient.** `queryset_factory` receives the run's
+  patient as `pid`; filter on it through the model's `PatientProxy`
+  foreign key, and never take a patient from the model's arguments. A
+  row id the model passes is untrusted too: check it belongs to the
+  patient before using it.
+- **Keep to what the requester can see.** The platform checks that the
+  requester can see the run's patient, but it does not know which rows
+  of a table that spans many patients, such as a work queue, belong to
+  patients outside the requester's patient groups. A tool over such a
+  table must apply that boundary itself, or stay patient-scoped.
+- **Treat stored text as data.** Text in your tables that came from a
+  patient or an outside system reaches the model as data, as documents
+  and messages do.
+
+A `filter_search_tool` with `model=` is citable, so a reply can cite
+your rows as it cites chart records.
+
+### Writing Custom Data
+
+A tool that saves a `CustomModel` writes to the database directly. Every
+control on an agent's writes works on the effects it returns, so none
+of them applies to that write:
+
+- The tool grant bounds the effects an agent can return, not what a tool
+  writes.
+- The requester's permissions are checked against effects, not against
+  your tables.
+- `tools.approve` turns the effects a tool stages into proposals. A tool
+  that stages no effect returns its own result, so a tool listed there
+  that saves a row saves it at once.
+- A run that fails or runs out of time has its effects dropped and its
+  state left unsaved, but a row a tool already saved stays. A run the
+  platform retries after a gateway outage runs its tools again.
+
+Write your tables in `save_state`, which runs only after `run()` returns
+in time, from what the run decided. When a tool must write as the run
+goes, keep the write to your plugin's own bookkeeping and make it
+idempotent. Anything a person should approve, or that changes the chart,
+belongs in an effect.
+
 ## Tool surface design tips
 
 - **Be specific in `description`.** The model picks tools based on
