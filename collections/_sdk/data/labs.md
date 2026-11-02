@@ -407,6 +407,24 @@ lab_report = command.anchor_object
 
 To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
 
+## Delegations
+
+When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a lab report are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import LabReport
+
+lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
+
+# The full delegation history, oldest first.
+history = lab_report.delegations
+
+# The active delegation, or None when no delegation is in effect.
+current = lab_report.active_delegation
+```
+
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
+
 ## The document reference
 
 `LabReport` carries the report's values and review state, not a file. When the report is reviewed, Canvas renders it to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report.
