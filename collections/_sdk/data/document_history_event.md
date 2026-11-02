@@ -108,9 +108,9 @@ When a review is entered in error, its `recorded` entry stays in the timeline, b
 | review_object_id    | Integer (the review command's `dbid`)                                                |
 | signers             | [Staff](/sdk/data-staff/#staff)[] (whose signatures the signed or recorded document carried) |
 | deleted_at          | DateTime (when the comment was hidden)                                               |
-| comment_hidden      | Boolean (`True` when `deleted_at` is set)                                            |
-| document            | [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) (the entry's document, or `None`) |
-| review              | The review command of a `recorded` or `entered_in_error` entry (`LabReview`, `ImagingReview`, `ReferralReview`, or `UncategorizedClinicalDocumentReview`), or `None` |
+| comment_hidden      | Boolean (computed; `True` when `deleted_at` is set)                                  |
+| document            | [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) (computed; the entry's document, or `None`) |
+| review              | `LabReview`, `ImagingReview`, `ReferralReview`, or `UncategorizedClinicalDocumentReview` (computed; the review command of a `recorded` or `entered_in_error` entry, or `None`) |
 
 ## Enumeration types
 

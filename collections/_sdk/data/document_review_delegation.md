@@ -97,6 +97,7 @@ if delegation and delegation.is_route_back:
 | signature_consent  | Boolean (grants nothing; each staff member places only their own signature) |
 | comment            | String (the comment left with the request)                      |
 | is_active          | Boolean (the delegation is still in effect)                     |
+| is_route_back      | Boolean (computed; the delegation returned the signed document to its sender or creator) |
 
 ## The delegated document
 

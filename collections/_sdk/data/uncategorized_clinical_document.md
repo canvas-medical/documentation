@@ -176,6 +176,8 @@ url = document.document_url if document else None
 | priority           | Boolean                                                                     |
 | document           | File (S3 key)                                                               |
 | document_url       | String (computed)                                                           |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the document's delegations, oldest first) |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### UncategorizedClinicalDocumentReview
 

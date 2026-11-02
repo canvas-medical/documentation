@@ -485,6 +485,8 @@ url = document.document_url if document else None
 | remarks              | [LabReportRemark](#labreportremark)[] |
 | diagnostic_reports   | [DiagnosticReport](#diagnosticreport)[] |
 | laborder_set         | [LabOrder](#laborder)[]               |
+| delegations          | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first) |
+| active_delegation    | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### LabReportRemark
 

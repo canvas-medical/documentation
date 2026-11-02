@@ -209,6 +209,8 @@ url = document.document_url if document else None
 | original_date      | Date                                                                  |
 | review             | [ReferralReview](#referralreview)                                     |
 | codings            | [ReferralReportCoding](#referralreportcoding)[]                       |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first) |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### ReferralReview
 

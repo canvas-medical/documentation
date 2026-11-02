@@ -252,6 +252,8 @@ document = DocumentReference.objects.filter(
 | review             | [ImagingReview](#imagingreview)                                       |                                                       |
 | document_url       | String (computed)                                                     | Presigned S3 URL, or `None` if the report has no file |
 | codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |                                                       |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed) | The report's delegations, oldest first |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed) | The delegation in effect, or `None` |
 
 ### ImagingReportCoding
 
