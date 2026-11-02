@@ -3625,7 +3625,7 @@ These events follow a patient portal invite or password reset link through its l
 <table>
   <thead>
     <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
-    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>.</td></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends this event with <code>reason</code> <code>expired</code>, so check the invitation's <code>status</code> before you send a new link.</td></tr>
   </thead>
   <tbody>
     <tr>

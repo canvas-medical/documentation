@@ -70,6 +70,8 @@ Links created before Canvas recorded claims have no `claimed_at`, so a link of t
 
 A link that Canvas couldn't use when someone opened it records the time and reason in `last_rejected_at` and `last_rejection_reason`. Those fields don't change `status`, `first_opened_at`, or `is_redeemable`.
 
+Opening a link that was already used to set a password also records a rejection, with reason `expired`, while `status` stays `claimed`. Before you send a new link because of an `expired` rejection, check that `claimed_at` is `None`.
+
 ## Attributes
 
 ### PortalInvitation
@@ -103,10 +105,10 @@ A link that Canvas couldn't use when someone opened it records the time and reas
 
 ### PortalInvitationRejectionReason
 
-| Value              | Label             | Description                                                 |
-|--------------------|-------------------|-------------------------------------------------------------|
-| expired            | Expired           | The link had expired when it was opened                     |
-| different\_account | Different account | Another account was signed in on the browser that opened it |
+| Value              | Label             | Description                                                                                          |
+|--------------------|-------------------|------------------------------------------------------------------------------------------------------|
+| expired            | Expired           | The link could no longer be used when it was opened, including a link already used to set a password |
+| different\_account | Different account | Another account was signed in on the browser that opened it                                          |
 
 <br/>
 <br/>
