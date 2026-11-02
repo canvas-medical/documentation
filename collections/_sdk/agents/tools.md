@@ -233,7 +233,9 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
   - `effects` — the list to append staged Effects to (used by effect tools).
   - `gateway`, `parent_tools` — the run's gateway and the agent's granted
     tools, for tools that run sub-agents or make a model call of their own,
-    as the standard `read_document` does.
+    as the standard `read_document` does. `edit_staged_command` and
+    `delete_staged_command` read `parent_tools` to check the grant, and
+    refuse without it.
   - Any agent-specific keys the agent passed to `run_tool_loop(ctx=...)`.
 
 Use `ctx` for anything the model shouldn't choose — patient scoping,
@@ -415,6 +417,12 @@ At run time the platform:
 
 An agent entry with no `tools.allowed` gets no tools, and so can
 return no effects.
+
+The standard `edit_staged_command` and `delete_staged_command` tools
+also check the grant, so an agent can't change a draft it couldn't
+have staged. They change a kind of command only when the agent is
+granted an `originate_*` tool that stages it. When that originate tool
+is in `tools.approve`, they must be too, or they refuse.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
