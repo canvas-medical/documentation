@@ -144,4 +144,4 @@ Yes. Wait until you're notified that your organization has been upgraded to the 
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. The CLI still uses those credentials for `canvas install`, for plugins Canvas Platform does not manage, and for instances it does not manage. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated).
+Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. The CLI still uses those credentials for `canvas install`, and for plugins and instances Canvas Platform does not manage once you sign out with `canvas logout`; while you're signed in, the CLI refuses those plugins and instances. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated).

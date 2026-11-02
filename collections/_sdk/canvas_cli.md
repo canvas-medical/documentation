@@ -76,7 +76,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a> walks through the switch." %}
 
-With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install` always authenticates this way. `enable`, `disable`, `config list`, `config set`, `config unset` and `uninstall` use it for a plugin Canvas Platform does not manage, and `list`, `logs` and the `namespace` commands use it for an instance Canvas Platform does not manage. Keep `credentials.ini` while you still work with plugins or instances that Canvas Platform does not manage.
+With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install` always authenticates this way. `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall`, `list`, `logs` and the `namespace` commands use it when you're not signed in to Canvas Platform, and for `localhost`. Signed in, they refuse a plugin or instance Canvas Platform does not manage, so sign out with `canvas logout` to reach it with `credentials.ini`. Keep `credentials.ini` while you still work with plugins or instances that Canvas Platform does not manage.
 
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once. The CLI picks per plugin for plugin commands, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform), and per instance for instance commands, as described in [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform).
 
@@ -103,14 +103,16 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Deprecation notices
 
-`canvas install` prints a deprecation warning on every run. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning on every run. So do `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands each time they connect with `credentials.ini`. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
 
 ### Which plugins go through Canvas Platform
 
 `canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
-- A name without a prefix, or a machine that is not signed in, goes straight to the instance.
-- Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
+- On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin, including a name without a prefix, is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use. Targets that are `localhost` or another host that is not a Canvas instance still go straight to the instance.
+
+To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
 `--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
 
@@ -123,7 +125,10 @@ git signs in to Canvas Platform's git server through `canvas git-credential`, a 
 `canvas list`, `canvas logs` and the `canvas namespace` commands act on a whole instance, and each decides per instance:
 
 - When you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), and the instance is one Canvas Platform manages in your list of instances, the command goes through Canvas Platform.
-- Otherwise, such as for `localhost`, an instance Canvas Platform does not manage, or any instance when you're not signed in, the command connects to the instance with its `credentials.ini` client.
+- Signed in, any other Canvas instance is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+- When you're not signed in, or for `localhost` and other hosts that are not Canvas instances, the command connects to the instance with its `credentials.ini` client.
+
+To work with an instance Canvas Platform does not manage, sign out first. `credentials.ini` keeps working for those instances until December 14, 2026.
 
 When Canvas Platform refuses a command for a managed instance, the CLI prints Canvas Platform's reason and exits. It doesn't retry with `credentials.ini`. To run the command against the instance with `credentials.ini` instead, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
@@ -456,7 +461,7 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 
 ### `canvas uninstall`
 
-Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), using `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 {% include alert.html type="warning" content="Uninstalling a plugin deletes its secrets and the <a href='/sdk/effect-banner-alerts/'>banner alerts</a> it added to patient charts and <a href='/sdk/effect-claims/#add-banner'>claims</a>. Disabling a plugin hides those banner alerts until it's enabled again." %}
 
@@ -481,7 +486,7 @@ $ canvas uninstall [OPTIONS] NAME
 
 ### `canvas enable`
 
-Enable a plugin. For a plugin Canvas Platform manages, an enable deployment switches it on at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, the CLI enables it on the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+Enable a plugin. For a plugin Canvas Platform manages, an enable deployment switches it on at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), the CLI enables it on the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
@@ -507,7 +512,7 @@ $ canvas enable acme__my_plugin --instance acme-staging
 
 ### `canvas disable`
 
-Disable a plugin. For a plugin Canvas Platform manages, a disable deployment switches it off at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, the CLI disables it on the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+Disable a plugin. For a plugin Canvas Platform manages, a disable deployment switches it off at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), the CLI disables it on the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
@@ -714,8 +719,9 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
 
 `canvas logs` chooses its credential per instance:
 
-- **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, so a long history read or a live follow keeps running.
-- **Any other instance**, such as `localhost` or an instance Canvas Platform does not manage, or any instance when you're not signed in: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+- **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, and a live follow reconnects with a new token when the log stream ends the old one, so a long history read or a live follow keeps running.
+- **Any other Canvas instance, while you're signed in**: `canvas logs` refuses it with the way to sign out (`canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN`).
+- **Any instance when you're not signed in, or `localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)) and prints a deprecation notice.
 
 When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform).
 
@@ -749,7 +755,7 @@ $ canvas logs [OPTIONS]
 
 List a plugin's variables and whether each one is set. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
 
-For a plugin Canvas Platform manages, the CLI reads the variables from Canvas Platform for each `--instance`. Without `--instance`, it uses the only instance the plugin is installed on; when the plugin is installed on more than one instance, name one with `--instance`. For any other plugin, the CLI reads the variables from the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+For a plugin Canvas Platform manages, the CLI reads the variables from Canvas Platform for each `--instance`. Without `--instance`, it uses the only instance the plugin is installed on; when the plugin is installed on more than one instance, name one with `--instance`. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), the CLI reads the variables from the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
@@ -785,7 +791,7 @@ Set (or update) one or more plugin variables. Pass one or more `KEY=value` pairs
 
 For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward for the keys that revision declares; see [Waiting for the outcome](#canvas-deploy).
 
-For a plugin Canvas Platform does not manage, the values are written to the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
+For a plugin Canvas Platform does not manage, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), the values are written to the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
@@ -830,7 +836,7 @@ $ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patie
 
 ### `canvas config unset`
 
-Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, each value is set to empty on the instance directly.
+Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), each value is set to empty on the instance directly.
 
 **Usage**:
 
