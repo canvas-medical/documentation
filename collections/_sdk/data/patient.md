@@ -192,6 +192,7 @@ registered = patient.user.is_portal_registered
 | related_contacts                        | [PatientContactPerson](#patientcontactperson)[]                                                                         | Contacts on *other* patients that reference this one                                           |
 | user                                    | [CanvasUser](/sdk/data-canvasuser/)[]                                                                                   |                                                                                                |
 | patient_groups                          | [PatientGroup](/sdk/data-patient-group/)[]                                                                              |                                                                                                |
+| portal_grants                           | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[]                                                                              | Family portal access to this patient's chart                                                   |
 | chart_section_reviews                   | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]                                              |                                                                                                |
 | visual_exam_findings                    | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]                                                 |                                                                                                |
 | vital_sign_readings                     | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]                                                    |                                                                                                |
@@ -485,6 +486,7 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 | comments        | String                                                               |
 | related_patient | [Patient](#patient)                                                  |
 | categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
+| portal_grants   | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
 
 ```python
 from canvas_sdk.v1.data import PatientContactPerson

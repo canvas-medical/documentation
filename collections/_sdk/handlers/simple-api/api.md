@@ -667,6 +667,11 @@ For a patient portal session, `id` is the key of the patient whose chart the por
 - `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
 - `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
 - `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.
+- `patient`: the [Patient](/sdk/data-patient/#patient) whose chart the request acts on.
+- `actor`: the [CanvasUser](/sdk/data-canvasuser/#user) acting on the chart. That's the family member's or representative's login, or on a patient's own chart, the patient's login, so `actor` is `patient.user` there.
+- `grant`: the [PortalAccessGrant](/sdk/data-portal-access-grant/) that gives `actor` the chart, with the contact's name and relationship and the levels staff gave. It's `None` on a patient's own chart.
+
+`patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
 
 For a patient on their own chart, every area is `ACT`, and for a session that isn't a patient's, every area is `NONE`. When `acting_user_id` is set, each area has the level the family member or representative was given, and an area with no level or an unrecognized one is `NONE`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if credentials.portal_access.level("billing"):` checks for any billing access. To serve family members and representatives from your routes, see [Family portal access](#family-portal-access).
 
@@ -885,7 +890,33 @@ A level can be a `PortalAccessLevel` or its value: `"none"`, `"view"`, or `"act"
 
 To check access in your route instead, declare an empty mapping, `PORTAL_ACCESS = {}`. It serves every family member and representative your `authenticate` method accepts, and your route reads `self.request.portal_access`, the same [`PortalAccess`](#session) object as `credentials.portal_access`.
 
-`logged_in_user["id"]` names the patient whose chart it is. When `portal_access.acting_user_id` is set, attribute what the request does to that user, not to the patient.
+`logged_in_user["id"]` names the patient whose chart it is, and `portal_access.patient` is that patient. When `portal_access.acting_user_id` is set, attribute what the request does to `portal_access.actor`, not to the patient.
+
+The levels that `level()`, `allows()`, and `PORTAL_ACCESS` use are the ones Canvas sends with the request. Read `portal_access.grant` to show who was given access and what the grant allows:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+
+
+class ChartBanner(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/chart-banner"
+    PORTAL_ACCESS = {}
+
+    def get(self) -> list[Response | Effect]:
+        access = self.request.portal_access
+        grant = access.grant
+        return [
+            JSONResponse(
+                {
+                    "chart": access.patient.first_name,
+                    "signed_in_as": access.actor.email,
+                    "relationship": grant.contact_relationship if grant else None,
+                }
+            )
+        ]
+```
 
 ## Acting as a Canvas user
 
