@@ -213,7 +213,9 @@ A run a patient started holds no staff permissions, so tools that need
 one are hidden, and its effects may change only the patient's own
 records. A run no user started, such as one from a webhook or an
 API-key route, runs as Canvas Bot and acts with your plugin's authority,
-as a handler's effects do; a superuser's run is not limited by
+as a handler's effects do, except that it cannot commit a command or add
+a lab report, which need a user's approval, or return an effect the
+chart has no counterpart for. A superuser's run is not limited by
 permissions.
 
 Declare what your own tool needs the same way, so it is hidden from
@@ -280,17 +282,21 @@ registers, since no standard tool commits a command:
 }
 ```
 
-The tool code does not change. When the model calls a listed tool, the
-effects it stages become proposals, and the model receives
+The tool code does not change. When the model calls a listed tool,
+everything that call stages becomes one proposal, in order, and the
+model receives
 `{"status": "awaiting_approval", "proposal_ids": [...], "tool_result": ...}`,
 with the tool's own result under `tool_result`, so it can tell the user
 what is waiting. A tool
 that stages nothing, such as one that refused its input, returns its own
 result. Sub-agents scoped from the agent's tools propose the same way.
 
-When the run ends, the platform checks each proposed change against the
-requester's permissions, like any effect, and holds it as an
-`AgentRunProposal` for one hour:
+A tool call that stages several changes, such as `originate_review_note`
+creating a note and a plan on it, is one decision: the requester
+approves or denies the whole call. When the run ends, the platform
+checks every proposed change against the requester's permissions, like
+any effect, and holds each proposal as an `AgentRunProposal` for one
+hour:
 
 - **Who decides:** only the requester, the user the run acted for. A run
   that no user started, such as a Canvas Bot run, cannot propose.
@@ -299,17 +305,23 @@ requester's permissions, like any effect, and holds it as an
   application, or an action button when the requester approves or
   denies it. A decision from an event handler or another plugin is
   refused.
-- **What applies:** an approval checks the requester's permissions and
-  patient groups again and applies exactly the stored change, recorded
-  in the audit trail as the requester's action correlated with the run.
-  A second decision on the same proposal applies nothing.
-- **Drafts apply at once:** a proposal of a draft, such as an originated
-  command or a drafted message, applies without waiting, since a person
-  still commits, signs, or sends it. So does a change to a draft: a
-  command's `edit()` applies only to a staged command and `delete()`
-  never to a committed one, so neither reaches past a draft.
+- **What applies:** an approval applies exactly the stored changes, in
+  order and all or none, recorded in the audit trail as the requester's
+  action correlated with the run. Each change is checked against the
+  requester's permissions and patient groups again just before it
+  applies, so a plan is checked once the note it goes on exists, and a
+  change that is refused or fails takes back the ones before it. A
+  second decision on the same proposal applies nothing.
+- **Drafts apply at once:** a proposal of drafts only, such as an
+  originated command or a drafted message, applies without waiting,
+  since a person still commits, signs, or sends it. So does a change to
+  a draft: a command's `edit()` applies only to a staged command and
+  `delete()` never to a committed one, so neither reaches past a draft.
+  A proposal that also holds a change that waits, such as a new note,
+  waits whole, so a plan never lands ahead of its note.
 - **Commits need approval:** a committed command is the user attesting
-  to it, so an agent's commit applies only through an approved proposal.
+  to it, so an agent's commit applies only through an approved proposal,
+  and a run no user started cannot commit.
   That includes `originate(commit=True)`, which drafts and commits a
   command in one effect, and a custom command, which is committed as
   soon as it is originated.

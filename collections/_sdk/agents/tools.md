@@ -552,7 +552,7 @@ of them applies to that write:
   writes.
 - The requester's permissions are checked against effects, not against
   your tables.
-- `tools.approve` turns the effects a tool stages into proposals. A tool
+- `tools.approve` turns the effects each tool call stages into one proposal. A tool
   that stages no effect returns its own result, so a tool listed there
   that saves a row saves it at once.
 - A run that fails or runs out of time has its effects dropped and its

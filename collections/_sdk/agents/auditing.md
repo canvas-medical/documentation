@@ -105,8 +105,9 @@ Inside a run, the agent has its record's id as `self.run_id`.
 
 A change an agent [proposed for approval](/sdk/agents-lifecycle/#approve-before-write)
 is an `AgentRunProposal`, reachable from its run as `record.proposals`.
-It records the tool and arguments that proposed it, the change's effect
-type, the staff member who decides it, its `status`, when it was decided
+It records the tool and arguments that proposed it, the effect types of
+the changes that apply together on approval (`effect_types`, in order),
+the staff member who decides it, its `status`, when it was decided
 (`decided_at`), and the requester's `reason` for a denial or the cause of
 a failure.
 
