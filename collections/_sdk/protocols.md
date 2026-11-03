@@ -98,9 +98,10 @@ Subclasses should populate the `Meta` inner class. Common meta fields include:
     | `LAB_REPORT_CREATED`, `LAB_REPORT_UPDATED` | [LabReport](/sdk/data-labs/) |
     | `MEDICATION_LIST_ITEM_CREATED`, `MEDICATION_LIST_ITEM_UPDATED` | [Medication](/sdk/data-medication/) |
     | `PATIENT_CREATED`, `PATIENT_UPDATED` | [Patient](/sdk/data-patient/) |
-    | `PROTOCOL_OVERRIDE_CREATED`, `PROTOCOL_OVERRIDE_DELETED`, `PROTOCOL_OVERRIDE_UPDATED` | [ProtocolOverride](/sdk/data-protocol-override/) |
+    | `PROTOCOL_OVERRIDE_CREATED`, `PROTOCOL_OVERRIDE_UPDATED` | [ProtocolOverride](/sdk/data-protocol-override/) |
     | `REFERRAL_REPORT_CREATED`, `REFERRAL_REPORT_UPDATED` | [ReferralReport](/sdk/data-referral/) |
 
+  - Canvas doesn't send `PROTOCOL_OVERRIDE_DELETED`. When an override is removed, the protocol receives `PROTOCOL_OVERRIDE_UPDATED`.
   - The method raises a `ValueError` when the event type isn't in this table, or when the target record has no patient. An interview, for example, can exist without a patient.
 
 ### Example — react to a lab report
