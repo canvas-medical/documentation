@@ -40168,7 +40168,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40218,10 +40218,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. When the committer or originator is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "Organization").
 display 
 string 
 Text alternative for the resource.
@@ -40366,7 +40366,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40416,10 +40416,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. When the committer or originator is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "Organization").
 display 
 string 
 Text alternative for the resource.
