@@ -42,6 +42,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
   "sdk_version": "0.1.4",
   "plugin_version": "0.0.1",
   "name": "acme__my_plugin",
+  "publisher": "acme",
   "description": "A description of what this plugin does",
   "components": {
     "handlers": [],
@@ -64,7 +65,8 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 |-------|------|----------|-------------|
 | `sdk_version` | string | Yes | The Canvas SDK version the plugin was built against. |
 | `plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See [Versioning your plugin](#versioning-your-plugin). |
-| `name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes. |
+| `name` | string | Yes | The plugin's name, which is also its package folder name: lowercase letters, digits and underscores, starting with a letter, at most 63 characters. We recommend your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`); `canvas login` lists your organizations' prefixes. |
+| `publisher` | string | No | Slug of the Canvas Platform organization that publishes the plugin, such as `acme`. `canvas login` lists each organization's slug in parentheses. `canvas init` sets it, and `canvas deploy` writes it when you pick a publisher at a terminal. See [Choosing the publisher](/sdk/canvas_cli/#choosing-the-publisher). |
 | `description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card. |
 | `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
 | `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See [Tags](#tags). |

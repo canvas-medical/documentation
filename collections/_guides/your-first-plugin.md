@@ -42,13 +42,13 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
 ```
 
 `canvas login` opens your browser and lists each organization you belong to with
-its plugin prefix. Every plugin you publish is named with that prefix, such as
+its slug (`acme`) and plugin prefix. `canvas init` names each new plugin with that prefix, such as
 `acme__paperwork_eviscerator`. Publishing a plugin needs the Plugin developer role
 in the organization, and deploying it needs Deploy manager.
 
 Run `canvas whoami` at any time to check which platform you are signed in to and as whom.
-If you run `canvas init` while signed out, it says so and creates a plugin that
-`canvas deploy` refuses, so sign in first.
+If you run `canvas init` while signed out, it says so and creates the plugin without
+registering it with Canvas Platform or giving it a git repository, so sign in first.
 
 {% include alert.html type="info" content="Configuring the CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code> is deprecated, and support ends on December 14, 2026. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
@@ -66,7 +66,7 @@ Registered acme__paperwork_eviscerator with Canvas Platform.
 ```
 
 This output shows the location of our freshly generated plugin project. `canvas init`
-names the package with your organization's prefix, registers it with Canvas Platform,
+names the package with your organization's prefix, sets the manifest's `publisher` to your organization, registers it with Canvas Platform,
 and makes the project folder a git repository that `canvas deploy` pushes to. If you
 belong to several organizations, it asks which one publishes the plugin.
 
@@ -103,6 +103,7 @@ reference for every field it can contain.
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
     "name": "acme__paperwork_eviscerator",
+    "publisher": "acme",
     "description": "Edit the description in CANVAS_MANIFEST.json",
     "components": {
         "handlers": [
