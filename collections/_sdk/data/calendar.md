@@ -9,7 +9,7 @@ hidden: false
 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
 
-When a calendar's `description` is its provider's staff id, Canvas links the calendar to the provider by that id. To find a provider's calendar, filter by `description` rather than by `title`. The title contains the provider's name, so a title lookup stops finding the calendar after the provider is renamed.
+When a calendar's `description` is its provider's staff id, Canvas links the calendar to the provider by that id. To [find a provider's calendar](#find-a-providers-calendar), filter by `description` rather than by `title`. The title contains the provider's name, so a title lookup stops finding the calendar after the provider is renamed.
 
 Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
 
