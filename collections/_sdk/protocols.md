@@ -91,7 +91,9 @@ Subclasses should populate the `Meta` inner class. Common meta fields include:
 
     | Events | Target record |
     | --- | --- |
+    | `BILLING_LINE_ITEM_CREATED`, `BILLING_LINE_ITEM_UPDATED` | [BillingLineItem](/sdk/data-billing-line-item/) |
     | `CONDITION_ASSESSED`, `CONDITION_CREATED`, `CONDITION_RESOLVED`, `CONDITION_UPDATED` | [Condition](/sdk/data-condition/) |
+    | `IMAGING_REPORT_CREATED`, `IMAGING_REPORT_UPDATED` | [ImagingReport](/sdk/data-imaging/#imagingreport) |
     | `INSTRUCTION_CREATED`, `INSTRUCTION_UPDATED` | [Instruction](/sdk/data-instruction/) |
     | `INTERVIEW_CREATED`, `INTERVIEW_UPDATED` | [Interview](/sdk/data-questionnaire/) |
     | `LAB_ORDER_CREATED`, `LAB_ORDER_UPDATED` | [LabOrder](/sdk/data-labs/) |
