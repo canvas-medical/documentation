@@ -132,6 +132,8 @@ Represents a complete healthcare claim. Claim belongs to a Note and has a one-to
 | snoozed_until              | Date                                                  |                                           |
 | patient_balance            | Decimal                                               |                                           |
 | aggregate_coverage_balance | Decimal                                               |                                           |
+| assignee                   | [Staff](/sdk/data-staff/#staff)                       | Staff member the claim is assigned to     |
+| team                       | [Team](/sdk/data-team/#team)                          | Team the claim is assigned to             |
 | created                    | DateTime                                              |                                           |
 | modified                   | DateTime                                              |                                           |
 | diagnosis_codes            | [ClaimDiagnosisCode](#claimdiagnosiscode)[]           |                                           |
@@ -254,15 +256,15 @@ Links a claim to a specific insurance coverage.
 | active                             | Boolean                                                                  |
 | payer_name                         | String                                                                   |
 | payer_id                           | String                                                                   |
-| payer_typecode                     | String                                                                   |
+| payer_typecode                     | [ClaimTypeCode](#claimtypecode)                                          |
 | payer_order                        | [ClaimPayerOrder](#claimpayerorder)                                      |
 | payer_addr1                        | String                                                                   |
 | payer_addr2                        | String                                                                   |
 | payer_city                         | String                                                                   |
 | payer_state                        | String                                                                   |
 | payer_zip                          | String                                                                   |
-| payer_plan_type                    | [ClaimTypeCode](#claimtypecode)                                          |
-| coverage_type                      | [CoverageType](/sdk/data-coverage/#coveragetype)                             |
+| payer_plan_type                    | [CoverageType](/sdk/data-coverage/#coveragetype)                         |
+| coverage_type                      | [TransactorCoverageType](/sdk/data-coverage/#transactorcoveragetype)     |
 | subscriber_employer                | String                                                                   |
 | subscriber_group                   | String                                                                   |
 | subscriber_number                  | String                                                                   |
