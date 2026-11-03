@@ -66,11 +66,11 @@ Each invitation has one `status`, chosen in this order:
 3. `opened` when the patient opened the link at least once.
 4. `pending` otherwise.
 
-Links created before Canvas recorded claims have no `claimed_at`, so a link of that age that was used to set a password shows `expired`.
-
 A link that Canvas couldn't use when someone opened it records the time and reason in `last_rejected_at` and `last_rejection_reason`. Those fields don't change `status`, `first_opened_at`, or `is_redeemable`.
 
-Opening a link that was already used to set a password also records a rejection, with reason `expired`, while `status` stays `claimed`. Before you send a new link because of an `expired` rejection, check that `claimed_at` is `None`.
+Opening a link that was already used to set a password records the reason `already_claimed`, and `status` stays `claimed`. A link that lapsed without being claimed records `expired`.
+
+Links created before Canvas recorded claims have no `claimed_at`. A link of that age that was used to set a password shows `status` `expired`, and reopening it records `expired`, not `already_claimed`. Before you send a new link in response to `expired`, check `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser/) to confirm the patient hasn't already registered.
 
 ## Attributes
 
@@ -81,7 +81,7 @@ Opening a link that was already used to set a password also records a rejection,
 | id                         | UUID                                                                    | The `target` ID on [portal invitation events](/sdk/events/#portal-invitations)       |
 | dbid                       | Integer                                                                 |                                                                                      |
 | created                    | DateTime                                                                | When the link was created                                                            |
-| modified                   | DateTime                                                                |                                                                                      |
+| modified                   | DateTime                                                                | When the link was last opened, claimed, or refused. Passing `expires_at` doesn't change it |
 | user                       | [CanvasUser](/sdk/data-canvasuser/)                                     | The user the link signs in                                                           |
 | expires\_at                | DateTime                                                                | When the link stops working                                                          |
 | first\_opened\_at          | DateTime                                                                | When the link was first opened successfully, or `None` if it never was               |
@@ -107,8 +107,9 @@ Opening a link that was already used to set a password also records a rejection,
 
 | Value              | Label             | Description                                                                                          |
 |--------------------|-------------------|------------------------------------------------------------------------------------------------------|
-| expired            | Expired           | The link could no longer be used when it was opened, including a link already used to set a password |
+| expired            | Expired           | The link had passed `expires_at` or could no longer be used when it was opened                       |
 | different\_account | Different account | Another account was signed in on the browser that opened it                                          |
+| already\_claimed   | Already claimed   | The link was already used to set a password, so the patient is registered                            |
 
 <br/>
 <br/>

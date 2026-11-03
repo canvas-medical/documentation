@@ -3625,7 +3625,7 @@ These events follow a patient portal invite or password reset link through its l
 <table>
   <thead>
     <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
-    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends this event with <code>reason</code> <code>expired</code>, so check the invitation's <code>status</code> before you send a new link.</td></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends <code>already_claimed</code>, and a link that lapsed without being claimed sends <code>expired</code>. Either way, the patient sees the same expired-link screen.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3637,7 +3637,7 @@ These events follow a patient portal invite or password reset link through its l
 "type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
       <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
 "patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
-"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code> or <code>different_account</code></pre></td>
+"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code>, <code>different_account</code>, or <code>already_claimed</code></pre></td>
     </tr>
   </tbody>
 </table>
