@@ -9,6 +9,8 @@ hidden: false
 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
 
+When a calendar's `description` is its provider's staff id, Canvas links the calendar to the provider by that id. To find a provider's calendar, filter by `description` rather than by `title`. The title contains the provider's name, so a title lookup stops finding the calendar after the provider is renamed.
+
 Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
 
 ## Basic usage
@@ -20,6 +22,20 @@ from canvas_sdk.v1.data.calendar import Calendar
 
 calendar = Calendar.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
 ```
+
+### Find a provider's calendar
+
+To get a provider's calendars, filter by `description` with the provider's staff id:
+
+```python
+from canvas_sdk.v1.data.calendar import Calendar
+
+provider_id = "4150cd20de8a470aa570a852859ac87e"  # The provider's staff id
+
+calendars = Calendar.objects.filter(description=provider_id)
+```
+
+This finds calendars whose `description` was set to the staff id when they were created, as the [Calendar effect](/sdk/calendar-create-effect/) recommends. A calendar created with any other description doesn't match.
 
 ## Events
 
@@ -54,13 +70,13 @@ Specify an attribute with `filter` to filter by that attribute:
 ```python
 from canvas_sdk.v1.data.calendar import Calendar
 
-# Filter calendars by title
-calendars = Calendar.objects.filter(title__icontains="Clinic")
+# Filter calendars by timezone
+calendars = Calendar.objects.filter(timezone="America/New_York")
 ```
 
 ### By calendar name
 
-To filter calendars by a specific provider name, calendar type, and location, use the `for_calendar_name` method:
+To filter calendars by their exact title, use the `for_calendar_name` method. It builds the title from the provider name, calendar type, and location as `<provider_name>: <calendar_type>: <location>`, or `<provider_name>: <calendar_type>` with no location, and returns calendars with exactly that title:
 
 ```python
 from canvas_sdk.v1.data.calendar import Calendar
@@ -71,6 +87,8 @@ calendars = Calendar.objects.for_calendar_name(
     location="Main Office"
 )
 ```
+
+{% include alert.html type="warning" content="A calendar's title keeps the provider's name from when the calendar was created. After the provider is renamed, <code>for_calendar_name</code> with the new name doesn't find the calendar. To find a provider's calendar, use <a href='#find-a-providers-calendar'>the provider's staff id</a> instead." %}
 
 ## Attributes
 
@@ -84,7 +102,7 @@ calendars = Calendar.objects.for_calendar_name(
 | modified      | DateTime | When the record was last modified.               |
 | title         | String   | The title of the calendar                        |
 | timezone      | TimeZone | The timezone for the calendar (default: UTC)     |
-| description   | String   | Optional description of the calendar's purpose   |
+| description   | String   | For a provider's calendar, the provider's staff id, which links the calendar to the provider. See [Find a provider's calendar](#find-a-providers-calendar). |
 | events        | [Event](#event)[] | Events associated with this calendar    |
 
 ### Event
