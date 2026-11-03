@@ -1884,6 +1884,15 @@ Writes a new prescription for a medication the patient is not already on, and ca
 
 These validations apply to [Refill](#refill) and [AdjustPrescription](#adjustprescription) as well, and in the Canvas UI as well as through the SDK — in the UI a restricted prescription offers no send action at all.
 
+**Resending a prescription that failed to send:** Call `send()` again on a Prescribe, Refill, or AdjustPrescription command whose [prescription](/sdk/data-prescription/) has the `error` [status](/sdk/data-prescription/#prescriptionstatus) and failed for a reason a second attempt can fix. A plugin can use this to resend prescriptions that failed during a Surescripts or network outage. A resend is accepted after these failures, where Surescripts never accepted the prescription and nothing on it needs to change:
+
+- Surescripts returned error 600 or 602 when Canvas sent the prescription.
+- The e-prescribing gateway returned HTTP 503.
+- Canvas couldn't connect to the e-prescribing gateway.
+- Surescripts couldn't match Canvas's certificate to an account.
+
+Any other error makes the resend fail with a validation error, and the prescription keeps its `error` status. Some of those errors need a change to the prescription before it can go out. Others, such as a timeout or an error Surescripts reported after accepting the prescription, mean the pharmacy may already have it, and a resend could send the patient a duplicate. The electronic prescribing validations above still apply to a resend. When a resend succeeds, Canvas clears the prescription's `error_message`.
+
 **Overriding the prescriber address:** By default, the prescriber address transmitted on the prescription is derived from the prescriber's primary practice location. For workflows where a provider works across multiple offices — for example white bagging, where the medication ships to the office where the patient is being seen — pass a `practice_location_override` to [`send()`](#send) to use a specific practice location's address instead:
 
 ```python
