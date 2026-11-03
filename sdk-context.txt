@@ -57908,6 +57908,7 @@ Attribute | Type | Description | Required
     ```
 ###  Send Invite 
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
+On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
 ####  Methods 
 #####  apply() → Effect 
 Sends the portal invitation.
