@@ -78,7 +78,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
-From December 14, 2026, Canvas instances refuse the commands among these that change a plugin directly: `canvas install`, `enable`, `disable`, and `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each one fails with an error that points to `canvas deploy`. `list`, `config list`, `logs` and the `namespace` commands keep working with `credentials.ini`.
+From midnight UTC on December 14, 2026, Canvas instances refuse the commands among these that change a plugin directly: `canvas install`, `enable`, `disable`, and `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each one fails with an error that points to `canvas deploy`. `list`, `config list`, `logs` and the `namespace` commands keep working with `credentials.ini`.
 
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
 
