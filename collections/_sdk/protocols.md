@@ -102,7 +102,8 @@ Subclasses should populate the `Meta` inner class. Common meta fields include:
     | `REFERRAL_REPORT_CREATED`, `REFERRAL_REPORT_UPDATED` | [ReferralReport](/sdk/data-referral/) |
 
   - Canvas doesn't send `PROTOCOL_OVERRIDE_DELETED`. When an override is removed, the protocol receives `PROTOCOL_OVERRIDE_UPDATED`.
-  - The method raises a `ValueError` when the event type isn't in this table, or when the target record has no patient. An interview, for example, can exist without a patient.
+  - The method still returns the patient when the target record has been deleted. Removing a command from a note deletes the command's record and sends an `*_UPDATED` event, such as `INSTRUCTION_UPDATED` or `INTERVIEW_UPDATED`, so a protocol can recompute for that patient.
+  - The method raises a `ValueError` when the event type isn't in this table, when no record has the target's id, or when the target record has no patient. An interview, for example, can exist without a patient.
 
 ### Example — react to a lab report
 
