@@ -404,6 +404,9 @@ sections:
           - name: _id
             type: string
             description: The Canvas resource identifier of the Claim
+          - name: created
+            type: date
+            description: Filter by `created`, which is the date of service of the note the claim is associated with. Use this parameter to retrieve only claims within a date range, such as claims added since your last sync. See [Date Filtering](/api/date-filtering) for more information.
           - name: patient
             description: The patient reference associated to the Claim in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
             type: string

@@ -90,6 +90,7 @@ full_name_and_specialty = service_provider.full_name_and_specialty
 | is_customer_managed  | Boolean | `True` for providers created through the SDK — see below                     |
 | science_contact_id   | Integer | The shared directory contact this provider came from, or `None` if it came from none. Not a reliable provenance signal on its own — providers that predate this tracking have no value — so use `is_customer_managed` to identify a customer's own providers. |
 | imaging_orders       | QuerySet[[ImagingOrder](/sdk/data-imaging/#imagingorder)] | Imaging orders sent to this provider |
+| dme_orders           | QuerySet[[DmeOrder](/sdk/data-dme/#dmeorder)] | DME orders sent to this provider |
 | referrals            | QuerySet[[Referral](/sdk/data-referral/#referral)] | Referrals sent to this provider |
 | integration_tasks    | QuerySet[[IntegrationTask](/sdk/data-integration-task/#integrationtask)] | Integration tasks associated with this provider |
 

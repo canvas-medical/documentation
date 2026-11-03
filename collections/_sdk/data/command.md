@@ -183,6 +183,7 @@ anchor = command.anchor_object
 | `labReview` | [LabReview](/sdk/data-labs/#labreview) |
 | `medicalHistory` | [Condition](/sdk/data-condition/#condition) |
 | `medicationStatement` | [MedicationStatement](/sdk/data-medication-statement/#medicationstatement) |
+| `orderDme` | [DmeOrder](/sdk/data-dme/#dmeorder) |
 | `perform` | [Procedure](/sdk/data-procedure/#procedure) |
 | `plan` | [Plan](/sdk/data-plan/#plan) |
 | `pocLabTest` | [LabReport](/sdk/data-labs/#labreport) |

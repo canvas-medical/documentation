@@ -800,6 +800,8 @@ Search SNOMED family relationships (mother, father, sibling, …).
 |-------------------|--------|--------------------------------------------------------------|
 | `term__icontains` | string | Case-insensitive substring match on the relationship term.   |
 
+Results are ordered by term length, shortest first, so an exact match comes before longer terms that contain it. For example, `sister` returns Sister before Half-sister.
+
 ```python
 from urllib.parse import urlencode
 from canvas_sdk.utils.http import ontologies_http

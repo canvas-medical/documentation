@@ -6,12 +6,12 @@ Developer documentation site for Canvas Medical's SDK, FHIR API, implementation 
 
 ## Tech Stack
 
-- **Site generator:** Jekyll 4.4 (Ruby 3.1)
+- **Site generator:** Jekyll 4.4 (Ruby 4.0, version in `.ruby-version`)
 - **Assets:** Webpack 5, SCSS, Babel
 - **Python tooling:** uv, Python 3.11+ (code block validation, context generation)
-- **Package managers:** Yarn 3.x (frontend), Bundler 2.x (Ruby), uv (Python)
+- **Package managers:** Yarn 3.x (frontend), Bundler 4.x (Ruby), uv (Python)
 - **Search:** Algolia
-- **Hosting:** AWS Amplify
+- **Hosting:** AWS Amplify, building in a custom image (`build-image/Dockerfile`)
 
 ## Quick Start
 
@@ -103,6 +103,19 @@ Write flat `•` bullets only, one per line: no tag headers (`sdk`, `ui`, `bugfi
 
 Frontmatter uses a structured `sections` → `blocks` → `apidoc` format with `attributes`, `search_parameters`, `endpoints`, and example references. These are complex — read an existing file before editing.
 
+### Access and validation changes
+
+Changes to access controls, permissions, scopes, or input validation stay out of the docs and release notes. Those specific release notes are drafted by humans to ensure the change is communicated effectively.
+
+- When such a change also adds a capability, such as a new scope, endpoint, field, or event, document the capability in neutral terms: what it does and how to use it.
+- When a request needs something specific, describe what to send.
+- If you're unsure whether a change falls under this section, leave it out.
+
+### SimpleAPI examples
+
+- Authenticate example SimpleAPI handlers with a mixin (`APIKeyAuthMixin`, `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, `BasicAuthMixin`), never a hand-written `authenticate` that checks `credentials.logged_in_user["type"]`.
+  - An example that needs an extra rule subclasses the mixin and calls `super().authenticate(credentials)` before its own check. The `SessionCredentials` reference section on the SimpleAPI page is the one place a raw `authenticate` belongs.
+
 ### Navigation
 
 Sidebar menus are defined in `_data/menus.yml`. Add entries there when creating new pages.
@@ -140,10 +153,13 @@ Python code blocks in markdown are validated by `test-code-blocks.py`:
 - Unfenced or unlabeled code blocks are flagged as errors
 - Mark blocks as `python?partial=true` if they intentionally omit imports
 
-Run locally:
+Run locally the way CI does, against the newest `canvas` SDK (examples use symbols that only exist there), then discard the `uv.lock` change:
 ```sh
+XDG_CONFIG_HOME="$(mktemp -d)" uv lock --upgrade-package canvas
 uv run ./test-code-blocks.py
+git checkout -- uv.lock
 ```
+An empty `XDG_CONFIG_HOME` keeps a personal `uv.toml` `exclude-newer` window from holding `canvas` back, which shows up as dozens of import failures.
 
 ## CI/CD
 
@@ -151,6 +167,8 @@ uv run ./test-code-blocks.py
 - **generate-context.yml** — builds AI context files (`sdk-context.txt`, `fhir-context.txt`) on push to main
 - **update-algolia.yml** — updates search index
 - **merge-release-branch.yml** — auto-merges release branches
+- **build-image.yml** — on a `.ruby-version` or `build-image/` change, pushes the Amplify build image (Ruby from `.ruby-version`, Node, uv) to ECR Public `docs-build:latest`
+  - Amplify builds use that image, and `amplify.yml` fails a build whose image Ruby doesn't match `.ruby-version`, so a Ruby bump's first Amplify build fails until the image push finishes; rerun it.
 
 ## AI / LLM access
 
@@ -168,6 +186,7 @@ The older `sdk-context.txt` / `fhir-context.txt` (used by the Canvas Plugin Assi
 ```sh
 yarn build          # Production build → _site/ (also emits llms.txt, llms-full.txt, .md mirrors)
 yarn build:llms     # Regenerate llms.txt/llms-full.txt/.md mirrors from an existing _site/
+yarn build:minify   # Minify _site/ HTML in place (minify-html, run last by yarn build)
 yarn build:pwa      # With service worker + manifest
 yarn serve:dist     # Serve built output locally
 yarn clean:project  # Remove _site and generated assets

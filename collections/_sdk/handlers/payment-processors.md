@@ -50,6 +50,40 @@ class PayTheoryPaymentProcessor(CardPaymentProcessor):
     ...  # Your implementation here
 ```
 
+Register the class in the `handlers` section of your plugin's `CANVAS_MANIFEST.json`, like any other handler. The base class already declares the events it responds to, so you don't list them yourself.
+
+```json
+{
+  "components": {
+    "handlers": [
+      {
+        "class": "my_plugin.handlers.payment_processor:PayTheoryPaymentProcessor",
+        "description": "Charges cards and manages saved payment methods through Pay Theory."
+      }
+    ]
+  }
+}
+```
+
+### How Canvas calls your processor
+
+`PaymentProcessor` responds to the six [payment processor events](/sdk/events/#payment-processor-events) and calls a method on your subclass for each one:
+
+| Event | Method Canvas calls | Returns |
+|-------|---------------------|---------|
+| `REVENUE__PAYMENT_PROCESSOR__LIST` | `metadata()` (implemented for you) | [`PaymentProcessorMetadata`](/sdk/payment-processor-effect/#paymentprocessormetadata) |
+| `REVENUE__PAYMENT_PROCESSOR__SELECTED` | [`payment_form`](#payment-form), [`add_card_form`](#add-card-form), or both | [`PaymentProcessorForm`](/sdk/payment-processor-effect/#paymentprocessorform) |
+| `REVENUE__PAYMENT_PROCESSOR__CHARGE` | [`charge`](#charging-a-card) | [`CardTransaction`](/sdk/payment-processor-effect/#cardtransaction) |
+| `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__LIST` | [`payment_methods`](#list) | A list of [`PaymentMethod`](/sdk/payment-processor-effect/#paymentmethod) |
+| `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__ADD` | [`add_payment_method`](#add) | [`AddPaymentMethodResponse`](/sdk/payment-processor-effect/#addpaymentmethodresponse) |
+| `REVENUE__PAYMENT_PROCESSOR__PAYMENT_METHODS__REMOVE` | [`remove_payment_method`](#remove) | [`RemovePaymentMethodResponse`](/sdk/payment-processor-effect/#removepaymentmethodresponse) |
+
+Every handler has an `identifier`, available as `self.identifier`, that Canvas derives from the handler's module path and class name. Every event after `REVENUE__PAYMENT_PROCESSOR__LIST` carries the `identifier` of the processor it targets, and your methods run only when it matches. Several payment processor plugins can be installed side by side without handling each other's events.
+
+{% include alert.html type="warning" content="Keep your handler's module path and class name stable once the processor is in use. Canvas routes every payment event by <code>identifier</code>, and renaming or moving the class changes it." %}
+
+The handler loads the [`Patient`](/sdk/data-patient/) from the event context and passes it to your methods. Some workflows have no patient context, so `payment_form`, `add_card_form`, `charge`, and `payment_methods` receive `patient=None` there. `add_payment_method` and `remove_payment_method` always receive a patient: when an event arrives without one, Canvas doesn't call them.
+
 ---
 
 ## Defining a `CardPaymentProcessor`
@@ -71,6 +105,8 @@ These forms render wherever Canvas collects a card payment or manages saved paym
 
 * the **provider UI** — the Revenue module and the patient profile payment/insurance area
 * the **Patient Portal** — when a patient makes a payment or manages their saved cards
+
+When a user selects your processor, the `REVENUE__PAYMENT_PROCESSOR__SELECTED` event carries an `intent` that says which form Canvas needs. An intent of `pay` calls `payment_form`, and `add_card` calls `add_card_form`. When the event has no intent, Canvas calls both and receives both forms.
 
 #### Payment Form
 
@@ -118,11 +154,7 @@ Handles the actual payment. This method is triggered after tokenization and is r
 ```python
 from decimal import Decimal
 from typing import Any
-from canvas_sdk.effects.payment_processor import (
-  CardTransaction,
-  PaymentProcessorForm
-)
-from canvas_sdk.templates import render_to_string
+from canvas_sdk.effects.payment_processor import CardTransaction
 from canvas_sdk.v1.data import Patient
 
 
@@ -137,7 +169,8 @@ def charge(
         "token": token,
         "amount": int(amount * 100),
         "currency": "usd",
-        "metadata": {"patient_id": patient.id},
+        # patient is None when the charge has no patient context
+        "metadata": {"patient_id": patient.id if patient else None},
     }
     result = self.api.charge(payload)
 
@@ -209,6 +242,9 @@ from canvas_sdk.v1.data import Patient
 
 
 def payment_methods(self, patient: Patient | None = None) -> list[PaymentMethod]:
+   if patient is None:
+       return []
+
    return [
             PaymentMethod(
                 payment_method_id="pm_1",
@@ -296,7 +332,7 @@ This should be called once the form has fully loaded and is ready for user inter
 
 ```js
 window.parent.setFormIsReady();
-````
+```
 
 ### 2. Submit token after success
 
@@ -318,7 +354,7 @@ const result = await paymentProvider.tokenize(cardDetails);
 window.parent.setToken(result.token, result);
 ```
 
-The additional context will be available in the `charge` and `add_payment_method`  method's `**kwargs`. See the [Charge](#3-charge) section for details on how different value types are handled.
+The additional context is available in the `**kwargs` of `charge` and `add_payment_method`. See [Additional Context](#additional-context) for how Canvas passes each type of value.
 
 ### 3. Report validation status
 

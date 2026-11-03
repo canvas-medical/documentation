@@ -101,6 +101,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `ALLOW_PATIENT_DOCUMENT_UPLOADS` | Patient document uploads on "My Health" | `False` |
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
+| `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
 
@@ -125,7 +126,7 @@ You can put your organization's identity on the portal without building anything
 What stays **Canvas-driven** and isn't branded per organization:
 
 - **The portal URL** — patients sign in at `https://<your-instance>.canvasmedical.com/app/`.
-- **The login flow** — the sign-in and verification screens are Canvas's.
+- **The login flow** — the sign-in and verification steps are Canvas's. A theme plugin can restyle the login page's colors, font, and wording (see [Theme the portal](#theme-the-portal)), but not the steps themselves.
 - **Sign-in & verification emails** — these are sent from a fixed `no-reply@canvasmedical.com` (a separate path from the patient-message sender above), so they can't be rebranded.
 
 {% include alert.html type="info" content="Want your own domain and login flow end to end? That's Path 3 — build your own app and use Canvas as the backend." %}
@@ -141,6 +142,12 @@ Under the hood, every extension is a plugin that **reacts to a portal event and 
 New to plugins? Start with [Your First Plugin](/guides/your-first-plugin-with-claude-code/), then keep the [Patient Portal config hub](/sdk/patient-portal/) and the [portal events](/sdk/events/) handy. And for inspiration, the community-run [Medical Software Foundation library](https://github.com/medical-software-foundation/canvas) has production-ready portal extensions you can install or learn from — several are linked below.
 
 Here's what you can do — mix and match as many as you like.
+
+### Theme the portal
+
+Make the portal match your brand: your colors for buttons, links, the menu, and the page background, your font, rounder or squarer corners, and the word the portal uses for the person (patient, member, or client). The theme covers every portal page, including login and registration, and each business line can have its own. Signed-in pages can also take your own CSS.
+
+A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal/#theme-the-patient-portal) effect. [Theming the Patient Portal](/guides/theme-the-patient-portal/) walks through each setting with screenshots.
 
 ### Personalize the landing page with widgets
 
@@ -204,6 +211,14 @@ Each download fires an event your plugin can respond to, so you can keep track o
 
 See [Link to After-Visit Summaries](/sdk/patient-portal/#link-to-after-visit-summaries) for the technical reference.
 
+### Share lab and imaging requisitions
+
+Patients can also download the requisition of their own lab and imaging orders. A lab requisition is the form a clinician prints from the order. An imaging requisition is the letter that tells the patient how to prepare for the test. As with summaries, you decide where the link appears, such as next to an upcoming lab visit on a page of your own. By default, a requisition is available until results arrive for the order. Canvas Support can extend that to completed orders with the `PATIENT_PORTAL_REQUISITION_ORDER_STATES` setting.
+
+Downloads fire the same event as summaries, so one handler can track every document a patient has received.
+
+See [Link to Lab and Imaging Requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for the technical reference.
+
 ### Control the navigation layout
 
 Decide which items appear in the portal navigation and in what order — and do it **conditionally per patient**. Surface a page only to patients in a certain program, reorder the menu so what matters most comes first, or hide built-in items you don't use. The navigation isn't fixed; you compute it for each patient every time the portal loads.
@@ -225,6 +240,24 @@ Real-world examples (MSF):
 - [patient-portal-profile](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-profile) — adds a read-only **My Profile** page (demographics, care team, preferred pharmacy).
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
+
+### Add a band to every page
+
+Keep something in front of patients on every page they visit: an announcement banner, a support footer, or a toolbar for your program. A Portal Docked Application mounts your content in a full-width band across the top or bottom of every signed-in portal page, and it stays on screen as patients move around the portal.
+
+See [Portal Docked Applications](/sdk/handlers-embedded-applications/#portal-docked-applications).
+
+### Collect insurance cards and photo IDs
+
+Let patients send what your front desk usually chases down at check-in: photos of their insurance card, a driver's license or other photo ID, or a document their care team asked for. Add an upload step to one of your own portal pages, such as an intake wizard or a pre-visit checklist, and the files land on the patient's record in Canvas without staff scanning or re-keying anything.
+
+Your page posts the patient's files to a [SimpleAPI](/sdk/handlers-simple-api-http/) route that [stores uploads](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas saves each file before your handler runs and hands your handler a key for it. Protect the route with the [patient session mixin](/sdk/handlers-simple-api-http/#patient-session) so only signed-in patients can call it, then pass each key to the effect that fits:
+
+- **Insurance card:** the [Coverage](/sdk/effect-coverage/) effect adds or updates the patient's coverage with front and back card images. Collect the member ID and payer on the same page, since a new coverage needs both.
+- **Photo ID:** the [Patient Identification Card](/sdk/effect-patient-identification-card/) effect adds the image to the patient's identification cards.
+- **Anything else:** the [Message](/sdk/effect-messages/#attaching-files) effect attaches PNG, JPEG, or PDF files to a message to the care team.
+
+See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files) for the full list of effects that accept an upload, and the example route on the [Coverage](/sdk/effect-coverage/) effect page that creates a coverage from uploaded card photos.
 
 ### Send patients to another page
 

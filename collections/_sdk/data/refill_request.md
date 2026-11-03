@@ -11,6 +11,8 @@ The `RefillRequest` model represents an incoming request to refill a patient's m
 
 An incoming `RefillRequest` is routed to a [staff](/sdk/data-staff/#staff) member — the provider expected to respond to it, who becomes the `prescriber` of the responding prescription, not the original requester — and can be marked as `ignored` to drop it from the active refill worklist. Once acted on, the request links to the responding prescription(s) through its `response` attribute, and each [Prescription](/sdk/data-prescription/#prescription) points back to the request through its `refill_request` field. Because the request originates from the pharmacy, and a pharmacy may route it to a provider other than the original prescriber, `staff` is not the requester; it is also nullable, so it may be unset.
 
+`patient` is the chart the request is filed on, which isn't always the chart the original prescription was written for. Canvas matches an incoming request to the original prescription's chart. If that chart has since been deactivated, Canvas files the request on the one active chart with the same name and date of birth. Canvas leaves `patient` unset when no active chart matches, when more than one matches, or when the request's name and date of birth don't match the deactivated chart. Staff then link the request to a chart manually. Check `patient` for `None` before you use it. The key of the chart Canvas matched the request to is in `content`, as described in [Message content](#message-content).
+
 ## Basic usage
 
 To get a refill request by identifier, use the `get` method on the `RefillRequest` model manager:
@@ -85,6 +87,7 @@ The `message_id` and `content` attributes carry the details of the inbound eRx m
 
 `content` is a JSON field holding the parsed inbound NCPDP SCRIPT refill-renewal request payload. It is a free-form, unstructured representation whose exact shape can vary between messages. The information typically available includes:
 
+- the patient as reported by the pharmacy (name, date of birth, gender, phone), along with `patient_key`, the key of the chart Canvas matched the request to. This key can differ from `patient` when that chart was deactivated, and it can be null when Canvas matched no chart.
 - the pharmacy (name, NCPDP ID, phone, address)
 - the prescriber as reported by the sender (name, NPI, SPI, and a sender-supplied identifier)
 - the dispensed and prescribed medication details (drug description, NDC, quantity, days supply, directions, number of refills, substitution allowance, written date, and similar)

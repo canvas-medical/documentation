@@ -136,6 +136,8 @@ class MyHandler(BaseHandler):
 
 Sends an existing note via fax to a specified recipient. This effect allows you to transmit patient notes to external healthcare providers or facilities.
 
+To fax a referral, imaging order, lab order or letter without the rest of its note, use the [fax effects](/sdk/effect-fax/).
+
 #### Attributes
 
 | Attribute               | Type            | Description                                                      | Required |

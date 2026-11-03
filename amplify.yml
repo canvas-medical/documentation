@@ -3,13 +3,11 @@ frontend:
   phases:
     preBuild:
       commands:
-        - rvm install $(cat .ruby-version)
-        - rvm use $(cat .ruby-version)
-        - gem install bundler -v 2.4.12
-        - curl -LsSf https://astral.sh/uv/install.sh | sh
+        # Ruby, Node, and uv come from the build image (build-image/Dockerfile)
+        - 'test "$(ruby -e "print RUBY_VERSION")" = "$(cat .ruby-version)" || { echo "Build image has Ruby $(ruby -e "print RUBY_VERSION"), .ruby-version wants $(cat .ruby-version): rerun once the Build image workflow has pushed"; exit 1; }'
+        - gem install bundler -v $(tail -1 Gemfile.lock | tr -d ' ')
     build:
       commands:
-        - export PATH="$HOME/.local/bin:$PATH"
         - bundle install
         - yarn install
         - yarn build

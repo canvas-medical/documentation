@@ -46,9 +46,27 @@ unreviewed_documents = UncategorizedClinicalDocument.objects.filter(Q(review_mod
 
 ```
 
+## Review assignment
+
+A document is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned. When the review is delegated to another staff member, `reviewers` lists the delegate in place of the original reviewer.
+
+```python
+from canvas_sdk.v1.data import UncategorizedClinicalDocument, Staff
+
+document = UncategorizedClinicalDocument.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the document is assigned to
+reviewers = document.reviewers.all()
+team = document.team
+
+# Every document assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
+```
+
 ## Delegations
 
-A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
+When staff send a document to a provider for signature, Canvas records a delegation, and records another when the provider signs the document and Canvas returns it. The delegations for a document are available through two accessors:
 
 ```python
 from canvas_sdk.v1.data import UncategorizedClinicalDocument
@@ -58,11 +76,11 @@ document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733
 # The full delegation history, oldest first.
 history = document.delegations
 
-# The current active delegation, or None when the document is with its owner.
+# The active delegation, or None when no delegation is in effect.
 current = document.active_delegation
 ```
 
-See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
+See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model. For the document's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 
 ## Document codings
 
@@ -145,6 +163,7 @@ url = document.document_url if document else None
 | assigned_by        | [CanvasUser](/sdk/data-canvasuser)                                          |
 | review             | [UncategorizedClinicalDocumentReview](#uncategorizedclinicaldocumentreview) |
 | team               | [Team](/sdk/data-team/#team)                                                |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                           |
 | code               | [DocumentCoding](/sdk/data-patient-administrative-document/#documentcoding) |
 | name               | String                                                                      |
 | review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode)       |
@@ -157,6 +176,8 @@ url = document.document_url if document else None
 | priority           | Boolean                                                                     |
 | document           | File (S3 key)                                                               |
 | document_url       | String (computed)                                                           |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the document's delegations, oldest first) |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### UncategorizedClinicalDocumentReview
 

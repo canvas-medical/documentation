@@ -14,7 +14,7 @@ layout: apipage
 ## Registering a third-party application on Canvas
 
 - Registering a third-party application is always the first step.
-- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role. Without one of these roles, the application pages below return `403 Forbidden`.
+- To register, view, edit, or delete applications, you need the Administrative Developer or Clinical Developer role, or membership in a group with the **Can register and manage OAuth applications** permission. Canvas support sets up the group, and you add staff to it in **Staff Permissions**.
 - Any user can review and revoke the tokens they approved for an application at `{YOUR_CANVAS_EHR_INSTANCE}/auth/authorized_tokens/`.
 - In order to do so, you'll need to:
   1. Go to `{YOUR_CANVAS_EHR_INSTANCE}/auth/applications/` where you'll see the following page:
@@ -231,6 +231,8 @@ These tokens work with the FHIR API, but Canvas refuses them on staff APIs. Staf
 
 A refused token gets `403 Forbidden` on `/api`. On the Note and Letter APIs and the plugin endpoints, it gets `401 Unauthorized`. To call these APIs, request a separate token. Use the client credentials flow, or the authorization code flow with a `launch` context that names no patient.
 
+FHIR operations, such as [Create Lab Report](/api/diagnosticreport-operations/) and [Add Claim Activity Log Item](/api/claim-operations/), also need a token without a patient context, including when an app is launched from a patient's chart.
+
 ## Scopes
 
 Scopes control which parts of the API the token can access.
@@ -286,7 +288,7 @@ Examples: `user/*.read`, `system/Patient.crus`, `patient/Appointment.write`.
 
 ### Operation scopes
 
-Some FHIR operations require a dedicated scope in addition to the resource scope. Available under both `user/` and `system/`:
+Some FHIR operations require a dedicated scope in addition to the resource scope. An operation scope covers only its operation: reading or writing the resource itself still needs a resource scope. Available under both `user/` and `system/`:
 
 | Scope suffix | Operation |
 |---|---|

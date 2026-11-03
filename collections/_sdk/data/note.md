@@ -528,6 +528,7 @@ patient_office_visits = Note.objects.filter(patient=patient, note_type_version=n
 | procedures          | QuerySet[[Procedure](/sdk/data-procedure/#procedure)] | All procedures recorded on this note                                                                                                                                                 |
 | family_histories    | QuerySet[[FamilyHistory](/sdk/data-family-history/#familyhistory)] | All family history records recorded on this note                                                                                                        |
 | plans               | QuerySet[[Plan](/sdk/data-plan/#plan)] | All plans recorded on this note |
+| dme_orders          | QuerySet[[DmeOrder](/sdk/data-dme/#dmeorder)] | All Order DME commands signed on this note |
 | follow_ups          | QuerySet[[FollowUp](/sdk/data-follow-up/#followup)] | All follow-ups recorded on this note |
 | reasons_for_visit   | QuerySet[[ReasonForVisit](/sdk/data-reason-for-visit/#reasonforvisit)] | All reasons for visit recorded on this note |
 | assessed_coding_gaps | QuerySet[[AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)] | All coding gaps assessed on this note |
