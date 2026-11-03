@@ -286,7 +286,7 @@ The command exits non-zero unless every instance succeeds, so it can gate a CI j
 
 `canvas deploy` publishes the plugin as:
 
-1. The manifest `publisher`, when it's set. It must be an organization you belong to.
+1. The manifest `publisher`, when it's set. For a deploy that pushes, including `--snapshot`, it must be an organization you belong to. With `--ref` or `--no-push`, deploy sends the manifest `publisher` to Canvas Platform as it is, and Canvas Platform decides whether you can deploy under it.
 2. Otherwise, the only organization you can publish in.
 3. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
 
