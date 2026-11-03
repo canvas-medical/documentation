@@ -2225,7 +2225,8 @@ Check if a key exists in cache:
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/calendar-create-effect/
-This allows developers to create calendars for providers in Canvas. Calendars can be either Clinic or Administrative type and can optionally be associated with a location.
+Create a Clinic or Administrative calendar for a provider, optionally for one location. Canvas titles the calendar from the provider's name, the calendar type, and the location name.
+To keep the calendar linked to its provider after a name change, set `description` to the provider's staff id.
 Build a `Calendar` with the attributes you want to set, then return its `create()` from your handler.
 ##  Methods 
 ###  create() → Effect 
@@ -2238,7 +2239,8 @@ Attribute | Type | Description | Required
 `provider` | `str \| UUID` | The id of the [provider](/sdk/data-staff/). | Yes  
 `type` | `CalendarType` | The type of calendar: `CalendarType.Clinic` or `CalendarType.Administrative`. | Yes  
 `location` | `str \| UUID \| None` | The id of the [location](/sdk/data-practicelocation/) to associate with the calendar. | No  
-`description` | `str \| None` | Description of the calendar's purpose. | No  
+`description` | `str \| None` | The provider's staff id, the same value as `provider`. Canvas uses it to link the calendar to the provider. With any other value, Canvas matches the calendar by the provider name in its title, and that match stops working when the provider is renamed. | No, but strongly recommended  
+> **Info:** A plugin can't change a calendar's title or description after it creates the calendar. To find a provider's existing calendar, filter by its description, as in Find a provider's calendar, rather than by its title, so the lookup still finds the calendar after the provider is renamed. 
 ##  CalendarType 
 An enumeration of calendar types:
 Value | Description  
@@ -2248,12 +2250,20 @@ Value | Description
 ##  Example 
     ```python
     from canvas_sdk.effects.calendar import Calendar, CalendarType
+    provider_id = "4150cd20de8a470aa570a852859ac87e"  # The provider's staff id
     Calendar(
-       provider="provider-uuid",
+       provider=provider_id,
        type=CalendarType.Clinic,
        location="location-uuid",
-       description="Primary clinic calendar"
+       description=provider_id,
     ).create()
+    ```
+##  Find a provider's calendar 
+To check whether a provider already has a calendar before you create one, filter the [Calendar](/sdk/data-calendar/) data model by `description`:
+    ```python
+    from canvas_sdk.v1.data.calendar import Calendar
+    provider_id = "4150cd20de8a470aa570a852859ac87e"  # The provider's staff id
+    calendars = Calendar.objects.filter(description=provider_id)
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/calendar-create-effect/
 
@@ -2265,6 +2275,7 @@ Build an `Event` with the attributes you want to set, then return one of its met
 ###  create() → Effect 
 Creates the event on a calendar.
   - `calendar_id`, `title`, `starts_at`, and `ends_at` are required.
+  - `event_id` is optional. Set it to a new UUID, and Canvas gives the event that id. Store the id so your plugin can update or delete the event later. When `event_id` isn't set, Canvas generates the id.
 ###  update() → Effect 
 Updates an existing event.
   - `event_id`, `title`, `starts_at`, and `ends_at` are required.
@@ -2275,7 +2286,7 @@ Deletes an existing event.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `calendar_id` | `str \| UUID \| None` | The id of the calendar where the event will be created. | For `create()`  
-`event_id` | `str \| UUID \| None` | The id of the event to update or delete. | For `update()` and `delete()`  
+`event_id` | `str \| UUID \| None` | The id of the event. For `create()`, a new UUID to give the event. For `update()` and `delete()`, the id of an existing event. | For `update()` and `delete()`  
 `title` | `str \| None` | The title of the event. | For `create()` and `update()`  
 `starts_at` | `datetime \| None` | The start date and time of the event. | For `create()` and `update()`  
 `ends_at` | `datetime \| None` | The end date and time of the event. | For `create()` and `update()`  
@@ -2305,6 +2316,7 @@ Value | Description
     ```python
     from canvas_sdk.effects.calendar import Event, EventRecurrence, DaysOfWeek
     from datetime import datetime
+    from uuid import uuid4
     # Create a one-time event
     Event(
         calendar_id="calendar-uuid",
@@ -2324,15 +2336,24 @@ Value | Description
         recurrence_ends_at=datetime(2025, 12, 31, 23, 59),
         allowed_note_types=["100", "101"]
     ).create()
+    # Create an event with an id you choose, so you can update or delete it later
+    event_id = str(uuid4())
+    Event(
+        event_id=event_id,
+        calendar_id="calendar-uuid",
+        title="Team Sync",
+        starts_at=datetime(2025, 1, 16, 9, 0),
+        ends_at=datetime(2025, 1, 16, 10, 0)
+    ).create()
     # Update an existing event
     Event(
-        event_id="event-uuid",
+        event_id=event_id,
         title="Updated Meeting Title",
-        starts_at=datetime(2025, 1, 15, 15, 0),
-        ends_at=datetime(2025, 1, 15, 16, 0)
+        starts_at=datetime(2025, 1, 16, 15, 0),
+        ends_at=datetime(2025, 1, 16, 16, 0)
     ).update()
     # Delete an event
-    Event(event_id="event-uuid").delete()
+    Event(event_id=event_id).delete()
     ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/calendar-event-management-effects/
 
@@ -2353,7 +2374,7 @@ The Canvas CLI signs in to [Canvas Platform](https://platform.canvasmedical.com)
     Signed in to https://platform.canvasmedical.com as you@example.com.
       Acme Health (acme): plugin prefix acme__
     ```
-`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a service account instead.
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a service account instead.
 A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
 `canvas login --platform <url>` or the `CANVAS_PLATFORM_URL` environment variable points the CLI at a platform other than https://platform.canvasmedical.com, and later commands keep using the platform you last signed in to.
 `canvas whoami` shows which platform the CLI is using, why, and who you are signed in as there:
@@ -2517,6 +2538,12 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
   4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
+With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
+    ```console
+    $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
+    Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
+    To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
+    ```
 **Waiting for the outcome**
 For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
 Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
@@ -12194,6 +12221,7 @@ error | Deleted
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-calendar/
 ##  Introduction 
 The `Calendar` model represents a Calendar in Canvas. Calendars are used to organize events for providers and can be either Clinic or Administrative type.
+When a calendar's `description` is its provider's staff id, Canvas links the calendar to the provider by that id. To find a provider's calendar, filter by `description` rather than by `title`. The title contains the provider's name, so a title lookup stops finding the calendar after the provider is renamed.
 Busy time that native Google Calendar sync imports for a provider isn't stored as calendar events. To read it, use the [Google Calendar](/sdk/data-google-calendar/) data models.
 ##  Basic usage 
 To get a calendar by identifier, use the `get` method on the `Calendar` model manager:
@@ -12201,6 +12229,14 @@ To get a calendar by identifier, use the `get` method on the `Calendar` model ma
     from canvas_sdk.v1.data.calendar import Calendar
     calendar = Calendar.objects.get(id="f53626e4-0683-43ac-a1b7-c52815639ce2")
     ```
+###  Find a provider's calendar 
+To get a provider's calendars, filter by `description` with the provider's staff id:
+    ```python
+    from canvas_sdk.v1.data.calendar import Calendar
+    provider_id = "4150cd20de8a470aa570a852859ac87e"  # The provider's staff id
+    calendars = Calendar.objects.filter(description=provider_id)
+    ```
+This finds calendars whose `description` was set to the staff id when they were created, as the [Calendar effect](/sdk/calendar-create-effect/) recommends. A calendar created with any other description doesn't match.
 ##  Events 
 The events associated with a calendar can be accessed with the `events` attribute on a `Calendar` object:
     ```python
@@ -12220,11 +12256,11 @@ Filtering is done with the `filter` method on the model manager.
 Specify an attribute with `filter` to filter by that attribute:
     ```python
     from canvas_sdk.v1.data.calendar import Calendar
-    # Filter calendars by title
-    calendars = Calendar.objects.filter(title__icontains="Clinic")
+    # Filter calendars by timezone
+    calendars = Calendar.objects.filter(timezone="America/New_York")
     ```
 ###  By calendar name 
-To filter calendars by a specific provider name, calendar type, and location, use the `for_calendar_name` method:
+To filter calendars by their exact title, use the `for_calendar_name` method. It builds the title from the provider name, calendar type, and location as `<provider_name>: <calendar_type>: <location>`, or `<provider_name>: <calendar_type>` with no location, and returns calendars with exactly that title:
     ```python
     from canvas_sdk.v1.data.calendar import Calendar
     calendars = Calendar.objects.for_calendar_name(
@@ -12233,6 +12269,7 @@ To filter calendars by a specific provider name, calendar type, and location, us
         location="Main Office"
     )
     ```
+> **Warning:** A calendar's title keeps the provider's name from when the calendar was created. After the provider is renamed, `for_calendar_name` with the new name doesn't find the calendar. To find a provider's calendar, use the provider's staff id instead. 
 ##  Attributes 
 ###  Calendar 
 Field Name | Type | Description  
@@ -12243,7 +12280,7 @@ created | DateTime | When the record was created.
 modified | DateTime | When the record was last modified.  
 title | String | The title of the calendar  
 timezone | TimeZone | The timezone for the calendar (default: UTC)  
-description | String | Optional description of the calendar's purpose  
+description | String | For a provider's calendar, the provider's staff id, which links the calendar to the provider. See Find a provider's calendar.  
 events | Event[] | Events associated with this calendar  
 ###  Event 
 Field Name | Type | Description  
@@ -12833,6 +12870,8 @@ account_number | String |
 snoozed_until | Date |   
 patient_balance | Decimal |   
 aggregate_coverage_balance | Decimal |   
+assignee | [Staff](/sdk/data-staff/#staff) | Staff member the claim is assigned to  
+team | [Team](/sdk/data-team/#team) | Team the claim is assigned to  
 created | DateTime |   
 modified | DateTime |   
 diagnosis_codes | ClaimDiagnosisCode[] |   
@@ -12938,15 +12977,15 @@ coverage | [Coverage](/sdk/data-coverage/)
 active | Boolean  
 payer_name | String  
 payer_id | String  
-payer_typecode | String  
+payer_typecode | ClaimTypeCode  
 payer_order | ClaimPayerOrder  
 payer_addr1 | String  
 payer_addr2 | String  
 payer_city | String  
 payer_state | String  
 payer_zip | String  
-payer_plan_type | ClaimTypeCode  
-coverage_type | [CoverageType](/sdk/data-coverage/#coveragetype)  
+payer_plan_type | [CoverageType](/sdk/data-coverage/#coveragetype)  
+coverage_type | [TransactorCoverageType](/sdk/data-coverage/#transactorcoveragetype)  
 subscriber_employer | String  
 subscriber_group | String  
 subscriber_number | String  
@@ -14189,6 +14228,7 @@ Value | Label
 active | Active  
 deleted | Deleted  
 ###  CoverageType 
+A coverage's `plan_type` comes from its payer's TransactorType and is set again whenever the coverage's payer changes. Each transactor type maps to the plan type with the same value, except `automobile`, which maps to `motorvehicle`. Any other value maps to `other`.
 Value | Label  
 ---|---  
 commercial | Commercial  
@@ -14197,6 +14237,10 @@ bcbs | Blue Cross Blue Shield
 champus | Tricare/Champus  
 medicaid | Medicaid  
 medicare | Medicare  
+medicare_advantage | Medicare Advantage  
+CHIP | CHIP  
+employer | Employer  
+direct_care | Direct Care  
 other | Other  
 tpa | Third Party Administrator  
 motorvehicle | Motor Vehicle  
@@ -14701,6 +14745,98 @@ INTERNAL | Internal
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-dme/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-document-history-event/
+##  Introduction 
+The `DocumentHistoryEvent` model records the review history of a Lab, Imaging, Consult/Referral, or Uncategorized document. Canvas adds an entry each time staff reassign the document, add a comment, send it for signature, sign it, remove a signature, record the review, or enter the review in error. Together the entries form the timeline that the document's history view shows.
+Each entry stores who acted (`actor`), who received the document, any comment, and, for signed and recorded entries, whose signatures the document carried.
+##  Basic usage 
+To get a history entry by identifier, use the `get` method on the `DocumentHistoryEvent` model manager:
+    ```python
+    from canvas_sdk.v1.data import DocumentHistoryEvent
+    event = DocumentHistoryEvent.objects.get(id="0f6b3c2e-8a51-4d7e-9c14-5b2e7a9d3f60")
+    ```
+##  Getting a document's timeline 
+History entries link to their document through `content_type` and `object_id`, which is the document's `dbid`. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`, rather than hardcoding its `dbid`:
+    ```python
+    from canvas_sdk.v1.data import ContentType, DocumentHistoryEvent, ImagingReport
+    report = ImagingReport.objects.get(id="3a5d8e21-6b4f-4c9a-8e27-1d9f0b6c4a73")
+    report_ct = ContentType.objects.get(app_label="api", model="imagingreport")
+    timeline = DocumentHistoryEvent.objects.filter(
+        content_type=report_ct, object_id=report.dbid
+    ).order_by("created")
+    ```
+The `model` values for the four reviewable document types are `labreport`, `imagingreport`, `referralreport`, and `uncategorizedclinicaldocument`, all with the `app_label` `api`.
+To go the other way, from a history entry to its document, read the entry's `document` property. It returns the entry's [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/). On a `recorded` or `entered_in_error` entry, the `review` property returns the document's review command:
+    ```python
+    from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
+    recorded = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.RECORDED)
+    for entry in recorded:
+        document = entry.document
+        review = entry.review
+        if document is not None:
+            patient = document.patient
+    ```
+##  Filtering 
+History entries can be filtered by any attribute that exists on the model.
+###  By event type 
+    ```python
+    from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
+    comments = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.COMMENTED)
+    ```
+###  Signers of recorded documents 
+    ```python
+    from canvas_sdk.v1.data import DocumentHistoryEvent, DocumentHistoryEventType
+    recorded = DocumentHistoryEvent.objects.filter(event_type=DocumentHistoryEventType.RECORDED)
+    for event in recorded:
+        signer_names = [staff.full_name for staff in event.signers.all()]
+    ```
+##  Entry types 
+Event type | Written when | Populated fields  
+---|---|---  
+`reassigned` | Staff reassign the document, including reviewer or team changes from the card's dropdowns. | `recipient_staff` and `recipient_team` hold the new assignment; `comment` holds any comment. `actor` is empty when the change came from an API client or a plugin.  
+`commented` | Staff add a comment without changing who holds the document. | `comment`  
+`sent_for_signature` | Staff send a prepared form to a provider to sign. The document keeps its team. | `recipient_staff` holds the provider and `recipient_team` the document's team; `comment` holds any comment. A [DocumentReviewDelegation](/sdk/data-document-review-delegation/) records the same request.  
+`signed` | The provider holding the document signs it with **SIGN FORM**. When Canvas returns the signed form to its sender, or to the document's creator, a `reassigned` entry follows. | `actor` and `signers` hold the provider.  
+`signature_removed` | Staff remove a signature from a signed form so they can edit it again. Canvas restores the version from just before signing. | `actor`  
+`recorded` | The document's review command is recorded. Recording again adds a new entry. | `signers`, `review_content_type`, and `review_object_id`  
+`entered_in_error` | The document's review command is entered in error. | `review_content_type` and `review_object_id`  
+When a review is entered in error, its `recorded` entry stays in the timeline, but its comment is hidden: `deleted_at` is set and `comment_hidden` returns `True`.
+##  Attributes 
+###  DocumentHistoryEvent 
+Field Name | Type  
+---|---  
+id | UUID  
+dbid | Integer  
+created | DateTime  
+modified | DateTime  
+content_type | [ContentType](/sdk/data-content-type/) (the document's type)  
+object_id | Integer (the document's `dbid`)  
+event_type | DocumentHistoryEventType  
+actor | [Staff](/sdk/data-staff/#staff) (who acted, or empty for an API client or plugin)  
+recipient_staff | [Staff](/sdk/data-staff/#staff) (who received the document)  
+recipient_team | [Team](/sdk/data-team/#team) (the team that received the document)  
+comment | String  
+review_content_type | [ContentType](/sdk/data-content-type/) (the review command's type)  
+review_object_id | Integer (the review command's `dbid`)  
+signers | [Staff](/sdk/data-staff/#staff)[] (whose signatures the signed or recorded document carried)  
+deleted_at | DateTime (when the comment was hidden)  
+comment_hidden | Boolean (computed; `True` when `deleted_at` is set)  
+document | [LabReport](/sdk/data-labs/#labreport), [ImagingReport](/sdk/data-imaging/#imagingreport), [ReferralReport](/sdk/data-referral/#referralreport), or [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) (computed; the entry's document, or `None`)  
+review | `LabReview`, `ImagingReview`, `ReferralReview`, or `UncategorizedClinicalDocumentReview` (computed; the review command of a `recorded` or `entered_in_error` entry, or `None`)  
+##  Enumeration types 
+###  DocumentHistoryEventType 
+Value | Label  
+---|---  
+REASSIGNED | Reassigned  
+COMMENTED | Commented  
+SENT_FOR_SIGNATURE | Sent for signature  
+SIGNED | Signed  
+SIGNATURE_REMOVED | Signature removed  
+RECORDED | Recorded  
+ENTERED_IN_ERROR | Entered in error
+----- END PAGE https://docs.canvasmedical.com/sdk/data-document-history-event/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-document-reference/
 The `DocumentReference` model represents references to documents stored in Canvas, such as uploaded PDFs, scanned files, and other clinical documents. Each document reference can link to a file stored in S3 and provides secure access via presigned URLs.
 ##  Basic Usage 
@@ -14826,24 +14962,26 @@ To go the other way — find every document reference for a given source type �
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-document-review-delegation/
 ##  Introduction 
-The `DocumentReviewDelegation` model records a hand-off of a document review from one staff member to another staff member or team. When a reviewer delegates an uncategorized clinical document, Canvas stores who delegated it, who received it, the original owner, whether the recipient may apply the owner's signature, and any instructions.
-Delegations are an append-only log: a document has at most one **active** delegation at a time (`is_active`). Delegation is A↔B only — an owner delegates a document out, and the recipient may only route it back — so `on_behalf_of` always identifies the original owner and, when `signature_consent` is set, the staff member whose signature the recipient may apply while annotating the document.
+The `DocumentReviewDelegation` model records each step of the send-for-signature flow on a reviewable document: a Lab, Imaging, Consult/Referral, or Uncategorized review. Staff prepare a form by marking where the signature and date go, then select **SEND FOR SIGNATURE** to send it to a provider. Canvas records a delegation to that provider, with the sender as `on_behalf_of`. When the provider selects **SIGN FORM** , Canvas stamps the provider's own saved signature and the date into the form and returns it to the sender. A form that no one sent for signature goes back to whoever reassigned it to the provider. When that person is the provider, is inactive, or can no longer see the patient, the form goes to the staff member who created the document instead. The return is recorded as a route-back delegation whose recipient is also its `on_behalf_of`, so `is_route_back` is `True`. When no one can take the form back, it stays with the provider and the active delegation ends.
+Each document has at most one **active** delegation (`is_active`). Earlier delegations stay in the table as inactive rows. The active delegation ends when the document changes hands any other way, when its review command is committed, or when it's marked as not needing review.
+Each staff member places only their own signature, so `signature_consent` doesn't let anyone apply another person's signature. To see the document's full timeline, including reassignments, comments, and signatures, use [DocumentHistoryEvent](/sdk/data-document-history-event/).
 ##  Basic usage 
 To get a delegation by identifier, use the `get` method on the `DocumentReviewDelegation` model manager:
     ```python
     from canvas_sdk.v1.data import DocumentReviewDelegation
     delegation = DocumentReviewDelegation.objects.get(id="b5a0c1d2-e3f4-5678-9abc-def012345678")
     ```
-If you have an [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/), its delegations are available through the `delegations` and `active_delegation` accessors:
+Each reviewable document exposes its delegations through the `delegations` and `active_delegation` accessors. [LabReport](/sdk/data-labs/#delegations), [ImagingReport](/sdk/data-imaging/#delegations), [ReferralReport](/sdk/data-referral/#delegations), and [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#delegations) all provide them:
     ```python
-    from canvas_sdk.v1.data import UncategorizedClinicalDocument
-    document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+    from canvas_sdk.v1.data import LabReport
+    lab_report = LabReport.objects.get(id="7c9e6679-7425-40de-944b-e07fc1f90ae7")
     # The full delegation history, oldest first.
-    history = document.delegations
-    # The current active delegation, or None when the document is with its owner.
-    current = document.active_delegation
-    if current and current.signature_consent:
-        signer = current.on_behalf_of  # whose signature the recipient may apply
+    history = lab_report.delegations
+    # The active delegation, or None when no delegation is in effect.
+    current = lab_report.active_delegation
+    if current and not current.is_route_back:
+        provider = current.delegated_to_staff  # the provider asked to sign
+        sender = current.on_behalf_of  # who sent the form for signature
     ```
 ##  Filtering 
 Delegations can be filtered by any attribute that exists on the model.
@@ -14852,19 +14990,22 @@ Delegations can be filtered by any attribute that exists on the model.
     from canvas_sdk.v1.data import DocumentReviewDelegation
     active = DocumentReviewDelegation.objects.filter(is_active=True)
     ```
-###  Delegations that granted signature consent 
+###  Documents waiting on a provider's signature 
     ```python
-    from canvas_sdk.v1.data import DocumentReviewDelegation
-    with_consent = DocumentReviewDelegation.objects.filter(is_active=True, signature_consent=True)
+    from canvas_sdk.v1.data import DocumentReviewDelegation, Staff
+    provider = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+    awaiting_signature = DocumentReviewDelegation.objects.filter(
+        is_active=True, delegated_to_staff=provider
+    ).exclude(on_behalf_of=provider)
     ```
 ##  Route-back 
-Use the `is_route_back` property to tell whether an active delegation returned the document to its owner (as opposed to delegating it away):
+Use the `is_route_back` property to tell whether a delegation returned the signed document to its sender or creator, rather than sending it to a provider to sign:
     ```python
     from canvas_sdk.v1.data import UncategorizedClinicalDocument
     document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
     delegation = document.active_delegation
     if delegation and delegation.is_route_back:
-        ...  # the document is back with its owner
+        ...  # the signed form is back with its sender or creator
     ```
 ##  Attributes 
 ###  DocumentReviewDelegation 
@@ -14874,40 +15015,45 @@ id | UUID
 dbid | Integer  
 created | DateTime  
 modified | DateTime  
-content_type | [ContentType](/sdk/data-content-type/) (the delegated document's type)  
-object_id | Integer (the delegated document's `dbid`)  
-delegated_by | [Staff](/sdk/data-staff/#staff) (who handed the document off)  
-delegated_to_staff | [Staff](/sdk/data-staff/#staff) (recipient, if delegated to a person)  
-delegated_to_team | [Team](/sdk/data-team/#team) (recipient, if delegated to a team)  
-on_behalf_of | [Staff](/sdk/data-staff/#staff) (the original owner)  
-signature_consent | Boolean (may the recipient apply the owner's signature)  
-comment | String (instructions for the recipient)  
-is_active | Boolean (the current delegation for the document)  
+content_type | [ContentType](/sdk/data-content-type/) (the document's type)  
+object_id | Integer (the document's `dbid`)  
+delegated_by | [Staff](/sdk/data-staff/#staff) (who sent the form, or the provider returning it signed)  
+delegated_to_staff | [Staff](/sdk/data-staff/#staff) (the provider asked to sign, or the staff member a signed form returns to)  
+delegated_to_team | [Team](/sdk/data-team/#team) (recipient team, on delegations recorded before send for signature)  
+on_behalf_of | [Staff](/sdk/data-staff/#staff) (who sent the form for signature; on a route-back, the staff member it returns to)  
+signature_consent | Boolean (grants nothing; each staff member places only their own signature)  
+comment | String (the comment left with the request)  
+is_active | Boolean (the delegation is still in effect)  
+is_route_back | Boolean (computed; the delegation returned the signed document to its sender or creator)  
 ##  The delegated document 
-`content_type` and `object_id` form a generic link to the document whose review was delegated: `content_type` identifies the linked model, and `object_id` is that record's `dbid`. Review delegation is currently supported only for [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) records, so `content_type` always resolves to that model and `object_id` is the document's `dbid`. The generic relation leaves room for additional document types in the future.
-The most direct way to work with a document's delegations is from the document itself, through its `delegations` and `active_delegation` accessors:
-    ```python
-    from canvas_sdk.v1.data import UncategorizedClinicalDocument
-    document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
-    current = document.active_delegation   # the active DocumentReviewDelegation, or None
-    history = document.delegations         # every delegation hop recorded for the document
-    ```
-To go the other way — from a delegation to the document it points at — read `content_type` to learn which model `object_id` refers to, then resolve it. A [ContentType](/sdk/data-content-type/) is identified by its stable `app_label` and `model` (the lowercased model name), so branch on those rather than on the per-environment `dbid`. This keeps working if more document types become delegatable later:
-    ```python
-    from canvas_sdk.v1.data import DocumentReviewDelegation, UncategorizedClinicalDocument
-    delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
-    content_type = delegation.content_type
-    # Today content_type is always api / uncategorizedclinicaldocument; object_id is its dbid.
-    if content_type.app_label == "api" and content_type.model == "uncategorizedclinicaldocument":
-        document = UncategorizedClinicalDocument.objects.get(dbid=delegation.object_id)
-    ```
-You can also use `content_type` to find every delegation for a given document type. Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the `dbid`, which differs per environment:
+`content_type` and `object_id` form a generic link to the delegated document: `content_type` identifies the linked model, and `object_id` is that record's `dbid`. A delegation can point at any of the four reviewable document types:
+Document | `content_type.app_label` | `content_type.model`  
+---|---|---  
+[LabReport](/sdk/data-labs/#labreport) | `api` | `labreport`  
+[ImagingReport](/sdk/data-imaging/#imagingreport) | `api` | `imagingreport`  
+[ReferralReport](/sdk/data-referral/#referralreport) | `api` | `referralreport`  
+[UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/) | `api` | `uncategorizedclinicaldocument`  
+To find every delegation for one document type, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model`. Never hardcode the content type `dbid`, which differs per environment:
     ```python
     from canvas_sdk.v1.data import ContentType, DocumentReviewDelegation
-    document_ct = ContentType.objects.filter(app_label="api", model="uncategorizedclinicaldocument").first()
-    delegations = DocumentReviewDelegation.objects.filter(content_type=document_ct)
+    imaging_report_ct = ContentType.objects.get(app_label="api", model="imagingreport")
+    imaging_delegations = DocumentReviewDelegation.objects.filter(content_type=imaging_report_ct)
     ```
-Exactly one of `delegated_to_staff` / `delegated_to_team` is set on a delegation.
+To go the other way, from a delegation to its document, read `content_type` to learn which model `object_id` refers to, then resolve it:
+    ```python
+    from canvas_sdk.v1.data import DocumentReviewDelegation, ImagingReport, LabReport, ReferralReport, UncategorizedClinicalDocument
+    DOCUMENT_MODELS = {
+        "labreport": LabReport,
+        "imagingreport": ImagingReport,
+        "referralreport": ReferralReport,
+        "uncategorizedclinicaldocument": UncategorizedClinicalDocument,
+    }
+    delegation = DocumentReviewDelegation.objects.get(id="b3e6f74c-2a1b-4c8d-9f2e-31842ae7d3b9")
+    model = DOCUMENT_MODELS.get(delegation.content_type.model)
+    if delegation.content_type.app_label == "api" and model:
+        document = model.objects.get(dbid=delegation.object_id)
+    ```
+Exactly one of `delegated_to_staff` and `delegated_to_team` is set on a delegation. Send for signature always sets `delegated_to_staff`; `delegated_to_team` appears only on delegations recorded before send for signature existed.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-document-review-delegation/
 
 
@@ -16322,6 +16468,17 @@ An imaging report is assigned for review to staff members or to a team. `reviewe
     staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
     assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
     ```
+##  Delegations 
+When staff send an imaging report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for an imaging report are available through two accessors:
+    ```python
+    from canvas_sdk.v1.data import ImagingReport
+    imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The full delegation history, oldest first.
+    history = imaging_report.delegations
+    # The active delegation, or None when no delegation is in effect.
+    current = imaging_report.active_delegation
+    ```
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 ##  The document reference 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
 Resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
@@ -16403,6 +16560,8 @@ original_date | Date |
 review | ImagingReview |   
 document_url | String (computed) | Presigned S3 URL, or `None` if the report has no file  
 codings | ImagingReportCoding[] |   
+delegations | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed) | The report's delegations, oldest first  
+active_delegation | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed) | The delegation in effect, or `None`  
 ###  ImagingReportCoding 
 Field Name | Type  
 ---|---  
@@ -17419,6 +17578,17 @@ A [POC Lab Test](/sdk/commands/#poclabtest) command records its results as a `La
     lab_report = command.anchor_object
     ```
 To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
+##  Delegations 
+When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a lab report are available through two accessors:
+    ```python
+    from canvas_sdk.v1.data import LabReport
+    lab_report = LabReport.objects.get(id="bcd287b7-8b04-4540-a1ea-6529eb576565")
+    # The full delegation history, oldest first.
+    history = lab_report.delegations
+    # The active delegation, or None when no delegation is in effect.
+    current = lab_report.active_delegation
+    ```
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 ##  The document reference 
 `LabReport` carries the report's values and review state, not a file. When the report is reviewed, Canvas renders it to a PDF and stores it on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report.
 To find it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
@@ -17468,6 +17638,8 @@ result_tests | LabTest[]
 remarks | LabReportRemark[]  
 diagnostic_reports | DiagnosticReport[]  
 laborder_set | LabOrder[]  
+delegations | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first)  
+active_delegation | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`)  
 ###  LabReportRemark 
 Field Name | Type  
 ---|---  
@@ -17788,7 +17960,7 @@ dbid | Integer |
 created | DateTime |   
 modified | DateTime |   
 content | String | The rendered letter content  
-printed | DateTime | When the letter was printed (null if not printed)  
+printed | DateTime | When the letter was last printed, set after its print PDF renders (null if not printed). A print that fails to render leaves it unchanged.  
 printed_document | File (S3 key) | The letter's attachments merged into one PDF, saved when the letter is first printed or faxed (null until then)  
 printed_document_url | String (computed) | Presigned S3 URL for `printed_document`, or `None` if unset  
 note | [Note](/sdk/data-note/) | The note this letter is associated with  
@@ -21255,6 +21427,17 @@ A referral report is assigned for review to staff members or to a team. `reviewe
     staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
     assigned = ReferralReport.objects.filter(reviewers__id=staff.id)
     ```
+##  Delegations 
+When staff send a referral report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a referral report are available through two accessors:
+    ```python
+    from canvas_sdk.v1.data import ReferralReport
+    referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+    # The full delegation history, oldest first.
+    history = referral_report.delegations
+    # The active delegation, or None when no delegation is in effect.
+    current = referral_report.active_delegation
+    ```
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 ##  The document reference 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
 To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from its stable `app_label` and `model` — never hardcode the per-environment `dbid` — and match `object_id` against the report's `dbid`:
@@ -21320,6 +21503,8 @@ priority | Boolean
 original_date | Date  
 review | ReferralReview  
 codings | ReferralReportCoding[]  
+delegations | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first)  
+active_delegation | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`)  
 ###  ReferralReview 
 Field Name | Type  
 ---|---  
@@ -22010,6 +22195,7 @@ medication_history_responses | [MedicationHistoryResponse](/sdk/data-medication-
 transmissions_delivered | [MessageTransmission](/sdk/data-message/#messagetransmission)[] |   
 integration_task_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[] |   
 assignee_note_tasks | [NoteTask](/sdk/data-task/#notetask)[] |   
+assigned_claims | [Claim](/sdk/data-claim/#claim)[] |   
 appointment_set | [Appointment](/sdk/data-appointment/#appointment)[] |   
 prescription_set | [Prescription](/sdk/data-prescription/#prescription)[] |   
 note_set | [Note](/sdk/data-note/#note)[] |   
@@ -22495,6 +22681,7 @@ members | [Staff](/sdk/data-staff/#staff)[]
 group_id | UUID  
 telecom | TeamContactPoint[]  
 tasks | [Task](/sdk/data-task/#task)[]  
+claims | [Claim](/sdk/data-claim/#claim)[]  
 document_references | [DocumentReference](/sdk/data-document-reference/#documentreference)[]  
 integration_task_team_reviews | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)[]  
 uncategorizedclinicaldocument_set | [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/#uncategorizedclinicaldocument)[]  
@@ -22574,16 +22761,16 @@ A document is assigned for review to staff members or to a team. `reviewers` hol
     assigned = UncategorizedClinicalDocument.objects.filter(reviewers__id=staff.id)
     ```
 ##  Delegations 
-A document review can be delegated to another staff member or team. The delegations for a document are available through two accessors:
+When staff send a document to a provider for signature, Canvas records a delegation, and records another when the provider signs the document and Canvas returns it. The delegations for a document are available through two accessors:
     ```python
     from canvas_sdk.v1.data import UncategorizedClinicalDocument
     document = UncategorizedClinicalDocument.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
     # The full delegation history, oldest first.
     history = document.delegations
-    # The current active delegation, or None when the document is with its owner.
+    # The active delegation, or None when no delegation is in effect.
     current = document.active_delegation
     ```
-See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model and the `DOCUMENT_DELEGATED` event.
+See [DocumentReviewDelegation](/sdk/data-document-review-delegation/) for the delegation model. For the document's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
 ##  Document codings 
 The `code` field comes from the document's type, which is drawn from a fixed list rather than set freely — either the type selected in Data Integration, or, when a document is created through the FHIR [DocumentReference](/api/documentreference/) endpoint, the LOINC code supplied in `type.coding`, which must match one of the codes below. Every coding uses the LOINC system (`http://loinc.org`). The document types stored as uncategorized clinical documents are:
 Document type | Code | Display  
@@ -22657,6 +22844,8 @@ comment | String
 priority | Boolean  
 document | File (S3 key)  
 document_url | String (computed)  
+delegations | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the document's delegations, oldest first)  
+active_delegation | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`)  
 ###  UncategorizedClinicalDocumentReview 
 Field Name | Type  
 ---|---  
@@ -23119,7 +23308,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommandTypeSetting Whether each command type is turned on for the instance. ](/sdk/data-command-type-setting/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A hand-off of a document review from one staff member (or team) to another, with signature consent. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Google Calendar Provider busy time and connection status from native Google Calendar sync. ](/sdk/data-google-calendar/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommandTypeSetting Whether each command type is turned on for the instance. ](/sdk/data-command-type-setting/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentHistoryEvent An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review. ](/sdk/data-document-history-event/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A reviewable document sent to a provider for signature, or returned signed to whoever sent it. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Google Calendar Provider busy time and connection status from native Google Calendar sync. ](/sdk/data-google-calendar/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -24002,6 +24191,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
   - updating provider information on claims
   - updating the supervising provider on claims
   - setting the incident-to flag on claims
+  - assigning claims to a staff member or team
+  - unassigning claims
 Additionally, the SDK provides a separate effect to update claim line items.
 The following standalone effect classes are deprecated and will be removed in a future release. Please use the `ClaimEffect` class instead.
 Deprecated Class | Old Import Path | New Equivalent  
@@ -24745,6 +24936,75 @@ Non-Medicare payer | The payer is not Medicare. Incident-to rules are a Medicare
             claim_id = self.event.target.id
             claim_effect = ClaimEffect(claim_id=claim_id)
             return [claim_effect.set_incident_to(True)]
+    ```
+###  Assign 
+`assign(*, assignee_id: str | None = None, team_id: str | UUID | None = None) → Effect`
+Assigns a claim to a staff member or a team, so the claim has an owner responsible for working it. A claim has one owner at a time: assigning a staff member removes any team assignment, and assigning a team removes any staff assignment. Calling `assign()` with neither parameter clears the assignment, the same as `unassign()`.
+When the assignment changes, Canvas emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event. To read the current owner, use the claim's [`assignee` and `team`](/sdk/data-claim/#claim) attributes.
+####  Parameters 
+Parameter | Type | Description | Required  
+---|---|---|---  
+`assignee_id` | `str` or `None` | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign | No  
+`team_id` | `UUID`, `str`, or `None` | The `id` of the [Team](/sdk/data-team/#team) to assign | No  
+####  Implementation Details 
+  - Pass `assignee_id` to assign a staff member, or `team_id` to assign a team, but not both in the same call.
+  - Reassigning a claim replaces its current owner.
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Team
+    class AssignNewClaimsHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.CLAIM_CREATED)
+        def compute(self) -> list[Effect]:
+            """Assign each new claim to the billing team."""
+            team = Team.objects.filter(name="Billing").first()
+            if not team:
+                return []
+            claim_effect = ClaimEffect(claim_id=self.event.target.id)
+            return [claim_effect.assign(team_id=str(team.id))]
+    ```
+To assign a staff member instead, pass their `id` as `assignee_id`:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import Note
+    class AssignClaimToProviderHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+        def compute(self) -> list[Effect]:
+            """When a note is locked, assign its claim to the note's provider."""
+            if self.event.context["state"] != "LKD":
+                return []
+            note = Note.objects.get(id=self.event.context["note_id"])
+            claim = note.get_claim()
+            if not claim or not note.provider:
+                return []
+            claim_effect = ClaimEffect(claim_id=claim.id)
+            return [claim_effect.assign(assignee_id=str(note.provider.id))]
+    ```
+###  Unassign 
+`unassign() → Effect`
+Clears a claim's assignment, whether the claim is assigned to a staff member or a team. Like `assign()`, it emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event when the assignment changes.
+####  Example Usage 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.claim import ClaimEffect
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data.claim import ClaimQueue, ClaimQueues
+    class UnassignSettledClaimsHandler(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.CLAIM_QUEUE_MOVED)
+        def compute(self) -> list[Effect]:
+            """Clear the owner when a claim reaches the Zero Balance queue."""
+            queue = ClaimQueue.objects.get(id=self.event.context["queue_entered"]["id"])
+            if queue.queue_sort_ordering != ClaimQueues.ZERO_BALANCE:
+                return []
+            claim_effect = ClaimEffect(claim_id=self.event.target.id)
+            return [claim_effect.unassign()]
     ```
 * * *
 ##  UpdateClaimLineItem 
@@ -25492,7 +25752,7 @@ Attribute | Type | Description | Required
 ---|---|---|---  
 `coverage_id` | `UUID` or `str` | The `id` of an existing [Coverage](/sdk/data-coverage/#coverage). Must be unset when creating a coverage. | For every method except `create()`  
 `patient_id` | `str` | The `id` of the [Patient](/sdk/data-patient/#patient) the coverage belongs to. | For `create()`  
-`issuer_id` | `UUID` or `str` | The `id` of the payer, a [Transactor](/sdk/data-coverage/#transactor). The coverage's plan type comes from the payer. | For `create()`  
+`issuer_id` | `UUID` or `str` | The `id` of the payer, a [Transactor](/sdk/data-coverage/#transactor). The coverage's plan type comes from the payer's type. See [CoverageType](/sdk/data-coverage/#coveragetype). | For `create()`  
 `issuer_address_id` | `UUID` or `str` or `None` | The `id` of a [TransactorAddress](/sdk/data-coverage/#transactoraddress) that belongs to the payer. | No  
 `issuer_phone_id` | `UUID` or `str` or `None` | The `id` of a [TransactorPhone](/sdk/data-coverage/#transactorphone) that belongs to the payer. | No  
 `patient_relationship_to_subscriber` | [`CoverageRelationshipCode`](/sdk/data-coverage/#coveragerelationshipcode) | The patient's relationship to the subscriber. See Subscribers. | For `create()`  
@@ -31778,6 +32038,7 @@ ADD_CLAIM_COMMENT | Add a comment to a claim.
 ADD_CLAIM_BANNER_ALERT | Add a banner alert to a claim.  
 REMOVE_CLAIM_BANNER_ALERT | Remove a banner alert from a claim.  
 UPDATE_CLAIM_PROVIDER | Update the provider on a claim.  
+UPDATE_CLAIM_ASSIGNEE | Assign a claim to a staff member or team, or clear the assignment.  
 UPSERT_CLAIM_METADATA | Add or update metadata on a claim.  
 UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim.  
 ###  Patient Portal 
@@ -32568,6 +32829,16 @@ Target object | Context object
     "type": [Claim](/sdk/data-claim/#claim)
 | 
     "previous": bool  
+CLAIM_ASSIGNEE_CHANGED  
+---  
+Occurs when a claim is assigned to a staff member or team, reassigned, or unassigned, including through [`ClaimEffect.assign`](/sdk/effect-claims/#assign) and [`ClaimEffect.unassign`](/sdk/effect-claims/#unassign). It also fires when a claim is created with an owner, with both `previous` values `null`. The context holds the assignment from before the change. A claim has one owner at a time, so at most one of `assignee` and `team` is set, and both are `null` when the claim was unassigned. To read the new assignment, get the claim and check its [`assignee` and `team`](/sdk/data-claim/#claim) attributes.  
+Target object | Context object  
+    "id": claim_id
+    "type": [Claim](/sdk/data-claim/#claim)
+| 
+    "previous":
+      "assignee": [staff_id](/sdk/data-staff/#staff) | null
+      "team": [team_id](/sdk/data-team/#team) | null  
 CLAIM_BALANCE_CHANGED  
 ---  
 Occurs when a claim's patient balance or aggregate coverage balance changes. Use it to follow payments as they post and to see when the amount the patient or their insurance owes changes. A balance can change from: 
@@ -32888,16 +33159,96 @@ Target object | Context object
       "report_type": str
       "template_type": str
     "updated_at": datetime str  
-####  Document Review Delegation 
-The `DOCUMENT_DELEGATED` event fires when an uncategorized clinical document's review is delegated to another staff member or team, or routed back to its owner. It is a review-workflow event, separate from the Data Integration document-lifecycle events above.
+####  Document Hand-off 
+These events fire when staff hand off a Lab, Imaging, Consult/Referral, or Uncategorized review from the document review screen or the document's card. They are review-workflow events, separate from the Data Integration document-lifecycle events above. They fire for documents created in the chart as well as for inbound documents. Each hand-off is also recorded as a [DocumentHistoryEvent](/sdk/data-document-history-event/).
+DOCUMENT_REASSIGNED  
+---  
+Occurs when a reviewable document's reviewer or team changes, whether through the Reassign modal or the card's reviewer and team dropdowns. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. `reviewer` and `team` hold the new assignment, and either can be null. `reassigned_by` is null when the change came from outside a staff session, such as an API client or a plugin. It also fires when staff send a form to a provider for signature, with `sent_for_signature` set to true, and when Canvas returns a signed form. Both of those hand-offs also fire DOCUMENT_DELEGATED.  
+Target object | Context object  
+    "id": report_id
+    "type": one of
+      [LabReport](/sdk/data-labs/#labreport)
+      [ImagingReport](/sdk/data-imaging/#imagingreport)
+      [ReferralReport](/sdk/data-referral/#referralreport)
+      [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)
+| 
+    "report":
+      "id": report_id
+      "type": str, one of
+        "LabReport"
+        "ImagingReport"
+        "ReferralReport"
+        "UncategorizedClinicalDocument"
+    "reassigned_at": datetime str
+    "reassigned_by": [Staff](/sdk/data-staff/#staff)
+      "type": str ("STAFF")
+      "id": staff_id
+      "name": str
+    "reviewer": [Staff](/sdk/data-staff/#staff)
+      "type": str ("STAFF")
+      "id": staff_id
+      "name": str
+    "team": [Team](/sdk/data-team/#team)
+      "type": str ("TEAM")
+      "id": team_id
+      "name": str
+    "previous_reviewer": [Staff](/sdk/data-staff/#staff)
+      "type": str ("STAFF")
+      "id": staff_id
+      "name": str
+    "previous_team": [Team](/sdk/data-team/#team)
+      "type": str ("TEAM")
+      "id": team_id
+      "name": str
+    "comment": str
+    "sent_for_signature": bool
+    "patient": [Patient](/sdk/data-patient/#patient)
+      "id": pt_id  
+DOCUMENT_COMMENT_ADDED  
+---  
+Occurs when staff add a comment to a reviewable document without changing who holds it.  
+Target object | Context object  
+    "id": report_id
+    "type": one of
+      [LabReport](/sdk/data-labs/#labreport)
+      [ImagingReport](/sdk/data-imaging/#imagingreport)
+      [ReferralReport](/sdk/data-referral/#referralreport)
+      [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)
+| 
+    "report":
+      "id": report_id
+      "type": str, one of
+        "LabReport"
+        "ImagingReport"
+        "ReferralReport"
+        "UncategorizedClinicalDocument"
+    "commented_at": datetime str
+    "commented_by": [Staff](/sdk/data-staff/#staff)
+      "type": str ("STAFF")
+      "id": staff_id
+      "name": str
+    "comment": str
+    "patient": [Patient](/sdk/data-patient/#patient)
+      "id": pt_id  
 DOCUMENT_DELEGATED  
 ---  
-Occurs when an uncategorized clinical document review is delegated to another staff member or team from the document review surface, or routed back to its owner. This is distinct from DOCUMENT_REVIEWER_ASSIGNED, which fires only for Data Integration reviewer changes. `signature_consent` indicates whether the recipient may apply the owner's signature; `routed_back` is true when the document was returned to its owner; `comment` carries the delegator's instructions.  
+Occurs when staff select **SEND FOR SIGNATURE** to send a reviewable document to a provider, and again when the provider selects **SIGN FORM** and Canvas returns the signed form. It does not fire for **REASSIGN** or the card's reviewer and team dropdowns; those fire DOCUMENT_REASSIGNED. A signed form goes back to whoever sent it for signature. When that person can't take it, because they're the provider, are inactive, or can no longer see the patient, it goes to the staff member who created the document. When no one can take it, the form stays with the provider and this event doesn't fire. A DOCUMENT_REASSIGNED event fires for the same hand-off. The target is always the report. `document` holds the inbound document metadata when the report came in through Data Integration, and is null otherwise, such as for a document created in the chart or an electronic lab report. `delegated_by` is the sender, or the provider returning the signed form. `delegated_to` is the provider asked to sign, or the staff member the signed form returns to. `on_behalf_of` is the staff member who sent the form for signature, or, on a route-back, the staff member it returns to. `routed_back` is true when the signed form went back to its sender or creator. `comment` carries the comment left with the request. `signature_consent` is always false, because each staff member places only their own signature. `delegated_to_team` is null for these hand-offs.  
 Target object | Context object  
-    "id": document_id
-    "type": [IntegrationTask](/sdk/data-integration-task/)
+    "id": report_id
+    "type": one of
+      [LabReport](/sdk/data-labs/#labreport)
+      [ImagingReport](/sdk/data-imaging/#imagingreport)
+      [ReferralReport](/sdk/data-referral/#referralreport)
+      [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)
 | 
-    "document": [UncategorizedClinicalDocument](/sdk/data-uncategorized-clinical-document/)
+    "report":
+      "id": report_id
+      "type": str, one of
+        "LabReport"
+        "ImagingReport"
+        "ReferralReport"
+        "UncategorizedClinicalDocument"
+    "document":
       "id": document_id
       "channel": str
       "status": str
@@ -32914,6 +33265,10 @@ Target object | Context object
     "delegated_to": [Staff](/sdk/data-staff/#staff) or [Team](/sdk/data-team/#team)
       "type": str ("STAFF" or "TEAM")
       "id": staff_or_team_id
+      "name": str
+    "delegated_to_team": [Team](/sdk/data-team/#team)
+      "type": str ("TEAM")
+      "id": team_id
       "name": str
     "on_behalf_of": [Staff](/sdk/data-staff/#staff)
       "type": str ("STAFF")
@@ -33650,7 +34005,7 @@ Target object | Context object
        "id": pt_id  
 LETTER_ACTION_EVENT_CREATED  
 ---  
-Occurs when a letter is printed or faxed. For a fax, `delivered_by_fax` on the target is still `None`.  
+Occurs when a letter is printed or faxed. A print fires it only after the letter's PDF renders, so a print that fails to render fires nothing. For a fax, `delivered_by_fax` on the target is still `None`.  
 Target object | Context object  
     "id": letter_action_event_id
     "type": [LetterActionEvent](/sdk/data-letter-action-event/)
@@ -57559,6 +57914,7 @@ Attribute | Type | Description | Required
     ```
 ###  Send Invite 
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
+On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
 ####  Methods 
 #####  apply() → Effect 
 Sends the portal invitation.
