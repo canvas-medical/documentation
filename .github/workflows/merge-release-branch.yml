@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: Just run through the motions, but don't merge/tag/close/create/etc...
+        description: Just run through the motions, but don't merge
         type: boolean
         required: false
         default: false
@@ -15,6 +15,9 @@ on:
 jobs:
   merge-release-branch-to-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Merge Release Branch
