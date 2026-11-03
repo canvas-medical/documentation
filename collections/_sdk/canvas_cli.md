@@ -103,14 +103,15 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Deprecation notices
 
-`canvas install` prints a deprecation warning on every run. So do `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands each time they connect with `credentials.ini`. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning on every run. So do `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands each time they connect to a Canvas instance with `credentials.ini`. Runs against `localhost` or another host that is not a Canvas instance print no deprecation notice, because `canvas login` can't serve those hosts. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
 
 ### Which plugins go through Canvas Platform
 
 `canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
+- When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
 - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
-- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin, including a name without a prefix, is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use. Targets that are `localhost` or another host that is not a Canvas instance still go straight to the instance.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin, including a name without a prefix, is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
@@ -721,7 +722,7 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
 
 - **An instance Canvas Platform manages**, when you're signed in with `canvas login` or a [service account token](#service-accounts-for-cicd): the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, and a live follow reconnects with a new token when the log stream ends the old one, so a long history read or a live follow keeps running.
 - **Any other Canvas instance, while you're signed in**: `canvas logs` refuses it with the way to sign out (`canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN`).
-- **Any instance when you're not signed in, or `localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)) and prints a deprecation notice.
+- **Any instance when you're not signed in, or `localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)). For a Canvas instance, it also prints a deprecation notice.
 
 When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform).
 

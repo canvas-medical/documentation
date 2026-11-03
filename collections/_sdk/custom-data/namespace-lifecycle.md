@@ -89,6 +89,11 @@ inspect what's in a namespace and clean it up without having to connect to the d
 
 All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. When you're signed in to Canvas Platform and it manages the instance, the commands go through Canvas Platform. When you're not signed in, or for `localhost`, they connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`. See [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform). The dry run and confirmation steps below work the same either way.
 
+Through Canvas Platform, two cases differ from a direct connection:
+
+- If the instance runs a Canvas release that can't manage namespaces through Canvas Platform yet, the CLI says so and explains how to sign out and use `credentials.ini` until the instance updates.
+- A `reset` or `drop` with `--execute` waits up to 90 seconds for an answer. If none arrives, the CLI reports that it can't tell whether the namespace changed, because the instance may still finish the work. Run `canvas namespace inspect <namespace> --host <instance>` to check before you retry.
+
 ### Listing Namespaces
 
 See all custom data namespaces on an instance:
