@@ -87,7 +87,7 @@ inspect what's in a namespace and clean it up without having to connect to the d
 
 ## CLI Commands
 
-All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. When you're signed in to Canvas Platform and it manages the instance, the commands go through Canvas Platform. When you're not signed in, or for `localhost`, they connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`. See [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform). The dry run and confirmation steps below work the same either way.
+All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. When you're signed in to Canvas Platform and it manages the instance, the commands go through Canvas Platform. When you're not signed in, or for `localhost`, they connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`. See [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform). The dry run and confirmation steps below work the same either way, except for the extra confirmation on a production instance.
 
 Through Canvas Platform, two cases differ from a direct connection:
 
@@ -168,20 +168,32 @@ Data tables to truncate:
 This is a dry run. To execute, re-run with --execute
 ```
 
-To actually perform the reset, add `--execute`. You will be prompted to confirm by typing the full namespace name:
+To actually perform the reset, add `--execute`. The prompt names the instance the command acts on, because a namespace has the same name on every instance your plugin runs on. Confirm by typing the full namespace name:
 
 ```bash
 canvas namespace reset acme_corp__shared_data --host dev-instance --execute
 ```
 
 ```text
-This will reset namespace 'acme_corp__shared_data'. This cannot be undone.
+This will reset namespace 'acme_corp__shared_data' on dev-instance. This cannot be undone.
 Type the full namespace name to confirm: acme_corp__shared_data
 
 Namespace 'acme_corp__shared_data' has been reset.
   Dropped tables: customnote, specialty
   Truncated tables: custom_attribute, attribute_hub
 ```
+
+Through Canvas Platform, the prompt names the instance by its slug. With `credentials.ini`, it names the host.
+
+On an instance that Canvas Platform marks as production, the prompt adds `(PRODUCTION)` after the instance name and also asks you to type the instance slug:
+
+```text
+This will reset namespace 'acme_corp__shared_data' on acme-prod (PRODUCTION). This cannot be undone.
+Type the full namespace name to confirm: acme_corp__shared_data
+Type the instance slug to confirm: acme-prod
+```
+
+If either entry doesn't match, the CLI aborts without changing the namespace.
 
 After a reset, reinstall your plugin to recreate the tables with your updated model definitions.
 
@@ -216,6 +228,8 @@ To execute:
 ```bash
 canvas namespace drop acme_corp__shared_data --host dev-instance --execute
 ```
+
+Drop asks for the same confirmation as reset, including the instance slug on a production instance.
 
 After a drop, the next plugin installation with that namespace name will create it from scratch,
 generating new authentication keys. Any other plugins that were sharing the namespace will need
