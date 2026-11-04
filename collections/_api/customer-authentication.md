@@ -114,9 +114,9 @@ With `approval_prompt=auto`, Canvas redirects straight to your `redirect_uri` wi
 
 - The logged-in user already has an access token for this application (matched by `client_id`).
 - That access token has not expired.
-- That access token's scopes include every scope in the new request.
+- That access token's scopes include every scope in the new request. The token carries only the scopes the user left checked on the prompt, so if the user unchecked a scope, or a fine-grained scope started unchecked, a later request for that scope shows the prompt again.
 
-Otherwise the prompt is shown as usual. That means the user still approves the first time, and sees the prompt again once their last access token for the application has expired or when the request asks for a scope they have not approved before.
+Otherwise, Canvas shows the prompt as usual. The user still approves the first time, and sees the prompt again after their last access token for the application expires or when the request asks for a scope they haven't approved.
 
 Applications also have a skip-authorization setting that suppresses the prompt for every user, including the first time. It is not on the `/auth/applications/` form; contact Canvas Support if you need it for an application.
 
