@@ -648,14 +648,16 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
 - `match_patient` and `suggest_patient` take the name, birth date, and MRN as
   the document gives them and match them in code. The MRN can be Canvas's or
   one an outside organization keeps for the patient, such as the sending lab's.
-  A patient is suggested only when exactly one matches, an MRN counts only with
-  the last name or birth date agreeing, and the model is told a patient's id,
-  never their details.
+  A patient is suggested only when exactly one matches. Canvas's MRN counts
+  only with the last name or birth date agreeing, and another organization's
+  only when it is a current medical record number and both agree. The model is
+  told a patient's id, never their details.
 - `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
   `assign_document_reviewer` suggest on the document's review form. They file
   nothing: a person confirms each suggestion in Canvas, and the review stays
   required. Each suggestion is labeled "AI suggested" with a confidence level:
-  for the patient, high when three identifiers agree and medium otherwise; for
+  for the patient, high when three of Canvas's own identifiers agree and medium
+  otherwise; for
   the type and the values, the confidence the model passes.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
