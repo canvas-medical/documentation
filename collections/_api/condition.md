@@ -35,19 +35,29 @@ sections:
             type: array[json]
             exclude_in: update
             description_for_all_endpoints: Canvas supports a note identifier extension on this resource. The note identifier can be used with the [Canvas Note API](/api/note).
-            create_description: Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note. If neither is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.
+            create_description: >-
+              Canvas recommends sending the note identifier extension or the Encounter reference, but not both. If both are supplied, they must both refer to the same note. If neither is specified, it will insert into a Data Import note where the DOS is the current time of ingestion.<br><br>
+              Canvas also supports a condition assess extension on create. Set its `valueBoolean` to `false` to add an active Condition to the patient's chart with an Add Condition command, without assessing it. Without the extension, or with `true`, an active Condition is assessed.
             attributes:
                 - name: url
                   type: string
                   description: Reference that defines the content of this object.
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/condition-assess
+                      exclude_in: read, search
                 - name: valueId
                   type: string
                   description: The valueId field is used for the Note extension and will be the note's unique identifier.
+                - name: valueBoolean
+                  type: boolean
+                  exclude_in: read, search
+                  description: The valueBoolean field is used for the condition assess extension. `false` adds the Condition without assessing it.
           - name: clinicalStatus
             description_for_all_endpoints: The clinical status of the condition.
-            create_description: If clinicalStatus is active, the Condition will be added as a Diagnose command. If it is not active, the Condition will be added as a Past Medical History command.
+            create_description: >-
+              If clinicalStatus is active, the Condition will be added as an Assess command, or as an Add Condition command when the condition assess extension is `false`. If it is not active, the Condition will be added as a Past Medical History command.<br><br>
+              An active Condition with an ICD-10 coding reuses the patient's charted Condition for that code instead of creating another one: an active match is returned as is, and a resolved match is reactivated. The response's `id` is that Condition's. When the Condition is already active and the condition assess extension is `false`, nothing is added to a note.
             required_in: create, update
             type: json
             attributes:
@@ -135,6 +145,7 @@ sections:
                         - value: Provisional
           - name: category
             description: A category assigned to the condition.
+            create_description: For an active Condition, `problem-list-item` puts the Condition on the patient's problem list and `encounter-diagnosis` records it as an encounter diagnosis, moving a reused Condition either way. An `encounter-diagnosis` must be assessed, so it is rejected with a 422 when the condition assess extension is `false`.
             required_in: create,update
             type: array[json]
             attributes:
@@ -301,8 +312,8 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           description: >-
             Create a Condition resource.<br><br>
-            This endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.<br><br>
-            If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` command. If it is not **active**, the Condition will be added as a `Past Medical History` command.<br><br>
+            An **active** Condition with an ICD-10 coding reuses the patient's charted Condition for that code, reactivating it if it is resolved, so repeated writes do not duplicate it. Other Conditions are created on every request.<br><br>
+            If `clinicalStatus` is **active**, the Condition will be added as an `Assess` command, or as an `Add Condition` command when the condition assess extension is `false`. If it is not **active**, the Condition will be added as a `Past Medical History` command.<br><br>
             If an `encounter` or a note ID in the `extension` is provided, the Condition will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
           example_request: condition-create-request
           example_response: condition-create-response
@@ -314,7 +325,8 @@ sections:
         update:
           description: >-
             Update a Condition resource.<br><br>
-            The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but out FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.
+            The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but out FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.<br><br>
+            A Condition can be marked as entered-in-error only when it was recorded in a Data Import note and is assessed in at most one note. Otherwise the update is rejected with a 422, and the Condition must be entered in error from the patient's chart.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: condition-update-request
           example_response: condition-update-response
