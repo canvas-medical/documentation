@@ -646,13 +646,17 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   `find_document_types` and `find_report_templates` list what it can be filed
   as.
 - `match_patient` and `suggest_patient` take the name, birth date, and MRN as
-  the document gives them and match them in code. A patient is suggested only
-  when exactly one matches, an MRN counts only with the last name or birth date
-  agreeing, and the model is told a patient's id, never their details.
+  the document gives them and match them in code. The MRN can be Canvas's or
+  one an outside organization keeps for the patient, such as the sending lab's.
+  A patient is suggested only when exactly one matches, an MRN counts only with
+  the last name or birth date agreeing, and the model is told a patient's id,
+  never their details.
 - `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
   `assign_document_reviewer` suggest on the document's review form. They file
   nothing: a person confirms each suggestion in Canvas, and the review stays
-  required.
+  required. Each suggestion is labeled "AI suggested" with a confidence level:
+  for the patient, high when three identifiers agree and medium otherwise; for
+  the type and the values, the confidence the model passes.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
 A staff member starting a run about a document also has to see every patient,
@@ -1523,9 +1527,9 @@ Check whether the identifiers on the document match exactly one Canvas patient, 
 | `first_name` | string | no | First name as the document gives it. |
 | `last_name` | string | no | Last name as the document gives it. |
 | `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
-| `mrn` | string | no | The Canvas MRN, if the document shows one. |
+| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
 
-**Returns:** `{match: {patient_id}, matched_on}` when exactly one patient matches, else `{match: null, reason}`.
+**Returns:** `{match: {patient_id}, matched_on, confidence}` when exactly one patient matches (`confidence` is high when three identifiers agree, else medium), else `{match: null, reason}`.
 
 #### `find_document_types`
 
@@ -2229,10 +2233,10 @@ Suggest, on the document's review form, the patient the document is for. Pass th
 | `first_name` | string | no | First name as the document gives it. |
 | `last_name` | string | no | Last name as the document gives it. |
 | `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
-| `mrn` | string | no | The Canvas MRN, if the document shows one. |
+| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
 | `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
 
-**Returns:** `{ok: true, patient_id, matched_on}` when one patient matched and was suggested, else `{ok: false, reason}`.
+**Returns:** `{ok: true, patient_id, matched_on, confidence}` when one patient matched and was suggested, else `{ok: false, reason}`.
 
 #### `categorize_document`
 
@@ -2247,6 +2251,7 @@ Suggest, on the document's review form, the type of document it is. `document_ty
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `document_type_key` | string | yes | From find_document_types. |
+| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
 | `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
 
 **Returns:** `{ok: true, document_type: {key, name, template_type}}`.
@@ -2266,6 +2271,7 @@ Fill in, on the document's review form, the values a lab, imaging, or specialty 
 | `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
 | `template_id` | integer | yes | From find_report_templates. |
 | `fields` | object | yes | Field code or label -> {value, unit?, reference_range?, abnormal?}. |
+| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
 | `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
 
 **Returns:** `{ok: true, template_id, template_name, filled: [<field>]}`.
