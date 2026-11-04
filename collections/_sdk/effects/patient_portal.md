@@ -338,6 +338,8 @@ Canvas applies the same appointment-type, location, and provider filters when a 
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
 
+To show open times on a booking screen your plugin builds itself, call the native slot search with [`search_slots()`](/sdk/utils/#searching-for-open-appointment-slots).
+
 ### Filter available slots
 
 Respond to `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS`.
