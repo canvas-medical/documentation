@@ -25,7 +25,9 @@ See [Creating a patient](#creating-a-patient) for an example.
 Updates an existing patient record.
 
 - `patient_id` is required, and must be the id of an existing patient.
-- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values, and so does the patient's business line, which the effect has no attribute for.
+- To remove a patient's default location or default provider, set `default_location_id` or `default_provider_id` to `None`.
+- `addresses`, `external_identifiers`, and `previous_names` replace the stored values when you set them, so pass the complete list you want the patient to have. An external identifier you leave out of the list is deleted, unless it has already expired.
 
 See [Updating a patient](#updating-a-patient) for an example.
 

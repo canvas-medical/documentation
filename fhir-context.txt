@@ -19263,7 +19263,7 @@ date or datetime
 Filter by the date or specific datetime the document was created. See [Date Filtering](/api/date-filtering) for more information.
 patient 
 string 
-The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Optional: when neither `patient` nor `subject` is given, the search returns matching documents across all patients, so you can combine `category`, `type`, `date` and `status` on their own (e.g. `category=clinical-note&date=ge2026-10-01&status=current`) and page through the results with [Pagination](/api/pagination).
 status 
 string 
 The status of the document reference
@@ -29087,7 +29087,7 @@ string
 Actual result.  
 This is used for vital observation that correspond with a string value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute.   
 Currently supported string values are   
-\- **note** \- this is a free text comment field in the Canvas Vital Command   
+\- **note** \- this is a free text comment field in the Canvas Vital Command. Maximum length is 150 characters.   
 \- **pulse rhythm** \- This is an enum in the Canvas Vital command. Values supported are **Regular** , **Irregularly Irregular** , **Regulary Irregular**. If one of these values is not provided, a 422 error will occur.   
 \- **blood pressure** \- This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command.
 hasMember 
@@ -40168,7 +40168,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40218,10 +40218,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. When the committer or originator is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "Organization").
 display 
 string 
 Text alternative for the resource.
@@ -40366,7 +40366,7 @@ The code of the activity.
 agent 
 array[json] 
 Actor involved.   
-The agent will be populated by the committer or originator in Canvas as the auther. If neither is found, it will default to the Canvas Organization as the composer.
+The agent will be populated by the committer or originator in Canvas as the author. If neither is found, it will default to the Canvas Organization as the composer.
 Click to view child attributes
 type 
 json 
@@ -40416,10 +40416,10 @@ json
 Click to view child attributes
 reference 
 string 
-The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
+The reference string of who the agent is in the format of `"Practitioner/a39cafb9d1b445be95a2e2548e12a787"`. When the committer or originator is a patient, such as a write made with a patient-context token, the reference is to that patient in the format `"Patient/b8dfa97bdcdf4754bcd8197ca78ef0f0"`. If the reference is `Organization/00000000-0000-0000-0002-000000000000`, a committer or originator couldn't be found in Canvas as the agent, so Canvas Medical is the default agent.
 type 
 string 
-Type the reference refers to (e.g. "Practitioner", "Organization").
+Type the reference refers to (e.g. "Practitioner", "Patient", "Organization").
 display 
 string 
 Text alternative for the resource.
@@ -47208,7 +47208,7 @@ This guide demonstrates how to build an external application that integrates wit
   5. **Save** the application
   6. Copy the **Client ID** \- you'll need this in the next step
 ###  Step 2. Deploy the Plugin 
-Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Moving to Canvas Platform](/guides/moving-to-canvas-platform/#2-rename-the-plugin-with-the-prefix) for the places the name appears). Then deploy it and set the Client ID:
+Copy the example into a repository of its own and rename the package with your organization's plugin prefix, such as `acme__note_management_app` (see [Signing in to Canvas Platform](/sdk/canvas_cli/#signing-in-to-canvas-platform) for the places the name appears). Then deploy it and set the Client ID:
     ```bash
     canvas deploy note_management_app/acme__note_management_app --instance <YOUR_INSTANCE>
     canvas config set acme__note_management_app client_id=<YOUR_CLIENT_ID> --instance <YOUR_INSTANCE>

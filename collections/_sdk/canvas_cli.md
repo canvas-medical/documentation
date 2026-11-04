@@ -2,7 +2,7 @@
 title: "Canvas CLI"
 ---
 
-{% include alert.html type="warning" content="The Canvas CLI signs in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and ships plugins with <a href='#canvas-deploy'><code>canvas deploy</code></a>. Instance API credentials in <code>credentials.ini</code> and <code>canvas install</code> are deprecated, and support for them ends on <b>December 14, 2026</b>. See <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
+{% include alert.html type="warning" content="The Canvas CLI signs in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and ships plugins with <a href='#canvas-deploy'><code>canvas deploy</code></a>. Instance API credentials in <code>credentials.ini</code> and <code>canvas install</code> are deprecated, and support for them ends on <b>December 14, 2026</b>. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 ## Getting Started
 
@@ -28,7 +28,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
   Acme Health (acme): plugin prefix acme__
 ```
 
-`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. It lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
+`canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
 A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
 
@@ -74,7 +74,7 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 ### Instance API credentials (`credentials.ini`): deprecated
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a> walks through the switch." %}
+{% include alert.html type="warning" content="<b>Deprecated:</b> authenticating the Canvas CLI with OAuth client credentials in <code>~/.canvas/credentials.ini</code>, and installing plugins with <code>canvas install</code>, are deprecated. Support ends on <b>December 14, 2026</b>. Sign in with <a href='#signing-in-to-canvas-platform'><code>canvas login</code></a> and deploy with <a href='#canvas-deploy'><code>canvas deploy</code></a> instead. <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a> walks through the switch." %}
 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
@@ -280,6 +280,14 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
+With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
+Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
+To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
+```
+
 **Waiting for the outcome**
 
 For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
@@ -370,7 +378,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 ### `canvas install`
 
-{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/moving-to-canvas-platform/'>Moving to Canvas Platform</a>." %}
+{% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
 Install a plugin into a Canvas instance.
 
