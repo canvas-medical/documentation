@@ -1,0 +1,40 @@
+name: Build image
+
+# Builds the AWS Amplify build image (build-image/Dockerfile) with the Ruby
+# version in .ruby-version and pushes it to ECR Public as :latest, which
+# Amplify builds use, and :ruby-<version>.
+on:
+  push:
+    branches: [main]
+    paths:
+      - .ruby-version
+      - build-image/**
+      - .github/workflows/build-image.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::004266138750:role/github-documentation-build-image-push
+          aws-region: us-east-1
+
+      - uses: aws-actions/amazon-ecr-login@03f1aad4c6c7ffd436567f42f9384779290529bd # v2.1.7
+        with:
+          registry-type: public
+
+      - name: Build and push
+        run: |
+          image=$(aws ecr-public describe-repositories --repository-names docs-build --query 'repositories[0].repositoryUri' --output text)
+          ruby_version=$(cat .ruby-version)
+          docker build --build-arg RUBY_VERSION="$ruby_version" -t "$image:latest" -t "$image:ruby-$ruby_version" build-image
+          docker run --rm "$image:latest" sh -c 'ruby -v && node -v && npm -v && yarn -v && uv --version && git --version && ssh -V'
+          docker push --all-tags "$image"

@@ -30,6 +30,31 @@ Some capabilities are gated by **named feature permissions** rather than by a re
 activation, and prescription cancellation among them. These behave identically in
 evaluation; they simply gate a feature rather than a model.
 
+### Removing admin console access
+
+Staff users can open the admin console by default. To take it away from a user without
+changing anything else they can do in Canvas, use the **Denied access to the admin
+(overrides all other permissions)** permission (`api.deny_admin_access`). Unlike other
+permissions, it removes access rather than granting it.
+
+No default group includes this permission. To use it:
+
+1. Ask Canvas Support to add the permission to a group on your instance. Only Canvas Support can
+   add a permission to a group.
+2. An administrator with Staff Permissions Access assigns that group to the users who shouldn't
+   open the admin console, in **Practice: Staff Permissions**. To also give it to staff who are
+   assigned a given staff role later, add the group to that role's default auth groups in
+   **Practice: Roles**. Changing a role's default auth groups doesn't affect staff who already
+   hold the role.
+
+A user who holds this permission:
+
+- Is sent to the admin sign-in page, which says they aren't authorized, when they open any
+  admin console page
+- Can't read plugin logs, either in the admin console or through the plugin logs API
+- Doesn't see **Settings** in the provider menu, even when a plugin's
+  [provider menu configuration](/sdk/layout-effect/#provider-menu-configuration) lists it
+
 ## Default roles
 
 Every Canvas instance is provisioned with the roles below. They are grouped here by what
@@ -82,7 +107,32 @@ cadence.
 
 {% include alert.html type="warning" content="Staff Permissions Access is the role that can change other users' access, and Lead can manage their MFA devices. Both warrant the tightest assignment and the most frequent review of any role in the list." %}
 
-Turning emergency access on or off requires the Emergency Access role.
+### Emergency access
+
+Emergency access is a temporary override for when a user needs to work on records beyond their
+normal roles. Turning it on or off requires the Emergency Access role, and it stays on until the
+user turns it off.
+
+While emergency access is on, the user holds add and change permissions on Canvas records. It
+never grants permissions whose changes would outlast the emergency session: those that change
+who holds access, how users sign in, what code runs, which credentials are used, or what the
+audit trail records. The excluded permissions cover:
+
+- Roles, role groups, permission groups, staff permissions, and staff role assignments
+- Staff records, including their contact points, external identifiers, and identity
+  verification
+- User accounts, login sessions, and OAuth configuration
+- Multi-factor authentication devices, including TOTP, email, and SMS
+- Failed-login lockouts
+- Plugins and plugin secrets
+- Stored Google credentials
+- Feature flags, organization settings, staff and global configuration settings, and Constance
+  settings
+- Audit and security event records, admin action logs, and record version history
+
+Turning emergency access off returns the user's directly assigned permissions to exactly what
+they were before it was turned on, including when the user had none. Any permission added to the
+user directly during the session is removed as well.
 
 Your instance may include additional roles introduced in later releases, or roles created
 by your own administrators.

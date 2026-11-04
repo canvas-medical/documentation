@@ -39,7 +39,11 @@ sections:
                   - value: http://schemas.canvasmedical.com/fhir/extensions/roles
               - name: valueString
                 type: string
-                description: Value of extension.<br><br> The `valueString` attribute is needed for the role's extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication
+                description_for_all_endpoints: Value of extension.<br><br> The `valueString` attribute is needed for the username extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-user-username`. <br><br> A username is a unique and often personalized identifier that an individual or entity uses to access a computer system, online platform, or any other service that requires user authentication.
+                create_description: >-
+                  The username is optional. If you omit the username extension, Canvas generates a username from the practitioner's given and family names in lowercase, such as `janedoe` for Jane Doe. The request fails if another staff member already has the username you send or the one Canvas generates, so send a unique username when two practitioners share a name. A username is up to 150 characters of letters, digits, and `@`, `.`, `+`, `-`, or `_`.
+                update_description: >-
+                  You can't change a practitioner's username. If you send the username extension, its `valueString` must match the practitioner's current username, or the update fails with a 422 error. If you omit the username extension, the username stays the same.
               - name: valueUrl
                 type: string
                 description: Value of extension.<br><br> The `valueUrl` attribute is needed for the meeting link extension where the `url` is `http://schemas.canvasmedical.com/fhir/extensions/practitioner-personal-meeting-room-link`. This value will represent the url that will be associated to any telehealth notes in Canvas. 
@@ -90,11 +94,12 @@ sections:
                       - name: system
                         description: The system url of the coding.
                         type: string
+                        required_in: create, update
                         enum_options: 
                           - value: http://schemas.canvasmedical.com/fhir/roles
                       - name: code
                         required_in: create, update
-                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
+                        description: The internal code. Examples of expected values include RN, CA, MA, etc. Some of these values are built in to each Canvas instance but are customizable. Each code must match a role defined in your Canvas instance; the request fails if any code doesn't. See this [article](https://canvas-medical.help.usepylon.com/articles/6649603926-staff-roles) for more information.
                         type: string
                       - name: display
                         description: The display name of the coding.
@@ -102,15 +107,22 @@ sections:
           - name: identifier
             type: array[json]
             description: A secondary identifier for the Practitioner. This is the NPI number of the Practitioner in Canvas.
+            create_description: >-
+              The practitioner's NPI number. The NPI is optional, so you can create a practitioner without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.
+            update_description: >-
+              The practitioner's NPI number. The NPI is optional, so you can send an update without an `identifier`. To store an NPI, send one identifier with both `system` and `value`.<br><br>
+              If you omit `identifier` during an update, Canvas removes the practitioner's stored NPI. To keep the NPI, send it in every update.
             attributes:
               - name: system
                 type: string
                 description: The `system` attribute specifies the namespace in which the identifier value is unique. 
+                create_and_update_description: Set to `http://hl7.org/fhir/sid/us-npi`. Required when you send an `identifier`.
                 enum_options:
                   - value: http://hl7.org/fhir/sid/us-npi
               - name: value
                 type: string
                 description: Practitioner's NPI number. Its value must be a 10 digit number.
+                create_and_update_description: The practitioner's 10-digit NPI number. Required when you send an `identifier`. A value longer than 10 characters fails.
           - name: active
             type: boolean
             description: A boolean to specify if the practitioner is active in the healthcare system. If this value is not set, Canvas will default this to true.
@@ -250,11 +262,14 @@ sections:
                 attributes:
                   - name: system
                     type: string
+                    required_in: create, update
                     description: The `system` attribute specifies the namespace in which the identifier value is unique. 
+                    create_and_update_description: Set to `http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url`.
                     enum_options:
                       - value: http://schemas.canvasmedical.com/fhir/extensions/issuing-authority-url
                   - name: value
                     type: string
+                    required_in: create, update
                     description: The `value` attribute contains the actual identifier assigned to the practitioner's qualification. This value is unique within the context defined by the `system` attribute. It can be any string that serves as a meaningful identifier, such as a license number, certification ID, or other relevant qualification identifiers.
               - name: code
                 type: json
@@ -278,19 +293,30 @@ sections:
                 attributes:
                   - name: start
                     type: string
+                    required_in: create, update
                     description: Start date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
                   - name: end
                     type: string
+                    required_in: create, update
                     description: End date of the Practitioner's license. Expected date format is YYYY-MM-DD (Example - "2020-01-01")
               - name: issuer
                 type: json
-                description: A component of the Practitioner's license object that defines the license issuing authority short name.
+                required_in: create, update
+                description: The authority that issued the Practitioner's license.
                 attributes:
                   - name: display
                     type: string
-                    description: The display text of the license's short name.
+                    required_in: create, update
+                    description: The full name of the issuing authority, such as `MD University Los Angeles`.
                   - name: extension
                     type: array[json]
+                    required_in: create, update
+                    description: The issuing authority's short name, the state that issued the license, and whether the license is primary.
+                    create_and_update_description: >-
+                      The issuing authority's short name, the state that issued the license, and whether the license is primary.<br><br>
+                      Put the `issuing-authority-short-name` extension first in the list, with the short name in `valueString`.<br><br>
+                      For a license whose `code.text` is `PTAN` or `STATE`, also send the `issuing-authority-state` extension.<br><br>
+                      Mark at most one license of each license type as primary with the `license-primary` extension.
                     attributes:
                       - name: url
                         type: string

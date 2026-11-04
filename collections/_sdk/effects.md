@@ -489,6 +489,7 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 | ADD_CLAIM_BANNER_ALERT | Add a banner alert to a claim. |
 | REMOVE_CLAIM_BANNER_ALERT | Remove a banner alert from a claim. |
 | UPDATE_CLAIM_PROVIDER | Update the provider on a claim. |
+| UPDATE_CLAIM_ASSIGNEE | Assign a claim to a staff member or team, or clear the assignment. |
 | UPSERT_CLAIM_METADATA | Add or update metadata on a claim. |
 | UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim. |
 
@@ -502,6 +503,7 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
 | SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
+| PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal). |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
@@ -534,6 +536,15 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | Effect | Description |
 |---|---|
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
+
+
+### Plugin Usage
+
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit. |
 
 
 ### Revenue / Payment Processor
