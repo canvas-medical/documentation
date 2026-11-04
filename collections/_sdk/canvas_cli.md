@@ -109,10 +109,13 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Which plugins go through Canvas Platform
 
-`canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
+`canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
-- A machine that is not signed in goes straight to the instance.
-- Otherwise the CLI asks Canvas Platform for the plugin, whatever its name, when a target is a Canvas instance or when you pass neither `--instance` nor `--host`. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance. When `--instance` or `--host` names only `localhost` or other hosts that aren't Canvas instances, the CLI doesn't ask Canvas Platform.
+- When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
+- On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+
+To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
 `--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
 
