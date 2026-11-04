@@ -111,7 +111,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 - When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
 - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
-- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin, including a name without a prefix, is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
