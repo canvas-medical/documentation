@@ -102,6 +102,26 @@ After the user clicks **Authorize**, they are redirected to your `redirect_uri` 
 https://your-app.com/callback?code=AUTHORIZATION_CODE
 ```
 
+#### Skipping the prompt for a user who already approved
+
+By default the authorization prompt appears on every request to `/auth/authorize/`, even for a user who approved the same application a moment ago. To skip it on repeat requests, add `approval_prompt=auto` to the authorize URL:
+
+```text
+{YOUR_CANVAS_EHR_INSTANCE}/auth/authorize/?response_type=code&client_id={CLIENT_ID}&scope={SCOPES}&redirect_uri={REDIRECT_URI}&launch={LAUNCH_CONTEXT}&approval_prompt=auto
+```
+
+With `approval_prompt=auto`, Canvas redirects straight to your `redirect_uri` with a new `code`, without showing the prompt, when all of these are true:
+
+- The logged-in user already has an access token for this application (matched by `client_id`).
+- That access token has not expired.
+- That access token's scopes include every scope in the new request.
+
+Otherwise the prompt is shown as usual. That means the user still approves the first time, and sees the prompt again once their last access token for the application has expired or when the request asks for a scope they have not approved before.
+
+Applications also have a skip-authorization setting that suppresses the prompt for every user, including the first time. It is not on the `/auth/applications/` form; contact Canvas Support if you need it for an application.
+
+The prompt lists a fixed description for each requested scope. The description for `fhirUser` reads "Authenticated patient identity" for every user, including staff, where the scope identifies the logged-in staff member.
+
 ### Step 2: Exchange the Code for Tokens
 
 ```shell
