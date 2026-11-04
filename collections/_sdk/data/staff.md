@@ -137,6 +137,14 @@ from canvas_sdk.v1.data.staff import Staff
 verified_staff = Staff.objects.filter(identity_verifications__isnull=False).distinct()
 ```
 
+When the name ID.me verified differs from the staff member's name in Canvas, the verification still counts, and its `name_mismatch` is `True`. Filter on it to find staff whose name in Canvas may need updating:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+staff_to_update = Staff.objects.filter(identity_verifications__name_mismatch=True).distinct()
+```
+
 ## Attributes
 
 ### Staff
@@ -371,14 +379,15 @@ to upsert it from a plugin.
 
 ### StaffIdentityVerification
 
-| Field Name   | Type            | Description                                                                                              |
-| ------------ | --------------- | -------------------------------------------------------------------------------------------------------- |
-| dbid         | Integer         |                                                                                                          |
-| created      | DateTime        |                                                                                                          |
-| modified     | DateTime        |                                                                                                          |
-| staff        | [Staff](#staff) | The staff member who verified their identity                                                             |
-| verified_at  | DateTime        | When the staff member completed the ID.me verification                                                   |
-| policy_scope | String          | The ID.me policy, or assurance level, the verification met, for example `http://idmanagement.gov/ns/assurance/ial/2/aal/2` |
+| Field Name    | Type            | Description                                                                                                                |
+| ------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| dbid          | Integer         |                                                                                                                            |
+| created       | DateTime        |                                                                                                                            |
+| modified      | DateTime        |                                                                                                                            |
+| staff         | [Staff](#staff) | The staff member who verified their identity                                                                               |
+| verified_at   | DateTime        | When the staff member completed the ID.me verification                                                                     |
+| policy_scope  | String          | The ID.me policy, or assurance level, the verification met, for example `http://idmanagement.gov/ns/assurance/ial/2/aal/2` |
+| name_mismatch | Boolean         | `True` when the name ID.me verified differs from the staff member's name in Canvas                                         |
 
 ## Enumeration types
 
