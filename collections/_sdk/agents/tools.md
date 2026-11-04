@@ -622,6 +622,42 @@ goes, keep the write to your plugin's own bookkeeping and make it
 idempotent. Anything a person should approve, or that changes the chart,
 belongs in an effect.
 
+## Incoming documents
+
+An agent can work an incoming document, such as a fax just received, before
+anyone files it. A handler on `DOCUMENT_RECEIVED` starts the run about that
+document:
+
+```python?partial=true
+from canvas_sdk.effects.agent import RunAgentEffect
+
+RunAgentEffect(
+    agent_id="my_plugin.agents.intake:IntakeAgent",
+    scope=RunAgentEffect.Scope.DOCUMENT,
+    document_id=self.event.target.id,
+).apply()
+```
+
+The platform checks the document is in the data integration queue and hands
+it to the intake tools as `ctx["document_id"]`. Grant them with
+`@intake_reads` and `@intake_writes`:
+
+- `read_incoming_document` answers a question from the document's file, and
+  `find_document_types` and `find_report_templates` list what it can be filed
+  as.
+- `match_patient` and `suggest_patient` take the name, birth date, and MRN as
+  the document gives them and match them in code. A patient is suggested only
+  when exactly one matches, an MRN counts only with the last name or birth date
+  agreeing, and the model is told a patient's id, never their details.
+- `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
+  `assign_document_reviewer` suggest on the document's review form. They file
+  nothing: a person confirms each suggestion in Canvas, and the review stays
+  required.
+
+Every intake tool needs `api.access_dataintegration`, the queue's permission.
+A staff member starting a run about a document also has to see every patient,
+since matching searches the whole chart.
+
 ## Tool surface design tips
 
 - **Be specific in `description`.** The model picks tools based on
@@ -690,6 +726,8 @@ list to opt out of specific tools within a granted category:
 - **`@clinical_writes`** (20 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`
 - **`@config_reads`** (5 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`
 - **`@document_reads`** (1 tool): `read_document`
+- **`@intake_reads`** (4 tools): `read_incoming_document`, `match_patient`, `find_document_types`, `find_report_templates`
+- **`@intake_writes`** (4 tools): `suggest_patient`, `categorize_document`, `prefill_document_fields`, `assign_document_reviewer`
 - **`@message_reads`** (1 tool): `find_messages`
 - **`@message_writes`** (1 tool): `originate_message`
 - **`@task_reads`** (1 tool): `find_tasks`
@@ -1453,6 +1491,75 @@ Look up the codes a history command needs, by name, from Canvas's own vocabulari
 | `query` | string | yes | The name to search for, e.g. 'penicillin' or 'appendectomy'. |
 
 **Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), or `cvx_code` and `cpt_code` (immunization).
+
+#### `read_incoming_document`
+
+**Category:** `@intake_reads`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Read the incoming document this run is about, such as a fax just received, and answer a question from it, with page numbers. Use it to find what the document says about who it is for (name, birth date, MRN), what kind of document it is, and the values it reports. Reads the whole file with a separate model call, so ask for everything you need in one or two questions.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `question` | string | yes | What to find in the document, in one focused question. |
+
+**Returns:** Object with `ok`, `document_id`, `title`, `channel` (e.g. fax), `answer` (with page numbers), and `note`; or `{ok: false, error}` when the file cannot be read.
+
+#### `match_patient`
+
+**Category:** `@intake_reads`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | no | First name as the document gives it. |
+| `last_name` | string | no | Last name as the document gives it. |
+| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
+| `mrn` | string | no | The Canvas MRN, if the document shows one. |
+
+**Returns:** `{match: {patient_id}, matched_on}` when exactly one patient matches, else `{match: null, reason}`.
+
+#### `find_document_types`
+
+**Category:** `@intake_reads`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+List the types an incoming document can be filed as, for `categorize_document`. A clinical type with a `template_type` files with a report template (`find_report_templates`) whose values `prefill_document_fields` fills in.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `query` | string | no | Optional words in the type's name, e.g. 'lab' or 'referral'. |
+| `report_type` | string (enum) | no |  One of: `CLINICAL`, `ADMINISTRATIVE`. |
+
+**Returns:** Array of `{key, name, report_type, template_type}`; `template_type` is LabReportTemplate, ImagingReportTemplate, SpecialtyReportTemplate, or null.
+
+#### `find_report_templates`
+
+**Category:** `@intake_reads`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Search the report templates a lab, imaging, or specialty document is filed with, for `prefill_document_fields`. Each template lists its fields: fill in values only for these fields, keyed by the field's `code` when it has one, else its `label`. When several templates fit, choose the one whose fields match the document's values.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
+| `query` | string | yes | Words in the template's name, e.g. 'lipid' or 'CBC'. |
+
+**Returns:** Array of up to 10 `{template_id, name, code, fields: [{code, label, units, type, required}]}`.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -2106,4 +2213,78 @@ Delete a staged (uncommitted) draft command from the patient's open note. `comma
 | `command_id` | string | yes | The draft command's id. |
 
 **Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`.
+
+#### `suggest_patient`
+
+**Category:** `@intake_writes`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | no | First name as the document gives it. |
+| `last_name` | string | no | Last name as the document gives it. |
+| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
+| `mrn` | string | no | The Canvas MRN, if the document shows one. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, patient_id, matched_on}` when one patient matched and was suggested, else `{ok: false, reason}`.
+
+#### `categorize_document`
+
+**Category:** `@intake_writes`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Suggest, on the document's review form, the type of document it is. `document_type_key` is a `key` from `find_document_types`. Files nothing; a person confirms the type.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `document_type_key` | string | yes | From find_document_types. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, document_type: {key, name, template_type}}`.
+
+#### `prefill_document_fields`
+
+**Category:** `@intake_writes`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Fill in, on the document's review form, the values a lab, imaging, or specialty report gives, for a template from `find_report_templates`. `fields` maps each template field's `code` (or `label`, when it has no code) to the value exactly as the document reports it. Leave out a value the document does not give; never estimate one. Files nothing; a person confirms the values.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
+| `template_id` | integer | yes | From find_report_templates. |
+| `fields` | object | yes | Field code or label -> {value, unit?, reference_range?, abnormal?}. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, template_id, template_name, filled: [<field>]}`.
+
+#### `assign_document_reviewer`
+
+**Category:** `@intake_writes`
+
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+
+Suggest who reviews the document: a staff member, a team, or both. The review stays required; a person confirms the assignment.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `staff_id` | string | no | The reviewer's staff id. |
+| `team_id` | string | no | The reviewing team's id. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, staff_id, team_id}`.
 <!-- AUTOGEN:writes END -->

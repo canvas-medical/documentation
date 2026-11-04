@@ -48,9 +48,12 @@ step is platform-driven:
    your plugin vouches for it, so check it before returning the effect.
    The platform grants the run its [capabilities](#capabilities) from
    the requester's permissions, and a `claim_id` must name an existing
-   claim, which needs the `REVENUE` capability.
+   claim, which needs the `REVENUE` capability. A `document_id` must name
+   an incoming document in the data integration queue that staff have not
+   junked; a staff member starting the run needs the queue's permission
+   and must see every patient, and a patient cannot start one.
    The `trigger_payload` cannot carry `patient_id`, `staff_id`,
-   `note_id`, or `claim_id` of its own. A subject that fails a check is refused and the
+   `note_id`, `claim_id`, or `document_id` of its own. A subject that fails a check is refused and the
    run is never queued. Either way the run
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
@@ -161,19 +164,21 @@ The platform sets three things on the agent before any hook fires:
 | `self.subject` (`RunSubject`) | `patient_id` | The effect's `patient_id`, checked to exist |
 | | `note_id` | The effect's `note_id`, checked to belong to the patient |
 | | `claim_id` | The effect's `claim_id`, checked to exist |
+| | `document_id` | The effect's `document_id`, an incoming document checked to be in the queue |
 | `self.requester` (`RunRequester`) | `staff_id` | The staff member whose action emitted the effect; `None` for a run a patient, a schedule, or a system event started |
 | | `permissions` | The staff member's permissions, such as `"api.change_task"`; empty for a run a patient started; `None` when permissions do not limit the run (see [Acting for the requester](#acting-for-the-requester)) |
 | `self.capabilities` | | The [capabilities](#capabilities) the platform granted the requester |
 
 Your agent reads these from the agent rather than from
 `trigger_payload`, which rejects `patient_id`, `staff_id`, `note_id`,
-and `claim_id` keys. `run_tool_loop` hands the subject to every tool, so the standard
+`claim_id`, and `document_id` keys. `run_tool_loop` hands the subject to every tool, so the standard
 tools read, write, and check ownership against the platform's patient.
 
 A run doesn't have to be about a patient. An agent that works on a
 clinician's inbox or the whole instance leaves `patient_id` unset and
-picks the `STAFF`, `KEY`, or `AGENT` scope, and one opened from a claim
-picks `CLAIM`. In such a run,
+picks the `STAFF`, `KEY`, or `AGENT` scope, one opened from a claim
+picks `CLAIM`, and one about an incoming document, such as a fax just
+received, picks `DOCUMENT`. In such a run,
 standard tools that only make sense on a patient return an error to the
 model, so it never reads an empty chart as a patient with no records.
 Your own patient tools can do the same with `require_patient_id(ctx)`
@@ -436,7 +441,7 @@ Every tool call gets a context the model never sees, which
 
 | Key | Value |
 |---|---|
-| `patient_id`, `claim_id` | From `self.subject` |
+| `patient_id`, `claim_id`, `document_id` | From `self.subject` |
 | `staff_id` | From `self.requester` |
 | `note_id` | `self.subject.note_id`, or for a run a staff member started, that staff member's open note on the patient |
 | `permissions` | `self.requester.permissions` |
@@ -600,6 +605,7 @@ never wait on each other, whatever their scope.
 | `NOTE` | Runs on the same note; the same patient's other notes run concurrently | `patient_id` and `note_id` |
 | `STAFF` | Runs started by the same staff member, such as an agent that works through one clinician's inbox | a run a staff member started |
 | `CLAIM` | Runs on the same claim, such as one claim's chat | `claim_id`, and the [`REVENUE` capability](#capabilities) |
+| `DOCUMENT` | Runs on the same incoming document, such as the agent that reads a fax | `document_id`, and a requester who [may work the queue](#the-runs-subject) |
 | `KEY` | Runs naming the same `scope_id`, for something none of the above covers, such as `f"appointment:{appointment_id}"` | `scope_id` |
 | `AGENT` | Every run of this agent on the instance, such as a strictly serialized cron job | nothing |
 
