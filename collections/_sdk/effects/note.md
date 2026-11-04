@@ -845,6 +845,8 @@ Reschedules an existing appointment by creating a new appointment and cancelling
 
 **Note**: At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
 
+Reschedule an appointment only while its note is still an appointment note. Checking the patient in changes the note to an encounter note type. After that, `reschedule()` raises a `ValidationError` and returns no effect, and the appointment and note stay as they are. `update()` works on a checked-in appointment.
+
 Rescheduling adds a `BKD` (Booked) entry to the appointment note's [state history](/sdk/data-note/#notestatechangeevent). The entry has the user who triggered the effect as its `originator`, or Canvas Bot if no user triggered it.
 
 #### Example Usage
