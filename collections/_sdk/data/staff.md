@@ -110,6 +110,33 @@ staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
 url = staff.signature_url
 ```
 
+## Checking ID.me identity verification
+
+When a staff member verifies their identity with ID.me, Canvas records the verification as a [`StaffIdentityVerification`](#staffidentityverification). Use these records to find out whether a prescriber has verified their identity, and when.
+
+A staff member can verify more than once, so a staff member with at least one verification is verified. The `identity_verifications` accessor lists the newest `verified_at` first, so `first()` returns the latest verification, or `None` if the staff member has never verified:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+from logger import log
+
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+
+latest = staff.identity_verifications.first()
+if latest:
+    log.info(f"Verified with ID.me on {latest.verified_at}")
+else:
+    log.info("Not verified with ID.me")
+```
+
+To list every staff member with at least one verification in one query, filter `Staff` on the accessor:
+
+```python
+from canvas_sdk.v1.data.staff import Staff
+
+verified_staff = Staff.objects.filter(identity_verifications__isnull=False).distinct()
+```
+
 ## Attributes
 
 ### Staff
@@ -190,6 +217,7 @@ url = staff.signature_url
 | prescription_change_requests | [PrescriptionChangeRequest](/sdk/data-prescription-change-request/#prescriptionchangerequest)[] |                                                                                                                                                     |
 | google_calendar_busy_blocks  | [GoogleCalendarBusyBlock](/sdk/data-google-calendar/#googlecalendarbusyblock)[]                 |                                                                                                                                                     |
 | google_calendar_connection   | [GoogleCalendarConnection](/sdk/data-google-calendar/#googlecalendarconnection)                 |                                                                                                                                                     |
+| identity_verifications       | [StaffIdentityVerification](#staffidentityverification)[]                                       |                                                                                                                                                     |
 | full_name                    | String (computed)                                                                               | The staff member's first and last name, for example `Larry Weed`                                                                                    |
 | credentialed_name            | String (computed)                                                                               | The staff member's full name suffixed with their topmost credential abbreviation, for example `Larry Weed MD`                                       |
 | top_clinical_role            | [StaffRole](#staffrole) (computed)                                                              | The staff member's highest-ranking clinical role, selected by privilege level when they hold more than one, or `None` if they have no clinical role |
@@ -340,6 +368,17 @@ for metadata in staff.metadata.all():
 `PatientMetadata`. The `(staff, key)` pair is unique, so a given key has at most
 one value per staff member; use the [`StaffMetadata` effect](/sdk/effect-staff-metadata/)
 to upsert it from a plugin.
+
+### StaffIdentityVerification
+
+| Field Name   | Type            | Description                                                                                              |
+| ------------ | --------------- | -------------------------------------------------------------------------------------------------------- |
+| dbid         | Integer         |                                                                                                          |
+| created      | DateTime        |                                                                                                          |
+| modified     | DateTime        |                                                                                                          |
+| staff        | [Staff](#staff) | The staff member who verified their identity                                                             |
+| verified_at  | DateTime        | When the staff member completed the ID.me verification                                                   |
+| policy_scope | String          | The ID.me policy, or assurance level, the verification met, for example `http://idmanagement.gov/ns/assurance/ial/2/aal/2` |
 
 ## Enumeration types
 
