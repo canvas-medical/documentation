@@ -852,10 +852,12 @@ AddCondition.
 
 **Recording Diagnose as Assess**:
 
-A Diagnose for a code the patient already has adds a second condition with that code. To stop
-existing plugins from adding these duplicates without changing their code,
-[contact Canvas Support](https://canvas-medical.help.usepylon.com/) to have Diagnose recorded as
-Assess on your instance. The Assess command must also be enabled on the instance.
+As part of the rollout retiring the Diagnose command, Canvas records a `DiagnoseCommand` a plugin
+originates as an Assess, as described below. Existing plugins keep working without code changes, and
+a code the patient already has reuses the charted condition instead of adding a second one. To use
+this behavior now, ahead of the rollout,
+[contact Canvas Support](https://canvas-medical.help.usepylon.com/). The Assess command must also be
+enabled on the instance.
 
 With this setting on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch,
 or from a protocol card, as an Assess:
