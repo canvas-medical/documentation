@@ -859,7 +859,7 @@ this behavior now, ahead of the rollout,
 [contact Canvas Support](https://canvas-medical.help.usepylon.com/). The Assess command must also be
 enabled on the instance.
 
-With this setting on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch,
+With it on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch,
 or from a protocol card, as an Assess:
 
 - The Assess uses the patient's charted condition with that ICD-10 code, and records a new
