@@ -75,7 +75,7 @@ with a fake inference gateway in place of Anthropic:
   `tool_use(name, input)` blocks. Its stop reason is `tool_use` when it
   calls a tool and `end_turn` otherwise; pass `stop_reason=` to test
   another.
-- `prepare_agent(AgentClass, allowed=..., denied=..., approve=..., subject=...)`
+- `prepare_agent(AgentClass, allowed=..., denied=..., approve=..., subject=..., secrets=...)`
   sets up the agent as the platform does before a run: it applies the
   manifest's tool grant, including the tools that
   [need approval](/sdk/agents-lifecycle/#approve-before-write), sets

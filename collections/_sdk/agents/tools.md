@@ -654,6 +654,16 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   only with the last name or birth date agreeing, and another organization's
   only when it is a current medical record number and both agree. The model is
   told a patient's id, never their details.
+- On a scan or fax, the model also passes each identifier `as_printed`,
+  exactly as the page shows it, with the `legibility`, `handwritten`, and
+  `pages_disagree`. The code then refuses illegible, handwritten, or
+  conflicting identifiers and any value the print does not support, such as a
+  birth date read day-first. When the identifiers as read match no one, it
+  tries the readings a fax misread (0/O, 1/I/l, 5/S, 8/B; never the birth
+  date), a dropped middle initial, or a first/last swap would explain, and
+  suggests a patient only when every reading that matches names that one,
+  labeled for the reviewer to check. With more readings than it can check, it
+  names no one.
 - `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
   `assign_document_reviewer` suggest on the document's review form. They file
   nothing: a person confirms each suggestion in Canvas, and the review stays
@@ -1522,7 +1532,7 @@ Read the incoming document this run is about, such as a fax just received, and a
 
 **Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
 
-Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file.
+Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file. On a scan or fax, also pass each identifier `as_printed` and the `legibility`: the code checks the values against the print and tries common fax misreads itself.
 
 **Arguments:**
 
@@ -1532,6 +1542,10 @@ Check whether the identifiers on the document match exactly one Canvas patient, 
 | `last_name` | string | no | Last name as the document gives it. |
 | `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
 | `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
+| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. |
+| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
+| `handwritten` | boolean | no | True when an identifier is handwritten. |
+| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
 
 **Returns:** `{match: {patient_id}, matched_on, confidence}` when exactly one patient matches (`confidence` is high when three identifiers agree, else medium), else `{match: null, reason}`.
 
@@ -2263,7 +2277,7 @@ Delete a staged (uncommitted) draft command from the patient's open note. `comma
 
 **Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
 
-Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient.
+Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient. On a scan or fax, pass `as_printed` and `legibility` as for `match_patient`.
 
 **Arguments:**
 
@@ -2273,6 +2287,10 @@ Suggest, on the document's review form, the patient the document is for. Pass th
 | `last_name` | string | no | Last name as the document gives it. |
 | `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
 | `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
+| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. |
+| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
+| `handwritten` | boolean | no | True when an identifier is handwritten. |
+| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
 | `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
 
 **Returns:** `{ok: true, patient_id, matched_on, confidence}` when one patient matched and was suggested, else `{ok: false, reason}`.

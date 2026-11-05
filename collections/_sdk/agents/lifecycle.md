@@ -74,8 +74,11 @@ step is platform-driven:
 6. **Instantiate your subclass** (`agent_class()` with no arguments).
 7. **Set `agent.subject`, `agent.requester`, and `agent.capabilities`**
    to the checked subject, the requester with their permissions, and the
-   granted capabilities, and `agent.run_id` to the run's id. See
-   [The run's subject](#the-runs-subject) below.
+   granted capabilities, `agent.run_id` to the run's id, and
+   `agent.secrets` to your plugin's variables, less the
+   `INFERENCE_GATEWAY_KEY` the gateway was built from. Read a model name
+   or a switch an operator configures from `self.secrets`, as a handler
+   does. See [The run's subject](#the-runs-subject) below.
 8. **Apply the manifest tool grant.** The platform expands
    `tools.allowed` (tool names and `@category` groups) against
    `agent.tools`, subtracts `tools.denied`, removes the tools the
@@ -434,7 +437,23 @@ result.messages   # messages plus every new turn, as JSON-safe dicts you can sto
 result.effects    # the effects the tools staged, to return from run()
 result.turns      # how many model calls it made
 result.stopped    # "end_turn", "max_turns", "call_limit", or "unexpected"
+result.calls      # every tool call, in order: ToolCall(name, arguments, result, ok)
 ```
+
+`result.calls` hands your code what the tools were given and returned.
+`result.last_call(name)` is the latest successful call to one tool. A
+tool that only takes what the model read, a form the model fills in,
+returns `{"ok": True}` and your code reads its `arguments`; and code
+learns what a write tool decided from its `result` (such as
+`categorize_document`'s `document_type`) rather than from the effect it
+staged.
+
+`model=` picks the model for one loop, and the tools that make model
+calls of their own (`read_document`, `read_incoming_document`) use it
+too, so a cheap step stays cheap. A sub-agent takes its own model on
+`SubAgentSpec(model=...)`, and `gateway.with_model(name)` is the run's
+gateway with another default model. The gateway refuses a model the
+organization has not enabled.
 
 Every tool call gets a context the model never sees, which
 `self.tool_context(gateway)` builds:
@@ -721,6 +740,7 @@ Built by the platform before `run()` is called, from the instance's
 inference gateway URL and your plugin's `INFERENCE_GATEWAY_KEY` secret.
 `client()` returns an `anthropic.Anthropic` client pointed at the
 gateway. It carries that key and headers that attribute each call to
-your plugin, agent, and run. See
+your plugin, agent, and run. `with_model(name)` returns the same
+gateway with another default model. See
 [Credentials](/sdk/agents/#credentials) for the errors the gateway
 returns.
