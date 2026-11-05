@@ -41,6 +41,8 @@ Sets the portal menu for the patient.
 | `CONTACT`      | `"contact"`      | Contact          |
 | `RECORDS`      | `"records"`      | Health Records   |
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal_menu_configuration import PatientPortalMenuConfiguration
@@ -227,6 +229,8 @@ Applies the portal options. Every attribute is optional; set only the options yo
 The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
 
 While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Portal consents, [forms](#forms), and [modals from `PATIENT_PORTAL__POST_LOGIN` handlers](#show-a-modal-after-login) still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -526,6 +530,8 @@ The event targets the patient. Its context carries `login_method`, which tells y
 
 The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -586,6 +592,8 @@ The event context names the `document` and the record it came from:
 | `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
 | `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
 | `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -730,6 +738,8 @@ Updates the user's phone number or email.
 | `email`        | `str` | The email to store.                                                   | No       |
 
 
+#### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.update_user import UpdateUserEffect
@@ -785,6 +795,8 @@ Sends the portal invitation.
 |-------------|-------|-----------------------------------------------------------------------|----------|
 | `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. | Yes      |
 
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -862,6 +874,8 @@ Sets the subject and body of the login email.
 |-------------|-------|-------------------------------------------|----------|
 | `subject`   | `str` | The subject line of the email.            | Yes      |
 | `html_body` | `str` | The body of the email, as HTML.           | Yes      |
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
