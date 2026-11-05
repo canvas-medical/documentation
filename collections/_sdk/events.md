@@ -28951,7 +28951,8 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)</pre></td>
+      <td><pre>"slots_by_provider": str, JSON
+    {provider: {date: [{"start", "end"}]}}</pre></td>
     </tr>
   </tbody>
 </table>
