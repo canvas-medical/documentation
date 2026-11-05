@@ -589,6 +589,12 @@ scope when those retries run out, it waits once more, until that hold
 expires, so a run whose worker stopped never blocks the scope for good;
 after that it gives up.
 
+Runs on a scope also start in the order they were queued, so a chat's
+turns run in the order they were sent. A run waits while one queued
+before it on the same scope has yet to start, and that wait doesn't
+count against its retries. A run queued more than an hour ago that
+never started holds no later run back.
+
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
 state the previous run wrote through its effects, such as protocol
@@ -668,7 +674,8 @@ Runs on different patients don't wait on each other. Keep each
 Runs a person is waiting on go ahead of batch work. A run is
 interactive when a signed-in user started it from a SimpleAPI route, an
 application, or an action button, and they have no other run of the
-same agent still waiting. Everything else waits behind interactive
+same agent still waiting on another scope. A chat's next turn stays
+interactive while its previous turn waits on the same scope. Everything else waits behind interactive
 runs: runs from event handlers, schedules, and webhooks; Canvas Bot runs,
 such as those from an API-key SimpleAPI route; and every run
 after the first when a user's request starts many. A chat's run doesn't

@@ -657,10 +657,10 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
 - `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
   `assign_document_reviewer` suggest on the document's review form. They file
   nothing: a person confirms each suggestion in Canvas, and the review stays
-  required. Each suggestion is labeled "AI suggested" with a confidence level:
-  for the patient, high when three of Canvas's own identifiers agree and medium
-  otherwise; for
-  the type and the values, the confidence the model passes.
+  required. Each suggestion is labeled "AI suggested" on the form. The patient,
+  type, and value suggestions also show a confidence level: for the patient,
+  high when three of Canvas's own identifiers agree and medium otherwise; for
+  the type and the values, the confidence the model passes, when it passes one.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
 A staff member starting a run about a document also has to see every patient,
