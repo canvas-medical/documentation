@@ -301,6 +301,18 @@ Canvas Platform sends a plugin only the stored values whose keys the deployed re
 
 If the plugin still needs one of these values, declare its key in the manifest and deploy again.
 
+**Plugins with dependencies, and bundles**
+
+A plugin whose manifest names [`dependencies`](/sdk/canvas_manifest/#dependencies-and-bundles), including a [bundle](/sdk/canvas_manifest/#bundles), deploys like any other: `deploy` pushes it and creates one deployment that names it. Canvas Platform installs each dependency at its pinned version, in waves, so a plugin goes in after the plugins it depends on. The outcome shows each plugin's wave:
+
+```text
+  acme__intake_form on acme-staging (wave 0): succeeded
+  acme__intake_summary on acme-staging (wave 0): succeeded
+  acme__intake_suite on acme-staging (wave 1): succeeded
+```
+
+Every dependency must already be on Canvas Platform at the version the manifest names. Its publisher pushes each release with `canvas deploy <plugin dir> --push-only`, adding `--snapshot` for a plugin inside a larger repository.
+
 **Plugin repository layout**
 
 Canvas Platform hosts one git repository per plugin, rooted at the directory that contains the package:
@@ -380,7 +392,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
-Install a plugin into a Canvas instance.
+Install a plugin into a Canvas instance. A [bundle](/sdk/canvas_manifest/#bundles) can't be installed this way; deploy it with [`canvas deploy`](#canvas-deploy).
 
 **Usage**:
 

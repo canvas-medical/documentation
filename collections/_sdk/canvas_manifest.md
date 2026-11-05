@@ -66,7 +66,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See [Versioning your plugin](#versioning-your-plugin). |
 | `name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes. |
 | `description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card. |
-| `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
+| `components` | object | Yes, except in a bundle | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
 | `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See [Tags](#tags). |
 | `license` | string | Yes | A license identifier such as `"MIT"`, or an empty string. |
 | `readme` | string or boolean | Yes | Path to the plugin's README, or `false`. |
@@ -76,6 +76,8 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `origins` | object | No | Legacy form of `url_permissions`. |
 | `custom_data` | object | No | The custom data namespace the plugin uses. See [Custom data](#custom-data). |
 | `catalog` | object | No | The plugin's listing in the Canvas Platform plugin catalog. See [Catalog](#catalog). |
+| `dependencies` | array | No, except in a bundle | Other plugins Canvas Platform installs with this one, each pinned to an exact version. See [Dependencies and bundles](#dependencies-and-bundles). |
+| `bundle` | boolean | No | `true` for a plugin made only of its `dependencies` and its catalog listing. Defaults to `false`. See [Dependencies and bundles](#dependencies-and-bundles). |
 | `references` | array of strings | No | Links to related documentation or resources. |
 | `diagram` | string or boolean | No | Path to an architecture or workflow diagram, or `false`. |
 
@@ -369,6 +371,59 @@ Every path is inside the package folder: no leading `/`, no `..` anywhere in it,
 Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
+
+## Dependencies and bundles
+
+A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency at the version you name, before the plugins that need it.
+
+```json
+{
+  "dependencies": [
+    {"name": "acme__intake_form", "publisher": "acme", "version": "1.16.0"},
+    {"name": "acme__intake_summary", "publisher": "acme", "version": "1.14.0"}
+  ]
+}
+```
+
+Each entry has exactly these three fields, all required:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | The dependency's manifest `name`. |
+| `publisher` | string | The slug of the Canvas Platform organization that publishes the dependency, as [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) lists it, such as `acme` for `Acme Health (acme)`. |
+| `version` | string | One exact version of the dependency, such as `"1.16.0"`. A range such as `">=1,<2"` fails validation. |
+
+A plugin can't depend on itself or list the same dependency twice.
+
+Each dependency must already be on Canvas Platform at the version you name. Its publisher puts each release there, without deploying it to an instance, with [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy), adding `--snapshot` for a plugin inside a larger repository such as a monorepo.
+
+### Bundles
+
+A bundle lists several plugins that Canvas Platform deploys together under one catalog listing. Set `"bundle": true`, name the plugins in `dependencies`, and describe the bundle in [`catalog`](#catalog). A bundle has no code of its own, so it needs at least one dependency and leaves out `components`, `custom_data`, `variables`, and `secrets`:
+
+```json
+{
+  "sdk_version": "0.1.4",
+  "plugin_version": "1.0.0",
+  "name": "acme__intake_suite",
+  "description": "Intake form and visit summary, deployed together",
+  "bundle": true,
+  "dependencies": [
+    {"name": "acme__intake_form", "publisher": "acme", "version": "1.16.0"},
+    {"name": "acme__intake_summary", "publisher": "acme", "version": "1.14.0"}
+  ],
+  "catalog": {
+    "title": "Intake Suite",
+    "category": "Charting",
+    "surfaces": ["Note"]
+  },
+  "tags": {},
+  "license": "",
+  "readme": false
+}
+```
+
+Deploy a bundle with `canvas deploy`, like any other plugin. `canvas install` can't install one.
 
 ## Tags
 
