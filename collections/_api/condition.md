@@ -8,6 +8,8 @@ sections:
         name: Condition
         article: "a"
         description: >-
+          <aside class="alert alert__wrapper alert__warning" role="alert"><div class="alert__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24v112c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zm-32 224a32 32 0 1 1 64 0 32 32 0 1 1-64 0z"/></svg></div><div class="alert__content">The Diagnose command is planned for retirement in a future release, in favor of Assess. An active Condition created through this endpoint is recorded with a Diagnose command, or with an Assess command when your instance records Diagnose as Assess. To move off Diagnose ahead of its retirement, <a href="https://canvas-medical.help.usepylon.com/">contact Canvas Support</a> to turn that on. See <a href="/product-updates/important-dates/">Important Dates</a>.</div></aside>
+
           A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html)<br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html)
@@ -97,7 +99,7 @@ sections:
                           exclude_in: create,update
           - name: verificationStatus
             description_for_all_endpoints: The verification status to support the clinical status of the condition.
-            read_and_search_description: A `confirmed` status corresponds to committed conditions from a Diagnose, Assess, or Past Medical History command. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition means it was added as an `indication` to either Image, Refer, POC Lab Test, or a Lab Order command.  
+            read_and_search_description: A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Diagnose. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.  
             exclude_in: create, update
             type: json
             attributes:

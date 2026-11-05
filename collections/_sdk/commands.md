@@ -844,11 +844,11 @@ close_goal = CloseGoalCommand(
 
 ### Diagnose
 
+{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now, and Canvas Support can record their Diagnose commands as Assess while you move off Diagnose (see <b>Recording Diagnose as Assess</b> below). See <a href='/product-updates/important-dates/'>Important Dates</a>." %}
+
 Records an active condition and assesses it for the first time. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess, MedicalHistory and
 AddCondition.
-
-{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now." %}
 
 **Recording Diagnose as Assess**:
 
