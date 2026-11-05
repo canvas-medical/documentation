@@ -29129,7 +29129,7 @@ shape only; dynamic per-field entries appear alongside.
 <table>
   <thead>
     <tr><th colspan="3">PATIENT_PORTAL__GET_LOGIN_EMAIL</th></tr>
-    <tr><td colspan="3">Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a <code>SendInviteEffect</code>, or a login link the patient requests from the portal login page. Return a <code>LoginEmailContent</code> effect to replace the email's subject and body. See <a href='/sdk/patient-portal/#customize-the-login-email'>Customize the Login Email</a>.</td></tr>
+    <tr><td colspan="3">Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a <a href='/sdk/patient-portal/#send-invite'><code>SendInviteEffect</code></a>, or a login link the patient requests from the portal login page. Return a <a href='/sdk/patient-portal/#customize-the-login-email'><code>LoginEmailContent</code></a> effect to replace the email's subject and body. See <a href='/sdk/patient-portal/#customize-the-login-email'>Customize the Login Email</a>.</td></tr>
   </thead>
   <tbody>
     <tr>
