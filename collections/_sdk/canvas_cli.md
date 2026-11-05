@@ -259,7 +259,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
 - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-- `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main`, and deploy that commit to your organization's test instances. Name a branch other than `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+- `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
 - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See [Deploying from a larger repository](#deploying-from-a-larger-repository). Takes no `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
