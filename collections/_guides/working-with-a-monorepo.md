@@ -71,7 +71,7 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 <div style="text-align: center; margin: 1.5rem 0;">
 <svg viewBox="0 0 830 480" role="img" aria-labelledby="mr-flow-title mr-flow-desc" style="width: 100%; max-width: 830px; height: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <title id="mr-flow-title">Gated release from Canvas Studio through a monorepo</title>
-  <desc id="mr-flow-desc">Lanes for your repository, Canvas Studio, Canvas Platform with its canvas-studio and main branches, the test instance, and your release instances. 1. Studio pushes work in progress to canvas-studio and deploys it to the test instance. 2. Promoting opens a pull request in your repository; Studio never pushes Canvas Platform's main. 3. Your engineers review and merge it. 4. CI or an engineer runs canvas deploy with --snapshot, which adds one commit to main and deploys it to your release instances. 5. When the project opens and before each deploy, Studio brings new commits on main and canvas-studio into the project.</desc>
+  <desc id="mr-flow-desc">Lanes for your repository, Canvas Studio, Canvas Platform with its canvas-studio and main branches, the test instance, and your release instances. 1. Studio pushes work in progress to canvas-studio and deploys it to the test instance. 2. Promoting opens a pull request in your repository; Studio writes Canvas Platform's main only to create it, with a base commit and no project code, when a project starts. 3. Your engineers review and merge it. 4. CI or an engineer runs canvas deploy with --snapshot, which adds one commit to main and deploys it to your release instances. 5. When the project opens and before each deploy, Studio brings new commits on main and canvas-studio into the project.</desc>
   <defs>
     <marker id="mr-a-push" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#2563eb"/></marker>
     <marker id="mr-a-deploy" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#15803d"/></marker>
@@ -130,8 +130,8 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 <line x1="352" y1="192" x2="580" y2="192" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 5"/>
 <circle cx="590" cy="192" r="9" fill="#fef2f2" stroke="#dc2626" stroke-width="1.8"/>
 <path d="M586,188 L594,196 M594,188 L586,196" stroke="#dc2626" stroke-width="2"/>
-<rect x="413" y="171" width="116" height="17" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
-<text x="471" y="183" text-anchor="middle">never pushes main</text>
+<rect x="395" y="171" width="152" height="17" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
+<text x="471" y="183" text-anchor="middle">no project code to main</text>
 <line x1="168" y1="264" x2="234" y2="264" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#mr-a-merge)"/>
 <circle cx="168" cy="264" r="4" fill="#7c3aed"/>
 <rect x="184" y="243" width="42" height="17" rx="4" fill="#ffffff" stroke="#e2e8f0"/>
@@ -154,7 +154,7 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 </div>
 
 1. **Build and test.** Studio users build the plugin and test it on the Studio test instance. Studio keeps this work in progress on the `canvas-studio` branch of the plugin's Canvas Platform repository.
-2. **Pull request.** Promoting from Studio's Final Review opens a pull request in your repository (on GitLab, a merge request) that writes the plugin into its folder there. Studio never pushes the plugin's `main` on Canvas Platform, so no commit ever goes there without explicit review and action by someone at your organization.
+2. **Pull request.** Promoting from Studio's Final Review opens a pull request in your repository (on GitLab, a merge request) that writes the plugin into its folder there. Studio writes the plugin's `main` on Canvas Platform only to create it, with a base commit and no project code, when a project starts. Project code reaches `main` only through review and action by someone at your organization.
 3. **Review and merge.** Your engineers review it like any other change. They can approve it as it is, push edits to its branch, or change the plugin after merging.
 4. **Snapshot.** Once it merges, CI or an engineer runs `canvas deploy <package folder> --snapshot`. The package folder is the one holding `CANVAS_MANIFEST.json` inside the folder Studio's pull request writes. Canvas Platform's `main` gets one commit with the plugin exactly as merged, and it deploys to the instances you name.
 5. **Studio brings it in.** When a Studio project opens, and before any deploy from it, Studio brings in new commits on Canvas Platform's `main` and `canvas-studio` that it has not synced yet. Your engineers' edits become the starting point of the next iteration within Studio, and are never overwritten by it.

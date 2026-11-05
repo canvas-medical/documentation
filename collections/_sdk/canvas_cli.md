@@ -256,7 +256,7 @@ $ canvas deploy [OPTIONS] PLUGIN_DIR
 **Options**:
 
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
-- `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's test instances. When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+- `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
 - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
 - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main`, and deploy that commit to your organization's test instances. Name a branch other than `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
@@ -305,7 +305,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 
 Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
 
-- **Gated release:** Studio never pushes the plugin's `main`. Its changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
+- **Gated release:** Studio writes the plugin's `main` only to create it, with a base commit and no project code, when a project starts. Its changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
 - **Direct release:** Studio only pushes plugin code to `main` at publish time, after it has been subject to testing and review within Studio. To collaborate on in-progress work with Studio users, you can push commits directly to the `canvas-studio` branch with `--branch canvas-studio`, and the Studio project will incorporate those changes on its next open or before its next deploy. 
 
 
