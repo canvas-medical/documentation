@@ -114,6 +114,7 @@ The `components` object groups everything Canvas loads from your plugin. Each ke
 | [`applications`](#applications) | Applications that appear in the Canvas UI. |
 | [`commands`](#commands) | Custom commands the plugin adds to notes. |
 | [`questionnaires`](#questionnaires) | Questionnaire templates Canvas creates on install. |
+| [`agents`](#agents) | LLM-driven agents the plugin runs with the [Agent Runner Framework](/sdk/agents/). |
 
 ### Handlers
 
@@ -220,6 +221,44 @@ The `questionnaires` list points at YAML templates in the plugin package. Canvas
       }
     ]
   }
+}
+```
+
+### Agents
+
+The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the tools each one may call. A handler in the same plugin starts an agent by returning a `RunAgentEffect` whose `agent_id` matches the agent's `class`. A plugin can't run another plugin's agents.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `class` | string | Yes | Import path to the `AgentPlugin` subclass, in `package.module:ClassName` form. |
+| `description` | string | Yes | What the agent does. |
+| `meta` | object | No | Agent metadata. |
+| `progress` | string | No | How much of a run's progress the person waiting on it sees: `status` (heartbeats only, the default), `activity` (adds a label as each tool starts and finishes), or `reply` (adds the reply text as the model writes it). See [Showing a run's progress](/sdk/agents-lifecycle/#showing-a-runs-progress). |
+| `run_seconds` | integer | No | How long each run may take, in seconds, from 1 to 1800. Defaults to 600 (10 minutes). A value above the default makes each run an extended run, and the plugin runner admits only a few of those at a time. See [Lifecycle](/sdk/agents-lifecycle/). |
+| `tools` | object | No | The tools from the agent's tool registry it may call. The agent can return only the effect types its granted tools stage. See [Tools](/sdk/agents-tools/). |
+| `tools.allowed` | array of strings | No | Tool names and `@category` groups, such as `@clinical_reads`, the agent may call. Without `allowed`, the agent gets no tools and can return no effects. |
+| `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed` after its `@category` groups are expanded. |
+| `tools.approve` | array of strings | No | Tool names and `@category` groups whose staged effects become proposals that the requester approves or denies before they apply. See [Approve before write](/sdk/agents-lifecycle/#approve-before-write). |
+
+Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key. Declare it as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY`, and set its value on each instance where the plugin runs. If the key isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
+
+```json
+{
+  "components": {
+    "agents": [
+      {
+        "class": "acme__my_plugin.agents.chart_chat:ChartChatAgent",
+        "description": "Answers clinician questions about the open patient's chart",
+        "tools": {
+          "allowed": ["@clinical_reads", "@clinical_writes"],
+          "denied": ["originate_prescribe_medication"]
+        }
+      }
+    ]
+  },
+  "variables": [
+    {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
+  ]
 }
 ```
 
