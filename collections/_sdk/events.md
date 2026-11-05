@@ -3809,6 +3809,7 @@ These events follow a patient portal invite or password reset link through its l
 <table>
   <thead>
     <tr><th colspan="2">PROTOCOL_OVERRIDE_DELETED</th></tr>
+    <tr><td colspan="2">This event does not fire. When a protocol override is removed, Canvas sends <code>PROTOCOL_OVERRIDE_UPDATED</code> instead, and the override's <code>deleted</code> field is <code>true</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
