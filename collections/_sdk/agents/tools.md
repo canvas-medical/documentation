@@ -731,8 +731,8 @@ list to opt out of specific tools within a granted category:
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (22 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`, `originate_imaging_order`, `originate_refer`
-- **`@config_reads`** (6 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`
+- **`@clinical_writes`** (24 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`, `originate_imaging_order`, `originate_refer`, `originate_reason_for_visit`, `originate_hpi`
+- **`@config_reads`** (7 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`, `find_reason_for_visit_codes`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@intake_reads`** (4 tools): `read_incoming_document`, `match_patient`, `find_document_types`, `find_report_templates`
 - **`@intake_writes`** (4 tools): `suggest_patient`, `categorize_document`, `prefill_document_fields`, `assign_document_reviewer`
@@ -1586,6 +1586,23 @@ Search the practice's directory of outside providers and facilities, the list th
 **Returns:** Array of objects with `id`, `name`, `specialty`, `practice_name`, `business_phone`, `business_fax`, and `business_address`.
 
 **Backing data model:** `ServiceProvider`.
+
+#### `find_reason_for_visit_codes`
+
+**Category:** `@config_reads`
+
+Search the reasons for visit the practice configured, the list the chart's Reason for Visit command offers. Returns each with `id` (pass it as `coding_id` to `originate_reason_for_visit`) and `display`. Practice-level config, not patient-scoped. Use a configured reason when one matches what the visit is for.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `display_contains` | string | no | Case-insensitive match on the reason's name (e.g. 'follow', 'physical'). |
+| `limit` | integer | no | Maximum results. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `display`, `code`, and `system`.
+
+**Backing data model:** `ReasonForVisitSettingCoding`.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -2358,4 +2375,37 @@ Stage a draft Referral on the patient's open note for the clinician to review an
 **Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `ReferCommand`.
+
+#### `originate_reason_for_visit`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Reason for Visit on the patient's open note. NEVER commits. Pass the reason in the clinician's or patient's words as `comment`, and, when one of the practice's configured reasons fits, its `coding_id` from `find_reason_for_visit_codes`. Without a comment the reason's name is used.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `comment` | string | no | Why the patient is being seen, in plain words. |
+| `coding_id` | string | no | A configured reason's `id` from find_reason_for_visit_codes. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `ReasonForVisitCommand`.
+
+#### `originate_hpi`
+
+**Category:** `@clinical_writes`
+
+Stage a draft History of Present Illness on the patient's open note. NEVER commits. Write the narrative from what the clinician or the visit said; never add findings the source does not contain.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `narrative` | string | yes | The history of present illness as plain text. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `HistoryOfPresentIllnessCommand`.
 <!-- AUTOGEN:writes END -->
