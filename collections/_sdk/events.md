@@ -29112,9 +29112,15 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
-"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
-"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
+      <td><pre>"document": str, one of
+    "after_visit_summary"
+    "lab_requisition"
+    "imaging_requisition"
+"note_id": str, the <a href='/sdk/data-note/#note'>Note</a> id
+    (after_visit_summary only)
+"order_id": str, the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or
+    <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> id
+    (requisitions only)</pre></td>
     </tr>
   </tbody>
 </table>
@@ -29133,10 +29139,13 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"link_type": str["invite" |
-                 "reset"]
+      <td><pre>"link_type": str, one of
+    "invite"
+    "reset"
 "login_url": str
-"practice_location_id": str, the id of the <a href='/sdk/data-practicelocation/'>PracticeLocation</a> the email is sent from
+"practice_location_id": str,
+    the <a href='/sdk/data-practicelocation/'>PracticeLocation</a> id
+    the email is sent from
 "default_subject": str
 "default_body": str, HTML</pre></td>
     </tr>

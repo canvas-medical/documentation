@@ -847,7 +847,7 @@ Reschedules an existing appointment by creating a new appointment and cancelling
 
 `reschedule()` works only while the note's note type has the category Appointment. Checking the patient in changes the note to the visit's note type, such as an office or telehealth visit, whose category is Encounter. From then on the appointment can't be rescheduled: `reschedule()` raises a `ValidationError` and returns no effect, and the appointment and note stay as they are.
 
-To change the time of a checked-in visit, set `datetime_of_service` with [`Note.update()`](#update-note). It makes the same change as **Change date of service** in the note's menu: it moves the visit's start time, the appointment's start time, and the note's date of service together. [`Appointment.update()`](#update-appointment) with `start_time` also works on a checked-in appointment and moves the appointment and the note's date of service, but leaves the visit's start time as it was.
+To change the time of a checked-in visit, set `datetime_of_service` with [`Note.update()`](#update-note). It makes the same change as **Change date of service** in the note's menu, and moves the appointment's start time and the note's date of service together.
 
 Rescheduling adds a `BKD` (Booked) entry to the appointment note's [state history](/sdk/data-note/#notestatechangeevent). The entry has the user who triggered the effect as its `originator`, or Canvas Bot if no user triggered it.
 
