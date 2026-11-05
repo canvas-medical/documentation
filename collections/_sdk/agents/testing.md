@@ -87,6 +87,11 @@ with a fake inference gateway in place of Anthropic:
   the grant drops (`run.dropped`), the model calls, the tool calls, and
   how the last tool loop ended. Unlike the platform, an exception from
   the run reaches your test.
+- `turn_on_command_types(*schema_keys)` turns command types on in the
+  test database, every SDK command type when given none. A tool that
+  stages a command refuses a type the instance has turned off, and a
+  test database has no command type settings until this runs, so call
+  it in a test, or an autouse fixture, that stages commands.
 
 The blocks are real Anthropic types, so the tool loop behaves as it
 does against the API.

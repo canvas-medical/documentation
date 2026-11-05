@@ -155,7 +155,9 @@ tools.add_effect_tool(
 - **`originate_command_tool`** — staging a draft chart Command on the
   patient's current note. Resolves the note from `ctx["note_id"]` by
   default (override `note_resolver` if your agent finds the note
-  differently). Patient scope flows through the Command.
+  differently). Patient scope flows through the Command. The tool
+  refuses a command type the instance has turned off, as the chart's
+  command menu leaves it out.
 - **`add_effect_tool`** — patient-scoped Effects that aren't pinned
   to a specific note (tasks, banner alerts, protocol cards). Auto-
   injects `patient_id` from ctx onto the Effect; `inject_ctx={}` to
@@ -729,8 +731,8 @@ list to opt out of specific tools within a granted category:
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
 - **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (20 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`
-- **`@config_reads`** (5 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`
+- **`@clinical_writes`** (22 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`, `originate_imaging_order`, `originate_refer`
+- **`@config_reads`** (6 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@intake_reads`** (4 tools): `read_incoming_document`, `match_patient`, `find_document_types`, `find_report_templates`
 - **`@intake_writes`** (4 tools): `suggest_patient`, `categorize_document`, `prefill_document_fields`, `assign_document_reviewer`
@@ -1487,16 +1489,16 @@ Find active staff members and teams a claim can be assigned to, by name. assign_
 
 **Category:** `@config_reads`
 
-Look up the codes a history command needs, by name, from Canvas's own vocabularies, as the chart's pickers do. `kind` is what to look up: `medical_history` (past conditions, for `originate_medical_history`), `condition` (ICD-10 diagnoses), `medication` (FDB, for `originate_medication_statement`), `allergen` (for `originate_allergy`), `family_history` and `surgical_history` (SNOMED, for the history tools), or `immunization` (CVX and CPT, for `originate_immunization_statement`). Use the codes it returns exactly; never write a code from memory. When several candidates fit, ask the clinician which one they mean.
+Look up the codes a history or order command needs, by name, from Canvas's own vocabularies, as the chart's pickers do. `kind` is what to look up: `medical_history` (past conditions, for `originate_medical_history`), `condition` (ICD-10 diagnoses), `medication` (FDB, for `originate_medication_statement`), `allergen` (for `originate_allergy`), `family_history` and `surgical_history` (SNOMED, for the history tools), `immunization` (CVX and CPT, for `originate_immunization_statement`), or `imaging_study` (for `originate_imaging_order`). Use the codes it returns exactly; never write a code from memory. When several candidates fit, ask the clinician which one they mean.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `kind` | string (enum) | yes |  One of: `condition`, `medical_history`, `medication`, `allergen`, `family_history`, `surgical_history`, `immunization`. |
+| `kind` | string (enum) | yes |  One of: `condition`, `medical_history`, `medication`, `allergen`, `family_history`, `surgical_history`, `immunization`, `imaging_study`. |
 | `query` | string | yes | The name to search for, e.g. 'penicillin' or 'appendectomy'. |
 
-**Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), or `cvx_code` and `cpt_code` (immunization).
+**Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), `cvx_code` and `cpt_code` (immunization), or `image_code` (imaging_study).
 
 #### `read_incoming_document`
 
@@ -1566,6 +1568,24 @@ Search the report templates a lab, imaging, or specialty document is filed with,
 | `query` | string | yes | Words in the template's name, e.g. 'lipid' or 'CBC'. |
 
 **Returns:** Array of up to 10 `{template_id, name, code, fields: [{code, label, units, type, required}]}`.
+
+#### `find_service_providers`
+
+**Category:** `@config_reads`
+
+Search the practice's directory of outside providers and facilities, the list the chart's Refer and Imaging Order commands pick from. Returns each with `id` (pass it as `service_provider_id` to `originate_refer` or `originate_imaging_order`), name, specialty, and practice. Practice-level config, not patient-scoped. When several fit, ask the clinician which one.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `specialty_contains` | string | no | Case-insensitive match on the specialty (e.g. 'cardiology', 'radiology'). |
+| `name_contains` | string | no | Case-insensitive match on the provider's first or last name or practice. |
+| `limit` | integer | no | Maximum results. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `name`, `specialty`, `practice_name`, `business_phone`, `business_fax`, and `business_address`.
+
+**Backing data model:** `ServiceProvider`.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -2295,4 +2315,47 @@ Suggest who reviews the document: a staff member, a team, or both. The review st
 | `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
 
 **Returns:** `{ok: true, staff_id, team_id}`.
+
+#### `originate_imaging_order`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Imaging Order on the patient's open note for the clinician to review and sign. NEVER commits. Look the study up first with `find_clinical_codes` (kind 'imaging_study') and pass its `image_code`; never write a study code from memory. Use when the clinician asks to order imaging.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `image_code` | string | yes | The study's `image_code` from find_clinical_codes (kind 'imaging_study'). |
+| `diagnosis_codes` | array of string | no | ICD-10 codes for the problems the order is for, from find_conditions or find_clinical_codes (kind 'condition'). Signing requires at least one. |
+| `priority` | string (enum) | no | How urgent the study is. Omit when the clinician did not say. One of: `Routine`, `Urgent`, `STAT`. |
+| `service_provider_id` | string | no | Where the study is performed: an `id` from find_service_providers. Optional; the clinician can choose when reviewing. |
+| `additional_details` | string | no | Details for whoever performs the study, such as side or contrast. |
+| `comment` | string | no | A comment on the order. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `ImagingOrderCommand`.
+
+#### `originate_refer`
+
+**Category:** `@clinical_writes`
+
+Stage a draft Referral on the patient's open note for the clinician to review and sign. NEVER commits. Look the provider up first with `find_service_providers` and pass its `id`. Use when the clinician asks to refer the patient.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `service_provider_id` | string | yes | Who the patient is referred to: an `id` from find_service_providers. |
+| `diagnosis_codes` | array of string | no | ICD-10 codes for the problems the order is for, from find_conditions or find_clinical_codes (kind 'condition'). Signing requires at least one. |
+| `clinical_question` | string (enum) | no | What the referral asks of the specialist. One of: `Cognitive Assistance (Advice/Guidance)`, `Assistance with Ongoing Management`, `Specialized intervention`, `Diagnostic Uncertainty`. |
+| `priority` | string (enum) | no | How urgent the referral is. Omit when the clinician did not say. One of: `Routine`, `Urgent`, `STAT`. |
+| `notes_to_specialist` | string | no | What the specialist should know, in the clinician's words. |
+| `include_visit_note` | boolean | no | Whether to send this visit's note with the referral. |
+| `comment` | string | no | An internal comment on the referral. |
+
+**Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
+
+**Backing Command:** `ReferCommand`.
 <!-- AUTOGEN:writes END -->
