@@ -40,10 +40,10 @@ See [Tools](/sdk/agents-tools/) for writing your own.
 `my_plugin/agents/advisor.py`:
 
 ```python?partial=true
+import json
 from typing import Any
 
 from canvas_sdk.agents import AgentPlugin, AgentRunResult, AgentState, LLMGateway
-from canvas_sdk.v1.data import ProtocolCurrent
 from my_plugin.agents.advisor_tools import tools as _registered_tools
 
 PLUGIN_NAME = "my_plugin"
@@ -65,17 +65,11 @@ SYSTEM_PROMPT = (
 MAX_TURNS = 10
 
 
-def _existing_cards(patient_id: str) -> str:
-    """List the cards this plugin staged on earlier visits, for the user message."""
-    cards = ProtocolCurrent.objects.filter(
-        patient__id=patient_id, plugin_name=PLUGIN_NAME
-    ).order_by("-created")
+def _cards_text(cards: list[dict[str, Any]]) -> str:
+    """The cards this plugin staged on earlier visits, for the user message."""
     if not cards:
         return "No protocol cards from earlier visits."
-    lines = ["Protocol cards from earlier visits:"]
-    for card in cards:
-        lines.append(f"- card_key={card.protocol_key!r} status={card.status!r} title={card.title!r}")
-    return "\n".join(lines)
+    return f"Protocol cards from earlier visits:\n{json.dumps(cards, indent=1)}"
 
 
 class LongitudinalCareAdvisor(AgentPlugin):
@@ -86,8 +80,17 @@ class LongitudinalCareAdvisor(AgentPlugin):
     tools = _registered_tools
 
     def load_state(self, scope_key: str) -> AgentState:
-        """The cards are the state, and run() reads them from the chart."""
-        return AgentState()
+        """The cards this plugin staged on the patient: this agent's state.
+
+        Read through find_protocol_cards, the same tool the model has, so the
+        cards come from one query in one shape, within the run's patient.
+        """
+        cards = self.tools.execute(
+            "find_protocol_cards",
+            {"plugin_name": PLUGIN_NAME},
+            ctx=self.tool_context(),
+        )
+        return AgentState(data={"cards": cards})
 
     def run(
         self,
@@ -95,9 +98,7 @@ class LongitudinalCareAdvisor(AgentPlugin):
         gateway: LLMGateway,
         trigger_payload: dict[str, Any],
     ) -> AgentRunResult:
-        # The platform checked the patient and note the trigger named and set
-        # them on self.subject.
-        cards = _existing_cards(self.subject.patient_id)
+        cards = _cards_text(state.data["cards"])
         messages = [
             {
                 "role": "user",
@@ -116,14 +117,19 @@ class LongitudinalCareAdvisor(AgentPlugin):
         return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key: str, state: AgentState) -> None:
-        """Nothing to write: the protocol card effects are the state."""
+        """Nothing to write: the cards change only through the run's effects."""
         return None
 ```
 
 The `AgentPlugin` contract is three methods: `load_state`, `run`, and
-`save_state`. This agent's state is the protocol cards themselves, so
-`load_state` and `save_state` do nothing and `run()` reads the cards
-from the chart.
+`save_state`. This agent's state is the protocol cards themselves:
+`load_state` reads them through the agent's own `find_protocol_cards`
+tool, and `save_state` does nothing, because the cards change only
+through the effects the run returns. Runs on the same patient happen one
+at a time, so `load_state` sees the cards the previous run staged.
+`self.tool_context()` builds the context a tool call gets from the run's
+subject; outside the tool loop it has no gateway, which only the tools
+that make model calls of their own need.
 
 `run_tool_loop` does the back-and-forth with the model: it calls the
 model with the agent's granted tools, runs each tool call through

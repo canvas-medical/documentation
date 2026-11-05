@@ -449,6 +449,12 @@ Every tool call gets a context the model never sees, which
 | `effects` | A new list the tools append to; returned as `result.effects` |
 | `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` or make a model call of their own, as `read_document` does, and for `edit_staged_command` and `delete_staged_command`, which check the agent's grant |
 
+`run_tool_loop` builds this context itself. To read through a tool
+outside the loop, as an agent whose state is chart records does in
+`load_state`, call `self.tools.execute(name, arguments,
+ctx=self.tool_context())`: without a gateway, only the tools that make
+model calls of their own refuse.
+
 Pass `ctx={...}` to add agent-specific keys. Those keys cannot replace
 any key in the table: passing one raises `ValueError`. A tool always
 acts on the run's own patient.

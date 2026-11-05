@@ -118,9 +118,9 @@ cost control](/sdk/agents-prompts/#prompt-caching-for-cost-control).
 ## Pattern 3: State in the chart
 
 The agent's state is records in the chart itself: the protocol cards,
-tasks, or banner alerts it staged on earlier runs. `load_state` and
-`save_state` do nothing; `run()` reads the records it needs, and the
-effects it returns are the writes.
+tasks, or banner alerts it staged on earlier runs. `load_state` reads
+those records, `save_state` does nothing, and the effects `run()`
+returns are the writes.
 
 Best for agents whose state is "the recommendations we've made over
 time." Each recommendation is its own record the clinician already
@@ -129,21 +129,19 @@ later runs. The reference plugin's longitudinal advisor works this way
 with protocol cards (see the [Quick Start](/sdk/agents-quick-start/)):
 
 ```python?partial=true
-from canvas_sdk.v1.data import ProtocolCurrent
-
-
 class LongitudinalCareAdvisor(AgentPlugin):
     tools = _registered_tools  # granted @clinical_reads and @clinical_alerts
 
     def load_state(self, scope_key):
-        return AgentState()  # the cards are the state
+        # The cards are the state, read through the tool the model also has.
+        cards = self.tools.execute(
+            "find_protocol_cards", {"plugin_name": "my_plugin"}, ctx=self.tool_context()
+        )
+        return AgentState(data={"cards": cards})
 
     def run(self, state, gateway, trigger_payload):
-        cards = ProtocolCurrent.objects.filter(
-            patient__id=self.subject.patient_id, plugin_name="my_plugin"
-        )
-        # ... brief the model with the cards; it updates them by card_key and
-        # stages new ones through add_or_update_protocol_card ...
+        # ... brief the model with state.data["cards"]; it updates them by
+        # card_key and stages new ones through add_or_update_protocol_card ...
         result = self.run_tool_loop(gateway, system=SYSTEM_PROMPT, messages=messages)
         return AgentRunResult(state=state, effects=result.effects)
 
