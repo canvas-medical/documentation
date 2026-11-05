@@ -1517,6 +1517,7 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
 from canvas_sdk.utils.appointment_slots import SlotSearchError, appointment_slots_http
+from canvas_sdk.v1.data import Staff
 
 
 class OpenSlots(PatientSessionAuthMixin, SimpleAPIRoute):
@@ -1544,12 +1545,21 @@ class OpenSlots(PatientSessionAuthMixin, SimpleAPIRoute):
             )
             return [JSONResponse({"error": error.message}, status_code=status)]
 
+        # Look up every provider's name in one query, rather than once per slot.
+        staff_names = {
+            staff["id"]: f"{staff['first_name']} {staff['last_name']}"
+            for staff in Staff.objects.filter(
+                id__in={slot.staff_id for slot in slots}
+            ).values("id", "first_name", "last_name")
+        }
+
         return [
             JSONResponse(
                 {
                     "slots": [
                         {
                             "staff_id": slot.staff_id,
+                            "staff_name": staff_names.get(slot.staff_id),
                             "start": slot.start.isoformat(),
                             "end": slot.end.isoformat(),
                         }
