@@ -376,6 +376,8 @@ An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the
 
 A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency at the version you name, before the plugins that need it.
 
+A dependency doesn't make its code importable: a plugin can still import only its own package. Declare a dependency when your plugin relies on what another plugin provides on the instance, such as the APIs one of its applications serves, so that plugin is installed and enabled wherever yours is.
+
 ```json
 {
   "dependencies": [
