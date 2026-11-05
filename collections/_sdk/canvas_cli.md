@@ -289,17 +289,25 @@ Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
 To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
 ```
 
-**Deploying a branch to test instances**
+**Deploying a branch to a test instance**
 
-To try plugin work that hasn't merged on a test instance, without putting it on `main`, push it to its own branch with `--branch`:
+To deploy plugin code not yet merged to `main` on a test instance, use the argument `--branch`:
 
 ```console
 $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
 ```
 
-`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. When any instance you name isn't one of them, the push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` only to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name.
+
+**Plugins built in Canvas Studio**
+
+Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
+
+- **Gated release:** Studio never pushes the plugin's `main`. Its changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
+- **Direct release:** Studio only pushes plugin code to `main` at publish time, after it has been subject to testing and review within Studio. To collaborate on in-progress work with Studio users, you can push commits directly to the `canvas-studio` branch with `--branch canvas-studio`, and the studio project will incorporate those changes on its next open or before its next deploy. 
+
 
 **Waiting for the outcome**
 
