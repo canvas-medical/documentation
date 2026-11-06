@@ -6673,8 +6673,16 @@ Name | Type | Required to commit | Description
     )
     ```
 ###  Diagnose 
+> **Warning:** Diagnose is planned for retirement in a future release, and `DiagnoseCommand` will be deprecated then. Use AssessCommand with `icd10_code` for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use `DiagnoseCommand` keep working for now, and Canvas Support can record their Diagnose commands as Assess while you move off Diagnose (see **Recording Diagnose as Assess** below). See [Important Dates](/product-updates/important-dates/). 
 Records an active condition and assesses it for the first time. See Recording a condition for how it compares to Assess, MedicalHistory and AddCondition.
-> **Warning:** Diagnose is planned for retirement in a future release, and `DiagnoseCommand` will be deprecated then. Use AssessCommand with `icd10_code` for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use `DiagnoseCommand` keep working for now. 
+**Recording Diagnose as Assess** :
+As part of the rollout retiring the Diagnose command, Canvas records a `DiagnoseCommand` a plugin originates as an Assess, as described below. Existing plugins keep working without code changes, and a code the patient already has reuses the charted condition instead of adding a second one. To use this behavior now, ahead of the rollout, [contact Canvas Support](https://canvas-medical.help.usepylon.com/). The Assess command must also be enabled on the instance.
+With it on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch, or from a protocol card, as an Assess:
+  - The Assess uses the patient's charted condition with that ICD-10 code, and records a new condition only when the patient has none.
+  - `today_assessment` becomes the Assess `narrative`. The other parameters keep their names.
+  - An ICD-10 code Canvas doesn't recognize still creates the command, with no condition set, as it does on Diagnose. Editing a saved command to such a code raises an error instead.
+  - Your handlers receive Assess events for the command, and SDK queries return it with `schema_key="assess"`.
+Calling `edit()`, `commit()`, `delete()`, `enter_in_error()`, or `upsert_metadata()` on the `DiagnoseCommand` still works, because Canvas follows the type each command was saved as. Commands already in a note keep working when the setting is turned on or off.
 **Command-specific parameters** :
 Name | Type | Required to commit | Description  
 ---|---|---|---  
@@ -13671,6 +13679,13 @@ The `uncategorizedDocumentReview` anchor is available as [UncategorizedClinicalD
     review = UncategorizedClinicalDocumentReview.objects.get(dbid=command.anchor_object_dbid)
     ```
 If a command's anchor record has been deleted, `anchor_object` raises the data model's `DoesNotExist` rather than returning `None`.
+##  Deleted and entered-in-error commands 
+Only a staged command can be deleted. `approveChange`, `denyChange` and `adjustProtocol` commands can't be deleted at all. The note doesn't offer to delete them, and the SDK has no command class for them, so there's no `delete` effect for them either.
+Deleting a command, from the note or with the [`delete` effect](/sdk/commands/#delete), has two results:
+  - The `Command` record is removed. Deleted commands are no longer returned by `Command.objects` or `note.commands`, and no record of them is kept on this model.
+  - The command's anchor record is kept and marked deleted (`deleted` set to true), with its note, patient, originator and last saved content.
+A deleted command's anchor record isn't returned by the anchor's data model, because data models return only records that aren't marked deleted. To capture what a command contained before it was deleted, respond to its pre-delete [command lifecycle event](/sdk/events/#command-lifecycle-events) and read the command while it still exists.
+A committed command can't be deleted. Entering it in error keeps the `Command` record, sets `state` to `entered_in_error`, and records the user in `entered_in_error`. The command's anchor record also has `entered_in_error` set to that user. It isn't marked deleted, so the anchor's data model still returns it.
 ##  Attributes 
 ###  Command 
 Field Name | Type  
@@ -19786,7 +19801,7 @@ value | JSON
 A patient carries at most one setting per `name`. Canvas maintains these:
 Name | Holds  
 ---|---  
-`pharmacy` | The patient's preferred pharmacies. Read this through `preferred_pharmacies`, which normalizes the older single-pharmacy shape into a list  
+`pharmacy` | The patient's preferred pharmacies. Read this through `preferred_pharmacies`, which normalizes the older single-pharmacy shape into a list. When the [FHIR Patient API](/api/patient/) or the [CreatePatientPreferredPharmacies](/sdk/effect-create-patient-preferred-pharmacies/) effect writes it, each entry holds `pharmacy_ncpdp_id`, `pharmacy_name`, `pharmacy_address`, `pharmacy_phone_number`, `pharmacy_fax_number`, `pharmacy_specialty_type`, and `default`, with the details filled in from Canvas's pharmacy directory. The effect saves its pharmacies merged with the patient's current ones, and every pharmacy saved is looked up again. When none of them is found in the directory, the setting is deleted rather than stored empty, so `get_setting("pharmacy")` returns `None`  
 `preferredSchedulingTimezone` | The timezone to schedule the patient in, for example `America/New_York`  
 Because `value` is JSON, its shape differs from one setting to the next.
 Use `get_setting` to read one by name. It returns `None` when the patient has no setting by that name, so a missing setting and a stored empty value are distinguishable.
@@ -28422,6 +28437,8 @@ Attribute | Type | Description | Required
 `status` | `AppointmentProgressStatus` or `None` | Updated status | No  
 `external_identifiers` | `list[AppointmentIdentifier]` or `None` | Updated external identifiers | No  
 **Note** : At least one field (besides `instance_id`) must be modified. `patient_id` cannot be updated after creation.
+`reschedule()` works only while the note's note type has the category Appointment. Checking the patient in changes the note to the visit's note type, such as an office or telehealth visit, whose category is Encounter. From then on the appointment can't be rescheduled: `reschedule()` raises a `ValidationError` and returns no effect, and the appointment and note stay as they are.
+To change the time of a checked-in visit, set `datetime_of_service` with `Note.update()`. It makes the same change as **Change date of service** in the note's menu, and moves the appointment's start time and the note's date of service together.
 Rescheduling adds a `BKD` (Booked) entry to the appointment note's [state history](/sdk/data-note/#notestatechangeevent). The entry has the user who triggered the effect as its `originator`, or Canvas Bot if no user triggered it.
 ####  Example Usage 
     ```python
@@ -31787,6 +31804,7 @@ Event Type | Disallowed Effect Types
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
 `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`  
 `ADD_OR_UPDATE_PROTOCOL_CARD`  
+`PATIENT_PORTAL__GET_LOGIN_EMAIL` | `PATIENT_PORTAL__SEND_INVITE`  
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 ##  Effect Classes 
 [ Appointment Labels Programmatically manage labels on appointments for categorization and automation. ](/sdk/effect-appointment-labels/) [ Appointment Metadata Interact with appointment metadata. ](/sdk/effect-appointment-metadata/) [ Appointment Metadata Create Form Effect for dynamically displaying forms when scheduling an appointment. ](/sdk/appointment-metadata-create-form-effect/) [ Appointments Create, update, and cancel patient appointments. ](/sdk/effect-notes/#appointment-effect) [ Application Notification Badge Display and update a notification badge count on an application icon. ](/sdk/effect-application-notification-badge/) [ Banner Alerts Contextual information in a patient's chart. ](/sdk/effect-banner-alerts/) [ Batch Originate Commands Efficiently insert multiple commands into a note in a single batch operation. ](/sdk/effect-batch-originate/) [ Billing Line Items Add, modify, or remove billing codes on a note. ](/sdk/effect-billing-line-items/) [ C-CDA Export Create a C-CDA (Consolidated Clinical Document Architecture) document for a patient. ](/sdk/effect-create-ccda-export/) [ Charge Stored Card Charge a patient's stored payment card on file. ](/sdk/effect-charge-stored-card/) [ Claims Manage labels, update line items, move to a queue, or post a payment. ](/sdk/effect-claims/) [ Command Metadata Attach custom key-value metadata to command records. ](/sdk/effect-command-metadata/) [ Configure Command Buttons Hide or disable command buttons in specific patient chart locations. ](/sdk/effect-configure-command-buttons/) [ Command Metadata Create form Adds additional fields to commands that are stored as command metadata. ](/sdk/command-metadata-create-form-effect/) [ Command Validation Validate commands and return structured error messages to users. ](/sdk/effect-command-validation/) [ Compound Medications Create or update compound medications. ](/sdk/effect-compound-medication/) [ Coverage Create, update, expire, remove, and reorder a patient's insurance coverages. ](/sdk/effect-coverage/) [ Create Calendar Create a calendar for a provider. ](/sdk/calendar-create-effect/) [ Create Patient Preferred Pharmacies Create preferred pharmacies for a patient. ](/sdk/effect-create-patient-preferred-pharmacies/) [ Custom HTML and Django Templates Render custom HTML using Django templates. ](/sdk/layout-effect/#custom-html-and-django-templates) [ Data Integration Manage documents in the Data Integration queue. ](/sdk/effect-data-integration/) [ Default Homepage Set a provider's default homepage in Canvas. ](/sdk/default-homepage-effect/) [ Event Validation Error Effect for blocking event creation with a validation error message. ](/sdk/effect-event-validation-error/) [ External Events Create or update external clinical events from ADT feeds. ](/sdk/effect-external-event/) [ Fax Fax a note, referral, imaging order, lab order or letter. ](/sdk/effect-fax/) [ HTTP Request Have the platform issue an HTTP request on behalf of a plugin. ](/sdk/effect-http-request/) [ Lab Report Create, update, enter-in-error, and attach results to a lab report. ](/sdk/effect-lab-report/) [ Layout Effects Modify or interact with the layout in Canvas. ](/sdk/layout-effect/) [ Manage Calendar Events Manage calendar events. ](/sdk/calendar-event-management-effects/) [ Messages Interact with messages in Canvas. ](/sdk/effect-messages/) [ Note Custom Content Render custom HTML blocks inside a clinical note. ](/sdk/effect-note-custom-content/) [ Note Footer Configuration Configure a note's footer — for example, hide Canvas's default state-transition buttons. ](/sdk/effect-note-footer-configuration/) [ Note Metadata Attach custom key-value metadata to note records. ](/sdk/effect-note-metadata/) [ Note Restrictions Control access to notes in real time — restrict editing, blur content, and show banners via plugin-driven effects. ](/sdk/effect-note-restrictions/) [ Notes Interact with notes in Canvas. ](/sdk/effect-notes/) [ Observations Create or update clinical observations. ](/sdk/effect-observation/) [ Patient Interact with patient data. ](/sdk/effect-patient/) [ Patient Chart Group Effect for grouping items on a patient chart section. ](/sdk/patient-chart-group-effect/) [ Patient Chart Summary Custom Section Serve content for a custom section in the patient chart summary. ](/sdk/patient-chart-summary-custom-section-effect/) [ Patient Consent Record a patient's decision on a consent and file the signed document. ](/sdk/effect-record-patient-consent/) [ Patient External ID Create a new external identifier for a patient. ](/sdk/effect-create-patient-external-identifier/) [ Patient Facility Address Create, update, or delete patient facility address associations. ](/sdk/effect-patient-facility-address/) [ Patient Group Interact with patient group data. ](/sdk/effect-patient-group/) [ Patient Identification Card Create, update, or delete a patient's identification card images. ](/sdk/effect-patient-identification-card/) [ Patient Metadata Interact with patient metadata. ](/sdk/effect-patient-metadata/) [ Patient Metadata Create Form Effect for dynamically displaying forms in the Patient profile. ](/sdk/patient-metadata-create-form-effect/) [ Patient Portal Customize your Patient Portal. ](/sdk/patient-portal/) [ Patient Timeline Configure a patient's timeline by excluding specific note types. ](/sdk/effect-patient-timeline/) [ Payment Processor Effects returned by custom payment processors. ](/sdk/payment-processor-effect/) [ Phone Dial Configuration Make patient-chart phone numbers clickable for device or plugin dialing. ](/sdk/effect-phone-dial-configuration/) [ Protocol Cards Calls to action in a patient's chart, commonly used for decision support intervention. ](/sdk/effect-protocol-cards/) [ Questionnaires Interact with questionnaires and interviews. ](/sdk/effect-questionnaires/) [ Record Usage Record units of a plugin's work that its catalog listing prices. ](/sdk/effect-record-usage/) [ Redirect Navigate the Canvas frontend to an allowlisted URL, page, or application. ](/sdk/effect-redirect/) [ Reload Action Buttons Re-evaluate a note's or patient's action buttons in real time. ](/sdk/effect-reload-action-buttons/) [ Send Contact Verification Send an email or SMS verification to a patient contact point. ](/sdk/effect-send-contact-verification/) [ ServiceProvider Create, update, and soft-deactivate providers in a customer-managed provider directory. ](/sdk/effect-service-provider/) [ Staff External ID Create, update, or delete an external identifier for a staff member. ](/sdk/effect-staff-external-identifier/) [ Staff Metadata Interact with staff metadata. ](/sdk/effect-staff-metadata/) [ Surescripts Query insurance eligibility, medication history, and benefits through Surescripts. ](/sdk/effect-surescripts/) [ Task Metadata Interact with Task metadata. ](/sdk/effect-task-metadata/) [ Tasks Create or update tasks. ](/sdk/effect-tasks/) [ Commands The building blocks of many end-user workflows in Canvas, including nearly all clinical workflows for documentation. ](/sdk/commands/)
@@ -32054,6 +32072,7 @@ PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the te
 PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card.  
 PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE | Show the 'reschedule' button on the appointment card.  
 PATIENT_PORTAL__SEND_INVITE | Trigger a portal invitation for a user.  
+PATIENT_PORTAL__LOGIN_EMAIL_CONTENT | Replace the subject and body of the portal login email. Check out [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email).  
 PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send an email or SMS verification to a patient contact point. Works for any patient contact point, not just the portal. Check out [Send Contact Verification](/sdk/effect-send-contact-verification/).  
 PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS | Modify slot availability in the patient portal appointment scheduler.  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH_RESULTS | Modify appointment types in the patient portal before a search.  
@@ -48896,7 +48915,8 @@ Target | Target type | Context object
 | 
     [Patient](/sdk/data-patient/)
 | 
-    "slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)  
+    "slots_by_provider": str, JSON
+        {provider: {date: [{"start", "end"}]}}  
 PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH  
 ---  
 Occurs before appointment types are resolved, allowing the internal values to be bypassed  
@@ -48975,9 +48995,32 @@ Target | Target type | Context object
 | 
     [Patient](/sdk/data-patient/)
 | 
-    "document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
-    "note_id": str, the id of the [Note](/sdk/data-note/#note) (after_visit_summary only)
-    "order_id": str, the id of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder) (lab_requisition and imaging_requisition only)  
+    "document": str, one of
+        "after_visit_summary"
+        "lab_requisition"
+        "imaging_requisition"
+    "note_id": str, the [Note](/sdk/data-note/#note) id
+        (after_visit_summary only)
+    "order_id": str, the [LabOrder](/sdk/data-labs/#laborder) or
+        [ImagingOrder](/sdk/data-imaging/#imagingorder) id
+        (requisitions only)  
+PATIENT_PORTAL__GET_LOGIN_EMAIL  
+---  
+Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a [`SendInviteEffect`](/sdk/patient-portal/#send-invite), or a login link the patient requests from the portal login page. Return a [`LoginEmailContent`](/sdk/patient-portal/#customize-the-login-email) effect to replace the email's subject and body. See [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email).  
+Target | Target type | Context object  
+    patient_id
+| 
+    [Patient](/sdk/data-patient/)
+| 
+    "link_type": str, one of
+        "invite"
+        "reset"
+    "login_url": str
+    "practice_location_id": str,
+        the [PracticeLocation](/sdk/data-practicelocation/) id
+        the email is sent from
+    "default_subject": str
+    "default_body": str, HTML  
 PATIENT_PORTAL__POST_LOGIN  
 ---  
 Occurs once, right after a patient logs in to the Patient Portal. Return a `LaunchModalEffect` with the `DEFAULT_MODAL` target to open a modal over the page the patient lands on. See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login).  
@@ -57410,6 +57453,7 @@ Member | Value | Menu item
 `LABS` | `"labs"` | Lab results  
 `CONTACT` | `"contact"` | Contact  
 `RECORDS` | `"records"` | Health Records  
+###  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.patient_portal_menu_configuration import PatientPortalMenuConfiguration
@@ -57533,6 +57577,7 @@ Attribute | Type | Description | Required
 `default_homepage_application_identifier` | `str` | The application to open as the patient's portal homepage. Use the application's `class` string from [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications), the `<module path>:<ClassName>` value. When omitted, patients see the widgets landing page. | No  
 The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
 While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see landing page widgets. Portal consents, forms, and modals from `PATIENT_PORTAL__POST_LOGIN` handlers still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
+###  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
@@ -57611,6 +57656,7 @@ Canvas applies the same appointment-type, location, and provider filters when a 
   - A start time in the future.
   - A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
+To show open times on a booking screen your plugin builds itself, call the native slot search with [`search_slots()`](/sdk/utils/#searching-for-open-appointment-slots).
 ###  Filter available slots 
 Respond to `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH` and return `PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS`.
 **Target:** `self.target` is the [Patient](/sdk/data-patient/#patient) id.
@@ -57747,6 +57793,7 @@ The event targets the patient. Its context carries `login_method`, which tells y
 `"access_token"` | Followed the sign-in link in a message, lab result, or statement notification  
 `"registration"` | Completed self-registration  
 The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
+###  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -57790,6 +57837,7 @@ The event context names the `document` and the record it came from:
 `"after_visit_summary"` | `note_id` | The `id` of the [Note](/sdk/data-note/)  
 `"lab_requisition"` | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)  
 `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder)  
+###  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.events import EventType
@@ -57886,6 +57934,7 @@ Attribute | Type | Description | Required
 `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to update. | Yes  
 `phone_number` | `str` | The phone number to store. | No  
 `email` | `str` | The email to store. | No  
+####  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.update_user import UpdateUserEffect
@@ -57923,6 +57972,7 @@ Sends the portal invitation.
 Attribute | Type | Description | Required  
 ---|---|---|---  
 `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. | Yes  
+####  Example 
     ```python
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.send_invite import SendInviteEffect
@@ -57946,6 +57996,65 @@ Attribute | Type | Description | Required
     ```
 **Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link.
 What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Signing in is a separate step that sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link and setting a password does not sign the patient in, so a registered patient who has not yet signed in shows both their username and the never-logged-in line.
+###  Customize the Login Email 
+Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
+Canvas fires the event each time it emails a patient a login link:
+  - Staff send an invite or a password reset from the Portal section of the patient's profile.
+  - A plugin returns a `SendInviteEffect`.
+  - A patient requests a login link by email from the portal login page.
+The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
+Key | Value  
+---|---  
+`link_type` | `"invite"` when the patient hasn't registered yet, or `"reset"` when they have  
+`login_url` | The login link to send the patient  
+`practice_location_id` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/) the email is sent from: the primary location of the patient's care team lead, or the first practice location when the patient has no care team lead  
+`default_subject` | The subject Canvas uses by default  
+`default_body` | The HTML body Canvas uses by default  
+Canvas sends the subject and body you return in place of the defaults. The sender and recipient stay the same, and text messages that carry the link keep the default wording.
+  - Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+  - Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
+  - When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+  - Don't return a `SendInviteEffect` from this handler. It would send another login email and fire the event again, so Canvas drops it. See [Disallowed Effect/Event Combinations](/sdk/effects/#disallowed-effectevent-combinations).
+  - Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
+####  Methods 
+#####  apply() → Effect 
+Sets the subject and body of the login email.
+  - `subject` and `html_body` are required and can't be empty or only whitespace.
+  - `subject` must fit on one line, with no line breaks. `html_body` can contain line breaks.
+  - Any other attribute is an error, so a misspelled attribute name fails instead of being ignored.
+####  Attributes 
+Attribute | Type | Description | Required  
+---|---|---|---  
+`subject` | `str` | The subject line of the email. | Yes  
+`html_body` | `str` | The body of the email, as HTML. | Yes  
+####  Example 
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.patient_portal.login_email import LoginEmailContent
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.utils.html import sanitize_html
+    from canvas_sdk.v1.data import Patient
+    class PortalLoginEmail(BaseHandler):
+        RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_LOGIN_EMAIL)
+        def compute(self) -> list[Effect]:
+            patient = Patient.objects.get(id=self.target)
+            # Canvas sends the body as written, so escape patient data before adding it
+            first_name = sanitize_html(patient.first_name)
+            login_url = self.context["login_url"]
+            if self.context["link_type"] == "invite":
+                subject = "Your patient portal is ready"
+                intro = f"Welcome, {first_name}. Set your password to start using the portal."
+            else:
+                subject = "Reset your patient portal password"
+                intro = f"Hi {first_name}, use this link to set a new password."
+            return [
+                LoginEmailContent(
+                    subject=subject,
+                    html_body=f'<p>{intro}</p><p><a href="{login_url}">Open the patient portal</a></p>',
+                ).apply()
+            ]
+    ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/patient-portal/
 
 
@@ -60299,6 +60408,94 @@ The following handler fires when a patient's mobile number is added or changed, 
             return []
     ```
 For a full, runnable plugin that mints a link, delivers it over a configurable provider, and reports the provider's delivery status, see the [patient_portal_link example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_link).
+##  Searching for open appointment slots 
+A plugin with its own booking screen can offer the same open appointment times as the native Canvas booking screens by calling `appointment_slots_http.search_slots()`. Canvas runs its own slot search: it expands recurring availability and its exceptions, subtracts booked appointments and holds, and applies the visit type. Your plugin doesn't rebuild that calculation from [Calendar](/sdk/data-calendar/) and [Appointment](/sdk/data-appointment/) records, and later fixes to the native search apply to your screen too.
+To change the slots the native scheduler offers patients instead of building your own screen, see [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling).
+    ```python
+    from canvas_sdk.utils.appointment_slots import Slot, SlotSearchError, appointment_slots_http
+    ```
+Like `patient_portal_http`, `appointment_slots_http` is imported from its own module, and it exposes only `search_slots`.
+###  search_slots 
+Searches for open appointment times and returns them as a list of `Slot` objects. Each call runs a new search.
+**Parameters** :
+Name | Type | Required | Description  
+---|---|---|---  
+`location_id` | _string_ | `true` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/).  
+`start` | _datetime_ | `true` | The start of the search, with a time zone. Canvas returns only the slots that start at or after it. To require a minimum notice, add it here, for example `now + timedelta(hours=24)`.  
+`end` | _datetime_ | `true` | The end of the search, with a time zone. It must be after `start` and at most 31 days after it.  
+`duration` | _integer_ | `true` | The visit length in minutes, from `1` to `1440`.  
+`staff_ids` | _list of strings_ | `false` | The `id` of each [Staff](/sdk/data-staff/) member to search. Each must be a schedulable provider. Omit it to search every schedulable provider.  
+`visit_type_id` | _string_ | `false` | The `id` of the visit type's [NoteType](/sdk/data-note/#notetype). Availability limited to other visit types is left out.  
+`exclude_appointment_id` | _string_ | `false` | The `id` of an [Appointment](/sdk/data-appointment/) being rescheduled. Its own time is returned as open.  
+`grid_minutes` | _integer_ | `false` | The spacing of slot start times, from `1` to `60`. Defaults to `15`. Canvas also offers back-to-back starts from the beginning of each open period, so some starts fall between grid stops, such as one right after a booking ends.  
+`respect_holds` | _boolean_ | `false` | Whether to apply the same-day and next-day holds on provider calendars. Defaults to `True`.  
+**Returns** : a list of `Slot` objects, each an open time with one provider. A `Slot` can't be changed after it's created.
+Attribute | Type | Description  
+---|---|---  
+`staff_id` | _string_ | The `id` of the [Staff](/sdk/data-staff/) member the slot is with.  
+`start` | _datetime_ | When the appointment would start, in the instance's time zone.  
+`end` | _datetime_ | When the appointment would end, in the instance's time zone.  
+A slot isn't a hold, and another booking can take it after you search. Search again just before you book.
+**Errors** :
+  - `ValueError`: `start` or `end` has no time zone. Pass a time-zone-aware datetime, such as `datetime.now(timezone.utc)`.
+  - `SlotSearchError`: the search didn't complete. Catch this exception rather than the underlying `requests` exceptions, which a plugin can't catch. Its `status_code` and `message` attributes describe the cause: 
+    - `400`: a parameter names a record Canvas doesn't have, or a value is outside the ranges above. The message names the parameter.
+    - `503`: Canvas couldn't read the provider calendars. Try the search again later.
+    - `0`: the plugin couldn't reach Canvas.
+**Example** :
+The following SimpleAPI route returns the 30-minute slots a logged-in patient can book at a location over the next week, starting 24 hours from now.
+    ```python
+    from datetime import datetime, timedelta, timezone
+    from http import HTTPStatus
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+    from canvas_sdk.utils.appointment_slots import SlotSearchError, appointment_slots_http
+    from canvas_sdk.v1.data import Staff
+    class OpenSlots(PatientSessionAuthMixin, SimpleAPIRoute):
+        PATH = "/slots"
+        def get(self) -> list[Response | Effect]:
+            location_id = self.request.query_params["location_id"]
+            # Patients must book at least 24 hours ahead.
+            start = datetime.now(timezone.utc) + timedelta(hours=24)
+            try:
+                slots = appointment_slots_http.search_slots(
+                    location_id=location_id,
+                    start=start,
+                    end=start + timedelta(days=7),
+                    duration=30,
+                )
+            except SlotSearchError as error:
+                # A 400 means the request itself needs fixing; anything else is worth retrying.
+                status = (
+                    HTTPStatus.BAD_REQUEST
+                    if error.status_code == 400
+                    else HTTPStatus.SERVICE_UNAVAILABLE
+                )
+                return [JSONResponse({"error": error.message}, status_code=status)]
+            # Look up every provider's name in one query, rather than once per slot.
+            staff_names = {
+                staff["id"]: f"{staff['first_name']} {staff['last_name']}"
+                for staff in Staff.objects.filter(
+                    id__in={slot.staff_id for slot in slots}
+                ).values("id", "first_name", "last_name")
+            }
+            return [
+                JSONResponse(
+                    {
+                        "slots": [
+                            {
+                                "staff_id": slot.staff_id,
+                                "staff_name": staff_names.get(slot.staff_id),
+                                "start": slot.start.isoformat(),
+                                "end": slot.end.isoformat(),
+                            }
+                            for slot in slots
+                        ]
+                    }
+                )
+            ]
+    ```
 ----- END PAGE https://docs.canvasmedical.com/sdk/utils/
 
 
