@@ -120,6 +120,7 @@ Canvas prevents certain combinations of events and effects to avoid infinite loo
 |------------|------------------------|
 | `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
 | `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+| `PATIENT_PORTAL__GET_LOGIN_EMAIL` | `PATIENT_PORTAL__SEND_INVITE` |
 
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 
@@ -489,6 +490,7 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 | ADD_CLAIM_BANNER_ALERT | Add a banner alert to a claim. |
 | REMOVE_CLAIM_BANNER_ALERT | Remove a banner alert from a claim. |
 | UPDATE_CLAIM_PROVIDER | Update the provider on a claim. |
+| UPDATE_CLAIM_ASSIGNEE | Assign a claim to a staff member or team, or clear the assignment. |
 | UPSERT_CLAIM_METADATA | Add or update metadata on a claim. |
 | UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim. |
 
@@ -508,6 +510,7 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE | Show the 'reschedule' button on the appointment card. |
 | PATIENT_PORTAL__SEND_INVITE | Trigger a portal invitation for a user. |
+| PATIENT_PORTAL__LOGIN_EMAIL_CONTENT | Replace the subject and body of the portal login email. Check out [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email). |
 | PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send an email or SMS verification to a patient contact point. Works for any patient contact point, not just the portal. Check out [Send Contact Verification](/sdk/effect-send-contact-verification/). |
 | PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS | Modify slot availability in the patient portal appointment scheduler. |
 | PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH_RESULTS | Modify appointment types in the patient portal before a search. |

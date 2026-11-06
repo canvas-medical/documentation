@@ -302,7 +302,7 @@ sections:
               This is used for vital observation that correspond with a string value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute. <br><br>
 
               Currently supported string values are <br>
-              - **note** - this is a free text comment field in the Canvas Vital Command <br><br>
+              - **note** - this is a free text comment field in the Canvas Vital Command. Maximum length is 150 characters. <br><br>
               - **pulse rhythm** - This is an enum in the Canvas Vital command. Values supported are **Regular**, **Irregularly Irregular**, **Regulary Irregular**. If one of these values is not provided, a 422 error will occur. <br><br>
               - **blood pressure** - This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command. 
           - name: valueCodeableConcept
