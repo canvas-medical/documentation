@@ -92,7 +92,7 @@ All namespace commands require a running Canvas instance. Pass `--host` to speci
 Through Canvas Platform, two cases differ from a direct connection:
 
 - If the instance runs a Canvas release that can't manage namespaces through Canvas Platform yet, the CLI says so and explains how to sign out and use `credentials.ini` until the instance updates.
-- A `reset` or `drop` with `--execute` waits up to 90 seconds for an answer. If none arrives, or a gateway answers with a 502 or 504 error in its place, the CLI reports that it can't tell whether the namespace changed, because the instance may still finish the work. Run `canvas namespace inspect <namespace> --host <instance>` to check before you retry.
+- A `reset` or `drop` with `--execute` waits up to 90 seconds for an answer. If none arrives, the connection drops, or a gateway answers with a 502 or 504 error in its place, the CLI reports that it can't tell whether the namespace changed, because the instance may still finish the work. Run `canvas namespace inspect <namespace> --host <instance>` to check before you retry.
 
 ### Listing Namespaces
 
