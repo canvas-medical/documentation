@@ -118,8 +118,6 @@ With `approval_prompt=auto`, Canvas redirects straight to your `redirect_uri` wi
 
 Otherwise, Canvas shows the prompt as usual. The user still approves the first time, and sees the prompt again after their last access token for the application expires or when the request asks for a scope they haven't approved.
 
-The prompt lists a fixed description for each requested scope. The description for `fhirUser` reads "Authenticated patient identity" for every user, including staff, where the scope identifies the logged-in staff member.
-
 ### Step 2: Exchange the Code for Tokens
 
 ```shell
