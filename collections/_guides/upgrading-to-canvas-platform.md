@@ -44,7 +44,7 @@ The Organization admin gives each person the roles their work needs. Developers 
 
 ### 3. Canvas upgrades your plugins
 
-Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role is notified when the upgrade is complete.
+Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role gets two emails from Canvas Platform: one when the upgrade starts, and one when it is complete. Keep using `canvas install` until the second email arrives.
 
 ### 4. Switch your workflow by December 14, 2026
 
@@ -140,7 +140,7 @@ No, not in any way. The upgrade happens on a different system from the one your 
 
 ### Do we have to wait for the upgrade before we switch to `canvas deploy`?
 
-Yes. Wait until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle.
+Yes. Wait for the email saying your organization's plugins are upgraded.
 
 ### Can we delete `credentials.ini` after we switch?
 
