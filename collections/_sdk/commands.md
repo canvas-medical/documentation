@@ -844,11 +844,35 @@ close_goal = CloseGoalCommand(
 
 ### Diagnose
 
+{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now, and Canvas Support can record their Diagnose commands as Assess while you move off Diagnose (see <b>Recording Diagnose as Assess</b> below). See <a href='/product-updates/important-dates/'>Important Dates</a>." %}
+
 Records an active condition and assesses it for the first time. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess, MedicalHistory and
 AddCondition.
 
-{% include alert.html type="warning" content="Diagnose is planned for retirement in a future release, and <code>DiagnoseCommand</code> will be deprecated then. Use <a href='#assess'>AssessCommand</a> with <code>icd10_code</code> for new work: it records a new condition the same way, and reuses the patient's charted condition instead of adding a duplicate. Existing plugins that use <code>DiagnoseCommand</code> keep working for now." %}
+**Recording Diagnose as Assess**:
+
+As part of the rollout retiring the Diagnose command, Canvas records a `DiagnoseCommand` a plugin
+originates as an Assess, as described below. Existing plugins keep working without code changes, and
+a code the patient already has reuses the charted condition instead of adding a second one. To use
+this behavior now, ahead of the rollout,
+[contact Canvas Support](https://canvas-medical.help.usepylon.com/). The Assess command must also be
+enabled on the instance.
+
+With it on, Canvas saves each `DiagnoseCommand` a plugin originates, alone, in a batch,
+or from a protocol card, as an Assess:
+
+- The Assess uses the patient's charted condition with that ICD-10 code, and records a new
+  condition only when the patient has none.
+- `today_assessment` becomes the Assess `narrative`. The other parameters keep their names.
+- An ICD-10 code Canvas doesn't recognize still creates the command, with no condition set, as it
+  does on Diagnose. Editing a saved command to such a code raises an error instead.
+- Your handlers receive Assess events for the command, and SDK queries return it with
+  `schema_key="assess"`.
+
+Calling `edit()`, `commit()`, `delete()`, `enter_in_error()`, or `upsert_metadata()` on the
+`DiagnoseCommand` still works, because Canvas follows the type each command was saved as. Commands
+already in a note keep working when the setting is turned on or off.
 
 **Command-specific parameters**:
 
