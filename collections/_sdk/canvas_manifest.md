@@ -76,7 +76,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 | `origins` | object | No | Legacy form of `url_permissions`. |
 | `custom_data` | object | No | The custom data namespace the plugin uses. See [Custom data](#custom-data). |
 | `catalog` | object | No | The plugin's listing in the Canvas Platform plugin catalog. See [Catalog](#catalog). |
-| `dependencies` | array | No, except in a bundle | Other plugins Canvas Platform installs with this one, each pinned to an exact version. See [Dependencies and bundles](#dependencies-and-bundles). |
+| `dependencies` | array | No, except in a bundle | Other plugins Canvas Platform installs with this one, each pinned to an exact version or a compatible release. See [Dependencies and bundles](#dependencies-and-bundles). |
 | `bundle` | boolean | No | `true` for a plugin made only of its `dependencies` and its catalog listing. Defaults to `false`. See [Dependencies and bundles](#dependencies-and-bundles). |
 | `references` | array of strings | No | Links to related documentation or resources. |
 | `diagram` | string or boolean | No | Path to an architecture or workflow diagram, or `false`. |
@@ -374,7 +374,7 @@ An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the
 
 ## Dependencies and bundles
 
-A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency at the version you name, before the plugins that need it.
+A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency at a version its pin accepts, before the plugins that need it.
 
 A dependency doesn't make its code importable: a plugin can still import only its own package. Declare a dependency when your plugin relies on what another plugin provides on the instance, such as the APIs one of its applications serves, so that plugin is installed and enabled wherever yours is.
 
@@ -382,7 +382,7 @@ A dependency doesn't make its code importable: a plugin can still import only it
 {
   "dependencies": [
     {"name": "acme__intake_form", "publisher": "acme", "version": "1.16.0"},
-    {"name": "acme__intake_summary", "publisher": "acme", "version": "1.14.0"}
+    {"name": "acme__intake_summary", "publisher": "acme", "version": "~=1.14"}
   ]
 }
 ```
@@ -393,11 +393,24 @@ Each entry has exactly these three fields, all required:
 |-------|------|-------------|
 | `name` | string | The dependency's manifest `name`. |
 | `publisher` | string | The slug of the Canvas Platform organization that publishes the dependency, as [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) lists it, such as `acme` for `Acme Health (acme)`. |
-| `version` | string | One exact version of the dependency, such as `"1.16.0"`. A range such as `">=1,<2"` fails validation. |
+| `version` | string | The versions of the dependency this plugin works with: one exact version or a compatible release. See [Version pins](#version-pins). |
 
 A plugin can't depend on itself or list the same dependency twice.
 
-Each dependency must already be on Canvas Platform at the version you name. Its publisher puts each release there, without deploying it to an instance, with [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy), adding `--snapshot` for a plugin inside a larger repository such as a monorepo.
+Each dependency must already be on Canvas Platform at a version its pin accepts. Its publisher puts each release there, without deploying it to an instance, with [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy), adding `--snapshot` for a plugin inside a larger repository such as a monorepo.
+
+### Version pins
+
+A dependency's `version` takes one of two forms:
+
+- **An exact version**, such as `"1.16.0"`, installs that version. Write it in its normal form: `"v1.16.0"` fails validation, and the error gives the form to write instead.
+- **A compatible release**, `~=` followed by a version with at least two parts, accepts any version in its range. `"~=1.16"` accepts 1.16 or later, below 2.0. `"~=0.1.1"` accepts 0.1.1 or later, below 0.2.
+
+Other forms, such as `">=1.16"`, `"==1.16.0"`, `"1.*"`, `"~=1"`, or a comma-separated range, fail validation.
+
+Version your plugins with [semantic versioning](#versioning-your-plugin) so these pins work: a compatible release stays within one major version, so a new major version reaches only plugins whose pin names it.
+
+When several plugins pin the same dependency, they move to its new major version together. Release a version of each that pins the new major version, then deploy those releases in one deployment with [`canvas deploy --plugin`](/sdk/canvas_cli/#deploying-released-plugins-together).
 
 ### Bundles
 
