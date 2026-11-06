@@ -275,7 +275,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name.
 2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
-3. Registers the plugin with Canvas Platform under the organization its prefix names.
+3. Refuses the package if git ignores any of its Python files, and lists them. Then registers the plugin with Canvas Platform under the organization its prefix names.
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
 6. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
@@ -320,6 +320,8 @@ paperwork-eviscerator/          # repository root
 `canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. A package nested deeper inside a larger repository is refused unless you pass `--snapshot`; see the next section.
 
 Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
+
+Validation reads the package on disk, so a Python file that git ignores passes validation but never reaches the instance. `deploy` refuses a package that holds one, with or without `--snapshot`, and names the files. Stop ignoring them in `.gitignore`, or move them out of the package, then deploy again. Python files under a folder whose name starts with a dot, such as `.venv`, or under `node_modules` are skipped, since validation skips them too.
 
 #### Deploying from a larger repository
 
