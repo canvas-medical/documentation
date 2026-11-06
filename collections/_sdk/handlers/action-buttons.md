@@ -103,6 +103,8 @@ The `ActionButton` class defines several locations where the button can be place
 | `CHART_SUMMARY_FAMILY_HISTORY_SECTION`      | The button will appear in the Family History section of the chart summary.      |
 | `CHART_SUMMARY_CODING_GAPS_SECTION`         | The button will appear in the Coding Gaps section of the chart summary.         |
 | `NOTE_BODY_AUTOMATION`                      | The button appears as an entry in the note body's "/" (slash) command list while a clinician documents a note. |
+| `CLAIM_QUEUE_HEADER`                        | The button appears at the top of a claim queue in Revenue, next to **Batch actions**. See [Claim buttons](#claim-buttons). |
+| `CLAIM_DETAILS`                             | The button appears on a claim's details page in Revenue, in a row below **Create a posting**, **Charges**, and **Diagnosis**. See [Claim buttons](#claim-buttons). |
 
 
 ## Dynamic, state-responsive buttons
@@ -131,7 +133,9 @@ What `visible()` sees depends on where the button lives:
 "Note and header locations" means `NOTE_HEADER`, `NOTE_FOOTER`, `NOTE_BODY`,
 `NOTE_BODY_AUTOMATION`, `NOTE_HEADER_DROPDOWN` and `CHART_PATIENT_HEADER`. Every
 `CHART_SUMMARY_*_SECTION` location gets the patient and the user only, because a chart
-summary is not rendered inside a note.
+summary is not rendered inside a note. The claim locations, `CLAIM_QUEUE_HEADER` and
+`CLAIM_DETAILS`, have no patient or note; their target is a claim queue or a claim, as
+described in [Claim buttons](#claim-buttons).
 
 `note_id` is a database id rather than a UUID, so look the note up with `dbid`:
 
@@ -150,7 +154,7 @@ summary is not rendered inside a note.
 | `self.event.context["user"]`         | The logged-in user, as `{"type": "Staff", "id": "<staff id>"}`                                                              |
 | `self.event.context["note_id"]`      | The database id of the note the button was clicked from. Present only when the button lives on a note.                       |
 | `self.event.context["line_number"]`  | The note body line the clinician typed the trigger on. Present only for a `NOTE_BODY_AUTOMATION` entry.                      |
-| `self.event.target.id`               | The id of the patient the button was clicked from                                                                            |
+| `self.event.target.id`               | The id of the patient the button was clicked from. For a claim location, the id of the claim queue or claim instead; see [Claim buttons](#claim-buttons). |
 
 ### Reloading buttons
 
@@ -286,6 +290,72 @@ class AscvdRiskCalculator(ActionButton):
 
 The clinician types `/`, picks the calculator, and it opens over the note. The trigger line
 is cleared either way, so the note is left exactly as it was.
+
+## Claim buttons
+
+Claim buttons put your plugin's actions where billers work claims in Revenue. Place one at
+the top of a claim queue with `CLAIM_QUEUE_HEADER`, or on a single claim's details page
+with `CLAIM_DETAILS`. A click tells your handler which claims it applies to, so it can act
+on them without reproducing the queue's filters.
+
+These locations have no patient and no note, so `note_id` is never present. Instead, the
+event's target is the claim queue or the claim, and `self.event.target.instance` returns
+the matching [`ClaimQueue` or `Claim`](/sdk/data-claim/) record. Both events also carry
+`self.event.context["user"]`, as every location does.
+
+| Location             | Target                                  | Context on the show event and the click   | Added on the click only      |
+|----------------------|-----------------------------------------|-------------------------------------------|------------------------------|
+| `CLAIM_QUEUE_HEADER` | The claim queue (`ClaimQueue`)          | `queue`, as `{"id": "<queue id>", "name": "<queue name>"}`. `name` is the queue's internal name, such as `"NeedsClinicianReview"`; see [`ClaimQueues`](/sdk/data-claim/#claimqueues). | `claim_ids` and `claim_count` |
+| `CLAIM_DETAILS`      | The claim (`Claim`)                     | `claim_id`, the id of the claim           | Nothing                      |
+
+All of these ids are the SDK models' `id` values, so you can pass them straight to a query
+such as `Claim.objects.filter(id__in=...)`.
+
+### Which claims a queue click includes
+
+On a `CLAIM_QUEUE_HEADER` click, `claim_ids` lists the claims the queue is showing with its
+current filters applied, including **Latest remit**. It includes only claims for patients
+the user is allowed to see.
+
+`claim_ids` holds at most 5,000 claims, oldest first. `claim_count` is the total number of
+claims that matched, so when `claim_count` is greater than the length of `claim_ids`, your
+handler received only part of the queue. The user can narrow the queue's filters to bring
+it under the limit.
+
+Clicks on either claim location require the user to have the
+[Revenue access](/guides/roles-and-permissions/) role. A click from a user without it is
+refused, and your handler does not run.
+
+This button appears only on the `QueuedForSubmission` queue. A click logs each claim it
+received, and notes when the queue held more claims than the click carried:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.handlers.action_button import ActionButton
+from canvas_sdk.v1.data.claim import Claim
+from logger import log
+
+
+class ExportClaims(ActionButton):
+    BUTTON_TITLE = "Export"
+    BUTTON_KEY = "EXPORT_CLAIMS"
+    BUTTON_LOCATION = ActionButton.ButtonLocation.CLAIM_QUEUE_HEADER
+
+    def visible(self) -> bool:
+        return self.event.context["queue"]["name"] == "QueuedForSubmission"
+
+    def handle(self) -> list[Effect]:
+        claim_ids = self.event.context["claim_ids"]
+        claims = Claim.objects.filter(id__in=claim_ids)
+
+        if self.event.context["claim_count"] > len(claim_ids):
+            log.info(f"Received {len(claim_ids)} of {self.event.context['claim_count']} claims")
+
+        for claim in claims:
+            log.info(f"Exporting claim {claim.id}")
+
+        return []
+```
 
 ## Examples
 
