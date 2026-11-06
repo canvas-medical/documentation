@@ -302,7 +302,7 @@ The `ProviderMenuConfiguration` effect allows you to define which items appear i
 
 The effect replaces the default set of items, so every item that should stay visible has to be listed. Anything you omit is not rendered. If no installed plugin emits the effect, the menu renders unchanged.
 
-Passing an empty list is allowed and hides every native item — useful if your plugin replaces the menu entirely with its own items.
+Passing an empty list is allowed and hides every native item except [Identity verification](#identity-verification) — useful if your plugin replaces the menu entirely with its own items.
 
 ```python
 from canvas_sdk.effects import Effect
@@ -350,7 +350,7 @@ If more than one installed plugin responds with a `ProviderMenuConfiguration`, t
 
 Sets the native items shown in the provider menu.
 
-- `items` is required; an empty list hides every native item.
+- `items` is required; an empty list hides every native item except Identity verification.
 
 ### Attributes
 
@@ -369,6 +369,7 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | CAMPAIGNS                   | Go to the campaigns page                                       |
 | DATA_INTEGRATION            | Go to the data integration queue                               |
 | QUESTIONNAIRE_BUILDER       | Go to the questionnaire builder                                |
+| IDENTITY_VERIFICATION       | Open ID.me identity verification in a new tab                  |
 | SETTINGS                    | Open the Canvas admin site in a new tab                        |
 | MULTI_FACTOR_AUTHENTICATION | Open multi-factor authentication setup in a new tab            |
 | CHANGELOG                   | Open the Canvas release notes in a new tab                     |
@@ -376,6 +377,15 @@ Values in the `ProviderMenuConfiguration.Items` enum are:
 | GOOGLE_CALENDAR             | Open the Google Calendar sync page in a new tab                |
 
 [Google Calendar sync](/product-updates/google-calendar-sync/) is a **beta** feature, so `GOOGLE_CALENDAR` renders only on instances where it is turned on.
+
+### Identity verification
+
+Prescribers use the **Identity verification** item to verify their identity through ID.me for Surescripts enrollment. The item follows ID.me availability rather than your allow-list:
+
+- On instances where ID.me identity verification is turned on, the item renders even when your list omits it or is empty.
+- On other instances, the item never renders, even when your list names it.
+
+Listing `IDENTITY_VERIFICATION` is optional, and naming it does not add a second entry.
 
 ### Hiding the Schedule item
 
