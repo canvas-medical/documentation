@@ -378,7 +378,8 @@ sections:
             description: Filter by the date or specific datetime the document was created. See [Date Filtering](/api/date-filtering) for more information.
           - name: patient
             type: string
-            description: The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`.
+            description: >-
+              The patient reference associated to the document in the format `Patient/a39cafb9d1b445be95a2e2548e12a787`. Optional: when neither `patient` nor `subject` is given, the search returns matching documents across all patients, so you can combine `category`, `type`, `date` and `status` on their own (e.g. `category=clinical-note&date=ge2026-10-01&status=current`) and page through the results with [Pagination](/api/pagination).
           - name: status
             type: string
             description: The status of the document reference
