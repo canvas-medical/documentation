@@ -235,7 +235,7 @@ Deleting a command, from the note or with the [`delete` effect](/sdk/commands/#d
 
 A deleted command's anchor record isn't returned by the anchor's data model, because data models return only records that aren't marked deleted. To capture what a command contained before it was deleted, respond to its pre-delete [command lifecycle event](/sdk/events/#command-lifecycle-events) and read the command while it still exists.
 
-A committed command can't be deleted. Entering it in error keeps the `Command` record, sets `state` to `entered_in_error`, and records the user in `entered_in_error`.
+A committed command can't be deleted. Entering it in error keeps the `Command` record, sets `state` to `entered_in_error`, and records the user in `entered_in_error`. The command's anchor record also has `entered_in_error` set to that user. It isn't marked deleted, so the anchor's data model still returns it.
 
 ## Attributes
 
