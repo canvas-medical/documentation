@@ -928,3 +928,11 @@ command = PlanCommand(note_uuid=note_uuid)
 
 return [command.originate(commit=True)]
 ```
+
+### 503 responses with a Retry-After header
+
+A **503 Service Unavailable** response with an empty body and a `Retry-After: 5` header means
+Canvas got no answer from the plugin runner when it asked your handler to authenticate the request.
+This happens when the plugin runner can't be reached, for example while it restarts.
+Your handler's code didn't run. Have your client wait the number of seconds in `Retry-After`, then
+send the request again.
