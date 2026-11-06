@@ -72,8 +72,20 @@ Provides relative time delta calculations for more complex date arithmetic opera
 - `relativedelta`
 
 ##### `decimal`
-Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html)
+Provides precise decimal arithmetic for financial and scientific calculations where floating-point accuracy is critical. [read more](https://docs.python.org/3/library/decimal.html) To round a value, pass one of the `ROUND_*` constants as the `rounding` argument to `Decimal.quantize`.
 - `Decimal`
+- `DecimalException`
+- `DivisionByZero`
+- `InvalidOperation`
+- `Overflow`
+- `ROUND_05UP`
+- `ROUND_CEILING`
+- `ROUND_DOWN`
+- `ROUND_FLOOR`
+- `ROUND_HALF_DOWN`
+- `ROUND_HALF_EVEN`
+- `ROUND_HALF_UP`
+- `ROUND_UP`
 
 ##### `defusedxml.ElementTree`
 The defusedxml package contains several Python-only workarounds and fixes for denial of service and other vulnerabilities in Python’s XML libraries. [read more](https://pypi.org/project/defusedxml/)
@@ -157,7 +169,9 @@ Provides regular expression matching operations for pattern matching and text pr
 - `IGNORECASE`
 - `M`
 - `match`
+- `Match`
 - `MULTILINE`
+- `Pattern`
 - `S`
 - `search`
 - `split`
