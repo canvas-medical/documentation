@@ -36,7 +36,6 @@ from context_extractor import (
 # Any guide not listed here is excluded (e.g., index.md landing page).
 FHIR_GUIDE_STEMS = {
     "embedding-a-smart-on-fhir-application",
-    "fhir-v2-migration-guide",
     "improve-hcc-coding-accuracy",
     "note-management-oauth",
     "staying-on-top-of-tasks",
@@ -55,7 +54,6 @@ SDK_GUIDE_STEMS = {
     "growth-charts",
     "navigator-mcp",
     "patient-chart-group-items",
-    "patient-portal-forms",
     "plugin-development-tips-and-sandbox-limits",
     "plugin-security-model",
     "populating-command-fields",
