@@ -2501,7 +2501,7 @@ Book an appointment for this run's patient at a time find_appointment_slots offe
 
 **Offered only to runs with:** `api.add_appointment`. The platform hides it from other runs.
 
-Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
+Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Canvas cancels the appointment and books a new one with a new id, which find_appointments returns once applied. Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
 
 **Arguments:**
 
@@ -2513,7 +2513,7 @@ Move one of this run's patient's appointments, from find_appointments, to a new 
 | `practice_location_id` | string | no | A new location, if changing. |
 | `duration_minutes` | integer | no |  |
 
-**Returns:** `{ok: true, appointment_id}`: applied after the run.
+**Returns:** `{ok: true, replaces_appointment_id, requested: {start_time}, note}`: applied after the run, as a new appointment.
 
 #### `cancel_appointment`
 
