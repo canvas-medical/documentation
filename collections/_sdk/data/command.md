@@ -226,10 +226,12 @@ If a command's anchor record has been deleted, `anchor_object` raises the data m
 
 ## Deleted and entered-in-error commands
 
-Only a staged command can be deleted. Deleting one, from the note or with the [`delete` effect](/sdk/commands/#delete), has two results:
+Only a staged command can be deleted. `approveChange`, `denyChange` and `adjustProtocol` commands can't be deleted at all. The note doesn't offer to delete them, and the SDK has no command class for them, so there's no `delete` effect for them either.
+
+Deleting a command, from the note or with the [`delete` effect](/sdk/commands/#delete), has two results:
 
 - The `Command` record is removed. Deleted commands are no longer returned by `Command.objects` or `note.commands`, and no record of them is kept on this model.
-- The command's anchor record is kept and marked deleted (`deleted` set to true), with its note, patient, originator and last saved content. This doesn't apply to `approveChange`, `denyChange` and `adjustProtocol`, whose anchor records are left as they were.
+- The command's anchor record is kept and marked deleted (`deleted` set to true), with its note, patient, originator and last saved content.
 
 A deleted command's anchor record isn't returned by the anchor's data model, because data models return only records that aren't marked deleted. To capture what a command contained before it was deleted, respond to its pre-delete [command lifecycle event](/sdk/events/#command-lifecycle-events) and read the command while it still exists.
 
