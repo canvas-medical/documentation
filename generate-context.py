@@ -55,6 +55,7 @@ SDK_GUIDE_STEMS = {
     "scribe-ai-parser",
     "set-default-homepage",
     "tailoring-the-chart-to-the-patient",
+    "working-with-a-monorepo",
     "your-first-application",
     "your-first-plugin-with-claude-code",
     "your-first-plugin",
