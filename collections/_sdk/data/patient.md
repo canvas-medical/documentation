@@ -366,7 +366,7 @@ A patient carries at most one setting per `name`. Canvas maintains these:
 
 | Name                          | Holds                                                                                                                                  |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `pharmacy`                    | The patient's preferred pharmacies. Read this through [`preferred_pharmacies`](#patient), which normalizes the older single-pharmacy shape into a list |
+| `pharmacy`                    | The patient's preferred pharmacies. Read this through [`preferred_pharmacies`](#patient), which normalizes the older single-pharmacy shape into a list. When the [FHIR Patient API](/api/patient/) or the [CreatePatientPreferredPharmacies](/sdk/effect-create-patient-preferred-pharmacies/) effect writes it, each entry holds `pharmacy_ncpdp_id`, `pharmacy_name`, `pharmacy_address`, `pharmacy_phone_number`, `pharmacy_fax_number`, `pharmacy_specialty_type`, and `default`, with the details filled in from Canvas's pharmacy directory. The effect saves its pharmacies merged with the patient's current ones, and every pharmacy saved is looked up again. When none of them is found in the directory, the setting is deleted rather than stored empty, so `get_setting("pharmacy")` returns `None` |
 | `preferredSchedulingTimezone` | The timezone to schedule the patient in, for example `America/New_York`                                                                 |
 
 Because `value` is JSON, its shape differs from one setting to the next.
