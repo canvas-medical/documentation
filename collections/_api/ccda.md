@@ -66,6 +66,15 @@ curl --request GET --header "Authorization: Bearer <token>" "<practice_subdomain
 A valid request will always return XML with the requested document as the response. 
 If the `document` param is omitted, an empty XML will be returned. 
 
+## Concurrent requests
+
+Each C-CDA renders the patient's full clinical record, so an instance generates only a few at a time. A request that arrives while every slot is in use gets `429 Too Many Requests` with a `Retry-After` header (in seconds) instead of a document. The request did nothing, so it is safe to send again.
+
+When exporting many patients:
+* send a few requests at a time rather than all at once;
+* on a `429`, wait for the `Retry-After` interval before retrying that patient;
+* do not retry a `400`, which means the patient's record is missing data the document needs.
+
 ## Errors
 
 Canvas uses conventional HTTP response codes to indicate success or failure of an API request.
@@ -84,12 +93,20 @@ In general: Codes in the 2xx range indicate success. Codes in the 4xx range indi
       <td>Everything worked as expected.</td>
     </tr>
     <tr>
+      <td>400 - Bad Request</td>
+      <td>The patient is missing data a C-CDA requires (for example, a Team Lead). The plain-text body names what is missing. Retrying will not succeed until the patient's record changes.</td>
+    </tr>
+    <tr>
       <td>403 - Forbidden</td>
       <td>No valid Bearer token provided.</td>
     </tr>
     <tr>
       <td>404 - Not Found</td>
       <td>The requested resource doesn't exist.</td>
+    </tr>
+    <tr>
+      <td>429 - Too Many Requests</td>
+      <td>The instance is already generating as many C-CDAs as it allows at once. Wait the number of seconds in the <code>Retry-After</code> header, then retry. See <a href="#concurrent-requests">Concurrent requests</a>.</td>
     </tr>
     <tr>
       <td>500 - Server Error</td>
