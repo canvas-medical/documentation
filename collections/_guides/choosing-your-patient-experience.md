@@ -100,6 +100,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `ENABLE_PATIENT_PORTAL` | Whole portal on/off | `True` |
 | `ALLOW_PATIENT_DOCUMENT_UPLOADS` | Patient document uploads on "My Health" | `False` |
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
+| `PATIENT_APP_USERNAME_IS_EMAIL` | Makes a new patient's username the email on their portal login. The Create Account page fills it in and the patient can't change it. Registered patients keep their username, and a patient with no email on their login still chooses one. | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
 | `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
 
