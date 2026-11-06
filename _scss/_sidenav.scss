@@ -16,18 +16,18 @@
     }
     &__toggle {
         display: none;
-        @media (max-width: $breakpoint-md) {
-            display: block;
-            position: absolute;
-            left: 5vw;
-            top: 60px;
-        }
         position: sticky;
         top: 0.5rem;
         margin-left: auto;
         cursor: pointer;
         width: 1rem;
         height: 1rem;
+        @media (max-width: $breakpoint-md) {
+            display: block;
+            position: absolute;
+            left: 5vw;
+            top: 60px;
+        }
         svg {
             fill: $navyblue;
         }
