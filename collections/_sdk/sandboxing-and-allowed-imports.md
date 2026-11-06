@@ -645,7 +645,15 @@ Several names return a restricted stand-in rather than the real object:
 - **`__traceback__`** returns a safe traceback exposing only `tb_frame`, `tb_lineno`, and `tb_next`. Its frame exposes only `f_code` and `f_lineno`, and that code object exposes only `co_filename` and `co_name`. Local and global variables are never reachable. [`extract_exc_frames()`](#extract_exc_frames) is the more convenient way to read a traceback.
 - **`_meta`** on an SDK model class or instance returns a read-only view for inspecting the model's fields. It exposes `app_label`, `concrete_fields`, `db_table`, `fields`, `get_field()`, `get_fields()`, `local_fields`, `model_name`, `pk`, `verbose_name`, and `verbose_name_plural`. Each field in it exposes `attname`, `blank`, `choices`, `column`, `concrete`, `default`, `get_internal_type()`, `is_relation`, `many_to_many`, `many_to_one`, `max_length`, `name`, `null`, `one_to_many`, `one_to_one`, and `related_model`. A field's `default` reads as `None` when the default is a callable.
 
-Reading a plain attribute off an imported module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+Reading a plain attribute off an external module is also limited to that module's entry in the allow-list at the top of this page. `json.dumps` works because `dumps` is listed under `json`; `json.tool` raises an `AttributeError`.
+
+Modules in your plugin's own package aren't on the allow-list and don't need to be. You can import one of them and read its attributes through the module object, the same as importing those names directly:
+
+```python?partial=true
+from my_plugin.lib import store
+
+store.get_latest()  # same as: from my_plugin.lib.store import get_latest
+```
 
 ### Attributes that don't exist
 
