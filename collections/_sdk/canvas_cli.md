@@ -103,15 +103,15 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Deprecation notices
 
-`canvas install` prints a deprecation warning on every run. So do `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands each time they connect to a Canvas instance with `credentials.ini`. Runs against `localhost` or another host that is not a Canvas instance print no deprecation notice, because `canvas login` can't serve those hosts. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning on every run. So do `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands each time they connect to a Canvas instance with `credentials.ini`. `list`, `logs` and the `namespace` commands print no deprecation notice for `localhost` or another host that is not a Canvas instance, because `canvas login` can't serve those hosts. The plugin commands skip the notice when you name such a host with `--host` or `--instance`. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
 
 ### Which plugins go through Canvas Platform
 
 `canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
-- When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
+- When every host you name with `--host` or `--instance` is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
 - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
-- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin aimed at a Canvas instance is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
