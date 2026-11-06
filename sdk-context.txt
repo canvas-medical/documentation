@@ -13679,6 +13679,13 @@ The `uncategorizedDocumentReview` anchor is available as [UncategorizedClinicalD
     review = UncategorizedClinicalDocumentReview.objects.get(dbid=command.anchor_object_dbid)
     ```
 If a command's anchor record has been deleted, `anchor_object` raises the data model's `DoesNotExist` rather than returning `None`.
+##  Deleted and entered-in-error commands 
+Only a staged command can be deleted. `approveChange`, `denyChange` and `adjustProtocol` commands can't be deleted at all. The note doesn't offer to delete them, and the SDK has no command class for them, so there's no `delete` effect for them either.
+Deleting a command, from the note or with the [`delete` effect](/sdk/commands/#delete), has two results:
+  - The `Command` record is removed. Deleted commands are no longer returned by `Command.objects` or `note.commands`, and no record of them is kept on this model.
+  - The command's anchor record is kept and marked deleted (`deleted` set to true), with its note, patient, originator and last saved content.
+A deleted command's anchor record isn't returned by the anchor's data model, because data models return only records that aren't marked deleted. To capture what a command contained before it was deleted, respond to its pre-delete [command lifecycle event](/sdk/events/#command-lifecycle-events) and read the command while it still exists.
+A committed command can't be deleted. Entering it in error keeps the `Command` record, sets `state` to `entered_in_error`, and records the user in `entered_in_error`. The command's anchor record also has `entered_in_error` set to that user. It isn't marked deleted, so the anchor's data model still returns it.
 ##  Attributes 
 ###  Command 
 Field Name | Type  
