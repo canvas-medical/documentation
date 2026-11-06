@@ -42,7 +42,7 @@ Deletes an existing event.
 | `recurrence_frequency` | [`EventRecurrence`](#eventrecurrence) `\| None` | The frequency of recurrence: `EventRecurrence.Daily` or `EventRecurrence.Weekly`.          | No                                 |
 | `recurrence_interval`  | `int \| None`                              | The interval between recurrences (for example, 1 for every week, 2 for every other week).           | No                                 |
 | `recurrence_days`      | `list[`[`DaysOfWeek`](#daysofweek)`] \| None` | List of days when the event should recur (used with weekly recurrence).                        | No                                 |
-| `recurrence_ends_at`   | `datetime \| None`                         | The date and time when the recurrence pattern ends.                                                 | No                                 |
+| `recurrence_ends_at`   | `datetime \| None`                         | The date and time when the recurrence pattern ends. Canvas stores it as `UNTIL` in the event's [recurrence rule](/sdk/data-calendar/#event). Ignored when the event doesn't recur. For `update()`, leave it unset to make the series open-ended. | No                                 |
 | `allowed_note_types`   | `list[str] \| None`                        | List of note types that are allowed for this event.                                                 | No                                 |
 
 ## EventRecurrence
