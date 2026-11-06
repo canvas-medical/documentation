@@ -674,7 +674,7 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
 A staff member starting a run about a document also has to see every patient,
-since matching searches the whole chart.
+since matching searches every patient.
 
 ## Scheduling
 
