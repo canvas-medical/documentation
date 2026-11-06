@@ -344,7 +344,7 @@ Monorepo-Commit: 3f9a1c2e7b40d8e1a6c5f4b3a2918e7d6c5b4a39
 Monorepo-Path: plugins/acme__intake
 ```
 
-`deploy` starts from the newest commit on `main`'s first-parent history that carries a `Monorepo-Commit` trailer or a `snapshot-baseline/` tag. Lightweight and annotated tags both count. To mark a commit on `main` as the starting point yourself, tag it in a [`canvas clone`](#canvas-clone) checkout and push the tag:
+`deploy` starts from the newest commit on `main`'s first-parent history that carries a `Monorepo-Commit` trailer or a `snapshot-baseline/` tag, as Canvas Studio tags the commit it starts `main` from. Lightweight and annotated tags both count. A tagged commit without a `Monorepo-Commit` trailer names no source commit, so `deploy` skips the rollback check described below. To mark a commit on `main` as the starting point yourself, tag it in a [`canvas clone`](#canvas-clone) checkout and push the tag:
 
 ```console
 $ git tag snapshot-baseline/<sha> <sha>
