@@ -2448,6 +2448,7 @@ class MyHandler(BaseHandler):
 
 
  - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
+ - **Changing the questionnaire:** `edit()` keeps the questionnaire the command already uses, along with its responses. A `questionnaire_id` set on the edited command is ignored, so set the questionnaire when you originate the command.
 
 ---
 
