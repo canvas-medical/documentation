@@ -676,6 +676,27 @@ Every intake tool needs `api.access_dataintegration`, the queue's permission.
 A staff member starting a run about a document also has to see every patient,
 since matching searches the whole chart.
 
+## Scheduling
+
+`@scheduling_reads` lists the practice's providers (`find_providers`) and
+searches open times the way the native booking screens do
+(`find_appointment_slots`, with time-zone-aware start and end at most 31 days
+apart). A slot is not held, so book soon after finding it.
+
+`@scheduling_writes` books, reschedules, and cancels the run's patient's
+appointments. Each refuses an appointment that is not the run's patient's, and
+each takes effect when applied rather than staying a draft, so an agent that
+offers them to a person lists `@scheduling_writes` under `tools.approve`. For a
+run a staff member started, each needs what the chart checks: `add_appointment`
+to book or reschedule, and `change_appointment` with
+`add_notestatechangeevent` to cancel.
+
+`find_patient` (`@patient_search`) names the one patient a set of identifiers
+matches, for an agent that works for whoever a person asks about. It needs the
+`PATIENT_SEARCH` capability. Every other tool still acts only on the run's
+patient: a patient the search names is for the agent to tell the person, or to
+start a run about.
+
 ## Tool surface design tips
 
 - **Be specific in `description`.** The model picks tools based on
@@ -748,6 +769,9 @@ list to opt out of specific tools within a granted category:
 - **`@intake_writes`** (4 tools): `suggest_patient`, `categorize_document`, `prefill_document_fields`, `assign_document_reviewer`
 - **`@message_reads`** (1 tool): `find_messages`
 - **`@message_writes`** (1 tool): `originate_message`
+- **`@patient_search`** (1 tool): `find_patient`
+- **`@scheduling_reads`** (2 tools): `find_providers`, `find_appointment_slots`
+- **`@scheduling_writes`** (3 tools): `book_appointment`, `reschedule_appointment`, `cancel_appointment`
 - **`@task_reads`** (1 tool): `find_tasks`
 - **`@task_writes`** (3 tools): `create_task`, `update_task`, `add_task_comment`
 <!-- AUTOGEN:categories END -->
@@ -1601,6 +1625,63 @@ Search the practice's directory of outside providers and facilities, the list th
 
 **Backing data model:** `ServiceProvider`.
 
+#### `find_patient`
+
+**Category:** `@patient_search`
+
+**Offered only to runs with:** the `patient_search` capability. The platform hides it from other runs.
+
+Find the one patient a person means, from the identifiers they give: the last name and birth date, plus the first name and MRN when known. Returns the patient's id only when exactly one patient matches; otherwise it says none or several did and names no one. Never loosen or guess identifiers to get a match: ask the person instead. The other tools still act on this run's patient, not the one found.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | no | First name, or a nickname. |
+| `last_name` | string | no | Last name. |
+| `birth_date` | string (date) | no | YYYY-MM-DD. |
+| `mrn` | string | no | The patient's MRN, when known. |
+
+**Returns:** `{match: {patient_id}, matched_on}` when exactly one patient matches, else `{match: null, reason}`.
+
+#### `find_providers`
+
+**Category:** `@scheduling_reads`
+
+List the practice's active staff a patient can be booked with, by name or primary location. Returns each with `id` (pass it as `provider_id` to the scheduling tools, or in `provider_ids` to `find_appointment_slots`), name, and primary location. Practice-level config, not patient-scoped.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `name_contains` | string | no | Case-insensitive match on the first or last name. |
+| `practice_location_id` | string | no | Only staff whose primary location this is, from find_practice_locations. |
+| `limit` | integer | no | Maximum results. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `name`, and `primary_practice_location_id`.
+
+**Backing data model:** `Staff`.
+
+#### `find_appointment_slots`
+
+**Category:** `@scheduling_reads`
+
+Search the open appointment times the native booking screens offer at one practice location, between two times (at most 31 days apart), for a visit of the given length. Narrow it to providers from find_providers and a visit type from find_note_types. A slot is not held: book soon after finding it, and search again if the booking is refused.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `practice_location_id` | string | yes | The location, from find_practice_locations. |
+| `start` | string | yes | Earliest start, ISO 8601 with a time zone. |
+| `end` | string | yes | Latest start, ISO 8601 with a time zone. |
+| `duration_minutes` | integer | yes |  |
+| `provider_ids` | array of string | no |  |
+| `visit_type_id` | string | no | The visit's note type, from find_note_types. |
+| `reschedule_appointment_id` | string | no | When rescheduling, the appointment, so its own time shows as open. |
+
+**Returns:** Array of up to 50 `{provider_id, start, end}`, earliest first.
+
 #### `find_reason_for_visit_codes`
 
 **Category:** `@config_reads`
@@ -2393,6 +2474,62 @@ Stage a draft Referral on the patient's open note for the clinician to review an
 **Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `ReferCommand`.
+
+#### `book_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Offered only to runs with:** `api.add_appointment`. The platform hides it from other runs.
+
+Book an appointment for this run's patient at a time find_appointment_slots offered. It takes effect when applied, not as a draft: confirm the time, provider, and visit type with the person first.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `provider_id` | string | yes | From find_providers. |
+| `practice_location_id` | string | yes | From find_practice_locations. |
+| `visit_type_id` | string | yes | A schedulable encounter note type, from find_note_types. |
+| `start_time` | string | yes | ISO 8601 with a time zone. |
+| `duration_minutes` | integer | yes |  |
+
+**Returns:** `{ok: true, booked: false, requested: {...}}`: applied after the run.
+
+#### `reschedule_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Offered only to runs with:** `api.add_appointment`. The platform hides it from other runs.
+
+Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `appointment_id` | string | yes | From find_appointments. |
+| `start_time` | string | yes | ISO 8601 with a time zone. |
+| `provider_id` | string | no | A new provider, if changing. |
+| `practice_location_id` | string | no | A new location, if changing. |
+| `duration_minutes` | integer | no |  |
+
+**Returns:** `{ok: true, appointment_id}`: applied after the run.
+
+#### `cancel_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Offered only to runs with:** `api.add_notestatechangeevent`, `api.change_appointment`. The platform hides it from other runs.
+
+Cancel one of this run's patient's appointments, from find_appointments. Takes effect when applied: confirm with the person first.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `appointment_id` | string | yes | From find_appointments. |
+
+**Returns:** `{ok: true, appointment_id}`: applied after the run.
 
 #### `originate_reason_for_visit`
 

@@ -256,6 +256,7 @@ it; a run a patient or Canvas Bot started has none.
 | `Capability` | Granted when the requester | Opens |
 |---|---|---|
 | `REVENUE` | holds the Revenue access permission, which the revenue pages require, and patient groups leave them able to see every patient | the claims tools, and runs with a `claim_id` |
+| `PATIENT_SEARCH` | holds the patient view permission, and patient groups leave them able to see every patient | `find_patient` |
 
 A tool that needs a capability declares it, and the platform hides it
 from runs without it:
