@@ -126,7 +126,7 @@ You can put your organization's identity on the portal without building anything
 What stays **Canvas-driven** and isn't branded per organization:
 
 - **The portal URL** — patients sign in at `https://<your-instance>.canvasmedical.com/app/`.
-- **The login flow** — the sign-in and verification screens are Canvas's.
+- **The login flow** — the sign-in and verification steps are Canvas's. A theme plugin can restyle the login page's colors, font, and wording (see [Theme the portal](#theme-the-portal)), but not the steps themselves.
 - **Sign-in & verification emails** — these are sent from a fixed `no-reply@canvasmedical.com` (a separate path from the patient-message sender above), so they can't be rebranded.
 
 {% include alert.html type="info" content="Want your own domain and login flow end to end? That's Path 3 — build your own app and use Canvas as the backend." %}
@@ -143,6 +143,12 @@ New to plugins? Start with [Your First Plugin](/guides/your-first-plugin-with-cl
 
 Here's what you can do — mix and match as many as you like.
 
+### Theme the portal
+
+Make the portal match your brand: your colors for buttons, links, the menu, and the page background, your font, rounder or squarer corners, and the word the portal uses for the person (patient, member, or client). The theme covers every portal page, including login and registration, and each business line can have its own. Signed-in pages can also take your own CSS.
+
+A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal/#theme-the-patient-portal) effect. [Theming the Patient Portal](/guides/theme-the-patient-portal/) walks through each setting with screenshots.
+
 ### Personalize the landing page with widgets
 
 The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient.
@@ -155,7 +161,9 @@ See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widge
 
 Self-scheduling is powerful, but you'll usually want guardrails. Filter or reorder the slots a patient can book *before they see them* — keep new patients on longer visit types, hide same-day slots, steer certain reasons to specific providers, or enforce your booking policies.
 
-See [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
+Building your own booking screen instead? A plugin can search open appointment times with the same search the Canvas booking screens use, so it offers patients the same times Canvas would.
+
+See [Searching for open appointment slots](/sdk/utils/#searching-for-open-appointment-slots) · [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
 
 Real-world example (MSF):
 
@@ -183,7 +191,9 @@ Getting patients into the portal doesn't have to be manual. Automatically **invi
 
 Prefer to send the invite yourself? A plugin can mint the patient's activation or password reset link and deliver it through your own email or SMS provider, with your own wording and branding. You choose where in the portal the link lands the patient, such as their appointments or one of your own portal pages.
 
-See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+Happy with Canvas sending the invite but want your own words? A plugin can write the subject and body of the invite and password reset emails Canvas sends, and Canvas keeps the login link in them.
+
+See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
 
 ### Greet patients as soon as they sign in
 
@@ -234,6 +244,12 @@ Real-world examples (MSF):
 - [patient-portal-profile](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-profile) — adds a read-only **My Profile** page (demographics, care team, preferred pharmacy).
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
+
+### Add a band to every page
+
+Keep something in front of patients on every page they visit: an announcement banner, a support footer, or a toolbar for your program. A Portal Docked Application mounts your content in a full-width band across the top or bottom of every signed-in portal page, and it stays on screen as patients move around the portal.
+
+See [Portal Docked Applications](/sdk/handlers-embedded-applications/#portal-docked-applications).
 
 ### Collect insurance cards and photo IDs
 

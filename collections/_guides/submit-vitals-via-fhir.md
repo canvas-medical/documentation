@@ -103,13 +103,13 @@ response = requests.post(url, json=payload, headers=headers)
 
 On a successful create, when the `response.status_code` equal 201. We can fetch the ID of the newly created observation in the `response.headers['location']` attribute. The value will always be in the format `{url}/{id}/_history/1`. We need to extract the `id` from the value. 
 
-However, if the request failed it will throw an error to see what went wrong. It will also display the Correlation ID that can be given to Customer Support for help with further debugging.
+If the request fails, the code raises an exception that shows what went wrong and the request's correlation ID, which you can give to Canvas support. A request that takes longer than 60 seconds returns a `504` with no correlation ID, so the code reads the header with `response.headers.get()` and shows `None` in that case. A create that returned a `504` may still have completed, so search for the observation before you retry it. For more about timeouts and how to set your own correlation ID, see [Errors](/api/errors/#timeouts).
 
 ```python?partial=true
 if response.status_code == 201:
     panel_id = response.headers['location'].replace(f"{url.replace('https', 'http')}/", '').replace('/_history/1', '')
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be a Data Import note placed on that patient's timeline based on the date passed in the `effectiveDateTime` attribute with an empty Vitals Command:
@@ -188,7 +188,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Height observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be height of `69.0 in` added in that Vitals Command:
@@ -237,7 +237,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Weight observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be weight of `176 lbs 6.4 oz` added in that Vitals Command:
@@ -286,7 +286,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Waist Circumference observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be waist circumference of `98.2 cm` added in that Vitals Command:
@@ -335,7 +335,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Body Temperature observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be temperature of `98.4 °F` added in that Vitals Command:
@@ -415,7 +415,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Blood Pressure observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be blood pressure of `122/68` added in that Vitals Command:
@@ -464,7 +464,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Pulse Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in that Vitals Command:
@@ -510,7 +510,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Pulse rhythm observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be pulse rhythm of `Regular` added in that Vitals Command:
@@ -559,7 +559,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Respiration Rate observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be respiration rate of `15 bpm` added in that Vitals Command:
@@ -613,7 +613,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now be Oxygen Saturation of `98%` added in that Vitals Command:
@@ -659,7 +659,7 @@ response = requests.post(url, json=payload, headers=headers)
 if response.status_code == 201:
     print(f"Oxygen Saturation observation id = {response.headers['location'].replace(f'{url}/', '').replace('/_history/1', '')}")
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 Looking in the Canvas UI, there will now will be a Note added in that Vitals Command:
@@ -680,7 +680,7 @@ response = requests.get(f"{url}/{panel_id}", headers=headers)
 if response.status_code == 200:
     pprint(response.json())
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 The output will look like:
@@ -790,7 +790,7 @@ response = requests.get(f"{url}?patient=Patient/{patient_id}&category=http://ter
 if response.status_code == 200:
     pprint(response.json())
 else:
-    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers['fumage-correlation-id']} \n {response.text}")
+    raise Exception(f"Failed to perform {response.url}. \n Fumage Correlation ID: {response.headers.get('fumage-correlation-id')} \n {response.text}")
 ```
 
 The response will look like: 

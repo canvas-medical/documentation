@@ -111,6 +111,8 @@ The payment is always applied to the patient's account:
 - **Against a specific claim.** When `claim_id` is given and `copay` is left `false` (the default), the payment pays down that claim's non-copay line-item balances. The charge is rejected if the claim has nothing to charge against, but the amount is not capped at the claim's balance, so an amount above it leaves the claim in credit.
 - **As a copay on a claim.** When `claim_id` is given with `copay` set to `true`, the amount is recorded as a copay on that claim, posted to its copay line item. No balance is checked at all, so use this to collect a copay or prepayment against a claim that carries nothing to charge.
 
+For a complete plugin that collects appointment copays this way from the patient portal, see the [Appointment Copay Collection](/sdk/example-appointment_copay_collection/) example.
+
 ## Reconciling the charge
 
 Once the charge has been processed, Canvas emits a [`REVENUE__STORED_CARD__CHARGE_RESPONSE`](/sdk/events/#stored-card-charge-events) event carrying the outcome. It fires whether or not the card was charged, and nothing a handler returns changes the charge, so handle it to reconcile rather than to intervene.

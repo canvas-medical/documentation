@@ -147,6 +147,7 @@ effect_create_multi = comprehensive_assessment.create()
 Update an existing observation.
 
 - Only fields marked dirty (modified on the model) are included in the update.
+- If the update matches the stored observation, Canvas writes nothing and doesn't send an [OBSERVATION_UPDATED](/sdk/events/#observations) event. You can resend a whole observation, such as from a lab sync, without creating extra events for plugins that listen for changes. Codings, value codings, and components match in any order, and `effective_datetime` matches when it names the same instant in a different UTC offset.
 
 #### Validation
 

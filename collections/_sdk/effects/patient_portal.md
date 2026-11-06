@@ -41,6 +41,8 @@ Sets the portal menu for the patient.
 | `CONTACT`      | `"contact"`      | Contact          |
 | `RECORDS`      | `"records"`      | Health Records   |
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal_menu_configuration import PatientPortalMenuConfiguration
@@ -108,6 +110,10 @@ class MyHandler(BaseHandler):
 ```
 
 For a full walkthrough with examples, see the [Custom Landing Page guide](/guides/custom-landing-page/). Example plugins: [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin), and the MSF [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) (a "Need to be seen today?" widget).
+
+## Add a Band to Every Portal Page
+
+To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
 
 ## Customize Appointment Cards
 
@@ -224,6 +230,8 @@ The portal opens the default homepage application only when that application use
 
 While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Portal consents, [forms](#forms), and [modals from `PATIENT_PORTAL__POST_LOGIN` handlers](#show-a-modal-after-login) still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.patient_portal.application_configuration import PatientPortalApplicationConfiguration
@@ -245,6 +253,83 @@ class MyHandler(BaseHandler):
 
 ```
 
+## Theme the Patient Portal
+
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
+
+Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
+
+### Methods
+
+#### apply() → Effect
+
+Applies the theme. The effect raises a validation error that names the attribute at fault when:
+
+- An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
+- A value doesn't match its format or range in the Attributes table.
+- `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+- `font_source` is set without `font_family`.
+
+### Attributes
+
+| Attribute                        | Type  | Description                                                                                                                                              | Required |
+|----------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `brand_color`                    | `str` | The brand color, as a six-digit hex color such as `"#0F766E"`.                                                                                           | No       |
+| `menu_background_color`          | `str` | The background of the left navigation menu, as a six-digit hex color.                                                                                    | No       |
+| `menu_selected_background_color` | `str` | The background of the selected menu item, as a six-digit hex color.                                                                                      | No       |
+| `menu_text_color`                | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No       |
+| `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
+| `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
+| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No       |
+| `font_source`                    | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No       |
+| `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
+| `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
+
+Setting `font_family` replaces the portal's default webfont, including in questionnaire forms. The theme also applies in pop-up windows, such as questionnaire forms and the Session Expired notice.
+
+Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
+
+### Color contrast
+
+`apply()` doesn't check color contrast, so check that the colors you choose stay readable. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a contrast ratio of at least 4.5:1. The portal draws these colors together:
+
+- Menu text on `menu_background_color`, and on `menu_selected_background_color`.
+- Body text on `page_background_color`.
+- `brand_color` links and section titles on `page_background_color`, and on the light brand tint behind section and accordion headers.
+- White text on `brand_color`, on primary buttons and sent messages.
+- `brand_color` text on `menu_selected_background_color`, when the menu keeps its default background.
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class PortalThemeHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_THEME_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [
+            PatientPortalTheme(
+                brand_color="#0F766E",
+                page_background_color="#F0FDFA",
+                # A dark menu: the portal picks white menu text.
+                menu_background_color="#1F2937",
+                corner_radius=8,
+                font_family="Inter, sans-serif",
+                font_source="https://fonts.googleapis.com/css2?family=Inter&display=swap",
+                person_word="member",
+            ).apply()
+        ]
+```
+
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
@@ -256,6 +341,8 @@ Canvas applies the same appointment-type, location, and provider filters when a 
 - A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
 
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
+
+To show open times on a booking screen your plugin builds itself, call the native slot search with [`search_slots()`](/sdk/utils/#searching-for-open-appointment-slots).
 
 ### Filter available slots
 
@@ -443,6 +530,8 @@ The event targets the patient. Its context carries `login_method`, which tells y
 
 The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
 
+### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.launch_modal import LaunchModalEffect
@@ -503,6 +592,8 @@ The event context names the `document` and the record it came from:
 | `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
 | `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
 | `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -647,6 +738,8 @@ Updates the user's phone number or email.
 | `email`        | `str` | The email to store.                                                   | No       |
 
 
+#### Example
+
 ```python
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.update_user import UpdateUserEffect
@@ -686,6 +779,8 @@ class SyncPortalUser(BaseHandler):
 
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
 
+On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
+
 #### Methods
 
 ##### apply() → Effect
@@ -700,6 +795,8 @@ Sends the portal invitation.
 |-------------|-------|-----------------------------------------------------------------------|----------|
 | `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. | Yes      |
 
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -732,6 +829,86 @@ class InviteVerifiedPatient(BaseHandler):
 **Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link.
 
 What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Signing in is a separate step that sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link and setting a password does not sign the patient in, so a registered patient who has not yet signed in shows both their username and the never-logged-in line.
+
+### Customize the Login Email
+
+Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
+
+Canvas fires the event each time it emails a patient a login link:
+
+- Staff send an invite or a password reset from the Portal section of the patient's profile.
+- A plugin returns a [`SendInviteEffect`](#send-invite).
+- A patient requests a login link by email from the portal login page.
+
+The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
+
+| Key                    | Value                                                                                                                                  |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `link_type`            | `"invite"` when the patient hasn't registered yet, or `"reset"` when they have                                                         |
+| `login_url`            | The login link to send the patient                                                                                                     |
+| `practice_location_id` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/) the email is sent from: the primary location of the patient's care team lead, or the first practice location when the patient has no care team lead |
+| `default_subject`      | The subject Canvas uses by default                                                                                                     |
+| `default_body`         | The HTML body Canvas uses by default                                                                                                   |
+
+Canvas sends the subject and body you return in place of the defaults. The sender and recipient stay the same, and text messages that carry the link keep the default wording.
+
+- Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+- Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
+- When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+- Don't return a `SendInviteEffect` from this handler. It would send another login email and fire the event again, so Canvas drops it. See [Disallowed Effect/Event Combinations](/sdk/effects/#disallowed-effectevent-combinations).
+- Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
+
+#### Methods
+
+##### apply() → Effect
+
+Sets the subject and body of the login email.
+
+- `subject` and `html_body` are required and can't be empty or only whitespace.
+- `subject` must fit on one line, with no line breaks. `html_body` can contain line breaks.
+- Any other attribute is an error, so a misspelled attribute name fails instead of being ignored.
+
+#### Attributes
+
+| Attribute   | Type  | Description                               | Required |
+|-------------|-------|-------------------------------------------|----------|
+| `subject`   | `str` | The subject line of the email.            | Yes      |
+| `html_body` | `str` | The body of the email, as HTML.           | Yes      |
+
+#### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.login_email import LoginEmailContent
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils.html import sanitize_html
+from canvas_sdk.v1.data import Patient
+
+
+class PortalLoginEmail(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_LOGIN_EMAIL)
+
+    def compute(self) -> list[Effect]:
+        patient = Patient.objects.get(id=self.target)
+        # Canvas sends the body as written, so escape patient data before adding it
+        first_name = sanitize_html(patient.first_name)
+        login_url = self.context["login_url"]
+
+        if self.context["link_type"] == "invite":
+            subject = "Your patient portal is ready"
+            intro = f"Welcome, {first_name}. Set your password to start using the portal."
+        else:
+            subject = "Reset your patient portal password"
+            intro = f"Hi {first_name}, use this link to set a new password."
+
+        return [
+            LoginEmailContent(
+                subject=subject,
+                html_body=f'<p>{intro}</p><p><a href="{login_url}">Open the patient portal</a></p>',
+            ).apply()
+        ]
+```
 
 <br/>
 <br/>

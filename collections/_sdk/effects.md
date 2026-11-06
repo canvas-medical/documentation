@@ -120,6 +120,7 @@ Canvas prevents certain combinations of events and effects to avoid infinite loo
 |------------|------------------------|
 | `PATIENT_CHART__CONDITIONS` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
 | `PATIENT_CHART_SUMMARY__SECTION_CONFIGURATION` | `ADD_BANNER_ALERT`<br/>`ADD_OR_UPDATE_PROTOCOL_CARD` |
+| `PATIENT_PORTAL__GET_LOGIN_EMAIL` | `PATIENT_PORTAL__SEND_INVITE` |
 
 For example, if you have a plugin that responds to `PATIENT_CHART__CONDITIONS` events, you cannot return `ADD_BANNER_ALERT` or `ADD_OR_UPDATE_PROTOCOL_CARD` effects from that plugin, as this could create an infinite loop where the effect triggers another conditions event.
 
@@ -489,6 +490,7 @@ Check out the [Claims Effects](/sdk/effect-claims/) documentation.
 | ADD_CLAIM_BANNER_ALERT | Add a banner alert to a claim. |
 | REMOVE_CLAIM_BANNER_ALERT | Remove a banner alert from a claim. |
 | UPDATE_CLAIM_PROVIDER | Update the provider on a claim. |
+| UPDATE_CLAIM_ASSIGNEE | Assign a claim to a staff member or team, or clear the assignment. |
 | UPSERT_CLAIM_METADATA | Add or update metadata on a claim. |
 | UPDATE_CLAIM_LINE_ITEM | Update a line item on a claim. |
 
@@ -502,11 +504,13 @@ Check out the [Patient Portal](/sdk/patient-portal/) documentation.
 | PORTAL_WIDGET | Add widgets to the patient portal landing page. |
 | SHOW_PATIENT_PORTAL_MENU_ITEMS | Configure menu items in the patient portal. Check out [Patient Portal](/sdk/patient-portal/#configure-portal-menu-items). |
 | PATIENT_PORTAL__APPLICATION_CONFIGURATION | Configure the patient portal application. |
+| PATIENT_PORTAL__THEME_CONFIGURATION | Set the patient portal's colors, font, corner radius, and custom CSS. Check out [Patient Portal](/sdk/patient-portal/#theme-the-patient-portal). |
 | PATIENT_PORTAL__FORM_RESULT | Return form results in the patient portal. |
 | PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK | Show the 'join' button on the telehealth appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_CANCELABLE | Show the 'cancel' button on the appointment card. |
 | PATIENT_PORTAL__APPOINTMENT_IS_RESCHEDULABLE | Show the 'reschedule' button on the appointment card. |
 | PATIENT_PORTAL__SEND_INVITE | Trigger a portal invitation for a user. |
+| PATIENT_PORTAL__LOGIN_EMAIL_CONTENT | Replace the subject and body of the portal login email. Check out [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email). |
 | PATIENT_PORTAL__SEND_CONTACT_VERIFICATION | Send an email or SMS verification to a patient contact point. Works for any patient contact point, not just the portal. Check out [Send Contact Verification](/sdk/effect-send-contact-verification/). |
 | PATIENT_PORTAL__APPOINTMENTS__SLOTS__POST_SEARCH_RESULTS | Modify slot availability in the patient portal appointment scheduler. |
 | PATIENT_PORTAL__APPOINTMENTS__FORM_APPOINTMENT_TYPES__PRE_SEARCH_RESULTS | Modify appointment types in the patient portal before a search. |
@@ -534,6 +538,15 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 | Effect | Description |
 |---|---|
 | HTTP_REQUEST | Have the platform issue an HTTP request on behalf of a plugin. Most useful when chained with [`.set_async(...)`](/sdk/effect-http-request/#async-execution) so the platform's async runner handles delay, retries, and retry-on-status-code behavior. |
+
+
+### Plugin Usage
+
+Check out the [Record Usage](/sdk/effect-record-usage/) effect class documentation.
+
+| Effect | Description |
+|---|---|
+| RECORD_USAGE | Record units of a plugin's work that its manifest `catalog.pricing` prices, such as one visit. |
 
 
 ### Revenue / Payment Processor
