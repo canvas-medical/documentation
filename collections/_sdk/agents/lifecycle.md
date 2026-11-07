@@ -338,8 +338,10 @@ hour:
   to it, so an agent's commit applies only through an approved proposal,
   and a run no user started cannot commit.
   That includes `originate(commit=True)`, which drafts and commits a
-  command in one effect, and a custom command, which is committed as
-  soon as it is originated.
+  command in one effect; a custom command, which is committed as soon
+  as it is originated; and a
+  [ChartSectionReview](/sdk/commands/#chartsectionreview), which
+  records the review when it is originated.
 - **Lab reports need approval:** a `LabReport`'s `create()` and
   `attach_results()` put results in the chart with no draft for a person
   to commit, so an agent's lab report applies only through an approved
