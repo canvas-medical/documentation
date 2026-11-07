@@ -7,6 +7,38 @@ hidden: false
 
 The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
 
+## Family Portal Access
+
+With family portal access, staff give a family member or another representative portal access to a patient's chart. A parent who is also a patient can open their child's chart as well as their own, and a representative with no chart of their own uses the portal for the chart they were given. Canvas turns family portal access on for each instance.
+
+A portal login can have several charts: its own, if it has one, and each chart it was given access to. The portal is open on one of them at a time, and the login can switch between them. Each browser tab shows one chart. Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
+
+Plugins receive the patient whose chart the portal is open on, which isn't always the person signed in. Canvas identifies that patient in:
+
+- The `canvas-logged-in-user-id` header on [SimpleAPI](/sdk/handlers-simple-api-http/#session) requests, which `SessionCredentials.logged_in_user` reads.
+- `logged_in_user` on [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) connections.
+- The `user` in the event context of a `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application).
+- The target of portal events, such as `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, and `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION`.
+
+To find out who is using the chart and what they can do there, read `portal_access` on [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) or the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object). It gives the chart's patient, the login acting on it, the family member's or representative's [PortalAccessGrant](/sdk/data-portal-access-grant/), and their access level (none, view, or act) in appointments, messaging, clinical, and billing. In portal events and applications, `self.event.actor` is the login, and you can look up its grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model. To serve family members and representatives from a SimpleAPI or WebSocket API, declare the access your routes need with `PORTAL_ACCESS`, as [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access) describes.
+
+A handler that looks up the patient from these values works with the chart the portal is open on. When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+
+A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+
+A message that a family member sends from the portal is filed on the chart the portal is open on. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+
+The built-in portal pages follow the family member's access in their area on the chart. With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
+
+| Area | Built-in pages (menu items) | View | Act |
+|---|---|---|---|
+| Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, with a note that the access is view-only. Book Appointment, Reschedule, and each appointment's cancel button show turned off. Join still opens a telehealth visit. | The appointments, with booking, canceling, and rescheduling |
+| Messaging | Messaging (`MESSAGING`) | The chart's messages, including lab reports the care team shared through the portal. The form for sending a message shows turned off, with a note that the access is view-only. Opening a shared lab report's original takes view or act access in clinical. | The messages, with the form for sending one |
+| Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. My Health and Health Records note that the access is view-only. Generated health records can be viewed and downloaded. Generate, Re-Generate, Transmit, and My Health's Upload Records show turned off. | The records, with Generate, Re-Generate, and Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on |
+| Billing | Payments (`PAYMENTS`) | The chart's balance, installment plan, and statements, with a note that the access is view-only. When card payments are set up, the saved payment methods show, and Pay Now, Add, and each card's edit and remove buttons show turned off. Otherwise, a number to call to pay. | The balance and statements, with Pay Now and saved payment methods that can be added, edited, and removed when card payments are set up, or otherwise a number to call to pay |
+
+The ready-made [landing page widgets](#portal-landing-page-widgets) follow the same access. `APPOINTMENTS` and `MESSAGING` don't appear without access in their area. With view access, each shows a note that the access is view-only: `APPOINTMENTS` shows its booking, canceling, and rescheduling buttons turned off, and `MESSAGING` links to the messages with View messages in place of Send a message.
+
 ## Configure Portal Menu Items
 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
@@ -788,6 +820,7 @@ On a non-production instance, the invite is only delivered to email addresses an
 Sends the portal invitation.
 
 - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- The invitation goes to the patient whose own login `user_dbid` names. For the login of a family member with no chart of their own (see [Family Portal Access](#family-portal-access)), the effect sends nothing.
 
 #### Attributes
 

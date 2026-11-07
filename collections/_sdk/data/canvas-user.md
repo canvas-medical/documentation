@@ -57,6 +57,7 @@ users = CanvasUser.objects.filter(phone_number="1111111111", email="test@canvasm
 | commands_originated       | [Command](/sdk/data-command/#command)[]                                 |
 | commands_committed        | [Command](/sdk/data-command/#command)[]                                 |
 | commands_entered_in_error | [Command](/sdk/data-command/#command)[]                                 |
+| portal_grants             | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
 
 <br/>
 <br/>

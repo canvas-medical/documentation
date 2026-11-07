@@ -228,7 +228,7 @@ The `scope` attribute determines where your application is visible within Canvas
 
 Applications in the `global`, `patient_specific`, and `provider_menu_item` scopes are shown to every staff member, and `portal_menu_item` applications are shown to every patient in the patient portal. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
 
-When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records. The `user` ID is the patient whose chart the portal is open on, who with [family portal access](/sdk/patient-portal/#family-portal-access) can be someone other than the person signed in.
 
 <!-- source: discussion #1204 -->
 ### Linking to a portal application

@@ -1333,6 +1333,9 @@ data_module:
   - title: "PluginCommand"
     url: /sdk/data-plugin-command/
     description: Custom commands registered by plugins via the manifest configuration.
+  - title: "PortalAccessGrant"
+    url: /sdk/data-portal-access-grant/
+    description: Family portal access given to a login for a patient's chart.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.

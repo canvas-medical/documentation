@@ -40,6 +40,7 @@ Changes an existing message.
 - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
 - `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See [Attaching files](#attaching-files).
 - `team_id` must not be set. Editing a message keeps its team. To change the team, use [`AssignMessageTeam`](#assigning-a-message-to-a-team).
+- For a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access), set `sender_id` to the patient whose chart the message is filed on. The family member stays the message's sender.
 
 ### send() → Effect
 
