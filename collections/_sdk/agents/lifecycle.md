@@ -701,15 +701,26 @@ Runs on different patients don't wait on each other. Keep each
 
 Runs a person is waiting on go ahead of batch work. A run is
 interactive when a signed-in user started it from a SimpleAPI route, an
-application, or an action button, and they have no other run of the
-same agent still waiting on another scope. A chat's next turn stays
-interactive while its previous turn waits on the same scope. Everything else waits behind interactive
-runs: runs from event handlers, schedules, and webhooks; Canvas Bot runs,
-such as those from an API-key SimpleAPI route; and every run
-after the first when a user's request starts many. A chat's run doesn't
-wait behind a large batch, though the batch takes longer to finish while
-people are using the agents. A run already started isn't interrupted,
-so a chat can still wait for a worker to free up.
+application, or an action button, and none of their runs of the same
+agent is still waiting to start on another scope. The platform decides
+this from who started the run and where; a plugin cannot set it.
+
+| How the runs start | Priority |
+| --- | --- |
+| An event handler, a schedule, or a webhook | Batch |
+| A Canvas Bot request, such as an API-key SimpleAPI route | Batch |
+| One request from a signed-in user that starts many runs | The first run interactive, the rest batch |
+| Many requests from a signed-in user, each starting a run on its own scope | Batch while an earlier one still waits to start; interactive once none does |
+| A signed-in user's runs on one scope, such as a chat's turns | Interactive; the runs on a scope run one at a time |
+
+The check is per agent: a user's waiting run of one agent doesn't make
+their run of another agent batch work.
+
+A chat's run doesn't wait behind a large batch, though the batch takes
+longer to finish while people are using the agents. A run already
+started isn't interrupted, so a chat can still wait for a worker to
+free up. To run a large job as batch work, start it from an API-key
+route, a schedule, or an event handler rather than as a signed-in user.
 
 ## The `AgentRunResult` shape
 
