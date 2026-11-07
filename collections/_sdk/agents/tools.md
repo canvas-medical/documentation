@@ -599,7 +599,11 @@ tables is scoped only by the query you write:
   and messages do.
 
 A `filter_search_tool` with `model=` is citable, so a reply can cite
-your rows as it cites chart records.
+your rows as it cites chart records. A citation finds its row by `id`
+alone, and a `dbid` repeats across tables: when rows of two of your
+tables share an `id`, neither can be cited. To cite rows from more than
+one table, make their ids unique, for example by prefixing the table
+(`f"outreach-{attempt.dbid}"`).
 
 ### Writing Custom Data
 
@@ -2350,7 +2354,7 @@ Delete a staged (uncommitted) draft command from the patient's open note. `comma
 |---|---|---|---|
 | `command_id` | string | yes | The draft command's id. |
 
-**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`.
+**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`; `command` is null for a draft this run staged, which is dropped before it reaches the note.
 
 #### `suggest_patient`
 
