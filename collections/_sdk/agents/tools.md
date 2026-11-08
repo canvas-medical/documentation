@@ -765,7 +765,7 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_reads`** (30 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `search_note_text`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
 - **`@clinical_writes`** (24 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`, `originate_imaging_order`, `originate_refer`, `originate_reason_for_visit`, `originate_hpi`
 - **`@config_reads`** (7 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`, `find_reason_for_visit_codes`
 - **`@document_reads`** (1 tool): `read_document`
@@ -1034,6 +1034,21 @@ Read the contents of a specific note in document order — the free-text narrati
 | `note_id` | string | yes | UUID of the note to read. From a prior find_notes or get_open_note call (the row's `id` field). |
 
 **Returns:** Object with the note's metadata (`id`, `dbid`, `title`, `note_type`, `note_type_name`, `state`, `datetime_of_service`, `provider_name`) plus a `content` array of items in document order. Each item is either `{type: 'text', value: <free-text>}` (the clinician's narrative between commands) or `{type: 'command', uuid, schema_key, state, data}` (a structured chart command — schema_key like 'plan'/'assess'/'labOrder', data containing the command-specific fields). Returns null if no note with that id exists for the current patient.
+
+#### `search_note_text`
+
+**Category:** `@clinical_reads`
+
+Find the patient's notes whose free text mentions the given words ('the note that mentions chest pain', 'when did we discuss sleep apnea'). Matches notes containing every word, in any order and any case, newest first, each with a snippet around the match. Searches only the narrative the clinician typed; structured commands are read with get_note_content. Use the row's `id` with get_note_content to read the whole note.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `text` | string | yes | Words to find, such as 'chest pain'. A note matches when it contains every word. |
+| `limit` | integer | no | Maximum notes to return. Defaults to 10. |
+
+**Returns:** Array of objects matching find_notes' row shape (`id`, `dbid`, `title`, `note_type`, `note_type_name`, `state`, `datetime_of_service`, `provider_name`) plus `snippet`, the note's text around the match. Empty when no note mentions every word.
 
 #### `find_goals`
 
