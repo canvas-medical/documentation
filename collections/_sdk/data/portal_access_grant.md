@@ -108,9 +108,9 @@ Call it as `current_grant(self.event.actor, patient_id)` from your handler. It r
 | modified             | DateTime                                                          |                                                                                     |
 | patient              | [Patient](/sdk/data-patient/#patient)                             | The patient whose chart the grant gives access to                                   |
 | user                 | [CanvasUser](/sdk/data-canvasuser/#user)                          | The portal login the grant was given to                                             |
-| contact              | [PatientContactPerson](/sdk/data-patient/#patientcontactperson)   | The patient's contact the grant was given from. Empty after the contact is deleted. |
-| contact_name         | String                                                            | The contact's name, kept after the contact is deleted                               |
-| contact_relationship | String                                                            | The contact's relationship to the patient, kept after the contact is deleted        |
+| contact              | [PatientContactPerson](/sdk/data-patient/#patientcontactperson)   | The patient's contact the grant was given from. Empty once the contact is changed to a different person after the grant is revoked. After staff remove the contact from the chart, `contact_id` keeps its ID, but plugins can't read the contact, and reading `contact` raises `PatientContactPerson.DoesNotExist`. Use `contact_name` and `contact_relationship` instead. |
+| contact_name         | String                                                            | The contact's name, kept after the contact is removed or changed                    |
+| contact_relationship | String                                                            | The contact's relationship to the patient, kept after the contact is removed or changed |
 | appointments         | PortalAccessLevel                                                 | Access level in appointments: `none`, `view`, or `act`                              |
 | messaging            | PortalAccessLevel                                                 | Access level in messaging: `none`, `view`, or `act`                                 |
 | clinical             | PortalAccessLevel                                                 | Access level in clinical records: `none`, `view`, or `act`                          |

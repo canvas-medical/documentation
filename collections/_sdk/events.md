@@ -338,7 +338,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_CONTACT_PERSON_DELETED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is removed.</td></tr>
+    <tr><td colspan="2">Occurs when one of a patient's contacts is removed. A contact that had <a href='/sdk/patient-portal/#family-portal-access'>family portal access</a> is kept for its grant's history when staff remove it, so its removal emits <code>PATIENT_CONTACT_PERSON_UPDATED</code> instead, and plugins can no longer read the contact.</td></tr>
   </thead>
   <tbody>
   <tr>
