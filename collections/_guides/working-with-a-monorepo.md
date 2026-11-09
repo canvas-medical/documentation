@@ -161,6 +161,8 @@ When your organization builds plugins in Canvas Studio with gated release pointe
 
 Because Studio reads both branches, your engineers can work with Studio users directly on iterative changes: push work in progress to `canvas-studio` with `canvas deploy <package folder> --snapshot --branch canvas-studio`, and the Studio project brings it in similarly.
 
+For the same flow as Studio users see it, share the Canvas help center's [Gated release: from Promote to Production](https://help.canvasmedical.com/articles/7597495196-studio-admin-guide-setting-up-gated-release) and [When code changes outside Studio](https://help.canvasmedical.com/articles/4485157203-when-code-changes-outside-studio).
+
 ## When a snapshot stops
 
 `deploy --snapshot` exits non-zero without pushing when:
