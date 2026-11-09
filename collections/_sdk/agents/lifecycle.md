@@ -296,6 +296,12 @@ chat opened from a claim acts on that claim unless the model names
 another. `get_claim` returns the patient's name and sex from the claim
 but never the SSN, date of birth, phone, or address the claim carries.
 
+The platform does not require approval for `@claims_writes`: without
+`tools.approve`, a queue move, assignment, comment, or label or banner change
+applies when the run ends. List `@claims_writes` under `tools.approve`
+for an agent that offers them to a person, and show the requester each
+proposal to [approve or deny](#approve-before-write).
+
 ### Approve before write
 
 A tool that commits a change, rather than drafting one for a clinician to
