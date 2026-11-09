@@ -146,7 +146,7 @@ sections:
               Person who received and recorded the answers.<br><br>
               If omitted, then the built-in automation user **Canvas Bot** will be set as the author.<br><br>
               Supported reference types for create operations are: **Patient**, **Practitioner**<br><br>
-              On a read or search, a response that a family member or other representative committed through [family portal access](/sdk/patient-portal/#family-portal-access) has the [RelatedPerson](/api/relatedperson/) their access was given from as its author, in the format `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. This holds even when the family member also has a chart of their own.
+              On a read or search, a response that a family member or other representative committed through [family portal access](/sdk/patient-portal/#family-portal-access) has the [RelatedPerson](/api/relatedperson/) their access was given from as its author, in the format `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`, even when the family member also has a chart of their own. Canvas finds that RelatedPerson when the response is read, from the family member's current access to the patient, or from the access removed most recently if none is current. If the family member is given access again through a different contact, their earlier responses name the new contact. If the contact of removed access is no longer linked to it, such as after staff change the contact to a different person, the author is the family member's own Patient, or is left out when they have no chart.
             type: json
             attributes:
                 - name: reference
