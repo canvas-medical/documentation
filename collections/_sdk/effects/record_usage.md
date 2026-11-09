@@ -27,6 +27,8 @@ An effect run later with [`set_async`](/sdk/effects/#async-execution) has no out
 
 `unit` must be one of the units the plugin's installed manifest lists in `catalog.pricing`, matched without regard to case or repeated whitespace. A record in any other unit, or in `token`, is discarded and logged, since the inference gateway meters tokens on its own. Units are recorded on every instance; the instance's stage decides what is charged.
 
+A unit marked `unlisted` in `catalog.pricing` is recorded like any other. It is billed only to an organization whose agreement with Canvas prices the plugin on that unit, and that organization is billed on it in place of the plugin's listed units. A plugin cannot tell which organization is billed on which unit, so it records every unit it supports for the same work, each under a key of its own.
+
 ## Methods
 
 ### apply() → Effect
@@ -63,3 +65,17 @@ class CountVisit(BaseHandler):
 ```
 
 A plugin recording several units of one piece of work passes `quantity`, such as `RecordUsage(unit="page", key=f"fax:{fax_id}", quantity=12)`.
+
+A plugin listed per `note`, with an unlisted `provider` unit for organizations billed per provider each month, records both for every note. The provider's key names the month, so each provider counts once a month however many notes they lock:
+
+```python?partial=true
+import arrow
+
+from canvas_sdk.effects.usage import RecordUsage
+
+month = arrow.utcnow().format("YYYY-MM")
+return [
+    RecordUsage(unit="note", key=f"note:{note_id}").apply(),
+    RecordUsage(unit="provider", key=f"provider:{staff_id}:{month}").apply(),
+]
+```
