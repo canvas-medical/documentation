@@ -212,7 +212,10 @@ SDK supports:
   computation results, recently-seen tokens, etc.
 - **External services** (`canvas_sdk.clients`). Plugin secrets carry
   credentials; do your own I/O. Common for integrations that need
-  cross-instance state.
+  cross-instance state. Agent state is protected health information
+  (PHI): a chat history stored with an outside service sends chart
+  content to that vendor. Storing state outside Canvas is a new place
+  PHI goes, so it needs your security and compliance review first.
 
 Reach for Custom Data first when the chart itself can't hold the
 state. It lives in your plugin's namespace, so it's easy to reason

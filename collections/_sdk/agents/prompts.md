@@ -4,9 +4,11 @@ slug: "agents-prompts"
 excerpt: "System and in-dialogue prompt patterns for clinical agents."
 ---
 
-The system prompt is where you set boundaries the model can't be
-talked out of: the agent's role, what it's allowed to do, what
-counts as a successful completion, the format of its output. The
+The system prompt is where you set the agent's standing instructions:
+its role, what it's allowed to do, what counts as a successful
+completion, the format of its output. A prompt guides the model but
+does not bound it; the tools you grant do (see
+[Boundaries that hold under pressure](#boundaries-that-hold-under-pressure)). The
 in-dialogue prompt — the first `{"role": "user", "content": "..."}`
 message — is where you frame the specific task this run is for.
 

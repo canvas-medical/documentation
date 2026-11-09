@@ -188,8 +188,10 @@ colon; a plugin can only run its own agents. `patient_id` and `note_id`
 are the run's subject: the platform checks them and hands them to the
 agent as `self.subject`. `scope` decides which runs wait for each
 other. Runs of this agent on the same patient go one at a time, and the
-next one starts only after the previous run's cards have landed, so two
-notes locked in quick succession don't stage the same card twice. See
+next one starts only after the previous run's cards have landed, so
+when two notes are locked in quick succession, the second run sees the
+first run's cards. Whether it updates a card rather than staging a
+second one depends on the model reusing the card's `card_key`. See
 [Concurrency](/sdk/agents-lifecycle/#concurrency).
 
 ## 4. Wire it up in the manifest

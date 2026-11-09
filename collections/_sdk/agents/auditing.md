@@ -54,17 +54,19 @@ Captured today:
   Those events name the clinician whose action started the run, your
   plugin, and the agent class, and carry the `run_id` as their
   correlation id, so one id joins a run's record and its chart changes.
-- **LLM call attribution**: the gateway's usage ledger records the
-  instance, plugin, agent, and `run_id` behind each call, so the
-  `run_id` also joins a run to its LLM calls.
 - **Logs and errors**: the platform logs each run's start and finish,
   and unexpected exceptions go to Sentry, tagged with the agent ID.
 
-The platform records these itself, around and inside the tool loop,
-so agent code can neither skip nor alter them.
+The platform records run records and the effect audit itself, around
+the run, so agent code can neither skip nor alter them. The tool-call
+envelope and model-call count come from `run_tool_loop`, so an agent
+that calls the model without it skips them.
 
 Coming soon:
 
+- **LLM call attribution**: the gateway's usage ledger records the
+  instance, plugin, agent, and `run_id` behind each call, so the
+  `run_id` also joins a run to its LLM calls.
 - **Per-LLM-call latency**: wall-clock and time-to-first-token.
 
 The skeleton is the safety net. Even if your plugin captured zero
@@ -75,7 +77,12 @@ or notice that an agent is misbehaving. It is *not* enough to answer
 "why did the agent recommend X for this patient" — that's your job.
 
 Run records are kept for 90 days. The platform stores them by day
-and drops each day once all of it is older than that.
+and drops each day once all of it is older than that. A run's
+subjects, tool calls, and proposals are stored and dropped with it,
+including the `AgentRunProposal` that records who approved or denied a
+commit or lab report, and when. If your practice needs approval
+decisions kept longer, raise it in your compliance review alongside
+how you keep signatures and audit logs.
 
 ### Reading run records
 
@@ -94,8 +101,13 @@ run = RunAgentEffect(
     patient_id=patient_id,
     trigger_payload={"user_message": message},
 )
-# Return str(run.run_id) with the 202, then, when the UI asks:
-record = AgentRun.objects.filter(id=run_id, plugin_name="my_plugin").first()
+# Return str(run.run_id) with the 202. When the UI asks, check that run_id is a
+# UUID (answer 400 if not), and look up only the logged-in staff member's runs:
+record = AgentRun.objects.filter(
+    id=run_id,
+    plugin_name="my_plugin",
+    staff__id=logged_in_staff_id,
+).first()
 record.status       # "queued" until the run starts, then "running", then final
 record.error_kind   # for a failed run, such as "LLM_REFUSED" or "PERMISSION_DENIED"
 record.tool_calls.values_list("name", "ok")
@@ -173,7 +185,7 @@ def on_run_end(self, result):
 Lifecycle hook failures are caught and logged by the platform — a
 broken audit path can't crash the underlying run.
 
-## Retention is your decision, with a ceiling
+## Retention of your own audit data
 
 Default retention for Custom Data tables is "as long as the plugin
 is installed." For audit tables, that default is wrong — clinical

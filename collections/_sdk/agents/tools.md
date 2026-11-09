@@ -12,8 +12,8 @@ the model on the next turn.
 
 The SDK gives you a `ToolRegistry` to hold the catalog, a built-in
 `standard_tools` set of clinical reads, and a manifest-driven
-permission filter so the EHR administrator (not the agent itself)
-controls which tools any given agent can use.
+permission filter: the plugin's manifest (not the agent itself)
+declares which tools any given agent can use.
 
 ## The two kinds of tools
 
@@ -27,9 +27,10 @@ in the [catalog section](#the-sdk-standard_tools-catalog) below.
 
 **Effect tools** stage Canvas Effects (draft commands, tasks, banner
 alerts, etc.) into a shared accumulator that the agent returns from
-`run()`. The platform dispatches each emitted effect through
-`handle_effect` exactly once *after* the run completes — the model
-decides *what* to emit; the platform decides *when*. Effect tools
+`run()`. The platform applies the emitted effects through
+`handle_effect` in order *after* the run completes — the model
+decides *what* to emit; the platform decides *when*. An effect that
+fails stops the rest, and the effects before it stay applied. Effect tools
 typically never commit anything outright; they originate drafts the
 clinician then reviews.
 
@@ -245,9 +246,13 @@ note targeting, the effects accumulator. Never trust `arguments` for
 scope (a malicious or hallucinating model could try to switch
 patients via an argument). The SDK's `standard_tools` enforce scope
 this way: `find_medications` reads `ctx["patient_id"]` and filters
-the query on it regardless of what the model passes. The agent cannot
-replace `patient_id`, `staff_id`, or `note_id`, so that filter is always
-the patient the platform checked.
+the query on it regardless of what the model passes. An agent's
+`run_tool_loop` can't replace `patient_id`, `staff_id`, or `note_id`, so
+in the tool loop that filter is the patient the platform checked. That
+bounds the model, not plugin code: code that calls a tool through
+`self.tools.execute(..., ctx={...})` or the `run_tool_loop` function
+chooses its own context. The platform's check on the run's effects is
+the authoritative layer, and reads have no such check.
 
 ## Attaching tools to an agent
 
@@ -481,7 +486,11 @@ The standard `edit_staged_command` and `delete_staged_command` tools
 also check the grant, so an agent can't change a draft it couldn't
 have staged. They change a kind of command only when the agent is
 granted an `originate_*` tool that stages it. When that originate tool
-is in `tools.approve`, they must be too, or they refuse.
+is in `tools.approve`, they must be too, or they refuse. Two exceptions
+apply today: they refuse to edit or delete imaging order, referral,
+reason for visit, and HPI drafts, and when they are in `tools.approve`,
+they can't see drafts the same run staged, so they change only drafts
+already in the note.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
@@ -489,13 +498,23 @@ subset (the model never sees the others) and
 because the executor isn't reachable. There's no per-call `allowed=`
 parameter to remember — the registry itself is pre-filtered.
 
-**Why this matters**: the manifest is the single source of truth.
-The EHR administrator reviewing your plugin can read the manifest
-and know what each agent can do. Step 5 holds even for agent code that
+**Why this matters**: the manifest is the single source of truth for
+the effects an agent can return. Someone reviewing your plugin can read
+the manifest and know which tools each agent has and which of their
+changes need approval. Step 5 holds even for agent code that
 builds an effect directly or calls the imported, unscoped registry:
 an agent granted only `@clinical_reads` and `@clinical_alerts` can
 stage protocol cards and banners, but any task, command, or message it
 returns is dropped.
+
+The grant doesn't bound everything a tool does:
+
+- A tool can write your Custom Data directly (see
+  [Writing Custom Data](#writing-custom-data)) and make outbound
+  `Http` calls. Neither is an effect, so neither is filtered.
+- What a granted tool does depends on the requester: their
+  permissions decide which tools are offered and which effects apply,
+  and a Canvas Bot or superuser run isn't limited by permissions.
 
 ## Citing what the tools read
 
@@ -660,9 +679,14 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   told a patient's id, never their details.
 - On a scan or fax, the model also passes each identifier `as_printed`,
   exactly as the page shows it, with the `legibility`, `handwritten`, and
-  `pages_disagree`. The code then refuses illegible, handwritten, or
-  conflicting identifiers and any value the print does not support, such as a
-  birth date read day-first. When the identifiers as read match no one, it
+  `pages_disagree`. The code then refuses identifiers marked illegible or
+  handwritten, pages that disagree, and any value passed that the print does
+  not support, such as a birth date read day-first. It checks only the
+  identifiers the model passes, and a name agrees when every word read is
+  printed. So a suggestion can still name a patient when the model leaves out
+  a printed MRN that belongs to someone else, reads only part of a printed
+  name, or passes no first name. Have a person confirm every suggested
+  patient. When the identifiers as read match no one, it
   tries the readings a fax misread (0/O, 1/I/l, 5/S, 8/B; never the birth
   date), a dropped middle initial, or a first/last swap would explain, and
   suggests a patient only when every reading that matches names that one,
@@ -673,7 +697,8 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   nothing: a person confirms each suggestion in Canvas, and the review stays
   required. Each suggestion is labeled "AI suggested" on the form. The patient,
   type, and value suggestions also show a confidence level: for the patient,
-  high when three of Canvas's own identifiers agree and medium otherwise; for
+  high when three of Canvas's own identifiers the model passed agree and
+  medium otherwise, whatever else the page prints; for
   the type and the values, the confidence the model passes, when it passes one.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
@@ -689,8 +714,10 @@ apart). A slot is not held, so book soon after finding it.
 
 `@scheduling_writes` books, reschedules, and cancels the run's patient's
 appointments. Each refuses an appointment that is not the run's patient's, and
-each takes effect when applied rather than staying a draft, so an agent that
-offers them to a person lists `@scheduling_writes` under `tools.approve`. For a
+each takes effect when applied rather than staying a draft. The platform does
+not require approval for them: without `tools.approve`, a booking, reschedule,
+or cancel applies when the run ends. List `@scheduling_writes` under
+`tools.approve` for an agent that offers them to a person. For a
 run a staff member started, each needs what the chart checks: `add_appointment`
 to book or reschedule, and `change_appointment` with
 `add_notestatechangeevent` to cancel.
@@ -740,6 +767,10 @@ behind `canvas_sdk.agents.standard_tools`. Patient scope is enforced
 by each tool — you can't widen it via filter arguments. The catalog
 is grouped into manifest-friendly `@category` tags so plugin authors
 can grant access by tool family rather than enumerating every name.
+
+A tool listed below as offered only to runs with a permission is
+offered to every Canvas Bot and superuser run, since permissions don't
+limit those runs; a capability limits every run.
 
 The sections below are auto-generated from the registry — they
 reflect the SDK version pinned in your plugin's environment. Hand
@@ -1557,7 +1588,7 @@ Look up the codes a history or order command needs, by name, from Canvas's own v
 
 **Category:** `@intake_reads`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Read the incoming document this run is about, such as a fax just received, and answer a question from it, with page numbers. Use it to find what the document says about who it is for (name, birth date, MRN), what kind of document it is, and the values it reports. Reads the whole file with a separate model call, so ask for everything you need in one or two questions.
 
@@ -1573,7 +1604,7 @@ Read the incoming document this run is about, such as a fax just received, and a
 
 **Category:** `@intake_reads`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file. On a scan or fax, also pass each identifier `as_printed` and the `legibility`: the code checks the values against the print and tries common fax misreads itself.
 
@@ -1596,7 +1627,7 @@ Check whether the identifiers on the document match exactly one Canvas patient, 
 
 **Category:** `@intake_reads`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 List the types an incoming document can be filed as, for `categorize_document`. A clinical type with a `template_type` files with a report template (`find_report_templates`) whose values `prefill_document_fields` fills in.
 
@@ -1613,7 +1644,7 @@ List the types an incoming document can be filed as, for `categorize_document`. 
 
 **Category:** `@intake_reads`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Search the report templates a lab, imaging, or specialty document is filed with, for `prefill_document_fields`. Each template lists its fields: fill in values only for these fields, keyed by the field's `code` when it has one, else its `label`. When several templates fit, choose the one whose fields match the document's values.
 
@@ -1783,7 +1814,7 @@ Create a follow-up Task for the patient — appears in the clinician's task queu
 
 **Category:** `@task_writes`
 
-**Offered only to runs with:** `api.change_task`. The platform hides it from other runs.
+**Offered only to runs with:** `api.change_task`. The platform hides it from a user's run without that permission.
 
 Update an existing task — typically to close it (status=COMPLETED), reopen it (status=OPEN), or change its title/due. The task_id must come from a prior `find_tasks` or `create_task` call; this tool does not look tasks up by content. Title is truncated to 200 chars. Only the fields you supply are updated; omitted fields are left as-is.
 
@@ -1804,7 +1835,7 @@ Update an existing task — typically to close it (status=COMPLETED), reopen it 
 
 **Category:** `@task_writes`
 
-**Offered only to runs with:** `api.change_task`. The platform hides it from other runs.
+**Offered only to runs with:** `api.change_task`. The platform hides it from a user's run without that permission.
 
 Add a comment to an existing task — use to explain *why* a task was created/closed or to add context the clinician should see when they pick up the task. The task_id must come from a prior find_tasks or create_task call.
 
@@ -2010,7 +2041,7 @@ Stage a draft message from the requesting staff to this patient for the staff to
 
 **Category:** `@clinical_writes`
 
-**Offered only to runs with:** `api.add_note`. The platform hides it from other runs.
+**Offered only to runs with:** `api.add_note`. The platform hides it from a user's run without that permission.
 
 Stage a draft review-category note for the patient with a single Plan command containing the narrative. NEVER commits — the note + plan draft sit unsigned for the clinician to review, edit, and sign. Use when the clinician asks to draft a chart-review note, lab-review note, or similar narrative summary that isn't tied to a live visit. Before calling: (1) `find_note_types(category='review')` to get a `note_type_id`; (2) `find_practice_locations` to get a `practice_location_id`. Patient + requesting-staff come from the agent's scope automatically.
 
@@ -2375,7 +2406,7 @@ Delete a staged (uncommitted) draft command from the patient's open note. `comma
 
 **Category:** `@intake_writes`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient. On a scan or fax, pass `as_printed` and `legibility` as for `match_patient`.
 
@@ -2399,7 +2430,7 @@ Suggest, on the document's review form, the patient the document is for. Pass th
 
 **Category:** `@intake_writes`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Suggest, on the document's review form, the type of document it is. `document_type_key` is a `key` from `find_document_types`. Files nothing; a person confirms the type.
 
@@ -2417,7 +2448,7 @@ Suggest, on the document's review form, the type of document it is. `document_ty
 
 **Category:** `@intake_writes`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Fill in, on the document's review form, the values a lab, imaging, or specialty report gives, for a template from `find_report_templates`. `fields` maps each template field's `code` (or `label`, when it has no code) to the value exactly as the document reports it. Leave out a value the document does not give; never estimate one. Files nothing; a person confirms the values.
 
@@ -2437,7 +2468,7 @@ Fill in, on the document's review form, the values a lab, imaging, or specialty 
 
 **Category:** `@intake_writes`
 
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from other runs.
+**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
 
 Suggest who reviews the document: a staff member, a team, or both. The review stays required; a person confirms the assignment.
 
@@ -2498,7 +2529,7 @@ Stage a draft Referral on the patient's open note for the clinician to review an
 
 **Category:** `@scheduling_writes`
 
-**Offered only to runs with:** `api.add_appointment`. The platform hides it from other runs.
+**Offered only to runs with:** `api.add_appointment`. The platform hides it from a user's run without that permission.
 
 Book an appointment for this run's patient at a time find_appointment_slots offered. It takes effect when applied, not as a draft: confirm the time, provider, and visit type with the person first.
 
@@ -2518,7 +2549,7 @@ Book an appointment for this run's patient at a time find_appointment_slots offe
 
 **Category:** `@scheduling_writes`
 
-**Offered only to runs with:** `api.add_appointment`. The platform hides it from other runs.
+**Offered only to runs with:** `api.add_appointment`. The platform hides it from a user's run without that permission.
 
 Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Canvas cancels the appointment and books a new one with a new id, which find_appointments returns once applied. Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
 
@@ -2538,7 +2569,7 @@ Move one of this run's patient's appointments, from find_appointments, to a new 
 
 **Category:** `@scheduling_writes`
 
-**Offered only to runs with:** `api.add_notestatechangeevent`, `api.change_appointment`. The platform hides it from other runs.
+**Offered only to runs with:** `api.add_notestatechangeevent`, `api.change_appointment`. The platform hides it from a user's run without those permissions.
 
 Cancel one of this run's patient's appointments, from find_appointments. Takes effect when applied: confirm with the person first.
 

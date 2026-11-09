@@ -111,9 +111,11 @@ response = client.messages.create(
 ```
 
 The client sends your plugin's key, along with headers naming your
-instance, plugin, agent, and run. The gateway records those names on
-each call in its usage ledger, so a run's `run_id` joins it to its LLM
-calls, and keeps them from Anthropic.
+instance, plugin, agent, and run.
+
+> **Coming soon**: the gateway records those names on each call in its
+> usage ledger, so a run's `run_id` joins it to its LLM calls, and keeps
+> them from Anthropic.
 
 The gateway meters every call against your organization's inference
 account and enforces its budget and model allowlist. `gateway.model`

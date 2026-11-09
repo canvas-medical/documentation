@@ -57,7 +57,10 @@ step is platform-driven:
    run is never queued. Either way the run
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
-   [Auditing](/sdk/agents-auditing/#reading-run-records)).
+   [Auditing](/sdk/agents-auditing/#reading-run-records)). An effect the
+   platform can't read, such as one missing `agent_id` or `scope`, or
+   with a malformed or duplicate `run_id`, is rejected before this step
+   and leaves no record.
 2. **Derive the scope key** from the effect's `scope` and the subject,
    or from its `scope_id` for a `KEY` scope. See
    [Concurrency](#concurrency) below.
@@ -101,14 +104,18 @@ step is platform-driven:
 15. **Check and apply the effects.** Every effect must be one the
     requester could make in the chart; if any is not, the run fails with
     `error_kind="PERMISSION_DENIED"` and none of its effects apply.
-    Otherwise they apply through the same pipeline as any plugin
-    effect, recorded in the audit trail as requested by the user whose
+    Otherwise they apply in order through the same pipeline as any
+    plugin effect. An effect that fails stops the rest and fails the
+    run; the effects before it stay applied. Each is recorded in the audit trail as requested by the user whose
     action started the run. Proposed changes are held for the requester
     to [approve or deny](#approve-before-write).
 16. **Release the scope**, so the next run on it can start.
 
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
-is captured to Sentry, and the run returns `success=False`. Errors from
+is captured to Sentry, and the run returns `success=False`. The Sentry
+event carries the local variables of the frames the exception passed
+through, which can include the conversation, tool results, and document
+text. Errors from
 the inference gateway are classified rather than captured: an outage
 (`error_kind="LLM_UNAVAILABLE"`) is retried up to twice, 30 and then
 60 seconds later, and a refusal
@@ -196,8 +203,8 @@ def load_state(self, scope_key):
 ### Acting for the requester
 
 A run a staff member started, whether from a chat or by an action that
-triggered it, acts for them: it may do what they could do in the chart,
-and nothing more. The platform enforces this in three places:
+triggered it, acts for them: it may do what they could do in the chart.
+The platform checks this in three places:
 
 - **Patients:** the run's patient must be one their patient groups let
   them see, and every effect may touch only patients they can see.
@@ -206,24 +213,33 @@ and nothing more. The platform enforces this in three places:
   with `required_capabilities`. The platform hides tools the requester
   could not use, so the model never offers them.
 - **Effects:** before applying a run's effects, the platform checks each
-  against the permission the chart checks for that action and the
+  against the permission it requires for that effect type and the
   patients it touches. An effect type the chart has no counterpart for
   is refused, and committing a command applies only once the requester
   [approves it](#approve-before-write).
 
-The standard tools need only what the chart needs. Updating a task or
+These checks don't cover everything the chart checks. Updating a task or
 commenting on one needs `api.change_task`, and drafting a review note
 needs `api.add_note`. Creating a task, drafting a message or any
-command, and adding a banner or protocol card need only access to the
-patient. The [tools catalog](/sdk/agents-tools/) lists each tool's
-requirements.
+command, editing or deleting a draft, and adding a banner or protocol
+card need only access to the patient. The platform doesn't check a
+run's drafts and commits against the chart's `api.change_note`
+permission or the note's restrictions, and it doesn't check who a
+message, task, or note names as its sender, assignee, or author, so a
+run can create one attributed to another staff member. The
+[tools catalog](/sdk/agents-tools/) lists each tool's requirements.
 
 A run a patient started holds no staff permissions, so tools that need
 one are hidden, and its effects may change only the patient's own
-records. Within their own chart it may do what needs no staff
-permission: draft a message or any command, edit or delete a draft
-command, create a task, add or remove a banner, and add a protocol card. Grant a patient-facing agent only the
-tools its job needs. A run no user started, such as one from a webhook or an
+records. Within their own chart the platform lets it do anything that
+needs no staff permission, including drafting a message or any
+command, editing or deleting a draft command a clinician staged,
+creating a task, adding or removing a banner, and adding a protocol
+card. Reads have no permission check: a read tool that declares no
+permission is offered to a patient's run, so it can read staff-only
+content such as staff tasks and unsigned notes. Grant a
+patient-facing agent only the tools its job needs, and none that
+drafts or changes commands, creates tasks, or changes banners. A run no user started, such as one from a webhook or an
 API-key route, runs as Canvas Bot and acts with your plugin's authority,
 as a handler's effects do, except that it cannot commit a command or add
 a lab report, which need a user's approval, or return an effect the
@@ -350,13 +366,14 @@ hour:
   exists marks that proposal `failed`.
 
 A proposal's `status` is `pending`, `approved`, `denied`, `failed` (the
-change could not apply when approved), or `expired`. Approval is per
-tool: the platform drops an effect a listed tool stages if the agent
-returns it bare, unless a granted tool that doesn't need approval stages
-the same effect type.
+change could not apply when approved), or `expired`. Approval covers the
+change, not just the tool: every granted tool that stages an effect type
+a listed tool stages proposes too, and the platform keeps that effect
+type only inside a proposal, dropping it if the agent returns it bare.
 
 ```python?partial=true
 from http import HTTPStatus
+from uuid import UUID
 
 from canvas_sdk.effects.agent import DecideAgentProposal
 from canvas_sdk.effects.simple_api import JSONResponse
@@ -364,12 +381,29 @@ from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
 from canvas_sdk.v1.data import AgentRunProposal
 
 
+def parse_id(value):
+    """The id as a UUID, or None when it is missing or malformed."""
+    try:
+        return UUID(str(value))
+    except ValueError:
+        return None
+
+
+def bad_request(error):
+    return [JSONResponse({"error": error}, status_code=HTTPStatus.BAD_REQUEST)]
+
+
 class ProposalsAPI(StaffSessionAuthMixin, SimpleAPI):
     @api.get("/proposals")
     def proposals(self):
+        run_id = parse_id(self.request.query_params.get("run_id"))
+        if run_id is None:
+            return bad_request("run_id must be a run's id")
         staff_id = self.request.headers["canvas-logged-in-user-id"]
+        # Only the logged-in staff member's own runs and proposals.
         pending = AgentRunProposal.objects.filter(
-            run__id=self.request.query_params["run_id"],
+            run__id=run_id,
+            run__staff__id=staff_id,
             staff__id=staff_id,
             status="pending",
         )
@@ -380,12 +414,18 @@ class ProposalsAPI(StaffSessionAuthMixin, SimpleAPI):
     @api.post("/decide")
     def decide(self):
         body = self.request.json()
+        if not isinstance(body, dict):
+            return bad_request("send a JSON object")
+        proposal_id = parse_id(body.get("proposal_id"))
+        decision = body.get("decision")
+        if proposal_id is None or decision not in ("approve", "deny"):
+            return bad_request("send a proposal_id and a decision of approve or deny")
         return [
             JSONResponse({"status": "decided"}, status_code=HTTPStatus.ACCEPTED),
             DecideAgentProposal(
-                proposal_id=body["proposal_id"],
-                decision=body["decision"],  # "approve" or "deny"
-                reason=body.get("reason", ""),
+                proposal_id=proposal_id,
+                decision=decision,
+                reason=str(body.get("reason", "")),
             ).apply(),
         ]
 ```
@@ -478,8 +518,15 @@ ctx=self.tool_context())`: without a gateway, only the tools that make
 model calls of their own refuse.
 
 Pass `ctx={...}` to add agent-specific keys. Those keys cannot replace
-any key in the table: passing one raises `ValueError`. A tool always
-acts on the run's own patient.
+any key in the table: passing one raises `ValueError`. So in the tool
+loop, a tool acts on the run's own patient. These limits bound the
+path the model takes, not your plugin code: code that calls
+`self.tools.execute(name, arguments, ctx={...})`, or the
+`run_tool_loop` function below, with a context it builds itself
+decides which patient those tools act on, and a context with no
+`permissions` key isn't limited by the requester's permissions. The
+platform's per-effect check, when the run's effects apply, is the
+authoritative layer, and reads have no such check.
 
 Along the way it:
 

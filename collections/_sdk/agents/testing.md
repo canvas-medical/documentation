@@ -64,8 +64,11 @@ a wrong filter or relation, that tests with mocked data miss.
 
 ## Running an agent against a fake gateway
 
-`canvas_sdk.test_utils.agents` runs an agent the way the platform does,
-with a fake inference gateway in place of Anthropic:
+`canvas_sdk.test_utils.agents` runs an agent through the platform's
+lifecycle and tool grant, with a fake inference gateway in place of
+Anthropic. It doesn't simulate the platform's permission and approval
+checks on the effects a run returns (see
+[Testing the tool grant](#testing-the-tool-grant)):
 
 - `FakeGateway(*replies)` answers each model call with the next reply,
   or raises it when it is an exception, such as an outage. It keeps a
@@ -83,7 +86,7 @@ with a fake inference gateway in place of Anthropic:
   `PROPOSE_AGENT_ACTION` effect in `run.effects` in place of its change.
 - `run_agent(agent, gateway, trigger_payload)` calls the lifecycle
   methods and hooks in the platform's order and returns what the run
-  did: the effects the platform would apply (`run.effects`), the ones
+  did: the effects the tool grant keeps (`run.effects`), the ones
   the grant drops (`run.dropped`), the model calls, the tool calls, and
   how the last tool loop ended. Unlike the platform, an exception from
   the run reaches your test.
@@ -139,6 +142,13 @@ member started, and `capabilities=[Capability.REVENUE]` to test one the
 platform granted a capability. Give the requester `permissions=` to test
 what a staff member without some permission sees: `prepare_agent` hides
 the tools they could not use, as the platform does.
+
+`run.effects` is what the tool grant keeps, not what the platform would
+apply: the harness doesn't run the platform's checks on returned
+effects. A bare `COMMIT_*` effect, an effect the requester lacks the
+permission for, a patient's run touching another patient, or a Canvas
+Bot run's proposal all appear in `run.effects` in a test, and each
+fails the run in production.
 
 ## Testing the tool grant
 
