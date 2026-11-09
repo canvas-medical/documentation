@@ -489,7 +489,7 @@ sections:
               - name: id
                 type: string
                 exclude_in: create
-                description: Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from the chart after it had [family portal access](/sdk/patient-portal/#family-portal-access), so writing back an earlier read doesn't restore that contact.
+                description: Canvas-issued identifier for this contact. Include on update to target an existing contact; omit to create a new one. Canvas skips an entry whose `id` names a contact that staff removed from this patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access), so writing back an earlier read doesn't restore that contact.
               - name: relationship
                 type: array[json]
                 description_for_all_endpoints: >-

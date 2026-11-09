@@ -670,7 +670,7 @@ For a patient portal session, `id` is the key of the patient whose chart the por
 - `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.
 - `patient`: the [Patient](/sdk/data-patient/#patient) whose chart the request acts on.
 - `actor`: the [CanvasUser](/sdk/data-canvasuser/#user) acting on the chart. That's the family member's or representative's login, or on a patient's own chart, the patient's login, so `actor` is `patient.user` there.
-- `grant`: the [PortalAccessGrant](/sdk/data-portal-access-grant/) that gives `actor` the chart, with the contact's name and relationship and the levels staff gave. It's `None` on a patient's own chart.
+- `grant`: the [PortalAccessGrant](/sdk/data-portal-access-grant/) that gives `actor` the chart, with the contact it was given from and the levels staff gave. It's `None` on a patient's own chart.
 
 `patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
 
@@ -910,12 +910,21 @@ class ChartBanner(PatientSessionAuthMixin, SimpleAPIRoute):
     def get(self) -> list[Response | Effect]:
         access = self.request.portal_access
         grant = access.grant
+        relationship = None
+        if grant:
+            # The contact's relationship is its v3-RoleCode categories, such as "mother".
+            relationship = [
+                link.category.name
+                for link in grant.contact.categories.filter(
+                    category__system="http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+                )
+            ]
         return [
             JSONResponse(
                 {
                     "chart": access.patient.first_name,
                     "signed_in_as": access.actor.email,
-                    "relationship": grant.contact_relationship if grant else None,
+                    "relationship": relationship,
                 }
             )
         ]

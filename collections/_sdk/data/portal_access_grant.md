@@ -57,6 +57,8 @@ from canvas_sdk.effects import Effect
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
 
+RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+
 
 class AccessSummary(PatientSessionAuthMixin, SimpleAPIRoute):
     PATH = "/access-summary"
@@ -67,11 +69,12 @@ class AccessSummary(PatientSessionAuthMixin, SimpleAPIRoute):
         if grant is None:
             return [JSONResponse({"own_chart": True})]
 
+        relationship = grant.contact.categories.filter(category__system=RELATIONSHIP_SYSTEM)
         return [
             JSONResponse(
                 {
                     "own_chart": False,
-                    "relationship": grant.contact_relationship,
+                    "relationship": [link.category.name for link in relationship],
                     "billing": grant.billing,
                 }
             )
@@ -125,7 +128,7 @@ class FlaggedAccessHandler(BaseHandler):
             revoked_at__isnull=True,
         )
         for grant in flagged:
-            self.log(f"{grant.contact_name} flagged access to patient {task.patient.id}")
+            self.log(f"{grant.user.email} flagged access to patient {task.patient.id}")
         return []
 ```
 
@@ -142,8 +145,8 @@ class FlaggedAccessHandler(BaseHandler):
 | patient              | [Patient](/sdk/data-patient/#patient)                             | The patient whose chart the grant gives access to                                   |
 | user                 | [CanvasUser](/sdk/data-canvasuser/#user)                          | The portal login the grant was given to                                             |
 | contact              | [PatientContactPerson](/sdk/data-patient/#patientcontactperson)   | The patient's contact the grant was given from. Empty once the contact is changed to a different person after the grant is revoked. After staff remove the contact from the chart, `contact_id` keeps its ID, but plugins can't read the contact, and reading `contact` raises `PatientContactPerson.DoesNotExist`. Use `contact_name` and `contact_relationship` instead. |
-| contact_name         | String                                                            | The contact's name, kept after the contact is removed or changed                    |
-| contact_relationship | String                                                            | The contact's relationship to the patient, kept after the contact is removed or changed |
+| contact_name         | String                                                            | The contact's name, saved when the contact is removed or changed. Empty while `contact` is the patient's contact |
+| contact_relationship | String                                                            | The contact's relationship to the patient, saved from its [relationship categories](/sdk/data-patient/#patientcontactperson) when the contact is removed or changed. Empty while `contact` is the patient's contact; read `contact.categories` instead |
 | appointments         | PortalAccessLevel                                                 | Access level in appointments: `none`, `view`, or `act`                              |
 | messaging            | PortalAccessLevel                                                 | Access level in messaging: `none`, `view`, or `act`                                 |
 | clinical             | PortalAccessLevel                                                 | Access level in clinical records: `none`, `view`, or `act`                          |
