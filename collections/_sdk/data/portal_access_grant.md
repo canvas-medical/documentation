@@ -96,6 +96,39 @@ def current_grant(actor, patient_id):
 
 Call it as `current_grant(self.event.actor, patient_id)` from your handler. It returns `None` when the login is the patient's own, or when the login's grant was revoked or flagged.
 
+## Responding to a flagged grant
+
+A flag usually means the invite reached the wrong person. When a family member reports that they don't know the patient, Canvas sets the grant's `flagged_at` and opens a [task](/sdk/data-task/) so staff can correct the contact or remove the access. The task is on the patient's chart, its creator is Canvas Bot, and its `tag` is `portal-access-flagged`. Canvas assigns it to the patient's [care team lead](/sdk/data-care-team/), or to the staff member in `granted_by` when the patient has no care team lead.
+
+Each flagged grant has one open task. Canvas completes the task when the grant is revoked, including when staff correct the contact and the access moves to the corrected person.
+
+The task raises the usual [task events](/sdk/events/#tasks): `TASK_CREATED` when Canvas opens it and `TASK_COMPLETED` when Canvas completes it. To act on a flag, such as alerting a team outside Canvas, respond to `TASK_CREATED` and check the task's `tag`:
+
+```python
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import PortalAccessGrant
+from canvas_sdk.v1.data.task import Task
+
+
+class FlaggedAccessHandler(BaseHandler):
+    RESPONDS_TO = [EventType.Name(EventType.TASK_CREATED)]
+
+    def compute(self):
+        task = Task.objects.get(id=self.target)
+        if task.tag != "portal-access-flagged":
+            return []
+
+        flagged = PortalAccessGrant.objects.filter(
+            patient=task.patient,
+            flagged_at__isnull=False,
+            revoked_at__isnull=True,
+        )
+        for grant in flagged:
+            self.log(f"{grant.contact_name} flagged access to patient {task.patient.id}")
+        return []
+```
+
 ## Attributes
 
 ### PortalAccessGrant
