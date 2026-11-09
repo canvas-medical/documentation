@@ -486,11 +486,9 @@ The standard `edit_staged_command` and `delete_staged_command` tools
 also check the grant, so an agent can't change a draft it couldn't
 have staged. They change a kind of command only when the agent is
 granted an `originate_*` tool that stages it. When that originate tool
-is in `tools.approve`, they must be too, or they refuse. Two exceptions
-apply today: they refuse to edit or delete imaging order, referral,
-reason for visit, and HPI drafts, and when they are in `tools.approve`,
-they can't see drafts the same run staged, so they change only drafts
-already in the note.
+is in `tools.approve`, they must be too, or they refuse. They don't
+edit or delete imaging order, referral, reason for visit, and HPI
+drafts today.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
@@ -634,9 +632,10 @@ of them applies to that write:
   writes.
 - The requester's permissions are checked against effects, not against
   your tables.
-- `tools.approve` turns the effects each tool call stages into one proposal. A tool
-  that stages no effect returns its own result, so a tool listed there
-  that saves a row saves it at once.
+- `tools.approve` turns the changes approval covers that each tool call
+  stages into one proposal. A tool that stages no such change returns
+  its own result, so a tool listed there that saves a row saves it at
+  once.
 - A run that fails or runs out of time has its effects dropped and its
   state left unsaved, but a row a tool already saved stays. A run the
   platform retries after a gateway outage runs its tools again.

@@ -130,7 +130,7 @@ with protocol cards (see the [Quick Start](/sdk/agents-quick-start/)):
 
 ```python?partial=true
 class LongitudinalCareAdvisor(AgentPlugin):
-    tools = _registered_tools  # granted @clinical_reads and @clinical_alerts
+    tools = _registered_tools  # granted @clinical_reads and add_or_update_protocol_card
 
     def load_state(self, scope_key):
         # The cards are the state, read through the tool the model also has.

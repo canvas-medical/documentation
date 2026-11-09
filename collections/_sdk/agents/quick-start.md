@@ -210,7 +210,7 @@ second one depends on the model reusing the card's `card_key`. See
         "class": "my_plugin.agents.advisor:LongitudinalCareAdvisor",
         "description": "Tracks follow-up across visits with protocol cards",
         "tools": {
-          "allowed": ["@clinical_reads", "@clinical_alerts"]
+          "allowed": ["@clinical_reads", "add_or_update_protocol_card"]
         }
       }
     ]
@@ -221,11 +221,11 @@ second one depends on the model reusing the card's `card_key`. See
 }
 ```
 
-`tools.allowed` grants the chart reads and the alert tools (banner
-alerts and protocol cards) by `@category`. It also bounds what the
-agent can do: the platform drops any effect the agent returns that no
-granted tool stages, so this agent can stage cards and banners but not
-commands, tasks, or messages. An agent with no `tools.allowed` gets no
+`tools.allowed` grants the chart reads by `@category` and
+`add_or_update_protocol_card` by name. It also bounds what the agent
+can do: the platform drops any effect the agent returns that no
+granted tool stages, so this agent can stage protocol cards but not
+banners, commands, tasks, or messages. An agent with no `tools.allowed` gets no
 tools at all. See [Tools](/sdk/agents-tools/#manifest-driven-permissions).
 
 ## 5. Install and try it

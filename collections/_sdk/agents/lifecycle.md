@@ -312,13 +312,16 @@ registers, since no standard tool commits a command:
 ```
 
 The tool code does not change. When the model calls a listed tool,
-everything that call stages becomes one proposal, in order, and the
-model receives
+each change that call stages of an effect type some listed tool
+stages goes into one proposal, in order, and the model receives
 `{"status": "awaiting_approval", "proposal_ids": [...], "tool_result": ...}`,
 with the tool's own result under `tool_result`, so it can tell the user
-what is waiting. A tool
-that stages nothing, such as one that refused its input, returns its own
-result. Sub-agents scoped from the agent's tools propose the same way.
+what is waiting. Any other change the call stages applies as it would
+from any granted tool. A tool that stages no change approval covers,
+such as one that refused its input, returns its own result. Sub-agents
+scoped from the agent's tools propose the same way, and a listed tool
+that runs a sub-agent passes the sub-agent's proposal through as it
+is, so the requester decides it once.
 
 A tool call that stages several changes, such as `originate_review_note`
 creating a note and a plan on it, is one decision: the requester

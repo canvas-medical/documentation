@@ -109,7 +109,7 @@ from canvas_sdk.test_utils.factories import PatientFactory
 from my_plugin.agents.advisor import LongitudinalCareAdvisor
 
 # The advisor's grant in CANVAS_MANIFEST.json.
-GRANT = ["@clinical_reads", "@clinical_alerts"]
+GRANT = ["@clinical_reads", "add_or_update_protocol_card"]
 
 
 @pytest.mark.django_db
