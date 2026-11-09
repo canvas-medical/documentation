@@ -106,7 +106,7 @@ effect = message.create_and_send() if has_eligible_contact else message.create()
 
 Instances set up to deliver patient messages through a plugin, rather than through Canvas, do not send these notifications.
 
-When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, and their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`). The notice says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin send these notices too.
+When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`), and they have confirmed the patient's date of birth (`dob_verified_at` is set). The notice says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin don't send these notices either.
 
 Where Canvas sends each family member's notice depends on whether they have their own chart:
 
