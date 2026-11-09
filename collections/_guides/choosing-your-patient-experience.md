@@ -193,7 +193,9 @@ Prefer to send the invite yourself? A plugin can mint the patient's activation o
 
 Happy with Canvas sending the invite but want your own words? A plugin can write the subject and body of the invite and password reset emails Canvas sends, and Canvas keeps the login link in them.
 
-See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+Want to follow up on invitations that go nowhere? A plugin can track each portal invitation from sent to opened to claimed, find links that expired before the patient opened them, and react when a patient opens a link that no longer works, for example by sending a fresh one.
+
+See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [PortalInvitation](/sdk/data-portal-invitation/) and the [portal invitation events](/sdk/events/#portal-invitations) for tracking invitations, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
 
 ### Greet patients as soon as they sign in
 
