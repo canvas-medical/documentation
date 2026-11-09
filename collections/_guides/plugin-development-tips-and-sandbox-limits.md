@@ -110,7 +110,7 @@ Each Canvas server process caches organization settings in memory for up to an h
 
 ### Telling a skipped send from a delivered one
 
-When an address isn't on the allow list, the send is counted as successful. For a patient message, the [`MessageTransmission`](/sdk/data-message/) is still stamped `delivered` and `failed` stays empty, so the transmission alone doesn't show whether the email or text left Canvas. `delivered_by` is only set when a staff member relays a message manually, so it's empty for every automated email or text.
+When the email address or phone number isn't on the allow list, the send is counted as successful. For a patient message, the [`MessageTransmission`](/sdk/data-message/) is still stamped `delivered` and `failed` stays empty, so the transmission alone doesn't show whether the email or text left Canvas. `delivered_by` is only set when a staff member relays a message manually, so it's empty for every automated email or text.
 
 To check a skipped send, compare the transmission's `contact_point_value` with the allow list entries (the match is exact and case-sensitive), and compare the transmission's `created` time with when the allow list was last saved. A transmission created within an hour of an allow list change may have been checked against the earlier list.
 
