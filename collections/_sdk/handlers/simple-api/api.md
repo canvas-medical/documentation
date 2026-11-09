@@ -664,6 +664,7 @@ For a patient portal session, `id` is the key of the patient whose chart the por
 
 `credentials.portal_access` tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object with:
 
+- `is_acting`: `True` when a family member or representative, not the patient, is acting on the chart.
 - `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
 - `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
 - `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.

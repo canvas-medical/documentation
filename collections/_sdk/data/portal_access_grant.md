@@ -19,25 +19,34 @@ Each area's level is `"none"`, `"view"`, or `"act"`. Follow the level on your po
 | `view` | Show the area without its actions      |
 | `act`  | Show the area and allow its actions    |
 
-To compare levels, wrap one in `PortalAccessLevel` from `canvas_sdk.handlers.simple_api`. Levels compare in order from `NONE` to `ACT`.
+Each level is a `PortalAccessLevel`, which you can import from `canvas_sdk.v1.data` or `canvas_sdk.handlers.simple_api`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if grant.billing:` checks for any billing access. A stored level that the SDK doesn't recognize reads as `NONE`.
 
-A revoked or flagged grant stays as a record. A grant gives its login the chart only while `revoked_at` and `flagged_at` are both empty and the patient is active.
+A revoked or flagged grant stays as a record. A grant gives its login the chart only while `revoked_at` and `flagged_at` are both empty and the patient is active. `PortalAccessGrant.objects.giving_access()` returns only those grants.
 
 ## Basic usage
 
-To list the logins that currently have access to a patient's chart, filter the patient's grants:
+To list the logins that currently have access to a patient's chart, filter the grants that give access:
 
 ```python
 from canvas_sdk.v1.data import PortalAccessGrant
 
-grants = PortalAccessGrant.objects.filter(
+grants = PortalAccessGrant.objects.giving_access().filter(
     patient__id="d7af3e356368446c85b40a5d6ff7288e",
-    revoked_at__isnull=True,
-    flagged_at__isnull=True,
 )
 ```
 
-The same grants are on the patient as `patient.portal_grants`, and the grants given to a login are on its [CanvasUser](/sdk/data-canvasuser/#user) as `portal_grants`.
+A patient's grants are also on the patient as `patient.portal_grants`, and the grants given to a login are on its [CanvasUser](/sdk/data-canvasuser/#user) as `portal_grants`. Both include revoked and flagged grants. Call `giving_access()` on them, such as `patient.portal_grants.giving_access()`, to keep only the grants that give access.
+
+To find the grants that give a level in one area, filter on that area's field:
+
+```python
+from canvas_sdk.v1.data import PortalAccessGrant, PortalAccessLevel
+
+grants = PortalAccessGrant.objects.giving_access().filter(
+    patient__id="d7af3e356368446c85b40a5d6ff7288e",
+    billing=PortalAccessLevel.ACT,
+)
+```
 
 ## Reading the grant for a portal request
 
@@ -78,14 +87,14 @@ from canvas_sdk.v1.data import PortalAccessGrant
 
 
 def current_grant(actor, patient_id):
-    return PortalAccessGrant.objects.filter(
-        user=actor.instance,
-        patient__id=patient_id,
-        revoked_at__isnull=True,
-    ).first()
+    return (
+        PortalAccessGrant.objects.giving_access()
+        .filter(user=actor.instance, patient__id=patient_id)
+        .first()
+    )
 ```
 
-Call it as `current_grant(self.event.actor, patient_id)` from your handler. It returns `None` when the login is the patient's own.
+Call it as `current_grant(self.event.actor, patient_id)` from your handler. It returns `None` when the login is the patient's own, or when the login's grant was revoked or flagged.
 
 ## Attributes
 
@@ -102,10 +111,10 @@ Call it as `current_grant(self.event.actor, patient_id)` from your handler. It r
 | contact              | [PatientContactPerson](/sdk/data-patient/#patientcontactperson)   | The patient's contact the grant was given from. Empty after the contact is deleted. |
 | contact_name         | String                                                            | The contact's name, kept after the contact is deleted                               |
 | contact_relationship | String                                                            | The contact's relationship to the patient, kept after the contact is deleted        |
-| appointments         | String                                                            | Access level in appointments: `none`, `view`, or `act`                              |
-| messaging            | String                                                            | Access level in messaging: `none`, `view`, or `act`                                 |
-| clinical             | String                                                            | Access level in clinical records: `none`, `view`, or `act`                          |
-| billing              | String                                                            | Access level in billing: `none`, `view`, or `act`                                   |
+| appointments         | PortalAccessLevel                                                 | Access level in appointments: `none`, `view`, or `act`                              |
+| messaging            | PortalAccessLevel                                                 | Access level in messaging: `none`, `view`, or `act`                                 |
+| clinical             | PortalAccessLevel                                                 | Access level in clinical records: `none`, `view`, or `act`                          |
+| billing              | PortalAccessLevel                                                 | Access level in billing: `none`, `view`, or `act`                                   |
 | dob_verified_at      | DateTime                                                          | When the login confirmed the patient's date of birth                                |
 | dob_failed_attempts  | Integer                                                           | How many date of birth entries didn't match                                         |
 | flagged_at           | DateTime                                                          | When the login reported that they don't know the patient                            |
