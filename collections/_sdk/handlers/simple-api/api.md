@@ -893,6 +893,8 @@ To check access in your route instead, declare an empty mapping, `PORTAL_ACCESS 
 
 `logged_in_user["id"]` names the patient whose chart it is, and `portal_access.patient` is that patient. When `portal_access.acting_user_id` is set, attribute what the request does to `portal_access.actor`, not to the patient.
 
+A family member can have different charts open in different browser tabs. A request that doesn't name a chart acts on the chart the session last chose, which can be another tab's. To keep a plugin page on the chart it shows, send that patient's key in the `X-Portal-Acting-For` header on every request the page makes. Your route can put the key in the page when it serves it, from `logged_in_user["id"]`. A page's [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page) names its chart in the URL instead.
+
 The levels that `level()`, `allows()`, and `PORTAL_ACCESS` use are the ones Canvas sends with the request. Read `portal_access.grant` to show who was given access and what the grant allows:
 
 ```python

@@ -32,6 +32,16 @@ Clients should connect using a URL that maps to your plugin and channel name:
 wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/
 ```
 
+#### Connecting from a patient portal page
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have different charts open in different browser tabs. A browser can't set headers on a WebSocket, so a portal page names the chart it shows in the URL, with the patient's key in `acting_for`:
+
+```generic
+wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/?acting_for=<patient_key>
+```
+
+The connection's `logged_in_user` and `portal_access` then describe that chart, as the `X-Portal-Acting-For` header does for the page's [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access). Without `acting_for`, the connection acts on the chart the session last chose.
+
 
 ### WebSocket Object
 
