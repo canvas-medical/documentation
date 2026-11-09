@@ -1336,6 +1336,9 @@ data_module:
   - title: "PortalAccessGrant"
     url: /sdk/data-portal-access-grant/
     description: Family portal access given to a login for a patient's chart.
+  - title: "PortalInvitation"
+    url: /sdk/data-portal-invitation/
+    description: Patient portal invite and password reset links, with when each was opened, claimed, or refused.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
