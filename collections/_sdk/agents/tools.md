@@ -749,9 +749,12 @@ start a run about.
   including patient-written messages, so treat an id it passes (a task,
   a condition, a medication) as untrusted and confirm it belongs to
   `ctx["patient_id"]` before staging anything.
-- **Return JSON-serializable values.** The agent's loop typically
-  does `json.dumps(result, default=str)` to feed it back to the
-  model.
+- **Return JSON-serializable values.** `run_tool_loop` writes each
+  result with `json.dumps(result, default=str)` to feed it back to the
+  model, so a value such as a date becomes a string. A result it can't
+  write, such as a dict keyed by dates, fails the call as an exception
+  in the tool does: the call keeps none of its effects, and the model
+  gets an error result.
 - **For effect tools, return a small confirmation dict, not the
   whole effect.** The model only needs to know the call succeeded;
   details of the staged effect are platform-side concerns.
