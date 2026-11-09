@@ -98,8 +98,9 @@ can issue one for your plugin.
 
 Before each run, the platform builds the `LLMGateway` it passes to
 `run()` from the instance's gateway URL and your plugin's
-`INFERENCE_GATEWAY_KEY`. `gateway.client()` returns an
-`anthropic.Anthropic` client pointed at the gateway:
+`INFERENCE_GATEWAY_KEY`. `gateway.client()` returns a `GatewayClient`
+for the gateway. It offers `messages.create` and `messages.stream`,
+which take the same arguments as the Anthropic SDK's:
 
 ```python?partial=true
 client = gateway.client()
@@ -111,7 +112,8 @@ response = client.messages.create(
 ```
 
 The client sends your plugin's key, along with headers naming your
-instance, plugin, agent, and run.
+instance, plugin, agent, and run. Each call counts toward the run's
+[`max_model_calls`](/sdk/agents-lifecycle/#what-the-platform-does-in-order).
 
 > **Coming soon**: the gateway records those names on each call in its
 > usage ledger, so a run's `run_id` joins it to its LLM calls, and keeps

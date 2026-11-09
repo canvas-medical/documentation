@@ -112,10 +112,7 @@ step is platform-driven:
 16. **Release the scope**, so the next run on it can start.
 
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
-is captured to Sentry, and the run returns `success=False`. The Sentry
-event carries the local variables of the frames the exception passed
-through, which can include the conversation, tool results, and document
-text. Errors from
+is captured to Sentry, and the run returns `success=False`. Errors from
 the inference gateway are classified rather than captured: an outage
 (`error_kind="LLM_UNAVAILABLE"`) is retried up to twice, 30 and then
 60 seconds later, and a refusal
@@ -154,11 +151,13 @@ with `error_kind="EXTENDED_RUNS_BUSY"`. Ask only for the time the work
 needs: the run's scope stays held, and an agent thread busy, for as
 long as it runs.
 
-The tool loop makes at most `max_model_calls` model calls per run,
-sub-agents included: 40 by default, set as a class attribute on your
-`AgentPlugin` subclass. Reaching it ends the tool loop with
-`stopped="call_limit"`, which the run's record shows as how its last
-tool loop ended.
+A run makes at most `max_model_calls` model calls: 40 by default, set
+as a class attribute on your `AgentPlugin` subclass, up to 100. Every
+call through `gateway.client()` counts, including the tool loop's,
+sub-agents', and the ones your code makes directly. Reaching it ends the tool loop with `stopped="call_limit"`,
+which the run's record shows as how its last tool loop ended. A direct
+call past it raises `ModelCallLimitReached`, which `canvas_sdk.agents`
+exports.
 
 When the instance is already running its share of agents, a new run
 waits and retries rather than taking workers that event handlers need.
@@ -802,15 +801,16 @@ platform will dispatch.
 class LLMGateway:
     model: str  # the run's default model, "claude-sonnet-4-6"
 
-    def client(self, *, max_retries: int = 2) -> Anthropic:
-        """An Anthropic client pointed at the inference gateway."""
+    def client(self, *, max_retries: int = 2) -> GatewayClient:
+        """A client for the inference gateway."""
 ```
 
 Built by the platform before `run()` is called, from the instance's
 inference gateway URL and your plugin's `INFERENCE_GATEWAY_KEY` secret.
-`client()` returns an `anthropic.Anthropic` client pointed at the
-gateway. It carries that key and headers that attribute each call to
-your plugin, agent, and run. `with_model(name)` returns the same
-gateway with another default model. See
+`client()` returns a `GatewayClient` whose `messages.create` and
+`messages.stream` take the Anthropic SDK's arguments. It carries that
+key and headers that attribute each call to your plugin, agent, and
+run, and counts each call toward the run's `max_model_calls`.
+`with_model(name)` returns the same gateway with another default model. See
 [Credentials](/sdk/agents/#credentials) for the errors the gateway
 returns.

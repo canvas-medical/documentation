@@ -73,7 +73,8 @@ checks on the effects a run returns (see
 - `FakeGateway(*replies)` answers each model call with the next reply,
   or raises it when it is an exception, such as an outage. It keeps a
   copy of each request on `gateway.requests`, so a test can check what
-  the agent sent the model.
+  the agent sent the model. Its calls count toward the agent's
+  `max_model_calls`, as the platform's gateway client counts them.
 - `reply(*blocks)` builds a model reply from `text(...)` and
   `tool_use(name, input)` blocks. Its stop reason is `tool_use` when it
   calls a tool and `end_turn` otherwise; pass `stop_reason=` to test

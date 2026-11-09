@@ -43,8 +43,9 @@ Captured today:
   exception type when it did not, and how long it took. Arguments and
   results are left out: they carry chart content, and only you know
   what is worth keeping (see below). An agent that calls the model
-  without `run_tool_loop` gets a record without these, and without
-  its model-call count or how its tool loop ended.
+  without `run_tool_loop` gets a record without these or how its tool
+  loop ended. Its model-call count still includes every call
+  through `gateway.client()`.
 - **LLM usage**: Canvas's inference gateway records every call in its
   usage ledger: model, token counts by cache class, and cost, against
   your organization's inference account. It retains no request or
@@ -59,8 +60,9 @@ Captured today:
 
 The platform records run records and the effect audit itself, around
 the run, so agent code can neither skip nor alter them. The tool-call
-envelope and model-call count come from `run_tool_loop`, so an agent
-that calls the model without it skips them.
+envelope comes from `run_tool_loop`, so an agent that calls the model
+without it has none. The model-call count comes from the gateway's
+client.
 
 Coming soon:
 
