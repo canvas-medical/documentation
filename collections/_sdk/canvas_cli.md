@@ -113,7 +113,7 @@ You can define your default host with `is_default=true`. If no default is explic
 
 - When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
 - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
-- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. Any other plugin is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. A name without an organization prefix counts as managed only when one of your organizations publishes it, because an instance can hold a plugin of that name from `canvas install` while another organization publishes one on Canvas Platform. Any other plugin aimed at a Canvas instance is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
@@ -298,10 +298,11 @@ To install this commit on an instance: canvas deploy paperwork-eviscerator/acme_
 `canvas deploy` publishes the plugin as:
 
 1. The manifest `publisher`, when it's set. For a deploy that pushes, including `--snapshot`, it must be an organization you belong to. With `--ref` or `--no-push`, deploy sends the manifest `publisher` to Canvas Platform as it is, and Canvas Platform decides whether you can deploy under it.
-2. Otherwise, the only organization you can publish in.
-3. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
+2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`. For a deploy that pushes, you need the push role there.
+3. Otherwise, the only organization you can publish in.
+4. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
 
-Without a terminal, such as in CI, a deploy for someone who can publish in several organizations stops until the manifest names one. Add the publisher's slug to `CANVAS_MANIFEST.json` and commit it:
+Without a terminal, such as in CI, a deploy stops until the manifest names a publisher when you can publish in several organizations and the name carries none of their prefixes. Add the publisher's slug to `CANVAS_MANIFEST.json` and commit it:
 
 ```json
 "publisher": "acme"
