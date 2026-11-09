@@ -472,7 +472,7 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 
 `id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
 
-`relationship` is the free-text Relationship staff pick for the contact, usually one of the [ContactRelationship](#contactrelationship) values, and an empty string when none is set. It's stored on the contact, so a `related_patient` contact has its own relationship. `categories` holds the contact's category codings, such as emergency contact.
+A contact's relationship to the patient is held in its `categories`: the ones whose coding system is `http://terminology.hl7.org/CodeSystem/v3-RoleCode`, such as `MTH` (mother) or `SPS` (spouse). Other categories, such as an emergency contact, describe the contact's role rather than the relationship. Family portal access shows the names of a contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". A contact with no relationship category shows no relationship there.
 
 | Field Name      | Type                                                                 |
 | --------------- | -------------------------------------------------------------------- |
@@ -486,7 +486,6 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 | email           | String                                                               |
 | comments        | String                                                               |
 | related_patient | [Patient](#patient)                                                  |
-| relationship    | String                                                               |
 | categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
 
 ```python
@@ -497,10 +496,14 @@ contacts = PatientContactPerson.objects.filter(
     patient__id="d7af3e356368446c85b40a5d6ff7288e"
 ).select_related("related_patient").prefetch_related("categories__category")
 
+RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+
 for contact in contacts:
     who = contact.related_patient.first_name if contact.related_patient else contact.name
-    codings = ", ".join(link.category.code for link in contact.categories.all())
-    log.info(f"Contact: {who}, {contact.relationship} ({codings})")  # Contact: Jane, Mother (EMC)
+    categories = [link.category for link in contact.categories.all()]
+    relationship = ", ".join(c.name for c in categories if c.system == RELATIONSHIP_SYSTEM)
+    others = ", ".join(c.code for c in categories if c.system != RELATIONSHIP_SYSTEM)
+    log.info(f"Contact: {who}, {relationship} ({others})")  # Contact: Jane, mother (EMC)
 ```
 
 ### PatientContactCategory
@@ -517,7 +520,7 @@ Links one of the patient's contacts to one of the category codings the instance 
 
 ### ContactCategory
 
-A contact-category coding available in this Canvas instance — the set a contact's categories are drawn from.
+A contact-category coding available in this Canvas instance — the set a contact's relationship can be drawn from.
 
 Use this to look up a coding before writing it with the [Patient effect](/sdk/effect-patient/#patientcontactcategory). Writing a coding that does not appear here is rejected rather than created, so querying this model first is how you find out what the instance actually has.
 
@@ -540,25 +543,6 @@ for coding in ContactCategory.objects.order_by("code"):
 ```
 
 ## Enumeration types
-
-### ContactRelationship
-
-The relationships Canvas offers staff for a patient contact, in the order it lists them. Import it from `canvas_sdk.v1.data.patient`. A contact's `relationship` is free text, so it can hold a value outside this list.
-
-| Value          | Label          |
-| -------------- | -------------- |
-| Mother         | Mother         |
-| Father         | Father         |
-| Parent         | Parent         |
-| Stepparent     | Stepparent     |
-| Grandparent    | Grandparent    |
-| Foster parent  | Foster parent  |
-| Legal guardian | Legal guardian |
-| Social worker  | Social worker  |
-| Spouse         | Spouse         |
-| Sibling        | Sibling        |
-| Adult child    | Adult child    |
-| Other          | Other          |
 
 ### SexAtBirth
 
