@@ -99,12 +99,13 @@ A contact identifies its person in one of two ways, and you must supply one of t
 | `phone_number`       | `str` or `None`                                                   | The contact's phone number. Exactly 10 digits                      | No       |
 | `email`              | `str` or `None`                                                   | The contact's email address                                        | No       |
 | `comments`           | `str` or `None`                                                   | Free-text notes about the contact                                  | No       |
-| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's relationship categories                              | No       |
+| `relationship`       | `str` or `None`                                                   | How the contact is related to the patient, such as `"Mother"` or `"Legal guardian"`. Up to 255 characters. See [Setting a contact's relationship](#setting-a-contacts-relationship) | No       |
+| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's category codings, such as emergency contact          | No       |
 | `inactive`           | `bool` or `None`                                                  | Set with `contact_identifier` to remove the contact                | No       |
 
 ## PatientContactCategory
 
-The `PatientContactCategory` dataclass expresses a contact's relationship to the patient — emergency contact, next-of-kin, and so on — as a coding.
+The `PatientContactCategory` dataclass expresses one of a contact's categories — emergency contact, next-of-kin, and so on — as a coding. Categories are separate from the contact's free-text `relationship`.
 
 All three fields are required, and the coding must already exist in the instance. Look one up with the [ContactCategory](/sdk/data-patient/#contactcategory) data model rather than composing a coding by hand; a coding the instance does not have raises a validation error instead of being created.
 
@@ -373,6 +374,7 @@ class MyHandler(BaseHandler):
                     phone_number="5551234567",
                     email="jane@example.com",
                     comments="Primary emergency contact",
+                    relationship="Spouse",
                     categories=[category],
                 )
             ],
@@ -416,6 +418,45 @@ class MyHandler(BaseHandler):
 ```
 
 A `related_patient` contact carries no name of its own; Canvas shows the referenced patient's details instead.
+
+### Setting a contact's relationship
+
+`relationship` records how the contact is related to the patient. It's the Relationship staff pick for a contact in Canvas, and family portal access shows it on each access row. Without it, a contact your plugin writes has a blank Relationship until staff set one by hand.
+
+The value is free text. The `ContactRelationship` enumeration in `canvas_sdk.v1.data.patient` lists the options Canvas offers staff, such as `"Mother"`, `"Legal guardian"`, and `"Other"`; see [ContactRelationship](/sdk/data-patient/#contactrelationship) for the full list. Canvas stores and shows any other text as given.
+
+Like the other contact fields, `relationship` is written only when you send it: omit it to keep the stored value, or pass `""` to clear it. The relationship belongs to the contact, not to the person, so a `related_patient` contact keeps its own relationship even though Canvas shows the referenced patient's other details. The same person can be one patient's `"Mother"` and another patient's `"Legal guardian"`.
+
+The relationship isn't part of the match Canvas makes when you re-send a contact without `contact_identifier`. Re-sending a contact with a different relationship updates the matched contact's relationship rather than adding a second contact.
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import PatientContactPerson
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        contact = PatientContactPerson.objects.filter(
+            patient__id="existing-patient-id", name="Jane Doe"
+        ).first()
+        if contact is None:
+            return []
+
+        # Only relationship changes; the contact's other fields keep their stored values.
+        patient = Patient(
+            patient_id="existing-patient-id",
+            contacts=[
+                PatientContact(
+                    contact_identifier=str(contact.id),
+                    name=contact.name,
+                    relationship="Legal guardian",
+                )
+            ],
+        )
+
+        return [patient.update()]
+```
 
 ### Removing a contact
 
