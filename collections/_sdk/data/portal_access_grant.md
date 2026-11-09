@@ -98,9 +98,9 @@ Call it as `current_grant(self.event.actor, patient_id)` from your handler. It r
 
 ## Responding to a flagged grant
 
-A flag usually means the invite reached the wrong person. When a family member reports that they don't know the patient, Canvas sets the grant's `flagged_at` and opens a [task](/sdk/data-task/) so staff can correct the contact or remove the access. The task is on the patient's chart, its creator is Canvas Bot, and its `tag` is `portal-access-flagged`. Canvas assigns it to the patient's [care team lead](/sdk/data-care-team/), or to the staff member in `granted_by` when the patient has no care team lead.
+A flag usually means the invite reached the wrong person. When a family member reports that they don't know the patient, Canvas sets the grant's `flagged_at` and opens a [task](/sdk/data-task/) so staff can correct the contact or remove the access. The task is on the patient's chart, its creator is Canvas Bot, and its `tag` is `portal-access-flagged`. Canvas assigns it to the patient's [care team lead](/sdk/data-care-team/). When the patient has no care team lead or the lead is no longer active, Canvas assigns it to the staff member in `granted_by`. If that staff member isn't active either, the task has no assignee.
 
-Each flagged grant has one open task. Canvas completes the task when the grant is revoked, including when staff correct the contact and the access moves to the corrected person.
+Each flagged grant gets one task. If staff complete it by hand, Canvas doesn't open another. Canvas completes the task when the grant is revoked, including when staff correct the contact and the access moves to the corrected person.
 
 The task raises the usual [task events](/sdk/events/#tasks): `TASK_CREATED` when Canvas opens it and `TASK_COMPLETED` when Canvas completes it. To act on a flag, such as alerting a team outside Canvas, respond to `TASK_CREATED` and check the task's `tag`:
 
