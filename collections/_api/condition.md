@@ -8,6 +8,8 @@ sections:
         name: Condition
         article: "a"
         description: >-
+          <aside class="alert alert__wrapper alert__warning" role="alert"><div class="alert__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24v112c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zm-32 224a32 32 0 1 1 64 0 32 32 0 1 1-64 0z"/></svg></div><div class="alert__content">The Diagnose command is planned for retirement in a future release, in favor of Assess. An active Condition created through this endpoint is recorded with a Diagnose command, or with an Assess command when your instance records Diagnose as Assess. To move off Diagnose ahead of its retirement, <a href="https://canvas-medical.help.usepylon.com/">contact Canvas Support</a> to turn that on. See <a href="/product-updates/important-dates/">Important Dates</a>.</div></aside>
+
           A clinical condition, problem, diagnosis, or other event, situation, issue, or clinical concept that has risen to a level of concern.<br><br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-encounter-diagnosis.html)<br>
           [https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html](https://hl7.org/fhir/us/core/STU6.1/StructureDefinition-us-core-condition-problems-health-concerns.html)
@@ -47,7 +49,7 @@ sections:
                   description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: clinicalStatus
             description_for_all_endpoints: The clinical status of the condition.
-            create_description: If clinicalStatus is active, the Condition will be added as a Diagnose command. If it is not active, the Condition will be added as a Past Medical History command.
+            create_description: If clinicalStatus is active, the Condition is added as a Diagnose command, or as an Assess command when your instance records Diagnose as Assess. If it is not active, the Condition is added as a Past Medical History command.
             required_in: create, update
             type: json
             attributes:
@@ -97,7 +99,7 @@ sections:
                           exclude_in: create,update
           - name: verificationStatus
             description_for_all_endpoints: The verification status to support the clinical status of the condition.
-            read_and_search_description: A `confirmed` status corresponds to committed conditions from a Diagnose or Past Medical History command. An `entered-in-error` status means the Diagnose or Past Medical History command was entered-in-error. A `provisional` condition means it was added as an `indication` to either Image, Refer, POC Lab Test, or a Lab Order command.  
+            read_and_search_description: A `confirmed` status corresponds to a committed condition on the patient's record, whichever command recorded it, including Diagnose, Assess, Add Condition, Past Medical History, or an Assess Coding Gap accepted with Accept and Diagnose. An `entered-in-error` status means the condition, or the command that recorded it, was entered-in-error. A `provisional` condition was added as an `indication` on an Imaging Order, Refer, POC Lab Test, or Lab Order command, in a note or by a plugin, or by a protocol recommendation for a condition the patient doesn't have charted. Indications on Prescribe and Order DME commands don't add conditions.  
             exclude_in: create, update
             type: json
             attributes:
@@ -267,6 +269,7 @@ sections:
           - name: note
             exclude_in: update
             description: Additional information about the Condition. This note only appears in the Canvas UI for resolved conditions.
+            create_description: Additional information about the Condition, up to 1,000 characters. This note only appears in the Canvas UI for resolved conditions. When your instance records Diagnose as Assess, the note of an active Condition becomes the Assess narrative.
             type: array[json]
             attributes:
                 - name: text
@@ -301,9 +304,14 @@ sections:
           responses: [201, 400, 401, 403, 405, 422]
           description: >-
             Create a Condition resource.<br><br>
-            This endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.<br><br>
-            If `clinicalStatus` is **active**, the Condition will be added as a `Diagnose` command. If it is not **active**, the Condition will be added as a `Past Medical History` command.<br><br>
-            If an `encounter` or a note ID in the `extension` is provided, the Condition will be added to the existing encounter (note). If it is not provided, a new data import note will be created.
+            If `clinicalStatus` is **active**, the Condition is added as a `Diagnose` command. If it is not **active**, the Condition is added as a `Past Medical History` command.<br><br>
+            If an `encounter` or a note ID in the `extension` is provided, the Condition is added to the existing encounter (note). If it is not provided, a new data import note is created.<br><br>
+            By default, this endpoint does not prevent duplicates in the record. **Canvas recommends performing a search prior to adding a new condition** to confirm whether the condition has already been created for the patient.<br><br>
+            **Recording Diagnose as Assess**<br><br>
+            As part of the rollout retiring the Diagnose command, this endpoint records conditions as described below. To use this behavior now, ahead of the rollout, [contact Canvas Support](https://canvas-medical.help.usepylon.com/). It also keeps integrations that resend conditions from adding duplicates, and it changes how plugins' Diagnose commands are recorded; see [Diagnose](/sdk/commands/#diagnose). With it on, creates work as follows:<br><br>
+            **A code the patient already has:** If the patient already has an active or resolved condition with the same ICD-10 code, the request returns `422` with the ID of that condition, and nothing is written. Codes are compared ignoring dots and case. Use the existing condition instead of creating another.<br><br>
+            **A new active condition:** The Condition is recorded with a committed `Assess` command in the note. The Assess narrative is the Condition's `note` text, and its onset date is `onsetDateTime`. The condition goes on the problem list unless its categories include `encounter-diagnosis`. Plugins receive Assess command events for the command.<br><br>
+            **A new resolved condition:** The Condition is added as a `Past Medical History` command, as it is with the setting off.
           example_request: condition-create-request
           example_response: condition-create-response
         read:
@@ -314,7 +322,8 @@ sections:
         update:
           description: >-
             Update a Condition resource.<br><br>
-            The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but out FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.
+            The only type of Condition update interaction that is supported by Canvas is to mark an existing Condition as **entered-in-error**. No changes to other fields will be processed. All required fields must still be provided, but our FHIR Update will assume a call to the FHIR Condition Update is an intention to mark the condition as entered-in-error.<br><br>
+            When your instance records Diagnose as Assess, entering a Condition in error also enters in error the command that recorded it: the `Diagnose`, `Assess`, `Add Condition`, or `Past Medical History` command. This works only when that command is all that references the condition. If another command assesses or resolves the condition, or no such command recorded it, the request returns `422`; enter the condition in error from the patient's chart instead.
           responses: [200, 400, 401, 403, 404, 405, 412, 422]
           example_request: condition-update-request
           example_response: condition-update-response

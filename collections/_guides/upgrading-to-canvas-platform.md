@@ -48,7 +48,7 @@ Canvas upgrades your organization's plugins to the platform-based Plugin Develop
 
 ### 4. Switch your workflow by December 14, 2026
 
-Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then.
+Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then. From that date, your instances refuse plugin changes the CLI sends straight to the instance, such as `canvas install`, and the CLI's error points you to `canvas deploy`.
 
 ## Update your development workflow
 
