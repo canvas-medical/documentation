@@ -106,7 +106,14 @@ effect = message.create_and_send() if has_eligible_contact else message.create()
 
 Instances set up to deliver patient messages through a plugin, rather than through Canvas, do not send these notifications.
 
-When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, and their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`). Canvas sends the notice to each of their email addresses and phone numbers. It says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin send these notices too.
+When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, and their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`). The notice says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin send these notices too.
+
+Where Canvas sends each family member's notice depends on whether they have their own chart:
+
+- With their own chart, they get an email and a text message at the first-ranked eligible email address and phone number on that chart, eligible as described above.
+- Without their own chart, they get an email only, at the email address of the contact their login was set up for. A contact's phone number has no consent on record for automated texts, so Canvas doesn't text it.
+
+Canvas skips any address that is also one of the patient's own, since the patient's notification already reaches it.
 
 `create()` on its own never notifies the patient.
 
