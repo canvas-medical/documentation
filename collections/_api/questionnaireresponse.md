@@ -145,7 +145,8 @@ sections:
             description: >-
               Person who received and recorded the answers.<br><br>
               If omitted, then the built-in automation user **Canvas Bot** will be set as the author.<br><br>
-              Supported reference types for create operations are: **Patient**, **Practitioner**
+              Supported reference types for create operations are: **Patient**, **Practitioner**<br><br>
+              On a read or search, a response that a family member or other representative committed through [family portal access](/sdk/patient-portal/#family-portal-access) has the [RelatedPerson](/api/relatedperson/) their access was given from as its author, in the format `"RelatedPerson/3f1b2c7d8e9a4b5c6d7e8f9a0b1c2d3e"`. This holds even when the family member also has a chart of their own.
             type: json
             attributes:
                 - name: reference
@@ -154,7 +155,7 @@ sections:
                   description: The reference string of the author in the format of `"Practitioner/cdbd6534-ba0d-4917-a5a6-6a2d46dcf0f7"`
                 - name: type
                   type: string
-                  description: Type the reference refers to (e.g. "Patient", "Practitioner")
+                  description: Type the reference refers to (e.g. "Patient", "Practitioner", "RelatedPerson")
           - name: item
             description: >-
               Groups and questions<br><br>
