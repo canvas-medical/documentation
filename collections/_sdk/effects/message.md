@@ -20,6 +20,7 @@ To route a message to a group of staff rather than one person, assign it to a te
 Creates a message without sending it.
 
 - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- `sender_id` is the `id` of a [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/), so the message comes from that patient's own login or from that staff member. It can't come from a family member with [family portal access](/sdk/patient-portal/#family-portal-access) to the patient: a family member sends their messages from the portal.
 - `message_id` must not be set.
 - `team_id` is optional. Set it to create the message already assigned to a team.
 
@@ -28,6 +29,7 @@ Creates a message without sending it.
 Creates the message and sends it in one operation.
 
 - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+- `sender_id` is the `id` of a [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/), so the message comes from that patient's own login or from that staff member. It can't come from a family member with [family portal access](/sdk/patient-portal/#family-portal-access) to the patient: a family member sends their messages from the portal.
 - `message_id` must not be set.
 - `team_id` is optional. Set it to create the message already assigned to a team.
 - When the recipient is a patient, the patient needs an eligible contact point. See [Sending to a patient](#sending-to-a-patient).
@@ -40,7 +42,7 @@ Changes an existing message.
 - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
 - `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See [Attaching files](#attaching-files).
 - `team_id` must not be set. Editing a message keeps its team. To change the team, use [`AssignMessageTeam`](#assigning-a-message-to-a-team).
-- For a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access), set `sender_id` to the patient whose chart the message is filed on. The family member stays the message's sender.
+- Editing a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access) keeps the family member as its sender. Set `sender_id` to the patient whose chart the message is filed on, which is the message's `note.patient`.
 
 ### send() → Effect
 
@@ -123,7 +125,7 @@ Canvas skips any address the patient's own notification goes to, such as a paren
 |----------------|---------------------------|-----------------------------------------------------------------------------------------------|----------|
 | `message_id`   | `str` or `UUID` or `None` | Unique identifier of an existing message. Must be unset when creating a new message.          | For `edit()` and `send()` |
 | `content`      | `str` or `None`           | The text body of the message. Cannot be empty.                                                | For `create()` and `create_and_send()` |
-| `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message.                                 | Yes      |
+| `sender_id`    | `str` or `UUID`           | ID of the user (Patient or Staff) who is sending the message. A family member's portal login isn't one of them. | Yes      |
 | `recipient_id` | `str` or `UUID`           | ID of the user (Patient or Staff) who will receive the message.                               | Yes      |
 | `read`         | `datetime` or `None`      | Timestamp indicating when the message was read by the recipient. Defaults to `None` (unread). | No       |
 | `attachment_upload_keys` | `list[str]` or `None` | Upload keys of PNG, JPEG, or PDF files to attach. Not allowed with `send()`. See [Attaching files](#attaching-files). | No |
