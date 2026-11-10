@@ -29,8 +29,9 @@ in the [catalog section](#the-sdk-standard_tools-catalog) below.
 alerts, etc.) into a shared accumulator that the agent returns from
 `run()`. The platform applies the emitted effects through
 `handle_effect` in order *after* the run completes — the model
-decides *what* to emit; the platform decides *when*. An effect that
-fails stops the rest, and the effects before it stay applied. Effect tools
+decides *what* to emit; the platform decides *when*. The effects
+apply all or none: an effect that fails takes back the ones before it.
+Effect tools
 typically never commit anything outright; they originate drafts the
 clinician then reviews.
 

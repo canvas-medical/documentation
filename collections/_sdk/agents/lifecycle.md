@@ -104,9 +104,14 @@ step is platform-driven:
 15. **Check and apply the effects.** Every effect must be one the
     requester could make in the chart; if any is not, the run fails with
     `error_kind="PERMISSION_DENIED"` and none of its effects apply.
-    Otherwise they apply in order through the same pipeline as any
-    plugin effect. An effect that fails stops the rest and fails the
-    run; the effects before it stay applied. Each is recorded in the audit trail as requested by the user whose
+    Otherwise they apply in order, all or none, through the same
+    pipeline as any plugin effect. Each is checked again just before it
+    applies, so a plan on a note an earlier `CREATE_NOTE` in the same
+    run creates is checked once that note exists. An effect that fails
+    takes back the ones before it and fails the run with no effects
+    applied. A run may return up to 500 effects; a run that returns
+    more applies none of them and fails with
+    `error_kind="TOO_MANY_EFFECTS"`. Each is recorded in the audit trail as requested by the user whose
     action started the run. Proposed changes are held for the requester
     to [approve or deny](#approve-before-write).
 16. **Release the scope**, so the next run on it can start.
@@ -657,10 +662,14 @@ the agent's level before it leaves the plugin runner:
 }
 ```
 
-Tool arguments and results are never sent, at any level. Treat the stream
-as a preview: the run's record and your saved state stay the source of
-truth, so a pane that can't open the channel can still poll for the
-result.
+Tool arguments and results are never sent, at any level. The platform
+sends a run's messages at most four times a second and merges what
+arrives in between: consecutive `text` messages become one, and a
+heartbeat folds into the message waiting with it. If a send fails, the
+platform stops streaming that run's progress. Treat the stream as a
+preview: the run's record and your saved state stay the source of
+truth, so a pane that can't open the channel, or stops receiving
+messages, can still poll for the result.
 
 ## Concurrency
 
@@ -675,8 +684,9 @@ after that it gives up.
 Runs on a scope also start in the order they were queued, so a chat's
 turns run in the order they were sent. A run waits while one queued
 before it on the same scope has yet to start, and that wait doesn't
-count against its retries. A run queued more than an hour ago that
-never started holds no later run back.
+count against its retries. A run queued more than an hour ago holds
+no later run back, and neither does one that no worker has picked up
+within 10 minutes of being queued.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
