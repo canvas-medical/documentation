@@ -144,4 +144,4 @@ Yes. Wait until you're notified that your organization has been upgraded to the 
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. The CLI still uses those credentials for `canvas install`, and for plugins and instances Canvas Platform does not manage once you sign out with `canvas logout`; while you're signed in, the CLI refuses those plugins and instances. See [Instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated).
+Yes, once everyone who runs the CLI, including your CI, is on `canvas` 1.0.0 or later and signed in with `canvas login` or a service account token. Every command that reaches an instance, including `canvas logs`, `canvas list`, `canvas config` and the `canvas namespace` commands, then goes through Canvas Platform. `canvas install`, which `canvas deploy` replaces, is the only command that still requires `credentials.ini`.
