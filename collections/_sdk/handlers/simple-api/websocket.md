@@ -32,6 +32,16 @@ Clients should connect using a URL that maps to your plugin and channel name:
 wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/
 ```
 
+#### Connecting from a patient portal page
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have different charts open in different browser tabs. A browser can't set headers on a WebSocket, so a portal page names the chart it shows in the URL, with the patient's key in `acting_for`:
+
+```generic
+wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/?acting_for=<patient_key>
+```
+
+The connection's `logged_in_user` and `portal_access` then describe that chart, as the `X-Portal-Acting-For` header does for the page's [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access). Without `acting_for`, the connection acts on the chart the session last chose.
+
 
 ### WebSocket Object
 
@@ -40,6 +50,7 @@ When a handler is invoked, the `websocket` object is available as an attribute o
 - `headers`: A dictionary of headers associated with the connection
 - `api_key`: The api key, if present
 - `logged_in_user`: A dictionary like `{ "id": ..., "type": ... }` if a logged-in user is present
+- `portal_access`: For a connection from the patient portal, who is using the chart and their access level in each area. It has the same attributes as [`SessionCredentials.portal_access`](/sdk/handlers-simple-api-http/#session) on SimpleAPI requests.
 
 You can access this object within your handler methods using `self.websocket`.
 
@@ -64,6 +75,26 @@ def authenticate(self) -> bool:
     # You could authenticate based on type or check to see if the
     # individual is in a particular group or team.
     ...
+```
+
+For a connection from the patient portal, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+
+To accept connections from a family member or representative, set `PORTAL_ACCESS` on your handler to the lowest access level it needs in each area, as on a [SimpleAPI](/sdk/handlers-simple-api-http/#family-portal-access). They connect when `authenticate()` accepts them and they have at least that level in every area it names:
+
+```python
+from canvas_sdk.handlers.simple_api import PortalAccessLevel
+from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
+
+
+class CopayWebSocket(WebSocketAPI):
+    PORTAL_ACCESS = {
+        "appointments": PortalAccessLevel.VIEW,
+        "billing": PortalAccessLevel.VIEW,
+    }
+
+    def authenticate(self) -> bool:
+        user = self.websocket.logged_in_user
+        return user is not None and user["type"] == "Patient"
 ```
 
 #### APIKey-Based (External Clients)

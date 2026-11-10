@@ -58,6 +58,7 @@ users = CanvasUser.objects.filter(phone_number="1111111111", email="test@canvasm
 | commands_originated       | [Command](/sdk/data-command/#command)[]                                 |
 | commands_committed        | [Command](/sdk/data-command/#command)[]                                 |
 | commands_entered_in_error | [Command](/sdk/data-command/#command)[]                                 |
+| portal_grants             | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
 | portal_invitations        | [PortalInvitation](/sdk/data-portal-invitation/#portalinvitation)[]     |
 
 `last_login` is set for patients only and is `None` for staff. It updates each time a patient portal session starts, including when the patient opens an invite or notification link before setting a password, so use `is_portal_registered` to tell whether a patient has activated their account.

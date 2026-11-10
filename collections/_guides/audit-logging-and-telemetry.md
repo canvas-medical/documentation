@@ -51,6 +51,10 @@ Alongside the record audit trail, Canvas captures:
   starts and a permission error in an update it sends later are recorded.
 - **Administrative activity** — configuration and permission changes, surfaced in the
   admin console and protected there against edit and deletion.
+- **Family members' plugin activity** — with [family portal access](/sdk/patient-portal/#family-portal-access),
+  each plugin request a family member or representative makes on a chart they were given, and
+  each message a plugin sends them there over a WebSocket, attributed to them and the patient
+  whose chart it is.
 - **Staff activity reports** — generated nightly.
 
 ### Change history through FHIR Provenance
@@ -168,8 +172,8 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | `metadata.labels` | `environment:production` for a production instance, `environment:non-production` for a sandbox or test instance. |
 | `category_uid`, `class_uid`, `activity_id`, `type_uid` | OCSF classification of the event (see the table below). `type_uid` is `class_uid * 100 + activity_id`. |
 | `time` | When the event happened, in milliseconds since the Unix epoch (UTC). |
-| `status_id` | Outcome: `1` success, `2` failure. |
-| `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation, and `4401` (the user may not use that schema) or `4403` (multi-factor authentication is incomplete) on a signed-in user's refused GraphQL websocket connection. Absent on success. |
+| `status_id` | Outcome: `1` success, `2` failure, `0` unknown, as on a family member's plugin request that was handed off to run later or that failed before anything answered it. |
+| `status_code` | Why an event failed: `invalid_credentials` or `account_locked` on a sign-in, `403` on a refused request, `permission_denied` on a refused GraphQL operation, and `4401` (the user may not use that schema) or `4403` (multi-factor authentication is incomplete) on a signed-in user's refused GraphQL websocket connection. Absent on success, except on a family member's plugin request, where it's the HTTP status the plugin answered with, such as `200`, `403`, or `101` for an accepted WebSocket connection. |
 | `api.operation` | On a refused request, the operation that was refused: the HTTP method and the URL pattern the request matched (`GET api/Patient/(?P<key>[a-f0-9]{32})$`), `graphql`, the operation type (`query`, `mutation`, or `subscription`), and the top-level field the refusal came from (`graphql mutation updateNoteBody`, over HTTP or the websocket; just `graphql subscription` when a subscription is refused before any field resolves), or `WEBSOCKET` and the websocket route (`WEBSOCKET graphql`). A request refused by the instance's network filter has the HTTP method followed by `network filter` (`GET network filter`), a `null` actor, and the refused client address in `src_endpoint.ip`. Never the actual path or its arguments. |
 | `actor.user.uid`, `actor.user.name` | Canvas user id and username of the acting user. On a failed sign-in or lockout, `uid` is `null` and `name` is the username that was tried. Both are `null` when no signed-in user caused the event. While a Canvas administrator is acting as another user, this is the user being acted as, except when a staff account is created or staff access changes, where it is the administrator. |
 | `actor.invoked_by` | The plugin whose action caused the event. Absent when a user acted directly. |
@@ -183,7 +187,7 @@ successive bodies appended to one file read as a single NDJSON stream. Events fo
 | 3002 | Authentication | Sign-in, sign-out, failed sign-in, account lockout, patient portal sign-in link issued, an administrator starting or ending a session as another user |
 | 3005 | User Access Management | Staff access granted or revoked |
 | 6001 | Web Resources Access | Chart opened, note printed |
-| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; instance settings changed by Canvas Studio; requests refused for lack of permission |
+| 6003 | API Activity | Clinical records and the patient record created, updated, or deleted; coverage, address, patient location, facility address, and care team changes; instance settings changed by Canvas Studio; family members' plugin requests and the messages plugins send them; requests refused for lack of permission |
 
 `activity_id` values depend on the class. In Authentication, `1` is a sign-in attempt, including
 failed sign-ins, lockouts, issued portal sign-in links, and the start of a session as another
@@ -208,6 +212,21 @@ DrFirst e-prescribing, and Documo faxing, by changing the instance's settings. E
 changes a setting produces an API Activity update with `event_name` `settings_change`. `actor`
 is the account Canvas Studio signs in with, and `enrichments.payload.changed_keys` lists the
 names of the settings that changed. A save that changes nothing produces no event.
+
+When a family member or representative uses a plugin on a chart they were given through
+[family portal access](/sdk/patient-portal/#family-portal-access), each request to the plugin
+produces an API Activity event with `event_name` `portal_plugin_request`. `actor` is the family
+member's or representative's login, and `resources` holds the patient whose chart it is and the
+`PortalAccessGrant` that gives them the chart. `activity_id` follows the HTTP method: `GET`, `HEAD`, and
+`OPTIONS` are a read, `POST` a create, `PUT` and `PATCH` an update, and `DELETE` a delete. A
+WebSocket connection the plugin accepts is a read.
+`enrichments.payload` carries `plugin_name`, `method` (`WEBSOCKET` for a connection),
+`response_status`, and `queued`, which is `true` for an
+[asynchronous request](/sdk/handlers-simple-api-http/#asynchronous-requests) handed off to run
+later. The requested path is withheld. Each message the plugin then sends over that WebSocket
+produces a read with `event_name` `portal_plugin_push`. A plugin broadcasts to every connection
+on its channel, so this event records that the login received the message while on that chart,
+not which patient the message is about. Activity on a login's own chart produces neither event.
 
 With pseudonymized identifiers, `resources[].uid` values are per-customer HMAC-SHA256
 tokens (64 hex characters) in place of Canvas identifiers, and `enrichments.payload` and
