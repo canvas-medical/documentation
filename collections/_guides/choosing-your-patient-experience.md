@@ -102,6 +102,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
 | `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
+| `FAMILY_PORTAL_ACCESS` | [Family portal access](#family-portal-access): staff can give family members and other representatives access to a patient's chart | `False` |
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
 
@@ -114,6 +115,17 @@ When the care team sends a patient a message or shares a lab result, Canvas noti
 - **The session lasts 15 minutes** by default. It doesn't extend while the patient is active; when it ends, the patient returns to the login page.
 
 Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
+
+### Family portal access
+
+Staff can give a patient's family member or other representative, such as a parent, guardian, or adult child, portal access to the patient's chart from the patient's **Profile → Portal** in Canvas. Each family member signs in with their own login, and one login can hold several charts: a parent who is also a patient switches between their own record and each child's.
+
+- **Access is set per area.** Appointments, messaging, clinical, and billing are each **None**, **View**, or **Full**. The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
+- **The family member confirms the patient's date of birth** the first time they open the chart.
+- **Their actions are recorded as them,** acting for the patient, and the patient can see who has access to their record in the portal.
+- **Notifications reach them too.** When the patient gets a new message, released lab results, a statement, or an appointment reminder, family members with access to that area are told. Their notices link to the portal's sign-in page rather than signing them in, because their login can open more than one chart.
+
+Family portal access is turned on by Canvas. See [Family Portal Access](https://help.canvasmedical.com/articles/1380397114-family-portal-access) for how staff set it up, and the [Patient Portal config hub](/sdk/patient-portal/#family-portal-access) for what plugins receive.
 
 ### Branding
 
@@ -151,7 +163,7 @@ A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal
 
 ### Personalize the landing page with widgets
 
-The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient.
+The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With [family portal access](/sdk/patient-portal/#family-portal-access), that's the patient whose chart the portal is open on, which isn't always the person signed in.
 
 You control what each card shows, pulling from the Canvas data module, your plugin's Custom Data, or an external service.
 
