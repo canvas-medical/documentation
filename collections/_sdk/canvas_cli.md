@@ -283,7 +283,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 1. Checks the manifest `name` is a valid plugin name and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+4. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
