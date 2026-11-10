@@ -660,7 +660,37 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
-For a patient portal session, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+For a patient portal session, `credentials.logged_in_user["id"]` is the key of the patient whose chart the portal is open on, which isn't always the person signed in. With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have someone else's chart open, such as a parent on their child's chart. Then `logged_in_user` names the child, and `portal_access` (below) names the parent.
+
+In a route, read the same values from the request: `self.request.headers["canvas-logged-in-user-id"]` is the patient whose chart is open, and `self.request.portal_access` tells you who is signed in. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](#family-portal-access).
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+
+
+class WhoIsHereAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/who-is-here"
+    # Lets family members' sessions in, with no particular access required.
+    PORTAL_ACCESS = {}
+
+    def get(self) -> list[Response | Effect]:
+        # The patient whose chart the portal is open on.
+        patient_id = self.request.headers["canvas-logged-in-user-id"]
+        access = self.request.portal_access
+        return [
+            JSONResponse(
+                {
+                    "patient_id": patient_id,
+                    # True for a family member on someone else's chart.
+                    "is_family_member": access.is_acting,
+                    # The family member's CanvasUser dbid, or None for the patient themselves.
+                    "family_member_user_id": access.acting_user_id,
+                }
+            )
+        ]
+```
 
 `credentials.portal_access` tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object with:
 
