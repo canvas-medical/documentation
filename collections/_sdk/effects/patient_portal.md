@@ -9,26 +9,45 @@ The Canvas SDK allows you to configure and extend the patient portal. This page 
 
 ## Family Portal Access
 
-With family portal access, staff give a family member or another representative portal access to a patient's chart. A parent who is also a patient can open their child's chart as well as their own, and a representative with no chart of their own uses the portal for the chart they were given. Canvas turns family portal access on for each instance.
+With family portal access, staff give a family member or another representative, such as a parent, portal access to a patient's chart. Each family member signs in with their own login, and one login can open several charts: its own, if it has one, and each chart it was given. Canvas turns family portal access on for each instance.
 
-A portal login can have several charts: its own, if it has one, and each chart it was given access to. The portal is open on one of them at a time, and the login can switch between them. Each browser tab shows one chart. Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart. To keep a plugin page on the chart its own tab shows, have it name that chart in its [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access) and its [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page).
+### The patient and the person signed in
 
-Plugins receive the patient whose chart the portal is open on, which isn't always the person signed in. Canvas identifies that patient in:
+When a family member has another patient's chart open, two different people are involved: the **patient** whose chart is open, and the **person signed in**. Plugins get both, in different places:
 
-- The `canvas-logged-in-user-id` header on [SimpleAPI](/sdk/handlers-simple-api-http/#session) requests, which `SessionCredentials.logged_in_user` reads.
-- `logged_in_user` on [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) connections.
-- The `user` in the event context of a `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application).
-- The target of portal events, such as `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, and `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION`: `self.event.target.id` is the patient's key (the target type is `Patient`). In these events, `self.event.actor` is the login that is signed in, which for a family member is their own login rather than the patient's.
+| Where | The patient whose chart is open | The person signed in |
+|---|---|---|
+| [SimpleAPI](/sdk/handlers-simple-api-http/#session) route | `self.request.headers["canvas-logged-in-user-id"]`, or `credentials.logged_in_user["id"]` in `authenticate()` | `self.request.portal_access`, or `credentials.portal_access` in `authenticate()` |
+| [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) | `logged_in_user` | `portal_access` |
+| Portal events: `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` | `self.event.target.id` (target type `Patient`) | `self.event.actor` |
+| `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application) | `self.event.context["user"]["id"]` | `self.event.actor` |
 
-To find out who is using the chart and what they can do there, read `portal_access` on [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) or the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object). It gives the chart's patient, the login acting on it, the family member's or representative's [PortalAccessGrant](/sdk/data-portal-access-grant/), and their access level (none, view, or act) in appointments, messaging, clinical, and billing. In portal events and applications, `self.event.actor` is the login, and you can look up its grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model. To serve family members and representatives from a SimpleAPI or WebSocket API, declare the access your routes need with `PORTAL_ACCESS`, as [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access) describes.
+When the patient opens their own chart, both columns point to the patient.
 
-A handler that looks up the patient from these values works with the chart the portal is open on. When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+To see what a family member can do on the chart:
 
-A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+- In SimpleAPI and WebSocket, `portal_access` gives the patient, the login acting on the chart, its [PortalAccessGrant](/sdk/data-portal-access-grant/), and its level (none, view, or act) in appointments, messaging, clinical, and billing. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
+- In portal events and applications, look up the login's grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
 
-A message that a family member sends from the portal is filed on the chart the portal is open on. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+### Which chart is open
 
-The built-in portal pages follow the family member's access in their area on the chart. With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
+The portal is open on one chart at a time, and the family member can switch between their charts. Each browser tab shows one chart.
+
+- Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
+- To keep a plugin page on the chart its own tab shows, have it name that chart in its [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access) and its [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page).
+
+### When there's no chart to open
+
+When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+
+### Messages and notification badges
+
+- A message a family member sends from the portal is filed on the chart that's open. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+- A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+
+### Built-in pages follow the family member's access
+
+With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
 
 | Area | Built-in pages (menu items) | View | Act |
 |---|---|---|---|
