@@ -120,7 +120,7 @@ Both limits are organization settings managed by Canvas: the link lifetime is th
 
 Staff can give a patient's family member or other representative, such as a parent, guardian, or adult child, portal access to the patient's chart from the patient's **Profile → Portal** in Canvas. Each family member signs in with their own login, and one login can hold several charts: a parent who is also a patient switches between their own record and each child's.
 
-- **Access is set per area.** Appointments, messaging, clinical, and billing are each **None**, **View**, or **Full**. The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
+- **Access is set per area.** Appointments, messaging, clinical, and billing are each **None**, **View**, or **Full** (`none`, `view`, and `act` to plugins). The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
 - **The family member confirms the patient's date of birth** the first time they open the chart.
 - **Their actions are recorded as them,** acting for the patient, and the patient can see who has access to their record in the portal.
 - **Notifications reach them too.** When the patient gets a new message, released lab results, a statement, or an appointment reminder, family members with access to that area are told. Their notices link to the portal's sign-in page rather than signing them in, because their login can open more than one chart.
@@ -173,8 +173,8 @@ See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widge
 
 With [family portal access](#family-portal-access), the person using the portal can be the patient or a family member acting for them, such as a parent on their child's chart. Your landing page widgets, menu, applications, and pages can serve each of them differently:
 
-- **Widgets, menu configuration, and applications:** the portal event's target is the patient whose chart is open, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
-- **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [session credentials](/sdk/handlers-simple-api-http/#session) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
+- **Widgets, menu configuration, and applications:** the patient whose chart is open is the portal event's target, or the `user` in an application's event context, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
+- **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) and the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
 
 For example, greet a parent with a card about their child's next appointment, leave out a balance reminder when their billing access is **None**, and keep a patient-only card, such as a care-gap reminder written to the patient, for the patient's own login. See [Family Portal Access](/sdk/patient-portal/#family-portal-access) for everything plugins receive.
 

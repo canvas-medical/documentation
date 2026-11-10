@@ -58,7 +58,7 @@ sections:
             required_in: create,update
             description_for_all_endpoints: >-
               Message recipient.<br><br>Supported reference types are a single **Patient** or **Practitioner**. 
-            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson**, the recipient is a practitioner.
+            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson**, the recipient must be a practitioner.
             attributes:
               - name: reference
                 type: string
