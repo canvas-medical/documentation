@@ -692,15 +692,20 @@ class WhoIsHereAPI(PatientSessionAuthMixin, SimpleAPIRoute):
         ]
 ```
 
-`credentials.portal_access` tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object with:
+`credentials.portal_access`, or `self.request.portal_access` in a route, tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object.
 
-- `is_acting`: `True` when a family member or representative, not the patient, is acting on the chart.
-- `acting_user_id`: the `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. It's `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.
-- `level(area)`: the session's `PortalAccessLevel` in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.
-- `allows(area, level)`: `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. The `level` argument can be a `PortalAccessLevel` or its value, such as `"view"`.
-- `patient`: the [Patient](/sdk/data-patient/#patient) whose chart the request acts on.
-- `actor`: the [CanvasUser](/sdk/data-canvasuser/#user) acting on the chart. That's the family member's or representative's login, or on a patient's own chart, the patient's login, so `actor` is `patient.user` there.
-- `grant`: the [PortalAccessGrant](/sdk/data-portal-access-grant/) that gives `actor` the chart, with the contact it was given from and the levels staff gave. It's `None` on a patient's own chart.
+| Attribute | Type | Description |
+|---|---|---|
+| `is_acting` | `bool` | `True` when a family member or representative, not the patient, is acting on the chart. |
+| `acting_user_id` | `str` or `None` | The `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session. |
+| `patient` | [Patient](/sdk/data-patient/#patient) or `None` | The patient whose chart the request acts on. |
+| `actor` | [CanvasUser](/sdk/data-canvasuser/#user) or `None` | The login acting on the chart: the family member's or representative's, or on a patient's own chart, the patient's, so `actor` is `patient.user` there. |
+| `grant` | [PortalAccessGrant](/sdk/data-portal-access-grant/) or `None` | The grant that gives `actor` the chart, with the contact it was given from and the levels staff gave. `None` on a patient's own chart. |
+
+| Method | Returns | Description |
+|---|---|---|
+| `level(area)` | `PortalAccessLevel` | The session's level in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`. |
+| `allows(area, level)` | `bool` | `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. `level` can be a `PortalAccessLevel` or its value, such as `"view"`. |
 
 `patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
 
