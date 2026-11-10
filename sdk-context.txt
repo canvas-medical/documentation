@@ -4426,10 +4426,11 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   - `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
 **Options** :
   - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
-  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
+  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's test instances. When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
   - `--no-push`: Deploy the pushed `main` as-is, without pushing.
-  - `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-  - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, leaving that repository's remotes and config alone. See Deploying from a larger repository. Takes no `--ref` or `--no-push`.
+  - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+  - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+  - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See Deploying from a larger repository. Takes no `--ref` or `--no-push`.
   - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
   - `--help`: Show this message and exit.
 **Example** :
@@ -4441,7 +4442,7 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
   2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
   3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-  4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+  4. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
     ```console
@@ -4449,6 +4450,13 @@ With `--push-only`, `deploy` stops after the push and prints the command that in
     Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
     To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
     ```
+**Deploying a branch to a test instance**
+To deploy plugin code not yet merged to `main` on a test instance, use `--branch`:
+    ```console
+    $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
+    ```
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+`deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in Deploying from a larger repository still apply.
 **Waiting for the outcome**
 For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
 Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
@@ -4493,6 +4501,7 @@ The commit is authored as the person or service account the CLI is signed in as,
 `deploy --snapshot` stops instead of pushing in two cases:
   - **HEAD lacks changes`main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
   - **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. When `main` has no snapshot and no `snapshot-baseline/` tag yet, every package file already on `main` counts as such a change.
+With `--branch`, the snapshot commit goes to that branch. If the branch exists on Canvas Platform, the commit builds on the branch's tip, and both checks compare against the branch: a snapshot from a checkout that lacks what the branch was last deployed from stops, while edits made on `main` after the branch was pushed don't. A new branch builds on the plugin's default branch on Canvas Platform and is checked against it. If the package matches the default branch, the new branch points at the default branch's commit. When the second check stops on a branch, `canvas clone` the plugin and `git checkout` that branch to get Canvas Platform's versions of the files.
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
 **Consent for cross-plugin data access**
 A plugin that reads another plugin's [custom data](/sdk/custom-data-sharing-data/) needs consent before it deploys. At a terminal, `deploy` shows each consent request and asks you to answer it. Under `--yes`, or without a terminal, it lists the requests with the deployment id and exits non-zero without answering them.
@@ -9749,6 +9758,7 @@ Below is the same thing written the other way, retrieving the questions and addi
     - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
     - For **DateQuestion** , you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
   - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
+  - **Changing the questionnaire:** `edit()` keeps the questionnaire the command already uses, along with its responses. A `questionnaire_id` set on the edited command is ignored, so set the questionnaire when you originate the command.
 * * *
 ###  ReasonForVisit 
 **Command-specific parameters** :
@@ -10049,6 +10059,7 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Structured Assessment** , and it must be set to originate in charting.  
 `answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). The command stays in the note's Assessment section. A Structured Assessment that a user adds from the note starts with no questionnaire picked, and you can still set `assessment_id` on it with `edit()`, for example in a `STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE` handler. When the questionnaire carries responses forward, the link given at `originate` is kept, and a link from an earlier note isn't carried into the new command.  
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see Recording responses.
 **Example** :
     ```python
@@ -13875,7 +13886,7 @@ treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |
 billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[] |   
 referrals | [Referral](/sdk/data-referral)[] |   
 ###  Commands linked to an assessment 
-Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
+Plan- and Procedures-section commands, the order, medication, and educational material commands, and the Structured Assessment command can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked. [Carrying a command forward](/sdk/commands/#command-actions) into a new note copies its data but not its link, so the new command starts with no `assessment`.
 Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
 On an instance in the [revamped note beta program](/product-updates/note-revamp/), a [printed note](/sdk/commands/#command-actions) in the revamped format lists each linked command indented under its assessment.
@@ -13889,6 +13900,7 @@ linked_change_medications | [ChangeMedication](/sdk/data-change-medication/#chan
 linked_dme_orders | [DmeOrder](/sdk/data-dme/#dmeorder)[]  
 linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  
 linked_imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
+linked_interviews | [Interview](/sdk/data-questionnaire/#interview)[]  
 linked_lab_orders | [LabOrder](/sdk/data-labs/#laborder)[]  
 linked_prescriptions | [Prescription](/sdk/data-prescription/#prescription)[]  
 linked_referrals | [Referral](/sdk/data-referral/#referral)[]  
@@ -13898,6 +13910,7 @@ procedures | [Procedure](/sdk/data-procedure/#procedure)[]
 stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[]  
 updategoals | [UpdateGoal](/sdk/data-goal/#updategoal)[]  
 Use `linked_referrals` for referrals linked this way. The `referrals` accessor above reads a referral's separate `assessments` list instead.
+`linked_interviews` returns the Structured Assessments linked to this assessment. The `interview` field above is a different relation: it holds the Structured Assessment that produced this assessment when it was committed.
 A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 ##  Enumeration types 
 ###  Assessment Status 
@@ -23132,12 +23145,16 @@ use_case_in_charting | String
 patient | [Patient](/sdk/data-patient/#patient)  
 note_id | Integer  
 appointment_id | Integer  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 questionnaires | Questionnaire[]  
 progress_status | String  
 created | DateTime  
 modified | DateTime  
 interview_responses | InterviewQuestionResponse[]  
-assessment_set | [Assessment](/sdk/data-assessment/#assessment)[]  
+assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
+An interview has two relations to assessments:
+  - `assessment` is the assessment in the same note that a [Structured Assessment](/sdk/commands/#structuredassessment) is linked to through its `assessment_id`. It's `None` when the interview isn't linked. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment).
+  - `assessments` holds the assessments that a Structured Assessment produces when it's committed.
 ###  InterviewQuestionnaireMap 
 The join between an Interview and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
 Field Name | Type  

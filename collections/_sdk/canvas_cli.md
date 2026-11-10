@@ -293,7 +293,7 @@ To install this commit on an instance: canvas deploy paperwork-eviscerator/acme_
 
 **Deploying a branch to a test instance**
 
-To deploy plugin code not yet merged to `main` on a test instance, use the argument `--branch`:
+To deploy plugin code not yet merged to `main` on a test instance, use `--branch`:
 
 ```console
 $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
@@ -301,7 +301,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 
 `deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 
-`deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name.
+`deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in [Deploying from a larger repository](#deploying-from-a-larger-repository) still apply.
 
 **Plugins built in Canvas Studio**
 
