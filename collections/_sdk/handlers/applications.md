@@ -237,6 +237,46 @@ With [family portal access](/sdk/patient-portal/#family-portal-access), a login 
 
 When the patient opens their own chart, both point to the patient.
 
+This `portal_menu_item` application shows the patient one page and a family member another. A family member whose access doesn't include clinical records sees a short message instead:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
+from canvas_sdk.v1.data import Patient, PortalAccessGrant, PortalAccessLevel
+
+
+class CarePlanApplication(Application):
+    """One menu item with a page for the patient and another for their family members."""
+
+    def on_open(self) -> Effect:
+        # The patient whose chart the portal is open on.
+        patient = Patient.objects.get(id=self.event.context["user"]["id"])
+        # The login that is signed in: the patient's own, or a family member's.
+        login = self.event.actor.instance
+
+        if patient.user == login:
+            content = "<h2>Your care plan</h2><p>Your goals and next steps from your care team.</p>"
+        else:
+            grant = (
+                PortalAccessGrant.objects.giving_access()
+                .filter(user=login, patient=patient)
+                .first()
+            )
+            if grant is None or grant.clinical == PortalAccessLevel.NONE:
+                content = "<p>Your access to this patient's records doesn't include their care plan.</p>"
+            else:
+                content = "<h2>Supporting their care plan</h2><p>How you can help between visits.</p>"
+
+        return LaunchModalEffect(
+            content=content,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+            title="Care plan",
+        ).apply()
+```
+
+Every `portal_menu_item` application appears in the menu for everyone who signs in to the portal. The SDK does not yet support hiding one from the patient, so for a page meant only for family members, show the patient a short message from `on_open()` in place of the page.
+
 <!-- source: discussion #1204 -->
 ### Linking to a portal application
 
