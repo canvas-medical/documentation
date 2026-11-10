@@ -21,7 +21,14 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 **Printed in the note's sections:** A printed note in the revamped format shows the History, Exam and Assessment & Plan sections in the note's SOAP or APSO order, the same sections it shows on screen. Commands in each section print in the order the provider arranged them, and each Assess Condition command prints with its linked commands indented beneath it. The Internal section isn't printed, and free text prints under Notes at the end. Faxed notes, the copy saved when a note is locked, and the patient's entire-record print use the same layout.
 
+**Cleaner commands:** Each command is an outlined card edged in its section's color, with sentence-case labels and fields that show their underline when you hover over or select them.
+- A choice with up to five options shows every option as a chip, so one click picks it. Arrow keys move between the chips.
+- **Delete** for an uncommitted command is in the command's ⋮ menu.
+
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
+- A collapsed command is a read-only summary of up to two lines that shows only the fields that have a value. A summary that runs longer ends in an ellipsis.
+- Interaction warnings and failed interaction checks stay in the summary; a clean "no interactions found" result is left out.
+- Select anywhere on a collapsed command to open it. The command's title also opens and collapses it from the keyboard with Enter or Space.
 
 **Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.
 - A command matches on its name or on the content the note shows for it, such as a field's text, a selected option's label or a questionnaire answer. Matching ignores case and starts at two characters.
@@ -40,6 +47,8 @@ Plugins can also add their own content to the revamped note. Respond to the [`NO
 - Content returned for the same section stacks in the order the handlers ran.
 - Each entry renders in its own frame, which starts 120 pixels tall. To fit the frame to the content, send a `RESIZE` message with the content's height over the frame's message channel, as shown in [Frame height](/sdk/effect-note-custom-content/#frame-height).
 - Outside the beta, Canvas doesn't send the event, so the content doesn't appear.
+
+HTML a plugin sets on a command with [`set_custom_html`](/sdk/commands/#set_custom_html) shows only while the command is open. A collapsed command's summary leaves it out.
 
 ```python
 from canvas_sdk.effects.note_custom_content import NoteCustomContent
