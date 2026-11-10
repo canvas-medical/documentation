@@ -163,11 +163,20 @@ A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal
 
 ### Personalize the landing page with widgets
 
-The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With [family portal access](/sdk/patient-portal/#family-portal-access), that's the patient whose chart the portal is open on, which isn't always the person signed in.
+The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With family portal access, you can also show different cards to the patient and to a family member (see [Tailor the portal for the patient or a family member](#tailor-the-portal-for-the-patient-or-a-family-member)).
 
 You control what each card shows, pulling from the Canvas data module, your plugin's Custom Data, or an external service.
 
 See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widgets) and the [Custom Landing Page guide](/guides/custom-landing-page/) for the exact documentation on how to build them. And you don't have to start from a blank file — there's a ready-made [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin) in our open-source examples repo you can install as-is or use as a reference and starting point.
+
+### Tailor the portal for the patient or a family member
+
+With [family portal access](#family-portal-access), the person using the portal can be the patient or a family member acting for them, such as a parent on their child's chart. Your landing page widgets, menu, applications, and pages can serve each of them differently:
+
+- **Widgets, menu configuration, and applications:** the portal event's target is the patient whose chart is open, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
+- **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [session credentials](/sdk/handlers-simple-api-http/#session) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
+
+For example, greet a parent with a card about their child's next appointment, leave out a balance reminder when their billing access is **None**, and keep a patient-only card, such as a care-gap reminder written to the patient, for the patient's own login. See [Family Portal Access](/sdk/patient-portal/#family-portal-access) for everything plugins receive.
 
 ### Shape self-scheduling
 
