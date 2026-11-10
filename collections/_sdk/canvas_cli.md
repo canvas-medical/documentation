@@ -113,9 +113,9 @@ You can define your default host with `is_default=true`. If no default is explic
 
 `canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
-- When every target is `localhost` or another host that is not a Canvas instance, the command goes straight to the instance with its `credentials.ini` client, signed in or not, without asking Canvas Platform.
+- When the target is `localhost` or another host that is not a Canvas instance, the command goes straight to that host with its `credentials.ini` client, signed in or not, without asking Canvas Platform. The target is every host you name with `--host` or `--instance`, or, with neither option, the default host in `credentials.ini`. For example, with a `[localhost]` default, `canvas enable acme__intake` enables the plugin on `localhost`, even when Canvas Platform has it installed on `acme`.
 - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
-- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform. A name without an organization prefix counts as managed only when one of your organizations publishes it, because an instance can hold a plugin of that name from `canvas install` while another organization publishes one on Canvas Platform. Any other plugin aimed at a Canvas instance is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform, and each `--instance` must be one Canvas Platform manages in your list of instances. Any other plugin aimed at a Canvas instance, or named with no `--instance`, no `--host` and no default host in `credentials.ini`, is refused, and so is an `--instance` outside your list. The refusal comes with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 
 To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
@@ -299,8 +299,8 @@ To install this commit on an instance: canvas deploy paperwork-eviscerator/acme_
 
 `canvas deploy` publishes the plugin as:
 
-1. The manifest `publisher`, when it's set. For a deploy that pushes, including `--snapshot`, it must be an organization you belong to. With `--ref` or `--no-push`, deploy sends the manifest `publisher` to Canvas Platform as it is, and Canvas Platform decides whether you can deploy under it.
-2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`. For a deploy that pushes, you need the push role there.
+1. The manifest `publisher`, when it's set.
+2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`.
 3. Otherwise, the only organization you can publish in.
 4. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
 
