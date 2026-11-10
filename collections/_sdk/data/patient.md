@@ -473,6 +473,8 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 
 `id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
 
+The model lists the patient's current contacts. When staff remove a contact that had [family portal access](/sdk/patient-portal/#family-portal-access), Canvas keeps it for the records its family member wrote, but it no longer appears here or among the patient's `contacts`. Its [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant) keeps the contact's name and relationship.
+
 A contact's relationship to the patient is held in its `categories`: the ones whose coding system is `http://terminology.hl7.org/CodeSystem/v3-RoleCode`, such as `MTH` (mother) or `SPS` (spouse). Other categories, such as an emergency contact, describe the contact's role rather than the relationship. Family portal access shows the names of a contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". A contact with no relationship category shows no relationship there.
 
 | Field Name      | Type                                                                 |

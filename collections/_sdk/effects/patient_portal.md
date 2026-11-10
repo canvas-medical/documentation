@@ -873,6 +873,8 @@ Canvas fires the event each time it emails a patient a login link:
 - A plugin returns a [`SendInviteEffect`](#send-invite).
 - A patient requests a login link by email from the portal login page.
 
+The invite or reset link for a family member or other representative's portal login, which staff send from the patient's Portal section under [Family Portal Access](#family-portal-access), doesn't fire the event and uses Canvas's default wording.
+
 The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
 
 | Key                    | Value                                                                                                                                  |

@@ -58,7 +58,7 @@ sections:
             required_in: create,update
             description_for_all_endpoints: >-
               Message recipient.<br><br>Supported reference types are a single **Patient** or **Practitioner**. 
-            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson**, the recipient must be a practitioner, or the request returns `422`.
+            create_description: Between the sender and recipient, one must be a practitioner while the other must be a patient. When the sender is a **RelatedPerson**, the recipient is a practitioner.
             attributes:
               - name: reference
                 type: string
@@ -73,7 +73,7 @@ sections:
             description_for_all_endpoints: >-
               Message sender.<br><br>Supported reference types are a single **Patient**, **Practitioner**, or **RelatedPerson**. A **RelatedPerson** sender is a family member or other representative who sent the message through [family portal access](/sdk/patient-portal/#family-portal-access). The reference is to the [RelatedPerson](/api/relatedperson/) their access was given from, even when they also have a chart of their own.
             create_description: >-
-              Between the sender and recipient, one must be a practitioner while the other must be a patient.<br><br>To send a message as a family member, set `sender` to the RelatedPerson their access was given from and `recipient` to a practitioner. Canvas files the message on that RelatedPerson's patient's chart, sent from the family member's own portal login. Family portal access must be on for the instance, and the family member's access must still be in effect (not revoked or flagged, on an active patient) with `act` access to messaging. Otherwise the request returns `405`. A patient-scoped token can't send a message as a family member.
+              Between the sender and recipient, one must be a practitioner while the other must be a patient.<br><br>To send a message as a family member, set `sender` to the RelatedPerson their access was given from and `recipient` to a practitioner. Canvas files the message on that RelatedPerson's patient's chart, sent from the family member's own portal login.
             read_and_search_description: When Canvas can no longer name the RelatedPerson a family member's message came from, `sender` is the family member's own Patient reference if they have a chart, and is left out if they don't.
             attributes:
               - name: reference
