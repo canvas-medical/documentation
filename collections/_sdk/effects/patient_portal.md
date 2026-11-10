@@ -828,6 +828,8 @@ class SyncPortalUser(BaseHandler):
 
 ### Send Invite
 
+{% include alert.html type="warning" content="<code>SendInviteEffect</code> invites patients only. It doesn't send a family member's portal invite: staff send those from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>). For the login of a family member with no chart of their own, the effect sends nothing." %}
+
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
 
 On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
@@ -839,7 +841,7 @@ On a non-production instance, the invite is only delivered to email addresses an
 Sends the portal invitation.
 
 - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
-- The invitation goes to the patient whose own login `user_dbid` names. For the login of a family member with no chart of their own (see [Family Portal Access](#family-portal-access)), the effect sends nothing.
+- The invitation goes to the patient whose own login `user_dbid` names.
 
 #### Attributes
 
@@ -884,6 +886,8 @@ What the patient does with the link is still visible in that section. Setting up
 
 ### Customize the Login Email
 
+{% include alert.html type="warning" content="This customizes patients' login emails only. A family member's invite or password reset email, which staff send from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>), doesn't fire <code>PATIENT_PORTAL__GET_LOGIN_EMAIL</code> and always uses Canvas's default wording." %}
+
 Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
 
 Canvas fires the event each time it emails a patient a login link:
@@ -891,8 +895,6 @@ Canvas fires the event each time it emails a patient a login link:
 - Staff send an invite or a password reset from the Portal section of the patient's profile.
 - A plugin returns a [`SendInviteEffect`](#send-invite).
 - A patient requests a login link by email from the portal login page.
-
-The invite or reset link for a family member or other representative's portal login, which staff send from the patient's Portal section under [Family Portal Access](#family-portal-access), doesn't fire the event and uses Canvas's default wording.
 
 The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
 
