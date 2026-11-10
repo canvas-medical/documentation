@@ -719,7 +719,7 @@ from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SessionCrede
 
 class BillingSummaryAPI(PatientSessionAuthMixin, SimpleAPIRoute):
     PATH = "/routes/billing-summary"
-    # Lets family members' sessions reach authenticate(), which checks their access.
+    # Serves family members that authenticate() accepts; it checks their access below.
     PORTAL_ACCESS = {}
 
     def authenticate(self, credentials: SessionCredentials) -> bool:
