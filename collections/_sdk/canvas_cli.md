@@ -30,7 +30,9 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
 
 `canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
-A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
+A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 63 characters. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
+
+The organization that publishes a plugin is its manifest [`publisher`](/sdk/canvas_manifest/#top-level-fields), the organization slug that `canvas login` lists in parentheses (`acme` above). [`canvas deploy`](#canvas-deploy) chooses the publisher when the manifest has none.
 
 `canvas login --platform <url>` or the `CANVAS_PLATFORM_URL` environment variable points the CLI at a platform other than https://platform.canvasmedical.com, and later commands keep using the platform you last signed in to.
 
@@ -78,6 +80,8 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 
 With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
 
+From midnight UTC on December 14, 2026, Canvas instances refuse the commands among these that change a plugin directly: `canvas install`, `enable`, `disable`, and `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each one fails with an error that points to `canvas deploy`. `list`, `config list`, `logs` and the `namespace` commands keep working with `credentials.ini`.
+
 A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform).
 
 The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
@@ -107,16 +111,19 @@ You can define your default host with `is_default=true`. If no default is explic
 
 ### Which plugins go through Canvas Platform
 
-`canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
+`canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
 
-- A name without a prefix, or a machine that is not signed in, goes straight to the instance.
-- Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
+- When the target is `localhost` or another host that is not a Canvas instance, the command goes straight to that host with its `credentials.ini` client, signed in or not, without asking Canvas Platform. The target is every host you name with `--host` or `--instance`, or, with neither option, the default host in `credentials.ini`. For example, with a `[localhost]` default, `canvas enable acme__intake` enables the plugin on `localhost`, even when Canvas Platform has it installed on `acme`.
+- On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
+- Signed in with `canvas login` or a [service account token](#service-accounts-for-cicd), the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform, and each `--instance` must be one Canvas Platform manages in your list of instances. Any other plugin aimed at a Canvas instance, or named with no `--instance`, no `--host` and no default host in `credentials.ini`, is refused, and so is an `--instance` outside your list. The refusal comes with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+
+To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 
 `--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
 
-An instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
+Until December 14, 2026, an instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 
-git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
+git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin and publisher named in the repository path.
 
 ## Update Notifications
 
@@ -222,7 +229,7 @@ $ canvas whoami [OPTIONS]
 
 ### `canvas init`
 
-Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, registered with Canvas Platform, and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, it is named from the project name alone and `init` says so: `canvas deploy` refuses such a plugin, so run `canvas login` and `canvas init` again for one you can deploy. Run [`canvas whoami`](#canvas-whoami) first if you are unsure which platform you are signed in to.
+Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, the manifest's `publisher` is set to the publishing organization, and the plugin is registered with Canvas Platform and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, the package is named from the project name alone, and `init` creates it without registering it or giving it a git repository. Run `canvas login` and then `canvas init` for a registered plugin. Run [`canvas whoami`](#canvas-whoami) first if you are unsure which platform you are signed in to.
 
 **Usage**:
 
@@ -273,9 +280,9 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 **What `deploy` does**
 
-1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name.
+1. Checks the manifest `name` is a valid plugin name and the package folder has the same name.
 2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
-3. Refuses the package if git ignores any of its Python files, and lists them. Then registers the plugin with Canvas Platform under the organization its prefix names.
+3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
 6. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
@@ -289,6 +296,23 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
 Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
 To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
 ```
+
+**Choosing the publisher**
+
+`canvas deploy` publishes the plugin as:
+
+1. The manifest `publisher`, when it's set.
+2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`.
+3. Otherwise, the only organization you can publish in.
+4. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
+
+Without a terminal, such as in CI, a deploy stops until the manifest names a publisher when you can publish in several organizations and the name carries none of their prefixes. Add the publisher's slug to `CANVAS_MANIFEST.json` and commit it:
+
+```json
+"publisher": "acme"
+```
+
+A service account belongs to one organization, so a pipeline that signs in with one publishes as that organization.
 
 **Waiting for the outcome**
 
@@ -346,10 +370,17 @@ Monorepo-Commit: 3f9a1c2e7b40d8e1a6c5f4b3a2918e7d6c5b4a39
 Monorepo-Path: plugins/acme__intake
 ```
 
+`deploy` starts from the newest commit on `main`'s first-parent history that carries a `Monorepo-Commit` trailer or a `snapshot-baseline/` tag, as Canvas Studio tags the commit it starts `main` from. Lightweight and annotated tags both count. A tagged commit without a `Monorepo-Commit` trailer names no source commit, so `deploy` skips the rollback check described below. To mark a commit on `main` as the starting point yourself, tag it in a [`canvas clone`](#canvas-clone) checkout and push the tag:
+
+```console
+$ git tag snapshot-baseline/<sha> <sha>
+$ git push origin snapshot-baseline/<sha>
+```
+
 `deploy --snapshot` stops instead of pushing in two cases:
 
 - **HEAD lacks changes `main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
-- **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. Before the first snapshot, every package file already on `main` counts as such a change.
+- **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. When `main` has no snapshot and no `snapshot-baseline/` tag yet, every package file already on `main` counts as such a change.
 
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
 
@@ -380,6 +411,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 **Options**:
 
+- `--publisher TEXT`: Slug of the organization that publishes the plugin, when two publishers have plugins with the same name
 - `--help`: Show this message and exit.
 
 ### `canvas install`
