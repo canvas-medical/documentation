@@ -2982,7 +2982,7 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 
 ### UpdateDiagnosis
 
-Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. The new condition also takes the original's category and domain, so an encounter diagnosis stays an encounter diagnosis and a health concern stays a health concern. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
