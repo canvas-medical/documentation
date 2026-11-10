@@ -161,7 +161,9 @@ See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widge
 
 Self-scheduling is powerful, but you'll usually want guardrails. Filter or reorder the slots a patient can book *before they see them* — keep new patients on longer visit types, hide same-day slots, steer certain reasons to specific providers, or enforce your booking policies.
 
-See [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
+Building your own booking screen instead? A plugin can search open appointment times with the same search the Canvas booking screens use, so it offers patients the same times Canvas would.
+
+See [Searching for open appointment slots](/sdk/utils/#searching-for-open-appointment-slots) · [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
 
 Real-world example (MSF):
 
@@ -189,7 +191,11 @@ Getting patients into the portal doesn't have to be manual. Automatically **invi
 
 Prefer to send the invite yourself? A plugin can mint the patient's activation or password reset link and deliver it through your own email or SMS provider, with your own wording and branding. You choose where in the portal the link lands the patient, such as their appointments or one of your own portal pages.
 
-See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+Happy with Canvas sending the invite but want your own words? A plugin can write the subject and body of the invite and password reset emails Canvas sends, and Canvas keeps the login link in them.
+
+Want to follow up on invitations that go nowhere? A plugin can track each portal invitation from sent to opened to claimed, find links that expired before the patient opened them, and react when a patient opens a link that no longer works, for example by sending a fresh one.
+
+See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [PortalInvitation](/sdk/data-portal-invitation/) and the [portal invitation events](/sdk/events/#portal-invitations) for tracking invitations, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
 
 ### Greet patients as soon as they sign in
 
