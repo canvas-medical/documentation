@@ -660,6 +660,8 @@ class MyAPI(SimpleAPIRoute):
         ...
 ```
 
+Canvas builds the `credentials` object from the request and passes it to your route's `authenticate()` method. The type annotated on the parameter, `credentials: SessionCredentials`, tells Canvas which kind of credentials to build. `credentials` exists only inside `authenticate()`: your route's other methods, such as `get()`, read the same information from `self.request`, as shown below.
+
 For a patient portal session, `credentials.logged_in_user["id"]` is the key of the patient whose chart the portal is open on, which isn't always the person signed in. With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have someone else's chart open, such as a parent on their child's chart. Then `logged_in_user` names the child, and `portal_access` (below) names the parent.
 
 In a route, read the same values from the request: `self.request.headers["canvas-logged-in-user-id"]` is the patient whose chart is open, and `self.request.portal_access` tells you who is signed in. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](#family-portal-access).
@@ -706,6 +708,32 @@ class WhoIsHereAPI(PatientSessionAuthMixin, SimpleAPIRoute):
 |---|---|---|
 | `level(area)` | `PortalAccessLevel` | The session's level in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`. |
 | `allows(area, level)` | `bool` | `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. `level` can be a `PortalAccessLevel` or its value, such as `"view"`. |
+
+This route lets in the patient, and a family member whose access includes at least viewing billing. Its `authenticate()` reads `credentials.portal_access` after the mixin's own check:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SessionCredentials, SimpleAPIRoute
+
+
+class BillingSummaryAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/billing-summary"
+    # Lets family members' sessions reach authenticate(), which checks their access.
+    PORTAL_ACCESS = {}
+
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        # Canvas builds `credentials` from the request and passes it in here.
+        if not super().authenticate(credentials):
+            return False
+        # The patient on their own chart has every level, so this checks family members.
+        return credentials.portal_access.allows("billing", "view")
+
+    def get(self) -> list[Response | Effect]:
+        # `credentials` isn't available here; the request carries the same information.
+        patient_id = self.request.headers["canvas-logged-in-user-id"]
+        return [JSONResponse({"patient_id": patient_id})]
+```
 
 `patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
 
