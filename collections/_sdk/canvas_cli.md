@@ -743,6 +743,8 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
 
 When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform).
 
+When the log stream doesn't start, `canvas logs` exits with status 1, whichever credential it used, so a script can tell a failed stream from one that ran. When Console, the Canvas log stream service, refuses the stream, the error quotes its answer, for example `Console refused the log stream for <instance>. Console answered: No instance named '<instance>' was found.` When the connection fails before the stream starts, the error gives the connection failure and asks you to run the command again. Stopping a live follow with Ctrl+C exits with status 0.
+
 **Usage**:
 
 ```console
