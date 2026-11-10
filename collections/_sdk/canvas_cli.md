@@ -761,7 +761,7 @@ $ canvas logs [OPTIONS]
 -  `--no-follow`:          Historical only; do not stream live logs.
 -  `--level TEXT`:         Repeatable. --level ERROR --level WARN
 -  `--source TEXT`:        Filter by source/service.
--  `--plugin TEXT`:        Repeatable. --plugin foo --plugin bar.
+-  `--plugin TEXT`:        Repeatable. --plugin foo --plugin bar. Filters history and the live stream.
 -  `--handler TEXT`:       Repeatable. Qualified handler name (e.g. my_plugin.handlers.Foo).
 -  `--page-size INTEGER`:  Fetch size per page (historical).  \[default: 200]
 -  `--limit INTEGER`:      Max historical logs to print.
