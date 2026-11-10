@@ -3684,6 +3684,90 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
   </tbody>
 </table>
 
+#### Portal Invitations
+
+These events follow a patient portal invite or password reset link through its life. Each one targets the link's <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a> record. They don't fire for portal notification links.
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"origin": str, <code>native</code> when Canvas sent the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+{% include alert.html type="warning" content="A handler for <code>PORTAL_INVITATION_CREATED</code> can't return <code>SendInviteEffect</code>. Sending an invite creates a new link, which would fire the event again. When a plugin returns that effect for this event, Canvas drops all the effects the plugin returned for it." %}
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_OPENED</th></tr>
+    <tr><td colspan="2">Occurs the first time the link is opened successfully. Later opens of the same link don't send it again.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CLAIMED</th></tr>
+    <tr><td colspan="2">Occurs when the link is used to set a password.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends <code>already_claimed</code>, and a link that lapsed without being claimed sends <code>expired</code>. Either way, the patient sees the same expired-link screen.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code>, <code>different_account</code>, or <code>already_claimed</code></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Protocol Overrides
 
 <table>
@@ -3725,6 +3809,7 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
 <table>
   <thead>
     <tr><th colspan="2">PROTOCOL_OVERRIDE_DELETED</th></tr>
+    <tr><td colspan="2">This event does not fire. When a protocol override is removed, Canvas sends <code>PROTOCOL_OVERRIDE_UPDATED</code> instead, and the override's <code>deleted</code> field is <code>true</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -28951,7 +29036,8 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"slots_by_provider": {provider: {date: [{"start", "end"}]}} (JSON string)</pre></td>
+      <td><pre>"slots_by_provider": str, JSON
+    {provider: {date: [{"start", "end"}]}}</pre></td>
     </tr>
   </tbody>
 </table>
@@ -29112,9 +29198,42 @@ shape only; dynamic per-field entries appear alongside.
     <tr>
       <td><pre>patient_id</pre></td>
       <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
-      <td><pre>"document": str["after_visit_summary", "lab_requisition", "imaging_requisition"]
-"note_id": str, the id of the <a href='/sdk/data-note/#note'>Note</a> (after_visit_summary only)
-"order_id": str, the id of the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> (lab_requisition and imaging_requisition only)</pre></td>
+      <td><pre>"document": str, one of
+    "after_visit_summary"
+    "lab_requisition"
+    "imaging_requisition"
+"note_id": str, the <a href='/sdk/data-note/#note'>Note</a> id
+    (after_visit_summary only)
+"order_id": str, the <a href='/sdk/data-labs/#laborder'>LabOrder</a> or
+    <a href='/sdk/data-imaging/#imagingorder'>ImagingOrder</a> id
+    (requisitions only)</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="3">PATIENT_PORTAL__GET_LOGIN_EMAIL</th></tr>
+    <tr><td colspan="3">Occurs each time Canvas emails a patient a portal login link: an invite or password reset sent from the patient's profile, a <a href='/sdk/patient-portal/#send-invite'><code>SendInviteEffect</code></a>, or a login link the patient requests from the portal login page. Return a <a href='/sdk/patient-portal/#customize-the-login-email'><code>LoginEmailContent</code></a> effect to replace the email's subject and body. See <a href='/sdk/patient-portal/#customize-the-login-email'>Customize the Login Email</a>.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target</td>
+      <td>Target type</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>patient_id</pre></td>
+      <td><pre><a href='/sdk/data-patient/'>Patient</a></pre></td>
+      <td><pre>"link_type": str, one of
+    "invite"
+    "reset"
+"login_url": str
+"practice_location_id": str,
+    the <a href='/sdk/data-practicelocation/'>PracticeLocation</a> id
+    the email is sent from
+"default_subject": str
+"default_body": str, HTML</pre></td>
     </tr>
   </tbody>
 </table>
