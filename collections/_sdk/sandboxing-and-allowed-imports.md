@@ -553,7 +553,7 @@ These are the ones plugin authors reach for most often:
 
 ## Forbidden Constructs
 
-Beyond the import allow-list above, a few Python constructs compile under RestrictedPython but are rejected when your code runs in the sandbox. `canvas validate` catches these statically before you install, so you don't have to wait for a runtime failure on the instance.
+Beyond the import allow-list above, a few Python constructs compile under RestrictedPython but are rejected when your code runs in the sandbox. `canvas validate` and `canvas deploy` catch these statically before the code reaches an instance, so you don't have to wait for a runtime failure on the instance.
 
 | Construct | Why it's rejected | Use instead |
 | --- | --- | --- |
@@ -592,7 +592,7 @@ except Exception:
 
 ## Runtime Restrictions
 
-The sandbox enforces the rules in this section every time an attribute is read or written, so they surface as an `AttributeError` while your plugin is running. That is what separates them from the [forbidden constructs](#forbidden-constructs), which are rejected when your code is compiled and reported by `canvas validate` before you install. Except for the [helper-module check](#helper-modules) below, nothing described here is caught until the code executes.
+The sandbox enforces the rules in this section every time an attribute is read or written, so they surface as an `AttributeError` while your plugin is running. That is what separates them from the [forbidden constructs](#forbidden-constructs), which are rejected when your code is compiled and reported by `canvas validate` and `canvas deploy` before the code reaches an instance. Except for the [helper-module check](#helper-modules) below, nothing described here is caught until the code executes.
 
 Throughout this section, **your plugin's code** means modules inside your own plugin package. **External code** means everything else — the Canvas SDK, the standard library, and third-party modules.
 

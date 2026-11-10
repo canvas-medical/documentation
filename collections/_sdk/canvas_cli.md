@@ -727,7 +727,7 @@ Error: these handler classes won't be found by the plugin runner with the curren
 CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
 ```
 
-{% include alert.html type="info" content="<code>canvas validate</code> runs the full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output. <code>canvas deploy</code> runs the same check before it pushes." %}
+{% include alert.html type="info" content="<code>canvas validate</code> runs the full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output." %}
 
 ### `canvas logs`
 

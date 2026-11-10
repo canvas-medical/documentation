@@ -228,14 +228,14 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, validate it and deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
+When your plugin is just the way you'd like it, deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
 
 ```sh
-$ canvas validate acme__paperwork_eviscerator
 $ canvas deploy acme__paperwork_eviscerator --instance buttered-popcorn-dev
 ```
 
-`canvas deploy` commits your changes after you confirm, pushes them to Canvas Platform, and
+`canvas deploy` runs the checks in [`canvas validate`](/sdk/canvas_cli/#canvas-validate) first,
+commits your changes after you confirm, pushes them to Canvas Platform, and
 deploys that commit to the instance, where the plugin is installed and enabled. Replace
 `buttered-popcorn-dev` with your instance; without `--instance`, `deploy` targets the only
 instance you can deploy to, or lists the choices. As you make changes to your plugin, run the
