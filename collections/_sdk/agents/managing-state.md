@@ -55,13 +55,16 @@ the agent reads the patient from `self.subject` and the clinician from
 `self.requester`:
 
 ```python?partial=true
-from django.db.models import DO_NOTHING, ForeignKey, JSONField
+from django.db.models import DO_NOTHING, ForeignKey, JSONField, UniqueConstraint
 
 from canvas_sdk.v1.data.base import CustomModel
 
 
 class Conversation(CustomModel):
     """One row per patient and clinician, holding the message history as JSON."""
+
+    class Meta:
+        constraints = [UniqueConstraint(fields=["patient", "staff"], name="conversation_patient_staff")]
 
     patient = ForeignKey(PatientProxy, to_field="dbid", on_delete=DO_NOTHING)
     staff = ForeignKey(StaffProxy, to_field="dbid", on_delete=DO_NOTHING)
@@ -85,13 +88,15 @@ class ChatAgent(AgentPlugin):
         return AgentRunResult(state=state, effects=result.effects)
 
     def save_state(self, scope_key, state):
-        conversation, _ = Conversation.objects.get_or_create(
+        Conversation.objects.update_or_create(
             patient=PatientProxy.objects.get(id=self.subject.patient_id),
             staff=StaffProxy.objects.get(id=self.requester.staff_id),
+            defaults={"messages": state.data["messages"]},
         )
-        conversation.messages = state.data["messages"]
-        conversation.save()
 ```
+
+The unique constraint keeps one row per patient and clinician even if
+two saves race, and `update_or_create` writes to that row.
 
 The tools, the conversation the run loads, and the record it saves all
 use `self.subject` and `self.requester`, so they always belong to the
@@ -99,6 +104,38 @@ same patient and clinician.
 
 Because runs on the same scope go one at a time, `load → run → save`
 can't interleave with another run that read the same baseline.
+
+**State is saved before Canvas applies the run's effects.** The plugin
+runner calls `save_state` when `run()` returns, and Canvas applies the
+effects afterward. It can refuse them all (a permission the requester
+lacks), apply none (the run lost its scope), or stop at one that fails,
+so a saved conversation can say a change was made that never reached
+the chart. Check the platform's record of the previous run when the next
+one starts, and tell the model what did not apply:
+
+```python?partial=true
+from canvas_sdk.v1.data import AgentRun
+
+previous = (
+    AgentRun.objects.filter(
+        agent_id="my_plugin.agents.chat:ChatAgent",
+        scope_key=scope_key,
+        staff__id=self.requester.staff_id,
+        finished_at__isnull=False,
+        effects_returned__isnull=False,
+    )
+    .exclude(id=self.run_id)
+    .order_by("-queued_at")
+    .first()
+)
+kept = previous.effects_returned - (previous.effects_dropped or 0) if previous else 0
+if previous and (previous.effects_applied or 0) < kept:
+    ...  # add a note to the conversation: those changes did not reach the chart
+```
+
+Filter on the requester as well as the scope when several staff members
+share a scope, as a claim's does. The reference plugin's chats add such
+a note, which their pages leave out of what they show.
 
 **Keep the history within one model call.** A conversation that grows
 without bound eventually exceeds the model's context window, and every

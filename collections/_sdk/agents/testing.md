@@ -85,12 +85,16 @@ checks on the effects a run returns (see
   [need approval](/sdk/agents-lifecycle/#approve-before-write), sets
   `self.subject`, and gives the run an id. A tool in `approve` stages a
   `PROPOSE_AGENT_ACTION` effect in `run.effects` in place of its change.
-- `run_agent(agent, gateway, trigger_payload)` calls the lifecycle
-  methods and hooks in the platform's order and returns what the run
-  did: the effects the tool grant keeps (`run.effects`), the ones
-  the grant drops (`run.dropped`), the model calls, the tool calls, and
-  how the last tool loop ended. Unlike the platform, an exception from
-  the run reaches your test.
+- `run_agent(agent, gateway, trigger_payload, run_seconds=..., usage_units=...)`
+  calls the lifecycle methods and hooks in the platform's order and
+  returns what the run did: the effects the tool grant keeps
+  (`run.effects`), the ones it drops (`run.dropped`), the model calls,
+  the tool calls, and how the last tool loop ended. As on the platform,
+  the run stops at its deadline (`run_seconds`, the manifest entry's,
+  600 by default), its tool results are capped in total, and a usage
+  record in a unit other than `usage_units` (the units your manifest's
+  `catalog.pricing` lists) is dropped. Unlike the platform, an exception
+  from the run reaches your test.
 - `turn_on_command_types(*schema_keys)` turns command types on in the
   test database, every SDK command type when given none. A tool that
   stages a command refuses a type the instance has turned off, and a
@@ -138,17 +142,18 @@ def test_the_advisor_stages_a_card_for_new_follow_up():
     assert [call.name for call in run.tool_calls] == ["find_conditions", "add_or_update_protocol_card"]
 ```
 
-Pass `requester=RunRequester(staff_id=...)` to test a run a staff
-member started, and `capabilities=[Capability.REVENUE]` to test one the
+Without a `requester`, the run is Canvas Bot's, as one a handler starts,
+and permissions don't limit it. Pass `requester=RunRequester(staff_id=...)`
+to test a run a staff member started, and `capabilities=[Capability.REVENUE]` to test one the
 platform granted a capability. Give the requester `permissions=` to test
 what a staff member without some permission sees: `prepare_agent` hides
 the tools they could not use, as the platform does.
 
 `run.effects` is what the tool grant keeps, not what the platform would
 apply: the harness doesn't run the platform's checks on returned
-effects. A bare `COMMIT_*` effect, an effect the requester lacks the
-permission for, a patient's run touching another patient, or a Canvas
-Bot run's proposal all appear in `run.effects` in a test, and each
+effects. An effect the requester lacks the permission for, one a
+patient's run may not make, a Canvas Bot run's proposal, or an effect
+that asks to apply later all appear in `run.effects` in a test, and each
 fails the run in production.
 
 ## Testing the tool grant

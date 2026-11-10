@@ -199,6 +199,10 @@ def _get_visit_pattern(arguments, *, ctx):
     return {"visits_last_year": 4, "avg_days_between_visits": 92}
 ```
 
+A tool's name must be 1 to 64 letters, digits, `_`, or `-`, and its
+`input_schema` an object schema, as the Messages API requires; any other
+raises `ValueError` when the tool registers.
+
 The SDK's `get_patient_demographics` is registered this way for
 exactly this reason — it returns one dict, not a list, so it doesn't
 fit `filter_search_tool`.
@@ -234,6 +238,10 @@ def my_tool(arguments: dict, *, ctx: dict) -> Any: ...
   - `staff_id` — the staff member whose action started the run. Message
     drafts are attributed to them. `None` for a run nobody on staff
     started.
+  - `plugin_name` — the plugin the agent belongs to. `remove_banner_alert`,
+    `remove_claim_banner`, and `add_or_update_protocol_card` refuse a key
+    that names another plugin's banner or card, since Canvas changes only
+    a plugin's own.
   - `effects` — the list to append staged Effects to (used by effect tools).
   - `gateway`, `parent_tools` — the run's gateway and the agent's granted
     tools, for tools that run sub-agents or make a model call of their own,
@@ -475,7 +483,10 @@ At run time the platform:
    [propose their changes](/sdk/agents-lifecycle/#approve-before-write)
    for the requester to approve instead of making them. Approval covers
    the change, not just the tool: any other granted tool that stages an
-   effect type a listed tool stages proposes too.
+   effect type a listed tool stages proposes too. A tool that commits a
+   command or adds a lab report proposes whether or not `tools.approve`
+   lists it, since Canvas accepts those changes only through the
+   requester's approval.
 5. After `run()` returns, drops any effect the agent returned whose
    type no granted tool stages. An effect type that only tools in
    `tools.approve` stage is kept only when it's wrapped in a proposal.
@@ -487,9 +498,9 @@ The standard `edit_staged_command` and `delete_staged_command` tools
 also check the grant, so an agent can't change a draft it couldn't
 have staged. They change a kind of command only when the agent is
 granted an `originate_*` tool that stages it. When that originate tool
-is in `tools.approve`, they must be too, or they refuse. They don't
-edit or delete imaging order, referral, reason for visit, and HPI
-drafts today.
+is in `tools.approve`, they must be too, or they refuse. They cover
+every kind a standard `originate_*` tool stages, and an approval-listed
+call sees the drafts the same run staged.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
@@ -681,12 +692,14 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   exactly as the page shows it, with the `legibility`, `handwritten`, and
   `pages_disagree`. The code then refuses identifiers marked illegible or
   handwritten, pages that disagree, and any value passed that the print does
-  not support, such as a birth date read day-first. It checks only the
-  identifiers the model passes, and a name agrees when every word read is
-  printed. So a suggestion can still name a patient when the model leaves out
-  a printed MRN that belongs to someone else, reads only part of a printed
-  name, or passes no first name. Have a person confirm every suggested
-  patient. When the identifiers as read match no one, it
+  not support, such as a birth date read day-first. Every identifier the
+  print shows must be read: an MRN or birth date printed but not passed, a
+  printed name without its last name read, a printed first name not read, or
+  a printed word missing from the name read refuses the match. After the
+  match, the patient's own last name, first name or nickname, birth date, and
+  MRN (or a current one another organization keeps) are compared with the
+  print. A person still confirms every suggested patient on the review form.
+  When the identifiers as read match no one, it
   tries the readings a fax misread (0/O, 1/I/l, 5/S, 8/B; never the birth
   date), a dropped middle initial, or a first/last swap would explain, and
   suggests a patient only when every reading that matches names that one,
@@ -697,8 +710,8 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   nothing: a person confirms each suggestion in Canvas, and the review stays
   required. Each suggestion is labeled "AI suggested" on the form. The patient,
   type, and value suggestions also show a confidence level: for the patient,
-  high when three of Canvas's own identifiers the model passed agree and
-  medium otherwise, whatever else the page prints; for
+  high when the patient's record confirms three printed identifiers, and
+  medium otherwise or for a repaired reading; for
   the type and the values, the confidence the model passes, when it passes one.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
@@ -771,9 +784,9 @@ by each tool — you can't widen it via filter arguments. The catalog
 is grouped into manifest-friendly `@category` tags so plugin authors
 can grant access by tool family rather than enumerating every name.
 
-A tool listed below as offered only to runs with a permission is
-offered to every Canvas Bot and superuser run, since permissions don't
-limit those runs; a capability limits every run.
+A tool listed below as hidden from a user's run without a permission
+is offered to every Canvas Bot and superuser run, since permissions
+don't limit those runs; a capability limits every run.
 
 The sections below are auto-generated from the registry — they
 reflect the SDK version pinned in your plugin's environment. Hand
@@ -799,8 +812,8 @@ list to opt out of specific tools within a granted category:
 - **`@claims_reads`** (6 tools): `find_claims`, `get_claim`, `summarize_claims`, `find_claim_queues`, `find_claim_labels`, `find_claim_assignees`
 - **`@claims_writes`** (8 tools): `move_claim_to_queue`, `assign_claim`, `unassign_claim`, `add_claim_labels`, `remove_claim_labels`, `add_claim_comment`, `add_claim_banner`, `remove_claim_banner`
 - **`@clinical_alerts`** (3 tools): `add_banner_alert`, `remove_banner_alert`, `add_or_update_protocol_card`
-- **`@clinical_reads`** (30 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `search_note_text`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
-- **`@clinical_writes`** (24 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `edit_staged_command`, `delete_staged_command`, `originate_imaging_order`, `originate_refer`, `originate_reason_for_visit`, `originate_hpi`
+- **`@clinical_reads`** (29 tools): `find_medications`, `find_conditions`, `find_lab_results`, `find_assessments`, `find_allergies`, `find_immunizations`, `find_vitals`, `find_appointments`, `find_encounters`, `find_notes`, `get_open_note`, `get_note_content`, `find_goals`, `find_imaging_reports`, `find_referrals`, `find_open_loops`, `find_documents`, `find_history`, `find_care_team_members`, `find_medication_statements`, `find_external_events`, `find_prescriptions`, `find_pharmacy_fills`, `find_pharmacy_requests`, `find_questionnaire_responses`, `find_stop_medication_events`, `find_banner_alerts`, `find_protocol_cards`, `get_patient_demographics`
+- **`@clinical_writes`** (24 tools): `originate_plan`, `originate_prescribe_medication`, `originate_lab_order`, `originate_diagnose_condition`, `originate_goal`, `originate_assessment`, `originate_follow_up`, `originate_stop_medication`, `originate_review_note`, `originate_medical_history`, `originate_medication_statement`, `originate_allergy`, `originate_family_history`, `originate_surgical_history`, `originate_immunization_statement`, `originate_vitals`, `originate_resolve_condition`, `originate_remove_allergy`, `originate_imaging_order`, `originate_refer`, `originate_reason_for_visit`, `originate_hpi`, `edit_staged_command`, `delete_staged_command`
 - **`@config_reads`** (7 tools): `find_note_types`, `find_practice_locations`, `find_lab_partners`, `find_lab_partner_tests`, `find_clinical_codes`, `find_service_providers`, `find_reason_for_visit_codes`
 - **`@document_reads`** (1 tool): `read_document`
 - **`@intake_reads`** (4 tools): `read_incoming_document`, `match_patient`, `find_document_types`, `find_report_templates`
@@ -1035,7 +1048,7 @@ Search the patient's notes (encounter documents). Each row has `id`, `title`, `n
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `state` | string (enum) | no | Restrict to notes in a specific lifecycle state. Three-letter NoteStates code — pick from the enum. Filters on the canonical current state, not the note's initial state. Common values: 'NEW' (created/open), 'LKD' (locked), 'ULK' (unlocked), 'SGN' (signed), 'DLT' (deleted). One of: `NEW`, `PSH`, `LKD`, `ULK`, `DLT`, `RLK`, `RST`, `RCL`, `UND`, `DSC`, `SGN`, `SCH`, `BKD`, `CVD`, `CLD`, `NSW`, `RVT`, `CNF`. |
+| `state` | string (enum) | no | Restrict to notes in a specific lifecycle state. Three-letter NoteStates code — pick from the enum. Filters on the canonical current state, not the note's initial state. Common values: 'NEW' (created/open), 'LKD' (locked), 'ULK' (unlocked), 'SGN' (signed). Deleted notes are never listed. One of: `NEW`, `PSH`, `LKD`, `ULK`, `RLK`, `RST`, `RCL`, `UND`, `DSC`, `SGN`, `SCH`, `BKD`, `CVD`, `CLD`, `NSW`, `RVT`, `CNF`. |
 | `note_type` | string (enum) | no | Restrict to notes whose category matches. Broad bucket from NoteTypeCategories (the canonical category enum). Common values: 'encounter' (catch-all for in-person / telehealth / phone / video / home / lab visits), 'inpatient', 'review' (chart review), 'message', 'letter', 'appointment'. For a more specific match like 'Telehealth' vs 'Office visit' (both encounter), use `note_type_name_contains`. One of: `message`, `letter`, `inpatient`, `review`, `encounter`, `appointment`, `task`, `data`, `ccda`, `schedule_event`. |
 | `note_type_name_contains` | string | no | Case-insensitive substring match on the note type's display name (e.g., 'Telehealth', 'Office visit', 'Chart review', 'Home visit'). More granular than `note_type` — use to disambiguate within a category. |
 | `since` | string (date) | no | ISO 8601 date. Only return notes with datetime_of_service >= this value. |
@@ -1068,21 +1081,6 @@ Read the contents of a specific note in document order — the free-text narrati
 | `note_id` | string | yes | UUID of the note to read. From a prior find_notes or get_open_note call (the row's `id` field). |
 
 **Returns:** Object with the note's metadata (`id`, `dbid`, `title`, `note_type`, `note_type_name`, `state`, `datetime_of_service`, `provider_name`) plus a `content` array of items in document order. Each item is either `{type: 'text', value: <free-text>}` (the clinician's narrative between commands) or `{type: 'command', uuid, schema_key, state, data}` (a structured chart command — schema_key like 'plan'/'assess'/'labOrder', data containing the command-specific fields). Returns null if no note with that id exists for the current patient.
-
-#### `search_note_text`
-
-**Category:** `@clinical_reads`
-
-Find the patient's notes whose free text mentions the given words ('the note that mentions chest pain', 'when did we discuss sleep apnea'). Matches notes containing every word, in any order and any case, newest first, each with a snippet around the match. Searches only the narrative the clinician typed; structured commands are read with get_note_content. Use the row's `id` with get_note_content to read the whole note.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `text` | string | yes | Words to find, such as 'chest pain'. A note matches when it contains every word. |
-| `limit` | integer | no | Maximum notes to return. Defaults to 10. |
-
-**Returns:** Array of objects matching find_notes' row shape (`id`, `dbid`, `title`, `note_type`, `note_type_name`, `state`, `datetime_of_service`, `provider_name`) plus `snippet`, the note's text around the match. Empty when no note mentions every word.
 
 #### `find_goals`
 
@@ -1428,7 +1426,7 @@ Search records of medications the patient stopped. Each event has `medication_na
 
 **Category:** `@clinical_reads`
 
-Search the patient's banner alerts (visual flags shown on the chart). Returns each banner's `key`, `narrative`, `intent` (info/warning/alert), `placement` (list), `href` (or null), and `status` (active/inactive). Use this to discover what's already flagged before adding a duplicate, or to find a banner's key for `remove_banner_alert`. Defaults to active banners only.
+Search the patient's banner alerts (visual flags shown on the chart). Returns each banner's `key`, `narrative`, `intent` (info/warning/alert), `placement` (list), `href` (or null), `status` (active/inactive), and `plugin_name`, the plugin that added it. Use this to discover what's already flagged before adding a duplicate, or to find the key of a banner your plugin added for `remove_banner_alert`, which removes only those. Defaults to active banners only.
 
 **Arguments:**
 
@@ -1439,7 +1437,7 @@ Search the patient's banner alerts (visual flags shown on the chart). Returns ea
 | `include_inactive` | boolean | no | When true, also return banners with status='inactive' (historical/removed). Default false — active only. |
 | `limit` | integer | no | Maximum results to return. Defaults to 25. |
 
-**Returns:** Array of objects with `key`, `narrative`, `intent`, `placement` (array of strings), `href`, `status`.
+**Returns:** Array of objects with `key`, `narrative`, `intent`, `placement` (array of strings), `href`, `status`, `plugin_name`.
 
 **Backing data model:** `BannerAlert`.
 
@@ -1447,7 +1445,7 @@ Search the patient's banner alerts (visual flags shown on the chart). Returns ea
 
 **Category:** `@clinical_reads`
 
-Search the patient's protocol cards (clinical decision support surfaces shown on the chart). Each card has a `protocol_key` (pass to `add_or_update_protocol_card` as `card_key` to update it), `title`, `narrative`, `status` (due / satisfied / not_applicable / pending / not_relevant), and `plugin_name` identifying which plugin staged it. Use this to discover what's already flagged before adding a new card, to find prior cards your plugin staged that need a status update, or to inspect cards staged by other plugins for context. Defaults to all statuses; filter to active ones via `active_only=true`.
+Search the patient's protocol cards (clinical decision support surfaces shown on the chart). Each card has a `protocol_key` (pass to `add_or_update_protocol_card` as `card_key` to update it), `title`, `narrative`, `status` (due / satisfied / not_applicable / pending / not_relevant), and `plugin_name` identifying which plugin staged it. Use this to discover what's already flagged before adding a new card, to find prior cards your plugin staged that need a status update, or to inspect cards staged by other plugins for context; only your plugin's cards can be updated. Defaults to all statuses; filter to active ones via `active_only=true`.
 
 **Arguments:**
 
@@ -1477,7 +1475,7 @@ Return basic demographics for the current patient: legal name, preferred name, M
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Search claims with optional filters, most recently created first. Excludes trashed claims unless `queue` names the trash queue. Each row has the claim's `id`, its queue, patient, date of service, current payer, assignee or team, balances, and labels. Use get_claim for one claim's full detail. Requires the run's revenue capability.
 
@@ -1503,7 +1501,7 @@ Search claims with optional filters, most recently created first. Excludes trash
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Return one claim's full detail: queue, assignee, balances, narrative, coverages, providers, diagnosis codes, active line items with modifiers and diagnosis pointers, labels, active banners, and recent comments. Omit `claim_id` for the claim the agent was opened from. The patient section carries the name and sex only. Requires the run's revenue capability.
 
@@ -1519,7 +1517,7 @@ Return one claim's full detail: queue, assignee, balances, narrative, coverages,
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Count claims and total their balances per queue, excluding trashed claims. Optionally limited to one assignee or team. Use this for questions like 'how many claims are waiting on coding review' or 'what is my open balance'. Requires the run's revenue capability.
 
@@ -1536,7 +1534,7 @@ Count claims and total their balances per queue, excluding trashed claims. Optio
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 List the instance's claim queues in workflow order. move_claim_to_queue and find_claims take a queue's `name`. Requires the run's revenue capability.
 
@@ -1548,7 +1546,7 @@ List the instance's claim queues in workflow order. move_claim_to_queue and find
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 List the active labels configured for claims. add_claim_labels accepts only these names. Requires the run's revenue capability.
 
@@ -1560,7 +1558,7 @@ List the active labels configured for claims. add_claim_labels accepts only thes
 
 **Category:** `@claims_reads`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Find active staff members and teams a claim can be assigned to, by name. assign_claim takes a staff member's or a team's `id`. Requires the run's revenue capability.
 
@@ -1587,79 +1585,6 @@ Look up the codes a history or order command needs, by name, from Canvas's own v
 
 **Returns:** Array of up to 10 candidates, each with `display` and its codes: `icd10_code` (condition, medical_history), `snomed_code` (condition, family_history, surgical_history), `fdb_code` and `rxnorm_rxcui` (medication), `concept_id` and `concept_type` (allergen), `cvx_code` and `cpt_code` (immunization), or `image_code` (imaging_study).
 
-#### `read_incoming_document`
-
-**Category:** `@intake_reads`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Read the incoming document this run is about, such as a fax just received, and answer a question from it, with page numbers. Use it to find what the document says about who it is for (name, birth date, MRN), what kind of document it is, and the values it reports. Reads the whole file with a separate model call, so ask for everything you need in one or two questions.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `question` | string | yes | What to find in the document, in one focused question. |
-
-**Returns:** Object with `ok`, `document_id`, `title`, `channel` (e.g. fax), `answer` (with page numbers), and `note`; or `{ok: false, error}` when the file cannot be read.
-
-#### `match_patient`
-
-**Category:** `@intake_reads`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file. On a scan or fax, also pass each identifier `as_printed` and the `legibility`: the code checks the values against the print and tries common fax misreads itself.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `first_name` | string | no | First name as the document gives it. |
-| `last_name` | string | no | Last name as the document gives it. |
-| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
-| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
-| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. |
-| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
-| `handwritten` | boolean | no | True when an identifier is handwritten. |
-| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
-
-**Returns:** `{match: {patient_id}, matched_on, confidence}` when exactly one patient matches (`confidence` is high when three identifiers agree, else medium), else `{match: null, reason}`.
-
-#### `find_document_types`
-
-**Category:** `@intake_reads`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-List the types an incoming document can be filed as, for `categorize_document`. A clinical type with a `template_type` files with a report template (`find_report_templates`) whose values `prefill_document_fields` fills in.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `query` | string | no | Optional words in the type's name, e.g. 'lab' or 'referral'. |
-| `report_type` | string (enum) | no |  One of: `CLINICAL`, `ADMINISTRATIVE`. |
-
-**Returns:** Array of `{key, name, report_type, template_type}`; `template_type` is LabReportTemplate, ImagingReportTemplate, SpecialtyReportTemplate, or null.
-
-#### `find_report_templates`
-
-**Category:** `@intake_reads`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Search the report templates a lab, imaging, or specialty document is filed with, for `prefill_document_fields`. Each template lists its fields: fill in values only for these fields, keyed by the field's `code` when it has one, else its `label`. When several templates fit, choose the one whose fields match the document's values.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
-| `query` | string | yes | Words in the template's name, e.g. 'lipid' or 'CBC'. |
-
-**Returns:** Array of up to 10 `{template_id, name, code, fields: [{code, label, units, type, required}]}`.
-
 #### `find_service_providers`
 
 **Category:** `@config_reads`
@@ -1678,21 +1603,111 @@ Search the practice's directory of outside providers and facilities, the list th
 
 **Backing data model:** `ServiceProvider`.
 
-#### `find_patient`
+#### `find_reason_for_visit_codes`
 
-**Category:** `@patient_search`
+**Category:** `@config_reads`
 
-**Offered only to runs with:** the `patient_search` capability. The platform hides it from other runs.
-
-Find the one patient a person means, from the identifiers they give: the last name and birth date, plus the first name and MRN when known. Returns the patient's id only when exactly one patient matches; otherwise it says none or several did and names no one. Never loosen or guess identifiers to get a match: ask the person instead. The other tools still act on this run's patient, not the one found.
+Search the reasons for visit the practice configured, the list the chart's Reason for Visit command offers. Returns each with `id` (pass it as `coding_id` to `originate_reason_for_visit`) and `display`. Practice-level config, not patient-scoped. Use a configured reason when one matches what the visit is for.
 
 **Arguments:**
 
 | Name | Type | Required | Description |
 |---|---|---|---|
-| `first_name` | string | no | First name, or a nickname. |
-| `last_name` | string | no | Last name. |
-| `birth_date` | string (date) | no | YYYY-MM-DD. |
+| `display_contains` | string | no | Case-insensitive match on the reason's name (e.g. 'follow', 'physical'). |
+| `limit` | integer | no | Maximum results. Defaults to 25. |
+
+**Returns:** Array of objects with `id`, `display`, `code`, and `system`.
+
+**Backing data model:** `ReasonForVisitSettingCoding`.
+
+#### `read_incoming_document`
+
+**Category:** `@intake_reads`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Read the incoming document this run is about, such as a fax just received, and answer a question from it, with page numbers. Use it to find what the document says about who it is for (name, birth date, MRN), what kind of document it is, and the values it reports. Reads the whole file with a separate model call, so ask for everything you need in one or two questions.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `question` | string | yes | What to find in the document, in one focused question. |
+
+**Returns:** Object with `ok`, `document_id`, `title`, `channel` (e.g. fax), `answer` (with page numbers), and `note`; or `{ok: false, error}` when the file cannot be read.
+
+#### `match_patient`
+
+**Category:** `@intake_reads`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Check whether the identifiers on the document match exactly one Canvas patient, without suggesting anything. Pass the last name and birth date, plus the first name and MRN when the document gives them, exactly as the document shows them. Returns the patient's id only when exactly one matches; otherwise it says none or several did and names no one. Never guess or loosen identifiers to get a match: a document no one patient matches is for a person to file. On a scan or fax, also pass each identifier `as_printed` and the `legibility`: the code checks the values against the print and tries common fax misreads itself.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | no | First name as the document gives it. |
+| `last_name` | string | no | Last name as the document gives it. |
+| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
+| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
+| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. Read every identifier the print shows, the whole name included: one printed but not passed, or read only in part, names no patient. |
+| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
+| `handwritten` | boolean | no | True when an identifier is handwritten. |
+| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
+
+**Returns:** `{match: {patient_id}, matched_on, confidence}` when exactly one patient matches (`confidence` is high when three identifiers agree, else medium), else `{match: null, reason}`.
+
+#### `find_document_types`
+
+**Category:** `@intake_reads`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+List the types an incoming document can be filed as, for `categorize_document`. A clinical type with a `template_type` files with a report template (`find_report_templates`) whose values `prefill_document_fields` fills in.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `query` | string | no | Optional words in the type's name, e.g. 'lab' or 'referral'. |
+| `report_type` | string (enum) | no |  One of: `CLINICAL`, `ADMINISTRATIVE`. |
+
+**Returns:** Array of `{key, name, report_type, template_type}`; `template_type` is LabReportTemplate, ImagingReportTemplate, SpecialtyReportTemplate, or null. At most 100, by name; narrow with `query` for others.
+
+#### `find_report_templates`
+
+**Category:** `@intake_reads`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Search the report templates a lab, imaging, or specialty document is filed with, for `prefill_document_fields`. Each template lists its fields: fill in values only for these fields, keyed by the field's `code` when it has one, else its `label`. When several templates fit, choose the one whose fields match the document's values.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
+| `query` | string | yes | Words in the template's name, e.g. 'lipid' or 'CBC'. |
+
+**Returns:** Array of up to 10 `{template_id, name, code, fields: [{code, label, units, type, required}]}`.
+
+#### `find_patient`
+
+**Category:** `@patient_search`
+
+**Offered only to runs with:** the `patient_search` capability.
+
+Find the one patient a person means, from the identifiers they give: the first name, last name, and birth date, plus the MRN when known. Returns the patient's id only when exactly one patient matches; otherwise it says none or several did and names no one. Never loosen or guess identifiers to get a match: ask the person instead. The other tools still act on this run's patient, not the one found.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | yes | First name, or a nickname. |
+| `last_name` | string | yes | Last name. |
+| `birth_date` | string (date) | yes | YYYY-MM-DD. |
 | `mrn` | string | no | The patient's MRN, when known. |
 
 **Returns:** `{match: {patient_id}, matched_on}` when exactly one patient matches, else `{match: null, reason}`.
@@ -1731,26 +1746,9 @@ Search the open appointment times the native booking screens offer at one practi
 | `duration_minutes` | integer | yes |  |
 | `provider_ids` | array of string | no |  |
 | `visit_type_id` | string | no | The visit's note type, from find_note_types. |
-| `reschedule_appointment_id` | string | no | When rescheduling, the appointment, so its own time shows as open. |
+| `reschedule_appointment_id` | string | no | When rescheduling, the patient's appointment, from find_appointments, so its own time shows as open. |
 
 **Returns:** Array of up to 50 `{provider_id, start, end}`, earliest first.
-
-#### `find_reason_for_visit_codes`
-
-**Category:** `@config_reads`
-
-Search the reasons for visit the practice configured, the list the chart's Reason for Visit command offers. Returns each with `id` (pass it as `coding_id` to `originate_reason_for_visit`) and `display`. Practice-level config, not patient-scoped. Use a configured reason when one matches what the visit is for.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `display_contains` | string | no | Case-insensitive match on the reason's name (e.g. 'follow', 'physical'). |
-| `limit` | integer | no | Maximum results. Defaults to 25. |
-
-**Returns:** Array of objects with `id`, `display`, `code`, and `system`.
-
-**Backing data model:** `ReasonForVisitSettingCoding`.
 <!-- AUTOGEN:reads END -->
 
 ### Writes
@@ -1775,7 +1773,7 @@ Surface a banner alert on the patient — visible to anyone viewing the chart. U
 | `narrative` | string | yes | Short banner text — what the clinician should see. Truncated to 90 chars. E.g. 'Overdue colonoscopy — screening interval was 10y.' |
 | `intent` | string (enum) | yes | Visual emphasis. 'info' for neutral context, 'warning' for issues that need attention, 'alert' for safety-critical. One of: `info`, `warning`, `alert`. |
 | `placement` | array of string (enum) | yes | Where the banner appears. Most clinical alerts want ['chart']; add 'timeline' to also surface on the patient timeline. Use 'profile' for identity/demographic flags. |
-| `href` | string | no | Optional URL the banner links to. Use for deep-links to supporting context (e.g., the lab result page). |
+| `href` | string | no | Optional link the banner opens: an https:// URL or a path in Canvas starting with /, such as the lab result page. |
 
 **Returns:** `{ok: true, banner_key: <uuid>}` — pass `banner_key` to `remove_banner_alert` later to take the banner down.
 
@@ -1785,7 +1783,7 @@ Surface a banner alert on the patient — visible to anyone viewing the chart. U
 
 **Category:** `@clinical_alerts`
 
-Remove a previously-staged banner alert from the patient's chart. Takes the banner's `key` — obtained either from a prior `add_banner_alert` call (returned as `banner_key` in the response) or from `find_banner_alerts`. Use when the underlying clinical issue has been addressed (e.g., the overdue screening was completed) and the banner should no longer display.
+Remove a banner alert this plugin added to the patient's chart. Takes the banner's `key` — obtained either from a prior `add_banner_alert` call (returned as `banner_key` in the response) or from `find_banner_alerts`, for a row whose `plugin_name` is this plugin's; another plugin's banner is refused. Use when the underlying clinical issue has been addressed (e.g., the overdue screening was completed) and the banner should no longer display.
 
 **Arguments:**
 
@@ -1817,7 +1815,7 @@ Create a follow-up Task for the patient — appears in the clinician's task queu
 
 **Category:** `@task_writes`
 
-**Offered only to runs with:** `api.change_task`. The platform hides it from a user's run without that permission.
+**Hidden from a user's run without:** `api.change_task`.
 
 Update an existing task — typically to close it (status=COMPLETED), reopen it (status=OPEN), or change its title/due. The task_id must come from a prior `find_tasks` or `create_task` call; this tool does not look tasks up by content. Title is truncated to 200 chars. Only the fields you supply are updated; omitted fields are left as-is.
 
@@ -1838,7 +1836,7 @@ Update an existing task — typically to close it (status=COMPLETED), reopen it 
 
 **Category:** `@task_writes`
 
-**Offered only to runs with:** `api.change_task`. The platform hides it from a user's run without that permission.
+**Hidden from a user's run without:** `api.change_task`.
 
 Add a comment to an existing task — use to explain *why* a task was created/closed or to add context the clinician should see when they pick up the task. The task_id must come from a prior find_tasks or create_task call.
 
@@ -1857,7 +1855,7 @@ Add a comment to an existing task — use to explain *why* a task was created/cl
 
 **Category:** `@clinical_alerts`
 
-Stage or update a protocol card on the patient — a clinical decision support surface with title, narrative, and a list of recommended actions the clinician can take. Pass `card_key` to update an existing card (idempotent — call again to refresh narrative/status as the underlying clinical picture changes); omit to create a new one. Status drives visual treatment: 'due' (needs action), 'satisfied' (done), 'not_applicable' (doesn't apply to this patient), 'pending' (in progress), 'not_relevant' (dismissed). Title and narrative are truncated to 200 and 500 chars respectively. Returns the card_key so the same card can be updated later.
+Stage or update a protocol card on the patient — a clinical decision support surface with title, narrative, and a list of recommended actions the clinician can take. Pass `card_key` to update an existing card (idempotent — call again to refresh narrative/status as the underlying clinical picture changes); omit to create a new one. Only a card this plugin staged can be updated. Status drives visual treatment: 'due' (needs action), 'satisfied' (done), 'not_applicable' (doesn't apply to this patient), 'pending' (in progress), 'not_relevant' (dismissed). Title and narrative are truncated to 200 and 500 chars respectively. Returns the card_key so the same card can be updated later.
 
 **Arguments:**
 
@@ -2044,7 +2042,7 @@ Stage a draft message from the requesting staff to this patient for the staff to
 
 **Category:** `@clinical_writes`
 
-**Offered only to runs with:** `api.add_note`. The platform hides it from a user's run without that permission.
+**Hidden from a user's run without:** `api.add_note`.
 
 Stage a draft review-category note for the patient with a single Plan command containing the narrative. NEVER commits — the note + plan draft sit unsigned for the clinician to review, edit, and sign. Use when the clinician asks to draft a chart-review note, lab-review note, or similar narrative summary that isn't tied to a live visit. Before calling: (1) `find_note_types(category='review')` to get a `note_type_id`; (2) `find_practice_locations` to get a `practice_location_id`. Patient + requesting-staff come from the agent's scope automatically.
 
@@ -2053,10 +2051,10 @@ Stage a draft review-category note for the patient with a single Plan command co
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `narrative` | string | yes | The body of the Plan command on the new note. Plain prose, no markdown. This is what becomes the note's primary content. |
-| `note_type_id` | string | yes | UUID of a NoteType row with category='review' — get from `find_note_types(category='review')`. The customer's review note type IDs vary; don't guess. |
+| `note_type_id` | string | yes | UUID of an active NoteType with category='review' — get from `find_note_types(category='review')`. The customer's review note type IDs vary; don't guess. |
 | `practice_location_id` | string | yes | UUID of a PracticeLocation row — get from `find_practice_locations`. The customer's locations vary; don't guess. |
 | `title` | string | no | Optional note title (e.g., 'Lab review — 2026-05-15'). Falls back to the NoteType's default if omitted. |
-| `datetime_of_service` | string (date-time) | no | Optional ISO 8601 datetime. Defaults to now if omitted. Use for back-dated reviews. |
+| `datetime_of_service` | string (date-time) | no | Optional ISO 8601 datetime with a time zone, when the review happened: now or within the last 30 days. Defaults to now. |
 
 **Returns:** `{ok: true, note_id: <uuid>, command: 'plan', committed: false}`. Two effects are bundled: CREATE_NOTE for the review shell and the Plan command originating onto it. Clinician reviews/edits/signs.
 
@@ -2066,7 +2064,7 @@ Stage a draft review-category note for the patient with a single Plan command co
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Move a claim to another queue, such as from coding review to queued for submission. Takes a queue `name` or `display_name` from find_claim_queues. Trashing a claim is left to a person. Requires the run's revenue capability.
 
@@ -2083,7 +2081,7 @@ Move a claim to another queue, such as from coding review to queued for submissi
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Assign a claim to a staff member or a team, given exactly one `id` from find_claim_assignees. Requires the run's revenue capability.
 
@@ -2101,7 +2099,7 @@ Assign a claim to a staff member or a team, given exactly one `id` from find_cla
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Clear a claim's assignee or team. Requires the run's revenue capability.
 
@@ -2117,7 +2115,7 @@ Clear a claim's assignee or team. Requires the run's revenue capability.
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Add labels to a claim. Only labels find_claim_labels lists are accepted; creating a new label is left to a person. Requires the run's revenue capability.
 
@@ -2134,7 +2132,7 @@ Add labels to a claim. Only labels find_claim_labels lists are accepted; creatin
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Remove labels from a claim. Requires the run's revenue capability.
 
@@ -2151,7 +2149,7 @@ Remove labels from a claim. Requires the run's revenue capability.
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Add a comment to a claim's comment thread, visible to everyone working the claim. Requires the run's revenue capability.
 
@@ -2168,7 +2166,7 @@ Add a comment to a claim's comment thread, visible to everyone working the claim
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
 Show a banner on a claim, such as a reminder that a prior authorization is pending. Requires the run's revenue capability.
 
@@ -2187,9 +2185,9 @@ Show a banner on a claim, such as a reminder that a prior authorization is pendi
 
 **Category:** `@claims_writes`
 
-**Offered only to runs with:** the `revenue` capability. The platform hides it from other runs.
+**Offered only to runs with:** the `revenue` capability.
 
-Remove a claim banner by its `key`, from get_claim's `banners`. Requires the run's revenue capability.
+Remove a claim banner this plugin added, by its `key` from get_claim's `banners` where `plugin_name` is this plugin's; another plugin's banner is refused. Requires the run's revenue capability.
 
 **Arguments:**
 
@@ -2376,115 +2374,6 @@ Stage a draft Remove Allergy command taking an allergy off the patient's list, o
 
 **Backing Command:** `RemoveAllergyCommand`.
 
-#### `edit_staged_command`
-
-**Category:** `@clinical_writes`
-
-Change fields on a staged (uncommitted) draft command in the patient's open note. NEVER commits. `command_id` is the `command_id` an `originate_*` tool returned in an earlier run, or a command's `uuid` from `get_note_content`. Pass `fields` with the new values, named as the matching `originate_*` tool names its arguments. Only these fields can change, by command: plan: narrative; prescribe: sig, days_supply, refills; labOrder: comment, fasting_required; diagnose: today_assessment, background, approximate_date_of_onset; goal: goal_statement, priority, achievement_status, due_date, progress; assess: status, narrative, background; followUp: requested_date, comment; stopMedication: rationale; medicalHistory: approximate_start_date, approximate_end_date, show_on_condition_list, comments; medicationStatement: sig; allergy: severity, narrative, approximate_date; familyHistory: relative, note; surgicalHistory: approximate_date, comment; immunizationStatement: approximate_date, comments; vitals: height, weight_lbs, body_temperature, blood_pressure_systole, blood_pressure_diastole, pulse, respiration_rate, oxygen_saturation, note; resolveCondition: rationale, show_in_condition_list; removeAllergy: narrative. To change anything else (the medication, condition, code, or allergen itself), use `delete_staged_command` and stage a new draft. A draft this run staged cannot be edited; delete it and stage it again.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `command_id` | string | yes | The draft command's id. |
-| `fields` | object | yes | The fields to change and their new values. |
-
-**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', changed: [<field>], committed: false}`.
-
-#### `delete_staged_command`
-
-**Category:** `@clinical_writes`
-
-Delete a staged (uncommitted) draft command from the patient's open note. `command_id` is the `command_id` an `originate_*` tool returned, in this run or an earlier one, or a command's `uuid` from `get_note_content`. A committed command, or one on another note, cannot be deleted. Use it to replace a draft staged with the wrong item: delete it, then stage the right one.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `command_id` | string | yes | The draft command's id. |
-
-**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`; `command` is null for a draft this run staged, which is dropped before it reaches the note.
-
-#### `suggest_patient`
-
-**Category:** `@intake_writes`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient. On a scan or fax, pass `as_printed` and `legibility` as for `match_patient`.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `first_name` | string | no | First name as the document gives it. |
-| `last_name` | string | no | Last name as the document gives it. |
-| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
-| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
-| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. |
-| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
-| `handwritten` | boolean | no | True when an identifier is handwritten. |
-| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
-| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
-
-**Returns:** `{ok: true, patient_id, matched_on, confidence}` when one patient matched and was suggested, else `{ok: false, reason}`.
-
-#### `categorize_document`
-
-**Category:** `@intake_writes`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Suggest, on the document's review form, the type of document it is. `document_type_key` is a `key` from `find_document_types`. Files nothing; a person confirms the type.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `document_type_key` | string | yes | From find_document_types. |
-| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
-| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
-
-**Returns:** `{ok: true, document_type: {key, name, template_type}}`.
-
-#### `prefill_document_fields`
-
-**Category:** `@intake_writes`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Fill in, on the document's review form, the values a lab, imaging, or specialty report gives, for a template from `find_report_templates`. `fields` maps each template field's `code` (or `label`, when it has no code) to the value exactly as the document reports it. Leave out a value the document does not give; never estimate one. Files nothing; a person confirms the values.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
-| `template_id` | integer | yes | From find_report_templates. |
-| `fields` | object | yes | Field code or label -> {value, unit?, reference_range?, abnormal?}. |
-| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
-| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
-
-**Returns:** `{ok: true, template_id, template_name, filled: [<field>]}`.
-
-#### `assign_document_reviewer`
-
-**Category:** `@intake_writes`
-
-**Offered only to runs with:** `api.access_dataintegration`. The platform hides it from a user's run without that permission.
-
-Suggest who reviews the document: a staff member, a team, or both. The review stays required; a person confirms the assignment.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `staff_id` | string | no | The reviewer's staff id. |
-| `team_id` | string | no | The reviewing team's id. |
-| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
-
-**Returns:** `{ok: true, staff_id, team_id}`.
-
 #### `originate_imaging_order`
 
 **Category:** `@clinical_writes`
@@ -2528,62 +2417,6 @@ Stage a draft Referral on the patient's open note for the clinician to review an
 
 **Backing Command:** `ReferCommand`.
 
-#### `book_appointment`
-
-**Category:** `@scheduling_writes`
-
-**Offered only to runs with:** `api.add_appointment`. The platform hides it from a user's run without that permission.
-
-Book an appointment for this run's patient at a time find_appointment_slots offered. It takes effect when applied, not as a draft: confirm the time, provider, and visit type with the person first.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `provider_id` | string | yes | From find_providers. |
-| `practice_location_id` | string | yes | From find_practice_locations. |
-| `visit_type_id` | string | yes | A schedulable encounter note type, from find_note_types. |
-| `start_time` | string | yes | ISO 8601 with a time zone. |
-| `duration_minutes` | integer | yes |  |
-
-**Returns:** `{ok: true, booked: false, requested: {...}}`: applied after the run.
-
-#### `reschedule_appointment`
-
-**Category:** `@scheduling_writes`
-
-**Offered only to runs with:** `api.add_appointment`. The platform hides it from a user's run without that permission.
-
-Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Canvas cancels the appointment and books a new one with a new id, which find_appointments returns once applied. Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `appointment_id` | string | yes | From find_appointments. |
-| `start_time` | string | yes | ISO 8601 with a time zone. |
-| `provider_id` | string | no | A new provider, if changing. |
-| `practice_location_id` | string | no | A new location, if changing. |
-| `duration_minutes` | integer | no |  |
-
-**Returns:** `{ok: true, replaces_appointment_id, requested: {start_time}, note}`: applied after the run, as a new appointment.
-
-#### `cancel_appointment`
-
-**Category:** `@scheduling_writes`
-
-**Offered only to runs with:** `api.add_notestatechangeevent`, `api.change_appointment`. The platform hides it from a user's run without those permissions.
-
-Cancel one of this run's patient's appointments, from find_appointments. Takes effect when applied: confirm with the person first.
-
-**Arguments:**
-
-| Name | Type | Required | Description |
-|---|---|---|---|
-| `appointment_id` | string | yes | From find_appointments. |
-
-**Returns:** `{ok: true, appointment_id}`: applied after the run.
-
 #### `originate_reason_for_visit`
 
 **Category:** `@clinical_writes`
@@ -2616,4 +2449,169 @@ Stage a draft History of Present Illness on the patient's open note. NEVER commi
 **Returns:** `{ok: true, note_id: <uuid>, command_id: <uuid>, command: '<command_key>', committed: false}`. Never commits — the clinician reviews the draft in the chart and decides whether to commit. `command_id` names the draft for `edit_staged_command` or `delete_staged_command`.
 
 **Backing Command:** `HistoryOfPresentIllnessCommand`.
+
+#### `edit_staged_command`
+
+**Category:** `@clinical_writes`
+
+Change fields on a staged (uncommitted) draft command in the patient's open note. NEVER commits. `command_id` is the `command_id` an `originate_*` tool returned in an earlier run, or a command's `uuid` from `get_note_content`. Pass `fields` with the new values, named as the matching `originate_*` tool names its arguments. Only these fields can change, by command: plan: narrative; prescribe: sig, days_supply, refills; labOrder: comment, fasting_required; diagnose: today_assessment, background, approximate_date_of_onset; goal: goal_statement, priority, achievement_status, due_date, progress; assess: status, narrative, background; followUp: requested_date, comment; stopMedication: rationale; medicalHistory: approximate_start_date, approximate_end_date, show_on_condition_list, comments; medicationStatement: sig; allergy: severity, narrative, approximate_date; familyHistory: relative, note; surgicalHistory: approximate_date, comment; immunizationStatement: approximate_date, comments; vitals: height, weight_lbs, body_temperature, blood_pressure_systole, blood_pressure_diastole, pulse, respiration_rate, oxygen_saturation, note; resolveCondition: rationale, show_in_condition_list; removeAllergy: narrative; imagingOrder: priority, additional_details, comment; refer: clinical_question, priority, notes_to_specialist, include_visit_note, comment; reasonForVisit: comment; hpi: narrative. To change anything else (the medication, condition, code, or allergen itself), use `delete_staged_command` and stage a new draft. A draft this run staged cannot be edited; delete it and stage it again.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `command_id` | string | yes | The draft command's id. |
+| `fields` | object | yes | The fields to change and their new values. |
+
+**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', changed: [<field>], committed: false}`.
+
+#### `delete_staged_command`
+
+**Category:** `@clinical_writes`
+
+Delete a staged (uncommitted) draft command from the patient's open note. `command_id` is the `command_id` an `originate_*` tool returned, in this run or an earlier one, or a command's `uuid` from `get_note_content`. A committed command, or one on another note, cannot be deleted. Use it to replace a draft staged with the wrong item: delete it, then stage the right one.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `command_id` | string | yes | The draft command's id. |
+
+**Returns:** `{ok: true, command_id: <uuid>, command: '<command_key>', deleted: true}`; `command` is null for a draft this run staged, which is dropped before it reaches the note.
+
+#### `suggest_patient`
+
+**Category:** `@intake_writes`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Suggest, on the document's review form, the patient the document is for. Pass the identifiers exactly as the document shows them, as for `match_patient`: the patient is matched in code and suggested only when exactly one matches. Files nothing; a person confirms the patient. On a scan or fax, pass `as_printed` and `legibility` as for `match_patient`.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `first_name` | string | no | First name as the document gives it. |
+| `last_name` | string | no | Last name as the document gives it. |
+| `birth_date` | string (date) | no | Birth date as the document gives it, YYYY-MM-DD. |
+| `mrn` | string | no | The MRN the document shows, whether Canvas's or the sending organization's. |
+| `as_printed` | object | no | For a scanned or faxed document: each identifier exactly as printed, character for character, misprints and all (for example 'DOE, J0HN' or 'DOB: 03/O9/1971'). With it, the identifiers read are checked against the print, and a common fax misread is tried when they match no one. Read every identifier the print shows, the whole name included: one printed but not passed, or read only in part, names no patient. |
+| `legibility` | string (enum) | no | How readable the identifiers are: clear; readable_with_artifacts (scan noise, but every character can be made out); illegible (any character is a guess). One of: `clear`, `readable_with_artifacts`, `illegible`. |
+| `handwritten` | boolean | no | True when an identifier is handwritten. |
+| `pages_disagree` | boolean | no | True when pages show different patients' identifiers. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, patient_id, matched_on, confidence}` when one patient matched and was suggested, else `{ok: false, reason}`.
+
+#### `categorize_document`
+
+**Category:** `@intake_writes`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Suggest, on the document's review form, the type of document it is. `document_type_key` is a `key` from `find_document_types`. Files nothing; a person confirms the type.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `document_type_key` | string | yes | From find_document_types. |
+| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, document_type: {key, name, template_type}}`.
+
+#### `prefill_document_fields`
+
+**Category:** `@intake_writes`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Fill in, on the document's review form, the values a lab, imaging, or specialty report gives, for a template from `find_report_templates`. `fields` maps each template field's `code` (or `label`, when it has no code) to the value exactly as the document reports it. Leave out a value the document does not give; never estimate one. Files nothing; a person confirms the values.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `template_type` | string (enum) | yes |  One of: `lab`, `imaging`, `specialty`. |
+| `template_id` | integer | yes | From find_report_templates. |
+| `fields` | object | yes | Field code or label -> {value, unit?, reference_range?, abnormal?}. |
+| `confidence` | string (enum) | no | How sure you are, shown to the reviewer: high only when the document states it plainly. One of: `high`, `medium`, `low`. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, template_id, template_name, filled: [<field>]}`.
+
+#### `assign_document_reviewer`
+
+**Category:** `@intake_writes`
+
+**Hidden from a user's run without:** `api.access_dataintegration`.
+
+Suggest who reviews the document: a staff member, a team, or both. The review stays required; a person confirms the assignment.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `staff_id` | string | no | The reviewer's staff id. |
+| `team_id` | string | no | The reviewing team's id. |
+| `label` | string | no | Optional short label shown with the suggestion on the review form, up to 40 characters, e.g. 'From fax header'. |
+
+**Returns:** `{ok: true, staff_id, team_id}`.
+
+#### `book_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Hidden from a user's run without:** `api.add_appointment`.
+
+Book an appointment for this run's patient at a time find_appointment_slots offered. It takes effect when applied, not as a draft: confirm the time, provider, and visit type with the person first.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `provider_id` | string | yes | From find_providers. |
+| `practice_location_id` | string | yes | From find_practice_locations. |
+| `visit_type_id` | string | yes | A schedulable encounter note type, from find_note_types. |
+| `start_time` | string | yes | ISO 8601 with a time zone, at most a year ahead. |
+| `duration_minutes` | integer | yes |  |
+
+**Returns:** `{ok: true, booked: false, requested: {...}}`: applied after the run.
+
+#### `reschedule_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Hidden from a user's run without:** `api.add_appointment`.
+
+Move one of this run's patient's appointments, from find_appointments, to a new time find_appointment_slots offered (pass reschedule_appointment_id there so the current time shows as open). Canvas cancels the appointment and books a new one with a new id, which find_appointments returns once applied. Takes effect when applied: confirm with the person first. A patient already checked in cannot be rescheduled.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `appointment_id` | string | yes | From find_appointments. |
+| `start_time` | string | yes | ISO 8601 with a time zone, at most a year ahead. |
+| `provider_id` | string | no | A new provider, if changing. |
+| `practice_location_id` | string | no | A new location, if changing. |
+| `duration_minutes` | integer | no |  |
+
+**Returns:** `{ok: true, replaces_appointment_id, requested: {start_time}, note}`: applied after the run, as a new appointment.
+
+#### `cancel_appointment`
+
+**Category:** `@scheduling_writes`
+
+**Hidden from a user's run without:** `api.add_notestatechangeevent`, `api.change_appointment`.
+
+Cancel one of this run's patient's appointments, from find_appointments. Takes effect when applied: confirm with the person first.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `appointment_id` | string | yes | From find_appointments. |
+
+**Returns:** `{ok: true, appointment_id}`: applied after the run.
 <!-- AUTOGEN:writes END -->

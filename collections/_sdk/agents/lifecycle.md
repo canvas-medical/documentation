@@ -57,10 +57,11 @@ step is platform-driven:
    run is never queued. Either way the run
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
-   [Auditing](/sdk/agents-auditing/#reading-run-records)). An effect the
-   platform can't read, such as one missing `agent_id` or `scope`, or
-   with a malformed or duplicate `run_id`, is rejected before this step
-   and leaves no record.
+   [Auditing](/sdk/agents-auditing/#reading-run-records)). An effect
+   missing or mistyping `agent_id`, `scope`, `run_id`, a subject id, or
+   `scope_id`, naming an agent outside its own plugin, or carrying a
+   trigger payload over 64 KiB is refused the same way. A malformed or
+   duplicate `run_id` is recorded under a new id.
 2. **Derive the scope key** from the effect's `scope` and the subject,
    or from its `scope_id` for a `KEY` scope. See
    [Concurrency](#concurrency) below.
@@ -117,7 +118,9 @@ step is platform-driven:
 16. **Release the scope**, so the next run on it can start.
 
 If any of steps 10–12 raises, `on_run_error(exc)` fires, the exception
-is captured to Sentry, and the run returns `success=False`. Errors from
+is captured to Sentry with its frames' local variables removed, since
+they hold the conversation and tool results, and the run returns
+`success=False`. Errors from
 the inference gateway are classified rather than captured: an outage
 (`error_kind="LLM_UNAVAILABLE"`) is retried up to twice, 30 and then
 60 seconds later, and a refusal
@@ -132,7 +135,7 @@ its time ends shows as `abandoned`.
 
 An agent whose work takes longer, such as reconciling hundreds of
 outside records, can ask for more time per run with `run_seconds` in
-its manifest entry, up to 1,800 (30 minutes):
+its manifest entry, from 600 (the default) up to 1,800 (30 minutes):
 
 ```json
 {
@@ -143,8 +146,9 @@ its manifest entry, up to 1,800 (30 minutes):
 }
 ```
 
-`canvas validate` rejects a value above 1,800, and the platform holds
-every run to that ceiling whatever the manifest says. A run of an agent
+`canvas validate` rejects a value outside that range, and the platform
+holds every run to it whatever the manifest says: a shorter run would
+leave no model time past the 30-second margin. A run of an agent
 that asks for more than the default 10 minutes is an extended run: the
 plugin runner admits only a few at a time (one by default, and fewer
 than its agent runs in total whenever it serves more than one), so
@@ -222,28 +226,35 @@ The platform checks this in three places:
   is refused, and committing a command applies only once the requester
   [approves it](#approve-before-write).
 
-These checks don't cover everything the chart checks. Updating a task or
-commenting on one needs `api.change_task`, and drafting a review note
-needs `api.add_note`. Creating a task, drafting a message or any
-command, editing or deleting a draft, and adding a banner or protocol
-card need only access to the patient. The platform doesn't check a
-run's drafts and commits against the chart's `api.change_note`
-permission or the note's restrictions, and it doesn't check who a
-message, task, or note names as its sender, assignee, or author, so a
-run can create one attributed to another staff member. The
-[tools catalog](/sdk/agents-tools/) lists each tool's requirements.
+Each effect needs what the chart's own path for the action needs:
 
-A run a patient started holds no staff permissions, so tools that need
-one are hidden, and its effects may change only the patient's own
-records. Within their own chart the platform lets it do anything that
-needs no staff permission, including drafting a message or any
-command, editing or deleting a draft command a clinician staged,
-creating a task, adding or removing a banner, and adding a protocol
-card. Reads have no permission check: a read tool that declares no
-permission is offered to a patient's run, so it can read staff-only
-content such as staff tasks and unsigned notes. Grant a
-patient-facing agent only the tools its job needs, and none that
-drafts or changes commands, creates tasks, or changes banners. A run no user started, such as one from a webhook or an
+- Drafting a command, editing or deleting a draft, and committing one
+  need `api.change_note` and a note the requester can edit; a note a
+  plugin restricts from them is refused.
+- Updating a task or commenting on one needs `api.change_task`, and
+  drafting a review note needs `api.add_note`. Booking or rescheduling
+  an appointment needs `api.add_appointment`, and cancelling one needs
+  `api.change_appointment` and `api.add_notestatechangeevent`.
+- Creating a task, drafting a message, and adding or removing a banner
+  or protocol card need access to the patient. Claim changes need
+  `api.access_revenue`, and suggestions on an incoming document need
+  `api.access_dataintegration`.
+- A message, task, task comment, or note must name the requester as its
+  sender, author, or provider; one recorded as made by someone else is
+  refused.
+- An effect that asks to apply later (`delay_seconds`) is refused, so a
+  run's changes apply with the run or not at all.
+
+The [tools catalog](/sdk/agents-tools/) lists each tool's requirements.
+
+A run a patient started holds no staff permissions. It is offered only
+the tools registered with `for_patients=True`, and no standard tool is,
+so a patient-facing agent reads and writes through tools you write for
+it. Its effects may change only the patient's own records, and it may
+return only a drafted message from the patient, a log line, and a usage
+record; every other effect is clinician work and is refused.
+
+A run no user started, such as one from a webhook or an
 API-key route, runs as Canvas Bot and acts with your plugin's authority,
 as a handler's effects do, except that it cannot commit a command or add
 a lab report, which need a user's approval, or return an effect the
@@ -521,6 +532,8 @@ Every tool call gets a context the model never sees, which
 | `note_id` | `self.subject.note_id`, or for a run a staff member started, that staff member's open note on the patient |
 | `permissions` | `self.requester.permissions` |
 | `capabilities` | `self.capabilities` |
+| `patient_run` | Whether a patient started the run |
+| `plugin_name` | The plugin the agent belongs to, which the banner and protocol card tools check a key against |
 | `effects` | A new list the tools append to; returned as `result.effects` |
 | `gateway`, `parent_tools` | The run's gateway and the agent's granted tools, for tools that run sub-agents with `run_subagent` or make a model call of their own, as `read_document` does, and for `edit_staged_command` and `delete_staged_command`, which check the agent's grant |
 
@@ -687,6 +700,13 @@ before it on the same scope has yet to start, and that wait doesn't
 count against its retries. A run queued more than an hour ago holds
 no later run back, and neither does one that no worker has picked up
 within 10 minutes of being queued.
+
+A run whose plugin runner stops mid-call, as on a deploy, or isn't up
+yet or hasn't loaded the agent, is queued again and keeps its place on
+the scope: first after 30 seconds, then with waits doubling to 2
+minutes, for up to 10 minutes. Its effects were not applied, and the
+plugin runner saves state only while the call is open, so it starts
+over from `load_state`. Write an agent so a run can start over this way.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
