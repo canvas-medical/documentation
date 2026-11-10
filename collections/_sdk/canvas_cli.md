@@ -285,7 +285,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-6. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
