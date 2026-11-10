@@ -228,7 +228,14 @@ The `scope` attribute determines where your application is visible within Canvas
 
 Applications in the `global`, `patient_specific`, and `provider_menu_item` scopes are shown to every staff member, and `portal_menu_item` applications are shown to every patient in the patient portal. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
 
-When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records. The `user` ID is the patient whose chart the portal is open on, who with [family portal access](/sdk/patient-portal/#family-portal-access) can be someone other than the person signed in.
+When a patient opens a `portal_menu_item` application, the event context identifies the patient only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a login can open someone else's chart, so the event tells you two different people:
+
+- `user` in `self.event.context` is the patient whose chart the portal is open on. Use it to look up the records the application shows.
+- `self.event.actor` is the login that is signed in, and `self.event.actor.instance` is its [CanvasUser](/sdk/data-canvasuser/#user). For a family member acting on another patient's chart, that's the family member's own login, not the patient's. Use it to tell the patient from a family member, and look up a family member's access with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+
+When the patient opens their own chart, both point to the patient.
 
 <!-- source: discussion #1204 -->
 ### Linking to a portal application
