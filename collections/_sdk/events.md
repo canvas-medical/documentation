@@ -6112,6 +6112,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6150,6 +6151,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6184,6 +6186,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6213,6 +6216,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6242,6 +6246,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6292,6 +6297,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6321,6 +6327,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6350,6 +6357,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6379,6 +6387,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6408,6 +6417,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6437,6 +6447,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6466,6 +6477,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6495,6 +6507,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6524,6 +6537,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6553,6 +6567,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
@@ -6582,6 +6597,7 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "show_in_problem_list": bool
+  "category_domain": str
   "background": str
   "status": str
   "narrative": str
