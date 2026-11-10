@@ -113,7 +113,7 @@ Where Canvas sends each family member's notice depends on whether they have thei
 - With their own chart, they get an email and a text message at the first-ranked eligible email address and phone number on that chart, eligible as described above.
 - Without their own chart, they get an email only, at the email address of the contact their login was set up for. A contact's phone number has no consent on record for automated texts, so Canvas doesn't text it.
 
-Canvas skips any address that is also one of the patient's own, since the patient's notification already reaches it.
+Canvas skips any address the patient's own notification goes to, such as a parent's phone number listed on a child's chart.
 
 `create()` on its own never notifies the patient.
 
