@@ -46,6 +46,8 @@ The results table shows columns for `@timestamp`, `level`, `source`, `plugin`, a
 
 Run `canvas logs --help` to see all options.
 
+Signed in to Canvas Platform, `canvas logs` reads an instance Canvas Platform manages without `credentials.ini`. See [`canvas logs`](/sdk/canvas_cli/#canvas-logs) for how the CLI picks its credential for each instance.
+
 
 ### Common Filters & Examples
 
@@ -77,6 +79,8 @@ $ canvas logs --handler my_plugin.handlers.foo.MyHandler
 # Multiple handlers:
 $ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
 ```
+
+`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each plugin-runner line is tagged with, so it leaves out the runner's untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
 
 ##### Time windows: since / start / end
 
