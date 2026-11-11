@@ -1,0 +1,32 @@
+---
+slug: canvas-cli-platform-2026-11-11
+title: "Canvas CLI updates ahead of the Canvas Platform upgrade"
+date: 2026-11-11 12:00:00
+layout: productupdates
+tags: sdk
+feed_summary: |
+  • Canvas CLI 1.0: list, enable, disable, config, uninstall, logs, and namespace commands work through Canvas Platform once you sign in.
+  • canvas deploy runs canvas validate first, and canvas deploy --branch deploys a branch to your test instances.
+  • Keep using credentials.ini until Canvas says your plugins are upgraded, then run canvas login before December 14, 2026.
+---
+
+The Canvas CLI has new releases to get you ready for the [Canvas Platform upgrade](/guides/upgrading-to-canvas-platform/). Upgrade to the latest Canvas CLI with `pip install --upgrade canvas`, or `uv tool upgrade canvas` if you installed it with `uv`.
+
+{% include alert.html type="info" content="<strong>Keep using <code>credentials.ini</code> until Canvas tells you your plugins are upgraded.</strong> Once you hear from us, sign in with <code>canvas login</code> before December 14, 2026. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
+
+<span class="tag-sdk">sdk</span>
+
+### What's new
+
+- **More commands through Canvas Platform.** Once you sign in with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform), these commands go through Canvas Platform for the plugins and instances it manages, with no `credentials.ini` client needed:
+  - [`canvas enable`](/sdk/canvas_cli/#canvas-enable), [`disable`](/sdk/canvas_cli/#canvas-disable), [`config list`](/sdk/canvas_cli/#canvas-config-list), [`config set`](/sdk/canvas_cli/#canvas-config-set), [`config unset`](/sdk/canvas_cli/#canvas-config-unset), and [`uninstall`](/sdk/canvas_cli/#canvas-uninstall) _(requires Canvas CLI 1.0.0 or newer)_
+  - [`canvas list`](/sdk/canvas_cli/#canvas-list) and the [`namespace`](/sdk/custom-data-namespace-lifecycle/) commands _(requires Canvas CLI 1.0.0 or newer)_
+  - [`canvas logs`](/sdk/canvas_cli/#canvas-logs) _(requires Canvas CLI 0.268.0 or newer)_
+- **Validation before every deploy.** [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) runs [`canvas validate`](/sdk/canvas_cli/#canvas-validate) before it pushes, so a plugin that wouldn't load is caught on your machine. _(requires Canvas CLI 0.268.0 or newer)_
+- **Branch deployments.** `canvas deploy --branch <name>` pushes a branch other than `main` and deploys it to your organization's test instances, so you can try work that hasn't merged. _(requires Canvas CLI 0.268.0 or newer)_
+
+### Signing in and `credentials.ini`
+
+- **Signed in,** the CLI works with the plugins and instances Canvas Platform manages for you. A plugin or instance it doesn't manage is refused with a message naming `canvas logout`. Sign out to reach it with `credentials.ini`. See [Which plugins go through Canvas Platform](/sdk/canvas_cli/#which-plugins-go-through-canvas-platform) and [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform).
+- **Signed out,** `credentials.ini` keeps working until December 14, 2026. Each command that uses it on a Canvas instance prints a deprecation notice with a link to the upgrade guide.
+- **`localhost` always uses `credentials.ini`,** signed in or not, so local plugin testing keeps working.
