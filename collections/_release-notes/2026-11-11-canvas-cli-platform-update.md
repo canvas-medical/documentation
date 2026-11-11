@@ -12,8 +12,6 @@ feed_summary: |
 
 The Canvas CLI has new releases to get you ready for the [Canvas Platform upgrade](/guides/upgrading-to-canvas-platform/). Upgrade to the latest Canvas CLI with `pip install --upgrade canvas`, or `uv tool upgrade canvas` if you installed it with `uv`.
 
-{% include alert.html type="info" content="<strong>Keep using <code>credentials.ini</code> until Canvas tells you your plugins are upgraded.</strong> Signing in sooner sends these commands through Canvas Platform, which refuses plugins and instances it doesn't manage yet. Once you hear from us, sign in with <code>canvas login</code> before December 14, 2026. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
-
 <span class="tag-sdk">sdk</span>
 
 ### What's new
@@ -24,3 +22,5 @@ The Canvas CLI has new releases to get you ready for the [Canvas Platform upgrad
   - [`canvas logs`](/sdk/canvas_cli/#canvas-logs) _(requires Canvas CLI 0.268.0 or newer)_
 - **Validation before every deploy.** [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) runs [`canvas validate`](/sdk/canvas_cli/#canvas-validate) before it pushes, so a plugin that wouldn't load is caught on your machine. _(requires Canvas CLI 0.268.0 or newer)_
 - **Branch deployments.** `canvas deploy --branch <name>` pushes a branch other than `main` and deploys it to your organization's test instances, so you can try work that hasn't merged. _(requires Canvas CLI 0.268.0 or newer)_
+
+{% include alert.html type="info" content="<strong>Keep using <code>credentials.ini</code> until Canvas tells you your plugins are upgraded.</strong> Signing in sooner sends these commands through Canvas Platform, which refuses plugins and instances it doesn't manage yet. Once you hear from us, sign in with <code>canvas login</code> before December 14, 2026. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
