@@ -81,7 +81,7 @@ committed_assessments = Assessment.objects.committed()
 
 ### Commands linked to an assessment
 
-Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to an assessment made in the same note. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
+Plan- and Procedures-section commands, the order, medication, and educational material commands, and the Structured Assessment command can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
 
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked. [Carrying a command forward](/sdk/commands/#command-actions) into a new note copies its data but not its link, so the new command starts with no `assessment`.
 
@@ -99,6 +99,7 @@ On an instance in the [revamped note beta program](/product-updates/note-revamp/
 | linked_dme_orders            | [DmeOrder](/sdk/data-dme/#dmeorder)[]                                         |
 | linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  |
 | linked_imaging_orders        | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]                             |
+| linked_interviews            | [Interview](/sdk/data-questionnaire/#interview)[]                             |
 | linked_lab_orders            | [LabOrder](/sdk/data-labs/#laborder)[]                                        |
 | linked_prescriptions         | [Prescription](/sdk/data-prescription/#prescription)[]                        |
 | linked_referrals             | [Referral](/sdk/data-referral/#referral)[]                                    |
@@ -109,6 +110,8 @@ On an instance in the [revamped note beta program](/product-updates/note-revamp/
 | updategoals                  | [UpdateGoal](/sdk/data-goal/#updategoal)[]                                    |
 
 Use `linked_referrals` for referrals linked this way. The `referrals` accessor above reads a referral's separate `assessments` list instead.
+
+`linked_interviews` returns the Structured Assessments linked to this assessment. The `interview` field above is a different relation: it holds the Structured Assessment that produced this assessment when it was committed.
 
 A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 
