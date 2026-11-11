@@ -447,7 +447,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 `canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
-- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
+- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs, Custom Data mistakes, and request-handling mistakes)
 - Sandbox-load validation (imports every handler in the sandbox)
 
 If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
@@ -576,12 +576,12 @@ $ canvas validate [OPTIONS] PLUGIN_NAME
 This command runs full pre-flight validation combining:
 
 1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
-2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes before any code runs.
+2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs, Custom Data mistakes, and request-handling mistakes before any code runs.
 3. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
 
 #### Static lint
 
-Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
+Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, silently misbehave, or make the plugin less reliable once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
 
 ```console
 $ canvas validate my_plugin
@@ -614,6 +614,13 @@ These issues will fail on the instance (sandbox / Custom Data):
 | --- | --- |
 | `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…` |
 | `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly |
+
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+
+| Rule code | Flags |
+| --- | --- |
+| `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
+| `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
 
 #### Sandbox-load validation
 
