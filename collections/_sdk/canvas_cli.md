@@ -30,7 +30,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
 
 `canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
-A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 63 characters. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
+A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 256 characters. A plugin that already runs on your instances under a name outside that rule, such as one with hyphens or uppercase letters, keeps its name: `canvas deploy` deploys it as long as one of your organizations publishes a plugin of exactly that name on Canvas Platform. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
 
 The organization that publishes a plugin is its manifest [`publisher`](/sdk/canvas_manifest/#top-level-fields), the organization slug that `canvas login` lists in parentheses (`acme` above). [`canvas deploy`](#canvas-deploy) chooses the publisher when the manifest has none.
 
@@ -293,7 +293,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 **What `deploy` does**
 
-1. Checks the manifest `name` is a valid plugin name and the package folder has the same name.
+1. Checks the manifest `name` is a valid plugin name, or a name one of your organizations publishes on Canvas Platform, and that the package folder has the same name.
 2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
