@@ -44,4 +44,4 @@ When an instance you name isn't a test instance, nothing is deployed, and `deplo
 acme__paperwork_eviscerator at 3f2a9c1e7b04 isn't on main, so it deploys only to your organization's test instances (acme-dev, acme-studio), and acme-prod isn't one. It can be deployed to acme-prod once it is on main.
 ```
 
-When the instance could be a test instance, the message adds who can add it and where. Merge the change to `main` to deploy it to any other instance.
+When the instance could be a test instance, the message adds who can add it and where. When your organization has no test instances, the message says so and names who can make one. Merge the change to `main` to deploy it to any other instance.
