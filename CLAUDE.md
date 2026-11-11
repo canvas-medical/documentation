@@ -149,7 +149,7 @@ Models follow Django ORM conventions:
 Python code blocks in markdown are validated by `test-code-blocks.py`:
 - Extracts fenced Python blocks from all `collections/**/*.md` files
 - Validates imports and variable references via AST parsing
-- Runs on every PR via GitHub Actions (Python 3.11, 3.12, 3.13)
+- Runs on every PR via GitHub Actions (Python 3.11, 3.12, 3.13, 3.14), and all four are required checks on `main`
 - Unfenced or unlabeled code blocks are flagged as errors
 - Mark blocks as `python?partial=true` if they intentionally omit imports
 
