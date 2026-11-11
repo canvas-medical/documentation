@@ -14,6 +14,8 @@ Your organization's Studio instance is always a test instance. A Deploy manager 
 
 You need the **Deploy manager** or **Organization admin** role in the instance's organization. For a practice under an MSO, that is the practice's own organization.
 
+Production instances and instances that hold patient data aren't eligible. The switch's tooltip explains why one can't be changed.
+
 1. In [Canvas Platform](https://platform.canvasmedical.com), open **Canvas Instances** and click the instance.
 2. Click the **Plugin management** tab.
 3. Under **Testing**, turn on **Designate as test instance**, then click **Make test instance** to confirm.
@@ -25,19 +27,6 @@ A flask marks each test instance beside its name and in the **All instances** ta
 ![The All instances table, with a flask beside testing-instance and testing-instance-1](/assets/images/guides/designating-test-instances/all-instances.png){:width="100%"}
 
 To remove one, turn the switch off and click **Remove**. Commits that aren't on `main` can no longer be deployed there, and the plugins already installed on the instance stay as they are. Every addition and removal is recorded in your organization's audit log.
-
-## Which instances can be test instances
-
-| Instance | Test instance? |
-| --- | --- |
-| Staged Production, or marked production by Canvas | Never |
-| Marked by Canvas as holding patient data | Never |
-| Your organization's Studio instance | Always, and can't be removed |
-| Any other instance in your organization | When a Deploy manager or Organization admin turns it on |
-
-When the switch can't be changed, it is disabled and its tooltip says why.
-
-A test instance that is later staged Production or marked as holding patient data stops being a test instance at that moment. Clearing the mark afterward doesn't restore it, so turn the switch on again. If an instance holds no patient data but is marked as holding it, ask your Canvas team to clear the mark.
 
 ## Deploy a branch to a test instance
 
