@@ -310,6 +310,23 @@ Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
 To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
 ```
 
+**Choosing the publisher**
+
+`canvas deploy` publishes the plugin as:
+
+1. The manifest `publisher`, when it's set.
+2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`.
+3. Otherwise, the only organization you can publish in.
+4. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
+
+Without a terminal, such as in CI, a deploy stops until the manifest names a publisher when you can publish in several organizations and the name carries none of their prefixes. Add the publisher's slug to `CANVAS_MANIFEST.json` and commit it:
+
+```json
+"publisher": "acme"
+```
+
+A service account belongs to one organization, so a pipeline that signs in with one publishes as that organization.
+
 **Deploying a branch to a test instance**
 
 To deploy plugin code not yet merged to `main` on a test instance, use `--branch`:
