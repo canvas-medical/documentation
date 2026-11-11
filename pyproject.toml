@@ -1,7 +1,7 @@
 [project]
 name = "documentation"
 version = "0.1.0"
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.11,<3.16"
 dependencies = [
   "ai-scribe",
   "canvas>=0.128.0",
@@ -11,6 +11,9 @@ dependencies = [
 ]
 
 [tool.uv]
+# Resolve against the index as it stood 7 days ago, so a release published minutes ago
+# cannot change the lock; canvas comes from git and is not affected.
+exclude-newer = "7 days"
 override-dependencies = ["canvas>=0.128.0", "typing-extensions>=4.14.1"]
 
 [tool.uv.sources]
