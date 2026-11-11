@@ -5,12 +5,12 @@ date: 2026-11-11 12:00:00
 layout: productupdates
 tags: sdk
 feed_summary: |
-  • Canvas CLI 1.0: list, enable, disable, config, uninstall, logs, and namespace commands work through Canvas Platform once you sign in.
+  • Canvas CLI 1.0.0: list, enable, disable, config, uninstall, logs, and namespace commands work through Canvas Platform once you sign in.
   • canvas deploy runs canvas validate first, and canvas deploy --branch deploys a branch to your test instances.
   • Keep using credentials.ini until Canvas says your plugins are upgraded, then run canvas login before December 14, 2026.
 ---
 
-Canvas CLI 1.0 is here to get you ready for the [Canvas Platform upgrade](/guides/upgrading-to-canvas-platform/). Upgrade to Canvas CLI 1.0.0 or newer to get everything below, with `pip install --upgrade canvas`, or `uv tool upgrade canvas` if you installed it with `uv`.
+Canvas CLI 1.0.0 is here to get you ready for the [Canvas Platform upgrade](/guides/upgrading-to-canvas-platform/). Upgrade to Canvas CLI 1.0.0 or newer to get everything below, with `pip install --upgrade canvas`, or `uv tool upgrade canvas` if you installed it with `uv`.
 
 <span class="tag-sdk">sdk</span>
 
