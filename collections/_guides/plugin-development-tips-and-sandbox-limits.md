@@ -106,7 +106,7 @@ If the setting doesn't exist on the instance yet, create it under the organizati
 
 ### Allow list changes can take up to an hour to apply everywhere
 
-Each Canvas server process caches organization settings in memory for up to an hour. Saving a setting clears the cache only in the process that handled the save, so other processes, including the ones that apply effects from scheduled tasks and other handlers, can keep reading the previous allow list for up to an hour. During that window a send to a newly added address can still be skipped, while a send handled by a process with a fresh cache goes out. Add test addresses and numbers well before you test with them, or wait an hour after editing the list.
+Each Canvas server process caches organization settings in memory for up to an hour. Saving a setting clears the cache only in the process that handled the save, so other processes, such as the one that applies a plugin's effects, can keep reading the previous allow list for up to an hour. During that window a send to a newly added address can still be skipped, while a send handled by a process with a fresh cache goes out. Add test addresses and numbers well before you test with them, or wait an hour after editing the list.
 
 ### Telling a skipped send from a delivered one
 
