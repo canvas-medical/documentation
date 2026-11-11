@@ -18,7 +18,7 @@ sections:
             description: The identifier of the RelatedPerson.
             type: string
           - name: active
-            description: Whether this related person's record is in active use.
+            description: Whether this related person's record is in active use. `false` for a contact that staff removed from the patient's chart after it had [family portal access](/sdk/patient-portal/#family-portal-access). Canvas keeps that contact for the records its family member wrote, so a read by `id` or a search by `_id` still returns it, and references to it, such as a Provenance `agent.who`, resolve. A search by `patient` leaves it out.
             type: boolean
           - name: patient
             description: The patient this person is related to.

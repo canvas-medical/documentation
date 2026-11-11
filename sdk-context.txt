@@ -1886,6 +1886,11 @@ Each setting's value is a JSON list. An entry has to match the destination exact
     ["5555550100"]
     ```
 If the setting doesn't exist on the instance yet, create it under the organization's settings with that exact name. After you save it, resend the invite or message. Messages that a plugin delivers through its own provider, such as a link from [`get_login_url`](/sdk/utils/#getting-a-patient-portal-login-link) sent over your own SMS or email account, don't go through these allow lists.
+###  Allow list changes can take up to an hour to apply everywhere 
+Each Canvas server process caches organization settings in memory for up to an hour. Saving a setting clears the cache only in the process that handled the save, so other processes, such as the one that applies a plugin's effects, can keep reading the previous allow list for up to an hour. During that window a send to a newly added address can still be skipped, while a send handled by a process with a fresh cache goes out. Add test addresses and numbers well before you test with them, or wait an hour after editing the list.
+###  Telling a skipped send from a delivered one 
+When the email address or phone number isn't on the allow list, the send is counted as successful. For a patient message, the [`MessageTransmission`](/sdk/data-message/) is still stamped `delivered` and `failed` stays empty, so the transmission alone doesn't show whether the email or text left Canvas. `delivered_by` is only set when a staff member relays a message manually, so it's empty for every automated email or text.
+To check a skipped send, compare the transmission's `contact_point_value` with the allow list entries (the match is exact and case-sensitive), and compare the transmission's `created` time with when the allow list was last saved. A transmission created within an hour of an allow list change may have been checked against the earlier list.
 ##  Sandbox restrictions on dict reads and writes 
 The sandbox routes item access and assignment through internal `_safe_getitem` and `_safe_write` checks. Ordinary lookup errors pass straight through them, so a traceback for a missing key or an empty list names the guard even though the cause is your data:
     ```text
@@ -34463,7 +34468,7 @@ Target object | Context object
         "id": pt_id  
 PATIENT_CONTACT_PERSON_UPDATED  
 ---  
-Occurs when one of a patient's contacts is updated.  
+Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.  
 Target object | Context object  
     "id": contact_person_id
     "type": None
@@ -35780,6 +35785,9 @@ Target object | Context object
        "id": pt_id  
 #####  Prescription status events 
 The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
+These events don't form one sequence that every prescription passes through. Which ones fire depends on how the prescription is sent:
+  - Non-controlled prescriptions move from open to pending to ultimately accepted, or to error, firing `PRESCRIPTION_OPENED`, `PRESCRIPTION_PENDING`, and then `PRESCRIPTION_ACCEPTED` or `PRESCRIPTION_ERRORED`.
+  - `PRESCRIPTION_RECEIVED`, `PRESCRIPTION_SIGNED`, `PRESCRIPTION_INQUEUE`, `PRESCRIPTION_TRANSMITTED`, and `PRESCRIPTION_DELIVERED` fire only for controlled-substance prescriptions, which Canvas sends through DrFirst for electronic prescribing of controlled substances (EPCS). Each time Canvas updates one of these prescriptions from DrFirst, it records only the most recent status DrFirst reports, so a prescription can skip some of these events. Don't rely on them arriving in a fixed order.
 PRESCRIPTION_OPENED  
 ---  
 Occurs when a prescription's status is set to open. This is the default status when a prescription is first created.  
@@ -35845,7 +35853,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_RECEIVED  
 ---  
-Occurs when a prescription has been received by the e-prescribing network.  
+Occurs when DrFirst has received a controlled-substance prescription.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35854,7 +35862,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_SIGNED  
 ---  
-Occurs when a prescription has been signed.  
+Occurs when DrFirst reports a controlled-substance prescription was signed.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35863,7 +35871,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_INQUEUE  
 ---  
-Occurs when a prescription is in queue for transmission.  
+Occurs when DrFirst reports a controlled-substance prescription is in queue for transmission.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35872,7 +35880,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_TRANSMITTED  
 ---  
-Occurs when a prescription has been transmitted to the pharmacy.  
+Occurs when DrFirst reports a controlled-substance prescription was transmitted to the pharmacy.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35881,7 +35889,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_DELIVERED  
 ---  
-Occurs when a prescription has been delivered to the pharmacy.  
+Occurs when DrFirst reports a controlled-substance prescription was delivered to the pharmacy. Non-controlled prescriptions reach ultimately accepted instead, which fires `PRESCRIPTION_ACCEPTED`.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
