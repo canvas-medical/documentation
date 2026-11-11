@@ -114,7 +114,7 @@ The `components` object groups everything Canvas loads from your plugin. Each ke
 | [`applications`](#applications) | Applications that appear in the Canvas UI. |
 | [`commands`](#commands) | Custom commands the plugin adds to notes. |
 | [`questionnaires`](#questionnaires) | Questionnaire templates Canvas creates on install. |
-| [`agents`](#agents) | LLM-driven agents the plugin runs with the [Agent Runner Framework](/sdk/agents/). |
+| [`agents`](#agents) | LLM-driven agents the plugin runs with the [Agent Development Kit](/sdk/agents/). |
 
 ### Handlers
 

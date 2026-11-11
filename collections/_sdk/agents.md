@@ -1,9 +1,9 @@
 ---
-title: "Agent Runner Framework"
+title: "Agent Development Kit"
 disable_anchorlist: true
 ---
 
-The Agent Runner Framework lets you deploy LLM-driven agents as Canvas
+The Agent Development Kit lets you deploy LLM-driven agents as Canvas
 plugins. An agent has read access to a patient's chart, can call tools you
 define (and tools the SDK ships), and emits Canvas [Effects](/sdk/effects/)
 that the platform dispatches — drafting commands on a note, creating

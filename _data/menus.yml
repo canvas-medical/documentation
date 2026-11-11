@@ -736,7 +736,7 @@ sdk:
 sdk_overview:
   - title: "Introduction"
     url: /sdk/
-  - title: "Agent Runner Framework"
+  - title: "Agent Development Kit"
     url: /sdk/agents/
     identifier: sdk_agents
   - title: "Caching Module"

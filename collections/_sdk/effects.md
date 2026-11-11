@@ -539,7 +539,7 @@ Check out the [HTTP Request](/sdk/effect-http-request/) documentation.
 
 ### Agents
 
-Check out the [Agent Runner Framework](/sdk/agents/) documentation.
+Check out the [Agent Development Kit](/sdk/agents/) documentation.
 
 | Effect | Description |
 |---|---|
