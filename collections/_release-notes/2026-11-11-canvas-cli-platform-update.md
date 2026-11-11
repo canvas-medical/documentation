@@ -16,7 +16,7 @@ Canvas CLI 1.0.0 is here to get you ready for the [Canvas Platform upgrade](/gui
 
 ### What's new
 
-- **More commands through Canvas Platform.** Once you sign in with `canvas login`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall`, `list`, `logs`, and the `namespace` commands go through Canvas Platform for the plugins and instances it manages, with no `credentials.ini` client needed. See [which commands go through Canvas Platform](/sdk/canvas_cli/#which-plugins-go-through-canvas-platform).
+- **More commands through Canvas Platform.** Once you sign in with `canvas login`, these commands go through Canvas Platform for the plugins and instances it manages, with no `credentials.ini` client needed: `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall`, `list`, `logs`, and the `namespace` commands. See [which commands go through Canvas Platform](/sdk/canvas_cli/#which-plugins-go-through-canvas-platform).
 
 - **Validation before every deploy.** `canvas deploy` runs `canvas validate` before it pushes, so a plugin that wouldn't load is caught on your machine. See [canvas deploy](/sdk/canvas_cli/#canvas-deploy).
 
