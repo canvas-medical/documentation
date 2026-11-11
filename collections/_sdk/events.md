@@ -4502,6 +4502,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4529,6 +4531,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4556,6 +4560,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4604,6 +4610,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4631,6 +4639,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4658,6 +4668,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4685,6 +4697,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4712,6 +4726,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4739,6 +4755,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4766,6 +4784,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4793,6 +4813,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4820,6 +4842,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4847,6 +4871,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -4874,6 +4900,8 @@ class FollowUpDateInPlan(BaseHandler):
     "input": str
     "date": str
   "comments": str
+  "category_type": str
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
