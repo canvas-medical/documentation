@@ -34463,7 +34463,7 @@ Target object | Context object
         "id": pt_id  
 PATIENT_CONTACT_PERSON_UPDATED  
 ---  
-Occurs when one of a patient's contacts is updated.  
+Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.  
 Target object | Context object  
     "id": contact_person_id
     "type": None
