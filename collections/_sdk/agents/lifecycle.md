@@ -361,7 +361,11 @@ hour:
   returns a `DecideAgentProposal` effect from a SimpleAPI route, an
   application, or an action button when the requester approves or
   denies it. A decision from an event handler or another plugin is
-  refused.
+  refused. The platform accepts a decision from any request your plugin
+  handles in the requester's session, so it cannot tell your code from
+  their click. Return `DecideAgentProposal` only from the route their
+  approve or deny control calls, never from the route that starts the
+  run or from any code that decides for them.
 - **What applies:** an approval applies exactly the stored changes, in
   order and all or none, recorded in the audit trail as the requester's
   action correlated with the run. Each change is checked against the

@@ -194,14 +194,12 @@ broken audit path can't crash the underlying run.
 Default retention for Custom Data tables is "as long as the plugin
 is installed." For audit tables, that default is wrong — clinical
 data accumulates indefinitely, your storage bill follows, and
-de-identification / right-to-be-forgotten obligations become
-expensive to honor on data you didn't need to keep.
+de-identification and deletion requests become expensive to honor
+on data you didn't need to keep.
 
 > **Coming soon**: per-table retention policy declared in
 > `CANVAS_MANIFEST.json`. The platform will run a daily prune job that
-> drops rows older than the declared cutoff. The platform sets a maximum cap by data class
-> (e.g., 2 years for clinical-data-bearing tables, 90 days for purely
-> operational); you choose any duration up to that.
+> drops rows older than the declared cutoff.
 
 Until then, plan your own retention. Two pragmatic approaches:
 
