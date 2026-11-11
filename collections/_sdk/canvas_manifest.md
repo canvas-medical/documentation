@@ -42,6 +42,7 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
   "sdk_version": "0.1.4",
   "plugin_version": "0.0.1",
   "name": "acme__my_plugin",
+  "publisher": "acme",
   "description": "A description of what this plugin does",
   "components": {
     "handlers": [],
@@ -64,7 +65,8 @@ Canvas runs only the handlers and applications the manifest lists. A handler cla
 |-------|------|----------|-------------|
 | `sdk_version` | string | Yes | The Canvas SDK version the plugin was built against. |
 | `plugin_version` | string | Yes | The plugin's version. Must not be empty. Increase it on every deploy. See [Versioning your plugin](#versioning-your-plugin). |
-| `name` | string | Yes | The plugin's name, which is also its package folder name. For a plugin deployed through Canvas Platform it is publisher-prefixed, `<org prefix>__<package>` (for example `acme__intake`): lowercase letters, digits and underscores, starting with a letter on both sides of the double underscore. `canvas login` lists your organizations' prefixes. |
+| `name` | string | Yes | The plugin's name, which is also its package folder name: lowercase letters, digits and underscores, starting with a letter, at most 63 characters. We recommend your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`); `canvas login` lists your organizations' prefixes. |
+| `publisher` | string | No | Slug of the Canvas Platform organization that publishes the plugin, such as `acme`. `canvas login` lists each organization's slug in parentheses. `canvas init` sets it, and `canvas deploy` writes it when you pick a publisher at a terminal. To leave the publisher unset, leave the field out: `canvas deploy` refuses `"publisher": null`, like any other value that isn't a string. See Choosing the publisher under [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy). |
 | `description` | string | Yes | What the plugin does, in one sentence. The Canvas Platform catalog shows it under the plugin's title and on its card. |
 | `components` | object | Yes | The handlers, applications, commands, and questionnaires the plugin provides. Must contain at least one component type. See [Components](#components). |
 | `tags` | object | Yes | Categorization tags. Can be empty (`{}`). See [Tags](#tags). |
@@ -340,7 +342,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
     },
     "pricing": [
       {"unit": "visit", "price_per_unit": "1.50"},
-      {"unit": "token"}
+      {"unit": "token", "markup_bps": 1500}
     ],
     "vendors": [
       {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
@@ -363,7 +365,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
 | `video` | object | No | A YouTube video that the plugin's page plays first in its screenshot row. It has a `url` (a YouTube watch, `youtu.be` or embed link over `https`, naming the video's 11-character id), a `poster` image shown until the video plays (with the same rules as a screenshot `path`), and an optional `caption` of at most 40 characters. The video must allow embedding, which is YouTube's default for an unlisted upload. |
-| `pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge. |
+| `pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. It can take an optional `markup_bps` instead: how far above the gateway's list price the plugin's tokens bill, as a whole number of basis points from `0` to `10000`, so `1500` is 15%. For a plugin Canvas publishes that declares the sensitive variable `INFERENCE_GATEWAY_KEY`, Canvas Platform issues the installing organization an inference gateway key in that variable and bills its tokens at this markup. No other unit takes a `markup_bps`. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge. |
 | `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas. |
 | `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase. |
 | `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works. |
