@@ -319,7 +319,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_CONTACT_PERSON_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is updated.</td></tr>
+    <tr><td colspan="2">Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.</td></tr>
   </thead>
   <tbody>
   <tr>
