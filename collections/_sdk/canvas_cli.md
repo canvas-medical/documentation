@@ -573,7 +573,7 @@ $ canvas disable acme__my_plugin --instance acme-staging
 
 List all plugins on a Canvas instance, with each plugin's version and whether it's enabled.
 
-For an instance Canvas Platform manages (see [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform)), the list is Canvas Platform's most recent inventory of the instance, and the CLI prints the time Canvas Platform collected it to standard error. The inventory can be hours older than the instance's current state. Until Canvas Platform has collected an inventory of the instance, `canvas list` reports that it has none and exits with status 1. To read the list from the instance itself, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN`, and use `credentials.ini`.
+For an instance Canvas Platform manages (see [Which instances go through Canvas Platform](#which-instances-go-through-canvas-platform)), the list is Canvas Platform's most recent inventory of the instance, and the CLI prints the time Canvas Platform collected it to standard error. The inventory can be hours older than the instance's current state. Until Canvas Platform has collected an inventory of the instance, `canvas list` reports that it has none and exits with status 1. To read the list from the instance itself, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN`, and use `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
@@ -871,7 +871,7 @@ $ canvas config set acme__my_plugin $'REDIRECT_ALLOWLIST_INTERNAL=/panel\n/patie
 
 ### `canvas config unset`
 
-Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), each value is set to empty on the instance directly.
+Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, once you're signed out (see [Which plugins go through Canvas Platform](#which-plugins-go-through-canvas-platform)), each value is set to empty on the instance directly with `credentials.ini` (deprecated; see [Instance API credentials](#instance-api-credentials-credentialsini-deprecated)).
 
 **Usage**:
 
