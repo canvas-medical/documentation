@@ -319,7 +319,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_CONTACT_PERSON_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is updated.</td></tr>
+    <tr><td colspan="2">Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.</td></tr>
   </thead>
   <tbody>
   <tr>
@@ -2795,6 +2795,11 @@ To be notified when lab results (documents and individual records) are added to 
 
 The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
 
+These events don't form one sequence that every prescription passes through. Which ones fire depends on how the prescription is sent:
+
+- Non-controlled prescriptions move from open to pending to ultimately accepted, or to error, firing `PRESCRIPTION_OPENED`, `PRESCRIPTION_PENDING`, and then `PRESCRIPTION_ACCEPTED` or `PRESCRIPTION_ERRORED`.
+- `PRESCRIPTION_RECEIVED`, `PRESCRIPTION_SIGNED`, `PRESCRIPTION_INQUEUE`, `PRESCRIPTION_TRANSMITTED`, and `PRESCRIPTION_DELIVERED` fire only for controlled-substance prescriptions, which Canvas sends through DrFirst for electronic prescribing of controlled substances (EPCS). Each time Canvas updates one of these prescriptions from DrFirst, it records only the most recent status DrFirst reports, so a prescription can skip some of these events. Don't rely on them arriving in a fixed order.
+
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_OPENED</th></tr>
@@ -2931,7 +2936,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_RECEIVED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been received by the e-prescribing network.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst has received a controlled-substance prescription.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2950,7 +2955,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_SIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been signed.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was signed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2969,7 +2974,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_INQUEUE</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is in queue for transmission.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription is in queue for transmission.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2988,7 +2993,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_TRANSMITTED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been transmitted to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was transmitted to the pharmacy.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3007,7 +3012,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_DELIVERED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been delivered to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was delivered to the pharmacy. Non-controlled prescriptions reach ultimately accepted instead, which fires <code>PRESCRIPTION_ACCEPTED</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
