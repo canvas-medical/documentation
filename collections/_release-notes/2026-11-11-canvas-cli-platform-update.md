@@ -20,6 +20,6 @@ Canvas CLI 1.0.0 is here to get you ready for the [Canvas Platform upgrade](/gui
 
 - **Validation before every deploy.** `canvas deploy` runs `canvas validate` before it pushes, so a plugin that wouldn't load is caught on your machine. See [canvas deploy](/sdk/canvas_cli/#canvas-deploy).
 
-- **Branch deployments.** `canvas deploy --branch` deploys a branch other than `main` to your organization's test instances, so you can try work that hasn't merged.
+- **Branch deployments.** `canvas deploy --branch` deploys a branch other than `main` to your organization's [test instances](/guides/designating-test-instances/), so you can try work that hasn't merged.
 
 {% include alert.html type="info" content="<strong>Keep using <code>credentials.ini</code> until Canvas tells you your plugins are upgraded.</strong> Signing in sooner sends these commands through Canvas Platform, which refuses plugins and instances it doesn't manage yet. Once you hear from us, sign in with <code>canvas login</code> before December 14, 2026. See <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
