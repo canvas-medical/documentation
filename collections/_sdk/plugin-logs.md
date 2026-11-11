@@ -80,7 +80,7 @@ $ canvas logs --handler my_plugin.handlers.foo.MyHandler
 $ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
 ```
 
-`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each plugin-runner line is tagged with, so it leaves out the runner's untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
+`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each line is tagged with: the plugin runner's handler lines and the effect failures Canvas logs for that plugin. It leaves out untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
 
 ##### Time windows: since / start / end
 
