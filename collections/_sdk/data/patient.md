@@ -192,6 +192,7 @@ registered = patient.user.is_portal_registered
 | related_contacts                        | [PatientContactPerson](#patientcontactperson)[]                                                                         | Contacts on *other* patients that reference this one                                           |
 | user                                    | [CanvasUser](/sdk/data-canvasuser/)[]                                                                                   |                                                                                                |
 | patient_groups                          | [PatientGroup](/sdk/data-patient-group/)[]                                                                              |                                                                                                |
+| portal_grants                           | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[]                                                                              | Family portal access to this patient's chart                                                   |
 | chart_section_reviews                   | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[]                                              |                                                                                                |
 | visual_exam_findings                    | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[]                                                 |                                                                                                |
 | vital_sign_readings                     | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[]                                                    |                                                                                                |
@@ -472,6 +473,10 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 
 `id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
 
+The model lists the patient's current contacts. When staff remove a contact that had [family portal access](/sdk/patient-portal/#family-portal-access), Canvas keeps it for the records its family member wrote, but it no longer appears here or among the patient's `contacts`. Its [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant) keeps the contact's name and relationship.
+
+A contact's relationship to the patient is held in its `categories`: the ones whose coding system is `http://terminology.hl7.org/CodeSystem/v3-RoleCode`, such as `MTH` (mother) or `SPS` (spouse). Other categories, such as an emergency contact, describe the contact's role rather than the relationship. Family portal access shows the names of a contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". A contact with no relationship category shows no relationship there.
+
 | Field Name      | Type                                                                 |
 | --------------- | -------------------------------------------------------------------- |
 | id              | UUID                                                                 |
@@ -485,6 +490,7 @@ One of the patient's contacts — an emergency contact, next-of-kin, or other re
 | comments        | String                                                               |
 | related_patient | [Patient](#patient)                                                  |
 | categories      | [PatientContactCategory](#patientcontactcategory)[]                  |
+| portal_grants   | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] |
 
 ```python
 from canvas_sdk.v1.data import PatientContactPerson
@@ -494,10 +500,14 @@ contacts = PatientContactPerson.objects.filter(
     patient__id="d7af3e356368446c85b40a5d6ff7288e"
 ).select_related("related_patient").prefetch_related("categories__category")
 
+RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+
 for contact in contacts:
     who = contact.related_patient.first_name if contact.related_patient else contact.name
-    codings = ", ".join(link.category.code for link in contact.categories.all())
-    log.info(f"Contact: {who} ({codings})")  # Contact: Jane (EMC)
+    categories = [link.category for link in contact.categories.all()]
+    relationship = ", ".join(c.name for c in categories if c.system == RELATIONSHIP_SYSTEM)
+    others = ", ".join(c.code for c in categories if c.system != RELATIONSHIP_SYSTEM)
+    log.info(f"Contact: {who}, {relationship} ({others})")  # Contact: Jane, mother (EMC)
 ```
 
 ### PatientContactCategory

@@ -3097,7 +3097,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before. <code>patient</code> is the chart the message is filed on. For a message a family member sent through <a href='/sdk/patient-portal/#family-portal-access'>family portal access</a>, <code>sender</code> is the family member's own patient id, or null when they have no chart of their own.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3109,8 +3109,8 @@ Surescripts response events fire when the platform receives a response from Sure
 "type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"message": <a href='/sdk/data-message/#message'>Message</a>
   "id": message_id
-  "sender": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
-  "recipient": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
+  "sender": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
+  "recipient": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
   "read": datetime str | null
 "team": <a href='/sdk/data-team/'>Team</a> | null
   "id": team_id
@@ -3696,7 +3696,7 @@ These events follow a patient portal invite or password reset link through its l
 <table>
   <thead>
     <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
-    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
+    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A family member's or representative's invite or reset link goes to each email address and phone number Canvas has for them, and the event fires once for the link when at least one send is accepted. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
   </thead>
   <tbody>
     <tr>
