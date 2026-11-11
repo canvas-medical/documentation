@@ -18,7 +18,11 @@ You need the **Deploy manager** or **Organization admin** role in the instance's
 2. Click the **Plugin management** tab.
 3. Under **Testing**, turn on **Designate as test instance**, then click **Make test instance** to confirm.
 
+![The Plugin management tab of testing-instance, with Designate as test instance turned on](/assets/images/guides/designating-test-instances/plugin-management-tab.png)
+
 A flask marks each test instance beside its name and in the **All instances** table.
+
+![The All instances table, with a flask beside testing-instance and testing-instance-1](/assets/images/guides/designating-test-instances/all-instances.png)
 
 To remove one, turn the switch off and click **Remove**. Commits that aren't on `main` can no longer be deployed there, and the plugins already installed on the instance stay as they are. Every addition and removal is recorded in your organization's audit log.
 
