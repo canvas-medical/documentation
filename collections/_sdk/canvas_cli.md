@@ -322,6 +322,13 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in [Deploying from a larger repository](#deploying-from-a-larger-repository) still apply.
 
+**Plugins built in Canvas Studio**
+
+Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
+
+- **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
+- **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`. A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
+
 **Choosing the publisher**
 
 `canvas deploy` publishes the plugin as:
