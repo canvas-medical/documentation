@@ -228,14 +228,14 @@ instance.
 
 ## 7. Deploy and use your plugin
 
-When your plugin is just the way you'd like it, validate it and deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
+When your plugin is just the way you'd like it, deploy it. Navigate to the root of your plugin project (i.e. `paperwork-eviscerator/`) and run:
 
 ```sh
-$ canvas validate acme__paperwork_eviscerator
 $ canvas deploy acme__paperwork_eviscerator --instance buttered-popcorn-dev
 ```
 
-`canvas deploy` commits your changes after you confirm, pushes them to Canvas Platform, and
+`canvas deploy` runs the checks in [`canvas validate`](/sdk/canvas_cli/#canvas-validate) first,
+commits your changes after you confirm, pushes them to Canvas Platform, and
 deploys that commit to the instance, where the plugin is installed and enabled. Replace
 `buttered-popcorn-dev` with your instance; without `--instance`, `deploy` targets the only
 instance you can deploy to, or lists the choices. As you make changes to your plugin, run the
@@ -245,7 +245,7 @@ same command to deploy the new code.
 
 To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
 
-`canvas logs` connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until it moves to your Canvas Platform sign-in, before December 14, 2026.
+When you're signed in to Canvas Platform and it manages the instance, `canvas logs` reads the logs through Canvas Platform. When you're not signed in, or for `localhost`, it connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`.
 
 <br/>
 <br/>

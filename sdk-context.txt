@@ -3038,7 +3038,7 @@ No, not in any way. The upgrade happens on a different system from the one your 
 ###  Do we have to wait for the upgrade before we switch to `canvas deploy`? 
 Yes. Wait until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle.
 ###  Can we delete `credentials.ini` after we switch? 
-Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. Some commands, such as `canvas logs` and the `canvas namespace` commands, still connect to an instance with those credentials.
+Yes, once everyone who runs the CLI, including your CI, is on `canvas` 1.0.0 or later and signed in with `canvas login` or a service account token. Every command that reaches an instance, including `canvas logs`, `canvas list`, `canvas config` and the `canvas namespace` commands, then goes through Canvas Platform. `canvas install`, which `canvas deploy` replaces, is the only command that still requires `credentials.ini`.
 ----- END PAGE https://docs.canvasmedical.com/guides/upgrading-to-canvas-platform/
 
 
@@ -3987,7 +3987,7 @@ When your plugin is just the way you'd like it, validate it and deploy it. Navig
 `canvas deploy` commits your changes after you confirm, pushes them to Canvas Platform, and deploys that commit to the instance, where the plugin is installed and enabled. Replace `buttered-popcorn-dev` with your instance; without `--instance`, `deploy` targets the only instance you can deploy to, or lists the choices. As you make changes to your plugin, run the same command to deploy the new code.
 ##  8\. Tail the logs 
 To view logs and to surface any errors with your plugin, run `canvas logs --host buttered-popcorn-dev` (replace with your Canvas instance name). This will tail the logs for all plugins installed on that instance.
-`canvas logs` connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until it moves to your Canvas Platform sign-in, before December 14, 2026.
+When you're signed in to Canvas Platform and it manages the instance, `canvas logs` reads the logs through Canvas Platform. When you're not signed in, or for `localhost`, it connects to the instance with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`.
 ----- END PAGE https://docs.canvasmedical.com/guides/your-first-plugin/
 
 
@@ -4310,9 +4310,9 @@ The Canvas CLI supports service accounts for automated pipelines such as GitHub 
 **Rotate or revoke it.** The token does not refresh. Rotating it on the Credentials page ends the old token, and revoking the service account ends it for good; either way the CLI's next request says that Canvas Platform did not accept `CANVAS_PLATFORM_TOKEN`. `canvas logout` signs out only a browser session and leaves the token alone.
 ###  Instance API credentials (`credentials.ini`): deprecated 
 > **Warning:** **Deprecated:** authenticating the Canvas CLI with OAuth client credentials in `~/.canvas/credentials.ini`, and installing plugins with `canvas install`, are deprecated. Support ends on **December 14, 2026**. Sign in with `canvas login` and deploy with `canvas deploy` instead. [Upgrading to Canvas Platform](/guides/upgrading-to-canvas-platform/) walks through the switch. 
-With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install`, `enable`, `disable`, `list`, `config list`, `logs` and the `namespace` commands authenticate this way today, as do `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Keep `credentials.ini` until the commands you use sign in through Canvas Platform.
+With `credentials.ini`, the CLI authenticates to each instance with an OAuth client registered on that instance. `canvas install` always authenticates this way. `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall`, `list`, `logs` and the `namespace` commands use it when you're not signed in to Canvas Platform, and for `localhost`. Signed in, they refuse a plugin or instance Canvas Platform does not manage, so sign out with `canvas logout` to reach it with `credentials.ini`. Keep `credentials.ini` while you still work with plugins or instances that Canvas Platform does not manage.
 From midnight UTC on December 14, 2026, Canvas instances refuse the commands among these that change a plugin directly: `canvas install`, `enable`, `disable`, and `config set`, `config unset` and `uninstall` for a plugin Canvas Platform does not manage. Each one fails with an error that points to `canvas deploy`. `list`, `config list`, `logs` and the `namespace` commands keep working with `credentials.ini`.
-A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once; the CLI picks per command and per plugin, as described in Which plugins go through Canvas Platform.
+A machine can hold both a Canvas Platform sign-in and `credentials.ini` at once. The CLI picks per plugin for plugin commands, as described in Which plugins go through Canvas Platform, and per instance for instance commands, as described in Which instances go through Canvas Platform.
 The file has a section for each Canvas instance subdomain, with that instance's `client_id` and `client_secret`. For example, if your Canvas instance URL is `https://buttered-popcorn.canvasmedical.com/`, its section is `[buttered-popcorn]`. [Customer Authentication](/api/customer-authentication/#registering-a-third-party-application-on-canvas) explains how to register a client.
 **Example:**
     ```ini
@@ -4329,14 +4329,23 @@ The file has a section for each Canvas instance subdomain, with that instance's 
     ```
 You can define your default host with `is_default=true`. If no default is explicitly defined, the Canvas CLI will use the first instance in the file as the default for each of the CLI commands.
 ###  Deprecation notices 
-`canvas install` prints a deprecation warning on every run. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. Both go to standard error, so they do not interfere with piped or redirected output.
+`canvas install` prints a deprecation warning each time it installs onto a Canvas instance at canvasmedical.com. It prints none for a preview environment such as `https://pull-x.preview.canvasmedical.com`, for `localhost`, or for another host outside canvasmedical.com. `canvas list`, `logs`, `enable`, `disable`, `config list`, `config set`, `config unset`, `uninstall` and the `namespace` commands print the warning each time they connect to a Canvas instance with `credentials.ini`. `list`, `logs` and the `namespace` commands print no deprecation notice for `localhost` or another host that is not a Canvas instance, because `canvas login` can't serve those hosts. The plugin commands skip the notice for such a host too, whether you name it with `--host` or `--instance` or it's the default host in `credentials.ini`. Separately, at most once a day, any command, `canvas install` included, prints a notice that authentication and deployment are changing, with a link to the migration steps. All of these notices go to standard error, so they do not interfere with piped or redirected output.
 ###  Which plugins go through Canvas Platform 
-`canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
-  - A name without a prefix, or a machine that is not signed in, goes straight to the instance.
-  - Otherwise the CLI asks Canvas Platform for the plugin. If Canvas Platform has it, the command goes through Canvas Platform; if not, it goes to the instance.
+`canvas enable`, `canvas disable`, `canvas config list`, `canvas config set`, `canvas config unset` and `canvas uninstall` work for plugins Canvas Platform manages and for plugins installed straight onto an instance, and each decides per plugin:
+  - When the target is `localhost` or another host that is not a Canvas instance, the command goes straight to that host with its `credentials.ini` client, signed in or not, without asking Canvas Platform. The target is every host you name with `--host` or `--instance`, or, with neither option, the default host in `credentials.ini`. For example, with a `[localhost]` default, `canvas enable acme__intake` enables the plugin on `localhost`, even when Canvas Platform has it installed on `acme`.
+  - On a machine that is not signed in, the command goes straight to the instance with its `credentials.ini` client.
+  - Signed in with `canvas login` or a service account token, the CLI asks Canvas Platform for the plugin, whatever its name. If Canvas Platform manages it, the command goes through Canvas Platform, and each `--instance` must be one Canvas Platform manages in your list of instances. Any other plugin aimed at a Canvas instance, or named with no `--instance`, no `--host` and no default host in `credentials.ini`, is refused, and so is an `--instance` outside your list. The refusal comes with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+To work with a plugin Canvas Platform does not manage on a Canvas instance, sign out first. `credentials.ini` keeps working for those plugins until December 14, 2026.
 `--instance` names the target instances for either kind of plugin, and you can repeat it. For a plugin Canvas Platform does not manage, the CLI connects to each `--instance` directly with its `credentials.ini` client. `--host` names a single instance instead, and without either option the command uses the default host from `credentials.ini`; pass `--instance` or `--host`, not both. For a plugin Canvas Platform manages, the CLI refuses `--host`.
 Until December 14, 2026, an instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
+###  Which instances go through Canvas Platform 
+`canvas list`, `canvas logs` and the `canvas namespace` commands act on a whole instance, and each decides per instance:
+  - When you're signed in with `canvas login` or a service account token, and the instance is one Canvas Platform manages in your list of instances, the command goes through Canvas Platform.
+  - Signed in, any other Canvas instance is refused with the way to sign out: `canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
+  - When you're not signed in, or for `localhost` and other hosts that are not Canvas instances, the command connects to the instance with its `credentials.ini` client.
+To work with an instance Canvas Platform does not manage, sign out first. `credentials.ini` keeps working for those instances until December 14, 2026.
+When Canvas Platform refuses a command for a managed instance, the CLI prints Canvas Platform's reason and exits. It doesn't retry with `credentials.ini`. To run the command against the instance with `credentials.ini` instead, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN` when a service account token is in use.
 ##  Update Notifications 
 The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for newer versions. If an update is available, a notice is printed to standard error after the command output:
     ```shell
@@ -4367,13 +4376,13 @@ The Canvas CLI automatically checks [PyPI](https://pypi.org/project/canvas/) for
   - `deploy`: Publish a plugin to Canvas Platform and deploy it
   - `clone`: Clone a plugin's repository from Canvas Platform
   - `uninstall`: Uninstall a plugin
-  - `enable`: Enable a plugin from a Canvas instance
-  - `disable`: Disable a plugin from a Canvas instance
+  - `enable`: Enable a plugin
+  - `disable`: Disable a plugin
   - `list`: List all plugins from a Canvas instance
   - `validate`: Validate a plugin's manifest and that all handlers load in the sandbox
   - `validate-manifest`: Validate the Canvas Manifest json file
   - `logs`: Listen and print log streams from a Canvas instance
-  - `config list`: List plugin variables on a Canvas instance
+  - `config list`: List plugin variables
   - `config set`: Set plugin variables
   - `config unset`: Clear plugin variables
   - `install`: Install a plugin into a Canvas instance (deprecated; use `deploy`)
@@ -4426,10 +4435,11 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   - `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
 **Options** :
   - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
-  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing.
+  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's test instances. When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
   - `--no-push`: Deploy the pushed `main` as-is, without pushing.
-  - `--push-only`: Push HEAD to `main` without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-  - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, leaving that repository's remotes and config alone. See Deploying from a larger repository. Takes no `--ref` or `--no-push`.
+  - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
+  - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+  - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See Deploying from a larger repository. Takes no `--ref` or `--no-push`.
   - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
   - `--help`: Show this message and exit.
 **Example** :
@@ -4441,7 +4451,7 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
   2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
   3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-  4. Pushes HEAD to `main`, deploys that commit to each instance, and waits for each instance's outcome.
+  4. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
     ```console
@@ -4449,6 +4459,13 @@ With `--push-only`, `deploy` stops after the push and prints the command that in
     Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
     To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
     ```
+**Deploying a branch to a test instance**
+To deploy plugin code not yet merged to `main` on a test instance, use `--branch`:
+    ```console
+    $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
+    ```
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+`deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in Deploying from a larger repository still apply.
 **Waiting for the outcome**
 For a plugin Canvas Platform manages, `canvas deploy`, `canvas config set`, `canvas config unset` and `canvas uninstall` each create a deployment, wait for it to finish, and print each instance's outcome. They stop waiting after 300 seconds, print a message such as `Deploy of acme__intake is still running after 300s (deployment <id>).`, and exit non-zero. The CLI does not cancel the deployment when it stops waiting.
 Canvas Platform sends a plugin only the stored values whose keys the deployed revision's manifest declares in [`variables`](/sdk/canvas_manifest/#variables). When it leaves stored values out, the CLI lists them under that instance's outcome:
@@ -4493,6 +4510,7 @@ The commit is authored as the person or service account the CLI is signed in as,
 `deploy --snapshot` stops instead of pushing in two cases:
   - **HEAD lacks changes`main` was last deployed with.** When the checkout has the commit that `main` was last snapshotted from, `deploy` compares it with HEAD from their common ancestor. A package file that commit changed and HEAD did not would go back to its older content, so `deploy` lists those files and stops. Update the checkout and run it again. A branch that was deployed and then squash- or rebase-merged passes, because HEAD carries its changes under another commit. A shallow checkout usually lacks the deployed commit, so `deploy` says on standard error that it could not check, and continues.
   - **`main` has changes the snapshot would replace.** When package files on `main` changed since the last snapshot, for example through an edit to the plugin's catalog listing in Canvas Platform, and the snapshot holds different versions of them, `deploy` lists the files. At a terminal it asks whether to replace them; without one it exits non-zero. To keep the changes, copy Canvas Platform's versions into the package (`canvas clone` checks them out), commit them, and run it again. When `main` has no snapshot and no `snapshot-baseline/` tag yet, every package file already on `main` counts as such a change.
+With `--branch`, the snapshot commit goes to that branch. If the branch exists on Canvas Platform, the commit builds on the branch's tip, and both checks compare against the branch: a snapshot from a checkout that lacks what the branch was last deployed from stops, while edits made on `main` after the branch was pushed don't. A new branch builds on the plugin's default branch on Canvas Platform and is checked against it. If the package matches the default branch, the new branch points at the default branch's commit. When the second check stops on a branch, `canvas clone` the plugin and `git checkout` that branch to get Canvas Platform's versions of the files.
 `deploy` also warns when HEAD is on no remote branch, since that code has not been pushed to the larger repository for review. The manifest `name` decides which Canvas Platform repository a snapshot goes to, so deploys from any checkout or pipeline land on the same `main`. [Working with a monorepo](/guides/working-with-a-monorepo/) walks through the setup.
 **Consent for cross-plugin data access**
 A plugin that reads another plugin's [custom data](/sdk/custom-data-sharing-data/) needs consent before it deploys. At a terminal, `deploy` shows each consent request and asks you to answer it. Under `--yes`, or without a terminal, it lists the requests with the deployment id and exits non-zero without answering them.
@@ -4559,7 +4577,7 @@ The CLI prints a warning, but still installs, when a single file is over 1 MB, t
 **Troubleshooting**
   - **The install fails with an HTTP 500:** the package usually has too many files, most often because a Python virtual environment was created inside the plugin folder. Rename the folder so it starts with a dot (for example, `.canvas-env`), since hidden folders aren't packaged, or list it in `.canvasignore`.
 ###  `canvas uninstall`
-Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly, using `credentials.ini` (deprecated; see Instance API credentials).
+Uninstall a plugin. A plugin Canvas Platform manages is removed by an uninstall deployment from each `--instance`, which is required. Any other plugin is removed from the instance directly once you're signed out (see Which plugins go through Canvas Platform), using `credentials.ini` (deprecated; see Instance API credentials).
 > **Warning:** Uninstalling a plugin deletes its secrets and the [banner alerts](/sdk/effect-banner-alerts/) it added to patient charts and [claims](/sdk/effect-claims/#add-banner). Disabling a plugin hides those banner alerts until it's enabled again. 
 The plugin's [custom data](/sdk/custom-data-namespace-lifecycle/) stays on the instance after an uninstall: its namespace, with every `CustomModel` table and `AttributeHub` in it, is kept, because another plugin may share the namespace. A plugin deployed with `canvas deploy` regains access to that data on its next deploy. A plugin installed with `canvas install` loses its namespace keys along with its other secrets, so save them before uninstalling; see [Uninstalling and Reinstalling a Plugin](/sdk/custom-data-namespace-lifecycle/#uninstalling-and-reinstalling-a-plugin). To delete the data itself, drop the namespace with [`canvas namespace drop`](/sdk/custom-data-namespace-lifecycle/#dropping-a-namespace).
 **Usage** :
@@ -4574,29 +4592,40 @@ The plugin's [custom data](/sdk/custom-data-namespace-lifecycle/) stays on the i
   - `--force`: Uninstall an enabled plugin from an instance directly
   - `--help`: Show this message and exit.
 ###  `canvas enable`
-Enable a plugin from a Canvas instance..
+Enable a plugin. For a plugin Canvas Platform manages, an enable deployment switches it on at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, once you're signed out (see Which plugins go through Canvas Platform), the CLI enables it on the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
-    $ canvas enable [OPTIONS] NAME
+    $ canvas enable [OPTIONS] PLUGIN_NAME
+    ```
+**Example** :
+    ```console
+    $ canvas enable acme__my_plugin --instance acme-staging
     ```
 **Arguments** :
-  - `NAME`: Plugin name to enable [required]
+  - `PLUGIN_NAME`: Plugin name to enable [required]
 **Options** :
-  - `--host TEXT`: Canvas instance to connect to
+  - `--instance TEXT`: Instance slug to enable the plugin on, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
   - `--help`: Show this message and exit.
 ###  `canvas disable`
-Disable a plugin from a Canvas instance..
+Disable a plugin. For a plugin Canvas Platform manages, a disable deployment switches it off at each `--instance`. Without `--instance`, the CLI targets the only instance the plugin is installed on that you can deploy to. For any other plugin, once you're signed out (see Which plugins go through Canvas Platform), the CLI disables it on the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
-    $ canvas disable [OPTIONS] NAME
+    $ canvas disable [OPTIONS] PLUGIN_NAME
+    ```
+**Example** :
+    ```console
+    $ canvas disable acme__my_plugin --instance acme-staging
     ```
 **Arguments** :
-  - `NAME`: Plugin name to disable [required]
+  - `PLUGIN_NAME`: Plugin name to disable [required]
 **Options** :
-  - `--host TEXT`: Canvas instance to connect to
+  - `--instance TEXT`: Instance slug to disable the plugin on, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
   - `--help`: Show this message and exit.
 ###  `canvas list`
-List all plugins on a Canvas instance.
+List all plugins on a Canvas instance, with each plugin's version and whether it's enabled.
+For an instance Canvas Platform manages (see Which instances go through Canvas Platform), the list is Canvas Platform's most recent inventory of the instance, and the CLI prints the time Canvas Platform collected it to standard error. The inventory can be hours older than the instance's current state. Until Canvas Platform has collected an inventory of the instance, `canvas list` reports that it has none and exits with status 1. To read the list from the instance itself, sign out with `canvas logout`, or unset `CANVAS_PLATFORM_TOKEN`, and use `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
     $ canvas list [OPTIONS]
@@ -4712,6 +4741,12 @@ If `validate-manifest` detects handlers that won't resolve, it reports which cla
 > **Info:** Use `canvas validate` before `canvas deploy` for a full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output. 
 ###  `canvas logs`
 Subscribes to a log stream and prints to your console. Optionally fetches historical logs first.
+`canvas logs` chooses its credential per instance:
+  - **An instance Canvas Platform manages** , when you're signed in with `canvas login` or a service account token: the CLI reads the logs with a 15-minute log token from Canvas Platform. It gets a new token before the current one expires, and a live follow reconnects with a new token when the log stream ends the old one, so a long history read or a live follow keeps running.
+  - **Any other Canvas instance, while you're signed in** : `canvas logs` refuses it with the way to sign out (`canvas logout`, or unsetting `CANVAS_PLATFORM_TOKEN`).
+  - **Any instance when you're not signed in, or`localhost`**: the CLI uses the instance's `credentials.ini` client (deprecated; see Instance API credentials). For a Canvas instance, it also prints a deprecation notice.
+When Canvas Platform can't issue a log token for a managed instance, for example because the instance runs an older Canvas release, `canvas logs` prints the reason and exits, as described in Which instances go through Canvas Platform.
+When the log stream doesn't start, `canvas logs` exits with status 1, whichever credential it used, so a script can tell a failed stream from one that ran. When Console, the Canvas log stream service, refuses the stream, the error quotes its answer, for example `Console refused the log stream for <instance>. Console answered: No instance named '<instance>' was found.` When the connection fails before the stream starts, the error gives the connection failure and asks you to run the command again. Stopping a live follow with Ctrl+C exits with status 0.
 **Usage** :
     ```console
     $ canvas logs [OPTIONS]
@@ -4725,7 +4760,7 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--no-follow`: Historical only; do not stream live logs.
   - `--level TEXT`: Repeatable. –level ERROR –level WARN
   - `--source TEXT`: Filter by source/service.
-  - `--plugin TEXT`: Repeatable. –plugin foo –plugin bar.
+  - `--plugin TEXT`: Repeatable. –plugin foo –plugin bar. Filters history and the live stream.
   - `--handler TEXT`: Repeatable. Qualified handler name (e.g. my_plugin.handlers.Foo).
   - `--page-size INTEGER`: Fetch size per page (historical). [default: 200]
   - `--limit INTEGER`: Max historical logs to print.
@@ -4734,33 +4769,30 @@ Subscribes to a log stream and prints to your console. Optionally fetches histor
   - `--cursor TEXT`: Resume token from a previous run.
   - `--help`: Show this message and exit.
 ###  `canvas config list`
-List plugin variables on a Canvas instance. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+List a plugin's variables and whether each one is set. Each variable is rendered as `[set]` or `[not set]`, with a `(sensitive)` annotation for sensitive variables. Values themselves are never displayed — to read a value, use the Django Admin UI (gated by managing-user permissions).
+For a plugin Canvas Platform manages, the CLI reads the variables from Canvas Platform for each `--instance`. Without `--instance`, it uses the only instance the plugin is installed on; when the plugin is installed on more than one instance, name one with `--instance`. For any other plugin, once you're signed out (see Which plugins go through Canvas Platform), the CLI reads the variables from the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
-    $ canvas config list [OPTIONS] PLUGIN
+    $ canvas config list [OPTIONS] PLUGIN_NAME
     ```
 **Example output** :
     ```console
-    $ canvas config list my_plugin
-      API_TOKEN  [set]  (sensitive)
-      LOG_LEVEL  [not set]
-    ```
-**Arguments** :
-  - `PLUGIN`: Plugin name to list variables for
-**Options** :
-  - `--host TEXT`: Canvas instance to connect to
-  - `--help`: Show this message and exit.
-**Example Output** :
-    ```console
-    $ canvas config list my_plugin
+    $ canvas config list acme__my_plugin --instance acme-staging
       API_TOKEN = [set]  (sensitive)
       WEBHOOK_URL = [set]
       DEBUG_MODE = [not set]
     ```
+When you pass more than one `--instance`, the CLI prints each instance's slug above its variables.
+**Arguments** :
+  - `PLUGIN_NAME`: Plugin name to list variables for
+**Options** :
+  - `--instance TEXT`: Instance slug to read the variables from, repeatable
+  - `--host TEXT`: Canvas instance to connect to, for a plugin Canvas Platform does not manage
+  - `--help`: Show this message and exit.
 ###  `canvas config set`
 Set (or update) one or more plugin variables. Pass one or more `KEY=value` pairs as positional arguments.
 For a plugin Canvas Platform manages, the values are stored in Canvas Platform and a configure deployment brings them to the running plugin on each `--instance`. Without `--instance`, the only instance the plugin is installed on that you can configure is targeted. Values are kept per instance, and a later `canvas deploy` carries them forward for the keys that revision declares; see Waiting for the outcome.
-For a plugin Canvas Platform does not manage, the values are written to the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
+For a plugin Canvas Platform does not manage, once you're signed out (see Which plugins go through Canvas Platform), the values are written to the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
     $ canvas config set [OPTIONS] PLUGIN [KEY=VALUE]...
@@ -4789,7 +4821,7 @@ Set a variable whose value is a list with one entry per line — for example a r
   - `--help`: Show this message and exit.
 > Whether each value is treated as sensitive is determined by the plugin's `CANVAS_MANIFEST.json` (`variables: [{name, sensitive}]`) — `canvas config set` does not change the sensitive flag of a declared variable.
 ###  `canvas config unset`
-Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, each value is set to empty on the instance directly.
+Clear one or more plugin variables. For a plugin Canvas Platform manages, the values are cleared in Canvas Platform and a configure deployment removes them from the running plugin. For any other plugin, once you're signed out (see Which plugins go through Canvas Platform), each value is set to empty on the instance directly with `credentials.ini` (deprecated; see Instance API credentials).
 **Usage** :
     ```console
     $ canvas config unset [OPTIONS] PLUGIN KEY...
@@ -9749,6 +9781,7 @@ Below is the same thing written the other way, retrieving the questions and addi
     - **Note for Checkboxes:** Only the responses explicitly provided in the command payload will be updated in the UI. If a checkbox response is already selected and is not sent as unselected in the payload, its state remains unchanged.
     - For **DateQuestion** , you must pass a `date` parameter (a `datetime.date`, a `datetime.datetime`, or an ISO 8601 date string), stored as a normalized `YYYY-MM-DD` string.
   - **Creating and editing:** responses recorded with `answers` or `add_response()` are included when the command is originated, so `[command.originate()]` inserts the questionnaire already filled in, and `command.originate(commit=True)` also commits it. To change the responses of a questionnaire command that is already in the note, set them on a command with the same `command_uuid` and return its `edit()`.
+  - **Changing the questionnaire:** `edit()` keeps the questionnaire the command already uses, along with its responses. A `questionnaire_id` set on the edited command is ignored, so set the questionnaire when you originate the command.
 * * *
 ###  ReasonForVisit 
 **Command-specific parameters** :
@@ -10049,6 +10082,7 @@ Name | Type | Required to commit | Description
 ---|---|---|---  
 `questionnaire_id` | _string_ | `true` | The id of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) being answered by the patient. The questionnaire's use case in charting must be **Structured Assessment** , and it must be set to originate in charting.  
 `answers` | _list ofAnswer_ | `false` | The responses to record, one per question. Defaults to an empty list.  
+`assessment_id` | _string_ | `false` | The id (a UUID) of an [Assessment](/sdk/data-assessment/#assessment) made in the same note as this command. A cross-note reference or an unknown id is rejected on `originate` and `edit`. The link clears automatically if that Assessment is deleted or entered in error, or if [a move puts the two in different notes](/sdk/data-assessment/#commands-linked-to-an-assessment). The command stays in the note's Assessment section. A Structured Assessment that a user adds from the note starts with no questionnaire picked, and you can still set `assessment_id` on it with `edit()`, for example in a `STRUCTURED_ASSESSMENT_COMMAND__POST_ORIGINATE` handler. When the questionnaire carries responses forward, the link given at `originate` is kept, and a link from an earlier note isn't carried into the new command.  
 **Note:** The StructuredAssessmentCommand is a subclass of the QuestionnaireCommand, so it supports all the questionnaire features. That includes recording responses either with the `answers` parameter or with the `questions` property and `add_response()` — see Recording responses.
 **Example** :
     ```python
@@ -12226,7 +12260,10 @@ When developing a plugin with custom data, you'll typically iterate through cycl
   4. If models were renamed or removed, use `canvas namespace reset` to clean up orphaned tables
   5. Repeat
 ##  CLI Commands 
-All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. They connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini` until they move to your Canvas Platform sign-in, before December 14, 2026.
+All namespace commands require a running Canvas instance. Pass `--host` to specify which instance to connect to. When you're signed in to Canvas Platform and it manages the instance, the commands go through Canvas Platform. When you're not signed in, or for `localhost`, they connect with the [instance API credentials](/sdk/canvas_cli/#instance-api-credentials-credentialsini-deprecated) in `~/.canvas/credentials.ini`, which are deprecated, with support ending on December 14, 2026. Signed in, an instance Canvas Platform does not manage is refused until you sign out with `canvas logout`. See [Which instances go through Canvas Platform](/sdk/canvas_cli/#which-instances-go-through-canvas-platform). The dry run and confirmation steps below work the same either way, except for the extra confirmation on a production instance.
+Through Canvas Platform, two cases differ from a direct connection:
+  - If the instance runs a Canvas release that can't manage namespaces through Canvas Platform yet, the CLI says so and explains how to sign out and use `credentials.ini` until the instance updates.
+  - A `reset` or `drop` with `--execute` waits up to 90 seconds for an answer. If none arrives, the connection drops, or a gateway answers with a 502 or 504 error in its place, the CLI reports that it can't tell whether the namespace changed, because the instance may still finish the work. Run `canvas namespace inspect <namespace> --host <instance>` to check before you retry.
 ###  Listing Namespaces 
 See all custom data namespaces on an instance:
     ```bash
@@ -12276,17 +12313,25 @@ By default, reset runs in **dry-run mode** and only shows what would happen:
       attribute_hub       ~3 rows
     This is a dry run. To execute, re-run with --execute
     ```
-To actually perform the reset, add `--execute`. You will be prompted to confirm by typing the full namespace name:
+To actually perform the reset, add `--execute`. The prompt names the instance the command acts on, because a namespace has the same name on every instance your plugin runs on. Confirm by typing the full namespace name:
     ```bash
     canvas namespace reset acme_corp__shared_data --host dev-instance --execute
     ```
     ```text
-    This will reset namespace 'acme_corp__shared_data'. This cannot be undone.
+    This will reset namespace 'acme_corp__shared_data' on dev-instance. This cannot be undone.
     Type the full namespace name to confirm: acme_corp__shared_data
     Namespace 'acme_corp__shared_data' has been reset.
       Dropped tables: customnote, specialty
       Truncated tables: custom_attribute, attribute_hub
     ```
+Through Canvas Platform, the prompt names the instance by its slug. With `credentials.ini`, it names the host.
+On an instance that Canvas Platform marks as production, the prompt adds `(PRODUCTION)` after the instance name and also asks you to type the instance slug:
+    ```text
+    This will reset namespace 'acme_corp__shared_data' on acme-prod (PRODUCTION). This cannot be undone.
+    Type the full namespace name to confirm: acme_corp__shared_data
+    Type the instance slug to confirm: acme-prod
+    ```
+If either entry doesn't match, the CLI aborts without changing the namespace.
 After a reset, reinstall your plugin to recreate the tables with your updated model definitions.
 ###  Dropping a Namespace 
 Drop removes the entire namespace — the schema, all tables, all data, and all authentication keys. Use this when you want to completely remove a namespace and start over, or when you're done with a development namespace and want to clean up.
@@ -12309,6 +12354,7 @@ To execute:
     ```bash
     canvas namespace drop acme_corp__shared_data --host dev-instance --execute
     ```
+Drop asks for the same confirmation as reset, including the instance slug on a production instance.
 After a drop, the next plugin installation with that namespace name will create it from scratch, generating new authentication keys. Any other plugins that were sharing the namespace will need to be reconfigured with the new keys.
 ##  Uninstalling and Reinstalling a Plugin 
 Uninstalling a plugin **deletes its secrets** , including the system-generated `namespace_read_access_key` and `namespace_read_write_access_key`. The namespace schema and its data, however, **survive the uninstall**. This is by design: uninstalling a plugin should never destroy custom data, and a namespace shared by multiple plugins must not be torn down while another plugin is still using it.
@@ -13875,7 +13921,7 @@ treatments_stated | [MedicationStatement](/sdk/data-medication-statement)[] |
 billinglineitem_set | [BillingLineItem](/sdk/data-billing-line-item)[] |   
 referrals | [Referral](/sdk/data-referral)[] |   
 ###  Commands linked to an assessment 
-Plan- and Procedures-section commands, and the order, medication, and educational material commands, can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
+Plan- and Procedures-section commands, the order, medication, and educational material commands, and the Structured Assessment command can be linked to the assessment of an Assess command in the same note. The assessment a Diagnose command creates can't take links, and neither can the assessment of an Assess command entered in error. The command holds the link on its own `assessment` field, and each accessor below reads the link back from the assessment's side.
 A link only joins a command and an assessment in the same note. When a command moves to another note without its assessment, or an assessment moves without the commands linked to it, Canvas clears those links. A command and its assessment that move together stay linked. [Carrying a command forward](/sdk/commands/#command-actions) into a new note copies its data but not its link, so the new command starts with no `assessment`.
 Linking a prescription or an order also adds the assessed condition to the command's diagnosis codes. Each command's `assessment_id` parameter in the [commands module](/sdk/commands/) gives the details. Clearing the link leaves those codes in place.
 On an instance in the [revamped note beta program](/product-updates/note-revamp/), a [printed note](/sdk/commands/#command-actions) in the revamped format lists each linked command indented under its assessment.
@@ -13889,6 +13935,7 @@ linked_change_medications | [ChangeMedication](/sdk/data-change-medication/#chan
 linked_dme_orders | [DmeOrder](/sdk/data-dme/#dmeorder)[]  
 linked_educational_materials | [EducationalMaterial](/sdk/data-educational-material/#educationalmaterial)[]  
 linked_imaging_orders | [ImagingOrder](/sdk/data-imaging/#imagingorder)[]  
+linked_interviews | [Interview](/sdk/data-questionnaire/#interview)[]  
 linked_lab_orders | [LabOrder](/sdk/data-labs/#laborder)[]  
 linked_prescriptions | [Prescription](/sdk/data-prescription/#prescription)[]  
 linked_referrals | [Referral](/sdk/data-referral/#referral)[]  
@@ -13898,6 +13945,7 @@ procedures | [Procedure](/sdk/data-procedure/#procedure)[]
 stopped_medications | [StopMedicationEvent](/sdk/data-stop-medication-event/#stopmedicationevent)[]  
 updategoals | [UpdateGoal](/sdk/data-goal/#updategoal)[]  
 Use `linked_referrals` for referrals linked this way. The `referrals` accessor above reads a referral's separate `assessments` list instead.
+`linked_interviews` returns the Structured Assessments linked to this assessment. The `interview` field above is a different relation: it holds the Structured Assessment that produced this assessment when it was committed.
 A linked [Close Goal](/sdk/commands/#closegoal) command arrives on `updategoals` rather than through an accessor of its own, because [both the Update Goal and Close Goal commands record an `UpdateGoal`](/sdk/data-goal/#goal-updates-and-closures).
 ##  Enumeration types 
 ###  Assessment Status 
@@ -23132,12 +23180,16 @@ use_case_in_charting | String
 patient | [Patient](/sdk/data-patient/#patient)  
 note_id | Integer  
 appointment_id | Integer  
+assessment | [Assessment](/sdk/data-assessment/#assessment)  
 questionnaires | Questionnaire[]  
 progress_status | String  
 created | DateTime  
 modified | DateTime  
 interview_responses | InterviewQuestionResponse[]  
-assessment_set | [Assessment](/sdk/data-assessment/#assessment)[]  
+assessments | [Assessment](/sdk/data-assessment/#assessment)[]  
+An interview has two relations to assessments:
+  - `assessment` is the assessment in the same note that a [Structured Assessment](/sdk/commands/#structuredassessment) is linked to through its `assessment_id`. It's `None` when the interview isn't linked. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment).
+  - `assessments` holds the assessments that a Structured Assessment produces when it's committed.
 ###  InterviewQuestionnaireMap 
 The join between an Interview and the questionnaires it covers. Reach them through the interview's `questionnaires` attribute rather than querying this model.
 Field Name | Type  
@@ -60234,6 +60286,7 @@ The results table shows columns for `@timestamp`, `level`, `source`, `plugin`, a
   - **Stop after history** → `--no-follow`
   - **Page through large result sets** → `--limit`, `--page-size`, `--interactive`, or **cursor** tokens
 Run `canvas logs --help` to see all options.
+Signed in to Canvas Platform, `canvas logs` reads an instance Canvas Platform manages without `credentials.ini`. See [`canvas logs`](/sdk/canvas_cli/#canvas-logs) for how the CLI picks its credential for each instance.
 ###  Common Filters & Examples 
 #####  Filter by source 
     ```console
@@ -60257,6 +60310,7 @@ Run `canvas logs --help` to see all options.
     # Multiple handlers:
     $ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
     ```
+`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each plugin-runner line is tagged with, so it leaves out the runner's untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
 #####  Time windows: since / start / end 
 **Relative lookback (`--since`)**  
 Fetch the last 24 hours, then continue following:
