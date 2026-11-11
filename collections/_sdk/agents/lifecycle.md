@@ -58,10 +58,11 @@ step is platform-driven:
    gets a record under its effect's `run_id`, which the platform keeps
    current through the steps below (see
    [Auditing](/sdk/agents-auditing/#reading-run-records)). An effect
-   missing or mistyping `agent_id`, `scope`, `run_id`, a subject id, or
+   missing or mistyping `agent_id`, `scope`, a subject id, or
    `scope_id`, naming an agent outside its own plugin, or carrying a
-   trigger payload over 64 KiB is refused the same way. A malformed or
-   duplicate `run_id` is recorded under a new id.
+   trigger payload over 64 KiB is refused the same way. An effect with
+   no `run_id` gets a new one, and one with a malformed or duplicate
+   `run_id` is refused and recorded under a new id.
 2. **Derive the scope key** from the effect's `scope` and the subject,
    or from its `scope_id` for a `KEY` scope. See
    [Concurrency](#concurrency) below.
@@ -239,9 +240,10 @@ Each effect needs what the chart's own path for the action needs:
   or protocol card need access to the patient. Claim changes need
   `api.access_revenue`, and suggestions on an incoming document need
   `api.access_dataintegration`.
-- A message, task, task comment, or note must name the requester as its
-  sender, author, or provider; one recorded as made by someone else is
-  refused.
+- A message, task, task comment, or note that names its sender, author,
+  or provider must name the requester; one that names someone else is
+  refused. A task or task comment that names no author is recorded as
+  made by Canvas Bot.
 - An effect that asks to apply later (`delay_seconds`) is refused, so a
   run's changes apply with the run or not at all.
 

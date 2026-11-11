@@ -4,8 +4,8 @@ slug: "agents-quick-start"
 excerpt: "Build an agent that tracks follow-up across visits with protocol cards."
 ---
 
-This walks through a version of the reference plugin's
-`LongitudinalCareAdvisor`. When a clinician locks a note, the agent
+This walks through `LongitudinalCareAdvisor`, an agent that tracks
+follow-up across visits. When a clinician locks a note, the agent
 reviews the visit against the protocol cards it staged on earlier
 visits, marks the ones the visit addressed as satisfied, and stages
 cards for any new follow-up. It uses only the SDK's tools and keeps its

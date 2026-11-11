@@ -688,31 +688,36 @@ it to the intake tools as `ctx["document_id"]`. Grant them with
   only with the last name or birth date agreeing, and another organization's
   only when it is a current medical record number and both agree. The model is
   told a patient's id, never their details.
-- On a scan or fax, the model also passes each identifier `as_printed`,
-  exactly as the page shows it, with the `legibility`, `handwritten`, and
-  `pages_disagree`. The code then refuses identifiers marked illegible or
-  handwritten, pages that disagree, and any value passed that the print does
-  not support, such as a birth date read day-first. Every identifier the
+- On a scan or fax, the tools ask the model to also pass the `legibility`,
+  `handwritten`, and `pages_disagree`, and each identifier `as_printed`,
+  exactly as the page shows it. The code refuses identifiers marked
+  illegible or handwritten and pages that disagree. `as_printed` is
+  optional, and the rest of these checks apply only when the model passes
+  it. The code then refuses any value passed that the print does not
+  support, such as a birth date read day-first. Every identifier the
   print shows must be read: an MRN or birth date printed but not passed, a
   printed name without its last name read, a printed first name not read, or
   a printed word missing from the name read refuses the match. After the
   match, the patient's own last name, first name or nickname, birth date, and
   MRN (or a current one another organization keeps) are compared with the
-  print. A person still confirms every suggested patient on the review form.
-  When the identifiers as read match no one, it
+  print. When the identifiers as read match no one, it
   tries the readings a fax misread (0/O, 1/I/l, 5/S, 8/B; never the birth
   date), a dropped middle initial, or a first/last swap would explain, and
   suggests a patient only when every reading that matches names that one,
   labeled for the reviewer to check. With more readings than it can check, it
-  names no one.
+  names no one. A person still confirms every suggested patient on the
+  review form.
 - `suggest_patient`, `categorize_document`, `prefill_document_fields`, and
   `assign_document_reviewer` suggest on the document's review form. They file
   nothing: a person confirms each suggestion in Canvas, and the review stays
   required. Each suggestion is labeled "AI suggested" on the form. The patient,
-  type, and value suggestions also show a confidence level: for the patient,
-  high when the patient's record confirms three printed identifiers, and
-  medium otherwise or for a repaired reading; for
-  the type and the values, the confidence the model passes, when it passes one.
+  type, and value suggestions also show a confidence level. For the
+  patient, it is medium for a repaired reading. Otherwise it is high when
+  the patient's record confirms three printed identifiers, or, without
+  `as_printed`, when three of Canvas's own identifiers passed match, such
+  as last name, birth date, and first name; it is medium in every other
+  case. For the type and the values, it is the confidence the model
+  passes, when it passes one.
 
 Every intake tool needs `api.access_dataintegration`, the queue's permission.
 A staff member starting a run about a document also has to see every patient,

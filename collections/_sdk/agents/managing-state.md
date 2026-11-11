@@ -47,9 +47,9 @@ as a unit — chat conversations being the canonical example.
 
 The full message history (user turns + assistant turns + tool calls +
 tool results) lives in a single JSON column. Reading the row and
-writing it back is one round-trip each. The reference plugin's chat
-agent keeps one conversation per patient and clinician, so one
-clinician's questions never become another's context. Its handler
+writing it back is one round-trip each. A chat agent can keep one
+conversation per patient and clinician, so one clinician's questions
+never become another's context. Its handler
 emits the run with `scope=RunAgentEffect.Scope.PATIENT_AND_STAFF`, and
 the agent reads the patient from `self.subject` and the clinician from
 `self.requester`:
@@ -107,14 +107,16 @@ can't interleave with another run that read the same baseline.
 
 **State is saved before Canvas applies the run's effects.** The plugin
 runner calls `save_state` when `run()` returns, and Canvas applies the
-effects afterward. It can refuse them all (a permission the requester
-lacks), apply none (the run lost its scope), or stop at one that fails,
-so a saved conversation can say a change was made that never reached
-the chart. Check the platform's record of the previous run when the next
-one starts, and tell the model what did not apply:
+effects afterward, all or none: it refuses them all when one needs a
+permission the requester lacks, applies none when the run lost its
+scope, and takes back the ones already applied when one fails. A saved
+conversation can then say a change was made that never reached the
+chart. When the next run starts, check the status of the platform's
+record of the previous run, and tell the model when its changes did not
+apply:
 
 ```python?partial=true
-from canvas_sdk.v1.data import AgentRun
+from canvas_sdk.v1.data import AgentRun, AgentRunStatus
 
 previous = (
     AgentRun.objects.filter(
@@ -128,14 +130,16 @@ previous = (
     .order_by("-queued_at")
     .first()
 )
-kept = previous.effects_returned - (previous.effects_dropped or 0) if previous else 0
-if previous and (previous.effects_applied or 0) < kept:
-    ...  # add a note to the conversation: those changes did not reach the chart
+if previous and previous.status != AgentRunStatus.SUCCEEDED:
+    ...  # add a note to the conversation: its changes did not reach the chart
 ```
 
 Filter on the requester as well as the scope when several staff members
-share a scope, as a claim's does. The reference plugin's chats add such
-a note, which their pages leave out of what they show.
+share a scope, as a claim's does. A chat can add such a note to what
+it sends the model and leave it out of the conversation it shows. A
+change the previous run proposed for approval is not a failure: it
+waits for the requester, and its `AgentRunProposal` records whether it
+applied.
 
 **Keep the history within one model call.** A conversation that grows
 without bound eventually exceeds the model's context window, and every
@@ -162,7 +166,7 @@ returns are the writes.
 Best for agents whose state is "the recommendations we've made over
 time." Each recommendation is its own record the clinician already
 sees and acts on, and the agent can update each one independently on
-later runs. The reference plugin's longitudinal advisor works this way
+later runs. A longitudinal care advisor can work this way
 with protocol cards (see the [Quick Start](/sdk/agents-quick-start/)):
 
 ```python?partial=true

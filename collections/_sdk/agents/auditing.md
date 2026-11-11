@@ -42,7 +42,9 @@ Captured today:
   sub-agents included, the tool's name, whether it succeeded, the
   exception type when it did not, and how long it took. Arguments and
   results are left out: they carry chart content, and only you know
-  what is worth keeping (see below). An agent that calls the model
+  what is worth keeping (see below). A change the agent proposes for
+  approval is the exception: its `AgentRunProposal` keeps the tool's
+  arguments and the changes the call staged for the same 90 days. An agent that calls the model
   without `run_tool_loop` gets a record without these or how its tool
   loop ended. Its model-call count still includes every call
   through `gateway.client()`.
