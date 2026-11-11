@@ -391,7 +391,7 @@ Each entry has exactly these three fields, all required:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | string | The dependency's manifest `name`. |
+| `name` | string | The dependency's manifest `name`: lowercase letters, digits, and underscores, starting with a letter. Up to 256 characters. |
 | `publisher` | string | The slug of the Canvas Platform organization that publishes the dependency, as [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) lists it, such as `acme` for `Acme Health (acme)`. |
 | `version` | string | The versions of the dependency this plugin works with: one exact version or a compatible release. See [Version pins](#version-pins). |
 
