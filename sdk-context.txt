@@ -586,6 +586,7 @@ Setting | Controls | Default
 `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False`  
 `PATIENT_APP_BANNER` | Banner text on the portal login page | `""`  
 `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only**  
+`FAMILY_PORTAL_ACCESS` | Family portal access: staff can give family members and other representatives access to a patient's chart | `False`  
 > **Warning:** Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch. 
 ###  Sign-in links in notifications 
 When the care team sends a patient a message or shares a lab result, Canvas notifies the patient by email or text message. When the patient is sent a statement, Canvas notifies them by email. Each notification carries a sign-in link, so the patient can go straight to the new item without entering a password. Opening the link signs the patient in and opens the matching page: Messaging, Labs, or Payments.
@@ -593,6 +594,13 @@ When the care team sends a patient a message or shares a lab result, Canvas noti
   - **Links stay valid for 30 days** by default, so the patient can open one well after the notification arrives.
   - **The session lasts 15 minutes** by default. It doesn't extend while the patient is active; when it ends, the patient returns to the login page.
 Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
+###  Family portal access 
+Staff can give a patient's family member or other representative, such as a parent, guardian, or adult child, portal access to the patient's chart from the patient's **Profile → Portal** in Canvas. Each family member signs in with their own login, and one login can hold several charts: a parent who is also a patient switches between their own record and each child's.
+  - **Access is set per area.** Appointments, messaging, clinical, and billing are each **None** , **View** , or **Full** (`none`, `view`, and `act` to plugins). The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
+  - **The family member confirms the patient's date of birth** the first time they open the chart.
+  - **Their actions are recorded as them,** acting for the patient, and the patient can see who has access to their record in the portal.
+  - **Notifications reach them too.** When the patient gets a new message, released lab results, a statement, or an appointment reminder, family members with access to that area are told. Their notices link to the portal's sign-in page rather than signing them in, because their login can open more than one chart.
+Family portal access is turned on by Canvas. See [Family Portal Access](https://help.canvasmedical.com/articles/1380397114-family-portal-access) for how staff set it up, and the [Patient Portal config hub](/sdk/patient-portal/#family-portal-access) for what plugins receive.
 ###  Branding 
 You can put your organization's identity on the portal without building anything:
   - **Logo** — your organization's logo is shown on the login page and throughout the portal. It's configured on your Canvas organization; until you provide one, the default Canvas logo appears. Work with Canvas to set it.
@@ -613,9 +621,14 @@ Here's what you can do — mix and match as many as you like.
 Make the portal match your brand: your colors for buttons, links, the menu, and the page background, your font, rounder or squarer corners, and the word the portal uses for the person (patient, member, or client). The theme covers every portal page, including login and registration, and each business line can have its own. Signed-in pages can also take your own CSS.
 A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal/#theme-the-patient-portal) effect. [Theming the Patient Portal](/guides/theme-the-patient-portal/) walks through each setting with screenshots.
 ###  Personalize the landing page with widgets 
-The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient.
+The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With family portal access, you can also show different cards to the patient and to a family member (see Tailor the portal for the patient or a family member).
 You control what each card shows, pulling from the Canvas data module, your plugin's Custom Data, or an external service.
 See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widgets) and the [Custom Landing Page guide](/guides/custom-landing-page/) for the exact documentation on how to build them. And you don't have to start from a blank file — there's a ready-made [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin) in our open-source examples repo you can install as-is or use as a reference and starting point.
+###  Tailor the portal for the patient or a family member 
+With family portal access, the person using the portal can be the patient or a family member acting for them, such as a parent on their child's chart. Your landing page widgets, menu, applications, and pages can serve each of them differently:
+  - **Widgets, menu configuration, and applications:** the patient whose chart is open is the portal event's target, or the `user` in an application's event context, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
+  - **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) and the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
+For example, greet a parent with a card about their child's next appointment, leave out a balance reminder when their billing access is **None** , and keep a patient-only card, such as a care-gap reminder written to the patient, for the patient's own login. See [Family Portal Access](/sdk/patient-portal/#family-portal-access) for everything plugins receive.
 ###  Shape self-scheduling 
 Self-scheduling is powerful, but you'll usually want guardrails. Filter or reorder the slots a patient can book _before they see them_ — keep new patients on longer visit types, hide same-day slots, steer certain reasons to specific providers, or enforce your booking policies.
 Building your own booking screen instead? A plugin can search open appointment times with the same search the Canvas booking screens use, so it offers patients the same times Canvas would.
@@ -5132,7 +5145,7 @@ Field | Type | Required | Description
         ],
         "pricing": [
           {"unit": "visit", "price_per_unit": "1.50"},
-          {"unit": "token"}
+          {"unit": "token", "markup_bps": 1500}
         ],
         "vendors": [
           {"name": "Twilio", "relationship": "self_managed", "additional_fees": true}
@@ -5153,7 +5166,7 @@ Field | Type | Required | Description
 `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out.  
 `keywords` | array | No | Free search terms, separate from Tags: lowercase letters, digits and hyphens, up to 32 characters each.  
 `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40.  
-`pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge.  
+`pricing` | array | No | What the plugin's publisher charges, up to 10 components in the order the plugin's page lists them. Each has a `unit` in the singular (at most 40 characters, named once) and a `price_per_unit`: a string of US dollars such as `"5.75"`, with at most four decimal places. The `token` unit takes no price, because the inference gateway prices tokens by model. It can take an optional `markup_bps` instead: how far above the gateway's list price the plugin's tokens bill, as a whole number of basis points from `0` to `10000`, so `1500` is 15%. For a plugin Canvas publishes that declares the sensitive variable `INFERENCE_GATEWAY_KEY`, Canvas Platform issues the installing organization an inference gateway key in that variable and bills its tokens at this markup. No other unit takes a `markup_bps`. For every other unit, the plugin counts the work it charges for by returning a [`RecordUsage`](/sdk/effect-record-usage/) effect. Leave `pricing` out for a plugin with no charge.  
 `vendors` | array | No | The third parties the plugin depends on, up to 10. Each has a `name` (at most 64 characters, named once), a `relationship` of `canvas_managed` (Canvas sets up the account) or `self_managed` (the customer does), and `additional_fees`: `true` when the vendor bills the customer directly for its own fees, separately from Canvas.  
 `icon` | string | No | Path to the image shown beside the title on the plugin's card, ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase.  
 `setup_guide` | string | No | Path to a markdown file describing setup for the person deciding whether to install the plugin: what to have ready, the steps, how long it takes. The plugin's page shows it under How setup works.  
@@ -14448,6 +14461,7 @@ received_messages | [Message](/sdk/data-message/#message)[]
 commands_originated | [Command](/sdk/data-command/#command)[]  
 commands_committed | [Command](/sdk/data-command/#command)[]  
 commands_entered_in_error | [Command](/sdk/data-command/#command)[]  
+portal_grants | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[]  
 portal_invitations | [PortalInvitation](/sdk/data-portal-invitation/#portalinvitation)[]  
 `last_login` is set for patients only and is `None` for staff. It updates each time a patient portal session starts, including when the patient opens an invite or notification link before setting a password, so use `is_portal_registered` to tell whether a patient has activated their account.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-canvasuser/
@@ -20332,9 +20346,9 @@ Name | Type | Description
 `created` | `DateTime` | Timestamp when the message was created.  
 `modified` | `DateTime` | Timestamp when the message was last modified.  
 `content` | `Text` | The body text of the message.  
-`sender` | [CanvasUser](/sdk/data-canvasuser) | The user who sent the message. May be null.  
+`sender` | [CanvasUser](/sdk/data-canvasuser) | The user who sent the message. May be null. For a message from a family member through [family portal access](/sdk/patient-portal/#family-portal-access), this is the family member's login, not the patient's.  
 `recipient` | [CanvasUser](/sdk/data-canvasuser) | The user who received the message. May be null.  
-`note` | [Note](/sdk/data-note) | Associated note (if any) for contextual linkage. May be null.  
+`note` | [Note](/sdk/data-note) | Associated note (if any) for contextual linkage. May be null. `note.patient` is the patient whose chart the message is filed on.  
 `read` | `DateTime` | Timestamp when the recipient read the message. Null if unread.  
 `team` | [Team](/sdk/data-team/#team) | The team the message is assigned to. Null if unassigned. See [Assigning a message to a team](/sdk/effect-messages/#assigning-a-message-to-a-team).  
 `transmissions` | QuerySet[MessageTransmission] | The delivery transmissions associated with this message.  
@@ -21642,6 +21656,7 @@ contacts | PatientContactPerson[] |
 related_contacts | PatientContactPerson[] | Contacts on _other_ patients that reference this one  
 user | [CanvasUser](/sdk/data-canvasuser/)[] |   
 patient_groups | [PatientGroup](/sdk/data-patient-group/)[] |   
+portal_grants | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[] | Family portal access to this patient's chart  
 chart_section_reviews | [ChartSectionReview](/sdk/data-chart-section-review/#chartsectionreview)[] |   
 visual_exam_findings | [VisualExamFinding](/sdk/data-visual-exam-finding/#visualexamfinding)[] |   
 vital_sign_readings | [VitalSignReading](/sdk/data-vital-sign-reading/#vitalsignreading)[] |   
@@ -21868,6 +21883,8 @@ room_number | String
 ###  PatientContactPerson 
 One of the patient's contacts — an emergency contact, next-of-kin, or other related person. A contact either holds the person's details directly, or references another Canvas patient through `related_patient`; when it does, that patient's own details supersede the values stored here.
 `id` is the value the [Patient effect](/sdk/effect-patient/#managing-patient-contacts) takes as `contact_identifier` when modifying or removing a contact.
+The model lists the patient's current contacts. When staff remove a contact that had [family portal access](/sdk/patient-portal/#family-portal-access), Canvas keeps it for the records its family member wrote, but it no longer appears here or among the patient's `contacts`. Its [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant) keeps the contact's name and relationship.
+A contact's relationship to the patient is held in its `categories`: the ones whose coding system is `http://terminology.hl7.org/CodeSystem/v3-RoleCode`, such as `MTH` (mother) or `SPS` (spouse). Other categories, such as an emergency contact, describe the contact's role rather than the relationship. Family portal access shows the names of a contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". A contact with no relationship category shows no relationship there.
 Field Name | Type  
 ---|---  
 id | UUID  
@@ -21881,16 +21898,20 @@ email | String
 comments | String  
 related_patient | Patient  
 categories | PatientContactCategory[]  
+portal_grants | [PortalAccessGrant](/sdk/data-portal-access-grant/#portalaccessgrant)[]  
     ```python
     from canvas_sdk.v1.data import PatientContactPerson
     from logger import log
     contacts = PatientContactPerson.objects.filter(
         patient__id="d7af3e356368446c85b40a5d6ff7288e"
     ).select_related("related_patient").prefetch_related("categories__category")
+    RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
     for contact in contacts:
         who = contact.related_patient.first_name if contact.related_patient else contact.name
-        codings = ", ".join(link.category.code for link in contact.categories.all())
-        log.info(f"Contact: {who} ({codings})")  # Contact: Jane (EMC)
+        categories = [link.category for link in contact.categories.all()]
+        relationship = ", ".join(c.name for c in categories if c.system == RELATIONSHIP_SYSTEM)
+        others = ", ".join(c.code for c in categories if c.system != RELATIONSHIP_SYSTEM)
+        log.info(f"Contact: {who}, {relationship} ({others})")  # Contact: Jane, mother (EMC)
     ```
 ###  PatientContactCategory 
 Links one of the patient's contacts to one of the category codings the instance defines.
@@ -22108,6 +22129,125 @@ plugin_name | String
   - **section** : The chart section where the command appears: `subjective`, `objective`, `assessment`, `plan`, `procedures`, `history`, or `internal`.
   - **plugin_name** : The name of the plugin that registered the command.
 ----- END PAGE https://docs.canvasmedical.com/sdk/data-plugin-command/
+
+
+----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-portal-access-grant/
+##  Introduction 
+The `PortalAccessGrant` model represents [family portal access](/sdk/patient-portal/#family-portal-access) to a patient's chart. Staff give a grant to a family member or another representative from one of the patient's contacts. The grant names the portal login it was given to and its access level in each area of the chart: appointments, messaging, clinical, and billing.
+Use it to show a patient or staff member who has access to a chart, to show a family member which charts they can use, or to read what a grant allows.
+Each area's level is `"none"`, `"view"`, or `"act"`. Follow the level on your portal pages the way the built-in pages do:
+Level | On a portal page  
+---|---  
+`none` | Hide the area  
+`view` | Show the area without its actions  
+`act` | Show the area and allow its actions  
+Each level is a `PortalAccessLevel`, which you can import from `canvas_sdk.v1.data` or `canvas_sdk.handlers.simple_api`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if grant.billing:` checks for any billing access. A stored level that the SDK doesn't recognize reads as `NONE`.
+A revoked or flagged grant stays as a record. A grant gives its login the chart only while `revoked_at` and `flagged_at` are both empty and the patient is active. `PortalAccessGrant.objects.giving_access()` returns only those grants.
+##  Basic usage 
+To list the logins that currently have access to a patient's chart, filter the grants that give access:
+    ```python
+    from canvas_sdk.v1.data import PortalAccessGrant
+    grants = PortalAccessGrant.objects.giving_access().filter(
+        patient__id="d7af3e356368446c85b40a5d6ff7288e",
+    )
+    ```
+A patient's grants are also on the patient as `patient.portal_grants`, and the grants given to a login are on its [CanvasUser](/sdk/data-canvasuser/#user) as `portal_grants`. Both include revoked and flagged grants. Call `giving_access()` on them, such as `patient.portal_grants.giving_access()`, to keep only the grants that give access.
+To find the grants that give a level in one area, filter on that area's field:
+    ```python
+    from canvas_sdk.v1.data import PortalAccessGrant, PortalAccessLevel
+    grants = PortalAccessGrant.objects.giving_access().filter(
+        patient__id="d7af3e356368446c85b40a5d6ff7288e",
+        billing=PortalAccessLevel.ACT,
+    )
+    ```
+##  Reading the grant for a portal request 
+In a [SimpleAPI](/sdk/handlers-simple-api-http/#session) handler or [WebSocket API](/sdk/handlers-simple-api-websocket/#websocket-object), `portal_access.grant` is the grant that gives the acting family member or representative the chart. It's `None` on a patient's own chart.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+    RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+    class AccessSummary(PatientSessionAuthMixin, SimpleAPIRoute):
+        PATH = "/access-summary"
+        PORTAL_ACCESS = {}
+        def get(self) -> list[Response | Effect]:
+            grant = self.request.portal_access.grant
+            if grant is None:
+                return [JSONResponse({"own_chart": True})]
+            relationship = grant.contact.categories.filter(category__system=RELATIONSHIP_SYSTEM)
+            return [
+                JSONResponse(
+                    {
+                        "own_chart": False,
+                        "relationship": [link.category.name for link in relationship],
+                        "billing": grant.billing,
+                    }
+                )
+            ]
+    ```
+##  Reading the grant for a portal event 
+Portal events and `portal_menu_item` [applications](/sdk/handlers-applications/) name the chart's patient and the acting login separately. The event's target, or the `user` in an application's context, is the patient whose chart the portal is open on, and `self.event.actor` is the login. Look up the grant from both:
+    ```python
+    from canvas_sdk.v1.data import PortalAccessGrant
+    def current_grant(actor, patient_id):
+        return (
+            PortalAccessGrant.objects.giving_access()
+            .filter(user=actor.instance, patient__id=patient_id)
+            .first()
+        )
+    ```
+Call it as `current_grant(self.event.actor, patient_id)` from your handler. It returns `None` when the login is the patient's own, or when the login's grant was revoked or flagged.
+##  Responding to a flagged grant 
+A flag usually means the invite reached the wrong person. When a family member reports that they don't know the patient, Canvas sets the grant's `flagged_at` and opens a [task](/sdk/data-task/) so staff can correct the contact or remove the access. The task is on the patient's chart, its creator is Canvas Bot, and its `tag` is `portal-access-flagged`. Canvas assigns it to the patient's [care team lead](/sdk/data-care-team/). When the patient has no care team lead or the lead is no longer active, Canvas assigns it to the staff member in `granted_by`. If that staff member isn't active either, the task has no assignee.
+Each flagged grant gets one task. If staff complete it by hand, Canvas doesn't open another. Canvas completes the task when the grant is revoked, including when staff correct the contact and the access moves to the corrected person.
+The task raises the usual [task events](/sdk/events/#tasks): `TASK_CREATED` when Canvas opens it and `TASK_COMPLETED` when Canvas completes it. To act on a flag, such as alerting a team outside Canvas, respond to `TASK_CREATED` and check the task's `tag`:
+    ```python
+    from canvas_sdk.events import EventType
+    from canvas_sdk.handlers import BaseHandler
+    from canvas_sdk.v1.data import PortalAccessGrant
+    from canvas_sdk.v1.data.task import Task
+    class FlaggedAccessHandler(BaseHandler):
+        RESPONDS_TO = [EventType.Name(EventType.TASK_CREATED)]
+        def compute(self):
+            task = Task.objects.get(id=self.target)
+            if task.tag != "portal-access-flagged":
+                return []
+            flagged = PortalAccessGrant.objects.filter(
+                patient=task.patient,
+                flagged_at__isnull=False,
+                revoked_at__isnull=True,
+            )
+            for grant in flagged:
+                self.log(f"{grant.user.email} flagged access to patient {task.patient.id}")
+            return []
+    ```
+##  Attributes 
+###  PortalAccessGrant 
+Field Name | Type | Description  
+---|---|---  
+id | UUID |   
+dbid | Integer |   
+created | DateTime |   
+modified | DateTime |   
+patient | [Patient](/sdk/data-patient/#patient) | The patient whose chart the grant gives access to  
+user | [CanvasUser](/sdk/data-canvasuser/#user) | The portal login the grant was given to  
+contact | [PatientContactPerson](/sdk/data-patient/#patientcontactperson) | The patient's contact the grant was given from. Empty once the contact is changed to a different person after the grant is revoked. After staff remove the contact from the chart, `contact_id` keeps its ID, but plugins can't read the contact, and reading `contact` raises `PatientContactPerson.DoesNotExist`. Use `contact_name` and `contact_relationship` instead.  
+contact_name | String | The contact's name, saved when the contact is removed or changed. Empty while `contact` is the patient's contact  
+contact_relationship | String | The contact's relationship to the patient, saved from its [relationship categories](/sdk/data-patient/#patientcontactperson) when the contact is removed or changed. Empty while `contact` is the patient's contact; read `contact.categories` instead  
+appointments | PortalAccessLevel | Access level in appointments: `none`, `view`, or `act`  
+messaging | PortalAccessLevel | Access level in messaging: `none`, `view`, or `act`  
+clinical | PortalAccessLevel | Access level in clinical records: `none`, `view`, or `act`  
+billing | PortalAccessLevel | Access level in billing: `none`, `view`, or `act`  
+dob_verified_at | DateTime | When the login confirmed the patient's date of birth  
+dob_failed_attempts | Integer | How many date of birth entries didn't match  
+flagged_at | DateTime | When the login reported that they don't know the patient  
+granted_by | [Staff](/sdk/data-staff/#staff) | The staff member who gave the grant  
+granted_at | DateTime | When the grant was given  
+notified_at | DateTime | When the login was notified of the grant  
+revoked_at | DateTime | When the grant was revoked  
+revoked_by | [Staff](/sdk/data-staff/#staff) | The staff member who revoked the grant  
+revoke_reason | String | The reason given for revoking the grant  
+----- END PAGE https://docs.canvasmedical.com/sdk/data-portal-access-grant/
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/data-portal-invitation/
@@ -25393,7 +25533,7 @@ Data module classes are Django ORM models, which allow easy retrieval of data at
 Access to these models is **read-only** , and mutations to them are allowed only via use of [Effects](/sdk/effects/) and the FHIR API.
 Use the [Custom Data](/sdk/custom-data/) features for creating and maintaining your plugin's own data.
 The pages below provide listings of the models, their attributes, and examples of usage.
-[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommandTypeSetting Whether each command type is turned on for the instance. ](/sdk/data-command-type-setting/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentHistoryEvent An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review. ](/sdk/data-document-history-event/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A reviewable document sent to a provider for signature, or returned signed to whoever sent it. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Google Calendar Provider busy time and connection status from native Google Calendar sync. ](/sdk/data-google-calendar/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ PortalInvitation Patient portal invite and password reset links, with when each was opened, claimed, or refused. ](/sdk/data-portal-invitation/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
+[ AllergyIntolerance Harmful or undesired physiological responses associated with exposure to a substance. ](/sdk/data-allergy-intolerance/) [ Application A plugin application. ](/sdk/data-application/) [ Appointment A scheduled meeting between a patient and a provider. ](/sdk/data-appointment/) [ AssessCodingGapEvent A record of a coding gap being assessed, with the conditions it was assessed against. ](/sdk/data-coding-gap-event/#assesscodinggapevent) [ Assessment Clinical assessment of a patient's condition. ](/sdk/data-assessment/) [ BannerAlert An alert notification linked to a patient. ](/sdk/data-banner-alert/) [ BillingLineItem A billable code linked to a patient note. ](/sdk/data-billing-line-item/) [ BusinessLine A group of patients that share a common brand under an organization. ](/sdk/data-business-line/) [ Calendar Calendars associated with providers. ](/sdk/data-calendar/) [ CancelPrescription A request to cancel a patient's prescription (the CancelPrescription command). ](/sdk/data-cancel-prescription/) [ CancelPrescriptionResponse The response to a CancelPrescription request. ](/sdk/data-cancel-prescription-response/) [ CanvasUser User accounts associated with other records. ](/sdk/data-canvasuser/) [ CareTeam Teams assigned for patient care. ](/sdk/data-care-team/) [ Change Medication A record of a Change Medication command, used to update a medication's directions (sig) without issuing a new prescription. ](/sdk/data-change-medication/) [ ChargeDescriptionMaster Billing charges in Canvas that can be added to the note footer. ](/sdk/data-charge-description-master/) [ ChartSectionReview Reviewed chart sections captured on a note, with their pre-rendered title and narrative content. ](/sdk/data-chart-section-review/) [ Claim A healthcare claim. ](/sdk/data-claim/) [ Clipboard Free-text content staged on a note by a clipboard command. ](/sdk/data-clipboard/) [ Command Structured units of documentation in a patient's chart. ](/sdk/data-command/) [ CommandTypeSetting Whether each command type is turned on for the instance. ](/sdk/data-command-type-setting/) [ CommonEnumerationTypes Common choice classes used in multiple models. ](/sdk/data-enumeration-types/) [ CompoundMedication Compound medications, which are custom-made medications tailored to a patient's specific needs. ](/sdk/data-compound-medication/) [ Condition Condition, diagnosis, or reason for seeking medical attention. ](/sdk/data-condition/) [ ContentType Django content type ids used for generic relations and permalink generation. ](/sdk/data-content-type/) [ Coverage Patient insurance coverage. ](/sdk/data-coverage/) [ CreateCodingGapEvent A record of a coding gap being created. ](/sdk/data-coding-gap-event/#createcodinggapevent) [ CustomCommand A plugin-defined read-only command recorded on a note (the custom command). ](/sdk/data-custom-command/) [ DeferCodingGapEvent A record of a coding gap being deferred. ](/sdk/data-coding-gap-event/#defercodinggapevent) [ DetectedIssue Actual or potential clinical issue with or between one or more active or proposed clinical actions for a patient. ](/sdk/data-detected-issue/) [ Device Type of a manufactured item that is used in the provision of healthcare. ](/sdk/data-device/) [ DiagnosticView A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command. ](/sdk/data-diagnostic-view/) [ DME Durable medical equipment formulary products and the signed orders placed for them with the Order DME command. ](/sdk/data-dme/) [ DocumentHistoryEvent An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review. ](/sdk/data-document-history-event/) [ DocumentReference References to documents stored in Canvas, with presigned URL support. ](/sdk/data-document-reference/) [ DocumentReviewDelegation A reviewable document sent to a provider for signature, or returned signed to whoever sent it. ](/sdk/data-document-review-delegation/) [ EducationalMaterial Patient educational material shared from a note via the Educational Material command. ](/sdk/data-educational-material/) [ EligibilityResponse A coverage eligibility (270/271) request and response, with the derived check status. ](/sdk/data-eligibility-response/) [ EligibilitySummary Summary of copay and coinsurance for a Coverage. ](/sdk/data-coverage/#eligibilitysummary) [ Encounter A patient Encounter connected to a Note in Canvas. ](/sdk/data-encounter/) [ ExternalEvent External clinical events from ADT feeds such as admissions, discharges, and transfers. ](/sdk/data-external-event/) [ Facility A location where healthcare services are provided. ](/sdk/data-facility/) [ FamilyHistory A patient's family medical history — conditions recorded for a relative. ](/sdk/data-family-history/) [ Fax Faxes sent or received through Canvas, and the action events that record a document's fax delivery status. ](/sdk/data-fax/) [ FaxStatusModel The status recorded when Canvas receives a fax. ](/sdk/data-fax/#faxstatusmodel) [ FollowUp A requested follow-up (recall) recorded on a note via the follow_up command. ](/sdk/data-follow-up/) [ Goal A goal for a patient. ](/sdk/data-goal/) [ Google Calendar Provider busy time and connection status from native Google Calendar sync. ](/sdk/data-google-calendar/) [ Group A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource. ](/sdk/data-group/) [ HistoryOfPresentIllness The History of Present Illness (HPI) narrative recorded on a note. ](/sdk/data-history-present-illness/) [ Imaging Analysis of imaging tests to obtain information about the health of a patient. ](/sdk/data-imaging/) [ ImagingOrderActionEvent Faxes of an imaging order, with their delivery status. ](/sdk/data-fax/#imagingorderactionevent) [ ImagingReportTemplate Templates used for imaging reports, defining fields and options. ](/sdk/data-imaging-report-template/) [ Immunization A record of a vaccination that is being administered to a patient, either now, in the past, or in the future. ](/sdk/data-immunization/) [ Instruction An Instruct command committed in a patient's note — clinical guidance such as cessation counseling or dietary instructions. ](/sdk/data-instruction/) [ IntegrationTask Incoming documents that need processing, including faxes, uploads, and portal submissions. ](/sdk/data-integration-task/) [ IntegrationTaskActionEvent Faxes of an integration task, with their delivery status. ](/sdk/data-fax/#integrationtaskactionevent) [ Invoice A patient statement generated for a patient or guarantor, with its total, delivery method, and status. ](/sdk/data-invoice/) [ LabOrderActionEvent Faxes of a lab order, with their delivery status. ](/sdk/data-fax/#laborderactionevent) [ LabPartner Lab partners and the tests they offer within Canvas. ](/sdk/data-lab-partner-and-test/) [ LabReportTemplate Templates for point-of-care labs and custom lab reports, defining fields and options. ](/sdk/data-lab-report-template/) [ Labs Analysis of clinical specimens to obtain information about the health of a patient. ](/sdk/data-labs/) [ Letter Patient correspondence letters created within Canvas. ](/sdk/data-letter/) [ LetterActionEvent Actions taken on a letter, such as printing or faxing. ](/sdk/data-letter-action-event/) [ Medication A record of a medication that is being consumed by a patient, either now, in the past, or in the future. ](/sdk/data-medication/) [ Medication History A record of a patient's medication history, including medications that were taken in the past but are no longer active. ](/sdk/data-medication-history/) [ Medication Statement A record of a medication statement by a patient from the past. ](/sdk/data-medication-statement/) [ Message Messages sent to and from Canvas. ](/sdk/data-message/) [ Note Clinical notes on patient charts. ](/sdk/data-note/) [ NoteActionEvent Faxes of a note, with their delivery status. ](/sdk/data-fax/#noteactionevent) [ Observation Measurements and simple assertions made about a patient. ](/sdk/data-observation/) [ Organization The clinical organization present in the Canvas EMR. ](/sdk/data-organization/) [ OrganizationalEntity External entities, such as service providers, referenced by a patient's external care team members. ](/sdk/data-organizational-entity/) [ Patient Data used to categorize individuals for identification, records matching, and other purposes. ](/sdk/data-patient/) [ PatientAdministrativeDocument Patient-facing administrative documents, such as signed consent forms and statements. ](/sdk/data-patient-administrative-document/) [ PatientConsent Documented patient consents that ensure legal compliance and protect patient rights. ](/sdk/data-patient-consent/) [ PatientGroup A collection of patients. ](/sdk/data-patient-group/) [ PaymentCard A patient's stored payment card on file. ](/sdk/data-payment-card/) [ PayorSpecificCharge A billing charge specific to a certain transactor in Canvas. ](/sdk/data-payor-specific-charge/) [ Plan A Plan (plan of care) narrative recorded on a note. ](/sdk/data-plan/) [ PluginCommand Custom commands registered by plugins via the manifest configuration. ](/sdk/data-plugin-command/) [ PortalAccessGrant Family portal access given to a login for a patient's chart. ](/sdk/data-portal-access-grant/) [ PortalInvitation Patient portal invite and password reset links, with when each was opened, claimed, or refused. ](/sdk/data-portal-invitation/) [ Posting Payments and postings associated with healthcare claims. ](/sdk/data-posting/) [ PracticeLocation The practice locations present in the Canvas EMR. ](/sdk/data-practicelocation/) [ Prescription The practice locations present in the Canvas EMR. ](/sdk/data-prescription/) [ PrescriptionChangeRequest An incoming Surescripts request to change a prescription, with its medication codings. ](/sdk/data-prescription-change-request/) [ PrescriptionChangeResponse A response (approve/deny) to a Surescripts prescription change request. ](/sdk/data-prescription-change-response/) [ Procedure A procedure performed on or ordered for a patient, with its CPT codings. ](/sdk/data-procedure/) [ ProtocolCurrent The current state of clinical protocols applied to patients within Canvas. ](/sdk/data-protocol-current/) [ ProtocolOverride A record of a protocol being snoozed for a patient. ](/sdk/data-protocol-override/) [ Questionnaire Groups of coded questions and the coded patient responses. ](/sdk/data-questionnaire/) [ ReasonForVisit The reason for a patient's visit. ](/sdk/data-reason-for-visit/) [ Receipt A Canvas-generated payment receipt for a payment collection. ](/sdk/data-receipt/) [ Reference The record of a diagnostic view embedded in a note, with a snapshot of its rendered table. ](/sdk/data-reference/) [ Referral A referral directing a specific patient to another provider or specialist. ](/sdk/data-referral/) [ ReferralActionEvent Faxes of a referral, with their delivery status. ](/sdk/data-fax/#referralactionevent) [ RefillRequest An incoming request to refill a patient's medication and its responding prescriptions. ](/sdk/data-refill-request/) [ RemoveAllergyEvent A record of an allergy being removed via the remove_allergy command. ](/sdk/data-remove-allergy-event/) [ RemovePastMedicalHistoryEvent A record of a past medical history entry being removed via the remove_past_medical_history command. ](/sdk/data-remove-past-medical-history-event/) [ ResolveConditionEvent A record of a condition being resolved via the resolve_condition command. ](/sdk/data-resolve-condition-event/) [ ServiceProvider Data associated with Service Providers. ](/sdk/data-serviceprovider/) [ Snapshot Images captured via the Canvas iOS application. ](/sdk/data-snapshot/) [ SpecialtyReportTemplate Templates for specialty and referral reports, including specialty taxonomy codes. ](/sdk/data-specialty-report-template/) [ Staff Data associated with Staff members. ](/sdk/data-staff/) [ Stop Medication Event A record of a Stop Medication Event, when a medication is removed from a patient's medication list. ](/sdk/data-stop-medication-event/) [ Task Data associated with Tasks. ](/sdk/data-task/) [ Team Data associated with Teams. ](/sdk/data-team/) [ Uncategorized Clinical Documents Data associated with uncategorized clinical documents and their reviews. ](/sdk/data-uncategorized-clinical-document/) [ Vaccine A vaccine in the instance's catalog and the lots of it held in inventory. ](/sdk/data-vaccine/) [ ValidateCodingGapEvent A record of a coding gap being validated. ](/sdk/data-coding-gap-event/#validatecodinggapevent) [ ValueSets Lists of codes and terms from various clinical coding systems grouped by a defining concept. ](/sdk/data-value-sets/) [ VisualExamFinding Visual exam findings captured on a note — a titled image with a narrative description. ](/sdk/data-visual-exam-finding/) [ VitalSignReading Vital-sign readings recorded via the vitals command — the reading anchor and its individual measurements. ](/sdk/data-vital-sign-reading/)
 ----- END PAGE https://docs.canvasmedical.com/sdk/data/
 
 
@@ -29407,11 +29547,13 @@ To route a message to a group of staff rather than one person, assign it to a te
 ###  create() → Effect 
 Creates a message without sending it.
   - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+  - The SDK does not yet support sending a message from a family member with [family portal access](/sdk/patient-portal/#family-portal-access).
   - `message_id` must not be set.
   - `team_id` is optional. Set it to create the message already assigned to a team.
 ###  create_and_send() → Effect 
 Creates the message and sends it in one operation.
   - `content`, `sender_id`, and `recipient_id` are required, and `content` cannot be empty.
+  - The SDK does not yet support sending a message from a family member with [family portal access](/sdk/patient-portal/#family-portal-access).
   - `message_id` must not be set.
   - `team_id` is optional. Set it to create the message already assigned to a team.
   - When the recipient is a patient, the patient needs an eligible contact point. See Sending to a patient.
@@ -29421,6 +29563,7 @@ Changes an existing message.
   - Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values.
   - `attachment_upload_keys` adds files to the message, and can be the only attribute you set. A locked message can't take new files. See Attaching files.
   - `team_id` must not be set. Editing a message keeps its team. To change the team, use `AssignMessageTeam`.
+  - To edit a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access), set `sender_id` to the patient the message is about. The family member stays the sender.
 ###  send() → Effect 
 Sends a message that was already created, if you separated creating it from sending it.
   - Set `message_id` to the message to send.
@@ -29466,6 +29609,11 @@ To avoid this, check the patient's [contact points](/sdk/data-patient/#patientco
     effect = message.create_and_send() if has_eligible_contact else message.create()
     ```
 Instances set up to deliver patient messages through a plugin, rather than through Canvas, do not send these notifications.
+When [family portal access](/sdk/patient-portal/#family-portal-access) is on, a message sent to a patient also notifies the family members and representatives who can see the patient's messages. Each one is notified when their [PortalAccessGrant](/sdk/data-portal-access-grant/) to the chart still gives access, its `messaging` level is `view` or `act`, their login is active and has signed up for the portal (`CanvasUser.is_portal_registered`), and they have confirmed the patient's date of birth (`dob_verified_at` is set). The notice says the portal has a new message for a person whose records they can see, and it links to the portal's sign-in page. Instances that deliver patient messages through a plugin don't send these notices either.
+Where Canvas sends each family member's notice depends on whether they have their own chart:
+  - With their own chart, they get an email and a text message at the first-ranked eligible email address and phone number on that chart, eligible as described above.
+  - Without their own chart, they get an email only, at the email address of the contact their login was set up for. A contact's phone number has no consent on record for automated texts, so Canvas doesn't text it.
+Canvas skips any address the patient's own notification goes to, such as a parent's phone number listed on a child's chart.
 `create()` on its own never notifies the patient.
 ##  Attributes 
 Attribute | Type | Description | Required  
@@ -31389,10 +31537,10 @@ Attribute | Type | Description | Required
 `phone_number` | `str` or `None` | The contact's phone number. Exactly 10 digits | No  
 `email` | `str` or `None` | The contact's email address | No  
 `comments` | `str` or `None` | Free-text notes about the contact | No  
-`categories` | list[PatientContactCategory] or `None` | The contact's relationship categories | No  
+`categories` | list[PatientContactCategory] or `None` | The contact's categories, including its relationship to the patient. See Setting a contact's relationship | No  
 `inactive` | `bool` or `None` | Set with `contact_identifier` to remove the contact | No  
 ##  PatientContactCategory 
-The `PatientContactCategory` dataclass expresses a contact's relationship to the patient — emergency contact, next-of-kin, and so on — as a coding.
+The `PatientContactCategory` dataclass expresses one of a contact's categories as a coding: a relationship such as mother or spouse, or a role such as emergency contact.
 All three fields are required, and the coding must already exist in the instance. Look one up with the [ContactCategory](/sdk/data-patient/#contactcategory) data model rather than composing a coding by hand; a coding the instance does not have raises a validation error instead of being created.
 ###  Attributes 
 Attribute | Type | Description | Required  
@@ -31634,6 +31782,38 @@ Setting `related_patient` to another patient's key makes that patient the contac
             return [spouse.create(), patient.update()]
     ```
 A `related_patient` contact carries no name of its own; Canvas shows the referenced patient's details instead.
+###  Setting a contact's relationship 
+A contact's relationship to the patient is a category in the `http://terminology.hl7.org/CodeSystem/v3-RoleCode` coding system, such as `MTH` (mother). Staff pick it under Categories on the patient's Contacts, and FHIR [RelatedPerson](/api/relatedperson/) and family portal access read it from there. A contact your plugin writes without a relationship category shows no relationship in family portal access.
+To set the relationship, look up the coding with the [ContactCategory](/sdk/data-patient/#contactcategory) data model and send it in `categories` with any other categories the contact has:
+    ```python
+    from canvas_sdk.effects.patient import Patient, PatientContact, PatientContactCategory
+    from canvas_sdk.handlers.base import BaseHandler
+    from canvas_sdk.v1.data import ContactCategory
+    RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+    class MyHandler(BaseHandler):
+        def compute(self):
+            mother = ContactCategory.objects.filter(system=RELATIONSHIP_SYSTEM, code="MTH").first()
+            emergency = ContactCategory.objects.filter(code="EMC").first()
+            if mother is None or emergency is None:
+                return []
+            patient = Patient(
+                patient_id="existing-patient-id",
+                contacts=[
+                    PatientContact(
+                        name="Jane Doe",
+                        phone_number="5551234567",
+                        categories=[
+                            PatientContactCategory(
+                                code=category.code, code_system=category.system, name=category.name
+                            )
+                            for category in (mother, emergency)
+                        ],
+                    )
+                ],
+            )
+            return [patient.update()]
+    ```
+Family portal access shows the names of the contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". Other categories, such as an emergency contact, aren't part of the relationship. The relationship categories Canvas provides don't include a legal guardian code.
 ###  Removing a contact 
 A removal needs the `contact_identifier` of the contact to remove and nothing else — no name or related patient, since neither is meaningful on a delete. Read the identifier from the [PatientContactPerson](/sdk/data-patient/#patientcontactperson) data model:
     ```python
@@ -35931,15 +36111,15 @@ Target object | Context object
        "id": pt_id  
 MESSAGE_TEAM_ASSIGNED  
 ---  
-Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the [`AssignMessageTeam`](/sdk/effect-messages/#assignmessageteam) effect. Deleting a team emits this event for each of its messages, with `team` set to null. A save that leaves the team unchanged does not emit it. `team` is null when the message was unassigned, and `previous_team` is null when it had no team before.  
+Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the [`AssignMessageTeam`](/sdk/effect-messages/#assignmessageteam) effect. Deleting a team emits this event for each of its messages, with `team` set to null. A save that leaves the team unchanged does not emit it. `team` is null when the message was unassigned, and `previous_team` is null when it had no team before. `patient` is the chart the message is filed on. For a message a family member sent through [family portal access](/sdk/patient-portal/#family-portal-access), `sender` is the family member's own patient id, or null when they have no chart of their own.  
 Target object | Context object  
     "id": message_id
     "type": [Message](/sdk/data-message/#message)
 | 
     "message": [Message](/sdk/data-message/#message)
       "id": message_id
-      "sender": str, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) who sent it
-      "recipient": str, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) it was sent to
+      "sender": str | null, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) who sent it
+      "recipient": str | null, the id of the [Patient](/sdk/data-patient/) or [Staff](/sdk/data-staff/) it was sent to
       "read": datetime str | null
     "team": [Team](/sdk/data-team/) | null
       "id": team_id
@@ -36219,7 +36399,7 @@ Target object | Context object
 These events follow a patient portal invite or password reset link through its life. Each one targets the link's [PortalInvitation](/sdk/data-portal-invitation/#portalinvitation) record. They don't fire for portal notification links.
 PORTAL_INVITATION_CREATED  
 ---  
-Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link). Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.  
+Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link). Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A family member's or representative's invite or reset link goes to each email address and phone number Canvas has for them, and the event fires once for the link when at least one send is accepted. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.  
 Target object | Context object  
     "id": portal_invitation_id
     "type": [PortalInvitation](/sdk/data-portal-invitation/#portalinvitation)
@@ -52285,7 +52465,8 @@ No copay on file for this visit | Neither `COPAY_AMOUNTS` nor the primary covera
     ```
 ##  handlers/ 
 ###  copay_api.py 
-`CopayAPI` is a SimpleAPI handler with the `/portal` prefix. It uses `PatientSessionAuthMixin` and reads the logged-in patient's ID from the `canvas-logged-in-user-id` request header, so every lookup is scoped to that patient.
+`CopayAPI` is a SimpleAPI handler with the `/portal` prefix. It uses `PatientSessionAuthMixin` and reads the ID of the patient whose chart the request acts on from the `canvas-logged-in-user-id` request header, so every lookup is scoped to that patient.
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member using the portal on the patient's chart can use the page with view access to the chart's appointments and billing, which `PORTAL_ACCESS` declares for every route. The pay endpoint declares its own `portal_access` and also requires act access to billing. See [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
 **Endpoints**
   - `GET /portal/page`: Renders the page, passing in the name of the patient's WebSocket channel.
   - `GET /portal/copay.js` and `GET /portal/copay.css`: Serve the page's script and styles.
@@ -52312,7 +52493,12 @@ The response body carries the `idempotency_key`, which the page uses to match th
     from canvas_sdk.effects import Effect
     from canvas_sdk.effects.payment import ChargeStoredCard
     from canvas_sdk.effects.simple_api import HTMLResponse, JSONResponse, Response
-    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPI, api
+    from canvas_sdk.handlers.simple_api import (
+        PatientSessionAuthMixin,
+        PortalAccessLevel,
+        SimpleAPI,
+        api,
+    )
     from canvas_sdk.templates import render_to_string
     def _appointment_json(row: dict[str, Any]) -> dict[str, Any]:
         """Serialize one copay row for the page."""
@@ -52330,13 +52516,16 @@ The response body carries the `idempotency_key`, which the page uses to match th
         }
     class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
         """Serve the copay page and charge a stored card for an appointment's copay.
-        Every request is made by a logged-in patient, and every lookup is scoped to that patient,
-        so a patient can only see and pay for their own appointments.
+        Every request acts on one patient's chart, and every lookup is scoped to that patient, so a
+        patient can only see and pay for their own appointments. A family member acting on the chart
+        needs view access to its appointments and billing to use the page, and act access to its
+        billing to pay.
         """
         PREFIX = "/portal"
+        PORTAL_ACCESS = {"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.VIEW}
         @property
         def patient_id(self) -> str:
-            """The id of the logged-in patient."""
+            """The id of the patient whose chart the request acts on."""
             return self.request.headers["canvas-logged-in-user-id"]
         def _configured_amounts(self) -> dict[str, Decimal]:
             return parse_copay_amounts(self.secrets.get(COPAY_AMOUNTS_VARIABLE))
@@ -52382,7 +52571,10 @@ The response body carries the `idempotency_key`, which the page uses to match th
                     status_code=HTTPStatus.OK,
                 )
             ]
-        @api.post("/appointments/<appointment_id>/pay")
+        @api.post(
+            "/appointments/<appointment_id>/pay",
+            portal_access={"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.ACT},
+        )
         def pay(self) -> list[Response | Effect]:
             """Charge the chosen stored card for the appointment's copay.
             The amount and the claim are recomputed here rather than taken from the request, so the
@@ -52468,14 +52660,18 @@ The response body carries the `idempotency_key`, which the page uses to match th
             ]
     ```
 ###  copay_websocket.py 
-`CopayWebSocket` is a `WebSocketAPI` handler. Its `authenticate` method accepts a connection when the logged-in user is a patient connecting to the channel named after them, the same `copay-<patient_id>` channel that `ChargeResponseHandler` broadcasts on.
+`CopayWebSocket` is a `WebSocketAPI` handler. Its `authenticate` method accepts a patient session connecting to the channel of the chart it acts on, the same `copay-<patient_id>` channel that `ChargeResponseHandler` broadcasts on. Its `PORTAL_ACCESS` lets a family member connect with the same access the page needs.
     ```python
     from appointment_copay_collection.handlers.charge_response import channel_for
+    from canvas_sdk.handlers.simple_api import PortalAccessLevel
     from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
     class CopayWebSocket(WebSocketAPI):
-        """Let a logged-in patient subscribe to their own charge-result channel, and no other."""
+        """Let a session subscribe to the charge results of the chart it acts on, and no other.
+        A family member acting on the chart needs the access the copay page needs.
+        """
+        PORTAL_ACCESS = {"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.VIEW}
         def authenticate(self) -> bool:
-            """Accept only a patient connecting to the channel named after them."""
+            """Accept only a patient session connecting to the channel of the chart it acts on."""
             user = self.websocket.logged_in_user
             return (
                 user is not None
@@ -56545,7 +56741,43 @@ Scope | Description
 `provider_companion_note_specific` | As a tab within an opened note in the [Provider Companion](/sdk/companion/)  
 ###  Who sees an application 
 Applications in the `global`, `patient_specific`, and `provider_menu_item` scopes are shown to every staff member, and `portal_menu_item` applications are shown to every patient in the patient portal. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
-When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+When a patient opens a `portal_menu_item` application, the event context identifies the patient only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+With [family portal access](/sdk/patient-portal/#family-portal-access), a login can open someone else's chart, so the event tells you two different people:
+  - `user` in `self.event.context` is the patient whose chart the portal is open on. Use it to look up the records the application shows.
+  - `self.event.actor` is the login that is signed in, and `self.event.actor.instance` is its [CanvasUser](/sdk/data-canvasuser/#user). For a family member acting on another patient's chart, that's the family member's own login, not the patient's. Use it to tell the patient from a family member, and look up a family member's access with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+When the patient opens their own chart, both point to the patient.
+This `portal_menu_item` application shows the patient one page and a family member another. A family member whose access doesn't include clinical records sees a short message instead:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.launch_modal import LaunchModalEffect
+    from canvas_sdk.handlers.application import Application
+    from canvas_sdk.v1.data import Patient, PortalAccessGrant, PortalAccessLevel
+    class CarePlanApplication(Application):
+        """One menu item with a page for the patient and another for their family members."""
+        def on_open(self) -> Effect:
+            # The patient whose chart the portal is open on.
+            patient = Patient.objects.get(id=self.event.context["user"]["id"])
+            # The login that is signed in: the patient's own, or a family member's.
+            login = self.event.actor.instance
+            if patient.user == login:
+                content = "<h2>Your care plan</h2><p>Your goals and next steps from your care team.</p>"
+            else:
+                grant = (
+                    PortalAccessGrant.objects.giving_access()
+                    .filter(user=login, patient=patient)
+                    .first()
+                )
+                if grant is None or grant.clinical == PortalAccessLevel.NONE:
+                    content = "<p>Your access to this patient's records doesn't include their care plan.</p>"
+                else:
+                    content = "<h2>Supporting their care plan</h2><p>How you can help between visits.</p>"
+            return LaunchModalEffect(
+                content=content,
+                target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                title="Care plan",
+            ).apply()
+    ```
+Every `portal_menu_item` application appears in the menu for everyone who signs in to the portal. The SDK does not yet support hiding one from the patient, so for a page meant only for family members, show the patient a short message from `on_open()` in place of the page.
 ###  Linking to a portal application 
 A `portal_menu_item` application's URL ends in its identifier, base64-encoded. For example, `.../app/application/cGF0aWVudF9wb3J0YWxfY29uc2VudF9mb3Jtcy4uLg==` decodes to `plugin_name.module.path:ClassName`. Because the identifier is made of the plugin name, module path, and class name, renaming any of them changes the URL and breaks links to it. The browser's address bar also stays the same as the patient moves between applications.
 To send a patient to a portal application from a plugin, return a [`RedirectEffect`](/sdk/effect-redirect/#redirects-in-the-patient-portal) with the application's `application_id` instead of building its URL. A redirect to an `/app/application/...` URL is blocked.
@@ -58498,6 +58730,67 @@ To authenticate using a logged-in user's session, use `SessionCredentials`:
         def get(self) -> list[Response | Effect]:
             ...
     ```
+Canvas builds the `credentials` object from the request and passes it to your route's `authenticate()` method. The type annotated on the parameter, `credentials: SessionCredentials`, tells Canvas which kind of credentials to build. `credentials` exists only inside `authenticate()`: your route's other methods, such as `get()`, read the same information from `self.request`, as shown below.
+For a patient portal session, `credentials.logged_in_user["id"]` is the key of the patient whose chart the portal is open on, which isn't always the person signed in. With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have someone else's chart open, such as a parent on their child's chart. Then `logged_in_user` names the child, and `portal_access` (below) names the parent.
+In a route, read the same values from the request: `self.request.headers["canvas-logged-in-user-id"]` is the patient whose chart is open, and `self.request.portal_access` tells you who is signed in. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see Family portal access.
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+    class WhoIsHereAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+        PATH = "/routes/who-is-here"
+        # Lets family members' sessions in, with no particular access required.
+        PORTAL_ACCESS = {}
+        def get(self) -> list[Response | Effect]:
+            # The patient whose chart the portal is open on.
+            patient_id = self.request.headers["canvas-logged-in-user-id"]
+            access = self.request.portal_access
+            return [
+                JSONResponse(
+                    {
+                        "patient_id": patient_id,
+                        # True for a family member on someone else's chart.
+                        "is_family_member": access.is_acting,
+                        # The family member's CanvasUser dbid, or None for the patient themselves.
+                        "family_member_user_id": access.acting_user_id,
+                    }
+                )
+            ]
+    ```
+`credentials.portal_access`, or `self.request.portal_access` in a route, tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object.
+Attribute | Type | Description  
+---|---|---  
+`is_acting` | `bool` | `True` when a family member or representative, not the patient, is acting on the chart.  
+`acting_user_id` | `str` or `None` | The `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session.  
+`patient` | [Patient](/sdk/data-patient/#patient) or `None` | The patient whose chart the request acts on.  
+`actor` | [CanvasUser](/sdk/data-canvasuser/#user) or `None` | The login acting on the chart: the family member's or representative's, or on a patient's own chart, the patient's, so `actor` is `patient.user` there.  
+`grant` | [PortalAccessGrant](/sdk/data-portal-access-grant/) or `None` | The grant that gives `actor` the chart, with the contact it was given from and the levels staff gave. `None` on a patient's own chart.  
+Method | Returns | Description  
+---|---|---  
+`level(area)` | `PortalAccessLevel` | The session's level in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`.  
+`allows(area, level)` | `bool` | `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. `level` can be a `PortalAccessLevel` or its value, such as `"view"`.  
+This route lets in the patient, and a family member whose access includes at least viewing billing. Its `authenticate()` reads `credentials.portal_access` after the mixin's own check:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SessionCredentials, SimpleAPIRoute
+    class BillingSummaryAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+        PATH = "/routes/billing-summary"
+        # Serves family members that authenticate() accepts; it checks their access below.
+        PORTAL_ACCESS = {}
+        def authenticate(self, credentials: SessionCredentials) -> bool:
+            # Canvas builds `credentials` from the request and passes it in here.
+            if not super().authenticate(credentials):
+                return False
+            # The patient on their own chart has every level, so this checks family members.
+            return credentials.portal_access.allows("billing", "view")
+        def get(self) -> list[Response | Effect]:
+            # `credentials` isn't available here; the request carries the same information.
+            patient_id = self.request.headers["canvas-logged-in-user-id"]
+            return [JSONResponse({"patient_id": patient_id})]
+    ```
+`patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
+For a patient on their own chart, every area is `ACT`, and for a session that isn't a patient's, every area is `NONE`. When `acting_user_id` is set, each area has the level the family member or representative was given, and an area with no level or an unrecognized one is `NONE`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if credentials.portal_access.level("billing"):` checks for any billing access. To serve family members and representatives from your routes, see Family portal access.
 #####  Custom 
 It's also possible to create custom authentication schemes. There are two ways to do this.
 The first way is to access authentication headers on the request object directly. If you wish to do this, then you would define your authenticate method to take a `Credentials` object, and pull the authentication values from the request headers:
@@ -58596,6 +58889,79 @@ If you want to ensure the visiting user is a logged in patient user, you can use
                 JSONResponse({"message": "Hello world!"})
             ]
     ```
+`PatientSessionAuthMixin` checks that the session is a patient's. To also serve a family member or representative using the portal on a patient's chart, declare the access your routes need, as Family portal access describes.
+####  Family portal access 
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member or representative uses the portal on a patient's chart with the access staff gave them in each area: appointments, messaging, clinical, and billing. To serve them from your API, declare the lowest access level your routes need in each area:
+  - `PORTAL_ACCESS` on the handler covers every route on it. On a `SimpleAPIRoute`, it covers every method.
+  - The `portal_access` argument of a route decorator, such as `@api.post`, replaces `PORTAL_ACCESS` for that route.
+A route serves family members and representatives only when it has a declaration, from `PORTAL_ACCESS` or its own `portal_access`. They reach it when your `authenticate` method accepts them and they have at least the declared level in every area the declaration names. A declaration doesn't change how patients on their own chart, staff, and requests without a session are authenticated.
+This handler serves family members who can view appointments and billing, and requires `ACT` access to billing to pay:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import (
+        PatientSessionAuthMixin,
+        PortalAccessLevel,
+        SimpleAPI,
+        api,
+    )
+    class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
+        PREFIX = "/copay"
+        PORTAL_ACCESS = {
+            "appointments": PortalAccessLevel.VIEW,
+            "billing": PortalAccessLevel.VIEW,
+        }
+        @api.get("/balance")
+        def balance(self) -> list[Response | Effect]:
+            return [
+                JSONResponse({"balance": "0.00"})
+            ]
+        @api.post(
+            "/pay",
+            portal_access={
+                "appointments": PortalAccessLevel.VIEW,
+                "billing": PortalAccessLevel.ACT,
+            },
+        )
+        def pay(self) -> list[Response | Effect]:
+            return [
+                JSONResponse({"message": "Payment started"})
+            ]
+    ```
+A level can be a `PortalAccessLevel` or its value: `"none"`, `"view"`, or `"act"`. An unknown area or level raises a `PluginError` when the plugin loads.
+To check access in your route instead, declare an empty mapping, `PORTAL_ACCESS = {}`. It serves every family member and representative your `authenticate` method accepts, and your route reads `self.request.portal_access`, the same `PortalAccess` object as `credentials.portal_access`.
+`logged_in_user["id"]` names the patient whose chart it is, and `portal_access.patient` is that patient. When `portal_access.acting_user_id` is set, attribute what the request does to `portal_access.actor`, not to the patient.
+A family member can have different charts open in different browser tabs. A request that doesn't name a chart acts on the chart the session last chose, which can be another tab's. To keep a plugin page on the chart it shows, send that patient's key in the `X-Portal-Acting-For` header on every request the page makes. Your route can put the key in the page when it serves it, from `logged_in_user["id"]`. A page's [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page) names its chart in the URL instead.
+The levels that `level()`, `allows()`, and `PORTAL_ACCESS` use are the ones Canvas sends with the request. Read `portal_access.grant` to show who was given access and what the grant allows:
+    ```python
+    from canvas_sdk.effects import Effect
+    from canvas_sdk.effects.simple_api import JSONResponse, Response
+    from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+    class ChartBanner(PatientSessionAuthMixin, SimpleAPIRoute):
+        PATH = "/chart-banner"
+        PORTAL_ACCESS = {}
+        def get(self) -> list[Response | Effect]:
+            access = self.request.portal_access
+            grant = access.grant
+            relationship = None
+            if grant:
+                # The contact's relationship is its v3-RoleCode categories, such as "mother".
+                relationship = [
+                    link.category.name
+                    for link in grant.contact.categories.filter(
+                        category__system="http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+                    )
+                ]
+            return [
+                JSONResponse(
+                    {
+                        "chart": access.patient.first_name,
+                        "signed_in_as": access.actor.email,
+                        "relationship": relationship,
+                    }
+                )
+            ]
+    ```
 ##  Acting as a Canvas user 
 By default, a SimpleAPI request isn't tied to a specific person, so any effects it returns — such as creating, locking, or signing a note — are recorded as Canvas Bot rather than a clinician.
 To have a request run **as a specific Canvas staff member** — for example, so a note is signed under the treating provider's name — call the endpoint with an access token obtained through the [Authorization Code flow](/api/customer-authentication#authorization-code). That flow issues a token that represents the staff member who signed in and approved it. Send it as a Bearer token in the `Authorization` header, and Canvas identifies the user from the token and treats the request as coming from them, so any effects the handler returns are attributed to that staff member.
@@ -58645,12 +59011,17 @@ To define a WebSocket handler, subclass `WebSocketAPI`. You must implement an `a
 If `authenticate()` returns `True`, the connection is accepted. Otherwise, it is denied.
 Clients should connect using a URL that maps to your plugin and channel name:
     wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/
+####  Connecting from a patient portal page 
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have different charts open in different browser tabs. A browser can't set headers on a WebSocket, so a portal page names the chart it shows in the URL, with the patient's key in `acting_for`:
+    wss://<instance>.canvasmedical.com/plugin-io/ws/<plugin_name>/<channel_name>/?acting_for=<patient_key>
+The connection's `logged_in_user` and `portal_access` then describe that chart, as the `X-Portal-Acting-For` header does for the page's [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access). Without `acting_for`, the connection acts on the chart the session last chose.
 ###  WebSocket Object 
 When a handler is invoked, the `websocket` object is available as an attribute on the handler. This object provides details about the connection, including:
   - `channel`: The channel name from the connection URL
   - `headers`: A dictionary of headers associated with the connection
   - `api_key`: The api key, if present
   - `logged_in_user`: A dictionary like `{ "id": ..., "type": ... }` if a logged-in user is present
+  - `portal_access`: For a connection from the patient portal, who is using the chart and their access level in each area. It has the same attributes as [`SessionCredentials.portal_access`](/sdk/handlers-simple-api-http/#session) on SimpleAPI requests.
 You can access this object within your handler methods using `self.websocket`.
 > **Info:** Channel names may only contain alphanumeric, hyphen, and underscore characters. 
 ###  Authentication 
@@ -58669,6 +59040,20 @@ For connections initiated from within the Canvas browser UI by a logged-in user:
         # You could authenticate based on type or check to see if the
         # individual is in a particular group or team.
         ...
+    ```
+For a connection from the patient portal, `id` is the key of the patient whose chart the portal is open on. With [family portal access](/sdk/patient-portal/#family-portal-access), that patient can be someone other than the person signed in.
+To accept connections from a family member or representative, set `PORTAL_ACCESS` on your handler to the lowest access level it needs in each area, as on a [SimpleAPI](/sdk/handlers-simple-api-http/#family-portal-access). They connect when `authenticate()` accepts them and they have at least that level in every area it names:
+    ```python
+    from canvas_sdk.handlers.simple_api import PortalAccessLevel
+    from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
+    class CopayWebSocket(WebSocketAPI):
+        PORTAL_ACCESS = {
+            "appointments": PortalAccessLevel.VIEW,
+            "billing": PortalAccessLevel.VIEW,
+        }
+        def authenticate(self) -> bool:
+            user = self.websocket.logged_in_user
+            return user is not None and user["type"] == "Patient"
     ```
 ####  APIKey-Based (External Clients) 
 For external tools or scripts, pass an auth key as a query parameter:
@@ -59546,6 +59931,38 @@ Attribute | Type | Description
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/sdk/patient-portal/
 The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
+##  Family Portal Access 
+With family portal access, staff give a family member or another representative, such as a parent, portal access to a patient's chart. Each family member signs in with their own login, and one login can open several charts: its own, if it has one, and each chart it was given. Canvas turns family portal access on for each instance.
+###  The patient and the person signed in 
+When a family member has another patient's chart open, two different people are involved: the **patient** whose chart is open, and the **person signed in**. Plugins get both, in different places:
+Where | The patient whose chart is open | The person signed in  
+---|---|---  
+[SimpleAPI](/sdk/handlers-simple-api-http/#session) route | `self.request.headers["canvas-logged-in-user-id"]`, or `credentials.logged_in_user["id"]` in `authenticate()` | `self.request.portal_access`, or `credentials.portal_access` in `authenticate()`  
+[WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) | `logged_in_user` | `portal_access`  
+Portal events: `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` | `self.event.target.id` (target type `Patient`) | `self.event.actor`  
+`portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application) | `self.event.context["user"]["id"]` | `self.event.actor`  
+When the patient opens their own chart, both columns point to the patient.
+To see what a family member can do on the chart:
+  - In SimpleAPI and WebSocket, `portal_access` gives the patient, the login acting on the chart, its [PortalAccessGrant](/sdk/data-portal-access-grant/), and its level (none, view, or act) in appointments, messaging, clinical, and billing. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
+  - In portal events and applications, look up the login's grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+###  Which chart is open 
+The portal is open on one chart at a time, and the family member can switch between their charts. Each browser tab shows one chart.
+  - Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
+  - To keep a plugin page on the chart its own tab shows, have it name that chart in its [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access) and its [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page).
+###  When there's no chart to open 
+When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+###  Messages and notification badges 
+  - A message a family member sends from the portal is filed on the chart that's open. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+  - A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+###  Built-in pages follow the family member's access 
+With no access in an area, the area's pages don't appear in the menu, even when your menu configuration includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
+Area | Built-in pages (menu items) | View | Act  
+---|---|---|---  
+Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, with a note that the access is view-only. Book Appointment, Reschedule, and each appointment's cancel button show turned off. Join still opens a telehealth visit. | The appointments, with booking, canceling, and rescheduling  
+Messaging | Messaging (`MESSAGING`) | The chart's messages, including lab reports the care team shared through the portal. The form for sending a message shows turned off, with a note that the access is view-only. Opening a shared lab report's original takes view or act access in clinical. | The messages, with the form for sending one  
+Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. My Health and Health Records note that the access is view-only. Generated health records can be viewed and downloaded. Generate, Re-Generate, Transmit, and My Health's Upload Records show turned off. | The records, with Generate, Re-Generate, and Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on  
+Billing | Payments (`PAYMENTS`) | The chart's balance, installment plan, and statements, with a note that the access is view-only. When card payments are set up, the saved payment methods show, and Pay Now, Add, and each card's edit and remove buttons show turned off. Otherwise, a number to call to pay. | The balance and statements, with Pay Now and saved payment methods that can be added, edited, and removed when card payments are set up, or otherwise a number to call to pay  
+The ready-made landing page widgets follow the same access. `APPOINTMENTS` and `MESSAGING` don't appear without access in their area. With view access, each shows a note that the access is view-only: `APPOINTMENTS` shows its booking, canceling, and rescheduling buttons turned off, and `MESSAGING` links to the messages with View messages in place of Send a message.
 ##  Configure Portal Menu Items 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
 The list you return **replaces** the built-in menu — include every built-in item you want shown, in the order you want them to appear (**the list order is the navigation order**), and omit any you want hidden.
@@ -60077,12 +60494,14 @@ Attribute | Type | Description | Required
             return []
     ```
 ###  Send Invite 
+> **Warning:** `SendInviteEffect` invites patients only. It doesn't send a family member's portal invite: staff send those from the patient's Portal section (see Family Portal Access). For the login of a family member with no chart of their own, the effect sends nothing. 
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
 On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
 ####  Methods 
 #####  apply() → Effect 
 Sends the portal invitation.
   - `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+  - The invitation goes to the patient whose own login `user_dbid` names.
 ####  Attributes 
 Attribute | Type | Description | Required  
 ---|---|---|---  
@@ -60112,6 +60531,7 @@ Attribute | Type | Description | Required
 **Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link. Canvas still records the link itself as a [PortalInvitation](/sdk/data-portal-invitation/), so a plugin can check `is_redeemable` on the patient's invitations before sending another one.
 What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Each portal session sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link starts a session, so `last_login` can be set before the patient sets a password. Use `is_portal_registered`, not `last_login`, to tell whether the patient activated their account. To follow each link as the patient opens and claims it, handle the [portal invitation events](/sdk/events/#portal-invitations).
 ###  Customize the Login Email 
+> **Warning:** This customizes patients' login emails only. A family member's invite or password reset email, which staff send from the patient's Portal section (see Family Portal Access), doesn't fire `PATIENT_PORTAL__GET_LOGIN_EMAIL` and always uses Canvas's default wording. 
 Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
 Canvas fires the event each time it emails a patient a login link:
   - Staff send an invite or a password reset from the Portal section of the patient's profile.
