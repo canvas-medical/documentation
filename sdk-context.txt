@@ -35780,6 +35780,9 @@ Target object | Context object
        "id": pt_id  
 #####  Prescription status events 
 The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
+These events don't form one sequence that every prescription passes through. Which ones fire depends on how the prescription is sent:
+  - Non-controlled prescriptions move from open to pending to ultimately accepted, or to error, firing `PRESCRIPTION_OPENED`, `PRESCRIPTION_PENDING`, and then `PRESCRIPTION_ACCEPTED` or `PRESCRIPTION_ERRORED`.
+  - `PRESCRIPTION_RECEIVED`, `PRESCRIPTION_SIGNED`, `PRESCRIPTION_INQUEUE`, `PRESCRIPTION_TRANSMITTED`, and `PRESCRIPTION_DELIVERED` fire only for controlled-substance prescriptions, which Canvas sends through DrFirst for electronic prescribing of controlled substances (EPCS). Each time Canvas updates one of these prescriptions from DrFirst, it records only the most recent status DrFirst reports, so a prescription can skip some of these events. Don't rely on them arriving in a fixed order.
 PRESCRIPTION_OPENED  
 ---  
 Occurs when a prescription's status is set to open. This is the default status when a prescription is first created.  
@@ -35845,7 +35848,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_RECEIVED  
 ---  
-Occurs when a prescription has been received by the e-prescribing network.  
+Occurs when DrFirst has received a controlled-substance prescription.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35854,7 +35857,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_SIGNED  
 ---  
-Occurs when a prescription has been signed.  
+Occurs when DrFirst reports a controlled-substance prescription was signed.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35863,7 +35866,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_INQUEUE  
 ---  
-Occurs when a prescription is in queue for transmission.  
+Occurs when DrFirst reports a controlled-substance prescription is in queue for transmission.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35872,7 +35875,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_TRANSMITTED  
 ---  
-Occurs when a prescription has been transmitted to the pharmacy.  
+Occurs when DrFirst reports a controlled-substance prescription was transmitted to the pharmacy.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
@@ -35881,7 +35884,7 @@ Target object | Context object
        "id": pt_id  
 PRESCRIPTION_DELIVERED  
 ---  
-Occurs when a prescription has been delivered to the pharmacy.  
+Occurs when DrFirst reports a controlled-substance prescription was delivered to the pharmacy. Non-controlled prescriptions reach ultimately accepted instead, which fires `PRESCRIPTION_ACCEPTED`.  
 Target object | Context object  
     "id": prescription_id
     "type": [Prescription](/sdk/data-prescription)
