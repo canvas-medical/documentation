@@ -228,7 +228,54 @@ The `scope` attribute determines where your application is visible within Canvas
 
 Applications in the `global`, `patient_specific`, and `provider_menu_item` scopes are shown to every staff member, and `portal_menu_item` applications are shown to every patient in the patient portal. To limit what a user can do, check who opened the application in `on_open()`, using the user in `self.event.context`, and show a message instead of the content when that user shouldn't have access.
 
-When a patient opens a `portal_menu_item` application, the event context identifies them only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+When a patient opens a `portal_menu_item` application, the event context identifies the patient only through `user`, for example `{"type": "Patient", "id": "..."}`. Canvas sets `url` to `None` and leaves out `patient` and other page context, so use the `user` ID to look up the patient's records.
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a login can open someone else's chart, so the event tells you two different people:
+
+- `user` in `self.event.context` is the patient whose chart the portal is open on. Use it to look up the records the application shows.
+- `self.event.actor` is the login that is signed in, and `self.event.actor.instance` is its [CanvasUser](/sdk/data-canvasuser/#user). For a family member acting on another patient's chart, that's the family member's own login, not the patient's. Use it to tell the patient from a family member, and look up a family member's access with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+
+When the patient opens their own chart, both point to the patient.
+
+This `portal_menu_item` application shows the patient one page and a family member another. A family member whose access doesn't include clinical records sees a short message instead:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.handlers.application import Application
+from canvas_sdk.v1.data import Patient, PortalAccessGrant, PortalAccessLevel
+
+
+class CarePlanApplication(Application):
+    """One menu item with a page for the patient and another for their family members."""
+
+    def on_open(self) -> Effect:
+        # The patient whose chart the portal is open on.
+        patient = Patient.objects.get(id=self.event.context["user"]["id"])
+        # The login that is signed in: the patient's own, or a family member's.
+        login = self.event.actor.instance
+
+        if patient.user == login:
+            content = "<h2>Your care plan</h2><p>Your goals and next steps from your care team.</p>"
+        else:
+            grant = (
+                PortalAccessGrant.objects.giving_access()
+                .filter(user=login, patient=patient)
+                .first()
+            )
+            if grant is None or grant.clinical == PortalAccessLevel.NONE:
+                content = "<p>Your access to this patient's records doesn't include their care plan.</p>"
+            else:
+                content = "<h2>Supporting their care plan</h2><p>How you can help between visits.</p>"
+
+        return LaunchModalEffect(
+            content=content,
+            target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+            title="Care plan",
+        ).apply()
+```
+
+Every `portal_menu_item` application appears in the menu for everyone who signs in to the portal. The SDK does not yet support hiding one from the patient, so for a page meant only for family members, show the patient a short message from `on_open()` in place of the page.
 
 <!-- source: discussion #1204 -->
 ### Linking to a portal application
