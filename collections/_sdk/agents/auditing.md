@@ -8,7 +8,7 @@ Agent runs need an audit trail for two distinct purposes — billing
 and operations on one side, "what did the agent do, and why" on the
 other. Those two needs have different shapes, different schemas,
 different retention requirements, and different owners. The Agent
-Runner Framework splits the responsibility along that line.
+Development Kit splits the responsibility along that line.
 
 ## Platform-owned audit (skeleton)
 
@@ -57,6 +57,12 @@ Captured today:
   Those events name the clinician whose action started the run, your
   plugin, and the agent class, and carry the `run_id` as their
   correlation id, so one id joins a run's record and its chart changes.
+  For a run started in a request, the events also carry what that
+  request's own events would: its source address and user agent, an
+  admin impersonating the clinician, and the person behind a shared
+  login. Canvas keeps these on the run's record with the request's id,
+  which ties the run to the request that started it. They aren't among
+  the `AgentRun` fields your plugin reads.
 - **Logs and errors**: the platform logs each run's start and finish,
   and unexpected exceptions go to Sentry, tagged with the agent ID.
 

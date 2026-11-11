@@ -368,7 +368,7 @@ hour:
   run or from any code that decides for them.
 - **What applies:** an approval applies exactly the stored changes, in
   order and all or none, recorded in the audit trail as the requester's
-  action correlated with the run. Each change is checked against the
+  action under the approving request's id. Each change is checked against the
   requester's permissions and patient groups again just before it
   applies, so a plan is checked once the note it goes on exists, and a
   change that is refused or fails takes back the ones before it. A
