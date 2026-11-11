@@ -30,7 +30,9 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
 
 `canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
-A plugin deployed through Canvas Platform has a publisher-prefixed name, `<org prefix>__<package>` (for example `acme__intake`), used for the manifest `name`, the package folder and its imports. The prefix decides which organization publishes the plugin.
+A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 63 characters. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
+
+The organization that publishes a plugin is its manifest [`publisher`](/sdk/canvas_manifest/#top-level-fields), the organization slug that `canvas login` lists in parentheses (`acme` above). [`canvas deploy`](#canvas-deploy) chooses the publisher when the manifest has none.
 
 `canvas login --platform <url>` or the `CANVAS_PLATFORM_URL` environment variable points the CLI at a platform other than https://platform.canvasmedical.com, and later commands keep using the platform you last signed in to.
 
@@ -121,7 +123,7 @@ To work with a plugin Canvas Platform does not manage on a Canvas instance, sign
 
 Until December 14, 2026, an instance accepts direct writes for every plugin, including one Canvas Platform deployed. A `canvas install`, `config set`, `config unset` or `uninstall` that goes straight to the instance changes that instance's copy of the plugin. The next deploy from Canvas Platform installs its own revision over it and replaces the plugin's variables with the values Canvas Platform stores. Canvas Platform can also deploy over a plugin first installed with `canvas install`.
 
-git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin named in the repository path.
+git signs in to Canvas Platform's git server through `canvas git-credential`, a hidden command that `canvas deploy`, `canvas init` and `canvas clone` register as the repository's credential helper. It mints a one-hour git token for the plugin and publisher named in the repository path.
 
 ### Which instances go through Canvas Platform
 
@@ -239,7 +241,7 @@ $ canvas whoami [OPTIONS]
 
 ### `canvas init`
 
-Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, registered with Canvas Platform, and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, it is named from the project name alone and `init` says so: `canvas deploy` refuses such a plugin, so run `canvas login` and `canvas init` again for one you can deploy. Run [`canvas whoami`](#canvas-whoami) first if you are unsure which platform you are signed in to.
+Create a new plugin. Signed in to Canvas Platform, the package is named `<org prefix>__<package>`, the manifest's `publisher` is set to the publishing organization, and the plugin is registered with Canvas Platform and given a git repository whose `origin` is Canvas Platform, ready for `canvas deploy`. Signed out, the package is named from the project name alone, and `init` creates it without registering it or giving it a git repository. Run `canvas login` and then `canvas init` for a registered plugin. Run [`canvas whoami`](#canvas-whoami) first if you are unsure which platform you are signed in to.
 
 **Usage**:
 
@@ -291,10 +293,12 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 **What `deploy` does**
 
-1. Checks the manifest `name` is publisher-prefixed and the package folder has the same name, before anything is committed or pushed. Then registers the plugin with Canvas Platform under the organization its prefix names.
-2. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
-3. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-4. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
+1. Checks the manifest `name` is a valid plugin name and the package folder has the same name.
+2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
+3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
+4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
+5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
+6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
@@ -317,6 +321,23 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 `deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in [Deploying from a larger repository](#deploying-from-a-larger-repository) still apply.
+
+**Choosing the publisher**
+
+`canvas deploy` publishes the plugin as:
+
+1. The manifest `publisher`, when it's set.
+2. Otherwise, your organization whose prefix the plugin name carries, such as `acme` for `acme__intake`.
+3. Otherwise, the only organization you can publish in.
+4. Otherwise, the organization you pick at a terminal. A regular push writes `"publisher"` into `CANVAS_MANIFEST.json` and commits it with the push, so later deploys don't ask. With `--ref`, `--no-push` or `--snapshot`, deploy prints the line to add to the manifest instead.
+
+Without a terminal, such as in CI, a deploy stops until the manifest names a publisher when you can publish in several organizations and the name carries none of their prefixes. Add the publisher's slug to `CANVAS_MANIFEST.json` and commit it:
+
+```json
+"publisher": "acme"
+```
+
+A service account belongs to one organization, so a pipeline that signs in with one publishes as that organization.
 
 **Waiting for the outcome**
 
@@ -348,6 +369,8 @@ paperwork-eviscerator/          # repository root
 `canvas init` creates this layout. If the package is not in a git repository yet, `deploy` offers to create one at its parent directory. A package nested deeper inside a larger repository is refused unless you pass `--snapshot`; see the next section.
 
 Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
+
+Validation reads the package on disk, so a Python file that git ignores passes validation but never reaches the instance. `deploy` refuses a package that holds one, with or without `--snapshot`, and names the files. Stop ignoring them in `.gitignore`, or move them out of the package, then deploy again. Python files under a folder whose name starts with a dot, such as `.venv`, or under `node_modules` are skipped, since validation skips them too.
 
 #### Deploying from a larger repository
 
@@ -392,9 +415,11 @@ With `--branch`, the snapshot commit goes to that branch. If the branch exists o
 
 A plugin that reads another plugin's [custom data](/sdk/custom-data-sharing-data/) needs consent before it deploys. At a terminal, `deploy` shows each consent request and asks you to answer it. Under `--yes`, or without a terminal, it lists the requests with the deployment id and exits non-zero without answering them.
 
-**Validate first**
+**Validation before push**
 
-Run [`canvas validate`](#canvas-validate) before you deploy. It runs the manifest checks, the static lint, and sandbox-load validation locally, where errors are faster to fix than after a push.
+`deploy` validates the package whenever it pushes local code: by default, and with `--push-only`, `--branch` or `--snapshot`. With `--ref` or `--no-push`, it deploys a commit that is already on Canvas Platform, so it doesn't validate the local package.
+
+When a handler has new CQM meta properties, manifest validation writes them into `CANVAS_MANIFEST.json`, as it does under `canvas install`. By default `deploy` commits that change with the rest. With `--snapshot`, the rewritten manifest is an uncommitted change, so commit it and run `deploy` again.
 
 ### `canvas clone`
 
@@ -413,6 +438,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 **Options**:
 
+- `--publisher TEXT`: Slug of the organization that publishes the plugin, when two publishers have plugins with the same name
 - `--help`: Show this message and exit.
 
 ### `canvas install`
@@ -683,7 +709,7 @@ Warning: these names do not exist. Each reads as None today and will raise an At
 
 A passing `canvas validate` confirms that handlers import cleanly under the sandbox — it does not guarantee the plugin is fully sandbox-clean. RestrictedPython checks attribute and item access inside `compute()` at request time, not at import time, so violations during handler execution won't be caught by this command.
 
-{% include alert.html type="info" content="Run <code>canvas validate</code> before <code>canvas deploy</code> so violations are caught on your machine before they reach an instance." %}
+{% include alert.html type="info" content="<code>canvas deploy</code> runs these checks before it pushes, and <code>canvas install</code> before it uploads, so violations are caught on your machine before they reach an instance." %}
 
 ### `canvas validate-manifest`
 
@@ -744,7 +770,7 @@ Error: these handler classes won't be found by the plugin runner with the curren
 CANVAS_MANIFEST.json must live inside the plugin's package directory (the directory whose name matches the manifest "name"), alongside the handler packages — not in a parent directory above them.
 ```
 
-{% include alert.html type="info" content="Use <code>canvas validate</code> before <code>canvas deploy</code> for a full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output." %}
+{% include alert.html type="info" content="<code>canvas validate</code> runs the full pre-flight check: manifest validation, the static lint, and sandbox-load validation, with detailed per-handler output." %}
 
 ### `canvas logs`
 
