@@ -319,7 +319,7 @@ These events fire as a result of records being created, updated, or deleted.
 <table>
   <thead>
     <tr><th colspan="2">PATIENT_CONTACT_PERSON_UPDATED</th></tr>
-    <tr><td colspan="2">Occurs when one of a patient's contacts is updated.</td></tr>
+    <tr><td colspan="2">Occurs when one of a patient's contacts is updated: a change to its name, phone number, email, comments, or linked patient. Adding or removing one of the contact's categories, including its relationship and emergency contact or release-of-information designations, doesn't send this event.</td></tr>
   </thead>
   <tbody>
   <tr>
@@ -2795,6 +2795,11 @@ To be notified when lab results (documents and individual records) are added to 
 
 The following events fire when a prescription's status changes during the e-prescribing lifecycle. These events always fire alongside a `PRESCRIPTION_CREATED` or `PRESCRIPTION_UPDATED` event. For example, when a prescription is first created, both `PRESCRIPTION_CREATED` and `PRESCRIPTION_OPENED` will fire. When a prescription's status is updated to "transmitted", both `PRESCRIPTION_UPDATED` and `PRESCRIPTION_TRANSMITTED` will fire.
 
+These events don't form one sequence that every prescription passes through. Which ones fire depends on how the prescription is sent:
+
+- Non-controlled prescriptions move from open to pending to ultimately accepted, or to error, firing `PRESCRIPTION_OPENED`, `PRESCRIPTION_PENDING`, and then `PRESCRIPTION_ACCEPTED` or `PRESCRIPTION_ERRORED`.
+- `PRESCRIPTION_RECEIVED`, `PRESCRIPTION_SIGNED`, `PRESCRIPTION_INQUEUE`, `PRESCRIPTION_TRANSMITTED`, and `PRESCRIPTION_DELIVERED` fire only for controlled-substance prescriptions, which Canvas sends through DrFirst for electronic prescribing of controlled substances (EPCS). Each time Canvas updates one of these prescriptions from DrFirst, it records only the most recent status DrFirst reports, so a prescription can skip some of these events. Don't rely on them arriving in a fixed order.
+
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_OPENED</th></tr>
@@ -2931,7 +2936,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_RECEIVED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been received by the e-prescribing network.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst has received a controlled-substance prescription.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2950,7 +2955,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_SIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been signed.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was signed.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2969,7 +2974,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_INQUEUE</th></tr>
-    <tr><td colspan="2">Occurs when a prescription is in queue for transmission.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription is in queue for transmission.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -2988,7 +2993,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_TRANSMITTED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been transmitted to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was transmitted to the pharmacy.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3007,7 +3012,7 @@ The following events fire when a prescription's status changes during the e-pres
 <table>
   <thead>
     <tr><th colspan="2">PRESCRIPTION_DELIVERED</th></tr>
-    <tr><td colspan="2">Occurs when a prescription has been delivered to the pharmacy.</td></tr>
+    <tr><td colspan="2">Occurs when DrFirst reports a controlled-substance prescription was delivered to the pharmacy. Non-controlled prescriptions reach ultimately accepted instead, which fires <code>PRESCRIPTION_ACCEPTED</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3092,7 +3097,7 @@ Surescripts response events fire when the platform receives a response from Sure
 <table>
   <thead>
     <tr><th colspan="2">MESSAGE_TEAM_ASSIGNED</th></tr>
-    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before.</td></tr>
+    <tr><td colspan="2">Occurs when a message is created with a team, and each time a message's team is assigned, changed, or cleared, including by the <a href='/sdk/effect-messages/#assignmessageteam'><code>AssignMessageTeam</code></a> effect. Deleting a team emits this event for each of its messages, with <code>team</code> set to null. A save that leaves the team unchanged does not emit it. <code>team</code> is null when the message was unassigned, and <code>previous_team</code> is null when it had no team before. <code>patient</code> is the chart the message is filed on. For a message a family member sent through <a href='/sdk/patient-portal/#family-portal-access'>family portal access</a>, <code>sender</code> is the family member's own patient id, or null when they have no chart of their own.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -3104,8 +3109,8 @@ Surescripts response events fire when the platform receives a response from Sure
 "type": <a href='/sdk/data-message/#message'>Message</a></pre></td>
       <td><pre>"message": <a href='/sdk/data-message/#message'>Message</a>
   "id": message_id
-  "sender": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
-  "recipient": str, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
+  "sender": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> who sent it
+  "recipient": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> or <a href='/sdk/data-staff/'>Staff</a> it was sent to
   "read": datetime str | null
 "team": <a href='/sdk/data-team/'>Team</a> | null
   "id": team_id
@@ -3684,6 +3689,90 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
   </tbody>
 </table>
 
+#### Portal Invitations
+
+These events follow a patient portal invite or password reset link through its life. Each one targets the link's <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a> record. They don't fire for portal notification links.
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CREATED</th></tr>
+    <tr><td colspan="2">Occurs when Canvas sends a portal invite or password reset link, or when a plugin mints one with <a href='/sdk/utils/#getting-a-patient-portal-login-link'><code>patient_portal_http.get_login_url()</code></a>. Canvas fires the event for a link it sends only after the text or email is accepted for delivery. If the send fails, or the patient has no phone number or email, the link's PortalInvitation record still exists but no event fires. A family member's or representative's invite or reset link goes to each email address and phone number Canvas has for them, and the event fires once for the link when at least one send is accepted. A minted link fires the event right away, because Canvas doesn't know whether the plugin delivers it.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"origin": str, <code>native</code> when Canvas sent the link by SMS or email, or <code>utility</code> when it was minted for someone else to deliver</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+{% include alert.html type="warning" content="A handler for <code>PORTAL_INVITATION_CREATED</code> can't return <code>SendInviteEffect</code>. Sending an invite creates a new link, which would fire the event again. When a plugin returns that effect for this event, Canvas drops all the effects the plugin returned for it." %}
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_OPENED</th></tr>
+    <tr><td colspan="2">Occurs the first time the link is opened successfully. Later opens of the same link don't send it again.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_CLAIMED</th></tr>
+    <tr><td colspan="2">Occurs when the link is used to set a password.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login</pre></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr><th colspan="2">PORTAL_INVITATION_REJECTED</th></tr>
+    <tr><td colspan="2">Occurs when someone opens the link and Canvas can't use it. <code>reason</code> says why, and is also stored on the invitation's <code>last_rejection_reason</code>. Reopening a link that was already used to set a password sends <code>already_claimed</code>, and a link that lapsed without being claimed sends <code>expired</code>. Either way, the patient sees the same expired-link screen.</td></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Target object</td>
+      <td>Context object</td>
+    </tr>
+    <tr>
+      <td><pre>"id": portal_invitation_id
+"type": <a href='/sdk/data-portal-invitation/#portalinvitation'>PortalInvitation</a></pre></td>
+      <td><pre>"user_dbid": int, the dbid of the <a href='/sdk/data-canvasuser/'>CanvasUser</a> the link signs in
+"patient_id": str | null, the id of the <a href='/sdk/data-patient/'>Patient</a> whose login it is, or null for a representative's login
+"reason": str, a <a href='/sdk/data-portal-invitation/#portalinvitationrejectionreason'>PortalInvitationRejectionReason</a> value: <code>expired</code>, <code>different_account</code>, or <code>already_claimed</code></pre></td>
+    </tr>
+  </tbody>
+</table>
+
 #### Protocol Overrides
 
 <table>
@@ -3725,6 +3814,7 @@ A later report that changes the outcome or its message fires `_UPDATED` again, s
 <table>
   <thead>
     <tr><th colspan="2">PROTOCOL_OVERRIDE_DELETED</th></tr>
+    <tr><td colspan="2">This event does not fire. When a protocol override is removed, Canvas sends <code>PROTOCOL_OVERRIDE_UPDATED</code> instead, and the override's <code>deleted</code> field is <code>true</code>.</td></tr>
   </thead>
   <tbody>
     <tr>

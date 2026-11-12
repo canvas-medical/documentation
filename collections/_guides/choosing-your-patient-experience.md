@@ -102,6 +102,7 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
 | `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
+| `FAMILY_PORTAL_ACCESS` | [Family portal access](#family-portal-access): staff can give family members and other representatives access to a patient's chart | `False` |
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
 
@@ -114,6 +115,17 @@ When the care team sends a patient a message or shares a lab result, Canvas noti
 - **The session lasts 15 minutes** by default. It doesn't extend while the patient is active; when it ends, the patient returns to the login page.
 
 Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
+
+### Family portal access
+
+Staff can give a patient's family member or other representative, such as a parent, guardian, or adult child, portal access to the patient's chart from the patient's **Profile → Portal** in Canvas. Each family member signs in with their own login, and one login can hold several charts: a parent who is also a patient switches between their own record and each child's.
+
+- **Access is set per area.** Appointments, messaging, clinical, and billing are each **None**, **View**, or **Full** (`none`, `view`, and `act` to plugins). The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
+- **The family member confirms the patient's date of birth** the first time they open the chart.
+- **Their actions are recorded as them,** acting for the patient, and the patient can see who has access to their record in the portal.
+- **Notifications reach them too.** When the patient gets a new message, released lab results, a statement, or an appointment reminder, family members with access to that area are told. Their notices link to the portal's sign-in page rather than signing them in, because their login can open more than one chart.
+
+Family portal access is turned on by Canvas. See [Family Portal Access](https://help.canvasmedical.com/articles/1380397114-family-portal-access) for how staff set it up, and the [Patient Portal config hub](/sdk/patient-portal/#family-portal-access) for what plugins receive.
 
 ### Branding
 
@@ -151,11 +163,20 @@ A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal
 
 ### Personalize the landing page with widgets
 
-The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient.
+The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With family portal access, you can also show different cards to the patient and to a family member (see [Tailor the portal for the patient or a family member](#tailor-the-portal-for-the-patient-or-a-family-member)).
 
 You control what each card shows, pulling from the Canvas data module, your plugin's Custom Data, or an external service.
 
 See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widgets) and the [Custom Landing Page guide](/guides/custom-landing-page/) for the exact documentation on how to build them. And you don't have to start from a blank file — there's a ready-made [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin) in our open-source examples repo you can install as-is or use as a reference and starting point.
+
+### Tailor the portal for the patient or a family member
+
+With [family portal access](#family-portal-access), the person using the portal can be the patient or a family member acting for them, such as a parent on their child's chart. Your landing page widgets, menu, applications, and pages can serve each of them differently:
+
+- **Widgets, menu configuration, and applications:** the patient whose chart is open is the portal event's target, or the `user` in an application's event context, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
+- **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) and the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
+
+For example, greet a parent with a card about their child's next appointment, leave out a balance reminder when their billing access is **None**, and keep a patient-only card, such as a care-gap reminder written to the patient, for the patient's own login. See [Family Portal Access](/sdk/patient-portal/#family-portal-access) for everything plugins receive.
 
 ### Shape self-scheduling
 
@@ -193,7 +214,9 @@ Prefer to send the invite yourself? A plugin can mint the patient's activation o
 
 Happy with Canvas sending the invite but want your own words? A plugin can write the subject and body of the invite and password reset emails Canvas sends, and Canvas keeps the login link in them.
 
-See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+Want to follow up on invitations that go nowhere? A plugin can track each portal invitation from sent to opened to claimed, find links that expired before the patient opened them, and react when a patient opens a link that no longer works, for example by sending a fresh one.
+
+See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [PortalInvitation](/sdk/data-portal-invitation/) and the [portal invitation events](/sdk/events/#portal-invitations) for tracking invitations, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
 
 ### Greet patients as soon as they sign in
 

@@ -44,11 +44,11 @@ The Organization admin gives each person the roles their work needs. Developers 
 
 ### 3. Canvas upgrades your plugins
 
-Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role is notified when the upgrade is complete.
+Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role gets two emails from Canvas Platform: one when the upgrade starts, and one when it is complete. Keep using `canvas install` until the second email arrives.
 
 ### 4. Switch your workflow by December 14, 2026
 
-Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then.
+Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then. From that date, your instances refuse plugin changes the CLI sends straight to the instance, such as `canvas install`, and the CLI's error points you to `canvas deploy`.
 
 ## Update your development workflow
 
@@ -140,8 +140,8 @@ No, not in any way. The upgrade happens on a different system from the one your 
 
 ### Do we have to wait for the upgrade before we switch to `canvas deploy`?
 
-Yes. Wait until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle.
+Yes. Wait for the email saying your organization's plugins are upgraded.
 
 ### Can we delete `credentials.ini` after we switch?
 
-Not yet. Keep `~/.canvas/credentials.ini` and the OAuth clients it names on each instance until December 14, 2026, or until Canvas gives you specific direction. Some commands, such as `canvas logs` and the `canvas namespace` commands, still connect to an instance with those credentials.
+Yes, once everyone who runs the CLI, including your CI, is on `canvas` 1.0.0 or later and signed in with `canvas login` or a service account token. Every command that reaches an instance, including `canvas logs`, `canvas list`, `canvas config` and the `canvas namespace` commands, then goes through Canvas Platform. `canvas install`, which `canvas deploy` replaces, is the only command that still requires `credentials.ini`.
