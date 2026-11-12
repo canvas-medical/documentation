@@ -529,8 +529,10 @@ For a code that's already on the chart, active or resolved, use [Assess](#assess
 which reuses that condition and makes a resolved one active again. Codes match regardless of dots
 and case, so `M54.50` and `M5450` name the same condition, and surgical history entries aren't
 checked. A staged AddCondition with a charted code shows a message to use Assess, and committing it
-records nothing. When a plugin commits one with `commit()`, the command stays staged and the plugin
-gets no error.
+records nothing. When a plugin commits one with a separate `commit()`, the command stays staged and
+the plugin gets no error. Passing `commit=True` to `originate()` instead fails with the error
+`This condition is already on the patient's chart. Use Assess to update it, including reactivating a resolved condition.`,
+and the command isn't added to the note.
 
 The condition is recorded as a problem list item unless a clinician sets the command's
 **Category Type** field to Health Concern. Clinicians can also pick an optional
