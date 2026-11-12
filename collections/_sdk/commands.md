@@ -1491,6 +1491,18 @@ lab_review = LabReviewCommand(
 Backfills a condition the patient had in the past that is not active now. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess and AddCondition.
 
+MedicalHistory records a condition only when the patient's chart doesn't already have its ICD-10
+code. Codes match regardless of dots and case. For a code that's on the chart as active, use
+[Resolve Condition](#resolve-condition) to move it to past medical history. For a code that's on
+the chart as resolved, use [Assess](#assess) with `icd10_code`. A staged MedicalHistory with a
+charted code shows a message naming the command to use, and committing it records nothing. When a
+plugin commits one with `commit()`, the command stays staged and the plugin gets no error.
+
+The condition is recorded as a problem list item. Clinicians can also pick an optional
+**Category Domain**. `MedicalHistoryCommand` has no parameter for it, so a plugin's MedicalHistory
+records no domain. Plugins can read the choice as `category_domain` in the command's data: `sdoh`,
+`functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+
 **Command-specific parameters**:
 
 | Name                     | Type      | Required to commit | Description                                                |
