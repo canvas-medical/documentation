@@ -12,8 +12,9 @@ cards for any new follow-up. It uses only the SDK's tools and keeps its
 state in the chart itself, so it needs no Custom Data tables.
 
 Agents reach Anthropic through Canvas's inference gateway. Your plugin
-declares an `INFERENCE_GATEWAY_KEY` secret for its gateway key, and the
-platform hands your agent a client built from it (see
+declares an `INFERENCE_GATEWAY_URL` variable for the gateway's address
+and an `INFERENCE_GATEWAY_KEY` secret for its gateway key, and the
+platform hands your agent a client built from them (see
 [Credentials](/sdk/agents/#credentials)).
 
 ## 1. Register a tool catalog
@@ -216,6 +217,7 @@ second one depends on the model reusing the card's `card_key`. See
     ]
   },
   "variables": [
+    {"name": "INFERENCE_GATEWAY_URL"},
     {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
   ]
 }
@@ -231,8 +233,14 @@ tools at all. See [Tools](/sdk/agents-tools/#manifest-driven-permissions).
 ## 5. Install and try it
 
 ```bash
-canvas install my_plugin --host <your-instance> --secret INFERENCE_GATEWAY_KEY=<your-gateway-key>
+canvas install my_plugin --host <your-instance> \
+  --variable INFERENCE_GATEWAY_URL=<your-gateway-url> \
+  --secret INFERENCE_GATEWAY_KEY=<your-gateway-key>
 ```
+
+Set `INFERENCE_GATEWAY_URL` to the address of the gateway that issued
+your key. When Canvas Platform deploys the plugin instead, it sets the
+URL for you.
 
 Lock a note on a test patient. Within a few seconds the agent runs on
 the worker, reads the chart, and stages protocol cards for the follow-up

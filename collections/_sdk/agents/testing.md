@@ -242,7 +242,8 @@ def test_on_run_end_records_the_decision():
 The unit and run-loop tests above cover your code. To see a real run —
 the trigger firing, the run queued on the worker, the gateway call,
 the effects landing in the chart — install the plugin on a development
-instance with its `INFERENCE_GATEWAY_KEY` set and trigger it there.
+instance with its `INFERENCE_GATEWAY_URL` and `INFERENCE_GATEWAY_KEY`
+set and trigger it there.
 Save that for a handful of golden-path scenarios per agent.
 
 A useful split:

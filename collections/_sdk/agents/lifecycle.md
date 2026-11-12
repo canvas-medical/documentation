@@ -72,8 +72,8 @@ step is platform-driven:
 4. **Check ownership.** The agent must belong to the plugin whose
    handler returned the effect; a plugin can't run another plugin's
    agents.
-5. **Build the `LLMGateway`** from the instance's inference gateway URL
-   and your plugin's `INFERENCE_GATEWAY_KEY` secret, attributed to your
+5. **Build the `LLMGateway`** from your plugin's `INFERENCE_GATEWAY_URL`
+   and `INFERENCE_GATEWAY_KEY` variables, attributed to your
    plugin, this agent, and this run. If either is unset, the run stops
    here with `error_kind="LLM_NOT_CONFIGURED"`.
 6. **Instantiate your subclass** (`agent_class()` with no arguments).
@@ -81,7 +81,8 @@ step is platform-driven:
    to the checked subject, the requester with their permissions, and the
    granted capabilities, `agent.run_id` to the run's id, and
    `agent.secrets` to your plugin's variables, less the
-   `INFERENCE_GATEWAY_KEY` the gateway was built from. Read a model name
+   `INFERENCE_GATEWAY_URL` and `INFERENCE_GATEWAY_KEY` the gateway was
+   built from. Read a model name
    or a switch an operator configures from `self.secrets`, as a handler
    does. See [The run's subject](#the-runs-subject) below.
 8. **Apply the manifest tool grant.** The platform expands
@@ -841,8 +842,8 @@ class LLMGateway:
         """A client for the inference gateway."""
 ```
 
-Built by the platform before `run()` is called, from the instance's
-inference gateway URL and your plugin's `INFERENCE_GATEWAY_KEY` secret.
+Built by the platform before `run()` is called, from your plugin's
+`INFERENCE_GATEWAY_URL` and `INFERENCE_GATEWAY_KEY` variables.
 `client()` returns a `GatewayClient` whose `messages.create` and
 `messages.stream` take the Anthropic SDK's arguments. It carries that
 key and headers that attribute each call to your plugin, agent, and

@@ -240,7 +240,7 @@ The `agents` list declares the [agents](/sdk/agents/) a plugin provides, and the
 | `tools.denied` | array of strings | No | Tool names and `@category` groups removed from `allowed` after its `@category` groups are expanded. |
 | `tools.approve` | array of strings | No | Tool names and `@category` groups whose staged effects become proposals that the requester approves or denies before they apply. See [Approve before write](/sdk/agents-lifecycle/#approve-before-write). |
 
-Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key. Declare it as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY`, and set its value on each instance where the plugin runs. If the key isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
+Agents reach Anthropic through Canvas's inference gateway, and each plugin with agents uses its own gateway key and the gateway's address. Declare the key as a sensitive [variable](#variables) named `INFERENCE_GATEWAY_KEY` and the address as a variable named `INFERENCE_GATEWAY_URL`. Canvas Platform sets `INFERENCE_GATEWAY_URL` when it deploys or configures the plugin; when you install with the Canvas CLI, set both values on each instance where the plugin runs. If either isn't set, agent runs fail before the agent starts. See [Credentials](/sdk/agents/#credentials).
 
 ```json
 {
@@ -257,6 +257,7 @@ Agents reach Anthropic through Canvas's inference gateway, and each plugin with 
     ]
   },
   "variables": [
+    {"name": "INFERENCE_GATEWAY_URL"},
     {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
   ]
 }

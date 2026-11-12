@@ -88,16 +88,22 @@ platform makes sure it runs safely.
 ## Credentials
 
 Agents reach Anthropic through Canvas's inference gateway. Each agent
-plugin holds its own gateway key: declare an `INFERENCE_GATEWAY_KEY`
-variable with `"sensitive": true` in your manifest (see
-[Manifest declaration](#manifest-declaration)), and set its value when
-you install the plugin, as with any other
-[plugin secret](/sdk/secrets/). Gateway keys are issued per organization
-in Canvas Platform, each with its own spending limit; your Canvas team
-can issue one for your plugin.
+plugin holds its own gateway key and the gateway's address, as two
+[plugin variables](/sdk/secrets/) declared in your manifest (see
+[Manifest declaration](#manifest-declaration)):
+
+- `INFERENCE_GATEWAY_KEY`, with `"sensitive": true`: the plugin's gateway key.
+- `INFERENCE_GATEWAY_URL`: the address of the gateway that issued the key.
+
+Gateway keys are issued per organization in Canvas Platform, each with
+its own spending limit; your Canvas team can issue one for your plugin.
+When Canvas Platform deploys or configures your plugin, it sets
+`INFERENCE_GATEWAY_URL` for you, so a key always reaches the gateway it
+was issued for. When you install the plugin with the Canvas CLI instead,
+set both values yourself.
 
 Before each run, the platform builds the `LLMGateway` it passes to
-`run()` from the instance's gateway URL and your plugin's
+`run()` from your plugin's `INFERENCE_GATEWAY_URL` and
 `INFERENCE_GATEWAY_KEY`. `gateway.client()` returns a `GatewayClient`
 for the gateway. It offers `messages.create` and `messages.stream`,
 which take the same arguments as the Anthropic SDK's:
@@ -136,15 +142,15 @@ Let these errors propagate out of `run()`. The platform retries a run
 when the gateway is unreachable, rate-limited (429), or returns a
 server error, up to twice (30 and then 60 seconds later) before
 recording it as failed, and records a refusal (any status above) as a
-failed run without retrying it. If the instance has no gateway URL configured, or your plugin's
-`INFERENCE_GATEWAY_KEY` isn't set, the run fails before your agent is
+failed run without retrying it. If your plugin's `INFERENCE_GATEWAY_URL`
+or `INFERENCE_GATEWAY_KEY` isn't set, the run fails before your agent is
 instantiated.
 
 ## Manifest declaration
 
 Each agent goes under `components.agents[]` in your manifest, with the
-tools you authorize it to use. Declare the gateway key under the
-top-level `variables`:
+tools you authorize it to use. Declare the gateway URL and key under
+the top-level `variables`:
 
 ```jsonc
 {
@@ -161,6 +167,7 @@ top-level `variables`:
     ]
   },
   "variables": [
+    {"name": "INFERENCE_GATEWAY_URL"},
     {"name": "INFERENCE_GATEWAY_KEY", "sensitive": true}
   ]
 }
