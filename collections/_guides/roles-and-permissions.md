@@ -166,9 +166,9 @@ When you do, a few practices keep the model reviewable:
 
 ## Reviewing access
 
-Because permissions are held by roles rather than individuals, an access review is a
-review of role membership. The admin console lists the staff assigned to each role and the
-patient groups scoping them.
+Because access comes from each user's auth groups, an access review covers role membership
+and the auth groups assigned to individual staff in **Practice: Staff Permissions**. The
+admin console lists the staff assigned to each role and the patient groups scoping them.
 
 Changes to roles, permissions, and staff records are captured in the audit trail — see
 [Audit Logging and Telemetry](/guides/audit-logging-and-telemetry/) for what is recorded
