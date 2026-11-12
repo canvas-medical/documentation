@@ -51,6 +51,7 @@ SDK_GUIDE_STEMS = {
     "customize-panel-buttons",
     "customize-search-results",
     "customizing-commands",
+    "designating-test-instances",
     "growth-charts",
     "navigator-mcp",
     "patient-chart-group-items",
