@@ -376,7 +376,7 @@ An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the
 
 ## Dependencies and bundles
 
-A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency at a version its pin accepts, before the plugins that need it.
+A plugin that needs other plugins on the same instance names them in `dependencies`. When you deploy it with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), Canvas Platform installs each dependency before the plugins that need it, at the highest version on the dependency's `main` that every pin on it accepts. A compatible release pin leaves out prereleases.
 
 A dependency doesn't make its code importable: a plugin can still import only its own package. Declare a dependency when your plugin relies on what another plugin provides on the instance, such as the APIs one of its applications serves, so that plugin is installed and enabled wherever yours is.
 
@@ -393,11 +393,11 @@ Each entry has exactly these three fields, all required:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | string | The dependency's manifest `name`: lowercase letters, digits, and underscores, starting with a letter. Up to 256 characters. |
+| `name` | string | The dependency's manifest [`name`](#top-level-fields), such as `acme__intake_form`. |
 | `publisher` | string | The slug of the Canvas Platform organization that publishes the dependency, as [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform) lists it, such as `acme` for `Acme Health (acme)`. |
 | `version` | string | The versions of the dependency this plugin works with: one exact version or a compatible release. See [Version pins](#version-pins). |
 
-A plugin can't depend on itself or list the same dependency twice.
+A plugin can't depend on itself or list the same dependency twice, and a dependency can't be a [bundle](#bundles).
 
 Each dependency must already be on Canvas Platform at a version its pin accepts. Its publisher puts each release there, without deploying it to an instance, with [`canvas deploy --push-only`](/sdk/canvas_cli/#canvas-deploy), adding `--snapshot` for a plugin inside a larger repository such as a monorepo.
 
@@ -423,6 +423,7 @@ A bundle lists several plugins that Canvas Platform deploys together under one c
   "sdk_version": "0.1.4",
   "plugin_version": "1.0.0",
   "name": "acme__intake_suite",
+  "publisher": "acme",
   "description": "Intake form and visit summary, deployed together",
   "bundle": true,
   "dependencies": [

@@ -363,12 +363,11 @@ If the plugin still needs one of these values, declare its key in the manifest a
 
 **Plugins with dependencies, and bundles**
 
-A plugin whose manifest names [`dependencies`](/sdk/canvas_manifest/#dependencies-and-bundles), including a [bundle](/sdk/canvas_manifest/#bundles), deploys like any other: `deploy` pushes it and creates one deployment that names it. Canvas Platform installs each dependency at its pinned version, in waves, so a plugin goes in after the plugins it depends on. The outcome shows each plugin's wave:
+A plugin whose manifest names [`dependencies`](/sdk/canvas_manifest/#dependencies-and-bundles), including a [bundle](/sdk/canvas_manifest/#bundles), deploys like any other: `deploy` pushes it and creates one deployment that names it. Canvas Platform installs the dependencies in waves, so a plugin goes in after the plugins it depends on. A bundle itself is never sent to an instance; only the plugins it names are. When Canvas Platform reports a target's wave, the outcome shows it:
 
 ```text
   acme__intake_form on acme-staging (wave 0): succeeded
-  acme__intake_summary on acme-staging (wave 0): succeeded
-  acme__intake_suite on acme-staging (wave 1): succeeded
+  acme__intake_summary on acme-staging (wave 1): succeeded
 ```
 
 Every dependency must already be on Canvas Platform at a version its [pin](/sdk/canvas_manifest/#version-pins) accepts. Its publisher pushes each release with `canvas deploy <plugin dir> --push-only`, adding `--snapshot` for a plugin inside a larger repository.
@@ -385,7 +384,7 @@ Use it when plugins have to change at the same time. For example, when two plugi
 
 `--plugin` is also how you deploy a plugin another organization publishes. Name its publisher, such as `--plugin canvas-medical/scribe_core@2.0.0`.
 
-When a deployment would leave the plugins on an instance pinning different versions of a dependency, Canvas Platform refuses it and names the plugins. If each plugin in the way has a release that fits, the refusal ends with the `canvas deploy --plugin ...` command that deploys them together, and `deploy` prints it as an error. At a terminal, `deploy` then asks `Deploy them together? [y/N]`. Answer `y` to send the same deployment again, each plugin you named at the commit or version you named it at, with the plugins in the way added at those releases. Under `--yes`, without a terminal, or if you answer `n`, nothing is deployed; run the printed command to deploy them together.
+When a deployment would leave the plugins on an instance pinning different versions of a dependency, Canvas Platform refuses it and names the plugins. If each plugin in the way has a release that fits, the refusal ends with the `canvas deploy --plugin ...` command that deploys them together, and `deploy` prints it as an error. For a deploy of one plugin at a terminal, `deploy` then asks `Deploy them together? [y/N]`. Answer `y` to send the same deployment again, with the plugin at the commit or version you named it at and the plugins in the way added at those releases. Under `--yes`, without a terminal, for a deploy that names several `--plugin`, or if you answer `n`, nothing is deployed; run the printed command to deploy them together.
 
 **Plugin repository layout**
 
