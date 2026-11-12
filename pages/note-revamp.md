@@ -12,7 +12,7 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 ## Expected Benefits
 
-**Clinical sections:** The note body is grouped into History, Exam, Assessment & Plan and Internal sections, ordered to match the note's SOAP or APSO format. Each section has its own prompt for adding commands, and a **Sections / All** toggle in the note header switches between the sectioned view and the whole note.
+**Clinical sections:** The note body is grouped into History, Exam, Assessment & Plan and Internal sections, ordered to match the note's SOAP or APSO format. Each section has its own prompt for adding commands, and a **Sections / All** toggle in the note header switches between the sectioned view and the whole note. In the **Sections** view, selecting a section's command prompt, or switching a note from **All** to **Sections**, makes that note the one that commands added from the chart go into.
 
 **Commands nested under their Assessment:** Plan and Procedure commands, along with Prescribe, Refill, Adjust Prescription, Change Medication, Lab Order, Imaging Order, Order DME, Refer, Educational Material and Structured Assessment, appear nested under the Assess Condition command they are linked to.
 - Drag a command onto an Assessment to link it, or drag it out to unlink it.
@@ -25,7 +25,6 @@ The revamped note is a redesigned note body that organizes commands into clinica
 **Cleaner commands:** Each command is an outlined card edged in its section's color, with sentence-case labels and fields that show their underline when you hover over or select them.
 - A choice with up to five options shows every option as a chip, so one click picks it. Arrow keys move between the chips.
 - **Delete** for an uncommitted command is in the command's ⋮ menu.
-- A command a plugin or the API added has a sparkle after its title, whether the command is open or collapsed. Hover over the sparkle to see where the command came from and, once someone else edits it, who last modified it.
 
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
 - A collapsed command is a read-only summary of up to two lines that shows only the fields that have a value. A summary that runs longer ends in an ellipsis.
@@ -69,5 +68,3 @@ class NoteBanner(BaseHandler):
             ).apply()
         ]
 ```
-
-Commands your plugin originates carry the sparkle after their title in the revamped note. Outside the beta, they show **Plugin Generated** above the title instead.
