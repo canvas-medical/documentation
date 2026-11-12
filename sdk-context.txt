@@ -1537,6 +1537,34 @@ When another system needs to write commands to a chart, such as an intake form, 
 ----- END PAGE https://docs.canvasmedical.com/guides/customizing-commands/
 
 
+----- BEGIN PAGE https://docs.canvasmedical.com/guides/designating-test-instances/
+A test instance is an instance where your organization can deploy plugin code that isn't on `main` yet. Canvas Platform deploys a commit that isn't on a plugin's `main` only to your organization's test instances, so a branch can be tried on a test instance before it is merged, while every other instance runs only merged code.
+Your organization's Studio instance is always a test instance. A Deploy manager or Organization admin chooses the others in Canvas Platform.
+> **Info:** **Help Center:** the step-by-step article for Deploy managers and Organization admins is [Designating test instances](https://help.canvasmedical.com/articles/4724162094-designating-test-instances). 
+##  Designate a test instance 
+You need the **Deploy manager** or **Organization admin** role in the instance's organization. For a practice under an MSO, that is the practice's own organization.
+Production instances and instances that hold patient data aren't eligible. The switch's tooltip explains why one can't be changed.
+  1. In [Canvas Platform](https://platform.canvasmedical.com), open **Canvas Instances** and click the instance.
+  2. Click the **Plugin management** tab.
+  3. Under **Testing** , turn on **Designate as test instance** , then click **Make test instance** to confirm.
+![The Plugin management tab of testing-instance, with Designate as test instance turned on](/assets/images/guides/designating-test-instances/plugin-management-tab.png)
+A flask marks each test instance beside its name and in the **All instances** table.
+![The All instances table, with a flask beside testing-instance and testing-instance-1](/assets/images/guides/designating-test-instances/all-instances.png)
+To remove one, turn the switch off and click **Remove**. Commits that aren't on `main` can no longer be deployed there, and the plugins already installed on the instance stay as they are. Every addition and removal is recorded in your organization's audit log.
+##  Deploy a branch to a test instance 
+Deploy a branch with [`canvas deploy --branch`](/sdk/canvas_cli/#canvas-deploy):
+    ```console
+    $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
+    ```
+The same rule applies everywhere a build ships: `canvas deploy --ref`, installs from the Plugin Catalog, and promotions all deploy a commit that isn't on `main` only to test instances.
+When an instance you name isn't a test instance, nothing is deployed, and `deploy` exits non-zero with a message naming your organization's test instances:
+    ```text
+    acme__paperwork_eviscerator at 3f2a9c1e7b04 isn't on main, so it deploys only to your organization's test instances (acme-dev, acme-studio), and acme-prod isn't one. It can be deployed to acme-prod once it is on main.
+    ```
+When the instance could be a test instance, the message adds who can add it and where. When your organization has no test instances, the message says so and names who can make one. Merge the change to `main` to deploy it to any other instance.
+----- END PAGE https://docs.canvasmedical.com/guides/designating-test-instances/
+
+
 ----- BEGIN PAGE https://docs.canvasmedical.com/guides/growth-charts/
 The Canvas SDK gives you access to real-time patient data and allows you to create custom UIs accessible from a patient's chart. The combination of these capabilities allows you to create rich, interactive data visualizations your clinicians can access directly in the charting interface. This example will show you how we've used this approach to implement a pediatric growth charts feature.
 ##  In this guide you will learn how to: 
@@ -2996,7 +3024,7 @@ The Organization admin gives each person the roles their work needs. Developers 
   - **Plugin developer** , to push plugin code to Canvas Platform
   - **Deploy manager** , to deploy plugins to your instances and set their variables
 ###  3\. Canvas upgrades your plugins 
-Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role is notified when the upgrade is complete.
+Canvas upgrades your organization's plugins to the platform-based Plugin Development Lifecycle. Your running plugins are not affected in any way: they keep running and handling events and requests throughout. Everyone in your organization with the Organization admin, Plugin developer or Deploy manager role gets two emails from Canvas Platform: one when the upgrade starts, and one when it is complete. Keep using `canvas install` until the second email arrives.
 ###  4\. Switch your workflow by December 14, 2026 
 Once your organization is upgraded, update your development workflow and your CI pipelines as described below. `canvas install` and `credentials.ini` keep working until December 14, 2026, so you can switch at your own pace before then. From that date, your instances refuse plugin changes the CLI sends straight to the instance, such as `canvas install`, and the CLI's error points you to `canvas deploy`.
 ##  Update your development workflow 
@@ -3054,7 +3082,7 @@ Your Organization admin sets up access and roles in Canvas Platform. Each develo
 ###  Will our plugins stop running or be degraded during the system upgrade? 
 No, not in any way. The upgrade happens on a different system from the one your plugins run on, so nothing changes about your running plugins or your data.
 ###  Do we have to wait for the upgrade before we switch to `canvas deploy`? 
-Yes. Wait until you're notified that your organization has been upgraded to the platform-based Plugin Development Lifecycle.
+Yes. Wait for the email saying your organization's plugins are upgraded.
 ###  Can we delete `credentials.ini` after we switch? 
 Yes, once everyone who runs the CLI, including your CI, is on `canvas` 1.0.0 or later and signed in with `canvas login` or a service account token. Every command that reaches an instance, including `canvas logs`, `canvas list`, `canvas config` and the `canvas namespace` commands, then goes through Canvas Platform. `canvas install`, which `canvas deploy` replaces, is the only command that still requires `credentials.ini`.
 ----- END PAGE https://docs.canvasmedical.com/guides/upgrading-to-canvas-platform/
@@ -3435,7 +3463,7 @@ When your organization builds plugins in Canvas Studio with gated release pointe
   3. **Review and merge.** Your engineers review it like any other change. They can approve it as it is, push edits to its branch, or change the plugin after merging. Studio users' further changes go into the next iteration, which starts from the merged snapshot.
   4. **Snapshot.** Once it merges, CI or an engineer runs `canvas deploy <package folder> --snapshot`. The package folder is the one holding `CANVAS_MANIFEST.json` inside the folder Studio's pull request writes. Canvas Platform's `main` gets one commit with the plugin exactly as merged, and it deploys to the instances you name.
   5. **Studio brings it in.** When a Studio project opens, and before any deploy from it, Studio brings in new commits on Canvas Platform's `main` and `canvas-studio` that it has not synced yet. Your engineers' edits become the starting point of the next iteration within Studio, and are never overwritten by it.
-Because Studio reads both branches, your engineers can work with Studio users directly on iterative changes: push work in progress to `canvas-studio` with `canvas deploy <package folder> --snapshot --branch canvas-studio`, and the Studio project brings it in the same way. When Studio has pushed to `canvas-studio` since your last snapshot there, `deploy` lists the files the snapshot would replace, as described in When a snapshot stops.
+Because Studio reads both branches, your engineers can work with Studio users directly on iterative changes: push work in progress to `canvas-studio` with `canvas deploy <package folder> --snapshot --branch canvas-studio`, and the Studio project brings it in the same way. Like any commit not on `main`, it deploys only to your organization's [test instances](/guides/designating-test-instances/). When Studio has pushed to `canvas-studio` since your last snapshot there, `deploy` lists the files the snapshot would replace, as described in When a snapshot stops.
 For the same flow as Studio users see it, share the Canvas help center's [Gated release: from Promote to Production](https://help.canvasmedical.com/articles/7597495196-studio-admin-guide-setting-up-gated-release) and [When code changes outside Studio](https://help.canvasmedical.com/articles/4485157203-when-code-changes-outside-studio).
 ##  When a snapshot stops 
 `deploy --snapshot` exits non-zero without pushing when:
@@ -4455,10 +4483,10 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   - `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
 **Options** :
   - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
-  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's test instances. When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+  - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's [test instances](/guides/designating-test-instances/). When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
   - `--no-push`: Deploy the pushed `main` as-is, without pushing.
   - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-  - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+  - `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's [test instances](/guides/designating-test-instances/). Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
   - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See Deploying from a larger repository. Takes no `--ref` or `--no-push`.
   - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
   - `--help`: Show this message and exit.
@@ -4473,7 +4501,7 @@ Publish a plugin's code to Canvas Platform and deploy it to one or more instance
   3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
   4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
   5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-  6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
+  6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome. A commit on a `--branch` branch deploys only to your organization's [test instances](/guides/designating-test-instances/).
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 With `--push-only`, `deploy` stops after the push and prints the command that installs the pushed commit on an instance:
     ```console
@@ -4486,12 +4514,12 @@ To deploy plugin code not yet merged to `main` on a test instance, use `--branch
     ```console
     $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
     ```
-`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none. To choose your test instances, see [Designating Test Instances](/guides/designating-test-instances/).
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in Deploying from a larger repository still apply.
 **Plugins built in Canvas Studio**
 Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
   - **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
-  - **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`. A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
+  - **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`, which deploys only to your organization's [test instances](/guides/designating-test-instances/). A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
 **Choosing the publisher**
 `canvas deploy` publishes the plugin as:
   1. The manifest `publisher`, when it's set.
@@ -60762,7 +60790,7 @@ Signed in to Canvas Platform, `canvas logs` reads an instance Canvas Platform ma
     # Multiple handlers:
     $ canvas logs --handler my_plugin.handlers.foo.MyHandler --handler my_plugin.handlers.bar.OtherHandler
     ```
-`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each plugin-runner line is tagged with, so it leaves out the runner's untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
+`--plugin` filters the live stream as well as history, so `canvas logs --plugin my_plugin` keeps showing only that plugin's lines while it follows. It matches the plugin each line is tagged with: the plugin runner's handler lines and the effect failures Canvas logs for that plugin. It leaves out untagged lines, such as those from loading and installing plugins. To see those lines, run `canvas logs` without `--plugin`.
 #####  Time windows: since / start / end 
 **Relative lookback (`--since`)**  
 Fetch the last 24 hours, then continue following:

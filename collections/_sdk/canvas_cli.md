@@ -260,25 +260,27 @@ $ canvas init [OPTIONS] [PLUGIN_TYPE]
 
 ### `canvas deploy`
 
-Publish a plugin's code to Canvas Platform and deploy it to one or more instances.
+Publish a plugin's code to Canvas Platform and deploy it to one or more instances. With `--plugin`, deploy released versions of one or more plugins in one deployment instead, without a plugin folder or a push.
 
 **Usage**:
 
 ```console
 $ canvas deploy [OPTIONS] PLUGIN_DIR
+$ canvas deploy --plugin [PUBLISHER/]NAME@VERSION [--plugin ...] [OPTIONS]
 ```
 
 **Arguments**:
 
-- `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
+- `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json`. Required unless you pass `--plugin`, and left out when you do.
 
 **Options**:
 
+- `--plugin TEXT`: A released plugin to deploy, written `[<publisher>/]<name>@<version>`, such as `canvas-medical/scribe_core@2.0.0`. The version is one exact version in its normal form. Without a publisher, Canvas Platform finds the plugin by name. Repeatable; every `--plugin` goes out in one deployment. Takes no `PLUGIN_DIR`, `--ref`, `--no-push`, `--push-only`, `--snapshot`, or `--branch`. See [Deploying released plugins together](#deploying-released-plugins-together).
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
-- `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's test instances. When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+- `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's [test instances](/guides/designating-test-instances/). When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
 - `--push-only`: Push HEAD to `main`, or to the `--branch` branch, without deploying it to any instance, so the plugin's code and its [catalog listing](/sdk/canvas_manifest/#catalog) are updated on Canvas Platform. Takes no `--instance`, `--ref` or `--no-push`.
-- `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's test instances. Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
+- `--branch TEXT`: Push HEAD to this branch on Canvas Platform instead of `main` and deploy that commit. Canvas Platform deploys a commit that isn't on `main` only to your organization's [test instances](/guides/designating-test-instances/). Refuses `main` and the plugin's default branch. Works with `--push-only` and `--snapshot`, and takes no `--ref` or `--no-push`.
 - `--snapshot`: Push the committed contents of a plugin inside a larger repository, such as a monorepo, as one new commit on `main`, or on the `--branch` branch, leaving that repository's remotes and config alone. See [Deploying from a larger repository](#deploying-from-a-larger-repository). Takes no `--ref` or `--no-push`.
 - `-y, --yes`: Commit uncommitted changes without prompting, with the default message. Does not approve consent requests.
 - `--help`: Show this message and exit.
@@ -298,7 +300,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
 5. Commits uncommitted changes after you confirm. Without a terminal to confirm at, it refuses uncommitted changes unless you pass `--yes`.
-6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome.
+6. Pushes HEAD to `main`, or to the branch `--branch` names, deploys that commit to each instance, and waits for each instance's outcome. A commit on a `--branch` branch deploys only to your organization's [test instances](/guides/designating-test-instances/).
 
 The command exits non-zero unless every instance succeeds, so it can gate a CI job.
 
@@ -318,7 +320,7 @@ To deploy plugin code not yet merged to `main` on a test instance, use `--branch
 $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-new-intake --instance acme-staging
 ```
 
-`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
+`deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none. To choose your test instances, see [Designating Test Instances](/guides/designating-test-instances/).
 
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in [Deploying from a larger repository](#deploying-from-a-larger-repository) still apply.
 
@@ -327,7 +329,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
 
 - **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
-- **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`. A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
+- **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`, which deploys only to your organization's [test instances](/guides/designating-test-instances/). A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
 
 **Choosing the publisher**
 
@@ -358,6 +360,31 @@ Canvas Platform sends a plugin only the stored values whose keys the deployed re
 ```
 
 If the plugin still needs one of these values, declare its key in the manifest and deploy again.
+
+**Plugins with dependencies, and bundles**
+
+A plugin whose manifest names [`dependencies`](/sdk/canvas_manifest/#dependencies-and-bundles), including a [bundle](/sdk/canvas_manifest/#bundles), deploys like any other: `deploy` pushes it and creates one deployment that names it. Canvas Platform installs the dependencies in waves, so a plugin goes in after the plugins it depends on. A bundle itself is never sent to an instance; only the plugins it names are. When Canvas Platform reports a target's wave, the outcome shows it:
+
+```text
+  acme__intake_form on acme-staging (wave 0): succeeded
+  acme__intake_summary on acme-staging (wave 1): succeeded
+```
+
+Every dependency must already be on Canvas Platform at a version its [pin](/sdk/canvas_manifest/#version-pins) accepts. Its publisher pushes each release with `canvas deploy <plugin dir> --push-only`, adding `--snapshot` for a plugin inside a larger repository.
+
+#### Deploying released plugins together
+
+`canvas deploy --plugin` deploys versions already on Canvas Platform, with no plugin folder and no push. Name each plugin with `--plugin`; they all go out in one deployment:
+
+```console
+$ canvas deploy --plugin canvas-medical/scribe@2.0.0 --plugin acme/intake@3.0.0 --instance acme-staging
+```
+
+Use it when plugins have to change at the same time. For example, when two plugins pin the same dependency, moving that dependency to a new major version means deploying a release of each plugin that pins the new major version, in the same deployment. Canvas Platform deploys the newest commit on the plugin's `main` that carries the version a `--plugin` names.
+
+`--plugin` is also how you deploy a plugin another organization publishes. Name its publisher, such as `--plugin canvas-medical/scribe_core@2.0.0`.
+
+When a deployment would leave the plugins on an instance pinning different versions of a dependency, Canvas Platform refuses it and names the plugins. If each plugin in the way has a release that fits, the refusal ends with the `canvas deploy --plugin ...` command that deploys them together, and `deploy` prints it as an error. For a deploy of one plugin at a terminal, `deploy` then asks `Deploy them together? [y/N]`. Answer `y` to send the same deployment again, with the plugin at the commit or version you named it at and the plugins in the way added at those releases. Under `--yes`, without a terminal, for a deploy that names several `--plugin`, or if you answer `n`, nothing is deployed; run the printed command to deploy them together.
 
 **Plugin repository layout**
 
@@ -452,7 +479,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
-Install a plugin into a Canvas instance.
+Install a plugin into a Canvas instance. A [bundle](/sdk/canvas_manifest/#bundles) can't be installed this way; deploy it with [`canvas deploy`](#canvas-deploy).
 
 **Usage**:
 
