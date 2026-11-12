@@ -11,15 +11,26 @@ We recommend running the request asynchronously by chaining [`.set_async(...)`](
 
 Without `.set_async(...)` and without `retry_on_status_codes`, the effect is executed inline.
 
+Build an `HttpRequestEffect` and return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Sends the HTTP request.
+
+- `url` is required.
+- `method` defaults to `GET`.
+
 ## Attributes
 
-| Name                    | Type                          | Required | Description                                                                                                                                                                                       |
-|-------------------------|-------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `url`                   | `str`                         | Yes      | The URL to request. Must be non-empty. Cannot resolve to a private or loopback address (see [Security](#security--network-behavior)).                                                             |
-| `method`                | [`HttpMethod`](#httpmethod)   | No       | The HTTP method to use. Defaults to `HttpMethod.GET`.                                                                                                                                             |
-| `headers`               | `dict[str, str]` or `None`    | No       | Request headers. Header values are transmitted as-is — store credentials in the plugin's [`secrets`](/sdk/secrets/) and reference them here rather than hard-coding them.                         |
-| `body`                  | `str` or `None`               | No       | The request body, as a string. For JSON payloads, serialize with `json.dumps(...)` and set the appropriate `Content-Type` header.                                                                 |
-| `retry_on_status_codes` | `list[int]` or `None`         | No       | HTTP status codes that should trigger a retry. Each value must be in the range `100`–`599`. Setting this automatically routes the request through the async runner (equivalent to `.set_async(delay_seconds=0)`); use `.set_async(...)` only to override the delay or set `max_retries`. |
+| Name | Type | Description | Required |
+|---|---|---|---|
+| `url` | `str` | The URL to request. Must be non-empty. Cannot resolve to a private or loopback address (see [Security](#security--network-behavior)). | Yes |
+| `method` | [`HttpMethod`](#httpmethod) | The HTTP method to use. Defaults to `HttpMethod.GET`. | No |
+| `headers` | `dict[str, str]` or `None` | Request headers. Header values are transmitted as-is — store credentials in the plugin's [`secrets`](/sdk/secrets/) and reference them here rather than hard-coding them. | No |
+| `body` | `str` or `None` | The request body, as a string. For JSON payloads, serialize with `json.dumps(...)` and set the appropriate `Content-Type` header. | No |
+| `retry_on_status_codes` | `list[int]` or `None` | HTTP status codes that should trigger a retry. Each value must be in the range `100`–`599`. Setting this automatically routes the request through the async runner (equivalent to `.set_async(delay_seconds=0)`); use `.set_async(...)` only to override the delay or set `max_retries`. | No |
 
 ## `HttpMethod`
 

@@ -44,19 +44,11 @@ reserved for electronic/Health-Gorilla feed ids).
 Namespace your `reference_id` values (e.g. `"my-plugin:batch-2026-06-17:img-44"`) so they don't
 collide with report ids from other inbound-lab sources.
 
-## Attributes
-
-| Name             | Type                 | Description                                                                                                     |
-| ---------------- | -------------------- |-----------------------------------------------------------------------------------------------------------------|
-| `reference_id`    | `str` or `None`      | The plugin-assigned handle (maximum 40 characters). **Required** when creating; usable as the handle for other operations.              |
-| `report_id`      | `UUID` or `None`     | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. |
-| `patient_id`     | `str` or `None`      | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.                                           |
-| `report_name`    | `str` or `None`      | Human-readable report name (maps to the report's document name).                                                |
-| `date_performed` | `datetime` or `None` | The report's effective/displayed date. If omitted on `create`, it defaults to the creation time — correct it later via `update`. |
+Build a `LabReport` and return one of its methods from your handler: `create()`, `update()`, `enter_in_error()`, or `attach_results()`.
 
 ## Methods
 
-### create()
+### create() → Effect
 
 Create a lab report decoupled from its results — no order, no PDF, and no values required.
 
@@ -87,7 +79,7 @@ report = LabReport(
 effect = report.create()
 ```
 
-### update()
+### update() → Effect
 
 Update report metadata, such as renaming it via `report_name`. Only the fields you set are sent. Only `report_name` and `date_performed` can be changed — `update()` **cannot move the report to a different patient**; the patient is fixed when the report is created. If a report was attached to the wrong patient, enter it in error and recreate it on the correct patient.
 
@@ -110,7 +102,7 @@ renamed = LabReport(
 effect = renamed.update()
 ```
 
-### enter_in_error()
+### enter_in_error() → Effect
 
 Flag a report as entered-in-error — use it when a report was filed incorrectly. It junks the report (removing it from active views) and records who entered it in error. The report's observations and its linked DiagnosticReport and DocumentReference records are marked entered-in-error as well. Once a report is entered-in-error (or junked) it can no longer be modified — `update()` and `attach_results()` on it raise a validation error.
 
@@ -129,6 +121,20 @@ voided = LabReport(reference_id="my-plugin:batch-2026-06-17:img-44")
 
 effect = voided.enter_in_error()
 ```
+
+### attach_results() → Effect
+
+Adds lab tests and values to an existing report. See [Attaching results](#attaching-results) for its arguments and an example.
+
+## Attributes
+
+| Name             | Type                 | Description                                                                                                     | Required |
+| ---------------- | -------------------- |-----------------------------------------------------------------------------------------------------------------|----------|
+| `reference_id`    | `str` or `None`      | The plugin-assigned handle (maximum 40 characters). **Required** when creating; usable as the handle for other operations.              | For `create()`; for `update()` and `enter_in_error()`, this or `report_id` |
+| `report_id`      | `UUID` or `None`     | The [LabReport](/sdk/data-labs/)'s `id` (a valid uuid string is also accepted). Must be **unset** when creating; an alternative handle otherwise. | For `update()` and `enter_in_error()`, this or `reference_id` |
+| `patient_id`     | `str` or `None`      | The [Patient](/sdk/data-patient/)'s `id`. **Required** when creating.                                           | For `create()` |
+| `report_name`    | `str` or `None`      | Human-readable report name (maps to the report's document name).                                                | No |
+| `date_performed` | `datetime` or `None` | The report's effective/displayed date. If omitted on `create`, it defaults to the creation time — correct it later via `update`. | No |
 
 ## Attaching results
 

@@ -523,9 +523,33 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Drive Navigator from your coding agent (MCP)"
+    url: /guides/navigator-mcp/
+    description: Ask the Canvas AI assistant from Claude Code or Cursor over MCP
+    uses:
+      - sdk
+
   - title: "Your First Plugin (Manual)"
     url: /guides/your-first-plugin/
     description: Customize the behavior of Canvas using plugins
+    uses:
+      - sdk
+
+  - title: "Upgrading to Canvas Platform"
+    url: /guides/upgrading-to-canvas-platform/
+    description: Switch from credentials.ini and canvas install to canvas login and canvas deploy before December 14, 2026
+    uses:
+      - sdk
+
+  - title: "Designating Test Instances"
+    url: /guides/designating-test-instances/
+    description: Choose the instances where plugin code not yet on main can be deployed with canvas deploy --branch
+    uses:
+      - sdk
+
+  - title: "Working with a Monorepo"
+    url: /guides/working-with-a-monorepo/
+    description: Deploy plugins from a repository shared with other code, from your machine or CI, and through Canvas Studio's gated release
     uses:
       - sdk
 
@@ -539,6 +563,12 @@ guides_list:
   - title: "Building a Custom Portal Landing Page"
     url: /guides/custom-landing-page/
     description: Customize a patient's landing page with interactive and relevant widgets
+    uses:
+      - sdk
+
+  - title: "Theming the Patient Portal"
+    url: /guides/theme-the-patient-portal/
+    description: Give the patient portal your practice's colors, font, corner radius and wording
     uses:
       - sdk
 
@@ -660,6 +690,30 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Building Custom Plugin UI with Action Buttons and SimpleAPI"
+    url: /guides/build-custom-ui-with-action-buttons/
+    description: Open your own screen from a button and act on what the user does there
+    uses:
+      - sdk
+
+  - title: "Automating Note and Billing Workflows"
+    url: /guides/automating-note-and-billing-workflows/
+    description: Carry commands forward, reassign notes by payer, link billing to diagnoses, and act on note lock
+    uses:
+      - sdk
+
+  - title: "Customizing Commands Beyond the Built-ins"
+    url: /guides/customizing-commands/
+    description: Add fields and content to built-in commands, add your own, or write commands over HTTP
+    uses:
+      - sdk
+
+  - title: "Plugin Development Tips and Sandbox Limits"
+    url: /guides/plugin-development-tips-and-sandbox-limits/
+    description: Deploying, debugging, and working within the plugin sandbox
+    uses:
+      - sdk
+
   - title: "Platform Security Overview"
     url: /guides/platform-security-overview/
     description: Tenancy model, trust boundaries, platform controls, and shared responsibility
@@ -696,6 +750,8 @@ sdk_overview:
     url: /sdk/
   - title: "Caching Module"
     url: /sdk/caching/
+  - title: "Canvas Manifest"
+    url: /sdk/canvas_manifest/
   - title: "Clients Module"
     url: /sdk/clients/
     identifier: clients_module
@@ -800,6 +856,8 @@ charting:
     url: /sdk/example-vitals_visualizer_plugin/
 
 portal_customization:
+  - title: "Appointment Copay Collection"
+    url: /sdk/example-appointment_copay_collection/
   - title: "Customize with Widgets"
     url: /sdk/example-portal-customization-widgets/
   - title: "Launch an Application"
@@ -840,6 +898,10 @@ embedded_applications:
     url: /sdk/handlers-embedded-applications/#scheduling-applications
   - title: "Docked Applications"
     url: /sdk/handlers-embedded-applications/#docked-applications
+  - title: "Provider Menu Applications"
+    url: /sdk/handlers-embedded-applications/#provider-menu-applications
+  - title: "Panel Applications"
+    url: /sdk/handlers-embedded-applications/#panel-applications
 
 simple_api_handlers:
   - title: "HTTP API"
@@ -898,6 +960,9 @@ effects_module:
   - title: "Compound Medications"
     url: /sdk/effect-compound-medication/
     description: Create or update compound medications.
+  - title: "Coverage"
+    url: /sdk/effect-coverage/
+    description: Create, update, expire, remove, and reorder a patient's insurance coverages.
   - title: "Create Calendar"
     url: /sdk/calendar-create-effect/
     description: Create a calendar for a provider.
@@ -919,6 +984,9 @@ effects_module:
   - title: "External Events"
     url: /sdk/effect-external-event/
     description: Create or update external clinical events from ADT feeds.
+  - title: "Fax"
+    url: /sdk/effect-fax/
+    description: Fax a note, referral, imaging order, lab order or letter.
   - title: "HTTP Request"
     url: /sdk/effect-http-request/
     description: Have the platform issue an HTTP request on behalf of a plugin.
@@ -934,6 +1002,9 @@ effects_module:
   - title: "Messages"
     url: /sdk/effect-messages/
     description: Interact with messages in Canvas.
+  - title: "Note Custom Content"
+    url: /sdk/effect-note-custom-content/
+    description: Render custom HTML blocks inside a clinical note.
   - title: "Note Footer Configuration"
     url: /sdk/effect-note-footer-configuration/
     description: Configure a note's footer — for example, hide Canvas's default state-transition buttons.
@@ -958,6 +1029,9 @@ effects_module:
   - title: "Patient Chart Summary Custom Section"
     url: /sdk/patient-chart-summary-custom-section-effect/
     description: Serve content for a custom section in the patient chart summary.
+  - title: "Patient Consent"
+    url: /sdk/effect-record-patient-consent/
+    description: Record a patient's decision on a consent and file the signed document.
   - title: "Patient External ID"
     url: /sdk/effect-create-patient-external-identifier/
     description: Create a new external identifier for a patient.
@@ -967,6 +1041,9 @@ effects_module:
   - title: "Patient Group"
     url: /sdk/effect-patient-group/
     description: Interact with patient group data.
+  - title: "Patient Identification Card"
+    url: /sdk/effect-patient-identification-card/
+    description: Create, update, or delete a patient's identification card images.
   - title: "Patient Metadata"
     url: /sdk/effect-patient-metadata/
     description: Interact with patient metadata.
@@ -991,6 +1068,9 @@ effects_module:
   - title: "Questionnaires"
     url: /sdk/effect-questionnaires/
     description: Interact with questionnaires and interviews.
+  - title: "Record Usage"
+    url: /sdk/effect-record-usage/
+    description: Record units of a plugin's work that its catalog listing prices.
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
@@ -1070,9 +1150,15 @@ data_module:
   - title: "Claim"
     url: /sdk/data-claim/
     description: A healthcare claim.
+  - title: "Clipboard"
+    url: /sdk/data-clipboard/
+    description: Free-text content staged on a note by a clipboard command.
   - title: "Command"
     url: /sdk/data-command/
     description: Structured units of documentation in a patient's chart.
+  - title: "CommandTypeSetting"
+    url: /sdk/data-command-type-setting/
+    description: Whether each command type is turned on for the instance.
   - title: "CommonEnumerationTypes"
     url: /sdk/data-enumeration-types/
     description: Common choice classes used in multiple models.
@@ -1091,6 +1177,9 @@ data_module:
   - title: "CreateCodingGapEvent"
     url: /sdk/data-coding-gap-event/#createcodinggapevent
     description: A record of a coding gap being created.
+  - title: "CustomCommand"
+    url: /sdk/data-custom-command/
+    description: A plugin-defined read-only command recorded on a note (the custom command).
   - title: "DeferCodingGapEvent"
     url: /sdk/data-coding-gap-event/#defercodinggapevent
     description: A record of a coding gap being deferred.
@@ -1103,12 +1192,18 @@ data_module:
   - title: "DiagnosticView"
     url: /sdk/data-diagnostic-view/
     description: A saved set of lab tests and questionnaire codes whose timeseries can be embedded in a note with the Reference command.
+  - title: "DME"
+    url: /sdk/data-dme/
+    description: Durable medical equipment formulary products and the signed orders placed for them with the Order DME command.
+  - title: "DocumentHistoryEvent"
+    url: /sdk/data-document-history-event/
+    description: An entry in a reviewable document's history, such as a reassignment, comment, signature request, signature, or recorded review.
   - title: "DocumentReference"
     url: /sdk/data-document-reference/
     description: References to documents stored in Canvas, with presigned URL support.
   - title: "DocumentReviewDelegation"
     url: /sdk/data-document-review-delegation/
-    description: A hand-off of a document review from one staff member (or team) to another, with signature consent.
+    description: A reviewable document sent to a provider for signature, or returned signed to whoever sent it.
   - title: "EducationalMaterial"
     url: /sdk/data-educational-material/
     description: Patient educational material shared from a note via the Educational Material command.
@@ -1130,12 +1225,21 @@ data_module:
   - title: "FamilyHistory"
     url: /sdk/data-family-history/
     description: A patient's family medical history — conditions recorded for a relative.
+  - title: "Fax"
+    url: /sdk/data-fax/
+    description: Faxes sent or received through Canvas, and the action events that record a document's fax delivery status.
+  - title: "FaxStatusModel"
+    url: /sdk/data-fax/#faxstatusmodel
+    description: The status recorded when Canvas receives a fax.
   - title: "FollowUp"
     url: /sdk/data-follow-up/
     description: A requested follow-up (recall) recorded on a note via the follow_up command.
   - title: "Goal"
     url: /sdk/data-goal/
     description: A goal for a patient.
+  - title: "Google Calendar"
+    url: /sdk/data-google-calendar/
+    description: Provider busy time and connection status from native Google Calendar sync.
   - title: "Group"
     url: /sdk/data-group/
     description: A stable external identifier linking a Team or PatientGroup, as surfaced by the FHIR Group resource.
@@ -1145,6 +1249,9 @@ data_module:
   - title: "Imaging"
     url: /sdk/data-imaging/
     description: Analysis of imaging tests to obtain information about the health of a patient.
+  - title: "ImagingOrderActionEvent"
+    url: /sdk/data-fax/#imagingorderactionevent
+    description: Faxes of an imaging order, with their delivery status.
   - title: "ImagingReportTemplate"
     url: /sdk/data-imaging-report-template/
     description: Templates used for imaging reports, defining fields and options.
@@ -1157,9 +1264,15 @@ data_module:
   - title: "IntegrationTask"
     url: /sdk/data-integration-task/
     description: Incoming documents that need processing, including faxes, uploads, and portal submissions.
+  - title: "IntegrationTaskActionEvent"
+    url: /sdk/data-fax/#integrationtaskactionevent
+    description: Faxes of an integration task, with their delivery status.
   - title: "Invoice"
     url: /sdk/data-invoice/
     description: A patient statement generated for a patient or guarantor, with its total, delivery method, and status.
+  - title: "LabOrderActionEvent"
+    url: /sdk/data-fax/#laborderactionevent
+    description: Faxes of a lab order, with their delivery status.
   - title: "LabPartner"
     url: /sdk/data-lab-partner-and-test/
     description: Lab partners and the tests they offer within Canvas.
@@ -1190,6 +1303,9 @@ data_module:
   - title: "Note"
     url: /sdk/data-note/
     description: Clinical notes on patient charts.
+  - title: "NoteActionEvent"
+    url: /sdk/data-fax/#noteactionevent
+    description: Faxes of a note, with their delivery status.
   - title: "Observation"
     url: /sdk/data-observation/
     description: Measurements and simple assertions made about a patient.
@@ -1223,6 +1339,12 @@ data_module:
   - title: "PluginCommand"
     url: /sdk/data-plugin-command/
     description: Custom commands registered by plugins via the manifest configuration.
+  - title: "PortalAccessGrant"
+    url: /sdk/data-portal-access-grant/
+    description: Family portal access given to a login for a patient's chart.
+  - title: "PortalInvitation"
+    url: /sdk/data-portal-invitation/
+    description: Patient portal invite and password reset links, with when each was opened, claimed, or refused.
   - title: "Posting"
     url: /sdk/data-posting/
     description: Payments and postings associated with healthcare claims.
@@ -1253,12 +1375,18 @@ data_module:
   - title: "ReasonForVisit"
     url: /sdk/data-reason-for-visit/
     description: The reason for a patient's visit.
+  - title: "Receipt"
+    url: /sdk/data-receipt/
+    description: A Canvas-generated payment receipt for a payment collection.
   - title: "Reference"
     url: /sdk/data-reference/
     description: The record of a diagnostic view embedded in a note, with a snapshot of its rendered table.
   - title: "Referral"
     url: /sdk/data-referral/
     description: A referral directing a specific patient to another provider or specialist.
+  - title: "ReferralActionEvent"
+    url: /sdk/data-fax/#referralactionevent
+    description: Faxes of a referral, with their delivery status.
   - title: "RefillRequest"
     url: /sdk/data-refill-request/
     description: An incoming request to refill a patient's medication and its responding prescriptions.
@@ -1351,6 +1479,8 @@ releasenotes_product_updates:
     url: /product-updates/release-notes/
   - title: "FDB Drug Database"
     url: /product-updates/fdb-changelogs/
+  - title: "ICD Updates"
+    url: /product-updates/icd-updates/
   - title: "Important Dates"
     url: /product-updates/important-dates/
   - title: "Roadmap"
@@ -1363,3 +1493,7 @@ releasenotes_betas:
     url: /product-updates/cancelrx/
   - title: "Commands Module"
     url: /product-updates/commands-module/
+  - title: "Revamped Note"
+    url: /product-updates/note-revamp/
+  - title: "Google Calendar Sync"
+    url: /product-updates/google-calendar-sync/

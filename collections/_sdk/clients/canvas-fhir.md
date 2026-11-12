@@ -145,6 +145,29 @@ print(f"Updated Coverage status: {updated['status']}")
 
 **Raises:** `requests.HTTPError` if the API returns an error status code.
 
+### Sending other requests
+
+The methods above parse every response as JSON. When you need a request they don't cover, or the raw response, send it yourself with the [`Http`](/sdk/utils/) util. Build the request from the client's `base_url` and `get_headers()`:
+
+```python?partial=true
+from canvas_sdk.utils import Http
+
+response = Http().post(
+    f"{client.base_url}/Coverage",
+    headers=client.get_headers(),
+    json=coverage,
+)
+response.raise_for_status()
+
+# The raw response is yours to read, including an empty body.
+result = response.json() if response.text.strip() else {}
+```
+
+| Member          | Type   | Description                                                                                  |
+|-----------------|--------|----------------------------------------------------------------------------------------------|
+| `base_url`      | `str`  | The FHIR API base URL for your environment, such as `https://fumage-{CUSTOMER_IDENTIFIER}.canvasmedical.com`. |
+| `get_headers()` | `dict` | The headers a FHIR API request needs. These are a bearer `Authorization` header carrying the client's access token, and `Content-Type: application/json`. |
+
 ## Authentication
 
 The client uses the OAuth 2.0 client credentials flow to authenticate with the Canvas API. Token management is handled automatically:

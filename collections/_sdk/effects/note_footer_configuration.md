@@ -9,7 +9,15 @@ The `NoteFooterConfiguration` effect configures the note footer at the note leve
 
 Return this effect in response to the `NOTE_FOOTER__GET_CONFIGURATION` event, which fires when a note's footer is loaded. If your handler does not return a configuration, the default state-transition buttons remain visible.
 
+Build a `NoteFooterConfiguration` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
+
 ---
+
+## Methods
+
+### apply() → Effect
+
+Configures the footer of the note the event targets. No attribute is required.
 
 ## How it works
 
@@ -23,13 +31,13 @@ As a note's footer loads, Canvas fires `NOTE_FOOTER__GET_CONFIGURATION` targetin
 | `event.actor`     | user         | The logged-in user viewing the note, when available. |
 | `event.context`   | `{}`         | Empty — no additional context is provided.           |
 
-### Attributes
+## Attributes
 
-| Field                        | Type   | Default | Description                                                         |
-|------------------------------|--------|---------|---------------------------------------------------------------------|
-| `hide_default_state_buttons` | `bool` | `False` | Hide Canvas's native footer state-transition buttons for this note. |
+| Attribute                    | Type   | Description                                                                              | Required |
+|------------------------------|--------|------------------------------------------------------------------------------------------|----------|
+| `hide_default_state_buttons` | `bool` | Hide Canvas's native footer state-transition buttons for this note. Defaults to `False`. | No       |
 
-### Example
+## Example
 
 ```python
 from canvas_sdk.effects import Effect

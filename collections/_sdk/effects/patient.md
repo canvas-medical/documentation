@@ -7,12 +7,38 @@ hidden: false
 
 The `Patient` effect enables the creation and updating of patient records within the Canvas system. This effect captures demographic information, contact details, and clinical associations necessary for patient registration and updates.
 
+Build a `Patient` with the [attributes](#attributes) you want to set, then return one of its two methods from your handler: `create()` for a new patient, or `update()` for an existing one.
+
+## Methods
+
+### create() → Effect
+
+Creates a new patient record.
+
+- `first_name` and `last_name` are required.
+- `patient_id` is optional. By default Canvas generates the patient's id; to choose it yourself, see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation).
+
+See [Creating a patient](#creating-a-patient) for an example.
+
+### update() → Effect
+
+Updates an existing patient record.
+
+- `patient_id` is required, and must be the id of an existing patient.
+- Only the attributes you set on the effect are changed. Attributes you leave unset keep their current values, and so does the patient's business line, which the effect has no attribute for.
+- To remove a patient's default location or default provider, set `default_location_id` or `default_provider_id` to `None`.
+- `addresses`, `external_identifiers`, and `previous_names` replace the stored values when you set them, so pass the complete list you want the patient to have. An external identifier you leave out of the list is deleted, unless it has already expired.
+
+See [Updating a patient](#updating-a-patient) for an example.
+
+Both methods check that `default_location_id` and `default_provider_id`, when set, refer to an existing practice location and staff member.
+
 ## Attributes
 
 | Attribute                | Type                                        | Description                                 | Required |
 | ------------------------ | ------------------------------------------- | ------------------------------------------- | -------- |
-| `first_name`             | `str`                                       | Patient's first name                        | Yes      |
-| `last_name`              | `str`                                       | Patient's last name                         | Yes      |
+| `first_name`             | `str`                                       | Patient's first name                        | For `create()` |
+| `last_name`              | `str`                                       | Patient's last name                         | For `create()` |
 | `middle_name`            | `str` or `None`                             | Patient's middle name                       | No       |
 | `birthdate`              | `datetime.date` or `None`                   | Patient's date of birth                     | No       |
 | `prefix`                 | `str` or `None`                             | Name prefix (e.g., "Dr.", "Mr.")            | No       |
@@ -35,7 +61,7 @@ The `Patient` effect enables the creation and updating of patient records within
 | `contact_points`         | list[[PatientContactPoint](#patientcontactpoint)] or `None`       | Patient's contact information               | No       |
 | `contacts`               | list[[PatientContact](#patientcontact)] or `None`                 | The patient's contacts — emergency contacts, next-of-kin, and other related persons. See [Managing patient contacts](#managing-patient-contacts) | No       |
 | `external_identifiers`   | list[[PatientExternalIdentifier](#patientexternalidentifier)] or `None` | Patient's external identifiers              | No       |
-| `patient_id`             | `str` or `None`                             | Patient id. Required for updates. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens) — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | No       |
+| `patient_id`             | `str` or `None`                             | Patient id. Optional on creation, where it must be a 32-character hex string (a UUID4 without hyphens); see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation). | For `update()` |
 | `addresses`              | list[[PatientAddress](#patientaddress)] or `None`            | Patient's addresses                         | No       |
 | `preferred_pharmacies`   | list[[PatientPreferredPharmacy](#patientpreferredpharmacy)] or `None`  | Patient's preferred pharmacies              | No       |
 | `metadata`               | list[[PatientMetadata](#patientmetadata)] or `None`           | Patient metadata                            | No       |
@@ -54,6 +80,9 @@ The `PatientContactPoint` dataclass represents various methods of contacting the
 | `rank`        | `int`                | Priority order of contact methods                                 | Yes      |
 | `has_consent` | `bool` or `None`     | Whether consent has been given to use this contact method         | No       |
 
+<!-- source: discussion #1410 -->
+{% include alert.html type="info" content="If you have already validated a patient's phone or email in a prior workflow, set <code>has_consent=True</code> on the <code>PatientContactPoint</code> when creating the patient. This marks the contact point as okay to text or email and suppresses the additional 'click here' verification message that Canvas would otherwise send." %}
+
 ## PatientContact
 
 The `PatientContact` dataclass represents one of the patient's contacts — an emergency contact, next-of-kin, or other related person.
@@ -70,12 +99,12 @@ A contact identifies its person in one of two ways, and you must supply one of t
 | `phone_number`       | `str` or `None`                                                   | The contact's phone number. Exactly 10 digits                      | No       |
 | `email`              | `str` or `None`                                                   | The contact's email address                                        | No       |
 | `comments`           | `str` or `None`                                                   | Free-text notes about the contact                                  | No       |
-| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's relationship categories                              | No       |
+| `categories`         | list[[PatientContactCategory](#patientcontactcategory)] or `None` | The contact's categories, including its relationship to the patient. See [Setting a contact's relationship](#setting-a-contacts-relationship) | No       |
 | `inactive`           | `bool` or `None`                                                  | Set with `contact_identifier` to remove the contact                | No       |
 
 ## PatientContactCategory
 
-The `PatientContactCategory` dataclass expresses a contact's relationship to the patient — emergency contact, next-of-kin, and so on — as a coding.
+The `PatientContactCategory` dataclass expresses one of a contact's categories as a coding: a relationship such as mother or spouse, or a role such as emergency contact.
 
 All three fields are required, and the coding must already exist in the instance. Look one up with the [ContactCategory](/sdk/data-patient/#contactcategory) data model rather than composing a coding by hand; a coding the instance does not have raises a validation error instead of being created.
 
@@ -136,10 +165,6 @@ The `PatientMetadata` dataclass represents a custom key-value pair for a patient
 
 ## Implementation Details
 
-- **Creation**: Creates new patient records. By default the server generates the patient id, but you may supply your own `patient_id` — see [Supplying a patient id on creation](#supplying-a-patient-id-on-creation)
-- **Updates**: Updates existing patient records when `patient_id` is provided
-- Validates that referenced practice locations exist in the system
-- Verifies that referenced healthcare providers exist in the system
 - Structures contact information through the `PatientContactPoint` dataclass
 - Structures the patient's contacts through the `PatientContact` dataclass, added or modified per entry according to `contact_identifier` — see [Managing patient contacts](#managing-patient-contacts)
 - Structures external identifier through the `PatientExternalIdentifier` dataclass
@@ -200,7 +225,6 @@ class MyHandler(BaseHandler):
 ```
 
 ### Updating a patient
-
 
 ```python
 from canvas_sdk.effects.patient import Patient, PatientAddress, PatientExternalIdentifier
@@ -392,6 +416,48 @@ class MyHandler(BaseHandler):
 ```
 
 A `related_patient` contact carries no name of its own; Canvas shows the referenced patient's details instead.
+
+### Setting a contact's relationship
+
+A contact's relationship to the patient is a category in the `http://terminology.hl7.org/CodeSystem/v3-RoleCode` coding system, such as `MTH` (mother). Staff pick it under Categories on the patient's Contacts, and FHIR [RelatedPerson](/api/relatedperson/) and family portal access read it from there. A contact your plugin writes without a relationship category shows no relationship in family portal access.
+
+To set the relationship, look up the coding with the [ContactCategory](/sdk/data-patient/#contactcategory) data model and send it in `categories` with any other categories the contact has:
+
+```python
+from canvas_sdk.effects.patient import Patient, PatientContact, PatientContactCategory
+from canvas_sdk.handlers.base import BaseHandler
+from canvas_sdk.v1.data import ContactCategory
+
+RELATIONSHIP_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+
+
+class MyHandler(BaseHandler):
+    def compute(self):
+        mother = ContactCategory.objects.filter(system=RELATIONSHIP_SYSTEM, code="MTH").first()
+        emergency = ContactCategory.objects.filter(code="EMC").first()
+        if mother is None or emergency is None:
+            return []
+
+        patient = Patient(
+            patient_id="existing-patient-id",
+            contacts=[
+                PatientContact(
+                    name="Jane Doe",
+                    phone_number="5551234567",
+                    categories=[
+                        PatientContactCategory(
+                            code=category.code, code_system=category.system, name=category.name
+                        )
+                        for category in (mother, emergency)
+                    ],
+                )
+            ],
+        )
+
+        return [patient.update()]
+```
+
+Family portal access shows the names of the contact's relationship categories, capitalized and joined with commas, as in "Grandparent, Step parent". Other categories, such as an emergency contact, aren't part of the relationship. The relationship categories Canvas provides don't include a legal guardian code.
 
 ### Removing a contact
 

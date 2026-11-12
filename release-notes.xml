@@ -204,14 +204,12 @@ collection: release-notes
         survive, and write plain text: markup is what gets cut open.
 
             feed_summary: |
-              sdk
-
               • Questionnaires can now be scored.
               • Two data models were added: CareTeam and Coverage.
-
-              bugfix
-
               • The Goals filter classifies by most recent update.
+
+        Write flat bullets only: no tag headers and no blank lines between
+        groups, which spend the budget without telling the reader anything.
 
         An override is emitted verbatim — no truncation — because trimming a
         hand-written digest to 340 characters would defeat the point. Keep it

@@ -13,7 +13,7 @@ Questionnaires are a structured set of questions that guide collecting answers f
 
 There are two ways to create a questionnaire, and both describe it with the same [field reference](#field-reference):
 
-- **[A manifest YAML template](#manifest-yaml-template)** — the simplest path when the questionnaire's shape is fixed as you build the plugin. Define the template and reference it in your `CANVAS_MANIFEST.json` file.
+- **[A manifest YAML template](#manifest-yaml-template)** — the simplest path when the questionnaire's shape is fixed as you build the plugin. Define the template and reference it in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#questionnaires) file.
 - **[The `CreateQuestionnaire` effect](#createquestionnaire-effect)** — for a shape that is not fixed at build time, such as one assembled from external data, user input, or per-instance configuration. Also the path to take when the questions change often enough that a plugin release per change is impractical.
   - This is the route to pair with a [SimpleAPI](/sdk/handlers-simple-api-http/) route to stand up your own create-questionnaire endpoint, where a caller posts the questionnaire it wants and your plugin publishes it. See [Publishing from a SimpleAPI route](#publishing-from-a-simpleapi-route).
 
@@ -94,6 +94,9 @@ On a `TXT` question, `value` carries default text for the answer rather than a s
     ],
 }
 ```
+
+<!-- source: discussion #1003 -->
+**Question toggle default:** For Physical Exam (`EXAM`) questionnaires, the per-question enable/disable toggle cannot be set to default-untoggled through the YAML (setting the response `value` to `0` does not control the toggle). To start a question toggled off, set up a plugin that listens for the command origination event and uses the [toggle-questions feature](/sdk/commands/#toggle-questions-feature) to disable the question.
 
 #### enabled_conditions[]
 
@@ -371,6 +374,9 @@ In this example:
 - **Q2** only appears if Q1 is answered "Yes" (using `=` with `value_code`).
 - **Q3** only appears if Q1 is "Yes" **and** Q2 has been answered (using `enabled_behavior: all` with two conditions).
 
+<!-- source: discussion #1602 -->
+Only the comparison operators `=`, `!=`, `exists`, and `not_exists` are supported. Numeric comparison operators (`<`, `>`, `<=`, `>=`) are not supported because question responses are stored as strings (free text, single select, and multi select), so there are no numeric values to compare.
+
 #### Loading a definition from YAML
 
 `questionnaire_from_yaml` reads a template out of your plugin package and returns it as a `QuestionnaireConfig`, validated against the schema on the way:
@@ -393,17 +399,25 @@ Creates a questionnaire while your plugin runs.
 from canvas_sdk.effects.questionnaire import CreateQuestionnaire
 ```
 
-#### Attributes
-
-| Attribute     | Required | Type                                        | Description                             |
-|---------------|----------|---------------------------------------------|-----------------------------------------|
-| questionnaire | Yes      | [QuestionnaireConfig](#field-reference) | The questionnaire definition to create. |
-
-`.apply()` takes no arguments and returns an `Effect` for your handler to return:
+Build a `CreateQuestionnaire` with the questionnaire definition, then return its `apply()` from your handler:
 
 ```python?partial=true
 CreateQuestionnaire(questionnaire=config).apply()
 ```
+
+#### Methods
+
+##### apply() → Effect
+
+Creates the questionnaire, superseding any questionnaire with the same name (see [Versioning](#versioning)).
+
+- `questionnaire` is required, and must pass the checks under [Validation](#validation).
+
+#### Attributes
+
+| Attribute       | Type                                    | Description                             | Required |
+|-----------------|-----------------------------------------|-----------------------------------------|----------|
+| `questionnaire` | [QuestionnaireConfig](#field-reference) | The questionnaire definition to create. | Yes      |
 
 #### Validation
 
@@ -577,18 +591,32 @@ The [`example_sdk_effect_create_questionnaire`](https://github.com/canvas-medica
 - adds a narrative to the command in the UI.
 - appears in the Social Determinants section on the left of the chart, when the questionnaire is configured to show there. [Questionnaires](#field-reference) covers the `display_result_in_social_history_section` setting.
 
+<!-- source: discussion #1404 -->
+{% include alert.html type="info" content="The <code>narrative</code> property is the customer-facing string shown alongside the result — it is separate from the numeric <code>score</code>. Use <code>score</code> to store the calculated numeric value and <code>narrative</code> to provide a more user-friendly description, for example <code>'Score: {score}'</code> or <code>'A score of {score} indicates {result}'</code>, giving providers context for how to react to the score." %}
+
+{% include alert.html type="info" content="Whether a result appears in the Social Determinants section depends on how the questionnaire itself is configured to display there, not on the effect alone: the SDK YAML <code>display_results_in_social_history_section</code> / <code>display_result_in_social_history_section</code> attributes, the <b>Display in Social Determinants</b> checkbox in the Questionnaire Builder, or the <code>use_in_shx</code> column when uploading via Google Sheets." %}
+
+Build a `CreateQuestionnaireResult` with the attributes below, then return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Records the result against the interview.
+
+- `interview_id`, `score`, `code_system`, and `code` are required, and `interview_id` must be the id of an existing interview.
+- `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
+
 ### Attributes
 
-| Attribute    | Required | Type   | Description                                                                                          |
-|--------------|----------|--------|------------------------------------------------------------------------------------------------------|
-| interview_id | Yes      | string | The id of the interview to associate the result with.                                                |
-| score        | Yes      | float  | The numerical score of the questionnaire result.                                                     |
-| abnormal     | No       | bool   | Whether the result is considered abnormal. Defaults to `False`.                                      |
-| narrative    | No       | string | A text description of the result and any recommended follow-up actions. Defaults to an empty string. |
-| code_system  | Yes*     | string | The code system used to identify the questionnaire, for example `"INTERNAL"`.                        |
-| code         | Yes*     | string | The code identifying the questionnaire within the code system, for example `"mchat_scoring"`.        |
-
-\* `code_system` and `code` are required because a questionnaire result also creates an [Observation](/sdk/data-observation/) record, and they are what tell one result's observations from another's.
+| Attribute      | Type    | Description                                                                                          | Required |
+|----------------|---------|------------------------------------------------------------------------------------------------------|----------|
+| `interview_id` | `str`   | The id of the interview to associate the result with.                                                | Yes      |
+| `score`        | `float` | The numerical score of the questionnaire result.                                                     | Yes      |
+| `abnormal`     | `bool`  | Whether the result is considered abnormal. Defaults to `False`.                                      | No       |
+| `narrative`    | `str`   | A text description of the result and any recommended follow-up actions. Defaults to an empty string. | No       |
+| `code_system`  | `str`   | The code system used to identify the questionnaire, for example `"INTERNAL"`.                        | Yes      |
+| `code`         | `str`   | The code identifying the questionnaire within the code system, for example `"mchat_scoring"`.        | Yes      |
 
 ### Examples
 

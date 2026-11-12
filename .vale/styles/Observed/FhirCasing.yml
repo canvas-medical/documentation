@@ -1,0 +1,10 @@
+# Rung: Observed. Source: collection analysis style-observations.md (terminology
+# table — "FHIR" uppercase). Prevalence: 82 of 83 sampled in-scope pages that use
+# the term write "FHIR" uppercase (~99%); the lone deviation is an inline-code UI
+# label, so prose usage is effectively uniform. Suggestion-level, not stated.
+extends: existence
+message: "Prefer 'FHIR' (uppercase), not '%s'. Observed convention (~99%% of pages); a suggestion, not a stated rule."
+level: suggestion
+ignorecase: false
+tokens:
+  - '\bFhir\b'

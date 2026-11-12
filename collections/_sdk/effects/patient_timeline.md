@@ -9,14 +9,23 @@ The Canvas SDK allows you to configure which note types a patient's chart shows 
 
 Both are controlled by the `PatientTimelineEffect` class, returned in response to the `PATIENT_TIMELINE__GET_CONFIGURATION` event, which fires when a patient's chart is loaded.
 
-## Excluding Note Types
+Build a `PatientTimelineEffect` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
 
-### Attributes
+## Methods
 
-| Attribute                |          | Type              | Description                                                                                                      |
-| ------------------------ | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `excluded_note_types`    | optional | list[str]         | A list of [`NoteType.unique_identifier`](/sdk/data-note/#notetype) values (UUIDs) to exclude from the patient's timeline. Defaults to `[]`. |
-| `allowed_new_note_types` | optional | list[str] \| None | An allow-list of [`NoteType.unique_identifier`](/sdk/data-note/#notetype) values the **New Note** button may offer. `None` (the default) means no constraint; `[]` offers nothing, which hides the button. See [Restricting note creation](#restricting-note-creation). |
+### apply() → Effect
+
+Applies the note type configuration to the patient's chart. No attribute is required.
+
+- Every UUID, in either attribute, must correspond to an existing [NoteType](/sdk/data-note/#notetype). A note type UUID that does not exist raises a `ValidationError` naming the note type that was not found.
+- Values that are not valid UUIDs also raise a `ValidationError`.
+
+## Attributes
+
+| Attribute                | Type                | Description                                                                                                      | Required |
+| ------------------------ | ------------------- | ---------------------------------------------------------------------------------------------------------------- | -------- |
+| `excluded_note_types`    | `list[str]`         | A list of [`NoteType.unique_identifier`](/sdk/data-note/#notetype) values (UUIDs) to exclude from the patient's timeline. Defaults to `[]`. | No       |
+| `allowed_new_note_types` | `list[str] \| None` | An allow-list of [`NoteType.unique_identifier`](/sdk/data-note/#notetype) values the **New Note** button may offer. `None` (the default) means no constraint; `[]` offers nothing, which hides the button. See [Restricting note creation](#restricting-note-creation). | No       |
 
 The two attributes differ in scope, and you will usually want only one of them:
 
@@ -28,6 +37,8 @@ The two attributes differ in scope, and you will usually want only one of them:
 | **New Note** button | type removed | restricted to the list |
 | direct permalink to such a note | permission error | unaffected |
 | several plugins respond | **unioned** | **unioned** |
+
+## Excluding Note Types
 
 ### Example Usage
 
@@ -155,8 +166,3 @@ class HideNewNoteButton(BaseHandler):
 {% include alert.html type="warning" content="<b>This is a workflow guardrail, not an access control.</b> It governs what the <b>New Note</b> button offers. It does not reject a note of a restricted type created directly through the API. Do not rely on it to enforce access to sensitive note types — see <a href='/sdk/effect-note-restrictions/'>Note Restrictions</a> for controlling access to notes." %}
 
 {% include alert.html type="info" content="<b>Note types are configured per instance.</b> The names above are illustrative, so check what exists on your instance before matching on <code>name</code> — a name that does not exist simply matches nothing, silently shortening your allow-list. A <code>unique_identifier</code> is generated per instance too, so it cannot be hard-coded in a plugin meant to run on more than one; look the note types up at runtime and keep the mapping configurable. An identifier that does not exist raises a <code>ValidationError</code> rather than failing quietly." %}
-
-### Validation
-
-- All provided UUIDs, in either attribute, must correspond to existing [NoteType](/sdk/data-note/#notetype) records in the system. If a note type UUID does not exist, a `ValidationError` will be raised with a message indicating which note type was not found.
-- Values that are not valid UUIDs will also raise a `ValidationError`.

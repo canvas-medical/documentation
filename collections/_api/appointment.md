@@ -326,9 +326,10 @@ sections:
           - name: date
             type: string
             description: Filter by start time. See [Date Filtering](/api/date-filtering) for more information.
+          # sources: discussions #1123, #653
           - name: status
             type: string
-            description: The status of the appointment.
+            description: The status of the appointment. Accepts one value per request, so a comma-separated list of statuses is not supported. To retrieve appointments across several statuses, make one request per status and combine the results.
             search_options:
               - value: proposed
               - value: pending
@@ -352,7 +353,7 @@ sections:
         create:
           description: Create an **Appointment**<br><br>
             It is recommended to utilize the [FHIR Slot Search](/api/slot#search) to find appointment times for a specific practitioner.<br><br>
-            **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.`
+            **Prevent Double Booking** By default, Canvas does not prevent appointments from being created if there is already an existing appointment for that provider. However, Canvas has a config setting to disable double booking. If double booking is not allowed and the Appointment Create or Appointment Update request is trying to book an appointment for a given Provider that already has a scheduled appointment at that time, you will see a 422 error status with the following error message returned `This appointment time is no longer available.` On instances in the [Google Calendar Sync beta](/product-updates/google-calendar-sync/), busy time from a provider's connected Google calendars counts as a scheduled appointment for this check. That busy time is not an Appointment, so it is not returned by Appointment search.
           responses: [201, 400, 401, 403, 405, 422]
           example_request: appointment-create-request
           example_response: appointment-create-response

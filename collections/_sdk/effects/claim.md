@@ -18,6 +18,8 @@ The Canvas SDK provides effects to facilitate managing claims. The `ClaimEffect`
 - [updating provider information](#update-provider) on claims
 - [updating the supervising provider](#update-supervising-provider) on claims
 - [setting the incident-to flag](#set-incident-to) on claims
+- [assigning claims](#assign) to a staff member or team
+- [unassigning claims](#unassign)
 
 Additionally, the SDK provides a separate effect to [update claim line items](#updateclaimlineitem).
 
@@ -37,6 +39,8 @@ The `ClaimEffect` class facilitates operations on existing claims.
 
 `from canvas_sdk.effects.claim import ClaimEffect`
 
+Build a `ClaimEffect` with the claim's id, then return one of the methods below from your handler. Each method takes its own parameters and returns an `Effect`.
+
 ### Attributes
 
 | Attribute  | Type            | Description              | Required |
@@ -45,7 +49,9 @@ The `ClaimEffect` class facilitates operations on existing claims.
 
 ### Add Labels
 
-`ClaimEffect.add_labels()`: adds one or more labels to a claim, and optionally creates new labels before assigning them to the claim.
+`add_labels(labels: list[str | Label]) → Effect`
+
+Adds one or more labels to a claim, and optionally creates new labels before assigning them to the claim.
 
 #### Parameters
 
@@ -102,7 +108,9 @@ class MyHandler(BaseHandler):
 
 ### Remove Labels
 
-`ClaimEffect.remove_labels()`: removes existing labels from a claim.
+`remove_labels(labels: list[str]) → Effect`
+
+Removes existing labels from a claim.
 
 #### Parameters
 
@@ -142,7 +150,15 @@ class MyHandler(BaseHandler):
 
 ### Move to Queue
 
-`ClaimEffect.move_to_queue()`: moves a claim to a specific queue.
+`move_to_queue(queue: str) → Effect`
+
+Moves a claim to a specific queue.
+
+<!-- source: discussion #658 -->
+Combined with the [claim data module](/sdk/data-claim/) and the label effects above, this effect lets a plugin control which claims land in the coding queue. For example:
+
+- When a visit does not meet your billable criteria, move its claim out of the coding queue so no one has to clean it up by hand.
+- Add labels to categorize claims for downstream workflows.
 
 #### Parameters
 
@@ -179,7 +195,9 @@ class MyHandler(BaseHandler):
 
 ### Add Comment
 
-`ClaimEffect.add_comment()`: creates a new comment on a claim.
+`add_comment(comment: str) → Effect`
+
+Creates a new comment on a claim.
 
 #### Parameters
 
@@ -220,7 +238,9 @@ class MyHandler(BaseHandler):
 
 ### Post Payment
 
-`ClaimEffect.post_payment()`: posts a payment to a claim, specifying payment details and line item transactions. This method supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
+`post_payment(claim_coverage_id, line_item_transactions, method, ...) → Effect`
+
+Posts a payment to a claim, specifying payment details and line item transactions. This method supports payments from insurance or patient and allows you to specify payments, adjustments, transfers, and write-offs on individual claim line items.
 
 #### Parameters
 
@@ -246,6 +266,7 @@ class MyHandler(BaseHandler):
 - `claim_coverage_id` must be either the string `"patient"` or correspond to a valid and **active** [ClaimCoverage](/sdk/data-claim/#claimcoverage) for the Claim.
   - A helpful way to identify the correct claim coverage is to use the method `get_coverage_by_payer_id(payer_id: str, subscriber_number: str | None = None)` on the [Claim](/sdk/data-claim/#claim) data model, where `payer_id` is the standard id for the insurance company. You can optionally provide `subscriber_number` if it's possible that the patient has multiple coverages from the same payer and you want to identify the correct coverage.
 - `move_to_queue_name` must be a valid label from [ClaimQueue](/sdk/data-claim/#claimqueues), but is not required. If provided, the claim will move to this queue after payment is applied.
+- The payment and its line item transactions are recorded together. If any part of the posting fails, none of it is saved. After the posting is saved, Canvas sends one [CLAIM_BALANCE_CHANGED](/sdk/events/#claims) event for the claim with its final balances.
 
 #### LineItemTransaction
 
@@ -486,7 +507,9 @@ curl -X POST "http://localhost:8000/plugin-io/api/pmt/routes/post-claim-payment"
 
 ### Upsert Metadata
 
-`ClaimEffect.upsert_metadata()`: upserts a key-value metadata record on a claim. If a metadata record with the given key already exists for the claim, its value will be updated. Otherwise, a new metadata record will be created.
+`upsert_metadata(key: str, value: str) → Effect`
+
+Upserts a key-value metadata record on a claim. If a metadata record with the given key already exists for the claim, its value will be updated. Otherwise, a new metadata record will be created.
 
 #### Parameters
 
@@ -527,7 +550,11 @@ class MyHandler(BaseHandler):
 
 ### Add Banner
 
-`ClaimEffect.add_banner()`: adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
+`add_banner(key: str, narrative: str, intent: BannerAlertIntent, href: str | None = None) → Effect`
+
+Adds a banner alert to a claim. Banner alerts are displayed in the UI to surface important information about a claim.
+
+{% include alert.html type="warning" content="A claim banner alert belongs to the plugin that added it. Disabling the plugin hides its banners, and <a href='/sdk/canvas_cli/#canvas-uninstall'>uninstalling</a> it deletes them." %}
 
 #### Parameters
 
@@ -583,7 +610,9 @@ class MyHandler(BaseHandler):
 
 ### Remove Banner
 
-`ClaimEffect.remove_banner()`: removes a banner alert from a claim by its key.
+`remove_banner(key: str) → Effect`
+
+Removes a banner alert from a claim by its key.
 
 #### Parameters
 
@@ -621,7 +650,9 @@ class MyHandler(BaseHandler):
 
 ### Update Provider
 
-`ClaimEffect.update_provider()`: updates provider information on a claim, including billing provider, rendering/attending provider, referring provider, ordering provider, and facility details. All parameters are optional — only the fields you provide will be updated.
+`update_provider(billing_provider=None, provider=None, referring_provider=None, ordering_provider=None, facility=None) → Effect`
+
+Updates provider information on a claim, including billing provider, rendering/attending provider, referring provider, ordering provider, and facility details. All parameters are optional — only the fields you provide will be updated.
 
 #### Parameters
 
@@ -776,7 +807,9 @@ class ClaimProviderHandler(BaseHandler):
 
 ### Update Supervising Provider
 
-`ClaimEffect.update_supervising_provider()`: sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
+`update_supervising_provider(supervising_provider=None, *, staff_id=None) → Effect`
+
+Sets the supervising provider snapshot on a claim. This snapshot is captured for billing purposes (837P loop 2310D and the printed CMS-1500 form) and remains frozen after submission.
 
 Provide exactly one of:
 - A `staff_id` to populate the snapshot from an existing Staff record (name, NPI, taxonomy, tax ID). The snapshot remains linked to the Staff record.
@@ -870,7 +903,9 @@ class SupervisingProviderHandler(BaseHandler):
 
 ### Set Incident To
 
-`ClaimEffect.set_incident_to()`: sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
+`set_incident_to(value: bool) → Effect`
+
+Sets the `incident_to` billing flag for Medicare incident-to billing. When set to `True`, the claim's rendering provider fields (name, NPI, taxonomy) are automatically replaced with the supervising provider's details.
 
 #### Parameters
 
@@ -947,11 +982,118 @@ class IncidentToHandler(BaseHandler):
         return [claim_effect.set_incident_to(True)]
 ```
 
+### Assign
+
+`assign(*, assignee_id: str | None = None, team_id: str | UUID | None = None) → Effect`
+
+Assigns a claim to a staff member or a team, so the claim has an owner responsible for working it. A claim has one owner at a time: assigning a staff member removes any team assignment, and assigning a team removes any staff assignment. Calling `assign()` with neither parameter clears the assignment, the same as [`unassign()`](#unassign).
+
+When the assignment changes, Canvas emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event. To read the current owner, use the claim's [`assignee` and `team`](/sdk/data-claim/#claim) attributes.
+
+#### Parameters
+
+| Parameter     | Type            | Description                                                         | Required |
+| ------------- | --------------- | ------------------------------------------------------------------- | -------- |
+| `assignee_id` | `str` or `None` | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign    | No       |
+| `team_id`     | `UUID`, `str`, or `None` | The `id` of the [Team](/sdk/data-team/#team) to assign     | No       |
+
+#### Implementation Details
+
+- Pass `assignee_id` to assign a staff member, or `team_id` to assign a team, but not both in the same call.
+- Reassigning a claim replaces its current owner.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Team
+
+
+class AssignNewClaimsHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """Assign each new claim to the billing team."""
+        team = Team.objects.filter(name="Billing").first()
+        if not team:
+            return []
+        claim_effect = ClaimEffect(claim_id=self.event.target.id)
+        return [claim_effect.assign(team_id=str(team.id))]
+```
+
+To assign a staff member instead, pass their `id` as `assignee_id`:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data import Note
+
+
+class AssignClaimToProviderHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.NOTE_STATE_CHANGE_EVENT_CREATED)
+
+    def compute(self) -> list[Effect]:
+        """When a note is locked, assign its claim to the note's provider."""
+        if self.event.context["state"] != "LKD":
+            return []
+        note = Note.objects.get(id=self.event.context["note_id"])
+        claim = note.get_claim()
+        if not claim or not note.provider:
+            return []
+        claim_effect = ClaimEffect(claim_id=claim.id)
+        return [claim_effect.assign(assignee_id=str(note.provider.id))]
+```
+
+### Unassign
+
+`unassign() → Effect`
+
+Clears a claim's assignment, whether the claim is assigned to a staff member or a team. Like [`assign()`](#assign), it emits the [`CLAIM_ASSIGNEE_CHANGED`](/sdk/events/#claims) event when the assignment changes.
+
+#### Example Usage
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.claim import ClaimEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.v1.data.claim import ClaimQueue, ClaimQueues
+
+
+class UnassignSettledClaimsHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.CLAIM_QUEUE_MOVED)
+
+    def compute(self) -> list[Effect]:
+        """Clear the owner when a claim reaches the Zero Balance queue."""
+        queue = ClaimQueue.objects.get(id=self.event.context["queue_entered"]["id"])
+        if queue.queue_sort_ordering != ClaimQueues.ZERO_BALANCE:
+            return []
+        claim_effect = ClaimEffect(claim_id=self.event.target.id)
+        return [claim_effect.unassign()]
+```
+
 ---
 
 ## UpdateClaimLineItem
 
 The `UpdateClaimLineItem` effect allows you to update the `charge` field and `linked_diagnosis_codes` on a specified claim line item.
+
+Build an `UpdateClaimLineItem` with the attributes below, then return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
+Updates the claim line item.
+
+- Validates `claim_line_item_id` is provided and that the associated claim line item exists
+- If `linked_diagnosis_codes` is provided, validates that all [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs correspond to existing diagnosis codes on the claim line item
+- The `linked_diagnosis_codes` list represents the complete set of diagnosis codes that will be linked to the claim line item when the effect is applied. Any diagnosis codes not included in this list will be unlinked. If you wish to add a new code to the existing linked codes, you must first retrieve the current list and include all codes you want to remain linked: `list(claim_line_item.diagnosis_codes.filter(linked=True).values_list("id", flat=True)) + [new_code_id]`
 
 ### Attributes
 
@@ -960,12 +1102,6 @@ The `UpdateClaimLineItem` effect allows you to update the `charge` field and `li
 | `claim_line_item_id`     | `UUID` or `str`     | Identifier for the claim line item                                                                                   | Yes      |
 | `charge`                 | `float`             | The charge amount to update on the claim line item                                                                   | No       |
 | `linked_diagnosis_codes` | `list[UUID or str]` | List of [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs to link to the claim line item | No       |
-
-### Implementation Details
-
-- Validates `claim_line_item_id` is provided and that the associated claim line item exists
-- If `linked_diagnosis_codes` is provided, validates that all [ClaimLineItemDiagnosisCode](/sdk/data-claim/#claimlineitemdiagnosiscode) IDs correspond to existing diagnosis codes on the claim line item
-- The `linked_diagnosis_codes` list represents the complete set of diagnosis codes that will be linked to the claim line item when the effect is applied. Any diagnosis codes not included in this list will be unlinked. If you wish to add a new code to the existing linked codes, you must first retrieve the current list and include all codes you want to remain linked: `list(claim_line_item.diagnosis_codes.filter(linked=True).values_list("id", flat=True)) + [new_code_id]`
 
 ### Example Usage
 

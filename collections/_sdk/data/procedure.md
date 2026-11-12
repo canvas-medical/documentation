@@ -122,6 +122,8 @@ procedures = Procedure.objects.find(Colonoscopy)
 | Field Name    | Type                    |
 | ------------- | ----------------------- |
 | dbid          | Integer                 |
+| created       | DateTime                |
+| modified      | DateTime                |
 | system        | String                  |
 | version       | String                  |
 | code          | String                  |

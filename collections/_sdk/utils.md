@@ -255,6 +255,56 @@ Both methods return a `PdfUrlResponse` on success, or `None` on failure.
 | Plugin serves an HTML page via SimpleAPI that requires authentication     | `from_url` with `PdfAuthRequest`    |
 | You already have the HTML string in memory (e.g. from `render_to_string`) | `from_html`                         |
 
+## Sanitizing untrusted HTML
+
+Content that comes from a patient or an integration, such as a patient portal message or a `POST /Communication` request, can contain HTML. If a plugin renders that HTML as-is, any script in it runs in the session of the staff member who views the page. Escaping the content prevents that, but it also shows formatting that staff wrote, such as bold text or lists, as literal tags.
+
+`sanitize_html` keeps a small set of formatting markup and removes everything else. Use it whenever you render HTML from an untrusted source.
+
+```python
+from canvas_sdk.utils.html import sanitize_html
+
+untrusted = '<p onclick="alert(1)">Can I refill <b>my</b> prescription?</p><script>alert(1)</script>'
+
+safe = sanitize_html(untrusted)
+# '<p>Can I refill <b>my</b> prescription?</p>'
+```
+
+**Parameters**:
+
+| Name    | Type     | Required | Description               |
+|:--------|:---------|:---------|:--------------------------|
+| `value` | _string_ | `true`   | The HTML to sanitize.     |
+
+**Returns**: `str` — the sanitized HTML.
+
+The sanitizer keeps:
+
+- The tags `p`, `br`, `b`, `strong`, `i`, `em`, `u`, `ul`, `ol`, `li`, `a`, `span`, and `div`.
+- The `href` attribute on `a` tags, when the URL uses the `http`, `https`, or `mailto` scheme. Every link also gets `rel="noopener noreferrer"`.
+
+The sanitizer removes:
+
+- All other tags and attributes, including `style`, `class`, `id`, `title`, and event handlers such as `onclick`.
+- Comments, and the contents of `script` and `style` tags.
+- Link URLs that use any other scheme, such as `javascript:`, `data:`, or `vbscript:`. The link text stays.
+
+Text is HTML-escaped, so `5 < 6` becomes `5 &lt; 6`.
+
+### Using the template filter
+
+In templates rendered with [`render_to_string`](/sdk/layout-effect/#custom-html-and-django-templates), use the builtin `sanitize_html` filter. You don't need a `{% raw %}{% load %}{% endraw %}` tag.
+
+{% raw %}
+```html
+<span class="message-text-content">{{ msg.text|sanitize_html }}</span>
+```
+{% endraw %}
+
+The filter marks its output as safe, so don't add `|safe`. A `None` value renders as an empty string.
+
+For the other rules on rendering untrusted data in templates, such as passing data to JavaScript, see [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely).
+
 ## Making requests to the Ontologies service
 
 Plugin authors can make requests to our Ontologies service using the
@@ -627,7 +677,7 @@ Beyond medications and allergens, the ontologies service resolves coded concepts
 
 #### `GET /icd/condition/` — ICD-10 conditions
 
-**Used by:** [Diagnose](/sdk/commands/#diagnose) (`icd10_code`), [Medical History](/sdk/commands/#medicalhistory) (`past_medical_history`), and the `diagnosis_codes` fields on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), and other diagnosis-code commands. _(Prescribe/Refill `icd10_codes` come from the patient's active conditions, not this search.)_
+**Used by:** [Diagnose](/sdk/commands/#diagnose) (`icd10_code`), [Assess](/sdk/commands/#assess) (`icd10_code`), [Medical History](/sdk/commands/#medicalhistory) (`past_medical_history`), and the `diagnosis_codes` fields on [Refer](/sdk/commands/#refer), [Imaging Order](/sdk/commands/#imagingorder), and other diagnosis-code commands. _(Prescribe/Refill `icd10_codes` come from the patient's active conditions, not this search.)_
 
 Search ICD-10 conditions by text, or resolve a specific code. This backs the condition/diagnosis autocompletes on commands such as [Diagnose](/sdk/commands/#diagnose), [Assess](/sdk/commands/#assess), and [Medical History](/sdk/commands/#medicalhistory). Query parameters:
 
@@ -749,6 +799,8 @@ Search SNOMED family relationships (mother, father, sibling, …).
 | Parameter         | Type   | Description                                                  |
 |-------------------|--------|--------------------------------------------------------------|
 | `term__icontains` | string | Case-insensitive substring match on the relationship term.   |
+
+Results are ordered by term length, shortest first, so an exact match comes before longer terms that contain it. For example, `sister` returns Sister before Half-sister.
 
 ```python
 from urllib.parse import urlencode
@@ -1404,6 +1456,119 @@ class InvitePatient(BaseHandler):
 ```
 
 For a full, runnable plugin that mints a link, delivers it over a configurable provider, and reports the provider's delivery status, see the [patient_portal_link example plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_link).
+
+## Searching for open appointment slots
+
+A plugin with its own booking screen can offer the same open appointment times as the native Canvas booking screens by calling `appointment_slots_http.search_slots()`. Canvas runs its own slot search: it expands recurring availability and its exceptions, subtracts booked appointments and holds, and applies the visit type. Your plugin doesn't rebuild that calculation from [Calendar](/sdk/data-calendar/) and [Appointment](/sdk/data-appointment/) records, and later fixes to the native search apply to your screen too.
+
+To change the slots the native scheduler offers patients instead of building your own screen, see [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling).
+
+```python?partial=true
+from canvas_sdk.utils.appointment_slots import Slot, SlotSearchError, appointment_slots_http
+```
+
+Like `patient_portal_http`, `appointment_slots_http` is imported from its own module, and it exposes only `search_slots`.
+
+### search_slots
+
+Searches for open appointment times and returns them as a list of `Slot` objects. Each call runs a new search.
+
+**Parameters**:
+
+| Name                     | Type                  | Required | Description |
+| :----------------------- | :-------------------- | :------- | :---------- |
+| `location_id`            | _string_              | `true`   | The `id` of the [PracticeLocation](/sdk/data-practicelocation/). |
+| `start`                  | _datetime_            | `true`   | The start of the search, with a time zone. Canvas returns only the slots that start at or after it. To require a minimum notice, add it here, for example `now + timedelta(hours=24)`. |
+| `end`                    | _datetime_            | `true`   | The end of the search, with a time zone. It must be after `start` and at most 31 days after it. |
+| `duration`               | _integer_             | `true`   | The visit length in minutes, from `1` to `1440`. |
+| `staff_ids`              | _list of strings_     | `false`  | The `id` of each [Staff](/sdk/data-staff/) member to search. Each must be a schedulable provider. Omit it to search every schedulable provider. |
+| `visit_type_id`          | _string_              | `false`  | The `id` of the visit type's [NoteType](/sdk/data-note/#notetype). Availability limited to other visit types is left out. |
+| `exclude_appointment_id` | _string_              | `false`  | The `id` of an [Appointment](/sdk/data-appointment/) being rescheduled. Its own time is returned as open. |
+| `grid_minutes`           | _integer_             | `false`  | The spacing of slot start times, from `1` to `60`. Defaults to `15`. Canvas also offers back-to-back starts from the beginning of each open period, so some starts fall between grid stops, such as one right after a booking ends. |
+| `respect_holds`          | _boolean_             | `false`  | Whether to apply the same-day and next-day holds on provider calendars. Defaults to `True`. |
+
+**Returns**: a list of `Slot` objects, each an open time with one provider. A `Slot` can't be changed after it's created.
+
+| Attribute  | Type       | Description |
+| :--------- | :--------- | :---------- |
+| `staff_id` | _string_   | The `id` of the [Staff](/sdk/data-staff/) member the slot is with. |
+| `start`    | _datetime_ | When the appointment would start, in the instance's time zone. |
+| `end`      | _datetime_ | When the appointment would end, in the instance's time zone. |
+
+A slot isn't a hold, and another booking can take it after you search. Search again just before you book.
+
+**Errors**:
+
+- `ValueError`: `start` or `end` has no time zone. Pass a time-zone-aware datetime, such as `datetime.now(timezone.utc)`.
+- `SlotSearchError`: the search didn't complete. Catch this exception rather than the underlying `requests` exceptions, which a plugin can't catch. Its `status_code` and `message` attributes describe the cause:
+  - `400`: a parameter names a record Canvas doesn't have, or a value is outside the ranges above. The message names the parameter.
+  - `503`: Canvas couldn't read the provider calendars. Try the search again later.
+  - `0`: the plugin couldn't reach Canvas.
+
+**Example**:
+
+The following SimpleAPI route returns the 30-minute slots a logged-in patient can book at a location over the next week, starting 24 hours from now.
+
+```python
+from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+from canvas_sdk.utils.appointment_slots import SlotSearchError, appointment_slots_http
+from canvas_sdk.v1.data import Staff
+
+
+class OpenSlots(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/slots"
+
+    def get(self) -> list[Response | Effect]:
+        location_id = self.request.query_params["location_id"]
+
+        # Patients must book at least 24 hours ahead.
+        start = datetime.now(timezone.utc) + timedelta(hours=24)
+
+        try:
+            slots = appointment_slots_http.search_slots(
+                location_id=location_id,
+                start=start,
+                end=start + timedelta(days=7),
+                duration=30,
+            )
+        except SlotSearchError as error:
+            # A 400 means the request itself needs fixing; anything else is worth retrying.
+            status = (
+                HTTPStatus.BAD_REQUEST
+                if error.status_code == 400
+                else HTTPStatus.SERVICE_UNAVAILABLE
+            )
+            return [JSONResponse({"error": error.message}, status_code=status)]
+
+        # Look up every provider's name in one query, rather than once per slot.
+        staff_names = {
+            staff["id"]: f"{staff['first_name']} {staff['last_name']}"
+            for staff in Staff.objects.filter(
+                id__in={slot.staff_id for slot in slots}
+            ).values("id", "first_name", "last_name")
+        }
+
+        return [
+            JSONResponse(
+                {
+                    "slots": [
+                        {
+                            "staff_id": slot.staff_id,
+                            "staff_name": staff_names.get(slot.staff_id),
+                            "start": slot.start.isoformat(),
+                            "end": slot.end.isoformat(),
+                        }
+                        for slot in slots
+                    ]
+                }
+            )
+        ]
+```
 
 <br/>
 <br/>

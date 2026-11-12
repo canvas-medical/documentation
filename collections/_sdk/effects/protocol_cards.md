@@ -19,30 +19,48 @@ A Protocol card consists of three main parts:
   - open a new tab and navigate to another site
   - insert commands into a note
 
-| Name               | Type                                    | Required                                     | Description                                                                                                                                        |
-| :----------------- | :-------------------------------------- | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `patient_id`       | _string_                                | `true` (if `patient_filter` is not included) | The id of the [patient](/sdk/data-patient/)                                                                                                        |
-| `patient_filter`   | _dict_                                  | `true` (if `patient_id` is not included)     | Patient queryset filters to apply the effect to multiple patients. For example, `{"active": True}` will apply to the effect to all active patients |
-| `key`              | _string_                                | `true`                                       | A unique identifier for the protocol card                                                                                                          |
-| `title`            | _string_                                | `true`                                       | The title for the protocol card, which appears at the top in bold                                                                                  |
-| `narrative`        | _string_                                | `false`                                      | The narrative for the protocol card, which appears just below the title                                                                            |
-| `can_be_snoozed`   | _boolean_                               | `false`                                      | Whether the protocol card can be snoozed, defaults to `false`                                                                                      |
-| `status`           | [Status](#status)                       | `false`                                      | The status of the protocol card, defaults to `Status.DUE`                                                                                          |
-| `recommendations`  | list[[Recommendation](#recommendation)] | `false`                                      | The recommendations to appear in the protocol card                                                                                                 |
-| `feedback_enabled` | _boolean_                               | `false`                                      | Whether users can provide feedback for the protocol card in Settings, defaults to `false`                                                          |
-| `due_in`           | _integer_                               | `false`                                      | The number of days until the protocol card will be considered due for the patient, defaults to `-1` for already due                                |
-|                    |                                         |                                              |                                                                                                                                                    |
+Build a `ProtocolCard` with the [attributes](#attributes) you want to set, add any recommendations, then return its `apply()` from your handler.
 
-### Recommendation
+## Methods
 
-| Attribute  | Type                             | Required | Description                           |
-|:-----------|:---------------------------------|:---------|:--------------------------------------|
-| `title`    | _string_                         | `true`   | The description of the recommendation |
-| `button`   | _string_                         | `false`  | The text to appear on the button      |
-| `href`     | _string_                         | `false`  | The url for the button to navigate to |
-| `commands` | list[[Command](#/sdk/commands/)] | `false`  | The commands to be inserted           |
+### apply() → Effect
 
-### Status
+Creates the protocol card, or updates the existing card with the same patient and `key`.
+
+- `key` is required.
+- Exactly one of `patient_id` or `patient_filter` is required.
+- The existing card is matched on patient, `key`, and the plugin that sends it, so two plugins using the same `key` each get their own card.
+- Re-applying replaces every field on the card. To change a card's `status`, for example from `DUE` to `SATISFIED`, send the whole card again with the new status.
+
+### add_recommendation(title: str = "", button: str = "", href: str | None = None, commands: list | None = None) → None
+
+Appends a [recommendation](#recommendation) to the card's `recommendations`.
+
+## Attributes
+
+| Attribute          | Type                                        | Description                                                                                                                                         | Required                                   |
+| ------------------ | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| `patient_id`       | `str`                                       | The id of the [patient](/sdk/data-patient/).                                                                                                        | One of `patient_id` or `patient_filter`    |
+| `patient_filter`   | `dict`                                      | A [patient filter](/sdk/effect-banner-alerts/#patient-filters) that applies the effect to every matching patient. For example, `{"active": True}` applies the effect to all active patients. | One of `patient_id` or `patient_filter`    |
+| `key`              | `str`                                       | A unique identifier for the protocol card.                                                                                                          | Yes                                        |
+| `title`            | `str`                                       | The title for the protocol card, which appears at the top in bold.                                                                                  | No                                         |
+| `narrative`        | `str`                                       | The narrative for the protocol card, which appears just below the title.                                                                            | No                                         |
+| `can_be_snoozed`   | `bool`                                      | Whether the protocol card can be snoozed. Defaults to `False`.                                                                                      | No                                         |
+| `status`           | [`Status`](#status)                         | The status of the protocol card. Defaults to `Status.DUE`.                                                                                          | No                                         |
+| `recommendations`  | `list[`[`Recommendation`](#recommendation)`]` | The recommendations to appear in the protocol card.                                                                                               | No                                         |
+| `feedback_enabled` | `bool`                                      | Whether users can provide feedback for the protocol card in Settings. Defaults to `False`.                                                          | No                                         |
+| `due_in`           | `int`                                       | The number of days until the protocol card will be considered due for the patient. Defaults to `-1`, already due.                                   | No                                         |
+
+## Recommendation
+
+| Attribute  | Type                            | Description                           | Required |
+|:-----------|:--------------------------------|:--------------------------------------|:---------|
+| `title`    | `str`                           | The description of the recommendation | No       |
+| `button`   | `str`                           | The text to appear on the button      | No       |
+| `href`     | `str`                           | The url for the button to navigate to | No       |
+| `commands` | list[[Command](/sdk/commands/)] | The commands to be inserted           | No       |
+
+## Status
 
 | Enum             | Value          |
 | :--------------- | :------------- |
@@ -51,10 +69,11 @@ A Protocol card consists of three main parts:
 | `NOT_APPLICABLE` | not_applicable |
 | `PENDING`        | pending        |
 | `NOT_RELEVANT`   | not_relevant   |
-|                  |                |
+
+## Example
 
 To include a command recommendation you can:
-- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Keep in mind that, at the moment, not all commands are supported for command insertion. See [below](#supported-commands) for the list of supported commands.
+- import the command from the [commands module](/sdk/commands/), instantiate the command with all the values you wish to populate, and then call `.recommend(title: str = "", button: str | None)` on the command to generate the recommendation that you can append to the protocol card's recommendations. Any command can be inserted; see [Supported Commands](#supported-commands).
 - instantiate the command as above, and then pass it in a list to the `commands` attribute of a recommendation.
 
 </br>
@@ -62,25 +81,23 @@ To include a command recommendation you can:
 
 For non-command recommendations, you can either use the `Recommendation` class, or the `.add_recommendation(title: str = "", button: str = "", href: str | None)` method on the protocol card.
 
-**Example**:
-
 ```python
 from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand, PlanCommand
+from canvas_sdk.commands import AssessCommand, PlanCommand
 
 
 class MyHandler(BaseHandler):
     RESPONDS_TO = EventType.Name(EventType.PATIENT_UPDATED)
 
     def compute(self):
-        diagnose = DiagnoseCommand(
+        assess = AssessCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
-            today_assessment="still not great",
+            narrative="still not great",
         )
         
         plan = PlanCommand(
@@ -95,7 +112,7 @@ class MyHandler(BaseHandler):
             status=ProtocolCard.Status.DUE,
             recommendations=[
               Recommendation(title="this recommendation has no action, just words!"),
-              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[diagnose, plan])
+              Recommendation(title="this recommendation inserts multiple commands", button="add commands", commands=[assess, plan])
             ],
         )
 
@@ -103,8 +120,8 @@ class MyHandler(BaseHandler):
             title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
         )
 
-        p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
-        p.recommendations.append(title="new recommendation", button="start", commands=[diagnose])
+        p.recommendations.append(assess.recommend(title="this inserts an assess command"))
+        p.recommendations.append(title="new recommendation", button="start", commands=[assess])
 
         return [p.apply()]
 
@@ -121,7 +138,7 @@ from canvas_sdk.events import EventType
 from canvas_sdk.handlers import BaseHandler
 from datetime import date
 from canvas_sdk.effects.protocol_card import ProtocolCard, Recommendation
-from canvas_sdk.commands import DiagnoseCommand
+from canvas_sdk.commands import AssessCommand
 
 
 class MyHandler(BaseHandler):
@@ -145,13 +162,13 @@ class MyHandler(BaseHandler):
             title="this is a recommendation", button="go here", href="https://canvasmedical.com/"
         )
 
-        diagnose = DiagnoseCommand(
+        assess = AssessCommand(
             icd10_code="I10",
             background="feeling bad for many years",
             approximate_date_of_onset=date(2020, 1, 1),
-            today_assessment="still not great",
+            narrative="still not great",
         )
-        p.recommendations.append(diagnose.recommend(title="this inserts a diagnose command"))
+        p.recommendations.append(assess.recommend(title="this inserts an assess command"))
 
         if self.event.type in [EventType.PLUGIN_CREATED, EventType.PLUGIN_UPDATED]:
             p.patient_filter = {"active": True}
@@ -162,28 +179,20 @@ class MyHandler(BaseHandler):
 
 ```
 
-### Supported Commands
+## Supported Commands
 
-The following commands from the [commands module](/sdk/commands/) are currently supported for insertion from Protocol Cards:
+Any command in the [commands module](/sdk/commands/) can be inserted from a protocol card recommendation.
 
-- Allergy
-- Assess
-- Diagnose
-- FollowUp
-- Goal
-- HistoryOfPresentIllness
-- Image
-- Immunize
-- Instruct
-- LabOrder
-- MedicationStatement
-- Perform
-- Plan
-- Prescribe
-- Questionnaire
-- ReasonForVisit
-- Refer
-- StructuredAssessment
-- Task
-- ValidateCodingGap
-- Vitals
+Validate Coding Gap has no class in the commands module. Recommend it with `add_recommendation(command="validateCodingGap", context={"detected_issue_id": ...})`, passing the coding gap's [DetectedIssue](/sdk/data-detected-issue/#detectedissue) `dbid`. The inserted command opens with that detected issue selected. See [Improve HCC Coding Accuracy](/guides/improve-hcc-coding-accuracy/) for a full plugin.
+
+```python?partial=true
+card.add_recommendation(
+    title="E11.9 (Type 2 diabetes)",
+    button="Validate",
+    command="validateCodingGap",
+    context={"detected_issue_id": coding_gap.dbid},
+)
+```
+
+<!-- source: discussion #758 -->
+{% include alert.html type="info" content="Commands inserted from a protocol card recommendation populate their fields the same way as a command originated directly from a plugin — the values you set when instantiating the command (for example <code>image_code</code>, <code>diagnosis_codes</code>, <code>comment</code>) carry through to the inserted command." %}

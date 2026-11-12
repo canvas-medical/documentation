@@ -5,11 +5,37 @@ excerpt: "Effect for grouping items on a patient chart section"
 hidden: false
 ---
 
-## Overview
-
 This effect allows developers to group items in a patient chart section. You can define multiple groups with a name, priority, and the items that belong to each group.
 
-Currently, this is supported for the Conditions, Medications, and Detected Issues sections.
+This is supported for the Conditions, Medications, and Detected Issues sections.
+
+Build a `PatientChartGroup` with the [groups](#group) to show, then return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Groups the section's items.
+
+- `items` is required.
+
+## Attributes
+
+| Attribute | Type                                 | Description                               | Required |
+|-----------|--------------------------------------|-------------------------------------------|----------|
+| `items`   | `dict[str, `[`Group`](#group)`]`     | The groups, keyed by group name.          | Yes      |
+
+## Group
+
+| Attribute  | Type   | Description                                                      |
+|------------|--------|------------------------------------------------------------------|
+| `items`    | `list` | List of items for each group, for example conditions or medications. |
+| `priority` | `int`  | The group's priority within the section.                         |
+| `name`     | `str`  | The group label.                                                 |
+
+All three are required.
+
+## Example
 
 ```python
 from canvas_sdk.effects.patient_chart_group import PatientChartGroup
@@ -31,39 +57,11 @@ conditions = [{
     }
 }]
 
-PatientChartGroup(items=[
-  {
-    "Psychiatry": Group(priority=100, items=conditions, name="Psychiatry")
-  },
-  {
-    "General": Group(priority=200, items=conditions, name="General")
-  }
-])
+PatientChartGroup(items={
+    "Psychiatry": Group(priority=100, items=conditions, name="Psychiatry"),
+    "General": Group(priority=200, items=conditions, name="General"),
+}).apply()
 ```
-
-## Structure
-
-### **Group**
-
-A Group consists of the following properties:
-
-#### Attributes
-
-| Attribute  | Type   | Description                              |
-|------------|--------|------------------------------------------|
-| `items`    | `list` | list of items for each group, ex: [Condition] or [Medication]            |
-| `priority` | `int`  | the group’s priority within the section. |
-| `name`     | `str`  | the group label.                         |
-
-### **PatientChartGroup**
-
-A PatientChartGroup consists of the following properties:
-
-#### Attributes
-
-| Attribute  | Type               | Description    |
-|------------|--------------------|----------------|
-| `items`    | `dict[str, Group]` | list of Groups |
 
 <br/>
 <br/>

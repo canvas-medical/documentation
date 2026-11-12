@@ -17,13 +17,23 @@ Check a patient's insurance coverage and plan details. Send a request with `Send
 
 Sends an eligibility request to Surescripts to check a patient's insurance coverage. The response arrives as a `SURESCRIPTS_ELIGIBILITY_RESPONSE` event.
 
+Build a `SendSurescriptsEligibilityRequestEffect` and return its `apply()` from your handler.
+
+#### Methods
+
+##### apply() → Effect
+
+Sends the eligibility request.
+
+- `patient_id` and `staff_id` are required.
+
 #### Attributes
 
-| Name             | Type   | Description                                                                                                                                                     |
-|------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `patient_id`     | `str`  | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check eligibility.                                                                                                            |
-| `staff_id`       | `str`  | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                                                     |
-| `correlation_id` | `str`  | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. |
+| Attribute        | Type  | Description                                                                                                                                                    | Required |
+|------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `patient_id`     | `str` | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check eligibility.                                                                             | Yes      |
+| `staff_id`       | `str` | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                          | Yes      |
+| `correlation_id` | `str` | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. | No       |
 
 #### Correlation ID
 
@@ -33,7 +43,7 @@ By default, the effect auto-generates a unique `correlation_id` (a UUID hex stri
 
 > **Note:** The `correlation_id` is required for receiving response events. The platform only delivers `SURESCRIPTS_ELIGIBILITY_RESPONSE` events to plugins that sent a request with a valid `correlation_id`.
 
-#### Example Usage
+#### Example
 
 ```python
 from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsEligibilityRequestEffect
@@ -139,16 +149,26 @@ Retrieve formulary and coverage details for a specific medication. Send a reques
 
 Sends a benefits request to Surescripts to retrieve formulary and coverage details for a specific medication. The response arrives as a `SURESCRIPTS_BENEFITS_RESPONSE` event.
 
+Build a `SendSurescriptsBenefitsRequestEffect` and return its `apply()` from your handler.
+
+#### Methods
+
+##### apply() → Effect
+
+Sends the benefits request.
+
+- `patient_id`, `staff_id`, `medication_description`, `medication_ndc`, and `plan` are required.
+
 #### Attributes
 
-| Name                     | Type   | Description                                                                                                                                                     |
-|--------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `patient_id`             | `str`  | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check benefits.                                                                                                              |
-| `staff_id`               | `str`  | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                                                     |
-| `medication_description` | `str`  | A human-readable description of the medication (e.g., "Lipitor 10 mg tablet").                                                                                  |
-| `medication_ndc`         | `str`  | The NDC of the medication to check.                                                                                                                            |
-| `plan`                   | `str`  | The plan or PBM to check benefits against.                                                                                                                      |
-| `correlation_id`         | `str`  | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. |
+| Attribute                | Type  | Description                                                                                                                                                    | Required |
+|--------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `patient_id`             | `str` | The Canvas [Patient](/sdk/data-patient/#patient) ID for whom to check benefits.                                                                                | Yes      |
+| `staff_id`               | `str` | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                                                                                          | Yes      |
+| `medication_description` | `str` | A human-readable description of the medication (e.g., "Lipitor 10 mg tablet").                                                                                 | Yes      |
+| `medication_ndc`         | `str` | The NDC of the medication to check.                                                                                                                            | Yes      |
+| `plan`                   | `str` | The plan or PBM to check benefits against.                                                                                                                     | Yes      |
+| `correlation_id`         | `str` | A unique identifier for matching the response to this request. Auto-generated if not provided. Read this value after instantiation and store it for later use. | No       |
 
 #### Correlation ID
 
@@ -158,7 +178,7 @@ By default, the effect auto-generates a unique `correlation_id` (a UUID hex stri
 
 > **Note:** The `correlation_id` is required for receiving response events. The platform only delivers `SURESCRIPTS_BENEFITS_RESPONSE` events to plugins that sent a request with a valid `correlation_id`.
 
-#### Example Usage
+#### Example
 
 ```python
 from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsBenefitsRequestEffect
@@ -293,14 +313,24 @@ Unlike eligibility and benefits, this effect has **no paired response event** �
 
 Sends a medication history request to Surescripts for the patient. Canvas requests the patient's recent fill history (currently the trailing 12 months).
 
+Build a `SendSurescriptsMedicationHistoryRequestEffect` and return its `apply()` from your handler.
+
+#### Methods
+
+##### apply() → Effect
+
+Sends the medication history request.
+
+- `patient_id` and `staff_id` are required.
+
 #### Attributes
 
-| Name         | Type  | Description                                                              |
-|--------------|-------|--------------------------------------------------------------------------|
-| `patient_id` | `str` | The Canvas [Patient](/sdk/data-patient/#patient) ID whose medication history to request. |
-| `staff_id`   | `str` | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.    |
+| Attribute    | Type  | Description                                                                              | Required |
+|--------------|-------|------------------------------------------------------------------------------------------|----------|
+| `patient_id` | `str` | The Canvas [Patient](/sdk/data-patient/#patient) ID whose medication history to request. | Yes      |
+| `staff_id`   | `str` | The Canvas [Staff](/sdk/data-staff/#staff) ID initiating the request.                    | Yes      |
 
-#### Example Usage
+#### Example
 
 ```python
 from canvas_sdk.effects.surescripts.surescripts_messages import SendSurescriptsMedicationHistoryRequestEffect

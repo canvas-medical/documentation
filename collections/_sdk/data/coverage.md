@@ -9,7 +9,9 @@ hidden: false
 
 The `Coverage` model represents insurance coverage linked to [Patients](/sdk/data-patient/#patient). Coverages are linked to [Patient](/sdk/data-patient/#patient) instances, as well as `Transactor` instances, which represent the issuer for the corresponding coverage. `Coverage`s also have an associated [`EligibilitySummary`](#eligibilitysummary), which provides the most up-to-date copay and coinsurance values.
 
-Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images captured via the Canvas iOS application or uploaded through the coverages modal.
+To create or change coverages from a plugin, use the [Coverage effect](/sdk/effect-coverage/).
+
+Coverages can also be linked to a [`Snapshot`](/sdk/data-snapshot/#snapshot), which provides access to insurance card images. Card images are captured via the Canvas iOS application, uploaded through the coverages modal, or attached by a plugin with the [Coverage effect](/sdk/effect-coverage/#card-images).
 
 ## Usage
 
@@ -129,7 +131,7 @@ The `filter` method can be used to filter by desired attributes. The following e
 | employer                           | String                                                |
 | coverage_start_date                | Date                                                  |
 | coverage_end_date                  | Date                                                  |
-| coverage_rank                      | Integer                                               |
+| coverage_rank                      | [CoverageRank](#coveragerank)                         |
 | state                              | [CoverageState](#coveragestate)                       |
 | plan_type                          | [CoverageType](#coveragetype)                         |
 | coverage_type                      | [TransactorCoverageType](#transactorcoveragetype)     |
@@ -148,7 +150,10 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 | Field Name                   | Type                                                |
 | ---------------------------- | --------------------------------------------------- |
+| id                           | UUID                                                |
 | dbid                         | Integer                                             |
+| created                      | DateTime                                            |
+| modified                     | DateTime                                            |
 | payer_id                     | String                                              |
 | name                         | String                                              |
 | type                         | String                                              |
@@ -237,6 +242,16 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ## Enumeration types
 
+### CoverageRank
+
+| Value | Name       | Label      |
+| ----- | ---------- | ---------- |
+| 1     | PRIMARY    | Primary    |
+| 2     | SECONDARY  | Secondary  |
+| 3     | TERTIARY   | Tertiary   |
+| 4     | QUATERNARY | Quaternary |
+| 5     | QUINARY    | Quinary    |
+
 ### CoverageStack
 
 | Value   | Label   |
@@ -254,19 +269,25 @@ The `filter` method can be used to filter by desired attributes. The following e
 
 ### CoverageType
 
-| Value        | Label                     |
-| ------------ | ------------------------- |
-| commercial   | Commercial                |
-| workerscomp  | Workers Comp              |
-| bcbs         | Blue Cross Blue Shield    |
-| champus      | Tricare/Champus           |
-| medicaid     | Medicaid                  |
-| medicare     | Medicare                  |
-| other        | Other                     |
-| tpa          | Third Party Administrator |
-| motorvehicle | Motor Vehicle             |
-| lien         | Attorney/Lien             |
-| pip          | Personal Injury           |
+A coverage's `plan_type` comes from its payer's [TransactorType](#transactortype) and is set again whenever the coverage's payer changes. Each transactor type maps to the plan type with the same value, except `automobile`, which maps to `motorvehicle`. Any other value maps to `other`.
+
+| Value              | Label                     |
+| ------------------ | ------------------------- |
+| commercial         | Commercial                |
+| workerscomp        | Workers Comp              |
+| bcbs               | Blue Cross Blue Shield    |
+| champus            | Tricare/Champus           |
+| medicaid           | Medicaid                  |
+| medicare           | Medicare                  |
+| medicare_advantage | Medicare Advantage        |
+| CHIP               | CHIP                      |
+| employer           | Employer                  |
+| direct_care        | Direct Care               |
+| other              | Other                     |
+| tpa                | Third Party Administrator |
+| motorvehicle       | Motor Vehicle             |
+| lien               | Attorney/Lien             |
+| pip                | Personal Injury           |
 
 ### CoverageRelationshipCode
 

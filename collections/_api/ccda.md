@@ -10,9 +10,11 @@ Software requirements for retrieving C-CDA via API calls can be found [here](/ap
 
 If you have a Canvas Production instance, you will need to request a token and refresh it periodically. You can refer to our [Authentication Documentation](/api/customer-authentication) to get you set up.
 
+If you use a [client credentials](/api/customer-authentication/#client-credentials) token, request it with the `system/*.*` scope. Canvas refuses a client credentials token with narrower scopes on this endpoint with `403 Forbidden`.
+
 ## Request and Parameters
 
-In order to generate a CCDA for a known patient key, you'll need to do a GET request to the endpoint `{YOUR_EHR_INSTANCE}/api/data-export/ccda/{patient_key}?document={document_type}`, where `document_type` can be either `continuity` or `referral`. You can check all parameters in the table below.
+In order to generate a CCDA for a known patient id, you'll need to do a GET request to the endpoint `{YOUR_EHR_INSTANCE}/api/data-export/ccda/{patient_id}?document={document_type}`, where `document_type` can be either `continuity` or `referral`. You can check all parameters in the table below.
 
 <table border="1">
   <thead>
@@ -58,7 +60,7 @@ In order to generate a CCDA for a known patient key, you'll need to do a GET req
 
 Here's a cURL example of a request for a continuity of care document, filtered for 2020-01-01 to 2020-12-31, and with a generation date of 2022-01-01, at 16:30 UTC:
 ```shell
-curl --request GET --header "Authorization: Bearer <token>" "<practice_subdomain>.canvasmedical.com/api/data-export/ccda/{PATIENT_KEY}?document=continuity&start_date=2024-01-01&end_date=2024-12-31&generation_date=2025-07-31T16:30:00"
+curl --request GET --header "Authorization: Bearer <token>" "<practice_subdomain>.canvasmedical.com/api/data-export/ccda/{PATIENT_ID}?document=continuity&start_date=2024-01-01&end_date=2024-12-31&generation_date=2025-07-31T16:30:00"
 ```
 
 A valid request will always return XML with the requested document as the response. 

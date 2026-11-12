@@ -26,13 +26,21 @@ A button's `visible()` result, its title, and its color are all computed from li
 
 ## ReloadNoteActionButtonsEffect
 
+To reload a note's action buttons, build a `ReloadNoteActionButtonsEffect` and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
 Re-evaluates the note's action buttons in the `NOTE_HEADER`, `NOTE_FOOTER`, and `NOTE_HEADER_DROPDOWN` locations. It also re-reads the note's [footer configuration](/sdk/effect-note-footer-configuration/) (by re-firing `NOTE_FOOTER__GET_CONFIGURATION`), so a plugin that toggles `hide_default_state_buttons` can refresh whether Canvas's native footer buttons are hidden without a full page reload.
+
+- `id` is required, and must be the id of an existing note.
 
 ### Attributes
 
-| Field | Type  | Description                                                                                       |
-|-------|-------|---------------------------------------------------------------------------------------------------|
-| `id`  | `str \| UUID` | The external id of a [Note](/sdk/data-note/#note) (`Note.id`). The note must exist, or the effect raises a validation error. |
+| Attribute | Type          | Description                                                                                                                  | Required |
+|-----------|---------------|------------------------------------------------------------------------------------------------------------------------------|----------|
+| `id`      | `str \| UUID` | The external id of a [Note](/sdk/data-note/#note) (`Note.id`). The note must exist, or the effect raises a validation error. | Yes      |
 
 {% include alert.html type="warning" content="The <code>note_id</code> carried by a <a href='/sdk/events/#action-buttons-events'><code>SHOW_*_BUTTON</code></a> context is the note's <b>database id</b> (<code>dbid</code>), while this effect is keyed by the note's <b>external id</b>. Resolve between them through the <a href='/sdk/data-note/#note'><code>Note</code></a> data model — for example <code>Note.objects.filter(dbid=...).first().id</code>." %}
 
@@ -64,13 +72,21 @@ class ReloadFooterOnCommandCommit(BaseHandler):
 
 ## ReloadPatientActionButtonsEffect
 
+To reload a patient's action buttons, build a `ReloadPatientActionButtonsEffect` and return its `apply()` from your handler.
+
+### Methods
+
+#### apply() → Effect
+
 Re-evaluates the patient's action buttons in the `CHART_PATIENT_HEADER` location.
+
+- `id` is required, and must be the id of an existing patient.
 
 ### Attributes
 
-| Field | Type  | Description                                                                       |
-|-------|-------|-----------------------------------------------------------------------------------|
-| `id`  | `str` | The id of a [Patient](/sdk/data-patient/#patient). The patient must exist, or the effect raises a validation error. |
+| Attribute | Type  | Description                                                                                                         | Required |
+|-----------|-------|---------------------------------------------------------------------------------------------------------------------|----------|
+| `id`      | `str` | The id of a [Patient](/sdk/data-patient/#patient). The patient must exist, or the effect raises a validation error. | Yes      |
 
 ### Example
 

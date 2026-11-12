@@ -99,6 +99,8 @@ The `sub_type_code` attribute further qualifies the request. It is nullable and 
 | Field Name     | Type                                                    |
 |----------------|---------------------------------------------------------|
 | dbid           | Integer                                                 |
+| created        | DateTime                                                |
+| modified       | DateTime                                                |
 | change_request | [PrescriptionChangeRequest](#prescriptionchangerequest) |
 | system         | String                                                  |
 | version        | String                                                  |

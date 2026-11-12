@@ -135,3 +135,23 @@ if __name__ == '__main__':
 - **Safely stored access tokens can and should be reused!**<br>
 - Additional reading:
     - [Token Best Practices from Auth0](https://auth0.com/docs/secure/tokens/token-best-practices)
+
+<!-- source: discussion #942 -->
+### Keep access tokens and client secrets out of browser code
+
+If your application has a browser front end, never put your Canvas client ID and secret, or any access token, in client-side code. Anyone who can view the page source or watch its network traffic can read them, and a leaked client secret lets anyone request new tokens as your application. Canvas applications are registered as confidential clients, so the secret belongs on your server.
+
+Keep the secret and tokens on your application's server, have the browser call your server, and have your server call the FHIR API.
+
+Request tokens from `/auth/token/` on your server, using the flow that matches who the calls are for:
+
+- [Client credentials](/api/customer-authentication/#client-credentials), for calls your application makes on its own behalf.
+- [Authorization code](/api/customer-authentication/#authorization-code), for calls on behalf of a specific Canvas user. Store each user's refresh token in your backend, as in the [recommended pattern for external applications](/api/customer-authentication/#recommended-pattern-for-external-applications).
+- [Patient scoped tokens](/api/customer-authentication/#patient-scoped-tokens), for a patient-facing application, so that each token can read and write only one patient's records.
+
+Reuse each access token until it expires rather than requesting a new one for every call, as described in [The Access Token: Don't lose it, reuse it](#the-access-token-dont-lose-it-reuse-it).
+
+<!-- source: discussion #945 -->
+### Resolving `access_denied` on the authorization code flow
+
+If the OAuth 2.0 authorization code flow returns `?error=access_denied` to your redirect URI even though login and scope selection succeed, the authorization server may be looking for a launch context (such as a patient) and not finding one. When no launch context exists, append `&launch=e30K` to your call to `/auth/authorize`. `e30K` is the base64 encoding of `{}` (an empty JSON object), which supplies an empty launch context and avoids the `access_denied` error.

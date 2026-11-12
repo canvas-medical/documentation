@@ -7,6 +7,57 @@ hidden: false
 
 The Canvas SDK allows you to configure and extend the patient portal. This page is the technical reference for the portal's effects and events. For a decision-oriented overview of how much of the patient experience to build, see [Choosing Your Patient Experience](/guides/choosing-your-patient-experience/).
 
+## Family Portal Access
+
+With family portal access, staff give a family member or another representative, such as a parent, portal access to a patient's chart. Each family member signs in with their own login, and one login can open several charts: its own, if it has one, and each chart it was given. Canvas turns family portal access on for each instance.
+
+### The patient and the person signed in
+
+When a family member has another patient's chart open, two different people are involved: the **patient** whose chart is open, and the **person signed in**. Plugins get both, in different places:
+
+| Where | The patient whose chart is open | The person signed in |
+|---|---|---|
+| [SimpleAPI](/sdk/handlers-simple-api-http/#session) route | `self.request.headers["canvas-logged-in-user-id"]`, or `credentials.logged_in_user["id"]` in `authenticate()` | `self.request.portal_access`, or `credentials.portal_access` in `authenticate()` |
+| [WebSocket](/sdk/handlers-simple-api-websocket/#websocket-object) | `logged_in_user` | `portal_access` |
+| Portal events: `PATIENT_PORTAL__MENU_CONFIGURATION`, `PATIENT_PORTAL__WIDGET_CONFIGURATION`, `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` | `self.event.target.id` (target type `Patient`) | `self.event.actor` |
+| `portal_menu_item` [application](/sdk/handlers-applications/#who-sees-an-application) | `self.event.context["user"]["id"]` | `self.event.actor` |
+
+When the patient opens their own chart, both columns point to the patient.
+
+To see what a family member can do on the chart:
+
+- In SimpleAPI and WebSocket, `portal_access` gives the patient, the login acting on the chart, its [PortalAccessGrant](/sdk/data-portal-access-grant/), and its level (none, view, or act) in appointments, messaging, clinical, and billing. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
+- In portal events and applications, look up the login's grant with the [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event) model.
+
+### Which chart is open
+
+The portal is open on one chart at a time, and the family member can switch between their charts. Each browser tab shows one chart.
+
+- Plugin pages, and the requests they send, use the chart of the portal tab that last had focus. With the portal open in two windows side by side, a plugin page in the window without focus works with the other window's chart.
+- To keep a plugin page on the chart its own tab shows, have it name that chart in its [SimpleAPI requests](/sdk/handlers-simple-api-http/#family-portal-access) and its [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page).
+
+### When there's no chart to open
+
+When a login has no chart to open, such as a representative whose access was removed, Canvas sends no logged-in user: the SimpleAPI and WebSocket headers are absent, and the application event's `user` is empty.
+
+### Messages and notification badges
+
+- A message a family member sends from the portal is filed on the chart that's open. Its `sender` is the family member's [CanvasUser](/sdk/data-canvasuser/#user), not the patient's, so use the message's `note.patient` to find the patient it's about.
+- A [notification badge](/sdk/handlers-applications/#notification-badges) update for a patient reaches the portal while it's open on that patient's chart.
+
+### Built-in pages follow the family member's access
+
+With no access in an area, the area's pages don't appear in the menu, even when your [menu configuration](#configure-portal-menu-items) includes them, and a family member who opens one sees a notice that their access to the chart doesn't include it. With view or act access, the pages show:
+
+| Area | Built-in pages (menu items) | View | Act |
+|---|---|---|---|
+| Appointments | Appointments (`APPOINTMENTS`) | The chart's appointments, with a note that the access is view-only. Book Appointment, Reschedule, and each appointment's cancel button show turned off. Join still opens a telehealth visit. | The appointments, with booking, canceling, and rescheduling |
+| Messaging | Messaging (`MESSAGING`) | The chart's messages, including lab reports the care team shared through the portal. The form for sending a message shows turned off, with a note that the access is view-only. Opening a shared lab report's original takes view or act access in clinical. | The messages, with the form for sending one |
+| Clinical | My Health (`MY_HEALTH`), Labs (`LABS`), Health Records (`RECORDS`) | The chart's records. My Health and Health Records note that the access is view-only. Generated health records can be viewed and downloaded. Generate, Re-Generate, Transmit, and My Health's Upload Records show turned off. | The records, with Generate, Re-Generate, and Transmit, and with Upload Records when [patient document uploads](/guides/choosing-your-patient-experience/) are on |
+| Billing | Payments (`PAYMENTS`) | The chart's balance, installment plan, and statements, with a note that the access is view-only. When card payments are set up, the saved payment methods show, and Pay Now, Add, and each card's edit and remove buttons show turned off. Otherwise, a number to call to pay. | The balance and statements, with Pay Now and saved payment methods that can be added, edited, and removed when card payments are set up, or otherwise a number to call to pay |
+
+The ready-made [landing page widgets](#portal-landing-page-widgets) follow the same access. `APPOINTMENTS` and `MESSAGING` don't appear without access in their area. With view access, each shows a note that the access is view-only: `APPOINTMENTS` shows its booking, canceling, and rescheduling buttons turned off, and `MESSAGING` links to the messages with View messages in place of Send a message.
+
 ## Configure Portal Menu Items
 
 Decide which items appear in the patient portal's menu with the `PatientPortalMenuConfiguration` effect, returned from a handler on the `PATIENT_PORTAL__MENU_CONFIGURATION` event. Unlike the account-wide page toggles managed by Canvas Support, this lets you show or hide menu items with your own logic (per patient, program, and so on).
@@ -15,11 +66,21 @@ The list you return **replaces** the built-in menu — include every built-in it
 
 An item only appears if its page is **also enabled in your portal settings** (the `PATIENT_APP_*` settings managed by Canvas Support — see [Managing the Patient Portal](https://canvas-medical.help.usepylon.com/articles/7348270931-managing-the-patient-portal)). This effect selects and orders among the *enabled* pages: it can hide or reorder them, but it can't surface a page that's turned off. Patient-portal [applications](/sdk/handlers-applications/) aren't part of this list — they're appended to the navigation after the built-in items through their own registration.
 
-| Attribute | Type              | Description                                    |
-|-----------|-------------------|------------------------------------------------|
-| `items`   | list[`MenuItems`] | The built-in menu items to show, in navigation order (at least one). Replaces the default set — omit an item to hide it. |
+### Methods
 
-**`MenuItems`** values:
+#### apply() → Effect
+
+Sets the portal menu for the patient.
+
+- `items` is required, with at least one item.
+
+### Attributes
+
+| Attribute | Type              | Description                                                                                                              | Required |
+|-----------|-------------------|--------------------------------------------------------------------------------------------------------------------------|----------|
+| `items`   | list[`MenuItems`] | The built-in menu items to show, in navigation order (at least one). Replaces the default set — omit an item to hide it. | Yes      |
+
+### MenuItems
 
 | Member         | Value            | Menu item        |
 |----------------|------------------|------------------|
@@ -30,6 +91,8 @@ An item only appears if its page is **also enabled in your portal settings** (th
 | `LABS`         | `"labs"`         | Lab results      |
 | `CONTACT`      | `"contact"`      | Contact          |
 | `RECORDS`      | `"records"`      | Health Records   |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -56,19 +119,26 @@ class MyHandler(BaseHandler):
 
 The `PortalWidget` class adds widgets to the patient portal landing page. Return `PortalWidget` effects from a handler on the `PATIENT_PORTAL__WIDGET_CONFIGURATION` event. You can fully customize a widget or use a ready-made one provided by Canvas (Appointments, Messaging).
 
-The `PortalWidget` class has the following attributes:
+### Methods
 
-| Attribute   | Type        | Description                                                                                                                            |
-|-------------|-------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| `url`       | `str`       | A URL to load within the widget.                                                                                                       |
-| `content`   | `str`       | Content to display directly within the widget.                                                                                         |
-| `component` | `Component` | A ready-made Canvas widget: `APPOINTMENTS` (upcoming appointments) or `MESSAGING` (quick messaging).                                    |
-| `size`      | `Size`      | Widget width on the grid: `EXPANDED` (12 columns), `MEDIUM` (8 columns), or `COMPACT` (4 columns). All are 300px tall. Defaults to `EXPANDED`. |
-| `priority`  | `int`       | Orders widgets within the portal; a lower number is higher priority. Defaults to `100`.                                                |
+#### apply() → Effect
 
-**Validation:** exactly one of `url`, `content`, or `component` must be set — providing more than one, or none, raises an error.
+Adds the widget to the landing page.
 
-### Example Usage
+- Exactly one of `url`, `content`, or `component` is required; more than one, or none, raises an error.
+- A `component` widget supports only the `EXPANDED` size.
+
+### Attributes
+
+| Attribute   | Type        | Description                                                                                                                                    | Required                                        |
+|-------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| `url`       | `str`       | A URL to load within the widget.                                                                                                               | Exactly one of `url`, `content`, or `component` |
+| `content`   | `str`       | Content to display directly within the widget.                                                                                                 | Exactly one of `url`, `content`, or `component` |
+| `component` | `Component` | A ready-made Canvas widget: `APPOINTMENTS` (upcoming appointments) or `MESSAGING` (quick messaging).                                           | Exactly one of `url`, `content`, or `component` |
+| `size`      | `Size`      | Widget width on the grid: `EXPANDED` (12 columns), `MEDIUM` (8 columns), or `COMPACT` (4 columns). All are 300px tall. Defaults to `EXPANDED`. | No                                              |
+| `priority`  | `int`       | Orders widgets within the portal; a lower number is higher priority. Defaults to `100`.                                                        | No                                              |
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -92,12 +162,22 @@ class MyHandler(BaseHandler):
 
 For a full walkthrough with examples, see the [Custom Landing Page guide](/guides/custom-landing-page/). Example plugins: [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin), and the MSF [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) (a "Need to be seen today?" widget).
 
+## Add a Band to Every Portal Page
+
+To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
+
 ## Customize Appointment Cards
 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments.
 Each appointment can be customized individually, allowing each one to have its own unique settings.
 
 Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+
+The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
+
+- With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
+- A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
+- Some appointments never offer either action, and Canvas doesn't fire the event for them. These are appointments that are canceled, marked as a no-show, or checked in, and appointments whose note is signed, locked, or deleted. A patient also can't cancel an appointment that has already started.
 
 MSF example: [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) hides the Cancel action.
 
@@ -177,12 +257,31 @@ class MyHandler(BaseHandler):
 
 ## Configuring the Patient Portal
 
-Return a `PatientPortalApplicationConfiguration` effect from a handler on the `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` event to set application-level portal options. Today this controls whether the self-scheduling entry points appear; pair it with [Shape Self-Scheduling](#shape-self-scheduling) to control *what* patients can book.
+Return a `PatientPortalApplicationConfiguration` effect from a handler on the `PATIENT_PORTAL__GET_APPLICATION_CONFIGURATION` event to set application-level portal options:
 
-| Attribute                 | Type | Description                                                  |
-|---------------------------|------|--------------------------------------------------------------|
-| can_schedule_appointments | bool | If the patient is allowed to book or reschedule appointments |
+- **Self-scheduling:** show or hide the self-scheduling entry points. Pair this with [Shape Self-Scheduling](#shape-self-scheduling) to control *what* patients can book.
+- **Default homepage:** open one of your plugin's portal applications, instead of the widgets landing page, when a patient lands on the portal home page.
 
+### Methods
+
+#### apply() → Effect
+
+Applies the portal options. Every attribute is optional; set only the options you want to change.
+
+- If `default_homepage_application_identifier` is set, it must match an installed application, or the effect raises a validation error.
+
+### Attributes
+
+| Attribute                                 | Type   | Description                                                                                                                                                                                                                   | Required |
+|-------------------------------------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `can_schedule_appointments`               | `bool` | If the patient is allowed to book or reschedule appointments. When omitted, patients can self-schedule if at least one note type is schedulable through the patient portal.                                                                                                            | No       |
+| `default_homepage_application_identifier` | `str`  | The application to open as the patient's portal homepage. Use the application's `class` string from [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#applications), the `<module path>:<ClassName>` value. When omitted, patients see the widgets landing page. | No       |
+
+The portal opens the default homepage application only when that application uses the `portal_menu_item` [scope](/sdk/handlers-applications/#application-scopes) and its plugin is enabled. Otherwise, patients see the widgets landing page.
+
+While a default homepage application is set, every visit to the portal home page opens it, including the header logo link, so patients don't see [landing page widgets](#portal-landing-page-widgets). Portal consents, [forms](#forms), and [modals from `PATIENT_PORTAL__POST_LOGIN` handlers](#show-a-modal-after-login) still appear on top of the application. A sign-in link that names another portal page, such as messages, opens that page instead.
+
+### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -198,17 +297,103 @@ class MyHandler(BaseHandler):
     def compute(self) -> list[Effect]:
         return [
           PatientPortalApplicationConfiguration(
-            can_schedule_appointments=True
+            can_schedule_appointments=True,
+            default_homepage_application_identifier="my_plugin.apps.care_dashboard:CareDashboardApp",
           ).apply()
         ]
 
+```
+
+## Theme the Patient Portal
+
+Brand the patient portal with your practice's colors, font, and corner radius by returning a `PatientPortalTheme` effect from a handler on the [`PATIENT_PORTAL__GET_THEME_CONFIGURATION`](/sdk/events/#patient_portal__get_theme_configuration) event. The theme applies to every portal page, including the login and registration pages. The exception is `custom_css`, which applies only on signed-in pages. For a walkthrough with screenshots of what each attribute changes, see [Theming the Patient Portal](/guides/theme-the-patient-portal/).
+
+Canvas sends the event when a portal page loads. Its context carries `business_line_id`: the ID of the business line named in the portal URL's `?bl=` parameter, or `null` when the URL names no active business line. Return a theme for `null` to brand the whole instance, or check the ID to give a business line its own theme.
+
+Canvas caches each theme for 60 seconds per business line, so a change can take up to a minute to appear. If several effects are returned, the last one wins. If the handler raises an error, the portal shows its default theme.
+
+Every attribute is optional. An attribute you leave unset keeps the portal's default, and an effect with no attributes returns the default theme.
+
+### Methods
+
+#### apply() → Effect
+
+Applies the theme. The effect raises a validation error that names the attribute at fault when:
+
+- An attribute isn't one of those listed below. A misspelled attribute is an error rather than being ignored.
+- A value doesn't match its format or range in the Attributes table.
+- `custom_css` contains a `<` character, or anything that makes the browser fetch: `url()`, `@import`, `image-set()`, `@font-face`, or a backslash escape.
+- `font_source` is set without `font_family`.
+
+### Attributes
+
+| Attribute                        | Type  | Description                                                                                                                                              | Required |
+|----------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `brand_color`                    | `str` | The brand color, as a six-digit hex color such as `"#0F766E"`.                                                                                           | No       |
+| `menu_background_color`          | `str` | The background of the left navigation menu, as a six-digit hex color.                                                                                    | No       |
+| `menu_selected_background_color` | `str` | The background of the selected menu item, as a six-digit hex color.                                                                                      | No       |
+| `menu_text_color`                | `str` | The menu label color, as a six-digit hex color. When unset with a custom `menu_background_color`, the portal picks dark or white text from the menu background's brightness. | No       |
+| `page_background_color`          | `str` | The page background, as a six-digit hex color.                                                                                                           | No       |
+| `corner_radius`                  | `int` | The corner radius, in pixels, from `0` to `24`.                                                                                                          | No       |
+| `font_family`                    | `str` | A CSS font family list, such as `"Inter, sans-serif"`. Up to 200 characters of letters, digits, spaces, commas, and hyphens. Quotes are not allowed; write multi-word names unquoted, such as `"Open Sans"`. | No       |
+| `font_source`                    | `str` | The Google Fonts stylesheet that loads `font_family`, starting with `https://fonts.googleapis.com/css2?` or `https://fonts.googleapis.com/css?`. Up to 2,000 characters. Requires `font_family`. | No       |
+| `person_word`                    | `str` | The word the portal uses for the person, such as in the "Patient Login" heading: `"patient"`, `"member"`, or `"client"`.                                  | No       |
+| `custom_css`                     | `str` | Your own CSS for signed-in portal pages, up to 50,000 characters. It must not make the browser fetch anything: no `<`, `url()`, `@import`, `image-set()`, `@font-face`, or backslash escapes. It does not apply on the login, registration, password reset, or verification pages. | No       |
+
+Setting `font_family` replaces the portal's default webfont, including in questionnaire forms. The theme also applies in pop-up windows, such as questionnaire forms and the Session Expired notice.
+
+Set the look with the theme attributes where you can. The portal's CSS class names aren't a public API, so selectors in `custom_css` can stop matching when the portal changes.
+
+### Color contrast
+
+`apply()` doesn't check color contrast, so check that the colors you choose stay readable. For normal text, [WCAG 2](https://www.w3.org/TR/WCAG21/#contrast-minimum) AA needs a contrast ratio of at least 4.5:1. The portal draws these colors together:
+
+- Menu text on `menu_background_color`, and on `menu_selected_background_color`.
+- Body text on `page_background_color`.
+- `brand_color` links and section titles on `page_background_color`, and on the light brand tint behind section and accordion headers.
+- White text on `brand_color`, on primary buttons and sent messages.
+- `brand_color` text on `menu_selected_background_color`, when the menu keeps its default background.
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.theme import PatientPortalTheme
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class PortalThemeHandler(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_THEME_CONFIGURATION)
+
+    def compute(self) -> list[Effect]:
+        return [
+            PatientPortalTheme(
+                brand_color="#0F766E",
+                page_background_color="#F0FDFA",
+                # A dark menu: the portal picks white menu text.
+                menu_background_color="#1F2937",
+                corner_radius=8,
+                font_family="Inter, sans-serif",
+                font_source="https://fonts.googleapis.com/css2?family=Inter&display=swap",
+                person_word="member",
+            ).apply()
+        ]
 ```
 
 ## Shape Self-Scheduling
 
 When patients self-schedule, you can filter or reorder what they're offered *before they see it* — the open time slots, and the appointment-type, location, and provider options on the scheduling form. Each search step fires a `…PRE_SEARCH` event (before Canvas runs the search) and a `…POST_SEARCH` event (with the results). Respond to the `POST_SEARCH` event and return an effect **of the same name with a `_RESULTS` suffix**, carrying the results you want the patient to see. (A `…PRE_SEARCH` event is available for each step too, if you need to act before the search runs.)
 
+Canvas applies the same appointment-type, location, and provider filters when a patient books or reschedules. It runs your handlers again for that patient and refuses the request unless each selected option is in the lists they return. A booking or new time also needs:
+
+- Self-scheduling turned on for the patient. See `can_schedule_appointments` in [Configuring the Patient Portal](#configuring-the-patient-portal).
+- A start time in the future.
+- A duration no longer than the appointment type's patient portal duration (the [NoteType](/sdk/data-note/#notetype) `online_duration`).
+
 Two example plugins put these together: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin) (slots) and [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule) (appointment types, locations, and providers).
+
+To show open times on a booking screen your plugin builds itself, call the native slot search with [`search_slots()`](/sdk/utils/#searching-for-open-appointment-slots).
 
 ### Filter available slots
 
@@ -382,6 +567,106 @@ class ProviderFilter(BaseHandler):
         ]
 ```
 
+## Show a Modal After Login
+
+Show a patient a consent form, a tour, or an alert as soon as they log in to the portal. Respond to the [`PATIENT_PORTAL__POST_LOGIN`](/sdk/events/#patient-portal-events) event and return a [`LaunchModalEffect`](/sdk/layout-effect/#modals) with the `DEFAULT_MODAL` target. The portal opens the modal over the page the patient lands on.
+
+The event targets the patient. Its context carries `login_method`, which tells you how the patient logged in:
+
+| `login_method`   | How the patient logged in                                  |
+|------------------|------------------------------------------------------------|
+| `"credentials"`  | Entered their username and password on the login page, including after setting a password from a portal invite or password reset link |
+| `"access_token"` | Followed the sign-in link in a message, lab result, or statement notification |
+| `"registration"` | Completed self-registration                                |
+
+The event fires once per login, in the browser tab where the patient logged in. Refreshing the page or returning to the portal with a remembered session doesn't fire it. When no handler responds, or the plugin runner fails, the patient lands in the portal with no modal.
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.launch_modal import LaunchModalEffect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+
+
+class WelcomeModal(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__POST_LOGIN)
+
+    def compute(self) -> list[Effect]:
+        # Only greet patients who just registered
+        if self.context.get("login_method") != "registration":
+            return []
+
+        return [
+            LaunchModalEffect(
+                content="<h2>Welcome to the portal</h2><p>Here's how to get started.</p>",
+                target=LaunchModalEffect.TargetType.DEFAULT_MODAL,
+                title="Welcome",
+            ).apply()
+        ]
+```
+
+{% include alert.html type="warning" content="The portal's built-in consents dialog also opens after login for any <a href='https://help.canvasmedical.com/articles/8144965836-Managing-Consents'>Patient Consent Coding</a> marked <strong>Show in patient portal</strong> that the patient hasn't completed. If your plugin collects consent after login, clear <strong>Show in patient portal</strong> on those consent codings in Settings so the patient doesn't see both." %}
+
+## Link to After-Visit Summaries
+
+A patient can download the after-visit summary of their own locked notes from the portal at `/app/note/<note id>/aftervisitsummary`, where `<note id>` is the [note's](/sdk/data-note/) `id`. The portal has no built-in link to it, so share the link from a plugin, such as a [widget](#portal-landing-page-widgets) or a [portal page](/sdk/handlers-applications/), or in a message.
+
+- The PDF is the same after-visit summary a clinician prints from the note.
+- Only the patient the note belongs to can open it, and only once the note is locked. Any other note id returns a 404 error.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
+
+## Link to Lab and Imaging Requisitions
+
+A patient can download the requisition of their own lab and imaging orders from the portal. As with [after-visit summaries](#link-to-after-visit-summaries), the portal has no built-in link, so share the link from a plugin or in a message. Each order type has its own URL and PDF:
+
+| Order   | Portal URL                                   | PDF the patient gets                                                                                                                                                       |
+|---------|----------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Lab     | `/app/laborder/<order id>/requisition`       | The requisition a clinician prints from the order. For an order sent electronically through Health Gorilla, the patient gets Health Gorilla's requisition form, as staff do. |
+| Imaging | `/app/imagingorder/<order id>/requisition`   | The "Prepare for your imaging test" letter staff print for the patient.                                                                                                    |
+
+`<order id>` is the `id` of the [LabOrder](/sdk/data-labs/#laborder) or [ImagingOrder](/sdk/data-imaging/#imagingorder).
+
+- Only the patient the order belongs to can open it, and only once the order is committed and not entered in error. Any other order id returns a 404 error.
+- By default, patients can download the requisition only while the order is open. A lab order is open until the chart shows all of its reports received. An imaging order is open until it has a result, not counting results deleted in Data Integration. To let patients download the requisitions of completed orders too, [contact Canvas Support](https://canvas-medical.help.usepylon.com/) to set `PATIENT_PORTAL_REQUISITION_ORDER_STATES` to **Open and completed orders**.
+- Each download is recorded in the [audit log](/guides/audit-logging-and-telemetry/) against the patient, and fires an event your plugin can [respond to](#track-document-downloads).
+
+## Track Document Downloads
+
+Each after-visit summary or requisition download fires the [`PATIENT_PORTAL__DOCUMENT_DOWNLOADED`](/sdk/events/#patient-portal-events) event, so your plugin can keep its own record of which documents a patient has received. The event targets the patient. It is sent after the PDF is served, so a handler can't delay or block the download.
+
+The event context names the `document` and the record it came from:
+
+| `document`              | Record key | Record                                                  |
+|-------------------------|------------|---------------------------------------------------------|
+| `"after_visit_summary"` | `note_id`  | The `id` of the [Note](/sdk/data-note/)                 |
+| `"lab_requisition"`     | `order_id` | The `id` of the [LabOrder](/sdk/data-labs/#laborder)    |
+| `"imaging_requisition"` | `order_id` | The `id` of the [ImagingOrder](/sdk/data-imaging/#imagingorder) |
+
+### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from logger import log
+
+
+class TrackDocumentDownloads(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__DOCUMENT_DOWNLOADED)
+
+    def compute(self) -> list[Effect]:
+        document = self.context.get("document")
+
+        if document == "after_visit_summary":
+            log.info(f"After-visit summary downloaded for note {self.context['note_id']}")
+        elif document in ("lab_requisition", "imaging_requisition"):
+            log.info(f"{document} downloaded for order {self.context['order_id']}")
+
+        return []
+```
+
 ## Forms
 
 Forms let you dynamically display questionnaires to patients in the portal based on your own criteria, and commit each response to the patient's chart as a Questionnaire Command when they submit. Because your handler runs on every portal page load, return only the forms that should currently appear.
@@ -390,13 +675,25 @@ Forms let you dynamically display questionnaires to patients in the portal based
 
 Respond to the `PATIENT_PORTAL__GET_FORMS` event and return a `FormResult` effect for each questionnaire to show.
 
-| Attribute          | Type                      | Description                                                  |
-|--------------------|---------------------------|--------------------------------------------------------------|
-| `questionnaire_id` | `str` \| `UUID`           | The unique ID of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) to show.                          |
-| `create_command`   | `bool`                    | **Strongly recommended `True`.** Commits the response as a Questionnaire Command in a note so it appears in the chart. When `False` (the default), the response is saved only as an Interview and never appears in a note. |
-| `note_id`          | `str` \| `UUID` \| `None` | The [Note](/sdk/data-note/#note) to place the command on. Only used when `create_command` is `True`; if omitted, Canvas creates and locks a new note for it. Has no effect on its own. |
+### Methods
 
-**Example** — assign intake questionnaires when a patient has a confirmed upcoming visit, skipping any they've already completed:
+#### apply() → Effect
+
+Shows the questionnaire to the patient.
+
+- `questionnaire_id` is required.
+
+### Attributes
+
+| Attribute          | Type                      | Description                                                                                                                                                                                                                | Required |
+|--------------------|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `questionnaire_id` | `str` \| `UUID`           | The unique ID of the [Questionnaire](/sdk/data-questionnaire/#questionnaire) to show.                                                                                                                                      | Yes      |
+| `create_command`   | `bool`                    | **Strongly recommended `True`.** Commits the response as a Questionnaire Command in a note so it appears in the chart. When `False` (the default), the response is saved only as an Interview and never appears in a note. | No       |
+| `note_id`          | `str` \| `UUID` \| `None` | The [Note](/sdk/data-note/#note) to place the command on. Only used when `create_command` is `True`; if omitted, Canvas creates and locks a new note for it. Has no effect on its own.                                     | No       |
+
+### Example
+
+Assign intake questionnaires when a patient has a confirmed upcoming visit, skipping any they've already completed:
 
 ```python
 import arrow
@@ -458,6 +755,14 @@ class Handler(BaseHandler):
 
 Real-world example: the MSF [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) extension assigns questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, posting responses back to the chart.
 
+<!-- sources: discussions #785, #696 -->
+### Writing answers back to the chart
+
+A submitted form is stored as an [Interview](/sdk/data-questionnaire/#interview), which links the patient to the questionnaire. To use the answers elsewhere in the chart, such as updating the patient's demographics, respond to the [`INTERVIEW_CREATED`](/sdk/events/#interviews) event, and to `INTERVIEW_UPDATED` as well, since answers can arrive after the Interview is created. The event targets the Interview and carries the patient's id. Read the answers from the Interview, then:
+
+- Update demographics, contact details, and other patient fields with the [patient effects](/sdk/effect-patient/).
+- Record insurance coverage through the FHIR [Coverage](/api/coverage/) API, using the [Canvas FHIR client](/sdk/clients-canvas-fhir/), since no SDK effect writes coverage.
+
 ## User Login
 
 These effects manage a patient's portal **user account** — the login they use to access the portal. Invites and password resets are sent to the email or phone linked on the user, so make sure those contact points are actually **verified** before you invite a patient or rely on an updated value. Trigger a verification with the [Send Contact Verification](/sdk/effect-send-contact-verification/) effect.
@@ -466,14 +771,25 @@ These effects manage a patient's portal **user account** — the login they use 
 
 The `UpdateUserEffect` updates a portal user's phone number or email. In the future this may support additional attributes, but for now only these two are supported. It isn't tied to a specific portal event — emit it from whatever handler fits your workflow (a common one is keeping the portal user in sync in response to `PATIENT_CONTACT_POINT_UPDATED`, as below).
 
-| Attribute      | Type            | Required | Description                              |
-|----------------|-----------------|----------|------------------------------------------|
-| `user_dbid`    | `int`           | `true`   | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to update. |
-| `phone_number` | `str`           | `false`* | The phone number to store.               |
-| `email`        | `str`           | `false`* | The email to store.                      |
+#### Methods
 
-**Validation:** at least one of `phone_number` or `email` must be provided, and `user_dbid` must resolve to an existing user (otherwise the effect returns a `User does not exist` error).
+##### apply() → Effect
 
+Updates the user's phone number or email.
+
+- `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- Only the fields you set are changed, and setting one to `None` clears it. With neither set, nothing changes.
+
+#### Attributes
+
+| Attribute      | Type  | Description                                                           | Required |
+|----------------|-------|-----------------------------------------------------------------------|----------|
+| `user_dbid`    | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to update. | Yes      |
+| `phone_number` | `str` | The phone number to store.                                            | No       |
+| `email`        | `str` | The email to store.                                                   | No       |
+
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -512,14 +828,29 @@ class SyncPortalUser(BaseHandler):
 
 ### Send Invite
 
+{% include alert.html type="warning" content="<code>SendInviteEffect</code> invites patients only. It doesn't send a family member's portal invite: staff send those from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>). For the login of a family member with no chart of their own, the effect sends nothing." %}
+
 The `SendInviteEffect` triggers a portal invitation that lets the patient register or activate their portal account. Because the invite is delivered to the patient's email or phone, only send it once that contact point is **verified** (`PatientContactPoint.last_verified` is set — see [Send Contact Verification](/sdk/effect-send-contact-verification/)) and the patient hasn't already registered (`CanvasUser.is_portal_registered`). Verification completes with a save that fires `PATIENT_CONTACT_POINT_UPDATED`, which makes it a natural trigger for the invite. Re-inviting someone who has already activated their account just sends a redundant email/SMS.
 
-| Attribute   | Type  | Required | Description                              |
-|-------------|-------|----------|------------------------------------------|
-| `user_dbid` | `int` | `true`   | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. |
+On a non-production instance, the invite is only delivered to email addresses and phone numbers on the instance's allow lists. See [Emails and texts on non-production instances](/guides/plugin-development-tips-and-sandbox-limits/#emails-and-texts-on-non-production-instances).
 
-**Validation:** `user_dbid` must resolve to an existing user (otherwise the effect returns a `User does not exist` error).
+#### Methods
 
+##### apply() → Effect
+
+Sends the portal invitation.
+
+- `user_dbid` is required, and must be the `dbid` of an existing user; otherwise the effect returns a `User does not exist` error.
+- The invitation goes to the patient whose own login `user_dbid` names.
+
+#### Attributes
+
+| Attribute   | Type  | Description                                                           | Required |
+|-------------|-------|-----------------------------------------------------------------------|----------|
+| `user_dbid` | `int` | The `dbid` of the [CanvasUser](/sdk/data-canvasuser/#user) to invite. | Yes      |
+
+
+#### Example
 
 ```python
 from canvas_sdk.effects import Effect
@@ -549,9 +880,91 @@ class InviteVerifiedPatient(BaseHandler):
         return [SendInviteEffect(user_dbid=user.dbid).apply()]
 ```
 
-**Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link.
+**Sending versus minting a link.** `SendInviteEffect` lets Canvas send the invite over the patient's verified contact point, and it records the send on `CanvasUser.last_invite_date_time`. To deliver the invite or password reset over your own transport instead, mint a link with [`patient_portal_http.get_login_url()`](/sdk/utils/#getting-a-patient-portal-login-link) and send it yourself. Minting a link does not update `last_invite_date_time`; only `SendInviteEffect` does. Canvas has no record that you delivered the link, so the patient's Portal section is unchanged and staff may send a second invite to a patient who already holds a live link. Canvas still records the link itself as a [PortalInvitation](/sdk/data-portal-invitation/), so a plugin can check `is_redeemable` on the patient's invitations before sending another one.
 
-What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Signing in is a separate step that sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link and setting a password does not sign the patient in, so a registered patient who has not yet signed in shows both their username and the never-logged-in line.
+What the patient does with the link is still visible in that section. Setting up the account sets `is_portal_registered` on the [CanvasUser](/sdk/data-canvasuser) data module, which replaces the pending username with theirs and changes the button to `Reset password`. Each portal session sets `last_login`, which is what replaces "The patient has never logged in to the patient portal." with a last login time. Opening the link starts a session, so `last_login` can be set before the patient sets a password. Use `is_portal_registered`, not `last_login`, to tell whether the patient activated their account. To follow each link as the patient opens and claims it, handle the [portal invitation events](/sdk/events/#portal-invitations).
+
+### Customize the Login Email
+
+{% include alert.html type="warning" content="This customizes patients' login emails only. A family member's invite or password reset email, which staff send from the patient's Portal section (see <a href='#family-portal-access'>Family Portal Access</a>), doesn't fire <code>PATIENT_PORTAL__GET_LOGIN_EMAIL</code> and always uses Canvas's default wording." %}
+
+Replace the wording of the email that carries a patient's portal login link, for example to match your practice's voice or to explain what the patient can do in the portal. Respond to the [`PATIENT_PORTAL__GET_LOGIN_EMAIL`](/sdk/events/#patient-portal-events) event and return a `LoginEmailContent` effect with your own subject and HTML body.
+
+Canvas fires the event each time it emails a patient a login link:
+
+- Staff send an invite or a password reset from the Portal section of the patient's profile.
+- A plugin returns a [`SendInviteEffect`](#send-invite).
+- A patient requests a login link by email from the portal login page.
+
+The event targets the patient. Its context carries the link and the default wording, so you can reuse either:
+
+| Key                    | Value                                                                                                                                  |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| `link_type`            | `"invite"` when the patient hasn't registered yet, or `"reset"` when they have                                                         |
+| `login_url`            | The login link to send the patient                                                                                                     |
+| `practice_location_id` | The `id` of the [PracticeLocation](/sdk/data-practicelocation/) the email is sent from: the primary location of the patient's care team lead, or the first practice location when the patient has no care team lead |
+| `default_subject`      | The subject Canvas uses by default                                                                                                     |
+| `default_body`         | The HTML body Canvas uses by default                                                                                                   |
+
+Canvas sends the subject and body you return in place of the defaults. The sender and recipient stay the same, and text messages that carry the link keep the default wording.
+
+- Canvas sends `html_body` as written, with no templating. Escape any patient data you put in it, for example with [`sanitize_html`](/sdk/utils/#sanitizing-untrusted-html).
+- Include `login_url` in the body, as text or in a link's `href`. When the body doesn't contain it, Canvas adds the link to the end of the body.
+- When more than one plugin returns a `LoginEmailContent` effect, Canvas uses the last one.
+- Don't return a `SendInviteEffect` from this handler. It would send another login email and fire the event again, so Canvas drops it. See [Disallowed Effect/Event Combinations](/sdk/effects/#disallowed-effectevent-combinations).
+- Canvas sends the default email when no handler responds, the handler raises an exception, the handler doesn't respond within 2 seconds, or the effect it returns isn't valid. The chart's **Send invite** button waits for your handler, so keep it fast.
+
+#### Methods
+
+##### apply() → Effect
+
+Sets the subject and body of the login email.
+
+- `subject` and `html_body` are required and can't be empty or only whitespace.
+- `subject` must fit on one line, with no line breaks. `html_body` can contain line breaks.
+- Any other attribute is an error, so a misspelled attribute name fails instead of being ignored.
+
+#### Attributes
+
+| Attribute   | Type  | Description                               | Required |
+|-------------|-------|-------------------------------------------|----------|
+| `subject`   | `str` | The subject line of the email.            | Yes      |
+| `html_body` | `str` | The body of the email, as HTML.           | Yes      |
+
+#### Example
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.patient_portal.login_email import LoginEmailContent
+from canvas_sdk.events import EventType
+from canvas_sdk.handlers import BaseHandler
+from canvas_sdk.utils.html import sanitize_html
+from canvas_sdk.v1.data import Patient
+
+
+class PortalLoginEmail(BaseHandler):
+    RESPONDS_TO = EventType.Name(EventType.PATIENT_PORTAL__GET_LOGIN_EMAIL)
+
+    def compute(self) -> list[Effect]:
+        patient = Patient.objects.get(id=self.target)
+        # Canvas sends the body as written, so escape patient data before adding it
+        first_name = sanitize_html(patient.first_name)
+        login_url = self.context["login_url"]
+
+        if self.context["link_type"] == "invite":
+            subject = "Your patient portal is ready"
+            intro = f"Welcome, {first_name}. Set your password to start using the portal."
+        else:
+            subject = "Reset your patient portal password"
+            intro = f"Hi {first_name}, use this link to set a new password."
+
+        return [
+            LoginEmailContent(
+                subject=subject,
+                html_body=f'<p>{intro}</p><p><a href="{login_url}">Open the patient portal</a></p>',
+            ).apply()
+        ]
+```
 
 <br/>
 <br/>

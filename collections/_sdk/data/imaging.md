@@ -108,6 +108,55 @@ imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c
 url = imaging_report.document_url
 ```
 
+## Accessing the imaging order PDF
+
+The `document_url` property on `ImagingOrder` returns a presigned S3 URL for the order's PDF, or `None` when the order has none. Canvas saves the PDF the first time the order is faxed. Printing the order doesn't save it, so an order that has never been faxed has no file. The URL is valid for one hour, so generate it when you need it rather than storing it.
+
+```python
+from canvas_sdk.v1.data.imaging import ImagingOrder
+
+imaging_order = ImagingOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+
+# Presigned S3 URL to the order PDF, or None if no PDF has been saved
+url = imaging_order.document_url
+```
+
+## Review assignment
+
+An imaging report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import ImagingReport, Staff
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the imaging report is assigned to
+reviewers = imaging_report.reviewers.all()
+team = imaging_report.team
+
+# Every imaging report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = ImagingReport.objects.filter(reviewers__id=staff.id)
+```
+
+## Delegations
+
+When staff send an imaging report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for an imaging report are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import ImagingReport
+
+imaging_report = ImagingReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The full delegation history, oldest first.
+history = imaging_report.delegations
+
+# The active delegation, or None when no delegation is in effect.
+current = imaging_report.active_delegation
+```
+
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
+
 ## The document reference
 
 A report that has a file also has a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at it — the record that carries the report's document coding, category, and status, and that represents it in the FHIR API. `document_url` above is the direct route to the file itself; reach for the document reference when you want that surrounding metadata.
@@ -143,6 +192,7 @@ document = DocumentReference.objects.filter(
 | entered_in_error    | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient             | [Patient](/sdk/data-patient/#patient)                          |
 | note                | [Note](/sdk/data-note/#note)                                   |
+| assessment          | [Assessment](/sdk/data-assessment/#assessment) |
 | imaging             | String                                                         |
 | imaging_center      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | note_to_radiologist | String                                                         |
@@ -152,8 +202,11 @@ document = DocumentReference.objects.filter(
 | ordering_provider   | [Staff](/sdk/data-staff/#staff)                                |
 | priority            | String                                                         |
 | delegated           | Boolean                                                        |
+| document            | File (S3 key)                                                  |
+| document_url        | String (computed)                                               |
 | task_ids            | String                                                         |
 | results             | [ImagingReport](#imagingreport)[]                              |
+| action_events       | [ImagingOrderActionEvent](/sdk/data-fax/#imagingorderactionevent)[] |
 
 ### ImagingReview
 
@@ -176,31 +229,39 @@ document = DocumentReference.objects.filter(
 
 ### ImagingReport
 
-| Field Name         | Type                                                                  |
-|--------------------|-----------------------------------------------------------------------|
-| id                 | UUID                                                                  |
-| dbid               | Integer                                                               |
-| created            | DateTime                                                              |
-| modified           | DateTime                                                              |
-| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |
-| junked             | Boolean                                                               |
-| requires_signature | Boolean                                                               |
-| assigned_date      | DateTime                                                              |
-| patient            | [Patient](/sdk/data-patient/#patient)                                 |
-| order              | [ImagingOrder](#imagingorder)                                         |
-| source             | [ImagingReportSource](#imagingreportsource)                           |
-| name               | String                                                                |
-| result_date        | Date                                                                  |
-| original_date      | Date                                                                  |
-| review             | [ImagingReview](#imagingreview)                                       |
-| document_url       | String (property) — presigned S3 URL, or `None` if the report has no file |
-| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |
+| Field Name         | Type                                                                  | Description                                           |
+|--------------------|-----------------------------------------------------------------------|-------------------------------------------------------|
+| id                 | UUID                                                                  |                                                       |
+| dbid               | Integer                                                               |                                                       |
+| created            | DateTime                                                              |                                                       |
+| modified           | DateTime                                                              |                                                       |
+| review_mode        | [DocumentReviewMode](/sdk/data-enumeration-types/#documentreviewmode) |                                                       |
+| junked             | Boolean                                                               |                                                       |
+| requires_signature | Boolean                                                               |                                                       |
+| assigned_date      | DateTime                                                              |                                                       |
+| assigned_by        | [CanvasUser](/sdk/data-canvasuser)                                    |                                                       |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |                                                       |
+| team               | [Team](/sdk/data-team/#team)                                          |                                                       |
+| team_assigned_date | DateTime                                                              |                                                       |
+| patient            | [Patient](/sdk/data-patient/#patient)                                 |                                                       |
+| order              | [ImagingOrder](#imagingorder)                                         |                                                       |
+| source             | [ImagingReportSource](#imagingreportsource)                           |                                                       |
+| name               | String                                                                |                                                       |
+| result_date        | Date                                                                  |                                                       |
+| original_date      | Date                                                                  |                                                       |
+| review             | [ImagingReview](#imagingreview)                                       |                                                       |
+| document_url       | String (computed)                                                     | Presigned S3 URL, or `None` if the report has no file |
+| codings            | [ImagingReportCoding](#imagingreportcoding)[]                         |                                                       |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed) | The report's delegations, oldest first |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed) | The delegation in effect, or `None` |
 
 ### ImagingReportCoding
 
 | Field Name    | Type                            |
 |---------------|---------------------------------|
 | dbid          | Integer                         |
+| created       | DateTime                        |
+| modified      | DateTime                        |
 | report        | [ImagingReport](#imagingreport) |
 | system        | String                          |
 | version       | String                          |

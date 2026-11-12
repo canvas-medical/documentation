@@ -33,22 +33,27 @@ patient is a child:
 
 First, we'll need to initialize a new plugin.
 
-The Canvas CLI gives you a great head start when creating a plugin. Simply
-run `canvas init`, and answer the prompt to name your plugin.
+The Canvas CLI gives you a great head start when creating a plugin. Run
+`canvas init`, and answer the prompt to name your plugin.
 
 ```sh
 $ canvas init
   [1/1] project_name (My Cool Plugin): Pediatric Patient Chart Customizations
 Project created in /Users/andrew/src/canvas-plugins/pediatric-patient-chart-customizations
+Registered acme__pediatric_patient_chart_customizations with Canvas Platform.
 ```
 
-This output shows the location of our freshly generated plugin project. In this
-directory, you'll see a default class (`pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your
+This output shows the location of our freshly generated plugin project. If you're signed in to Canvas Platform with [`canvas login`](/sdk/canvas_cli/#signing-in-to-canvas-platform),
+`canvas init` names the package with your organization's prefix, such as `acme__pediatric_patient_chart_customizations`,
+and registers it with Canvas Platform. It also makes the project folder a git repository
+that [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy) pushes to.
+
+In the package directory, you'll see a default class (`acme__pediatric_patient_chart_customizations/handlers/event_handlers.py`) provided as a starting point for your
 code.
 
 ```sh
-$ tree pediatric_patient_chart_customizations/
-pediatric_patient_chart_customizations/
+$ tree acme__pediatric_patient_chart_customizations/
+acme__pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
 └── handlers
@@ -69,8 +74,8 @@ I've created a new file, `handlers/pediatric_chart_layout.py`, and I've
 updated my `CANVAS_MANIFEST.json` to reflect it.
 
 ```sh
-$ tree pediatric_patient_chart_customizations/
-pediatric_patient_chart_customizations/
+$ tree acme__pediatric_patient_chart_customizations/
+acme__pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
 └── handlers
@@ -236,8 +241,8 @@ class PediatricChartLayout(BaseHandler):
         return [layout.apply()]
 ```
 
-Once installed, pediatric patients will have their immunization section at the
-top of their summary, while adult patients will continue to have social
+Once you deploy the plugin with [`canvas deploy`](/sdk/canvas_cli/#canvas-deploy), pediatric patients will have their immunization section at the
+top of their summary. Adult patients will continue to have social
 determinants as their initial section.
 
 ### Prevent adult-only diagnosis choices from appearing in searches
@@ -253,8 +258,8 @@ updated my `CANVAS_MANIFEST.json` to reflect it.
 Here's the updated plugin file structure:
 
 ```sh
-$ tree pediatric_patient_chart_customizations/
-pediatric_patient_chart_customizations/
+$ tree acme__pediatric_patient_chart_customizations/
+acme__pediatric_patient_chart_customizations/
 ├── CANVAS_MANIFEST.json
 ├── README.md
 └── handlers
@@ -271,12 +276,12 @@ And here's the updated `CANVAS_MANIFEST.json`:
 {
     "sdk_version": "0.1.4",
     "plugin_version": "0.0.1",
-    "name": "pediatric_patient_chart_customizations",
+    "name": "acme__pediatric_patient_chart_customizations",
     "description": "Customizations for pediatric patients",
     "components": {
         "handlers": [
             {
-                "class": "pediatric_patient_chart_customizations.handlers.pediatric_chart_layout:PediatricChartLayout",
+                "class": "acme__pediatric_patient_chart_customizations.handlers.pediatric_chart_layout:PediatricChartLayout",
                 "description": "Moves the immunization section to the top of the patient summary on pediatric charts.",
                 "data_access": {
                     "event": "",
@@ -285,7 +290,7 @@ And here's the updated `CANVAS_MANIFEST.json`:
                 }
             },
             {
-                "class": "pediatric_patient_chart_customizations.handlers.pediatric_condition_search:PediatricConditionSearch",
+                "class": "acme__pediatric_patient_chart_customizations.handlers.pediatric_condition_search:PediatricConditionSearch",
                 "description": "Filters the condition search to eliminate adult-only conditions on pediatric charts.",
                 "data_access": {
                     "event": "",
@@ -532,7 +537,7 @@ class PediatricConditionSearch(BaseHandler):
         ]
 ```
 
-Once installed, certain diagnosis codes will not clutter up search results
+Once deployed, certain diagnosis codes will not clutter up search results
 in commands for pediatric patients, but will continue to show as expected for
 patients over the age of 15.
 

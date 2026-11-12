@@ -13,17 +13,26 @@ The exceptions are `JunkDocument` and `RemoveDocumentFromPatient`, which act on 
 
 ## Assigning a Reviewer
 
-To assign a staff member or team as the reviewer for a document in the Data Integration queue, import the `AssignDocumentReviewer` class from `canvas_sdk.effects.data_integration` and create an instance of it.
+To assign a staff member or team as the reviewer for a document in the Data Integration queue, build an `AssignDocumentReviewer` and return its `apply()` from your handler.
 
-| Attribute     |          | Type                      | Description                                                                              |
-|---------------|----------|---------------------------|------------------------------------------------------------------------------------------|
-| `document_id` | required | string                    | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document. |
-| `reviewer_id` | optional | string                    | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign as reviewer.            |
-| `team_id`     | optional | string                    | The `id` of the [Team](/sdk/data-team/#team) to assign as reviewer.                      |
-| `review_mode` | optional | [ReviewMode](#reviewmode) | Review mode. Defaults to `ReviewMode.REVIEW_REQUIRED`.                                   |
-| `annotations` | optional | list                      | List of annotations for display in the UI. See [Annotations](#annotations).              |
+### Methods
 
-Supply either `reviewer_id` or `team_id`, not both. If both are supplied, the staff reviewer is used and the team is ignored when the Data Integration UI pre-populates the reviewer field. Supplying neither makes the effect a no-op.
+#### apply() → Effect
+
+Suggests the reviewer for the document.
+
+- `document_id` is required.
+- Set `reviewer_id` or `team_id`. If both are set, the staff reviewer is used; with neither, the effect does nothing.
+
+### Attributes
+
+| Attribute     | Type                      | Description                                                                              | Required                          |
+|---------------|---------------------------|------------------------------------------------------------------------------------------|-----------------------------------|
+| `document_id` | `str`                     | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document. | Yes                               |
+| `reviewer_id` | `str`                     | The `id` of the [Staff](/sdk/data-staff/#staff) member to assign as reviewer.            | One of `reviewer_id` or `team_id` |
+| `team_id`     | `str`                     | The `id` of the [Team](/sdk/data-team/#team) to assign as reviewer.                      | One of `reviewer_id` or `team_id` |
+| `review_mode` | [ReviewMode](#reviewmode) | Review mode. Defaults to `ReviewMode.REVIEW_REQUIRED`.                                   | No                                |
+| `annotations` | `list`                    | List of annotations for display in the UI. See [Annotations](#annotations).              | No                                |
 
 ### ReviewMode
 
@@ -75,13 +84,23 @@ assign_reviewer = AssignDocumentReviewer(
 
 ## Categorizing a Document
 
-To categorize a document in the Data Integration queue into a specific document type, import the `CategorizeDocument` class from `canvas_sdk.effects.data_integration` and create an instance of it.
+To categorize a document in the Data Integration queue into a specific document type, build a `CategorizeDocument` and return its `apply()` from your handler.
 
-| Attribute         |          | Type                          | Description                                                                 |
-|-------------------|----------|-------------------------------|-----------------------------------------------------------------------------|
-| `document_id`     | required | string                        | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to categorize.                       |
-| `document_type`   | required | [DocumentType](#documenttype) | Document type information for categorizing the document.                    |
-| `annotations`     | optional | list                          | List of annotations for display in the UI. See [Annotations](#annotations). |
+### Methods
+
+#### apply() → Effect
+
+Suggests the document type.
+
+- `document_id` and `document_type` are required.
+
+### Attributes
+
+| Attribute       | Type                          | Description                                                                                            | Required |
+|-----------------|-------------------------------|--------------------------------------------------------------------------------------------------------|----------|
+| `document_id`   | `str`                         | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to categorize. | Yes      |
+| `document_type` | [DocumentType](#documenttype) | Document type information for categorizing the document.                                               | Yes      |
+| `annotations`   | `list`                        | List of annotations for display in the UI. See [Annotations](#annotations).                            | No       |
 
 ### DocumentType
 
@@ -182,13 +201,23 @@ For full end-to-end usage including discovery, error handling, and the other Dat
 
 ## Linking a Document to a Patient
 
-To link a document in the Data Integration queue to a patient, import the `LinkDocumentToPatient` class from `canvas_sdk.effects.data_integration` and create an instance of it. The plugin is responsible for matching the patient and supplying their key — the interpreter does not search for matching patients itself.
+To link a document in the Data Integration queue to a patient, build a `LinkDocumentToPatient` and return its `apply()` from your handler. The plugin is responsible for matching the patient and supplying their id; Canvas does not search for matching patients itself.
 
-| Attribute     |          | Type   | Description                                                                 |
-|---------------|----------|--------|-----------------------------------------------------------------------------|
-| `document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document.                                     |
-| `patient_key` | required | string | The `id` of the [Patient](/sdk/data-patient/#patient) to link the document to. |
-| `annotations` | optional | list   | List of annotations for display in the UI. See [Annotations](#annotations). |
+### Methods
+
+#### apply() → Effect
+
+Suggests the patient to link the document to.
+
+- `document_id` and `patient_key` are required.
+
+### Attributes
+
+| Attribute     | Type   | Description                                                                              | Required |
+|---------------|--------|------------------------------------------------------------------------------------------|----------|
+| `document_id` | `str`  | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document. | Yes      |
+| `patient_key` | `str`  | The `id` of the [Patient](/sdk/data-patient/#patient) to link the document to.           | Yes      |
+| `annotations` | `list` | List of annotations for display in the UI. See [Annotations](#annotations).              | No       |
 
 An example of linking a document to a patient:
 
@@ -228,11 +257,21 @@ class LinkDocumentHandler(BaseHandler):
 
 ## Marking a Document as Junk
 
-To mark a document in the Data Integration queue as junk (spam), import the `JunkDocument` class and create an instance of it.
+To mark a document in the Data Integration queue as junk (spam), build a `JunkDocument` and return its `apply()` from your handler.
 
-| Attribute     |          | Type   | Description                                                                                            |
-|---------------|----------|--------|--------------------------------------------------------------------------------------------------------|
-| `document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to mark as junk. |
+### Methods
+
+#### apply() → Effect
+
+Marks the document as junk immediately.
+
+- `document_id` is required, and must be the id of an existing IntegrationTask in an early-stage state.
+
+### Attributes
+
+| Attribute     | Type  | Description                                                                                              | Required |
+|---------------|-------|----------------------------------------------------------------------------------------------------------|----------|
+| `document_id` | `str` | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to mark as junk. | Yes      |
 
 `JunkDocument` only works on IntegrationTasks in early-stage states: **Unread**, **Read**, **Error**, **Unread error**, or **Junk** (already). IntegrationTasks in **Processed** or **Reviewed** states cannot be junked — attempting to do so raises a validation error. The effect also validates that `document_id` resolves to an existing IntegrationTask and is a well-formed UUID; missing, malformed, or unknown IDs raise validation errors before the IntegrationTask is touched.
 
@@ -264,7 +303,7 @@ class JunkDocumentHandler(BaseHandler):
 
 ## Prefilling Document Fields
 
-`PrefillDocumentFields` pre-populates the parse-template fields on an IntegrationTask. **Only three document types support field prefill** — those whose `template_type` is a known parse-template family:
+To pre-populate the parse-template fields on an IntegrationTask, build a `PrefillDocumentFields` and return its `apply()` from your handler. **Only three document types support field prefill** — those whose `template_type` is a known parse-template family:
 
 | Document type             | `template_type`           | SDK data module                                            |
 |---------------------------|---------------------------|------------------------------------------------------------|
@@ -274,13 +313,21 @@ class JunkDocumentHandler(BaseHandler):
 
 Document types with inline fields (Patient Consent, Power of Attorney, the Uncategorized variants, and the other ~30 entries in the [Supported Document Types](#supported-document-types) catalog) cannot have their fields prefilled by this effect.
 
-> The wire-level effect type for this class is `UPDATE_DOCUMENT_FIELDS`, which is what appears in event logs and the [effects table](/sdk/effects/#data-integration). The class name is `PrefillDocumentFields`.
+### Methods
 
-| Attribute     |          | Type                                      | Description                                                                              |
-|---------------|----------|-------------------------------------------|------------------------------------------------------------------------------------------|
-| `document_id` | required | string                                    | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document. |
-| `templates`   | required | list[[PrefillTemplate](#prefilltemplate)] | One or more templates to prefill. Must contain at least one entry.                       |
-| `annotations` | optional | list                                      | List of annotations for display in the UI. See [Annotations](#annotations).              |
+#### apply() → Effect
+
+Suggests values for the template fields.
+
+- `document_id` and at least one entry in `templates` are required.
+
+### Attributes
+
+| Attribute     | Type                                      | Description                                                                              | Required |
+|---------------|-------------------------------------------|------------------------------------------------------------------------------------------|----------|
+| `document_id` | `str`                                     | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document. | Yes      |
+| `templates`   | list[[PrefillTemplate](#prefilltemplate)] | One or more templates to prefill. Must contain at least one entry.                       | Yes      |
+| `annotations` | `list`                                    | List of annotations for display in the UI. See [Annotations](#annotations).              | No       |
 
 ### PrefillTemplate
 
@@ -417,11 +464,22 @@ class PrefillLabReportHandler(BaseHandler):
 
 ## Removing a Document from a Patient
 
-To unlink a document from its currently-linked patient in the Data Integration queue, import the `RemoveDocumentFromPatient` class and create an instance of it. An IntegrationTask carries at most one patient link at a time, so this effect simply clears that link.
+To unlink a document from its currently-linked patient in the Data Integration queue, build a `RemoveDocumentFromPatient` and return its `apply()` from your handler. An IntegrationTask carries at most one patient link at a time, so this effect simply clears that link.
 
-| Attribute     |          | Type   | Description                                                                                                         |
-|---------------|----------|--------|---------------------------------------------------------------------------------------------------------------------|
-| `document_id` | required | string | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to unlink from its patient. |
+### Methods
+
+#### apply() → Effect
+
+Clears the document's patient link immediately.
+
+- `document_id` is required.
+
+### Attributes
+
+| Attribute     | Type  | Description                                                                                                         | Required |
+|---------------|-------|---------------------------------------------------------------------------------------------------------------------|----------|
+| `document_id` | `str` | The `id` of the [IntegrationTask](/sdk/data-integration-task/#integrationtask) document to unlink from its patient. | Yes      |
+| `patient_id` | `str` | The id of the [patient](/sdk/data-patient/) the document is linked to. Recorded in the log for auditing; the link is cleared whatever its value. | No       |
 
 An example of unlinking a document from its patient:
 

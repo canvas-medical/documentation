@@ -17,7 +17,7 @@ Follow the instructions in
 [Your First Plugin (with Claude Code)](https://docs.canvasmedical.com/guides/your-first-plugin-with-claude-code/) to create a plugins
 project. For this exercise, use `my_api` as your project (i.e. plugin) name.
 
-Open `CANVAS_MANIFEST.json` in your editor. You can modify filenames, directory structures, and
+Open [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/) in your editor. You can modify filenames, directory structures, and
 class names as you see fit in your project, but for this exercise, we are just going to set the
 value at `components -> handlers -> 0 -> class` to be `my_api.handlers.my_handler:MyAPI`.
 
@@ -378,6 +378,59 @@ part = form_data["my-part-name"]
 parts_all = form_data.get_list("my-part-name")
 ```
 
+#### Storing uploaded files
+
+To save an uploaded file on a Canvas record, declare the route with `file_uploads="stored"`. Examples include an insurance card image on a coverage or an attachment on a message. Canvas then stores each file in a `multipart/form-data` request before your handler runs, and `form_data()` returns a `StoredFilePart` for each file field instead of the file's bytes. Pass the part's `key` to an effect that accepts upload keys:
+
+- [`Coverage`](/sdk/effect-coverage/): `card_image_front_upload_key` and `card_image_back_upload_key`
+- [`PatientIdentificationCard`](/sdk/effect-patient-identification-card/): `image_upload_key`
+- [`Message`](/sdk/effect-messages/#attaching-files): `attachment_upload_keys`
+- [`VisualExamFindingCommand`](/sdk/commands/#visualexamfinding): `image_upload_key`
+
+The file never passes through your plugin or the effect payload.
+
+`file_uploads="stored"` works on POST and PUT routes only. On a `SimpleAPI` class, pass it to the decorator. On a `SimpleAPIRoute`, set the class attribute `FILE_UPLOADS = "stored"`, which applies to its `post` and `put` methods. Setting `FILE_UPLOADS` on a `SimpleAPIRoute` that has no `post` or `put` method raises a `PluginError` when the class is defined. The default is `"passthrough"`, which passes file bytes to your handler.
+
+A route declared with `file_uploads="stored"` takes `multipart/form-data` requests only. Canvas answers a request with any other content type with **400 Bad Request** without calling your handler.
+
+A `StoredFilePart` has these attributes:
+
+| Attribute        | Type            | Description                                                                 |
+|------------------|-----------------|-----------------------------------------------------------------------------|
+| `name`           | `str`           | The name of the form field.                                                 |
+| `filename`       | `str`           | The filename the client sent.                                               |
+| `content_type`   | `str` or `None` | The content type the client declared for the file.                          |
+| `content_length` | `int`           | The size of the file in bytes.                                              |
+| `key`            | `str` or `None` | The key of the stored file. `None` when the upload failed.                  |
+| `error`          | `str` or `None` | A code such as `"s3_upload_failed"` when the upload failed; otherwise `None`. |
+
+Canvas stores each file separately, so one failed file doesn't stop the others in the request. When every file in the request fails, Canvas answers with **502 Bad Gateway** without calling your handler. Otherwise, failed uploads come back alongside successful ones, so check `error` before you read `key`:
+
+```python
+from http import HTTPStatus
+
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import SimpleAPI, StaffSessionAuthMixin, api
+
+
+class UploadAPI(StaffSessionAuthMixin, SimpleAPI):
+    @api.post("/upload", file_uploads="stored")
+    def upload(self) -> list[Response | Effect]:
+        part = self.request.form_data()["file"]
+        if part.error:
+            return [JSONResponse({"error": part.error}, status_code=HTTPStatus.BAD_GATEWAY)]
+
+        # Pass part.key to an effect that accepts upload keys
+        return [JSONResponse({"key": part.key})]
+```
+
+Pass each key to an effect from the plugin that uploaded the file, and upload a file of a type the effect accepts. When the effect is applied, Canvas copies the file to the record under a new name, so the uploader's filename isn't kept, and then deletes the upload. Use each key in one effect only.
+
+The image keys on `Coverage` and `VisualExamFindingCommand` are optional, as is `image_upload_key` on a `PatientIdentificationCard` update. Setting one of these to `None` attaches no file and leaves any existing file in place. You can pass the key of a file input the user left empty without checking it first.
+
+When you switch an existing route to `file_uploads="stored"`, check for files with `part.is_file()` rather than `isinstance(part, FileFormPart)`. A `StoredFilePart` is not a `FileFormPart`, so an `isinstance` check skips every file.
+
 ### Responses
 
 Endpoint handlers may return zero or one response objects and any number of Effects. Handlers that
@@ -448,6 +501,8 @@ class MyAPI(SimpleAPIRoute):
             )
         ]
 ```
+
+When an `HTMLResponse` includes data from patients, integrations, or other external sources, build it with `render_to_string` and follow [Rendering untrusted data safely](/sdk/layout-effect/#rendering-untrusted-data-safely). Never include secrets in an HTML response.
 
 #### Returning Effects
 
@@ -604,6 +659,85 @@ class MyAPI(SimpleAPIRoute):
     def get(self) -> list[Response | Effect]:
         ...
 ```
+
+Canvas builds the `credentials` object from the request and passes it to your route's `authenticate()` method. The type annotated on the parameter, `credentials: SessionCredentials`, tells Canvas which kind of credentials to build. `credentials` exists only inside `authenticate()`: your route's other methods, such as `get()`, read the same information from `self.request`, as shown below.
+
+For a patient portal session, `credentials.logged_in_user["id"]` is the key of the patient whose chart the portal is open on, which isn't always the person signed in. With [family portal access](/sdk/patient-portal/#family-portal-access), a family member can have someone else's chart open, such as a parent on their child's chart. Then `logged_in_user` names the child, and `portal_access` (below) names the parent.
+
+In a route, read the same values from the request: `self.request.headers["canvas-logged-in-user-id"]` is the patient whose chart is open, and `self.request.portal_access` tells you who is signed in. A family member's session reaches a route only when the route declares `PORTAL_ACCESS`; see [Family portal access](#family-portal-access).
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+
+
+class WhoIsHereAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/who-is-here"
+    # Lets family members' sessions in, with no particular access required.
+    PORTAL_ACCESS = {}
+
+    def get(self) -> list[Response | Effect]:
+        # The patient whose chart the portal is open on.
+        patient_id = self.request.headers["canvas-logged-in-user-id"]
+        access = self.request.portal_access
+        return [
+            JSONResponse(
+                {
+                    "patient_id": patient_id,
+                    # True for a family member on someone else's chart.
+                    "is_family_member": access.is_acting,
+                    # The family member's CanvasUser dbid, or None for the patient themselves.
+                    "family_member_user_id": access.acting_user_id,
+                }
+            )
+        ]
+```
+
+`credentials.portal_access`, or `self.request.portal_access` in a route, tells you who is using the chart and how much they can do in each area of it, so your handler can match the access staff gave a family member or representative. It's a `PortalAccess` object.
+
+| Attribute | Type | Description |
+|---|---|---|
+| `is_acting` | `bool` | `True` when a family member or representative, not the patient, is acting on the chart. |
+| `acting_user_id` | `str` or `None` | The `dbid` of the family member's or representative's [CanvasUser](/sdk/data-canvasuser/#user), as a string. `None` when nobody else is acting on the chart, such as a patient on their own chart or a staff session. |
+| `patient` | [Patient](/sdk/data-patient/#patient) or `None` | The patient whose chart the request acts on. |
+| `actor` | [CanvasUser](/sdk/data-canvasuser/#user) or `None` | The login acting on the chart: the family member's or representative's, or on a patient's own chart, the patient's, so `actor` is `patient.user` there. |
+| `grant` | [PortalAccessGrant](/sdk/data-portal-access-grant/) or `None` | The grant that gives `actor` the chart, with the contact it was given from and the levels staff gave. `None` on a patient's own chart. |
+
+| Method | Returns | Description |
+|---|---|---|
+| `level(area)` | `PortalAccessLevel` | The session's level in one area: `"appointments"`, `"messaging"`, `"clinical"`, or `"billing"`. Another area name raises `ValueError`. |
+| `allows(area, level)` | `bool` | `True` when the session's level in `area` is at least `level`. From lowest to highest, the levels are `PortalAccessLevel.NONE`, `PortalAccessLevel.VIEW`, and `PortalAccessLevel.ACT`. `level` can be a `PortalAccessLevel` or its value, such as `"view"`. |
+
+This route lets in the patient, and a family member whose access includes at least viewing billing. Its `authenticate()` reads `credentials.portal_access` after the mixin's own check:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SessionCredentials, SimpleAPIRoute
+
+
+class BillingSummaryAPI(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/routes/billing-summary"
+    # Serves family members that authenticate() accepts; it checks their access below.
+    PORTAL_ACCESS = {}
+
+    def authenticate(self, credentials: SessionCredentials) -> bool:
+        # Canvas builds `credentials` from the request and passes it in here.
+        if not super().authenticate(credentials):
+            return False
+        # The patient on their own chart has every level, so this checks family members.
+        return credentials.portal_access.allows("billing", "view")
+
+    def get(self) -> list[Response | Effect]:
+        # `credentials` isn't available here; the request carries the same information.
+        patient_id = self.request.headers["canvas-logged-in-user-id"]
+        return [JSONResponse({"patient_id": patient_id})]
+```
+
+`patient`, `actor`, and `grant` are `None` for a session that isn't a patient's. Each is looked up the first time you read it and reused after that.
+
+For a patient on their own chart, every area is `ACT`, and for a session that isn't a patient's, every area is `NONE`. When `acting_user_id` is set, each area has the level the family member or representative was given, and an area with no level or an unrecognized one is `NONE`. Levels compare in order from `NONE` to `ACT`, and `NONE` is falsy, so `if credentials.portal_access.level("billing"):` checks for any billing access. To serve family members and representatives from your routes, see [Family portal access](#family-portal-access).
 
 ##### Custom
 
@@ -766,6 +900,99 @@ class MyAPI(PatientSessionAuthMixin, SimpleAPIRoute):
         ]
 ```
 
+`PatientSessionAuthMixin` checks that the session is a patient's. To also serve a family member or representative using the portal on a patient's chart, declare the access your routes need, as [Family portal access](#family-portal-access) describes.
+
+#### Family portal access
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member or representative uses the portal on a patient's chart with the access staff gave them in each area: appointments, messaging, clinical, and billing. To serve them from your API, declare the lowest access level your routes need in each area:
+
+- `PORTAL_ACCESS` on the handler covers every route on it. On a `SimpleAPIRoute`, it covers every method.
+- The `portal_access` argument of a route decorator, such as `@api.post`, replaces `PORTAL_ACCESS` for that route.
+
+A route serves family members and representatives only when it has a declaration, from `PORTAL_ACCESS` or its own `portal_access`. They reach it when your `authenticate` method accepts them and they have at least the declared level in every area the declaration names. A declaration doesn't change how patients on their own chart, staff, and requests without a session are authenticated.
+
+This handler serves family members who can view appointments and billing, and requires `ACT` access to billing to pay:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import (
+    PatientSessionAuthMixin,
+    PortalAccessLevel,
+    SimpleAPI,
+    api,
+)
+
+
+class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
+    PREFIX = "/copay"
+    PORTAL_ACCESS = {
+        "appointments": PortalAccessLevel.VIEW,
+        "billing": PortalAccessLevel.VIEW,
+    }
+
+    @api.get("/balance")
+    def balance(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"balance": "0.00"})
+        ]
+
+    @api.post(
+        "/pay",
+        portal_access={
+            "appointments": PortalAccessLevel.VIEW,
+            "billing": PortalAccessLevel.ACT,
+        },
+    )
+    def pay(self) -> list[Response | Effect]:
+        return [
+            JSONResponse({"message": "Payment started"})
+        ]
+```
+
+A level can be a `PortalAccessLevel` or its value: `"none"`, `"view"`, or `"act"`. An unknown area or level raises a `PluginError` when the plugin loads.
+
+To check access in your route instead, declare an empty mapping, `PORTAL_ACCESS = {}`. It serves every family member and representative your `authenticate` method accepts, and your route reads `self.request.portal_access`, the same [`PortalAccess`](#session) object as `credentials.portal_access`.
+
+`logged_in_user["id"]` names the patient whose chart it is, and `portal_access.patient` is that patient. When `portal_access.acting_user_id` is set, attribute what the request does to `portal_access.actor`, not to the patient.
+
+A family member can have different charts open in different browser tabs. A request that doesn't name a chart acts on the chart the session last chose, which can be another tab's. To keep a plugin page on the chart it shows, send that patient's key in the `X-Portal-Acting-For` header on every request the page makes. Your route can put the key in the page when it serves it, from `logged_in_user["id"]`. A page's [WebSocket connection](/sdk/handlers-simple-api-websocket/#connecting-from-a-patient-portal-page) names its chart in the URL instead.
+
+The levels that `level()`, `allows()`, and `PORTAL_ACCESS` use are the ones Canvas sends with the request. Read `portal_access.grant` to show who was given access and what the grant allows:
+
+```python
+from canvas_sdk.effects import Effect
+from canvas_sdk.effects.simple_api import JSONResponse, Response
+from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPIRoute
+
+
+class ChartBanner(PatientSessionAuthMixin, SimpleAPIRoute):
+    PATH = "/chart-banner"
+    PORTAL_ACCESS = {}
+
+    def get(self) -> list[Response | Effect]:
+        access = self.request.portal_access
+        grant = access.grant
+        relationship = None
+        if grant:
+            # The contact's relationship is its v3-RoleCode categories, such as "mother".
+            relationship = [
+                link.category.name
+                for link in grant.contact.categories.filter(
+                    category__system="http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+                )
+            ]
+        return [
+            JSONResponse(
+                {
+                    "chart": access.patient.first_name,
+                    "signed_in_as": access.actor.email,
+                    "relationship": relationship,
+                }
+            )
+        ]
+```
+
 ## Acting as a Canvas user
 
 By default, a SimpleAPI request isn't tied to a specific person, so any effects it
@@ -789,3 +1016,87 @@ curl --request POST \
 
 In this example the note is signed and recorded in Canvas as signed by the staff
 member who authorized the access token, not by Canvas Bot.
+
+## Common use cases
+
+SimpleAPI is the supported way to react to external (non-Canvas) events and to
+expose functionality that the FHIR API does not cover. A few recurring patterns:
+
+<!-- source: discussion #536 -->
+### Reacting to external events
+
+Effects such as Protocol Cards can normally only be created in response to
+internal Canvas events. To create one from an outside trigger, expose a
+SimpleAPI endpoint that accepts the external request and returns the
+corresponding effect. This makes SimpleAPI the supported entry point for any
+workflow that needs to be initiated from outside of Canvas.
+
+<!-- source: discussion #1164 -->
+### Originating commands that have no FHIR resource
+
+Many commands, such as HPI, Assessment, and Plan, have no FHIR resource, because
+the standard has nothing at that level of detail. To write them from outside
+Canvas, expose a SimpleAPI endpoint that originates the commands with the classes
+in the [command module](/sdk/commands/). [`CommandAPI`](/sdk/handlers-simple-api-commands/)
+builds such an endpoint for you: it reads the request body onto a command,
+validates it, and writes the command to the note. Use `Command.objects` from the
+data module to check for an existing command or to find one to edit.
+
+<!-- source: discussion #708 -->
+### Calling SimpleAPI from an external application
+
+External applications, such as a Node.js service, integrate with Canvas by
+calling the SimpleAPI endpoints you define in your plugin. Each endpoint returns
+[effects](/sdk/effects/) that make the change in Canvas.
+
+<!-- source: discussion #735 -->
+### Creating or updating patients from a third-party webhook
+
+To process a third-party webhook, such as a form submission, point it at a
+SimpleAPI `POST` endpoint. Your handler controls how the incoming data maps onto
+the patient, so it can transform fields, check them, and save values the FHIR API
+can't, such as custom patient metadata. Build a [Patient effect](/sdk/effect-patient/)
+from the request body, including any custom values in its `metadata`, and return
+its `create()` or `update()`. The patient and their metadata are saved together.
+
+<!-- source: discussion #1242 -->
+### Serving plugin frontends without leaking secrets
+
+If your plugin serves an HTML/JS UI (for example a vitals chart), do **not**
+embed secrets or credentials in client-side JavaScript to call third-party APIs
+directly. Instead, have your JavaScript call a SimpleAPI endpoint provided by the
+same plugin and protected with the [staff session authentication mixin](#staff-session).
+The plugin's Python code holds the secrets and makes the authenticated outbound
+request. This works as long as the HTML/JS is served from the plugin. See the
+[vitals visualizer example plugin](/sdk/example-vitals_visualizer_plugin/#vitals_visualizationhtml)
+for a working implementation.
+
+## Troubleshooting
+
+<!-- source: discussion #858 -->
+### A SimpleAPI endpoint returns 404
+
+A 404 from an endpoint you believe is deployed usually means the plugin failed to
+load at reload time even though the deploy appeared to succeed — a runtime error
+when the plugins reload on the server. Keep two shells open: deploy in one and run
+`canvas logs` in the other to catch the load failure (and the line number) as it
+happens. Note also that the **plugin name cannot contain a hyphen** (`-`); use
+underscores in both the plugin name and the class path, or routing will 404.
+
+<!-- source: discussion #551 -->
+### 503 responses when originating many commands
+
+If you receive intermittent **503 No server is available** responses while issuing
+many command requests, have your client retry with
+[exponential backoff](https://en.wikipedia.org/wiki/Exponential_backoff#Rate_limiting).
+To reduce the number of round trips, expose a SimpleAPI endpoint that originates
+and commits each command in one effect with `originate(commit=True)`:
+
+```python?partial=true
+from canvas_sdk.commands import PlanCommand
+
+# inside a SimpleAPI route; note_uuid identifies the target note
+command = PlanCommand(note_uuid=note_uuid)
+
+return [command.originate(commit=True)]
+```

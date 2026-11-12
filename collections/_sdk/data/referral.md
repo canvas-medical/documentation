@@ -95,6 +95,42 @@ referral = Referral.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
 tasks = referral.task_list
 ```
 
+## Review assignment
+
+A referral report is assigned for review to staff members or to a team. `reviewers` holds the assigned staff members, and `team` holds the assigned team, or `None` when no team is assigned.
+
+```python
+from canvas_sdk.v1.data import ReferralReport, Staff
+
+referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The staff members and the team the referral report is assigned to
+reviewers = referral_report.reviewers.all()
+team = referral_report.team
+
+# Every referral report assigned to this staff member
+staff = Staff.objects.get(id="4150cd20de8a470aa570a852859ac87e")
+assigned = ReferralReport.objects.filter(reviewers__id=staff.id)
+```
+
+## Delegations
+
+When staff send a referral report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a referral report are available through two accessors:
+
+```python
+from canvas_sdk.v1.data import ReferralReport
+
+referral_report = ReferralReport.objects.get(id="c1a5a35a-4ee2-4a0e-85c0-21739dc8c4a8")
+
+# The full delegation history, oldest first.
+history = referral_report.delegations
+
+# The active delegation, or None when no delegation is in effect.
+current = referral_report.active_delegation
+```
+
+For the report's full timeline, including reassignments, comments, and signatures, see [DocumentHistoryEvent](/sdk/data-document-history-event/).
+
 ## The document reference
 
 `ReferralReport` carries the consult report's specialty, review state and comments, not the file. Canvas stores the file on a [DocumentReference](/sdk/data-document-reference/#the-related-object) pointing back at the report, which is also how it appears in the FHIR API.
@@ -132,6 +168,7 @@ url = document.document_url if document else None
 | entered_in_error      | [CanvasUser](/sdk/data-canvasuser)                             |
 | patient               | [Patient](/sdk/data-patient/#patient)                          |
 | note                  | [Note](/sdk/data-note/#note)                                   |
+| assessment            | [Assessment](/sdk/data-assessment/#assessment) |
 | assessments           | [Assessment](/sdk/data-assessment/#assessment)                 |
 | service_provider      | [ServiceProvider](/sdk/data-serviceprovider/#service-provider) |
 | clinical_question     | String                                                         |
@@ -145,6 +182,7 @@ url = document.document_url if document else None
 | internal_task_comment | [TaskComment](/sdk/data-task/#taskcomment)                     |
 | task_ids              | String                                                         |
 | reports               | [ReferralReport](#referralreport)[]                            |
+| action_events         | [ReferralActionEvent](/sdk/data-fax/#referralactionevent)[]    |
 
 ### ReferralReport
 
@@ -162,6 +200,7 @@ url = document.document_url if document else None
 | assigned_date      | DateTime                                                              |
 | team_assigned_date | DateTime                                                              |
 | team               | [Team](/sdk/data-team/#team)                                          |
+| reviewers          | [Staff](/sdk/data-staff/#staff)[]                                     |
 | patient            | [Patient](/sdk/data-patient/#patient)                                 |
 | referral           | [Referral](#referral)                                                 |
 | specialty          | String                                                                |
@@ -170,6 +209,8 @@ url = document.document_url if document else None
 | original_date      | Date                                                                  |
 | review             | [ReferralReview](#referralreview)                                     |
 | codings            | [ReferralReportCoding](#referralreportcoding)[]                       |
+| delegations        | [DocumentReviewDelegation](/sdk/data-document-review-delegation/)[] (computed; the report's delegations, oldest first) |
+| active_delegation  | [DocumentReviewDelegation](/sdk/data-document-review-delegation/) (computed; the delegation in effect, or `None`) |
 
 ### ReferralReview
 
@@ -195,6 +236,8 @@ url = document.document_url if document else None
 | Field Name    | Type                              |
 |---------------|-----------------------------------|
 | dbid          | Integer                           |
+| created       | DateTime                          |
+| modified      | DateTime                          |
 | report        | [ReferralReport](#referralreport) |
 | system        | String                            |
 | version       | String                            |

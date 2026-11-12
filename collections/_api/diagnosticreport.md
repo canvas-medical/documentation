@@ -20,9 +20,20 @@ sections:
             description: The identifier of the Diagnostic Report.
             type: string
           - name: status
-            type: enum [ final | entered-in-error ]
+            type: enum [ final | preliminary | entered-in-error ]
             description: >-
-                Status of the Diagnostic Report see [https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html](https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html). Currently Canvas only supports two types of statuses. 
+                Status of the Diagnostic Report, see [https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html](https://hl7.org/fhir/R4/valueset-diagnostic-report-status.html). <br><br>
+
+                - `final`: the current version of the report.
+
+                - `preliminary`: an earlier version of a lab report received electronically from a lab. Labs send an updated copy of a report each time more results are released, and Canvas keeps each copy as a separate DiagnosticReport with its own `presentedForm`. When a new copy arrives, it becomes `final` and every earlier copy becomes `preliminary`.
+
+                - `entered-in-error`: the report was removed from the patient's chart.
+
+
+                For electronic lab reports, `final` means this is the newest copy Canvas has received. It does not mean the lab has finished every test on the order, and a newer copy may still arrive. <br><br>
+
+                DiagnosticReport search does not filter on status, so a search returns every version. To work with only the current version of each lab report, filter on `status` in your client, or search [DocumentReference](/api/documentreference) with `status=current`.
           - name: category
             type: array[json]
             description: Service category [https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html](https://hl7.org/fhir/R4/valueset-diagnostic-service-sections.html). Use this attribute to help distinguish the type of report in Canvas.
@@ -127,7 +138,8 @@ sections:
           - name: presentedForm
             type: array[json]
             description: >-
-              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created.
+              Entire report as issued. There is also a [DocumentReference](/api/documentreference) resource specifically for this Report PDF being created. <br><br>
+              The PDF is not updated in place. When a lab sends an updated copy of an electronic lab report, Canvas creates a new DiagnosticReport with its own `presentedForm`, and the earlier one becomes `preliminary`.
             attributes:
                 - name: url
                   type: string

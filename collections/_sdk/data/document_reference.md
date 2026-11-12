@@ -5,8 +5,6 @@ excerpt: "References to documents stored in Canvas, with presigned URL support f
 hidden: false
 ---
 
-# DocumentReference
-
 The `DocumentReference` model represents references to documents stored in Canvas, such as uploaded PDFs, scanned files, and other clinical documents. Each document reference can link to a file stored in S3 and provides secure access via presigned URLs.
 
 ## Basic Usage
@@ -64,30 +62,30 @@ url = doc_ref.document_url
 
 ### DocumentReference
 
-| Field Name                       | Type                                                        |
-|----------------------------------|-------------------------------------------------------------|
-| id                               | UUID                                                        |
-| dbid                             | Integer                                                     |
-| created                          | DateTime                                                    |
-| modified                         | DateTime                                                    |
-| document                         | String                                                      |
-| document_absolute_url            | String                                                      |
-| document_content_type            | String                                                      |
-| business_identifier              | String                                                      |
-| originator                       | [CanvasUser](/sdk/data-canvasuser)                          |
-| subject                          | [CanvasUser](/sdk/data-canvasuser)                          |
-| type                             | [DocumentReferenceCoding](#documentreferencecoding)         |
-| category                         | [DocumentReferenceCategory](#documentreferencecategory)     |
-| status                           | [DocumentReferenceStatus](#documentreferencestatus)         |
-| date                             | Date                                                        |
-| encounter                        | [Encounter](/sdk/data-encounter)                            |
-| team                             | [Team](/sdk/data-team/#team)                                |
-| related_object_document_title    | String                                                      |
-| related_object_document_comment  | String                                                      |
-| content_type                     | [ContentType](/sdk/data-content-type/) (the related object's type)          |
-| object_id                        | Integer (the related object's `dbid`)                                       |
-| related_object                   | Model (property) — the SDK object the document is attached to, or `None`    |
-| document_url                     | String (property) — presigned S3 URL or absolute URL        |
+| Field Name                      | Type                                                               | Description                                           |
+|---------------------------------|--------------------------------------------------------------------|-------------------------------------------------------|
+| id                              | UUID                                                               |                                                       |
+| dbid                            | Integer                                                            |                                                       |
+| created                         | DateTime                                                           |                                                       |
+| modified                        | DateTime                                                           |                                                       |
+| document                        | String                                                             |                                                       |
+| document_absolute_url           | String                                                             |                                                       |
+| document_content_type           | String                                                             |                                                       |
+| business_identifier             | String                                                             |                                                       |
+| originator                      | [CanvasUser](/sdk/data-canvasuser)                                 |                                                       |
+| subject                         | [CanvasUser](/sdk/data-canvasuser)                                 |                                                       |
+| type                            | [DocumentReferenceCoding](#documentreferencecoding)                |                                                       |
+| category                        | [DocumentReferenceCategory](#documentreferencecategory)            |                                                       |
+| status                          | [DocumentReferenceStatus](#documentreferencestatus)                |                                                       |
+| date                            | Date                                                               |                                                       |
+| encounter                       | [Encounter](/sdk/data-encounter)                                   |                                                       |
+| team                            | [Team](/sdk/data-team/#team)                                       |                                                       |
+| related_object_document_title   | String                                                             |                                                       |
+| related_object_document_comment | String                                                             |                                                       |
+| content_type                    | [ContentType](/sdk/data-content-type/) (the related object's type) |                                                       |
+| object_id                       | Integer (the related object's `dbid`)                              |                                                       |
+| related_object                  | Model (computed)                                                   | The SDK object the document is attached to, or `None` |
+| document_url                    | String (computed)                                                  | Presigned S3 URL or absolute URL                      |
 
 ### DocumentReferenceCoding
 
@@ -96,6 +94,8 @@ A coding entry representing the type of a document reference.
 | Field Name     | Type    |
 |----------------|---------|
 | dbid           | Integer |
+| created        | DateTime |
+| modified       | DateTime |
 | system         | String  |
 | version        | String  |
 | code           | String  |
@@ -109,6 +109,8 @@ A coding entry representing the category of a document reference.
 | Field Name     | Type    |
 |----------------|---------|
 | dbid           | Integer |
+| created        | DateTime |
+| modified       | DateTime |
 | system         | String  |
 | version        | String  |
 | code           | String  |

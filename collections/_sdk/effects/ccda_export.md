@@ -9,13 +9,24 @@ The `CreateCCDA` effect creates a C-CDA document for a patient with the provided
 
 This effect stores a C-CDA document, generating or otherwise sourcing that document is the responsibility of the plugin.
 
+Build a `CreateCCDA` and return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Creates the C-CDA document for the patient.
+
+- `patient_id` and `content` are required. `patient_id` must be the id of an existing patient, and `content` must be valid XML.
+- `document_type` defaults to `CCD`.
+
 ## Attributes
 
-| Name           | Type           | Required | Description                                                                 |
-|----------------|----------------|----------|-----------------------------------------------------------------------------|
-| `patient_id`   | `str`          | Yes      | The patient's key (UUID).                                                   |
-| `content`      | `str`          | Yes      | The C-CDA XML content as a string. Must be valid XML.                        |
-| `document_type` | `DocumentType` | No       | Type of C-CDA document. Defaults to `DocumentType.CCD`.                      |
+| Name | Type | Description | Required |
+|---|---|---|---|
+| `patient_id` | `str` | The id of the [patient](/sdk/data-patient/). | Yes |
+| `content` | `str` | The C-CDA XML content as a string. Must be valid XML. | Yes |
+| `document_type` | `DocumentType` | Type of C-CDA document. Defaults to `DocumentType.CCD`. | No |
 
 ## DocumentType Enum
 

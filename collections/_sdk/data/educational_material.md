@@ -106,6 +106,7 @@ url = document.document_url if document else None
 | entered_in_error  | [CanvasUser](/sdk/data-canvasuser)                          |
 | patient           | [Patient](/sdk/data-patient/#patient)                       |
 | note              | [Note](/sdk/data-note/#note)                                |
+| assessment        | [Assessment](/sdk/data-assessment/#assessment) |
 | article_id        | String                                                      |
 | selected_language | [EducationalMaterialLanguage](#educationalmateriallanguage) |
 | title             | String                                                      |

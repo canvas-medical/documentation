@@ -78,6 +78,12 @@
                     {{ block.description | markdownify }}
                 </div>
                 {% endif %}
+                {% if block.additional_information %}
+                <div class="apidoc__info__description">
+                    <h4>Additional information</h4>
+                    {{ block.additional_information | markdownify }}
+                </div>
+                {% endif %}
             </div>
             <div class="apidoc__guides">
                 {% for guide in site.guides %}

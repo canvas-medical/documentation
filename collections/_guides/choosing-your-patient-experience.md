@@ -101,8 +101,31 @@ Each page is toggled with a **Constance** setting, managed by Canvas Support —
 | `ALLOW_PATIENT_DOCUMENT_UPLOADS` | Patient document uploads on "My Health" | `False` |
 | `PATIENT_APP_USERS_EMAIL_ONLY` | Email-only login (access mode, not a page) | `False` |
 | `PATIENT_APP_BANNER` | Banner text on the portal login page | `""` |
+| `PATIENT_PORTAL_REQUISITION_ORDER_STATES` | Which orders patients can [download requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for: **Open orders only** or **Open and completed orders** | **Open orders only** |
+| `FAMILY_PORTAL_ACCESS` | [Family portal access](#family-portal-access): staff can give family members and other representatives access to a patient's chart | `False` |
 
 {% include alert.html type="warning" content="Defaults are mixed, not all-off. Messaging, Payments, Labs, and Contact are on out of the box; My Health, Health Records, Appointments, Consents, and Register are off. So you typically turn off the stock pages you don't want and turn on the ones you do — rather than enabling everything from scratch." %}
+
+### Sign-in links in notifications
+
+When the care team sends a patient a message or shares a lab result, Canvas notifies the patient by email or text message. When the patient is sent a statement, Canvas notifies them by email. Each notification carries a sign-in link, so the patient can go straight to the new item without entering a password. Opening the link signs the patient in and opens the matching page: Messaging, Labs, or Payments.
+
+- **Each link works once.** The email and the text for the same notification carry separate links, so opening one doesn't invalidate the other. After a link has been used, the patient signs in with their password as usual.
+- **Links stay valid for 30 days** by default, so the patient can open one well after the notification arrives.
+- **The session lasts 15 minutes** by default. It doesn't extend while the patient is active; when it ends, the patient returns to the login page.
+
+Both limits are organization settings managed by Canvas: the link lifetime is the `notificationLink` value (in seconds) in `accessTokenExpirationInSeconds`, and the session length is `magicLinkSessionInMinutes`. [Contact Support](https://canvas-medical.help.usepylon.com/) to change either one.
+
+### Family portal access
+
+Staff can give a patient's family member or other representative, such as a parent, guardian, or adult child, portal access to the patient's chart from the patient's **Profile → Portal** in Canvas. Each family member signs in with their own login, and one login can hold several charts: a parent who is also a patient switches between their own record and each child's.
+
+- **Access is set per area.** Appointments, messaging, clinical, and billing are each **None**, **View**, or **Full** (`none`, `view`, and `act` to plugins). The built-in pages follow that access: pages in an area set to None don't appear, and pages in an area set to View show the patient's information with their actions turned off.
+- **The family member confirms the patient's date of birth** the first time they open the chart.
+- **Their actions are recorded as them,** acting for the patient, and the patient can see who has access to their record in the portal.
+- **Notifications reach them too.** When the patient gets a new message, released lab results, a statement, or an appointment reminder, family members with access to that area are told. Their notices link to the portal's sign-in page rather than signing them in, because their login can open more than one chart.
+
+Family portal access is turned on by Canvas. See [Family Portal Access](https://help.canvasmedical.com/articles/1380397114-family-portal-access) for how staff set it up, and the [Patient Portal config hub](/sdk/patient-portal/#family-portal-access) for what plugins receive.
 
 ### Branding
 
@@ -115,7 +138,7 @@ You can put your organization's identity on the portal without building anything
 What stays **Canvas-driven** and isn't branded per organization:
 
 - **The portal URL** — patients sign in at `https://<your-instance>.canvasmedical.com/app/`.
-- **The login flow** — the sign-in and verification screens are Canvas's.
+- **The login flow** — the sign-in and verification steps are Canvas's. A theme plugin can restyle the login page's colors, font, and wording (see [Theme the portal](#theme-the-portal)), but not the steps themselves.
 - **Sign-in & verification emails** — these are sent from a fixed `no-reply@canvasmedical.com` (a separate path from the patient-message sender above), so they can't be rebranded.
 
 {% include alert.html type="info" content="Want your own domain and login flow end to end? That's Path 3 — build your own app and use Canvas as the backend." %}
@@ -132,19 +155,36 @@ New to plugins? Start with [Your First Plugin](/guides/your-first-plugin-with-cl
 
 Here's what you can do — mix and match as many as you like.
 
+### Theme the portal
+
+Make the portal match your brand: your colors for buttons, links, the menu, and the page background, your font, rounder or squarer corners, and the word the portal uses for the person (patient, member, or client). The theme covers every portal page, including login and registration, and each business line can have its own. Signed-in pages can also take your own CSS.
+
+A theme is one handler that returns a [`PatientPortalTheme`](/sdk/patient-portal/#theme-the-patient-portal) effect. [Theming the Patient Portal](/guides/theme-the-patient-portal/) walks through each setting with screenshots.
+
 ### Personalize the landing page with widgets
 
-The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient.
+The portal home is the first thing patients see after logging in, and it's the easiest place to add value. **Widgets** are cards you render there: a "your next appointment" summary, an outstanding-balance nudge, a care-gap reminder ("you're due for a flu shot"), links to your own resources — anything you can compute for that patient. With family portal access, you can also show different cards to the patient and to a family member (see [Tailor the portal for the patient or a family member](#tailor-the-portal-for-the-patient-or-a-family-member)).
 
 You control what each card shows, pulling from the Canvas data module, your plugin's Custom Data, or an external service.
 
 See [Portal Landing Page Widgets](/sdk/patient-portal/#portal-landing-page-widgets) and the [Custom Landing Page guide](/guides/custom-landing-page/) for the exact documentation on how to build them. And you don't have to start from a blank file — there's a ready-made [patient_portal_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_plugin) in our open-source examples repo you can install as-is or use as a reference and starting point.
 
+### Tailor the portal for the patient or a family member
+
+With [family portal access](#family-portal-access), the person using the portal can be the patient or a family member acting for them, such as a parent on their child's chart. Your landing page widgets, menu, applications, and pages can serve each of them differently:
+
+- **Widgets, menu configuration, and applications:** the patient whose chart is open is the portal event's target, or the `user` in an application's event context, and `self.event.actor` is the login using it. Compare the login with the patient's own, or look up its [PortalAccessGrant](/sdk/data-portal-access-grant/#reading-the-grant-for-a-portal-event), to know whether it's a family member and what access they have in each area.
+- **Your own pages (SimpleAPI and WebSocket):** `portal_access` on the [SimpleAPI session credentials](/sdk/handlers-simple-api-http/#session) and the [WebSocket object](/sdk/handlers-simple-api-websocket/#websocket-object) gives the patient, the login acting on the chart, and their access level in each area. Declare the access each route needs with `PORTAL_ACCESS`.
+
+For example, greet a parent with a card about their child's next appointment, leave out a balance reminder when their billing access is **None**, and keep a patient-only card, such as a care-gap reminder written to the patient, for the patient's own login. See [Family Portal Access](/sdk/patient-portal/#family-portal-access) for everything plugins receive.
+
 ### Shape self-scheduling
 
 Self-scheduling is powerful, but you'll usually want guardrails. Filter or reorder the slots a patient can book *before they see them* — keep new patients on longer visit types, hide same-day slots, steer certain reasons to specific providers, or enforce your booking policies.
 
-See [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
+Building your own booking screen instead? A plugin can search open appointment times with the same search the Canvas booking screens use, so it offers patients the same times Canvas would.
+
+See [Searching for open appointment slots](/sdk/utils/#searching-for-open-appointment-slots) · [Shape Self-Scheduling](/sdk/patient-portal/#shape-self-scheduling) · SDK example: [patient_portal_search_appointments_slots_plugin](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_portal_search_appointments_slots_plugin).
 
 Real-world example (MSF):
 
@@ -170,7 +210,41 @@ See the [Patient Portal effects → Forms](/sdk/patient-portal/#forms) for the t
 
 Getting patients into the portal doesn't have to be manual. Automatically **invite** patients to activate their account when they're ready — for example, once you've confirmed a good email or phone — instead of having staff send invitations one at a time. You can also keep a patient's portal **login in sync** when their email or phone changes, and **verify** a contact point before you rely on it to invite them or send messages.
 
-See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+Prefer to send the invite yourself? A plugin can mint the patient's activation or password reset link and deliver it through your own email or SMS provider, with your own wording and branding. You choose where in the portal the link lands the patient, such as their appointments or one of your own portal pages.
+
+Happy with Canvas sending the invite but want your own words? A plugin can write the subject and body of the invite and password reset emails Canvas sends, and Canvas keeps the login link in them.
+
+Want to follow up on invitations that go nowhere? A plugin can track each portal invitation from sent to opened to claimed, find links that expired before the patient opened them, and react when a patient opens a link that no longer works, for example by sending a fresh one.
+
+See [User Login](/sdk/patient-portal/#user-login) for automating invitations and keeping the login in sync, [PortalInvitation](/sdk/data-portal-invitation/) and the [portal invitation events](/sdk/events/#portal-invitations) for tracking invitations, [Customize the Login Email](/sdk/patient-portal/#customize-the-login-email) for writing the invite and reset emails, [Getting a patient portal login link](/sdk/utils/#getting-a-patient-portal-login-link) for minting a link to send yourself, and [Send Contact Verification](/sdk/effect-send-contact-verification/) for confirming a contact point first.
+
+### Greet patients as soon as they sign in
+
+The moment right after login is the natural place to ask for something before the patient goes anywhere else: collect a consent, walk a new patient through a short tour, or show an alert about an upcoming visit or a balance due. The [`PATIENT_PORTAL__POST_LOGIN`](/sdk/events/#patient-portal-events) event fires once each time a patient signs in, and your plugin can respond by opening a **modal** over the page they land on.
+
+The event tells you how the patient signed in: with their username and password, with the sign-in link from a notification, or by registering. That lets you, for example, welcome a newly registered patient differently from one who signs in every week. Refreshing the page or returning with a remembered session doesn't count as a new sign-in, so patients aren't shown the same modal over and over.
+
+Modals aren't limited to sign-in. Any handler that runs because of something the patient did can open one in the portal, for example a [SimpleAPI](/sdk/handlers-simple-api-http/) route your portal page calls. The modal appears if the patient still has the portal open.
+
+When the patient has to finish the step before going further, such as signing a consent, make the modal **blocking**. The patient can't close it or navigate away, and it closes only when your page says the step is done.
+
+See [Show a Modal After Login](/sdk/patient-portal/#show-a-modal-after-login), [Modals](/sdk/layout-effect/#modals), and [Blocking Modals](/sdk/layout-effect/#blocking-modals) for the technical reference.
+
+### Share after-visit summaries
+
+Patients can download the after-visit summary of their own locked visit notes from the portal, as the same PDF a clinician prints from the note. The portal doesn't link to it on its own, so you decide where patients find it: a "your visit summary is ready" widget on the landing page, a visit history page of your own, or a link in a follow-up message.
+
+Each download fires an event your plugin can respond to, so you can keep track of which patients have received their summary and follow up with the ones who haven't.
+
+See [Link to After-Visit Summaries](/sdk/patient-portal/#link-to-after-visit-summaries) for the technical reference.
+
+### Share lab and imaging requisitions
+
+Patients can also download the requisition of their own lab and imaging orders. A lab requisition is the form a clinician prints from the order. An imaging requisition is the letter that tells the patient how to prepare for the test. As with summaries, you decide where the link appears, such as next to an upcoming lab visit on a page of your own. By default, a requisition is available until results arrive for the order. Canvas Support can extend that to completed orders with the `PATIENT_PORTAL_REQUISITION_ORDER_STATES` setting.
+
+Downloads fire the same event as summaries, so one handler can track every document a patient has received.
+
+See [Link to Lab and Imaging Requisitions](/sdk/patient-portal/#link-to-lab-and-imaging-requisitions) for the technical reference.
 
 ### Control the navigation layout
 
@@ -184,6 +258,8 @@ Need more than a card? Add entire patient-facing **pages** with an Application s
 
 This is also how you **replace a built-in page you don't love**. Don't like how the stock My Health page presents conditions, medications, and allergies? Build your own version exactly the way you want it, then turn off the built-in page with its Path 1 toggle (`PATIENT_APP_MY_HEALTH`) so patients only ever see yours. The same works for any built-in section — keep the stock pages that suit you and swap out the ones that don't, one at a time.
 
+You can go further and make one of your pages the portal's **home page**. Patients who open the portal land on your page instead of the widgets landing page, with any consents, forms, and sign-in modals still shown on top. While a home page is set, patients don't see landing page widgets, so choose one approach or the other. See [Configuring the Patient Portal](/sdk/patient-portal/#configuring-the-patient-portal).
+
 See the [Applications handler](/sdk/handlers-applications/) and [Configure Portal Menu Items](/sdk/patient-portal/#configure-portal-menu-items) for surfacing your page in the portal navigation · SDK examples: [example_patient_portal_page](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/example_patient_portal_page), [patient_app_schedule](https://github.com/canvas-medical/canvas-plugins/tree/main/example-plugins/patient_app_schedule).
 
 Real-world examples (MSF):
@@ -191,6 +267,38 @@ Real-world examples (MSF):
 - [patient-portal-profile](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-profile) — adds a read-only **My Profile** page (demographics, care team, preferred pharmacy).
 - [portal-content](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal-content) — builds richer **My Records** and **My Profile** pages (visit notes, labs, imaging, letters, insurance) with optional review-gating. A great model for replacing the stock pages with your own.
 - [patient-portal-forms](https://github.com/medical-software-foundation/canvas/tree/main/extensions/patient-portal-forms) — ships a whole forms experience as its own portal page: staff assign questionnaires (PHQ-9, GAD-7, ROS…) that patients complete in the portal, with responses posting back to the chart.
+
+### Add a band to every page
+
+Keep something in front of patients on every page they visit: an announcement banner, a support footer, or a toolbar for your program. A Portal Docked Application mounts your content in a full-width band across the top or bottom of every signed-in portal page, and it stays on screen as patients move around the portal.
+
+See [Portal Docked Applications](/sdk/handlers-embedded-applications/#portal-docked-applications).
+
+### Collect insurance cards and photo IDs
+
+Let patients send what your front desk usually chases down at check-in: photos of their insurance card, a driver's license or other photo ID, or a document their care team asked for. Add an upload step to one of your own portal pages, such as an intake wizard or a pre-visit checklist, and the files land on the patient's record in Canvas without staff scanning or re-keying anything.
+
+Your page posts the patient's files to a [SimpleAPI](/sdk/handlers-simple-api-http/) route that [stores uploads](/sdk/handlers-simple-api-http/#storing-uploaded-files). Canvas saves each file before your handler runs and hands your handler a key for it. Protect the route with the [patient session mixin](/sdk/handlers-simple-api-http/#patient-session) so only signed-in patients can call it, then pass each key to the effect that fits:
+
+- **Insurance card:** the [Coverage](/sdk/effect-coverage/) effect adds or updates the patient's coverage with front and back card images. Collect the member ID and payer on the same page, since a new coverage needs both.
+- **Photo ID:** the [Patient Identification Card](/sdk/effect-patient-identification-card/) effect adds the image to the patient's identification cards.
+- **Anything else:** the [Message](/sdk/effect-messages/#attaching-files) effect attaches PNG, JPEG, or PDF files to a message to the care team.
+
+See [Storing uploaded files](/sdk/handlers-simple-api-http/#storing-uploaded-files) for the full list of effects that accept an upload, and the example route on the [Coverage](/sdk/effect-coverage/) effect page that creates a coverage from uploaded card photos.
+
+### Send patients to another page
+
+Your pages can move the patient along when they finish a step: after they submit an intake form, take them to their messages; from a "schedule your follow-up" card on the landing page, open your scheduling page; when a step happens on a partner's site, send them there.
+
+When the patient does something in your page or widget, the handler that responds, such as a [SimpleAPI](/sdk/handlers-simple-api-http/) route your page calls, returns a redirect. Within the portal, the patient moves without a page reload, and Back returns them to where they were. A redirect can go to:
+
+- a built-in portal page that is turned on for your instance, such as Messages or Appointments
+- one of your own portal pages
+- an external URL, in the same tab or a new one
+
+Each destination has to be on your plugin's allowlist, which an administrator sets for each instance, so a plugin can only send patients where you've approved.
+
+See [Redirects in the patient portal](/sdk/effect-redirect/#redirects-in-the-patient-portal) for the technical reference.
 
 ### Missing something? Ask before you rebuild
 

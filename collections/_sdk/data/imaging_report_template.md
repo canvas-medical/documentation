@@ -68,6 +68,8 @@ results = ImagingReportTemplate.objects.search("chest x-ray")
 |-----------------|------------------------------------------------------------------|
 | id              | UUID                                                             |
 | dbid            | Integer                                                          |
+| created         | DateTime                                                         |
+| modified        | DateTime                                                         |
 | name            | String                                                           |
 | long_name       | String                                                           |
 | code            | String                                                           |
@@ -83,6 +85,8 @@ results = ImagingReportTemplate.objects.search("chest x-ray")
 | Field Name      | Type                                                                           |
 |-----------------|--------------------------------------------------------------------------------|
 | dbid            | Integer                                                                        |
+| created         | DateTime                                                                       |
+| modified        | DateTime                                                                       |
 | report_template | [ImagingReportTemplate](#imagingreporttemplate)                                |
 | sequence        | Integer                                                                        |
 | code            | String                                                                         |
@@ -98,6 +102,8 @@ results = ImagingReportTemplate.objects.search("chest x-ray")
 | Field Name | Type                                                              |
 |------------|-------------------------------------------------------------------|
 | dbid       | Integer                                                           |
+| created    | DateTime                                                          |
+| modified   | DateTime                                                          |
 | field      | [ImagingReportTemplateField](#imagingreporttemplatefield)         |
 | label      | String                                                            |
 | key        | String                                                            |

@@ -7,7 +7,7 @@ hidden: false
 
 ## Introduction
 
-The `CreateCodingGapEvent`, `ValidateCodingGapEvent`, `AssessCodingGapEvent`, and `DeferCodingGapEvent` models are read-only records of the actions taken on a coding gap — create, validate, assess, and defer. Each model is the anchor for the corresponding coding gap command.
+The `CreateCodingGapEvent`, `ValidateCodingGapEvent`, `AssessCodingGapEvent`, and `DeferCodingGapEvent` models are records of the actions taken on a coding gap: create, validate, assess, and defer. Each model is the anchor for the corresponding coding gap command.
 
 A coding gap itself is represented by a [DetectedIssue](/sdk/data-detected-issue/) together with its `DetectedIssueEvidence`. These four models record only the actions taken on the coding gap. A coding gap event's `detected_issue` foreign key is nullable, so expect events without an associated `DetectedIssue`.
 
@@ -23,7 +23,7 @@ from canvas_sdk.v1.data import CreateCodingGapEvent
 create_event = CreateCodingGapEvent.objects.get(id="61a1853f-168f-4ed3-80d2-44e5d144bcf3")
 ```
 
-All four models expose the same manager, so `get`, `filter`, and `committed` are available on each. The models are read-only — there is no create or save.
+All four models expose the same manager, so `get`, `filter`, and `committed` are available on each.
 
 ## Accessing events from a patient or note
 

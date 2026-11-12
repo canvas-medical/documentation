@@ -21,6 +21,8 @@ The export will generate links to the output files for each resource. Clicking e
 You can initiate a single patient export by issuing a request like the one below:<br>
 `GET https://fumage-<instance-name>.canvasmedical.com/Patient/<id>/$export`
 
+The export can read only what the token that started it can read. It uses that token's scopes and, for a [patient scoped token](/api/customer-authentication/#patient-scoped-tokens), its patient. The token must be unexpired when you send the request.
+
 
 <br>
 ## Creating a Population Export

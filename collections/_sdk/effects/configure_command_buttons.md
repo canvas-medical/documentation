@@ -7,6 +7,33 @@ hidden: false
 
 The `ConfigureCommandButtons` effect allows plugins to hide or disable the command buttons that appear in specific areas of the patient chart — such as the conditions section, medications section, or protocol cards.
 
+Build a `ConfigureCommandButtons` with the [attributes](#attributes) you want to set, then return its `apply()` from your handler.
+
+## Methods
+
+### apply() → Effect
+
+Applies the button visibility to the patient's chart.
+
+- `patient_id` is required.
+- Each `location` may appear only once in `locations`; a duplicate raises a `ValidationError`.
+
+## Attributes
+
+| Attribute    | Type                                           | Description                                                              | Required |
+|--------------|------------------------------------------------|--------------------------------------------------------------------------|----------|
+| `patient_id` | `str`                                          | The id of the [patient](/sdk/data-patient/).                             | Yes      |
+| `locations`  | `list[`[`LocationConfig`](#locationconfig)`]`  | Areas to configure. Areas not listed retain their default visible state. | No       |
+
+## LocationConfig
+
+Each entry in `locations` is a `LocationConfig` with the following attributes, both required:
+
+| Attribute    | Type                        | Description                        |
+|--------------|-----------------------------|------------------------------------|
+| `location`   | [`Location`](#locations)    | The chart area to configure        |
+| `visibility` | [`Visibility`](#visibility) | The visibility state for that area |
+
 ## Locations
 
 The `Location` enum defines which areas of the chart can be configured:
@@ -34,29 +61,11 @@ The `Location` enum defines which areas of the chart can be configured:
 
 Each location can be configured with one of three visibility values:
 
-| Value | Behaviour |
+| Value | Behavior |
 |---|---|
 | `VISIBLE` | Buttons are shown and interactive (default when not listed) |
 | `HIDDEN` | Buttons are not rendered |
 | `DISABLED` | Buttons are rendered but not interactive |
-
-## Attributes
-
-Each entry in `locations` is a `LocationConfig` with the following attributes:
-
-| Attribute    | Required | Type         | Description                        |
-|--------------|----------|--------------|------------------------------------|
-| `location`   | yes      | `Location`   | The chart area to configure        |
-| `visibility` | yes      | `Visibility` | The visibility state for that area |
-
-| Top-level    | Required | Type                   | Description                                                              |
-|--------------|----------|------------------------|--------------------------------------------------------------------------|
-| `patient_id` | yes      | `str`                  | The patient id                                                           |
-| `locations`  | no       | `list[LocationConfig]` | Areas to configure. Areas not listed retain their default visible state. |
-
-## Validation
-
-Duplicate `location` values in the `locations` list will raise a `ValidationError` when `apply()` is called.
 
 ## Example: Patient Chart Load
 
@@ -194,4 +203,4 @@ The iframe listens for `NOTE_TAB_CHANGE` messages from Canvas and calls the appr
 </script>
 ```
 
-Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` in your `CANVAS_MANIFEST.json`.
+Both `MyChartingApp` and `CommandButtonsApi` should be registered as `handlers` in your [`CANVAS_MANIFEST.json`](/sdk/canvas_manifest/#handlers).
