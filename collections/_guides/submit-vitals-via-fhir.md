@@ -248,7 +248,7 @@ Looking in the Canvas UI, there will now be weight of `176 lbs 6.4 oz` added in 
 
 #### Add Waist Circumference
 
-Waist Circumference is denoted by the LOINC code `29463-7`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
+Waist Circumference is denoted by the LOINC code `56086-2`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
 
 Here is a payload to create a waist circumference of `98.2 cm`:
 
@@ -475,7 +475,7 @@ Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in tha
 
 #### Add Pulse Rhythm
 
-Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regulary Irregular`. This value will be passed in the `valueString` attribute. 
+Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regularly Irregular`. This value will be passed in the `valueString` attribute. 
 
 Here is a payload to create a pulse rhythm of `Regular`:
 
