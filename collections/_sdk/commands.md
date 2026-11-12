@@ -486,7 +486,7 @@ Four more commands act on a condition that is already on the chart.
 | Command | Use it when |
 |:--------|:------------|
 | [Assess](#assess) | You are recording an assessment against a condition on the chart, named by `condition_id` or `icd10_code`. Assessing a resolved condition makes it active again. |
-| [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. |
+| [UpdateDiagnosis](#updatediagnosis) | The diagnosis was wrong or has been refined, and you want the new code to carry the original's history. If the patient already has the new code charted, that condition is assessed instead, so no duplicate is added. |
 | [Resolve Condition](#resolve-condition) | An active condition is no longer relevant to track. It must be committed, not entered in error, and not already resolved. |
 | [Remove Past Medical History](#remove-past-medical-history) | A past medical history entry does not belong on the chart at all. It must have no committed assessment against it. Resolve Condition will not take it, because the entry is already resolved. |
 
@@ -2982,7 +2982,14 @@ uncategorized_review = UncategorizedDocumentReviewCommand(
 
 ### UpdateDiagnosis
 
-Replaces an existing diagnosis with a different code, carrying the original's history onto the new condition. See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
+Replaces an existing diagnosis with a different code. Committing the command resolves the original condition with the rationale "Change of diagnosis". What happens to the new code depends on whether the patient already has it charted:
+
+- If the patient has no charted condition with `new_condition_code`, committing records a new condition that carries the original's history. The new condition takes the original's categories, so an encounter diagnosis stays an encounter diagnosis and a health concern stays a health concern.
+- If the patient already has a charted condition with that code, committing assesses that condition instead of recording a duplicate, the way [Assess](#assess) with `icd10_code` does. Codes match regardless of dots and case, and an active condition is preferred over a resolved one. The `background` and `narrative` go on the new assessment, a resolved condition becomes active again, and the condition keeps its own categories.
+
+Entering the command in error makes the original condition active again, unless it was resolved again after the change. If the command assessed a charted condition, entering it in error also withdraws that assessment, and a condition the commit made active is resolved again.
+
+See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
 **Command-specific parameters**:
 
