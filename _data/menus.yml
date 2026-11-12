@@ -541,6 +541,12 @@ guides_list:
     uses:
       - sdk
 
+  - title: "Designating Test Instances"
+    url: /guides/designating-test-instances/
+    description: Choose the instances where plugin code not yet on main can be deployed with canvas deploy --branch
+    uses:
+      - sdk
+
   - title: "Working with a Monorepo"
     url: /guides/working-with-a-monorepo/
     description: Deploy plugins from a repository shared with other code, from your machine or CI, and through Canvas Studio's gated release
@@ -1333,6 +1339,9 @@ data_module:
   - title: "PluginCommand"
     url: /sdk/data-plugin-command/
     description: Custom commands registered by plugins via the manifest configuration.
+  - title: "PortalAccessGrant"
+    url: /sdk/data-portal-access-grant/
+    description: Family portal access given to a login for a patient's chart.
   - title: "PortalInvitation"
     url: /sdk/data-portal-invitation/
     description: Patient portal invite and password reset links, with when each was opened, claimed, or refused.
