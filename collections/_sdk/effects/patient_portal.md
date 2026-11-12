@@ -171,7 +171,7 @@ To show content across the top or bottom of every page a signed-in patient visit
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments.
 Each appointment can be customized individually, allowing each one to have its own unique settings.
 
-Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action. Each action's exact event, effect, and payload are shown below.
 
 The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
 
@@ -233,7 +233,9 @@ class MyHandler(BaseHandler):
 
 ### Hide 'Join' button
 
-This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": True}` to show the join link.
+The **Join** button shows on telehealth appointments that have a meeting link: the appointment's own link, or the provider's personal meeting room. It shows only while the appointment is in the patient's upcoming appointments. An appointment stays there until its scheduled end, which is its start time plus its duration, so a patient who is late can still join. The appointment moves to past appointments, and the button stops showing, when its scheduled end passes or when the visit is marked Exited, whichever comes first.
+
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": False}` to hide the button. Canvas fires the event only for appointments that have a meeting link.
 
 ```python
 import json
@@ -251,7 +253,7 @@ class MyHandler(BaseHandler):
         return [
           Effect(
             type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
-            payload=json.dumps({"result": True}))
+            payload=json.dumps({"result": False}))
         ]
 ```
 
