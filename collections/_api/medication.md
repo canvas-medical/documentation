@@ -52,7 +52,9 @@ sections:
         search_requirements_description: A Medication Search requires either a code or _text search parameter to perform. 
         search_parameters:
           - name: _text
-            description: Performs a case insensitive partial search on the narrative of the Medication.
+            description: >-
+              Performs a case-insensitive partial search on the narrative of the Medication, which is the medication description. A Medication matches when every word of the search appears somewhere in its description, in any order. Commas separate words the same way spaces do.<br><br>
+              A strength can be written with or without a space before the unit: `amoxicillin 500mg` and `amoxicillin 500 mg` return the same results. Numbers also match inside larger numbers, so `lisinopril 5mg` can return 25 mg strengths alongside 5 mg.
             type: string
           - name: code
             description: System url and code that identifies the medication formatted like <br> `system_url|code`.<br><br>
