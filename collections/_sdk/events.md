@@ -1496,7 +1496,7 @@ These events fire during the lifecycle of documents in the <a href="https://canv
 <!-- source: discussion #1662 -->
 Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
 
-- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+- **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"], timeout=30)`, and check `document["channel"]` first if you only want one channel.
 - **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
 - **After it's filed to a chart:** use the <a href="/sdk/data-document-reference/">DocumentReference</a> data class, which has a presigned `document_url`.
 

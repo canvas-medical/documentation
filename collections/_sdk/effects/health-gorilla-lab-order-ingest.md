@@ -57,6 +57,7 @@ orders are past the Canvas send pipeline.
 
 ```python
 from datetime import datetime, UTC
+from hmac import compare_digest
 
 from canvas_sdk.effects.lab_order import HealthGorillaLabOrderIngest
 from canvas_sdk.effects.simple_api import JSONResponse, Response
@@ -67,7 +68,7 @@ class StandingLabOrdersAPI(SimpleAPIRoute):
     PATH = "/standing-lab-orders"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["ingest-api-key"]
+        return compare_digest(credentials.key.encode(), self.secrets["ingest-api-key"].encode())
 
     def post(self) -> list[Response]:
         body = self.request.json()

@@ -404,6 +404,8 @@ paperwork-eviscerator/          # repository root
 
 Because `deploy` pushes a git commit, `.gitignore` decides what reaches Canvas Platform. Keep virtual environments, `node_modules` and local secrets out of the repository with it.
 
+The static lint's [credential rules](#static-lint) read the files the push sends rather than the package `canvas install` builds. A plain deploy pushes the whole repository, and `--snapshot` pushes the package folder. Either way, the push sends each file git tracks and each new file `.gitignore` doesn't exclude, hidden files and files `.canvasignore` lists included, so a credential in one of them stops the deploy. A file that git ignores isn't pushed, so the credential rules don't read it. A finding on a file outside the package folder names its path relative to the package, such as `../config/keys.json:1`. When the package isn't in a git repository yet, they read the files `canvas install` would package.
+
 Validation reads the package on disk, so a Python file that git ignores passes validation but never reaches the instance. `deploy` refuses a package that holds one, with or without `--snapshot`, and names the files. Stop ignoring them in `.gitignore`, or move them out of the package, then deploy again. Python files under a folder whose name starts with a dot, such as `.venv`, or under `node_modules` are skipped, since validation skips them too.
 
 #### Deploying from a larger repository
@@ -522,7 +524,7 @@ $ canvas install [OPTIONS] PLUGIN_NAME
 
 `canvas install` runs the same checks as [`canvas validate`](#canvas-validate) before it uploads anything:
 - Manifest validation (schema, tags, handler resolution)
-- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs and Custom Data mistakes)
+- [Static lint](#static-lint) (scans your source for sandbox-forbidden constructs, Custom Data mistakes, and request-handling mistakes, and every packaged file for credentials)
 - Sandbox-load validation (imports every handler in the sandbox)
 
 If the static lint reports an error, or a handler fails to load (for example, because of a disallowed import like `subprocess`), the install stops before the plugin is built or uploaded. Run `canvas validate` first for detailed per-handler results.
@@ -667,18 +669,18 @@ $ canvas validate [OPTIONS] PLUGIN_NAME
 This command runs full pre-flight validation combining:
 
 1. **Manifest validation** — Schema checks, tag validation, handler resolution, and unreferenced handler warnings (everything `validate-manifest` does).
-2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs and Custom Data mistakes before any code runs.
+2. **Static lint** — Scans the plugin's source for sandbox-forbidden constructs, Custom Data mistakes, and request-handling mistakes, and every packaged file for credentials, before any code runs.
 3. **Sandbox-load validation** — Imports every handler the way the plugin runner will, catching violations that would otherwise surface only at runtime on the instance.
 
 #### Static lint
 
-Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, or silently misbehave, once your code runs on the instance. Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
+Before it loads any handlers, `canvas validate` scans every `.py` file in the plugin — skipping directories like `tests`, `build`, and `dist` *within* the plugin — for patterns that compile cleanly but fail, silently misbehave, or make the plugin less reliable once your code runs on the instance. The credential rules read every file the package ships instead (see **Credentials** below). Each finding is reported with a rule code in brackets. Warnings are printed but do not block validation; any error fails the command and exits with code 1.
 
 ```console
 $ canvas validate my_plugin
   ⚠ my_plugin/handlers/protocol.py:42  [custom-model-id-vs-dbid]  Widget.objects.filter(id=…) — CustomModels use `dbid` as their primary key (only core SDK models have `id`). Use `dbid=…` instead.
 
-These issues will fail on the instance (sandbox / Custom Data):
+These issues must be fixed before the plugin can be installed:
   ✗ my_plugin/handlers/protocol.py:18  [type-blocked]  `type()` takes one argument in the sandbox. Declare classes with `class … :` rather than `type(name, bases, dict)`.
 ```
 
@@ -705,6 +707,23 @@ These issues will fail on the instance (sandbox / Custom Data):
 | --- | --- |
 | `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…` |
 | `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly |
+
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+
+| Rule code | Flags |
+| --- | --- |
+| `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
+| `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
+| `unauthenticated-data-route` | A `SimpleAPI` or `SimpleAPIRoute` class whose `authenticate` method only returns `True` (after an optional docstring), and that has a method that both reads request input (`self.request.query_params`, `path_params`, `headers`, `json`, `form_data`, `body`, or `text`) and queries SDK data (`.objects` or `for_patient`), directly or through a module-level function in the same file. The warning points at `authenticate` and names the method. Authenticate requests with an [authentication mixin](/sdk/handlers-simple-api-http/#authentication-mixins) such as `StaffSessionAuthMixin`, `PatientSessionAuthMixin`, or `APIKeyAuthMixin`. If the route is meant to be public, such as a booking page or an intake form, set `PUBLIC_ACCESS = True` on the class and the rule skips it. `WebSocketAPI` classes aren't checked. |
+
+**Credentials (errors and warnings).** These rules read every text file the plugin package ships, not just `.py` files: the files `canvas install` packages, as listed under [What gets packaged](#canvas-install), including files under `tests/`. [`canvas deploy`](#canvas-deploy) reads the files it pushes instead. Anyone with the package can read a credential in one of these files. Move it to a [plugin secret](/sdk/secrets/) read with `self.secrets[...]`, and rotate it. A finding never prints the credential: an API key finding shows its first four characters and its length, and the other findings show none of the value.
+
+| Rule code | Flags |
+| --- | --- |
+| `hardcoded-credential` (error) | An Anthropic API key, a Slack bot or user token (`xoxb-`, `xoxp-`), a Stripe live key, a GitHub token, or an OpenAI project key (`sk-proj-`). In a Markdown or reStructuredText file (`.md`, `.rst`), where examples live, it's a warning instead. |
+| `hardcoded-credential` (error) | A service-account private key: a JSON `private_key` field holding a key body, the shape of a downloaded Google service-account file. Store the service-account JSON as a plugin secret and sign with `jwt.encode(claims, key, algorithm="RS256")`. In a `.md` or `.rst` file it's a warning instead. |
+| `hardcoded-credential` (warning) | Any other private key header, such as `-----BEGIN PRIVATE KEY-----`, in any shipped file. A mutual-TLS client key stays a warning because plugins can load one only from a file today. |
+| `possible-credential` (warning) | A random-looking value of 20 or more characters, assigned to a name such as `api_key`, `secret`, `token`, `password`, or `private_key`. A value counts as random-looking when it mixes lowercase letters, uppercase letters, and digits, or is a run of 32 or more lowercase hex characters. URLs aren't flagged, and neither are `.md` and `.rst` files or files under a `test` or `tests` folder. |
 
 #### Sandbox-load validation
 

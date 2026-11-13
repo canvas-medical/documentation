@@ -538,6 +538,11 @@ will return a **401 Unauthorized** response if no `authenticate` method is defin
 `authenticate` method should return `True` or `False` depending on whether the requester is
 authenticated.
 
+If a route is meant to be open to anyone, such as a booking page or an intake form, its
+`authenticate` method can return `True`. Set `PUBLIC_ACCESS = True` on the handler class as well, so
+`canvas validate` knows the route is public on purpose and doesn't report the
+[`unauthenticated-data-route`](/sdk/canvas_cli/#static-lint) warning for it.
+
 Please keep in mind that while setting plugins secrets on your instance is out of scope for this
 guide, best practices would dictate that most `authenticate` methods would use these secrets to
 authenticate credentials in a request (OAuth being a notable exception). Your secrets can be
