@@ -68,7 +68,7 @@ How encounters are created for appointments:
 - When an appointment is checked in, Canvas creates an encounter on its note if the note doesn't have one yet.
 - An appointment with no note, such as a schedule event created without one, has no encounter.
 - A rescheduled appointment points to the same note as the appointment it replaced, so several appointment rows can match one encounter.
-- Cancelling an appointment or marking it a no-show doesn't remove its encounter.
+- Cancelling an appointment or marking it a no-show sets its encounter's state to `CANCELLED`. The encounter isn't deleted. Reverting a check-in or a no-show sets it back to `PLANNED` with an empty `start_time`.
 
 Because the planned encounter is created when the appointment is first saved, an appointment whose note was attached later, or that was loaded without going through the normal appointment save, can have a note but no encounter until it is checked in. Treat the encounter as optional when reading appointments, and handle a missing one rather than assuming every appointment note has an encounter.
 
