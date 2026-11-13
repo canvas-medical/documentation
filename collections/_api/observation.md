@@ -261,7 +261,7 @@ sections:
                   -  body temperature<br>
                   -  pulse rate<br>
                   -  oxygen saturation<br>
-                  -  respiration rate
+                  -  respiration rate<br><br>
 
               The value must be a number greater than zero; otherwise the request is rejected with a 422 error. <br><br>
 
