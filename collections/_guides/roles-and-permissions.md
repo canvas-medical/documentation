@@ -23,7 +23,7 @@ patient population.
 Both levels are always evaluated together. A user must satisfy the model permission and
 the object permission — and be an active user — for access to be granted.
 
-{% include alert.html type="info" content="Permissions are granted to roles, never directly to individuals. Adding or removing a user's access means changing their role assignments, which makes access reviews a question of who holds which role rather than an audit of per-user exceptions." %}
+{% include alert.html type="info" content="Permissions are granted through auth groups. A role's default auth groups are given to staff when they're assigned the role. Changing a role's defaults later doesn't change staff who already hold it, so update those staff individually in <b>Practice: Staff Permissions</b>." %}
 
 Some capabilities are gated by **named feature permissions** rather than by a record type
 — printing, revenue, data integration, campaigns, the questionnaire builder, patient
@@ -166,9 +166,9 @@ When you do, a few practices keep the model reviewable:
 
 ## Reviewing access
 
-Because permissions are held by roles rather than individuals, an access review is a
-review of role membership. The admin console lists the staff assigned to each role and the
-patient groups scoping them.
+Because access comes from each user's auth groups, an access review covers role membership
+and the auth groups assigned to individual staff in **Practice: Staff Permissions**. The
+admin console lists the staff assigned to each role and the patient groups scoping them.
 
 Changes to roles, permissions, and staff records are captured in the audit trail — see
 [Audit Logging and Telemetry](/guides/audit-logging-and-telemetry/) for what is recorded
