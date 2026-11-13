@@ -380,7 +380,7 @@ Someone holding the Publisher role in the plugin's organization can also edit th
 
 ### Release stages
 
-The suffix on the `plugin_version` that `main` carries sets the listing's stage in the Canvas Platform catalog:
+The suffix on the highest `plugin_version` that `main` has carried sets the listing's stage in the Canvas Platform catalog:
 
 | `plugin_version` | Stage | Examples |
 |------------------|-------|----------|
@@ -391,10 +391,10 @@ The suffix on the `plugin_version` that `main` carries sets the listing's stage 
 While a plugin is Coming soon or Beta:
 
 - Other organizations see the plugin's card and page with a Coming soon or Beta label. The page offers **Join the waiting list**, with an optional note, in place of installing it.
-- Every install outside the plugin's organization is refused, and `canvas deploy` names the plugin's catalog page in its refusal. The plugin's own organization, and for a practice the organization that manages it, installs it as usual, for testing.
+- Every install outside the plugin's organization is refused, and `canvas deploy` names the plugin's catalog page in its refusal. The plugin's own organization installs it as usual, for testing, and so does each practice it manages when that organization is an MSO.
 - The plugin's organization sees each waiting-list request on its own view of the plugin's page, with the requester's note and whether they would test a beta.
 
-Push a version with no suffix to make the plugin generally available. A listing that shows a released version to other organizations keeps that release when a pre-release is pushed after it, while any instance outside the plugin's organization has the plugin installed, so customers keep installing the release they run.
+To make the plugin generally available, push its release with no suffix, such as `1.0.0` after `1.0.0-rc.1`. A lower release, such as `0.9.1` pushed after `1.0.0-rc.1`, leaves the stage as it is. A listing that shows a released version to other organizations keeps that release when a pre-release is pushed after it, while any instance outside the plugin's organization has the plugin installed, so customers keep installing the release they run.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
