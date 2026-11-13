@@ -23,10 +23,14 @@ The revamped note is a redesigned note body that organizes commands into clinica
 **Printed in the note's sections:** A printed note in the revamped format shows the History, Exam and Assessment & Plan sections in the note's SOAP or APSO order, the same sections it shows on screen. Commands in each section print in the order the provider arranged them, and each Assess Condition command prints with its linked commands indented beneath it. The Internal section isn't printed, and free text prints under Notes at the end. Faxed notes, the copy saved when a note is locked, and the patient's entire-record print use the same layout.
 
 **Collapsible commands:** Commands that haven't been committed yet can be collapsed to keep a long note readable, and they stay collapsed when you come back to the note.
+- Collapsing an Assess Condition command also hides the commands nested under it, and a pill beside its title shows how many there are, such as **2 items**. Expanding it shows them again, each open or collapsed as it was.
+- A committed Assess Condition command opens collapsed, with its nested commands hidden.
 
 **Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.
 - A command matches on its name or on the content the note shows for it, such as a field's text, a selected option's label or a questionnaire answer. Matching ignores case and starts at two characters.
 - In the **Sections** view, each section shows only its matching commands. In the **All** view, only the commands that don't match are hidden; free text stays in place.
+- A matching command nested under an Assess Condition command shows under it, even when the Assess Condition command doesn't match. Commands nested under it that don't match stay hidden. In the **Sections** view, a match in a different section from its Assess Condition command shows at the top level of its own section instead.
+- A collapsed Assess Condition command opens while the search shows a match under it, and collapses again when the search is cleared. If you collapse or expand it during the search, it keeps that state after the search is cleared.
 - A command added while a search is active stays in view. Commands can't be dragged to a new position until the search is cleared.
 - When nothing matches, the box shows **No matches**. Select the clear button or press Escape to show the whole note again.
 
