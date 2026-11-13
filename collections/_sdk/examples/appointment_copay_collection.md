@@ -128,7 +128,9 @@ class CopayApplication(Application):
 
 ### copay_api.py
 
-`CopayAPI` is a SimpleAPI handler with the `/portal` prefix. It uses `PatientSessionAuthMixin` and reads the logged-in patient's ID from the `canvas-logged-in-user-id` request header, so every lookup is scoped to that patient.
+`CopayAPI` is a SimpleAPI handler with the `/portal` prefix. It uses `PatientSessionAuthMixin` and reads the ID of the patient whose chart the request acts on from the `canvas-logged-in-user-id` request header, so every lookup is scoped to that patient.
+
+With [family portal access](/sdk/patient-portal/#family-portal-access), a family member using the portal on the patient's chart can use the page with view access to the chart's appointments and billing, which `PORTAL_ACCESS` declares for every route. The pay endpoint declares its own `portal_access` and also requires act access to billing. See [Family portal access](/sdk/handlers-simple-api-http/#family-portal-access).
 
 **Endpoints**
 
@@ -162,7 +164,12 @@ from appointment_copay_collection.services.copay import (
 from canvas_sdk.effects import Effect
 from canvas_sdk.effects.payment import ChargeStoredCard
 from canvas_sdk.effects.simple_api import HTMLResponse, JSONResponse, Response
-from canvas_sdk.handlers.simple_api import PatientSessionAuthMixin, SimpleAPI, api
+from canvas_sdk.handlers.simple_api import (
+    PatientSessionAuthMixin,
+    PortalAccessLevel,
+    SimpleAPI,
+    api,
+)
 from canvas_sdk.templates import render_to_string
 
 
@@ -185,15 +192,18 @@ def _appointment_json(row: dict[str, Any]) -> dict[str, Any]:
 class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
     """Serve the copay page and charge a stored card for an appointment's copay.
 
-    Every request is made by a logged-in patient, and every lookup is scoped to that patient,
-    so a patient can only see and pay for their own appointments.
+    Every request acts on one patient's chart, and every lookup is scoped to that patient, so a
+    patient can only see and pay for their own appointments. A family member acting on the chart
+    needs view access to its appointments and billing to use the page, and act access to its
+    billing to pay.
     """
 
     PREFIX = "/portal"
+    PORTAL_ACCESS = {"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.VIEW}
 
     @property
     def patient_id(self) -> str:
-        """The id of the logged-in patient."""
+        """The id of the patient whose chart the request acts on."""
         return self.request.headers["canvas-logged-in-user-id"]
 
     def _configured_amounts(self) -> dict[str, Decimal]:
@@ -245,7 +255,10 @@ class CopayAPI(PatientSessionAuthMixin, SimpleAPI):
             )
         ]
 
-    @api.post("/appointments/<appointment_id>/pay")
+    @api.post(
+        "/appointments/<appointment_id>/pay",
+        portal_access={"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.ACT},
+    )
     def pay(self) -> list[Response | Effect]:
         """Charge the chosen stored card for the appointment's copay.
 
@@ -347,18 +360,24 @@ class ChargeResponseHandler(BaseHandler):
 
 ### copay_websocket.py
 
-`CopayWebSocket` is a `WebSocketAPI` handler. Its `authenticate` method accepts a connection when the logged-in user is a patient connecting to the channel named after them, the same `copay-<patient_id>` channel that `ChargeResponseHandler` broadcasts on.
+`CopayWebSocket` is a `WebSocketAPI` handler. Its `authenticate` method accepts a patient session connecting to the channel of the chart it acts on, the same `copay-<patient_id>` channel that `ChargeResponseHandler` broadcasts on. Its `PORTAL_ACCESS` lets a family member connect with the same access the page needs.
 
 ```python
 from appointment_copay_collection.handlers.charge_response import channel_for
+from canvas_sdk.handlers.simple_api import PortalAccessLevel
 from canvas_sdk.handlers.simple_api.websocket import WebSocketAPI
 
 
 class CopayWebSocket(WebSocketAPI):
-    """Let a logged-in patient subscribe to their own charge-result channel, and no other."""
+    """Let a session subscribe to the charge results of the chart it acts on, and no other.
+
+    A family member acting on the chart needs the access the copay page needs.
+    """
+
+    PORTAL_ACCESS = {"appointments": PortalAccessLevel.VIEW, "billing": PortalAccessLevel.VIEW}
 
     def authenticate(self) -> bool:
-        """Accept only a patient connecting to the channel named after them."""
+        """Accept only a patient session connecting to the channel of the chart it acts on."""
         user = self.websocket.logged_in_user
         return (
             user is not None
