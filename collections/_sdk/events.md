@@ -8306,6 +8306,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8334,6 +8336,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8362,6 +8366,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8390,6 +8396,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8418,6 +8426,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8446,6 +8456,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8474,6 +8486,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8502,6 +8516,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8530,6 +8546,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8558,6 +8576,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8586,6 +8606,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8614,6 +8636,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8642,6 +8666,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -8670,6 +8696,8 @@ Refer to the [base context documentation](#context-overview) for additional deta
   "background": str
   "approximate_date_of_onset": str
   "todays_assessment": str
+  "show_in_problem_list": bool
+  "category_domain": str
 "note":
   "uuid": note_id
 "patient":
@@ -15936,6 +15964,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -15966,6 +15995,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -15996,6 +16026,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16047,6 +16078,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16077,6 +16109,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16107,6 +16140,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16137,6 +16171,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16167,6 +16202,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16197,6 +16233,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16227,6 +16264,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16257,6 +16295,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16287,6 +16326,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16317,6 +16357,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id
@@ -16347,6 +16388,7 @@ Refer to the [base context documentation](#context-overview) for additional deta
     "date": str
     "input": str
   "show_on_condition_list": bool
+  "category_domain": str
   "comments": str
 "note":
   "uuid": note_id

@@ -140,7 +140,7 @@ The API can be leveraged to create coding gaps in various states. There are also
 
 - **Create Coding Gap** serves as a manual way to add coding gaps to the chart. Staff have the ability to create and validate in the same step. 
 - **Validate Coding Gap** allows the care team (often CDI Reviewers) to review the external date and confirm that the gap should be surfaced to a clinician. 
-- **Assess Coding Gap** allows clinicians to accept or refute the diagnose and choose the appropriate diagnosis to add to the visit. 
+- **Assess Coding Gap** lets clinicians accept or refute the coding gap and pick the diagnoses to assess in the visit. **Accept and Assess** assesses the patient's charted condition for each picked ICD-10 code, making a resolved one active again, and records a new condition only for a code the chart doesn't have. **Show in problem list**, on by default, records the conditions as problem list items with an optional **Category Domain**. Switched off, it records them as encounter diagnoses for this visit only. In the command's data, the accepted `status` value is still `accept and diagnose`.
 - **Defer Coding Gap** allows clinicians to acknowledge the gap and snooze it for a period of time so that they can return to it at a later date. This may be necessary if the patient is unable to provide enough detail or they run out of time during a visit. When recapture rate is an important metric, this allow reporting to reflect an action was taken. 
 
 ## Annotate ICD-10 Codes
