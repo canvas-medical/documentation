@@ -875,6 +875,8 @@ sdk_agents:
     url: /sdk/agents-tools/
   - title: "Prompts"
     url: /sdk/agents-prompts/
+  - title: "Styling"
+    url: /sdk/agents-styling/
   - title: "Testing"
     url: /sdk/agents-testing/
   - title: "Auditing"

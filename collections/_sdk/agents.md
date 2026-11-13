@@ -190,6 +190,7 @@ the full pattern.
   <li><a href="/sdk/agents-managing-state/"><strong>Managing state</strong></a> — three persistence patterns: stateless, snapshot, and state kept in the chart.</li>
   <li><a href="/sdk/agents-tools/"><strong>Tools</strong></a> — read tools, effect tools, and manifest-driven permissions.</li>
   <li><a href="/sdk/agents-prompts/"><strong>Prompts</strong></a> — system prompts in a clinical setting.</li>
+  <li><a href="/sdk/agents-styling/"><strong>Styling</strong></a> — the shared stylesheet that gives an agent's chat or search page the agent look.</li>
   <li><a href="/sdk/agents-testing/"><strong>Testing</strong></a> — patterns for unit-testing agents and tools without real provider calls.</li>
   <li><a href="/sdk/agents-auditing/"><strong>Auditing</strong></a> — what the platform captures, what you should capture.</li>
 </ul>
