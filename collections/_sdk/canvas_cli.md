@@ -8,7 +8,7 @@ title: "Canvas CLI"
 
 ### Installation using `pip`
 
-To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11, 3.12, or 3.13 is required.
+To install the Canvas CLI using `pip`, execute `pip install canvas`. Python 3.11–3.15 (`>=3.11, <3.16`) is required.
 
 To upgrade the Canvas CLI if you installed using `pip`, execute `pip install --upgrade canvas`.
 
