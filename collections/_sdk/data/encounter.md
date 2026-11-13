@@ -41,6 +41,37 @@ note = encounter.note
 
 All encounters will have an associated note, which means `encounter.note` will never be `None`.
 
+## Encounters and appointments
+
+An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note: an appointment's encounter is the encounter whose note is the appointment's note.
+
+```python
+from canvas_sdk.v1.data import Appointment, Encounter
+
+appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+encounter = None
+if appointment.note:
+    encounter = Encounter.objects.filter(note=appointment.note).first()
+```
+
+In SQL against the read replica, join on the note, not on the appointment's own id:
+
+```sql
+SELECT a.id AS appointment_id, e.id AS encounter_id, e.state
+FROM canvas_sdk_data_api_appointment_001 a
+LEFT JOIN canvas_sdk_data_api_encounter_001 e ON e.note_id = a.note_id;
+```
+
+How encounters are created for appointments:
+
+- When an appointment is created with a note, Canvas creates a `PLANNED` encounter on that note with an empty `start_time`, or resets the note's existing encounter to `PLANNED` with an empty `start_time`.
+- When an appointment is checked in, Canvas creates an encounter on its note if the note doesn't have one yet.
+- An appointment with no note, such as a schedule event created without one, has no encounter.
+- A rescheduled appointment points to the same note as the appointment it replaced, so several appointment rows can match one encounter.
+- Cancelling an appointment or marking it a no-show doesn't remove its encounter.
+
+Because the planned encounter is created when the appointment is first saved, an appointment whose note was attached later, or that was loaded without going through the normal appointment save, can have a note but no encounter until it is checked in. Treat the encounter as optional when reading appointments, and handle a missing one rather than assuming every appointment note has an encounter.
+
 ## Filtering
 
 Encounters can be filtered by any attribute that exists on the model.
