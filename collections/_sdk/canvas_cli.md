@@ -331,6 +331,14 @@ Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on
 - **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
 - **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`, which deploys only to your organization's [test instances](/guides/designating-test-instances/). A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
 
+To try a project's current work on another of your organization's test instances, deploy the branch without fetching or checking it out:
+
+```console
+$ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref canvas-studio --instance acme-staging
+```
+
+Canvas Platform looks up `canvas-studio` in the plugin's repository, and nothing is pushed. See [Deploy a branch that's already on Canvas Platform](/guides/designating-test-instances/#deploy-a-branch-thats-already-on-canvas-platform).
+
 **Choosing the publisher**
 
 `canvas deploy` publishes the plugin as:
