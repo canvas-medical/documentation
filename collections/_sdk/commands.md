@@ -458,7 +458,7 @@ and whether it is surgical.
 |:--------|:------------|
 | [Assess](#assess) with `icd10_code` | The condition is active and you are assessing it, whether it is new or already on the chart. It reuses the patient's charted condition with that code, and records a new one only when the patient has none, so it never adds a duplicate. Use this for new work. Set `show_in_problem_list=False` for a diagnosis that belongs only to this visit. |
 | [MedicalHistory](#medicalhistory) | You are backfilling a condition the patient had in the past that is not active now. |
-| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, and you are not assessing it. |
+| [AddCondition](#addcondition) | The condition was diagnosed previously and is still active, you are not assessing it, and the patient's chart doesn't have its code yet. For a code already on the chart, use Assess. |
 | [SurgicalHistory](#surgicalhistory) | You are recording a past surgical procedure. |
 | [Diagnose](#diagnose) | Still available for a new active condition you are assessing for the first time, but planned for retirement in a future release. Use Assess with `icd10_code` instead. |
 
@@ -523,6 +523,23 @@ Records a coded (ICD-10) condition on the patient's Conditions list with clinica
 the note's History section, without opening an assessment for it. Reach for it when the condition was
 diagnosed previously and is still active. See
 [Recording a condition](#recording-a-condition) for how it compares to Assess and MedicalHistory.
+
+AddCondition records a condition only when the patient's chart doesn't already have its ICD-10 code.
+For a code that's already on the chart, active or resolved, use [Assess](#assess) with `icd10_code`,
+which reuses that condition and makes a resolved one active again. Codes match regardless of dots
+and case, so `M54.50` and `M5450` name the same condition, and surgical history entries aren't
+checked. A staged AddCondition with a charted code shows a message to use Assess, and committing it
+records nothing. When a plugin commits one with a separate `commit()`, the command stays staged and
+the plugin gets no error. Passing `commit=True` to `originate()` instead fails with the error
+`This condition is already on the patient's chart. Use Assess to update it, including reactivating a resolved condition.`,
+and the command isn't added to the note.
+
+The condition is recorded as a problem list item unless a clinician sets the command's
+**Category Type** field to Health Concern. Clinicians can also pick an optional
+**Category Domain**. `AddConditionCommand` has no parameters for either, so a plugin's AddCondition
+records a problem list item with no domain. Plugins can read the choices in the command's data as
+`category_type`, which is `problem-list-item` or `health-concern`, and `category_domain`, which is
+`sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
 
 **Command-specific parameters**:
 
