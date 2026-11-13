@@ -2989,7 +2989,7 @@ Replaces an existing diagnosis with a different code. Committing the command res
 
 When a clinician picks a condition already on the chart as the new diagnosis, the Change Diagnosis card also shows the Assess fields: approximate date of onset, status, **Show in problem list**, and **Category Domain**. The onset date, the box, and the domain are filled in from the picked condition, and committing applies all four as an [Assess](#assess) commit does. Plugins can read them in the command's data as `approximate_date_of_onset`, `status`, `show_in_problem_list`, and `category_domain`. `UpdateDiagnosisCommand` has no parameters for these fields, so a plugin's command keeps the charted condition's categories and records the assessment with no status.
 
-Entering the command in error makes the original condition active again, unless it was resolved again after the change. If the command assessed a charted condition, entering it in error also withdraws that assessment, and a condition the commit made active is resolved again.
+Entering the command in error makes the original condition active again, unless it was resolved again after the change. If the command assessed a charted condition, entering it in error also withdraws that assessment, and a condition the commit made active is resolved again unless another assessment has been committed against it since.
 
 See [Updating or removing a condition](#updating-or-removing-a-condition) for how it compares to the other condition commands.
 
