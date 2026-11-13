@@ -346,7 +346,7 @@ Looking in the Canvas UI, there will now be temperature of `98.4 °F` added in t
 
 #### Add Blood Pressure
 
-Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command. A `valueString` in any other format is rejected with a 400 error. 
+Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command. A trailing `mmHg` is accepted and removed; a `valueString` in any other format is rejected with a 422 error. 
 
 Since blood pressure is made up of two values, the payload will also define a `component` attribute list to pass the systolic (LOINC code `8480-6`) and diastolic (LOINC code `8462-4`) values. These two values are numeric, so they will have the `valueQuantity` attributes where the unit will be `mmHg`
 
@@ -475,7 +475,7 @@ Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in tha
 
 #### Add Pulse Rhythm
 
-Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regularly Irregular`, and rejects any other value with a 400 error. This value will be passed in the `valueString` attribute. 
+Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regularly Irregular`, and rejects any other value with a 422 error. This value will be passed in the `valueString` attribute. 
 
 Here is a payload to create a pulse rhythm of `Regular`:
 
