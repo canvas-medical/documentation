@@ -11,6 +11,20 @@ The Canvas SDK includes a library of built-in Value Sets that can be used within
 
 Built-in Value Sets that can be imported into plugins can be found in the Canvas SDK open source repo [here](https://github.com/canvas-medical/canvas-plugins/tree/main/canvas_sdk/value_set/).
 
+## Built-in value set versions
+
+The built-in eCQM value sets come from the Value Set Authority Center (VSAC) eCQM releases. Each package holds the value sets for one performance period, with one module per Quality Data Model (QDM) category, such as `condition`, `encounter`, `medication`, and `procedure`.
+
+| Package                      | Performance period | VSAC eCQM release |
+| :--------------------------- | :----------------- | :---------------- |
+| `canvas_sdk.value_set.v2022` | 2022               | 2021-05-06        |
+| `canvas_sdk.value_set.v2026` | 2026               | 2025-05-08        |
+| `canvas_sdk.value_set.v2027` | 2027               | 2026-05-14        |
+
+Import from the package that matches the measure versions your plugin implements. Each value set class records its VSAC `OID` and the release it was expanded from in `EXPANSION_VERSION`, and its docstring lists the CMS measures that use it.
+
+Value sets that exist in both `v2026` and `v2027` have the same module and class name in each. To move a plugin to the 2027 measures, change `v2026` to `v2027` in its imports. Value sets that the 2027 measures no longer use, such as `condition.Glaucoma`, aren't in `v2027`; keep importing those from `v2026`.
+
 ## Usage
 
 **Filtering Conditions by Value Set**
