@@ -77,7 +77,7 @@ Returns an Effect that originates a new command in the note body.
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill) raise a `ValueError` when it is `True`. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
 | `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
 
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
@@ -513,6 +513,10 @@ the note. There is no SDK command class for it, so a plugin cannot originate one
 resulting records are readable through the
 [CancelPrescription](/sdk/data-cancel-prescription/) data module.
 
+To answer a refill request a pharmacy sent, use [ApproveRefill](#approverefill) or
+[DenyRefill](#denyrefill). A plugin starts the response in a note, and the provider sends it to the
+pharmacy from the command.
+
 ## Commands
 
 The sections below document each command class. See [Common Attributes](#common-attributes) for the parameters and methods shared by all commands.
@@ -644,6 +648,53 @@ allergy = AllergyCommand(
     narrative="Severe rash and difficulty breathing after penicillin.",
     approximate_date=date(2023, 6, 15)
 )
+```
+
+---
+
+### ApproveRefill
+
+Approves a pharmacy's refill request. A plugin starts the Approve Refill command in a note and can
+edit or delete it, and the provider sends the approval to the pharmacy from the command. A refill
+dashboard plugin can use it to set up responses to a batch of requests, so providers don't have to
+open each chart to start one. To decline a request instead, use [DenyRefill](#denyrefill).
+
+The command takes its medication, quantity, sig, and pharmacy from the
+[RefillRequest](/sdk/data-refill-request/#refillrequest). The plugin names the request and can add a
+note to the pharmacist.
+
+Approve Refill supports `originate`, `edit`, and `delete`. It has no `commit`, `send`, or
+`enter_in_error` method, and `originate(commit=True)` raises a `ValueError`. It can't be used as a
+[protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+**Building the command from a refill request**:
+
+`ApproveRefillCommand.for_request(refill_request, note_uuid, **fields)` builds the command from a
+`RefillRequest` object or its id and a note for the same patient. Pass any other parameters as
+keyword arguments.
+
+**Example**:
+
+```python
+from canvas_sdk.commands import ApproveRefillCommand
+from canvas_sdk.v1.data import RefillRequest
+
+refill_request = RefillRequest.objects.get(id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10")
+
+approve_refill = ApproveRefillCommand.for_request(
+    refill_request,
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    note_to_pharmacist="OK to fill. Patient seen last month.",
+)
+
+effects = [approve_refill.originate()]
 ```
 
 ---
@@ -841,6 +892,68 @@ close_goal = CloseGoalCommand(
     progress="Patient has achieved the target weight goal of 150 lbs."
 )
 ```
+
+---
+
+### DenyRefill
+
+Denies a pharmacy's refill request with an NCPDP reason code. Like [ApproveRefill](#approverefill),
+a plugin starts the Deny Refill command in a note and can edit or delete it, and the provider sends
+the denial to the pharmacy from the command. The command takes its medication, quantity, sig, and
+pharmacy from the [RefillRequest](/sdk/data-refill-request/#refillrequest).
+
+Deny Refill supports `originate`, `edit`, and `delete`. It has no `commit`, `send`, or
+`enter_in_error` method, and `originate(commit=True)` raises a `ValueError`. It can't be used as a
+[protocol card](/sdk/effect-protocol-cards/) recommendation.
+
+**Command-specific parameters**:
+
+| Name                 | Type     | Required | Description |
+|:---------------------|:---------|:---------|:------------|
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `reason_code`        | _[Reason](#denyrefill-reason) enum_ | `false` | The reason for the denial. Must be one of [`DenyRefillCommand.Reason`](#denyrefill-reason). |
+| `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
+
+`DenyRefillCommand.for_request(refill_request, note_uuid, **fields)` builds the command the same way
+as [`ApproveRefillCommand.for_request`](#approverefill).
+
+**Enums and Types**:
+
+<a id="denyrefill-reason"></a>
+
+| Reason                                  | Value  | Description |
+|:----------------------------------------|:-------|:------------|
+| `PATIENT_UNKNOWN_TO_PRESCRIBER`         | `"AA"` | Patient unknown to the prescriber |
+| `PATIENT_NEVER_UNDER_PROVIDER_CARE`     | `"AB"` | Patient never under provider care |
+| `PATIENT_NO_LONGER_UNDER_PROVIDER_CARE` | `"AC"` | Patient no longer under provider care |
+| `REFILL_TOO_SOON`                       | `"AD"` | Refill too soon |
+| `MEDICATION_NEVER_PRESCRIBED`           | `"AE"` | Medication never prescribed for patient |
+| `PATIENT_SHOULD_CONTACT_PROVIDER`       | `"AF"` | Patient should contact provider |
+| `REFILL_NOT_APPROPRIATE`                | `"AG"` | Refill not appropriate |
+| `PATIENT_PICKED_UP_PRESCRIPTION`        | `"AH"` | Patient has picked up prescription |
+| `PATIENT_PICKED_UP_PARTIAL_FILL`        | `"AJ"` | Patient has picked up partial fill of prescription |
+| `NOT_PICKED_UP_RETURNED_TO_STOCK`       | `"AK"` | Patient has not picked up prescription, drug returned to stock |
+| `PATIENT_NEEDS_APPOINTMENT`             | `"AM"` | Patient needs appointment |
+| `PRESCRIBER_NOT_AT_PRACTICE`            | `"AN"` | Prescriber not associated with this practice or location |
+| `NO_PRIOR_AUTHORIZATION_ATTEMPT`        | `"AO"` | No attempt will be made to obtain prior authorization |
+| `RESPONDED_BY_OTHER_MEANS`              | `"AP"` | Request already responded to by other means, such as phone or fax |
+
+**Example**:
+
+```python
+from canvas_sdk.commands import DenyRefillCommand
+
+deny_refill = DenyRefillCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    refill_request_id="6b4f1f62-8a8a-4b49-b3a4-0d1c3b2a9e10",
+    reason_code=DenyRefillCommand.Reason.PATIENT_NEEDS_APPOINTMENT,
+    note_to_pharmacist="Patient must schedule a visit first.",
+)
+
+effects = [deny_refill.originate()]
+```
+
+---
 
 ### Diagnose
 
