@@ -309,7 +309,7 @@ With `--push-only`, `deploy` stops after the push and prints the command that in
 ```console
 $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --push-only
 Pushed acme__paperwork_eviscerator 5d768a166204 to main on Canvas Platform.
-To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a166204
+To install this commit on an instance: canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --ref 5d768a1662049c3e1f0b7a2d84e6c5b3f9a01d27
 ```
 
 **Deploying a branch to a test instance**
