@@ -86,6 +86,8 @@ medications = Medication.objects.find(AdhdMedications)
 
 The `latest_sig` property returns a medication's most recent sig — its directions for use — as a string. It draws on three sources: the medication's active [prescriptions](/sdk/data-prescription/), its [change medications](/sdk/data-change-medication/) that are not entered in error, and its [medication statements](/sdk/data-medication-statement/). It returns the sig from whichever of those is most recent. Because `latest_sig` is a property computed in Python, it is read from each `Medication` object and is not available to a queryset `.filter()` or `.order_by()`.
 
+`latest_sig` reads a medication's statements whether or not they have been committed, while the chart and the FHIR API's `MedicationStatement.dosage[0].text` use committed statements only. An uncommitted medication, one whose command was staged in a note but never committed, can therefore return a sig from `latest_sig` that the chart and the FHIR API don't show. To match them, read medications through `active()` or `committed()` before reading `latest_sig`, as described in [Filtering to match the Patient Summary](#filtering-to-match-the-patient-summary).
+
 When both an active prescription and a change medication exist, the source whose [note](/sdk/data-note/) has the later date of service wins. Otherwise the sig comes from the first source that has one, in this order:
 
 1. The latest prescription.
