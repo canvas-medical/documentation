@@ -118,8 +118,8 @@ calendars = Calendar.objects.for_calendar_name(
 | calendar                 | [Calendar](#calendar)   | The calendar this event belongs to                     |
 | starts_at                | DateTime                | The start date and time of the event                   |
 | ends_at                  | DateTime                | The end date and time of the event                     |
-| recurrence               | String                  | Recurrence rule for recurring events                   |
-| recurrence_ends_at       | DateTime                | The date and time when the recurrence pattern ends     |
+| recurrence               | String                  | Recurrence rule for recurring events, as an iCalendar `RRULE` string such as `RRULE:FREQ=WEEKLY;UNTIL=20260828T000000Z;BYDAY=MO,TU`. The rule can leave out parts that have their default value, such as `INTERVAL=1`, so parse it rather than comparing its text. |
+| recurrence_ends_at       | DateTime                | The date and time when the recurrence pattern ends. Empty for series with no end date. |
 | recurring_parent_event   | [Event](#event)         | The parent event                                       |
 | exceptions               | [Event](#event)[]       | Exception (override) events for this recurring parent event |
 | original_starts_at       | DateTime                | The original start time for recurring event exceptions |
