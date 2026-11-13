@@ -932,7 +932,10 @@ return [command.originate(commit=True)]
 ### 503 responses with a Retry-After header
 
 A **503 Service Unavailable** response with an empty body and a `Retry-After: 5` header means
-Canvas got no answer from the plugin runner when it asked your handler to authenticate the request.
-This happens when the plugin runner can't be reached, for example while it restarts.
-Your handler's code didn't run. Have your client wait the number of seconds in `Retry-After`, then
-send the request again.
+Canvas couldn't reach the plugin runner to authenticate the request, for example while the runner
+restarts. Your handler's code didn't run. Have your client wait the number of seconds in
+`Retry-After`, then send the request again.
+
+When the plugin runner is running but no loaded plugin answers the request, Canvas returns a 404
+instead. This happens when the plugin isn't installed, is disabled, or failed to load. See
+[A SimpleAPI endpoint returns 404](#a-simpleapi-endpoint-returns-404).
