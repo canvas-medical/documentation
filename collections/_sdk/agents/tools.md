@@ -474,8 +474,9 @@ At run time the platform:
    for this agent.
 2. Resolves them with `ToolRegistry.resolve_allowed`: tool names and
    `@category` groups in `tools.allowed` expand against the agent's
-   registry, `tools.denied` is subtracted, and unknown names resolve
-   to nothing. The result becomes `self.tools_allowed`.
+   registry, `tools.denied` is subtracted, and unknown names in
+   `tools.allowed` resolve to nothing. The result becomes
+   `self.tools_allowed`.
 3. Replaces `self.tools` with a *scoped* registry containing only
    those tools — disallowed entries aren't in the registry at all.
 4. Marks the granted tools named in `tools.approve` (names and
@@ -486,10 +487,10 @@ At run time the platform:
    effect type a listed tool stages proposes too. A tool that commits a
    command or adds a lab report proposes whether or not `tools.approve`
    lists it, since Canvas accepts those changes only through the
-   requester's approval. Each `tools.approve` entry must name at least
-   one tool that stages a change. An entry that names no tool, or only
-   tools that stage none, keeps the agent from loading, and
-   `canvas validate` reports it.
+   requester's approval. Each `tools.denied` entry must name at least
+   one tool, and each `tools.approve` entry must name at least one tool
+   that stages a change. `canvas validate` and `canvas install` report
+   an entry that does not, and every run of the agent fails.
 5. After `run()` returns, drops any effect the agent returned whose
    type no granted tool stages. An effect type that only tools in
    `tools.approve` stage is kept only when it's wrapped in a proposal.

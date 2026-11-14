@@ -115,10 +115,11 @@ step is platform-driven:
     Otherwise they apply in order, all or none, through the same
     pipeline as any plugin effect. Each is checked again just before it
     applies, so a plan on a note an earlier `CREATE_NOTE` in the same
-    run creates is checked once that note exists. A plugin handler for
-    a command's `__PRE_` event, such as `__PRE_ORIGINATE` or
-    `__PRE_DELETE`, has 10 seconds to respond to a run's effect, and a
-    handler that raises or runs longer fails that effect. An effect that fails
+    run creates is checked once that note exists. When a run's effect
+    raises a command's `__PRE_` event, such as `__PRE_ORIGINATE` or
+    `__PRE_DELETE`, a handler that runs longer than 10 seconds, or a
+    plugin runner that does not answer, fails the run. A handler that
+    raises is skipped. An effect that fails
     takes back the ones before it and fails the run with no effects
     applied. A run may return up to 500 effects; a run that returns
     more applies none of them and fails with
@@ -346,9 +347,10 @@ registers, since no standard tool commits a command:
 The tool code does not change. When the model calls a listed tool,
 each change that call stages of an effect type some listed tool
 stages goes into one proposal, in order, and the model receives
-`{"status": "awaiting_approval", "proposal_ids": [...], "tool_result": ...}`,
-with the tool's own result under `tool_result`, so it can tell the user
-what is waiting. Any other change the call stages applies as it would
+`{"status": "awaiting_approval", "proposal_ids": [...], "message": ..., "tool_result": ...}`,
+with the tool's own result under `tool_result`. The `message` tells the
+model that nothing has changed until the user approves, so it can tell
+the user what is waiting. Any other change the call stages applies as it would
 from any granted tool. A tool that stages no change approval covers,
 such as one that refused its input, returns its own result. Sub-agents
 scoped from the agent's tools propose the same way, and a listed tool
