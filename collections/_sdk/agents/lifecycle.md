@@ -34,6 +34,11 @@ class MyAgent(AgentPlugin):
 
 ## What the platform does, in order
 
+Agent runs are off on an instance until Canvas turns them on for it.
+On an instance with them off, every `RunAgentEffect` is refused and
+recorded under its effect's `run_id` with the reason "Agent runs are
+off on this instance."; nothing is queued.
+
 When a handler returns a `RunAgentEffect`, the following happens. Each
 step is platform-driven:
 

@@ -242,6 +242,11 @@ Set `INFERENCE_GATEWAY_URL` to the address of the gateway that issued
 your key. When Canvas Platform deploys the plugin instead, it sets the
 URL for you.
 
+Agent runs are off on an instance until Canvas turns them on for it, so
+ask your Canvas team to turn them on for your test instance. Until then
+each run is recorded as refused, with the reason "Agent runs are off on
+this instance."
+
 Lock a note on a test patient. Within a few seconds the agent runs on
 the worker, reads the chart, and stages protocol cards for the follow-up
 it found. Lock another note on the same patient and it updates those
