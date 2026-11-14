@@ -868,6 +868,10 @@ Built by the platform before `run()` is called, from your plugin's
 `messages.stream` take the Anthropic SDK's arguments. It carries that
 key and headers that attribute each call to your plugin, agent, and
 run, and counts each call toward the run's `max_model_calls`.
+`max_retries` is at most 2. Each call's attempts share the time the run
+has left before its deadline, read when the call is made, so a
+`timeout` you pass can shorten a call but not lengthen it, and a call
+made with no time left is not sent and ends the run at its deadline.
 `with_model(name)` returns the same gateway with another default model. See
 [Credentials](/sdk/agents/#credentials) for the errors the gateway
 returns.
