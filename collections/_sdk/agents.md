@@ -12,7 +12,7 @@ tasks, surfacing recommendations to clinicians, and so on. Unlike a
 take seconds (or minutes, for tool-heavy workflows) — it runs on a
 worker, not on the request thread.
 
-{% include alert.html type="warning" content="This framework is currently in preview. The shape of the SDK is stable, but some features described here are scheduled for upcoming releases. Those are called out inline." %}
+{% include alert.html type="warning" content="This framework is currently in preview. The shape of the SDK is stable, but some features described here are scheduled for upcoming releases. Those are called out inline. Agent runs are off on an instance until Canvas turns them on for it." %}
 
 ## When agents fit
 
