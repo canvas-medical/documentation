@@ -106,7 +106,8 @@ Before each run, the platform builds the `LLMGateway` it passes to
 `run()` from your plugin's `INFERENCE_GATEWAY_URL` and
 `INFERENCE_GATEWAY_KEY`. `gateway.client()` returns a `GatewayClient`
 for the gateway. It offers `messages.create` and `messages.stream`,
-which take the same arguments as the Anthropic SDK's:
+which take the same arguments as the Anthropic SDK's. Stream a call
+with `messages.stream`, not `create(stream=True)`:
 
 ```python?partial=true
 client = gateway.client()
@@ -128,8 +129,12 @@ instance, plugin, agent, and run. Each call counts toward the run's
 The gateway meters every call against your organization's inference
 account and enforces its budget and model allowlist. `gateway.model`
 defaults to `claude-sonnet-4-6`; pass any model your organization has
-enabled. Refusals come back as Anthropic's own error types, so the SDK's
-exception handling works unchanged:
+enabled. A failed call raises `GatewayError`, which `canvas_sdk.agents`
+exports, in place of the Anthropic SDK's error types. It carries the
+gateway's `status_code` (`None` when no answer came), an `error_type`
+such as `rate_limit_error`, `timeout`, or `connection_error`, and the
+error's `message`. Its `is_outage` is true when the same call may
+succeed later: no answer, a 429, or a server error. A refusal carries one of these:
 
 | Status | Cause |
 |---|---|

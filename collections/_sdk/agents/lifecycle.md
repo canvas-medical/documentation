@@ -865,7 +865,13 @@ class LLMGateway:
 Built by the platform before `run()` is called, from your plugin's
 `INFERENCE_GATEWAY_URL` and `INFERENCE_GATEWAY_KEY` variables.
 `client()` returns a `GatewayClient` whose `messages.create` and
-`messages.stream` take the Anthropic SDK's arguments. It carries that
+`messages.stream` take the Anthropic SDK's arguments. `messages.create`
+raises `ValueError` when passed `stream=True`. Use `messages.stream` as
+a context manager: iterate it for the stream's events, read
+`text_stream` for the reply's text as the model writes it, and call
+`get_final_message()` for the whole reply once the stream has ended. A
+failed call, including one that fails mid-stream, raises `GatewayError`.
+It carries that
 key and headers that attribute each call to your plugin, agent, and
 run, and counts each call toward the run's `max_model_calls`.
 `max_retries` is at most 2. Each call's attempts share the time the run

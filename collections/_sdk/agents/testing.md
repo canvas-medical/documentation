@@ -93,8 +93,10 @@ checks on the effects a run returns (see
   the run stops at its deadline (`run_seconds`, the manifest entry's,
   600 by default), its tool results are capped in total, and a usage
   record in a unit other than `usage_units` (the units your manifest's
-  `catalog.pricing` lists) is dropped. Unlike the platform, an exception
-  from the run reaches your test.
+  `catalog.pricing` lists) is dropped. A run that returns more than 500
+  effects the tool grant keeps raises an error before its state is
+  saved, as the platform fails it with `error_kind="TOO_MANY_EFFECTS"`.
+  Unlike the platform, an exception from the run reaches your test.
 - `turn_on_command_types(*schema_keys)` turns command types on in the
   test database, every SDK command type when given none. A tool that
   stages a command refuses a type the instance has turned off, and a

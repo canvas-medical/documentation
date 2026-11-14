@@ -486,7 +486,10 @@ At run time the platform:
    effect type a listed tool stages proposes too. A tool that commits a
    command or adds a lab report proposes whether or not `tools.approve`
    lists it, since Canvas accepts those changes only through the
-   requester's approval.
+   requester's approval. Each `tools.approve` entry must name at least
+   one tool that stages a change. An entry that names no tool, or only
+   tools that stage none, keeps the agent from loading, and
+   `canvas validate` reports it.
 5. After `run()` returns, drops any effect the agent returned whose
    type no granted tool stages. An effect type that only tools in
    `tools.approve` stage is kept only when it's wrapped in a proposal.
@@ -500,7 +503,10 @@ have staged. They change a kind of command only when the agent is
 granted an `originate_*` tool that stages it. When that originate tool
 is in `tools.approve`, they must be too, or they refuse. They cover
 every kind a standard `originate_*` tool stages, and an approval-listed
-call sees the drafts the same run staged.
+call sees the drafts the same run staged, including ones already in a
+proposal. Deleting a draft this run proposed takes it out of its
+proposal, which keeps its id and its other changes, and withdraws the
+proposal once nothing is left in it.
 
 After step 3, `self.tools.definitions()` returns only the allowlisted
 subset (the model never sees the others) and
@@ -1791,7 +1797,7 @@ Surface a banner alert on the patient — visible to anyone viewing the chart. U
 
 **Category:** `@clinical_alerts`
 
-Remove a banner alert this plugin added to the patient's chart. Takes the banner's `key` — obtained either from a prior `add_banner_alert` call (returned as `banner_key` in the response) or from `find_banner_alerts`, for a row whose `plugin_name` is this plugin's; another plugin's banner is refused. Use when the underlying clinical issue has been addressed (e.g., the overdue screening was completed) and the banner should no longer display.
+Remove a banner alert this plugin added to the patient's chart. Takes the banner's `key` — obtained either from a prior `add_banner_alert` call (returned as `banner_key` in the response), including one earlier in this run, or from `find_banner_alerts`, for a row whose `plugin_name` is this plugin's; another plugin's banner is refused. Use when the underlying clinical issue has been addressed (e.g., the overdue screening was completed) and the banner should no longer display.
 
 **Arguments:**
 
@@ -1800,8 +1806,6 @@ Remove a banner alert this plugin added to the patient's chart. Takes the banner
 | `banner_key` | string | yes | The banner's key — exactly as returned by add_banner_alert (``banner_key`` in the response) or find_banner_alerts (``key`` in each row). |
 
 **Returns:** `{ok: true}`.
-
-**Backing Effect:** `RemoveBannerAlert`.
 
 #### `create_task`
 
