@@ -710,12 +710,25 @@ count against its retries. A run queued more than an hour ago holds
 no later run back, and neither does one that no worker has picked up
 within 10 minutes of being queued.
 
-A run whose plugin runner stops mid-call, as on a deploy, or isn't up
-yet or hasn't loaded the agent, is queued again and keeps its place on
-the scope: first after 30 seconds, then with waits doubling to 2
-minutes, for up to 10 minutes. Its effects were not applied, and the
-plugin runner saves state only while the call is open, so it starts
-over from `load_state`. Write an agent so a run can start over this way.
+A run whose plugin runner isn't up yet, or is still starting and
+hasn't loaded the agent, is queued again and keeps its place on the
+scope: first after 30 seconds, then with waits doubling to 2 minutes,
+for up to 10 minutes. The run then fails and frees the scope. A plugin
+runner that has finished loading its plugins but not the agent, because
+the plugin is disabled or the agent was refused, fails the run at once
+with `error_kind="AGENT_NOT_LOADED"` and frees the scope.
+
+A run whose plugin runner stops mid-call, as on a deploy, is queued
+again the same way, at most twice. A run cut off a third time is likely
+what stops the plugin runner, so it fails. Because the plugin runner may
+still be finishing it, the scope stays held until the run's time and 2
+more minutes have passed.
+
+A run queued again starts over from `load_state`, and none of the
+cut-off attempt's effects were applied. State that `save_state` wrote
+before the stop stays saved, so write an agent to start over from state
+whose effects may not have applied. A run whose last response arrived
+before the connection broke has finished, and its effects apply.
 
 This lets `load_state` / `run` / `save_state` treat the underlying
 storage as if no one else is touching it during the run, including
