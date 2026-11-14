@@ -47,7 +47,7 @@ docs = DocumentReference.objects.filter(category__code="clinical-note")
 
 ## Accessing Document Files
 
-The `document_url` property returns a presigned S3 URL for securely accessing the document file. If no S3 file is present, it falls back to the `document_absolute_url` field.
+The `document_url` property returns a presigned S3 URL for securely accessing the document file. If no S3 file is present, it falls back to the `document_absolute_url` field. When the stored file has no extension, the URL serves it as its `document_content_type` and names the download with the matching extension, so the browser opens or saves it as that type.
 
 ```python
 from canvas_sdk.v1.data import DocumentReference

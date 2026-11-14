@@ -41,7 +41,7 @@ documents = PatientAdministrativeDocument.objects.filter(patient=patient)
 
 ## Accessing the document file
 
-The `document_url` property returns a presigned S3 URL for securely accessing the document file, or `None` when no file is present.
+The `document_url` property returns a presigned S3 URL for securely accessing the document file, or `None` when no file is present. Canvas stores these documents, signed consents included, as PDFs. The URL serves the file as a PDF with a `.pdf` download filename, even when Canvas stored it without an extension.
 
 ```python
 from canvas_sdk.v1.data import PatientAdministrativeDocument
