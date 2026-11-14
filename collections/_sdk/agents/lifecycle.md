@@ -110,7 +110,10 @@ step is platform-driven:
     Otherwise they apply in order, all or none, through the same
     pipeline as any plugin effect. Each is checked again just before it
     applies, so a plan on a note an earlier `CREATE_NOTE` in the same
-    run creates is checked once that note exists. An effect that fails
+    run creates is checked once that note exists. A plugin handler for
+    a command's `__PRE_` event, such as `__PRE_ORIGINATE` or
+    `__PRE_DELETE`, has 10 seconds to respond to a run's effect, and a
+    handler that raises or runs longer fails that effect. An effect that fails
     takes back the ones before it and fails the run with no effects
     applied. A run may return up to 500 effects; a run that returns
     more applies none of them and fails with
