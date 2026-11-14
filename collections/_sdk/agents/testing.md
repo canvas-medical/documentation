@@ -74,9 +74,7 @@ checks on the effects a run returns (see
   or raises it when it is an exception, such as an outage. It keeps a
   copy of each request on `gateway.requests`, so a test can check what
   the agent sent the model. Its calls count toward the agent's
-  `max_model_calls` as the agent sets it. The harness doesn't cap that
-  at 100 as the platform does, so keep an agent's `max_model_calls` at
-  100 or below for a test to match a real run.
+  `max_model_calls`.
 - `reply(*blocks)` builds a model reply from `text(...)` and
   `tool_use(name, input)` blocks. Its stop reason is `tool_use` when it
   calls a tool and `end_turn` otherwise; pass `stop_reason=` to test

@@ -243,8 +243,8 @@ Each effect needs what the chart's own path for the action needs:
   `api.access_dataintegration`.
 - A message, task, task comment, or note that names its sender, author,
   or provider must name the requester; one that names someone else is
-  refused. A task or task comment that names no author is recorded as
-  made by Canvas Bot.
+  refused. One that names no one is recorded as made by the requester.
+  Canvas Bot is the author only in a run no user started.
 - An effect that asks to apply later (`delay_seconds`) is refused, so a
   run's changes apply with the run or not at all.
 
