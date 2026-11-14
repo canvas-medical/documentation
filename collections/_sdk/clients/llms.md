@@ -600,7 +600,7 @@ class MySchema(BaseModelLlmJson):
     another_field: int = Field(description="Another description")
 ```
 
-With `LlmAnthropic` and `structured_outputs=True`, a schema can have at most 24 optional fields and 16 fields with union types, and some validation keywords are moved into field descriptions. See [Anthropic](#anthropic) under Provider-Specific Notes.
+With `LlmAnthropic` and `structured_outputs=True`, a schema can have at most 24 optional fields and 16 fields with union types, can't contain `dict` fields or PHI, and some validation keywords are moved into field descriptions. See [Anthropic](#anthropic) under Provider-Specific Notes.
 
 ## Constants (Enums)
 
@@ -795,6 +795,10 @@ else:
   - `minLength`, `maxLength`, `maxItems`, `uniqueItems`, `minContains`, `maxContains`, `minProperties`, and `maxProperties`
   - `minItems` values other than 0 or 1
   - `format` values other than `date-time`, `time`, `date`, `duration`, `email`, `hostname`, `uri`, `ipv4`, `ipv6`, and `uuid`
+  - `discriminator`
+- Structured outputs also rejects `oneOf` and any object whose `additionalProperties` isn't explicitly `false`. The client sends `oneOf` as `anyOf` and adds `additionalProperties: false` to every object that doesn't set it. A Pydantic discriminated union still works: the `Literal` tag on each variant keeps the response valid against your model.
+- Structured outputs can't express a `dict` field, such as `dict[str, Item]` or `dict[str, Any]`. With `structured_outputs=True` and a schema that has one, `request()` raises a `ValueError` that names the model before it sends anything, and `attempt_requests()` returns the error as a failed response. Use a list of models instead.
+- Anthropic caches structured outputs schemas for up to 24 hours without PHI protections. Keep PHI out of your schema, including property names, enum and const values, patterns, and descriptions.
 - A schema sent with structured outputs can have at most 24 optional fields and 16 fields with union types (for example, `str | None`). A schema over either limit, or one that's too complex in other ways, fails with a 400 error. To stay under the limits, make fields required and have the model return empty values instead of leaving fields out. If you can't reduce the schema, leave `structured_outputs` off and use a model that accepts forced tool calls. See [Anthropic's schema complexity limits](https://platform.claude.com/docs/en/build-with-claude/structured-outputs#json-schema-limitations) for details.
 
 ### Google Gemini
