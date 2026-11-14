@@ -374,13 +374,12 @@ hour:
   applies, so a plan is checked once the note it goes on exists, and a
   change that is refused or fails takes back the ones before it. A
   second decision on the same proposal applies nothing.
-- **Drafts apply at once:** a proposal of drafts only, such as an
-  originated command or a drafted message, applies without waiting,
-  since a person still commits, signs, or sends it. So does a change to
-  a draft: a command's `edit()` applies only to a staged command and
-  `delete()` never to a committed one, so neither reaches past a draft.
-  A proposal that also holds a change that waits, such as a new note,
-  waits whole, so a plan never lands ahead of its note.
+- **Every proposal waits:** your `tools.approve` list decides what
+  waits. A proposal of drafts, such as an originated command, a drafted
+  message, or an `edit()` or `delete()` of a staged command, waits for
+  the requester like any other, as the model was told it would. A
+  proposal waits whole, so a plan never lands ahead of its note. To let
+  a tool's drafts apply at once, leave it off `tools.approve`.
 - **Commits need approval:** a committed command is the user attesting
   to it, so an agent's commit applies only through an approved proposal,
   and a run no user started cannot commit.
