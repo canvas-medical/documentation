@@ -129,7 +129,7 @@ sections:
                 description: Type the reference refers to (e.g. "Practitioner").
           - name: note
             type: array[json]
-            description: Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands. A goal update with no progress text has no entry here.
+            description: Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands. The goal and each goal update get an entry only when they have progress text.
             attributes:
               - name: id
                 type: string
@@ -380,7 +380,7 @@ sections:
             },
             "note": [
               {
-                "id": "fe2365c7-1a87-43c3-8846-fc26349a8797",
+                "id": "d942b2b6-5c87-4f95-b7d6-51e2355aabf5",
                 "extension": [
                   {
                     "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
