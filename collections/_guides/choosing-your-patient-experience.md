@@ -192,7 +192,7 @@ Real-world example (MSF):
 
 ### Tailor appointment cards
 
-Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or hide the telehealth **Join** button, decided per appointment. Canvas shows **Join** on a telehealth visit until its scheduled end.
+Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or hide the telehealth **Join** button, decided per appointment. **Join** shows on a telehealth visit that has a meeting link until the visit's scheduled end, or until it's marked Exited.
 
 See [Customize Appointment Cards](/sdk/patient-portal/#customize-appointment-cards).
 
