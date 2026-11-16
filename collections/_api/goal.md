@@ -129,11 +129,23 @@ sections:
                 description: Type the reference refers to (e.g. "Practitioner").
           - name: note
             type: array[json]
-            description: Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands.
+            description: Comments about the goal and who wrote them. Notes correspond to any progress/barriers submitted on any of goal related commands. A goal update with no progress text has no entry here.
             attributes:
               - name: id
                 type: string
-                description: The Canvas identifier of the goal, for the first annotation, or of the goal update the annotation came from. This is not a note identifier. To find the note the goal was entered in, use the `note-id` extension.
+                description: The Canvas identifier of the goal, for the first annotation, or of the goal update the annotation came from. This is not a note identifier. To find the note an annotation was written in, use its `note-id` extension.
+              - name: extension
+                type: array[json]
+                description: The note identifier extension for the note this annotation was written in. For the goal's own progress text, that is the note the goal was entered in. For a goal update, it is the note the update was made in, which is often a later visit. The note identifier can be used with the [Canvas Note API](/api/note).
+                attributes:
+                    - name: url
+                      type: string
+                      description: Reference that defines the content of this object.
+                      enum_options:
+                        - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                    - name: valueId
+                      type: string
+                      description: The valueId field is used for the Note extension and will be the note's unique identifier.
               - name: authorReference
                 type: json
                 description: Individual responsible for the annotation.
@@ -226,6 +238,12 @@ sections:
   "note": [
     {
       "id": "c2a45d52-b3d7-4e57-bb70-2b82b8819305",
+      "extension": [
+        {
+          "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+          "valueId": "7b1e0c34-5f2a-4d8e-9c61-3a0f2b8d4e17"
+        }
+      ],
       "authorReference": {
           "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
           "type": "Practitioner"
@@ -363,6 +381,12 @@ sections:
             "note": [
               {
                 "id": "fe2365c7-1a87-43c3-8846-fc26349a8797",
+                "extension": [
+                  {
+                    "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+                    "valueId": "9b7f5d0e-3c1a-4e2b-8f6d-1a2b3c4d5e6f"
+                  }
+                ],
                 "authorReference": {
                     "reference": "Practitioner/4150cd20de8a470aa570a852859ac87e",
                     "type": "Practitioner"
