@@ -17,15 +17,17 @@ Only pending requests can be updated: requests that aren't ignored and have no c
 
 Updates the refill request.
 
-- `id` must be the id of a pending refill request.
+- `id` must be the id of a pending refill request. A request that was already ignored or answered can't be updated, including to reassign it.
 - Set `assignee_id`, `ignored`, or both.
+
+Ignoring sets the request's `ignored` attribute and fires the [`REFILL_REQUEST_UPDATED`](/sdk/events/#refill-requests) event. It doesn't write a response to the request.
 
 ## Attributes
 
 | Attribute     | Type            | Description                                                                 | Required |
 |---------------|-----------------|-----------------------------------------------------------------------------|----------|
 | `id`          | `str` or `UUID` | ID of the refill request to update                                          | Yes      |
-| `assignee_id` | `str`           | Key of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI, because they become the prescriber on the response to the pharmacy. | Unless `ignored` is set |
+| `assignee_id` | `str`           | Key of the [staff](/sdk/data-staff/#staff) member to assign the request to. The assignee must be an active prescriber with a Surescripts SPI. | Unless `ignored` is set |
 | `ignored`     | `bool`          | Set to `True` to ignore the request. An ignored request can't be returned to the queue, so `True` is the only value this attribute accepts. | Unless `assignee_id` is set |
 
 ## Example
