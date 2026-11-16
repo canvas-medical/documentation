@@ -1074,6 +1074,9 @@ effects_module:
   - title: "Redirect"
     url: /sdk/effect-redirect/
     description: Navigate the Canvas frontend to an allowlisted URL, page, or application.
+  - title: "Refill Request"
+    url: /sdk/effect-update-refill-request/
+    description: Assign a pending refill request to a staff member, ignore it, or both.
   - title: "Reload Action Buttons"
     url: /sdk/effect-reload-action-buttons/
     description: Re-evaluate a note's or patient's action buttons in real time.
