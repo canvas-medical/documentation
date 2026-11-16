@@ -133,7 +133,7 @@ sections:
             attributes:
               - name: id
                 type: string
-                description: The Canvas identifier of the goal's note.
+                description: The Canvas identifier of the goal, for the first annotation, or of the goal update the annotation came from. This is not a note identifier. To find the note the goal was entered in, use the `note-id` extension.
               - name: authorReference
                 type: json
                 description: Individual responsible for the annotation.
