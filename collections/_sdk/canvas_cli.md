@@ -706,6 +706,13 @@ These issues will fail on the instance (sandbox / Custom Data):
 | `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…` |
 | `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly |
 
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+
+| Rule code | Flags |
+| --- | --- |
+| `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
+| `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
+
 #### Sandbox-load validation
 
 After the static lint passes, sandbox-load validation executes each handler module in the plugin sandbox to catch:
