@@ -17,6 +17,18 @@ sections:
           - name: id
             type: string
             description: The Canvas identifier of the goal.
+          - name: extension
+            type: array[json]
+            description: Canvas supports a note identifier extension on this resource. It identifies the note the goal was entered in, and can be used with the [Canvas Note API](/api/note).
+            attributes:
+                - name: url
+                  type: string
+                  description: Reference that defines the content of this object.
+                  enum_options:
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                - name: valueId
+                  type: string
+                  description: The valueId field is used for the Note extension and will be the note's unique identifier.
           - name: lifecycleStatus
             type: enum [ proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected ]
             description: >-
@@ -169,6 +181,12 @@ sections:
 {
   "resourceType": "Goal",
   "id": "e04a62f8-e6ab-46a1-af34-b635f901e37b",
+  "extension": [
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+      "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
+    }
+  ],
   "lifecycleStatus": "active",
   "achievementStatus": {
       "coding": [
@@ -305,6 +323,12 @@ sections:
         "resource": {
             "resourceType": "Goal",
             "id": "d942b2b6-5c87-4f95-b7d6-51e2355aabf5",
+            "extension": [
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+                "valueId": "9b7f5d0e-3c1a-4e2b-8f6d-1a2b3c4d5e6f"
+              }
+            ],
             "lifecycleStatus": "completed",
             "achievementStatus": {
                 "coding": [
@@ -353,6 +377,12 @@ sections:
         "resource": {
             "resourceType": "Goal",
             "id": "730e38b4-afaf-476c-914c-5eb0b2de405d",
+            "extension": [
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
+                "valueId": "4c3e1f2a-7b8d-4e9f-a0b1-c2d3e4f5a6b7"
+              }
+            ],
             "lifecycleStatus": "active",
             "achievementStatus": {
               "coding": [
