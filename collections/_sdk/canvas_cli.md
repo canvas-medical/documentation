@@ -30,7 +30,7 @@ Signed in to https://platform.canvasmedical.com as you@example.com.
 
 `canvas login` opens your browser and also prints the sign-in URL, for a machine without a browser. Once you approve or decline the sign-in, the browser tab ends on a Canvas Platform page that says whether you signed in, and you can close it. The command then lists each organization you belong to with its plugin prefix. The session is stored in `~/.canvas/platform-credentials.json`, readable only by you, and refreshes itself. `canvas logout` revokes it. A CI/CD pipeline signs in with a [service account](#service-accounts-for-cicd) instead.
 
-A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 63 characters. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
+A plugin's name is used for the manifest `name`, the package folder and its imports. It starts with a lowercase letter, holds only lowercase letters, digits and underscores, and is at most 255 characters. A plugin that already runs on your instances under a name outside that rule, such as one with hyphens or uppercase letters, keeps its name: `canvas deploy` deploys it as long as one of your organizations publishes a plugin of exactly that name on Canvas Platform. We recommend naming a plugin with your organization's prefix, `<org prefix>__<package>` (for example `acme__intake`), which [`canvas init`](#canvas-init) does for you.
 
 The organization that publishes a plugin is its manifest [`publisher`](/sdk/canvas_manifest/#top-level-fields), the organization slug that `canvas login` lists in parentheses (`acme` above). [`canvas deploy`](#canvas-deploy) chooses the publisher when the manifest has none.
 
@@ -260,20 +260,22 @@ $ canvas init [OPTIONS] [PLUGIN_TYPE]
 
 ### `canvas deploy`
 
-Publish a plugin's code to Canvas Platform and deploy it to one or more instances.
+Publish a plugin's code to Canvas Platform and deploy it to one or more instances. With `--plugin`, deploy released versions of one or more plugins in one deployment instead, without a plugin folder or a push.
 
 **Usage**:
 
 ```console
 $ canvas deploy [OPTIONS] PLUGIN_DIR
+$ canvas deploy --plugin [PUBLISHER/]NAME@VERSION [--plugin ...] [OPTIONS]
 ```
 
 **Arguments**:
 
-- `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json` [required]
+- `PLUGIN_DIR`: Path to the plugin package, the folder that holds `CANVAS_MANIFEST.json`. Required unless you pass `--plugin`, and left out when you do.
 
 **Options**:
 
+- `--plugin TEXT`: A released plugin to deploy, written `[<publisher>/]<name>@<version>`, such as `canvas-medical/scribe_core@2.0.0`. The version is one exact version in its normal form. Without a publisher, Canvas Platform finds the plugin by name. Repeatable; every `--plugin` goes out in one deployment. Takes no `PLUGIN_DIR`, `--ref`, `--no-push`, `--push-only`, `--snapshot`, or `--branch`. See [Deploying released plugins together](#deploying-released-plugins-together).
 - `--instance TEXT`: Instance slug to deploy to, repeatable. Without it, `deploy` targets the only instance you can deploy to, and otherwise lists the choices.
 - `--ref TEXT`: Deploy a pushed branch, tag or commit as-is, without pushing. Canvas Platform deploys a commit that isn't on `main`, such as one pushed with `--branch`, only to your organization's [test instances](/guides/designating-test-instances/). When any instance you name isn't one of them, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none.
 - `--no-push`: Deploy the pushed `main` as-is, without pushing.
@@ -293,7 +295,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --instance acm
 
 **What `deploy` does**
 
-1. Checks the manifest `name` is a valid plugin name and the package folder has the same name.
+1. Checks the manifest `name` is a valid plugin name, or a name one of your organizations publishes on Canvas Platform, and that the package folder has the same name.
 2. Runs the same checks as [`canvas validate`](#canvas-validate): manifest validation, the static lint, and sandbox-load validation. If any check fails, `deploy` exits with code 1 before it registers, commits, pushes, or deploys anything.
 3. Refuses the package if git ignores any of its Python files (see **Plugin repository layout** below). Then registers the plugin with Canvas Platform under its publisher (see **Choosing the publisher** below).
 4. Points the repository's `origin` at Canvas Platform, with `canvas` as git's credential helper for it.
@@ -358,6 +360,31 @@ Canvas Platform sends a plugin only the stored values whose keys the deployed re
 ```
 
 If the plugin still needs one of these values, declare its key in the manifest and deploy again.
+
+**Plugins with dependencies, and bundles**
+
+A plugin whose manifest names [`dependencies`](/sdk/canvas_manifest/#dependencies-and-bundles), including a [bundle](/sdk/canvas_manifest/#bundles), deploys like any other: `deploy` pushes it and creates one deployment that names it. Canvas Platform installs the dependencies in waves, so a plugin goes in after the plugins it depends on. A bundle itself is never sent to an instance; only the plugins it names are. When Canvas Platform reports a target's wave, the outcome shows it:
+
+```text
+  acme__intake_form on acme-staging (wave 0): succeeded
+  acme__intake_summary on acme-staging (wave 1): succeeded
+```
+
+Every dependency must already be on Canvas Platform at a version its [pin](/sdk/canvas_manifest/#version-pins) accepts. Its publisher pushes each release with `canvas deploy <plugin dir> --push-only`, adding `--snapshot` for a plugin inside a larger repository.
+
+#### Deploying released plugins together
+
+`canvas deploy --plugin` deploys versions already on Canvas Platform, with no plugin folder and no push. Name each plugin with `--plugin`; they all go out in one deployment:
+
+```console
+$ canvas deploy --plugin canvas-medical/scribe@2.0.0 --plugin acme/intake@3.0.0 --instance acme-staging
+```
+
+Use it when plugins have to change at the same time. For example, when two plugins pin the same dependency, moving that dependency to a new major version means deploying a release of each plugin that pins the new major version, in the same deployment. Canvas Platform deploys the newest commit on the plugin's `main` that carries the version a `--plugin` names.
+
+`--plugin` is also how you deploy a plugin another organization publishes. Name its publisher, such as `--plugin canvas-medical/scribe_core@2.0.0`.
+
+When a deployment would leave the plugins on an instance pinning different versions of a dependency, Canvas Platform refuses it and names the plugins. If each plugin in the way has a release that fits, the refusal ends with the `canvas deploy --plugin ...` command that deploys them together, and `deploy` prints it as an error. For a deploy of one plugin at a terminal, `deploy` then asks `Deploy them together? [y/N]`. Answer `y` to send the same deployment again, with the plugin at the commit or version you named it at and the plugins in the way added at those releases. Under `--yes`, without a terminal, for a deploy that names several `--plugin`, or if you answer `n`, nothing is deployed; run the printed command to deploy them together.
 
 **Plugin repository layout**
 
@@ -452,7 +479,7 @@ $ canvas clone [OPTIONS] NAME [DIRECTORY]
 
 {% include alert.html type="warning" content="<b>Deprecated:</b> <code>canvas install</code> uploads a plugin straight onto an instance using <code>credentials.ini</code>. Support ends on <b>December 14, 2026</b>. Use <a href='#canvas-deploy'><code>canvas deploy</code></a>, and see <a href='/guides/upgrading-to-canvas-platform/'>Upgrading to Canvas Platform</a>." %}
 
-Install a plugin into a Canvas instance.
+Install a plugin into a Canvas instance. A [bundle](/sdk/canvas_manifest/#bundles) can't be installed this way; deploy it with [`canvas deploy`](#canvas-deploy).
 
 **Usage**:
 
