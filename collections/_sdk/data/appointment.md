@@ -120,7 +120,7 @@ appointment = Appointment.objects.filter(
 | start_time                   | DateTime                                                          |
 | duration_minutes             | Integer                                                           |
 | comment                      | String                                                            |
-| note_id                      | Integer                                                           |
+| note                         | [Note](/sdk/data-note/#note)                                      |
 | note_type_id                 | Integer                                                           |
 | status                       | String                                                            |
 | meeting_link                 | URL                                                               |
