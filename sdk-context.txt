@@ -636,7 +636,7 @@ See [Searching for open appointment slots](/sdk/utils/#searching-for-open-appoin
 Real-world example (MSF):
   - [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) — adds a "Need to be seen today?" portal card and a full self-booking flow that offers only credentialed providers, blocks duplicate bookings, and pre-populates the visit note. A good end-to-end model.
 ###  Tailor appointment cards 
-Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or add a **telehealth join link** to virtual appointments — decided per appointment.
+Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or hide the telehealth **Join** button, decided per appointment. **Join** shows on a telehealth visit that has a meeting link until the visit's scheduled end, or until it's marked Exited.
 See [Customize Appointment Cards](/sdk/patient-portal/#customize-appointment-cards).
 Real-world example (MSF):
   - [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) — answers the "can this appointment be canceled?" check with _no_ , removing the self-service Cancel action so cancellations route through staff.
@@ -1746,6 +1746,7 @@ By combining action buttons, the data module, and the `LaunchModalEffect`, you c
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/guides/navigator-mcp/
+> **Info:** **Help Center:** for what Navigator is and who can use it, see [The Canvas Navigator](https://help.canvasmedical.com/articles/5155757572-navigator-and-mcp). 
 Navigator is Canvas's AI assistant for builders. It answers questions about the Canvas SDK and FHIR API, your own deployed plugins, and recent product updates, with read-only access and strict per-customer scope. You normally talk to Navigator in your Canvas Slack channel, but your developers can also drive it from a coding agent such as [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) or Cursor, so you can ask without leaving your editor.
 This guide connects your coding agent to Navigator over a [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) endpoint. It's the same assistant with the same scope and privacy rules; only the entry point changes.
 > **Info:** The MCP endpoint is opt-in per Canvas instance and off by default. If Navigator says it can't set up MCP access, ask your Canvas contact to enable it for your instance. 
@@ -3460,9 +3461,10 @@ The commit on Canvas Platform is authored as the service account, and its messag
 When your organization builds plugins in Canvas Studio with gated release pointed at your repository, Studio's work reaches your release instances only through your repository's review:
   1. **Build and test.** Studio users build the plugin and test it on the Studio test instance. Studio keeps this work in progress on the `canvas-studio` branch of the plugin's Canvas Platform repository.
   2. **Pull request.** Promoting from Studio's Final Review opens a pull request in your repository (on GitLab, a merge request) that writes the plugin into its folder there. Studio writes the plugin's `main` on Canvas Platform only to create it, with a base commit and no project code, when a project starts. Project code reaches `main` only through review and action by someone at your organization. Studio doesn't push to a pull request after opening it, and keeps one open per plugin. While it's open, Studio refuses to promote the plugin again. After it merges, Studio refuses to promote the plugin until the snapshot from step 4 is on Canvas Platform's `main`. If you close it without merging, the next promotion opens a new one.
-  3. **Review and merge.** Your engineers review it like any other change. They can approve it as it is, push edits to its branch, or change the plugin after merging. Studio users' further changes go into the next iteration, which starts from the merged snapshot.
+  3. **Review and merge.** Your engineers review it like any other change. They can approve it as it is, push edits to its branch, or change the plugin after merging. While the pull request is open, and after it is merged, a change to its branch or to the plugin on `main`, in your repository or on Canvas Platform, keeps the project in Promoted. Studio updates the Testing Checklist to the new code and redeploys it to the Studio test instance through the usual test deploy and its checks. When the change came in through a Studio user's own action (opening the project, or Publish), Studio redeploys it for that user. When it came in on its own, such as Studio's check after your engineers push, Studio asks a Studio user before that deploy. The plugin reaches production only after your engineers merge the pull request and deploy the snapshot in step 4. If it is closed without merging, a change sends the project back to Test & Iterate. Once it is merged, Studio users' further changes go into the next iteration, which starts from the merged snapshot. Edits on the branch that conflict with the project also send it back to Test & Iterate, where they can be merged and tested.
   4. **Snapshot.** Once it merges, CI or an engineer runs `canvas deploy <package folder> --snapshot`. The package folder is the one holding `CANVAS_MANIFEST.json` inside the folder Studio's pull request writes. Canvas Platform's `main` gets one commit with the plugin exactly as merged, and it deploys to the instances you name.
   5. **Studio brings it in.** When a Studio project opens, and before any deploy from it, Studio brings in new commits on Canvas Platform's `main` and `canvas-studio` that it has not synced yet. Your engineers' edits become the starting point of the next iteration within Studio, and are never overwritten by it.
+To review the pull request with the same checks as Studio's Final Review, run [Canvas Plugin Assistant](https://github.com/canvas-medical/coding-agents/tree/main/canvas-plugin-assistant) (CPA) on the branch with `/cpa:security-review`, `/cpa:database-performance-review`, `/cpa:coverage`, and `/cpa:wrap-up`.
 Because Studio reads both branches, your engineers can work with Studio users directly on iterative changes: push work in progress to `canvas-studio` with `canvas deploy <package folder> --snapshot --branch canvas-studio`, and the Studio project brings it in the same way. Like any commit not on `main`, it deploys only to your organization's [test instances](/guides/designating-test-instances/). When Studio has pushed to `canvas-studio` since your last snapshot there, `deploy` lists the files the snapshot would replace, as described in When a snapshot stops.
 For the same flow as Studio users see it, share the Canvas help center's [Gated release: from Promote to Production](https://help.canvasmedical.com/articles/7597495196-studio-admin-guide-setting-up-gated-release) and [When code changes outside Studio](https://help.canvasmedical.com/articles/4485157203-when-code-changes-outside-studio).
 ##  When a snapshot stops 
@@ -4519,7 +4521,7 @@ To deploy plugin code not yet merged to `main` on a test instance, use `--branch
 `deploy` pushes HEAD to that branch on Canvas Platform, creating the branch if it doesn't exist, and deploys the pushed commit. Canvas Platform only allows deploys of a commit that isn't on `main` to your organization's test instances. When any instance you name isn't one of them, the branch push still happens, nothing is deployed, and `deploy` exits non-zero with a message that names your organization's test instances, or says it has none. To choose your test instances, see [Designating Test Instances](/guides/designating-test-instances/).
 `deploy` pushes to the branch without force, so it can't replace a commit the branch already holds. After you amend or rebase commits you already pushed, deploy them under a new branch name. With `--snapshot`, each deploy adds a new commit on top of the branch, so you can keep deploying to the same branch after an amend or rebase. The checks in Deploying from a larger repository still apply.
 **Plugins built in Canvas Studio**
-Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
+Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. In Test & Iterate, its next deploy waits for a Studio user to acknowledge the new commits. In Final Review or Published, the project keeps its stage: Studio updates its Testing Checklist to the new commits and redeploys them to the Studio test instance, asking a Studio user first unless that user's own open or Publish brought the commits in. A gated project that has been promoted does this only in Promoted, while its pull request is open or after it is merged, as described in [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
   - **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
   - **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`, which deploys only to your organization's [test instances](/guides/designating-test-instances/). A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
 **Choosing the publisher**
@@ -4757,6 +4759,11 @@ Rule code | Flags
 ---|---  
 `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…`  
 `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly  
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+Rule code | Flags  
+---|---  
+`secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged.  
+`requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one.  
 ####  Sandbox-load validation 
 After the static lint passes, sandbox-load validation executes each handler module in the plugin sandbox to catch:
   - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
@@ -5216,6 +5223,7 @@ Field | Type | Required | Description
 `surfaces` | array | Yes | Every place in Canvas the plugin's work shows up, at least one and none repeated: `Note`, `Chart app`, `Command`, `Background`, `Patient portal`, `Waffle`.  
 `kind` | string | No | `agent` for a plugin that calls a model and acts with latitude, or `plugin` for a deterministic one. Defaults to `plugin`.  
 `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out.  
+`maintainer` | string | No | Who maintains the plugin: `publisher` for the plugin's publisher, or `installer` for each organization that installs it. Defaults to `publisher`.  
 `keywords` | array | No | Free search terms, separate from Tags: lowercase letters, digits and hyphens, up to 32 characters each.  
 `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40.  
 `video` | object | No | A YouTube video that the plugin's page plays first in its screenshot row. It has a `url` (a YouTube watch, `youtu.be` or embed link over `https`, naming the video's 11-character id), a `poster` image shown until the video plays (with the same rules as a screenshot `path`), and an optional `caption` of at most 40 characters. The video must allow embedding, which is YouTube's default for an unlisted upload.  
@@ -8390,7 +8398,7 @@ Parameter | Type | Description
         return [existing_plan.upsert_metadata(key="priority", value="high")]
     ```
 ####  set_custom_html 
-Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
 The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
 Parameter | Type | Description  
 ---|---|---  
@@ -13959,8 +13967,8 @@ provider | Staff
 start_time | DateTime  
 duration_minutes | Integer  
 comment | String  
-note_id | Integer  
-note_type_id | Integer  
+note | [Note](/sdk/data-note/#note)  
+note_type | [NoteType](/sdk/data-note/#notetype)  
 status | String  
 meeting_link | URL  
 telehealth_instructions_sent | Boolean  
@@ -17408,7 +17416,7 @@ To get an encounter from a note, use the `encounter` attribute on the `Note` obj
     note = Note.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
     encounter = note.encounter
     ```
-Keep in mind that not all notes have an associated encounter, so sometimes `note.encounter` will be `None`.
+Not all notes have an encounter. When a note has none, reading `note.encounter` raises `Encounter.DoesNotExist`.
 Similary, you can get a note from an `Encounter` object by using the `note` attribute:
     ```python
     from canvas_sdk.v1.data import Encounter
@@ -17416,6 +17424,25 @@ Similary, you can get a note from an `Encounter` object by using the `note` attr
     note = encounter.note
     ```
 All encounters will have an associated note, which means `encounter.note` will never be `None`.
+##  Encounters and appointments 
+An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note, as `appointment.note.encounter`. An appointment can have no note, and a note can have no encounter, so handle both cases:
+    ```python
+    from canvas_sdk.v1.data import Appointment, Encounter
+    appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
+    encounter = None
+    if appointment.note:
+        try:
+            encounter = appointment.note.encounter
+        except Encounter.DoesNotExist:
+            pass
+    ```
+How encounters are created for appointments:
+  - When an appointment is created with a note, Canvas creates a `PLANNED` encounter on that note with an empty `start_time`, or resets the note's existing encounter to `PLANNED` with an empty `start_time`.
+  - When an appointment is checked in, Canvas creates an encounter on its note if the note doesn't have one yet.
+  - An appointment with no note, such as a schedule event created without one, has no encounter.
+  - A rescheduled appointment points to the same note as the appointment it replaced, so several appointment rows can match one encounter.
+  - Cancelling an appointment or marking it a no-show sets its encounter's state to `CANCELLED`. The encounter isn't deleted. Reverting a check-in or a no-show sets it back to `PLANNED` with an empty `start_time`.
+An appointment can have a note but no encounter until it is checked in. Treat the encounter as optional and handle a missing one.
 ##  Filtering 
 Encounters can be filtered by any attribute that exists on the model.
 Filtering for encounters is done with the `filter` method on the `Encounter` model manager.
@@ -20345,6 +20372,7 @@ Filtering by ValueSet works a little differently. The `find` method on the model
     ```
 ##  Latest sig 
 The `latest_sig` property returns a medication's most recent sig — its directions for use — as a string. It draws on three sources: the medication's active [prescriptions](/sdk/data-prescription/), its [change medications](/sdk/data-change-medication/) that are not entered in error, and its [medication statements](/sdk/data-medication-statement/). It returns the sig from whichever of those is most recent. Because `latest_sig` is a property computed in Python, it is read from each `Medication` object and is not available to a queryset `.filter()` or `.order_by()`.
+`latest_sig` currently reads a medication's statements whether or not they have been committed, while the chart and the FHIR API's `MedicationStatement.dosage[0].text` use committed statements only. An uncommitted medication, one whose command was staged in a note but never committed, can therefore return a sig from `latest_sig` that the chart and the FHIR API don't show. An upcoming release will change `latest_sig` to read only committed data. Until then, to match the chart and the FHIR API, read medications through `active()` or `committed()` before reading `latest_sig`, as described in Filtering to match the Patient Summary.
 When both an active prescription and a change medication exist, the source whose [note](/sdk/data-note/) has the later date of service wins. Otherwise the sig comes from the first source that has one, in this order:
   1. The latest prescription.
   2. The latest change medication.
@@ -23780,6 +23808,16 @@ To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from i
     url = document.document_url if document else None
     ```
 > **Info:** `object_id` holds the related record's integer `dbid`, not its UUID `id`. 
+###  The incoming fax or upload 
+A report filed from an incoming fax or upload links to it through `integration_task_review`, the [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) of the document. The review's `task` is the [IntegrationTask](/sdk/data-integration-task/#accessing-the-document-file), whose `document_url` points to the file as Canvas received it. The field can be `None`, so check it before reading the task.
+    ```python
+    from canvas_sdk.v1.data import ReferralReport
+    report = ReferralReport.objects.select_related("integration_task_review__task").get(
+        id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+    )
+    review = report.integration_task_review
+    url = review.task.document_url if review else None
+    ```
 ##  Attributes 
 ###  Referral 
 Field Name | Type  
@@ -23826,6 +23864,7 @@ team | [Team](/sdk/data-team/#team)
 reviewers | [Staff](/sdk/data-staff/#staff)[]  
 patient | [Patient](/sdk/data-patient/#patient)  
 referral | Referral  
+integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)  
 specialty | String  
 comment | String  
 priority | Boolean  
@@ -29212,13 +29251,14 @@ Each `LabTest` is created with status `RECEIVED`, since externally-originated or
 ##  Example 
     ```python
     from datetime import datetime, UTC
+    from hmac import compare_digest
     from canvas_sdk.effects.lab_order import HealthGorillaLabOrderIngest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     class StandingLabOrdersAPI(SimpleAPIRoute):
         PATH = "/standing-lab-orders"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["ingest-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["ingest-api-key"].encode())
         def post(self) -> list[Response]:
             body = self.request.json()
             return [
@@ -29327,13 +29367,14 @@ Set at most one of `pdf_url` or `pdf_base64`; setting both is an error. Canvas f
 ##  Example 
     ```python
     from datetime import datetime, UTC
+    from hmac import compare_digest
     from canvas_sdk.effects.lab_order import HealthGorillaLabReportIngest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     class ExternalLabReportsAPI(SimpleAPIRoute):
         PATH = "/external-lab-reports"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["ingest-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["ingest-api-key"].encode())
         def post(self) -> list[Response]:
             body = self.request.json()
             return [
@@ -35326,7 +35367,7 @@ Target object | Context object
 ####  Clinical Documents 
 These events fire during the lifecycle of documents in the [Data Integration](https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration) module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying [IntegrationTask](/sdk/data-integration-task/).
 Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
-  - **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+  - **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"], timeout=30)`, and check `document["channel"]` first if you only want one channel.
   - **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
   - **After it's filed to a chart:** use the [DocumentReference](/sdk/data-document-reference/) data class, which has a presigned `document_url`.
 DOCUMENT_RECEIVED  
@@ -52415,6 +52456,7 @@ The code defines an endpoint for handling bounced email events.
 **Intended Use**
 This endpoint provides an automated workflow to prompt staff to confirm and update patient contact information in response to an email bounce event, improving contact data quality in clinical operations.
     ```python
+    from hmac import compare_digest
     import arrow
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.effects.task import AddTask, TaskStatus
@@ -52428,7 +52470,7 @@ This endpoint provides an automated workflow to prompt staff to confirm and upda
     class EmailBounceAPI(SimpleAPIRoute):
         PATH = "/crm-webhooks/email-bounce"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["my-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
         def post(self) -> list[Response]:
             patient = Patient.objects.get(mrn=self.request.json()["mrn"])
             five_days_from_now = arrow.utcnow().shift(days=5).datetime
@@ -52453,6 +52495,7 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
     }
     ```
     ```python
+    from hmac import compare_digest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     #
@@ -52462,7 +52505,7 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
     class HelloWorldAPI(SimpleAPIRoute):
         PATH = "/hello-world"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["my-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
         def get(self) -> list[Response]:
             return [JSONResponse({"message": "Hello world!"})]
     ```
@@ -60144,7 +60187,7 @@ For a full walkthrough with examples, see the [Custom Landing Page guide](/guide
 To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
 ##  Customize Appointment Cards 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
-Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action. Each action's exact event, effect, and payload are shown below.
 The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
   - With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
   - A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
@@ -60183,7 +60226,8 @@ Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED` and return a `PATIEN
             ]
     ```
 ###  Hide 'Join' button 
-This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": True}` to show the join link.
+The **Join** button shows on telehealth appointments that have a meeting link: the appointment's own link, or the provider's personal meeting room. It shows only while the appointment is in the patient's upcoming appointments. An appointment stays there until its scheduled end, which is its start time plus its duration, so a patient who is late can still join. The appointment moves to past appointments, and the button stops showing, when its scheduled end passes or when the visit is marked Exited, whichever comes first.
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": False}` to hide the button. Canvas fires the event only for appointments that have a meeting link.
     ```python
     import json
     from canvas_sdk.effects import Effect, EffectType
@@ -60195,7 +60239,7 @@ This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOIN
             return [
               Effect(
                 type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
-                payload=json.dumps({"result": True}))
+                payload=json.dumps({"result": False}))
             ]
     ```
 ##  Configuring the Patient Portal 
