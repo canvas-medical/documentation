@@ -1746,6 +1746,7 @@ By combining action buttons, the data module, and the `LaunchModalEffect`, you c
 
 
 ----- BEGIN PAGE https://docs.canvasmedical.com/guides/navigator-mcp/
+> **Info:** **Help Center:** for what Navigator is and who can use it, see [The Canvas Navigator](https://help.canvasmedical.com/articles/5155757572-navigator-and-mcp). 
 Navigator is Canvas's AI assistant for builders. It answers questions about the Canvas SDK and FHIR API, your own deployed plugins, and recent product updates, with read-only access and strict per-customer scope. You normally talk to Navigator in your Canvas Slack channel, but your developers can also drive it from a coding agent such as [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) or Cursor, so you can ask without leaving your editor.
 This guide connects your coding agent to Navigator over a [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) endpoint. It's the same assistant with the same scope and privacy rules; only the entry point changes.
 > **Info:** The MCP endpoint is opt-in per Canvas instance and off by default. If Navigator says it can't set up MCP access, ask your Canvas contact to enable it for your instance. 
@@ -4757,6 +4758,11 @@ Rule code | Flags
 ---|---  
 `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…`  
 `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly  
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+Rule code | Flags  
+---|---  
+`secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged.  
+`requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one.  
 ####  Sandbox-load validation 
 After the static lint passes, sandbox-load validation executes each handler module in the plugin sandbox to catch:
   - **Disallowed imports** — Modules like `subprocess`, `socket`, or `os` that are blocked by the sandbox.
@@ -23780,6 +23786,16 @@ To read it, resolve the [ContentType](/sdk/data-content-type/) at runtime from i
     url = document.document_url if document else None
     ```
 > **Info:** `object_id` holds the related record's integer `dbid`, not its UUID `id`. 
+###  The incoming fax or upload 
+A report filed from an incoming fax or upload links to it through `integration_task_review`, the [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview) of the document. The review's `task` is the [IntegrationTask](/sdk/data-integration-task/#accessing-the-document-file), whose `document_url` points to the file as Canvas received it. The field can be `None`, so check it before reading the task.
+    ```python
+    from canvas_sdk.v1.data import ReferralReport
+    report = ReferralReport.objects.select_related("integration_task_review__task").get(
+        id="d2194110-5c9a-4842-8733-ef09ea5ead11"
+    )
+    review = report.integration_task_review
+    url = review.task.document_url if review else None
+    ```
 ##  Attributes 
 ###  Referral 
 Field Name | Type  
@@ -23826,6 +23842,7 @@ team | [Team](/sdk/data-team/#team)
 reviewers | [Staff](/sdk/data-staff/#staff)[]  
 patient | [Patient](/sdk/data-patient/#patient)  
 referral | Referral  
+integration_task_review | [IntegrationTaskReview](/sdk/data-integration-task/#integrationtaskreview)  
 specialty | String  
 comment | String  
 priority | Boolean  
@@ -29212,13 +29229,14 @@ Each `LabTest` is created with status `RECEIVED`, since externally-originated or
 ##  Example 
     ```python
     from datetime import datetime, UTC
+    from hmac import compare_digest
     from canvas_sdk.effects.lab_order import HealthGorillaLabOrderIngest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     class StandingLabOrdersAPI(SimpleAPIRoute):
         PATH = "/standing-lab-orders"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["ingest-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["ingest-api-key"].encode())
         def post(self) -> list[Response]:
             body = self.request.json()
             return [
@@ -29327,13 +29345,14 @@ Set at most one of `pdf_url` or `pdf_base64`; setting both is an error. Canvas f
 ##  Example 
     ```python
     from datetime import datetime, UTC
+    from hmac import compare_digest
     from canvas_sdk.effects.lab_order import HealthGorillaLabReportIngest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     class ExternalLabReportsAPI(SimpleAPIRoute):
         PATH = "/external-lab-reports"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["ingest-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["ingest-api-key"].encode())
         def post(self) -> list[Response]:
             body = self.request.json()
             return [
@@ -35326,7 +35345,7 @@ Target object | Context object
 ####  Clinical Documents 
 These events fire during the lifecycle of documents in the [Data Integration](https://canvas-medical.help.usepylon.com/articles/4617508394-data-integration) module — including inbound faxes, uploaded documents, and electronic transmissions. Each event's context includes document metadata from the underlying [IntegrationTask](/sdk/data-integration-task/).
 Use `DOCUMENT_RECEIVED` to automate inbound-document intake, such as inbound faxes. It fires when a new `IntegrationTask` is created, from any channel (fax, document upload, lab, and so on).
-  - **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"])`, and check `document["channel"]` first if you only want one channel.
+  - **Getting the file:** the event context carries the file URL as `document["content_url"]`. The `IntegrationTask` data class doesn't include the file, so this event is where you get it. Fetch it with `requests.get(document["content_url"], timeout=30)`, and check `document["channel"]` first if you only want one channel.
   - **Following one document:** every event in this family uses the `IntegrationTask` UUID as its `target` and `document["id"]`, so you can match one document across `DOCUMENT_RECEIVED`, `DOCUMENT_LINKED_TO_PATIENT`, `DOCUMENT_CATEGORIZED`, `DOCUMENT_REVIEWER_ASSIGNED`, `DOCUMENT_REVIEWED`, and `DOCUMENT_DELETED`.
   - **After it's filed to a chart:** use the [DocumentReference](/sdk/data-document-reference/) data class, which has a presigned `document_url`.
 DOCUMENT_RECEIVED  
@@ -52415,6 +52434,7 @@ The code defines an endpoint for handling bounced email events.
 **Intended Use**
 This endpoint provides an automated workflow to prompt staff to confirm and update patient contact information in response to an email bounce event, improving contact data quality in clinical operations.
     ```python
+    from hmac import compare_digest
     import arrow
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.effects.task import AddTask, TaskStatus
@@ -52428,7 +52448,7 @@ This endpoint provides an automated workflow to prompt staff to confirm and upda
     class EmailBounceAPI(SimpleAPIRoute):
         PATH = "/crm-webhooks/email-bounce"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["my-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
         def post(self) -> list[Response]:
             patient = Patient.objects.get(mrn=self.request.json()["mrn"])
             five_days_from_now = arrow.utcnow().shift(days=5).datetime
@@ -52453,6 +52473,7 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
     }
     ```
     ```python
+    from hmac import compare_digest
     from canvas_sdk.effects.simple_api import JSONResponse, Response
     from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
     #
@@ -52462,7 +52483,7 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
     class HelloWorldAPI(SimpleAPIRoute):
         PATH = "/hello-world"
         def authenticate(self, credentials: APIKeyCredentials) -> bool:
-            return credentials.key == self.secrets["my-api-key"]
+            return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
         def get(self) -> list[Response]:
             return [JSONResponse({"message": "Hello world!"})]
     ```
