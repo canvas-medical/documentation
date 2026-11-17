@@ -37,7 +37,7 @@ sections:
                   description: Used by the note-id extension. The note's unique identifier.
                 - name: extension
                   type: array[json]
-                  description: Used by the goal-history extension. Its inner extensions describe one add, update or close of the goal.
+                  description: Used by the goal-history extension. Its inner extensions describe one add, update or close of the goal. An inner extension is left out when its value is blank.
                   attributes:
                     - name: url
                       type: string
