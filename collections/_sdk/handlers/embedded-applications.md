@@ -238,7 +238,7 @@ class LowPriorityApp(NoteApplication):
 
 ## Scheduling Applications
 
-Scheduling Applications replace the built-in scheduling modal throughout Canvas. When you install a plugin with a scheduling application, it takes over all scheduling entry points: the schedule page, patient chart, calendar drag-and-drop, calendar reschedule, and note reschedule flows.
+Scheduling Applications replace the built-in scheduling modal throughout Canvas. When you install a plugin with a scheduling application, it takes over all scheduling entry points: the schedule page, the patient's Chart and Profile tabs, calendar drag-and-drop, calendar reschedule, and note reschedule flows.
 
 ### Implementing a Scheduling Application
 
@@ -311,7 +311,7 @@ When `end` is not provided, derive it from `start + duration`.
 | `origin`              | Launching surface                                               | `mode`                   | Slot length            |
 |-----------------------|-----------------------------------------------------------------|--------------------------|------------------------|
 | `schedule_page`       | **New appointment** from the schedule page (no patient context) | `schedule` or `followup` | neither (`start` only) |
-| `patient_chart`       | **New appointment** from a patient's chart                      | `schedule` or `followup` | neither (`start` only) |
+| `patient_chart`       | **New appointment** from a patient's Chart or Profile tab       | `schedule` or `followup` | neither (`start` only) |
 | `calendar`            | Drag-and-drop on the calendar to create a slot                  | `schedule`               | `end`                  |
 | `calendar_reschedule` | Rescheduling an existing appointment from the calendar          | `reschedule`             | `duration`             |
 | `note_reschedule`     | Rescheduling an appointment from within a note                  | `reschedule`             | `duration`             |
