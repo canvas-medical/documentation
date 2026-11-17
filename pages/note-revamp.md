@@ -39,6 +39,8 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 **Easier drag and drop:** Commands are picked up by a grip in the left gutter, so clicks inside a command's fields always go to the fields.
 
+**Commands from plugins and the API marked:** A command a plugin or the API added has a sparkle after its title, whether the command is open or collapsed. Hover over the sparkle to see where the command came from and, once someone else edits it, who last modified it.
+
 ## For developers
 
 Plugins can link commands to an Assess command's Assessment in the same note with `assessment_id`, and read the link back from each data model's `assessment` field. See [Commands linked to an assessment](/sdk/data-assessment/#commands-linked-to-an-assessment) and the [commands module](/sdk/commands/). Links are recorded on every instance; the nested display and sectioned print are what the beta adds.
@@ -68,3 +70,5 @@ class NoteBanner(BaseHandler):
             ).apply()
         ]
 ```
+
+Commands your plugin originates carry the sparkle after their title in the revamped note. Outside the beta, they show **Plugin Generated** above the title instead.
