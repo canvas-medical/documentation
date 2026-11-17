@@ -115,7 +115,7 @@ const presignedUrl = response.headers['location'];
 
 ## File type and download name
 
-The pre-signed URLs for `DocumentReference` content and `Consent` source attachments serve each file with its content type and a download filename that ends in the matching extension. Consent documents are served as `application/pdf`. A browser that opens one of these URLs displays or saves the file as that type, such as a PDF named `<name>.pdf`.
+When a `DocumentReference` content file or a `Consent` source attachment is stored under a name that doesn't end in a recognized file extension, its pre-signed URL serves the file with its content type and a download filename that adds the matching extension. A dot inside the name doesn't count as an extension. Consent documents are served as `application/pdf`, so a consent stored under the title `Consent Form - Dr. Smith` downloads as `Consent Form - Dr. Smith.pdf`. A browser that opens one of these URLs displays or saves the file as that type.
 
 ## Note on HTTP client redirect behavior
 
