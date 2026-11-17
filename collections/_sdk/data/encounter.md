@@ -28,7 +28,7 @@ note = Note.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 encounter = note.encounter
 ```
 
-Not all notes have an encounter. When a note has none, reading `note.encounter` raises `Encounter.DoesNotExist`.
+Keep in mind that not all notes have an associated encounter. When a note has none, `note.encounter` raises `Encounter.DoesNotExist`.
 
 Similary, you can get a note from an `Encounter` object by using the `note` attribute:
 
@@ -43,18 +43,23 @@ All encounters will have an associated note, which means `encounter.note` will n
 
 ## Encounters and appointments
 
-An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note, as `appointment.note.encounter`. An appointment can have no note, and a note can have no encounter, so handle both cases:
+An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note:
 
 ```python
-from canvas_sdk.v1.data import Appointment, Encounter
+from canvas_sdk.v1.data import Appointment
 
 appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
-encounter = None
-if appointment.note:
-    try:
-        encounter = appointment.note.encounter
-    except Encounter.DoesNotExist:
-        pass
+encounter = appointment.note.encounter
+```
+
+`appointment.note` is `None` when the appointment has no note, and `note.encounter` raises `Encounter.DoesNotExist` when the note has no encounter. `getattr(appointment.note, "encounter", None)` returns `None` in both cases.
+
+In SQL against the read replica, join on the note, not on the appointment's own id:
+
+```sql
+SELECT a.id AS appointment_id, e.id AS encounter_id, e.state
+FROM canvas_sdk_data_api_appointment_001 a
+LEFT JOIN canvas_sdk_data_api_encounter_001 e ON e.note_id = a.note_id;
 ```
 
 How encounters are created for appointments:
@@ -65,7 +70,7 @@ How encounters are created for appointments:
 - A rescheduled appointment points to the same note as the appointment it replaced, so several appointment rows can match one encounter.
 - Cancelling an appointment or marking it a no-show sets its encounter's state to `CANCELLED`. The encounter isn't deleted. Reverting a check-in or a no-show sets it back to `PLANNED` with an empty `start_time`.
 
-An appointment can have a note but no encounter until it is checked in. Treat the encounter as optional and handle a missing one.
+Because the planned encounter is created when the appointment is first saved, an appointment whose note was attached later, or that was loaded without going through the normal appointment save, can have a note but no encounter until it is checked in. Treat the encounter as optional when reading appointments, and handle a missing one rather than assuming every appointment note has an encounter.
 
 ## Filtering
 
