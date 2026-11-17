@@ -4,6 +4,8 @@ guide_for:
 - /sdk/quickstart/
 ---
 
+{% include alert.html type="info" content="<b>Help Center:</b> for what Navigator is and who can use it, see <a href='https://help.canvasmedical.com/articles/5155757572-navigator-and-mcp'>The Canvas Navigator</a>." %}
+
 Navigator is Canvas's AI assistant for builders. It answers questions about the Canvas SDK and FHIR API, your own deployed plugins, and recent product updates, with read-only access and strict per-customer scope. You normally talk to Navigator in your Canvas Slack channel, but your developers can also drive it from a coding agent such as [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) or Cursor, so you can ask without leaving your editor.
 
 This guide connects your coding agent to Navigator over a [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) endpoint. It's the same assistant with the same scope and privacy rules; only the entry point changes.

@@ -76,6 +76,8 @@ The code defines an endpoint for handling bounced email events.
 This endpoint provides an automated workflow to prompt staff to confirm and update patient contact information in response to an email bounce event, improving contact data quality in clinical operations.
 
 ```python
+from hmac import compare_digest
+
 import arrow
 
 from canvas_sdk.effects.simple_api import JSONResponse, Response
@@ -94,7 +96,7 @@ class EmailBounceAPI(SimpleAPIRoute):
     PATH = "/crm-webhooks/email-bounce"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["my-api-key"]
+        return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
 
     def post(self) -> list[Response]:
         patient = Patient.objects.get(mrn=self.request.json()["mrn"])
@@ -130,6 +132,8 @@ A GET request to `/plugin-io/api/api_samples/hello-world` (when authenticated) r
 ```
 
 ```python
+from hmac import compare_digest
+
 from canvas_sdk.effects.simple_api import JSONResponse, Response
 from canvas_sdk.handlers.simple_api import APIKeyCredentials, SimpleAPIRoute
 
@@ -143,7 +147,7 @@ class HelloWorldAPI(SimpleAPIRoute):
     PATH = "/hello-world"
 
     def authenticate(self, credentials: APIKeyCredentials) -> bool:
-        return credentials.key == self.secrets["my-api-key"]
+        return compare_digest(credentials.key.encode(), self.secrets["my-api-key"].encode())
 
     def get(self) -> list[Response]:
         return [JSONResponse({"message": "Hello world!"})]
