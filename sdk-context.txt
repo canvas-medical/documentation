@@ -636,7 +636,7 @@ See [Searching for open appointment slots](/sdk/utils/#searching-for-open-appoin
 Real-world example (MSF):
   - [urgent-care-self-scheduler](https://github.com/medical-software-foundation/canvas/tree/main/extensions/urgent-care-self-scheduler) — adds a "Need to be seen today?" portal card and a full self-booking flow that offers only credentialed providers, blocks duplicate bookings, and pre-populates the visit note. A good end-to-end model.
 ###  Tailor appointment cards 
-Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or add a **telehealth join link** to virtual appointments — decided per appointment.
+Fine-tune the actions on each appointment. Hide **Cancel** or **Reschedule** when your policy says so (for example, no reschedule within 24 hours of the visit), or hide the telehealth **Join** button, decided per appointment. **Join** shows on a telehealth visit that has a meeting link until the visit's scheduled end, or until it's marked Exited.
 See [Customize Appointment Cards](/sdk/patient-portal/#customize-appointment-cards).
 Real-world example (MSF):
   - [portal_disable_cancel_appts](https://github.com/medical-software-foundation/canvas/tree/main/extensions/portal_disable_cancel_appts) — answers the "can this appointment be canceled?" check with _no_ , removing the self-service Cancel action so cancellations route through staff.
@@ -8390,7 +8390,7 @@ Parameter | Type | Description
         return [existing_plan.upsert_metadata(key="priority", value="high")]
     ```
 ####  set_custom_html 
-Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note.
+Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
 The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
 Parameter | Type | Description  
 ---|---|---  
@@ -60144,7 +60144,7 @@ For a full walkthrough with examples, see the [Custom Landing Page guide](/guide
 To show content across the top or bottom of every page a signed-in patient visits, such as an announcement or a support bar, use a [Portal Docked Application](/sdk/handlers-embedded-applications/#portal-docked-applications). Unlike a landing page widget, the band stays on screen as the patient moves between portal pages.
 ##  Customize Appointment Cards 
 Customize your patient appointment cards so patients can easily join their telehealth appointments, cancel or reschedule appointments. Each appointment can be customized individually, allowing each one to have its own unique settings.
-Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action; for the telehealth **Join** link, `True` shows it. Each action's exact event, effect, and payload are shown below.
+Each action is decided per appointment: Canvas fires a `PATIENT_PORTAL__APPOINTMENT_CAN_*` event for the appointment, and your handler returns the matching `PATIENT_PORTAL__APPOINTMENT_IS_*` (or `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK`) effect with a `{"result": <bool>}` payload — `False` hides the action. Each action's exact event, effect, and payload are shown below.
 The Cancel and Reschedule answers also decide what Canvas accepts, not only which buttons the portal shows. When a patient cancels or reschedules, Canvas checks the appointment again and refuses the request if the button wouldn't be offered.
   - With no plugin answer, a patient can cancel or reschedule an appointment until one day before it starts.
   - A plugin's `result` replaces that one-day rule. `True` lets the patient act within the final day, and `False` refuses the action at any time.
@@ -60183,7 +60183,8 @@ Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_BE_RESCHEDULED` and return a `PATIEN
             ]
     ```
 ###  Hide 'Join' button 
-This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": True}` to show the join link.
+The **Join** button shows on telehealth appointments that have a meeting link: the appointment's own link, or the provider's personal meeting room. It shows only while the appointment is in the patient's upcoming appointments. An appointment stays there until its scheduled end, which is its start time plus its duration, so a patient who is late can still join. The appointment moves to past appointments, and the button stops showing, when its scheduled end passes or when the visit is marked Exited, whichever comes first.
+Respond to `PATIENT_PORTAL__APPOINTMENT_CAN_SHOW_MEETING_LINK` and return a `PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK` effect with `{"result": False}` to hide the button. Canvas fires the event only for appointments that have a meeting link.
     ```python
     import json
     from canvas_sdk.effects import Effect, EffectType
@@ -60195,7 +60196,7 @@ This button shows on telehealth appointments. Respond to `PATIENT_PORTAL__APPOIN
             return [
               Effect(
                 type=EffectType.PATIENT_PORTAL__APPOINTMENT_SHOW_MEETING_LINK,
-                payload=json.dumps({"result": True}))
+                payload=json.dumps({"result": False}))
             ]
     ```
 ##  Configuring the Patient Portal 
