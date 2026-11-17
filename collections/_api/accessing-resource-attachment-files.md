@@ -113,6 +113,10 @@ const presignedUrl = response.headers['location'];
 
 {% endtabs %}
 
+## File type and download name
+
+The pre-signed URLs for `DocumentReference` content and `Consent` source attachments serve each file with its content type and a download filename that ends in the matching extension. Consent documents are served as `application/pdf`. A browser that opens one of these URLs displays or saves the file as that type, such as a PDF named `<name>.pdf`.
+
 ## Note on HTTP client redirect behavior
 
 Per [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110#section-15.4), compliant HTTP clients should strip the `Authorization` header when following a redirect to a different host. However, some HTTP clients do not do this, which can cause S3 to reject the request with a dual-auth error:
