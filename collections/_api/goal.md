@@ -19,16 +19,47 @@ sections:
             description: The Canvas identifier of the goal.
           - name: extension
             type: array[json]
-            description: Canvas supports a note identifier extension on this resource. It identifies the note the goal was entered in, and can be used with the [Canvas Note API](/api/note).
+            description: >-
+              Canvas supports two extensions on this resource. <br><br>
+              **note-id** — the note the goal was entered in. The note identifier can be used with the [Canvas Note API](/api/note). <br><br>
+              **goal-history** — one entry for each time the goal was added, updated or closed, in the order they happened. It includes updates with no progress text, which have no entry in `note`. Each entry is a compound extension that gives the note the change was made in, when it was made, and the statuses it set. The first entry is the Goal command that added the goal. An entry whose `lifecycle-status` is `completed`, `cancelled` or `rejected` closed the goal. Updates that were entered in error are left out.
             attributes:
                 - name: url
                   type: string
                   description: Reference that defines the content of this object.
                   enum_options:
                     - value: http://schemas.canvasmedical.com/fhir/extensions/note-id
+                      description: The note the goal was entered in.
+                    - value: http://schemas.canvasmedical.com/fhir/extensions/goal-history
+                      description: One add, update or close of the goal. Compound — uses nested extension.
                 - name: valueId
                   type: string
-                  description: The valueId field is used for the Note extension and will be the note's unique identifier.
+                  description: Used by the note-id extension. The note's unique identifier.
+                - name: extension
+                  type: array[json]
+                  description: Used by the goal-history extension. Its inner extensions describe one add, update or close of the goal.
+                  attributes:
+                    - name: url
+                      type: string
+                      description: Identifies the inner extension.
+                      enum_options:
+                        - value: note-id
+                          description: The note the change was made in (with valueId).
+                        - value: date
+                          description: When the change was made (with valueDateTime).
+                        - value: lifecycle-status
+                          description: The goal's lifecycle status after the change, such as `active` or `completed` (with valueCode).
+                        - value: achievement-status
+                          description: The goal's achievement status after the change, such as `improving` or `achieved` (with valueCode).
+                    - name: valueId
+                      type: string
+                      description: For `note-id`, the note's unique identifier.
+                    - name: valueDateTime
+                      type: datetime
+                      description: For `date`.
+                    - name: valueCode
+                      type: string
+                      description: For `lifecycle-status` and `achievement-status`.
           - name: lifecycleStatus
             type: enum [ proposed | planned | accepted | active | on-hold | completed | cancelled | entered-in-error | rejected ]
             description: >-
@@ -197,6 +228,24 @@ sections:
     {
       "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
       "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5"
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/goal-history",
+      "extension": [
+        { "url": "note-id", "valueId": "2a8154d8-9420-4ab5-97f8-c2dae5a10af5" },
+        { "url": "date", "valueDateTime": "2022-01-27T16:12:40.123456+00:00" },
+        { "url": "lifecycle-status", "valueCode": "active" },
+        { "url": "achievement-status", "valueCode": "in-progress" }
+      ]
+    },
+    {
+      "url": "http://schemas.canvasmedical.com/fhir/extensions/goal-history",
+      "extension": [
+        { "url": "note-id", "valueId": "7b1e0c34-5f2a-4d8e-9c61-3a0f2b8d4e17" },
+        { "url": "date", "valueDateTime": "2023-09-19T20:50:25.955348+00:00" },
+        { "url": "lifecycle-status", "valueCode": "active" },
+        { "url": "achievement-status", "valueCode": "improving" }
+      ]
     }
   ],
   "lifecycleStatus": "active",
@@ -345,6 +394,24 @@ sections:
               {
                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
                 "valueId": "9b7f5d0e-3c1a-4e2b-8f6d-1a2b3c4d5e6f"
+              },
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/goal-history",
+                "extension": [
+                  { "url": "note-id", "valueId": "9b7f5d0e-3c1a-4e2b-8f6d-1a2b3c4d5e6f" },
+                  { "url": "date", "valueDateTime": "2022-12-06T17:21:25.172196+00:00" },
+                  { "url": "lifecycle-status", "valueCode": "active" },
+                  { "url": "achievement-status", "valueCode": "in-progress" }
+                ]
+              },
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/goal-history",
+                "extension": [
+                  { "url": "note-id", "valueId": "e6c2d9a1-8b4f-4c3e-9d2a-5f1b7c8e0a34" },
+                  { "url": "date", "valueDateTime": "2023-02-10T15:30:12.418903+00:00" },
+                  { "url": "lifecycle-status", "valueCode": "completed" },
+                  { "url": "achievement-status", "valueCode": "improving" }
+                ]
               }
             ],
             "lifecycleStatus": "completed",
@@ -405,6 +472,15 @@ sections:
               {
                 "url": "http://schemas.canvasmedical.com/fhir/extensions/note-id",
                 "valueId": "4c3e1f2a-7b8d-4e9f-a0b1-c2d3e4f5a6b7"
+              },
+              {
+                "url": "http://schemas.canvasmedical.com/fhir/extensions/goal-history",
+                "extension": [
+                  { "url": "note-id", "valueId": "4c3e1f2a-7b8d-4e9f-a0b1-c2d3e4f5a6b7" },
+                  { "url": "date", "valueDateTime": "2023-03-03T14:05:51.302117+00:00" },
+                  { "url": "lifecycle-status", "valueCode": "active" },
+                  { "url": "achievement-status", "valueCode": "improving" }
+                ]
               }
             ],
             "lifecycleStatus": "active",
