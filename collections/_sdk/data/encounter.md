@@ -28,7 +28,7 @@ note = Note.objects.get(id="1eed3ea2a8d546a1b681a2a45de1d790")
 encounter = note.encounter
 ```
 
-Keep in mind that not all notes have an associated encounter, so sometimes `note.encounter` will be `None`.
+Not all notes have an encounter. When a note has none, reading `note.encounter` raises `Encounter.DoesNotExist`.
 
 Similary, you can get a note from an `Encounter` object by using the `note` attribute:
 
@@ -43,7 +43,7 @@ All encounters will have an associated note, which means `encounter.note` will n
 
 ## Encounters and appointments
 
-An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note: an appointment's encounter is the encounter whose note is the appointment's note.
+An [Appointment](/sdk/data-appointment/) has no direct link to an encounter. It reaches its encounter through its note, as `appointment.note.encounter`. An appointment can have no note, and a note can have no encounter, so handle both cases:
 
 ```python
 from canvas_sdk.v1.data import Appointment, Encounter
@@ -51,15 +51,10 @@ from canvas_sdk.v1.data import Appointment, Encounter
 appointment = Appointment.objects.get(id="b80b1cdc-2e6a-4aca-90cc-ebc02e683f35")
 encounter = None
 if appointment.note:
-    encounter = Encounter.objects.filter(note=appointment.note).first()
-```
-
-In SQL against the read replica, join on the note, not on the appointment's own id:
-
-```sql
-SELECT a.id AS appointment_id, e.id AS encounter_id, e.state
-FROM canvas_sdk_data_api_appointment_001 a
-LEFT JOIN canvas_sdk_data_api_encounter_001 e ON e.note_id = a.note_id;
+    try:
+        encounter = appointment.note.encounter
+    except Encounter.DoesNotExist:
+        pass
 ```
 
 How encounters are created for appointments:

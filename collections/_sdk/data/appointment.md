@@ -121,7 +121,7 @@ appointment = Appointment.objects.filter(
 | duration_minutes             | Integer                                                           |
 | comment                      | String                                                            |
 | note                         | [Note](/sdk/data-note/#note)                                      |
-| note_type_id                 | Integer                                                           |
+| note_type                    | [NoteType](/sdk/data-note/#notetype)                              |
 | status                       | String                                                            |
 | meeting_link                 | URL                                                               |
 | telehealth_instructions_sent | Boolean                                                           |
