@@ -23,7 +23,10 @@ The built-in eCQM value sets come from the Value Set Authority Center (VSAC) eCQ
 
 Import from the package that matches the measure versions your plugin implements. Each value set class records its VSAC `OID` and the release it was expanded from in `EXPANSION_VERSION`, and its docstring lists the CMS measures that use it.
 
-Value sets that exist in both `v2026` and `v2027` have the same module and class name in each. To move a plugin to the 2027 measures, change `v2026` to `v2027` in its imports. Value sets that the 2027 measures no longer use, such as `condition.Glaucoma`, aren't in `v2027`; keep importing those from `v2026`.
+Value sets that exist in both `v2026` and `v2027` have the same module and class name in each. To move a plugin to the 2027 measures, change `v2026` to `v2027` in its imports, then check for these differences:
+
+- Some `v2026` classes, such as `condition.Glaucoma`, have no `v2027` class. Keep importing those from `v2026`.
+- In the `individual_characteristic` payer value sets (`PayerType`, `MedicareAdvantagePayer`, and `MedicareFfsPayer`), the payer code attribute is `SOP` in `v2026` and `SOPT` in `v2027`. Change any code that reads `.SOP` to read `.SOPT`.
 
 ## Usage
 
