@@ -528,18 +528,18 @@ AddCondition records a condition only when the patient's chart doesn't already h
 For a code that's already on the chart, active or resolved, use [Assess](#assess) with `icd10_code`,
 which reuses that condition and makes a resolved one active again. Codes match regardless of dots
 and case, so `M54.50` and `M5450` name the same condition, and surgical history entries aren't
-checked. A staged AddCondition with a charted code shows a message to use Assess, and committing it
-records nothing. When a plugin commits one with a separate `commit()`, the command stays staged and
-the plugin gets no error. Passing `commit=True` to `originate()` instead fails with the error
+checked. A staged AddCondition with a charted code shows
 `This condition is already on the patient's chart. Use Assess to update it, including reactivating a resolved condition.`,
-and the command isn't added to the note.
+and committing it records nothing. When a plugin commits one, with `commit()` or by passing
+`commit=True` to `originate()`, the command stays staged in the note and the plugin gets no error.
 
 The condition is recorded as a problem list item unless a clinician sets the command's
 **Category Type** field to Health Concern. Clinicians can also pick an optional
 **Category Domain**. `AddConditionCommand` has no parameters for either, so a plugin's AddCondition
 records a problem list item with no domain. Plugins can read the choices in the command's data as
 `category_type`, which is `problem-list-item` or `health-concern`, and `category_domain`, which is
-`sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+`sdoh`, `functional-status`, `disability-status`, or `cognitive-status`, and is empty when no domain
+is set.
 
 **Command-specific parameters**:
 
