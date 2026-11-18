@@ -44,6 +44,12 @@ The revamped note is a redesigned note body that organizes commands into clinica
 
 **Easier drag and drop:** Commands are picked up by a grip in the left gutter, so clicks inside a command's fields always go to the fields.
 
+**Diagnoses billed in the note's order:** The billing footer lists the note's diagnoses in the order their commands appear in the note body, so dragging an Assess Condition command to the top makes its diagnosis the primary one.
+- Each condition takes the position of the topmost command that records or assesses it, such as Assess Condition, Diagnose, Change Diagnosis or a Structured Assessment. The footer updates as soon as you drop a command.
+- Conditions with no command of their own, such as an order's indication, follow in the order they were added.
+- Each time charges are pushed or the note is locked, the claim ranks the note's diagnosis codes in the same order, ahead of any codes added only on the claim. This includes a claim that has already been filed.
+- When the order changes, the claim gets a comment listing the new order.
+
 **Commands from plugins and the API marked:** A command a plugin or the API added has a sparkle after its title, whether the command is open or collapsed. Hover over the sparkle to see where the command came from and, once someone else edits it, who last modified it.
 
 ## For developers
@@ -55,6 +61,8 @@ Plugins can also add their own content to the revamped note. Respond to the [`NO
 - Content returned for the same section stacks in the order the handlers ran.
 - Each entry renders in its own frame, which starts 120 pixels tall. To fit the frame to the content, send a `RESIZE` message with the content's height over the frame's message channel, as shown in [Frame height](/sdk/effect-note-custom-content/#frame-height).
 - Outside the beta, Canvas doesn't send the event, so the content doesn't appear.
+
+A claim's diagnosis codes follow the note body order in the beta. Plugins that read `ClaimDiagnosisCode.rank` can see how the order is set in [How diagnosis codes are ranked](/sdk/data-claim/#how-diagnosis-codes-are-ranked).
 
 HTML a plugin sets on a command with [`set_custom_html`](/sdk/commands/#set_custom_html) shows only while the command is open. A collapsed command's summary leaves it out.
 
