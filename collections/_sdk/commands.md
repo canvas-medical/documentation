@@ -672,7 +672,7 @@ returning an effect. It can't be used as a [protocol card](/sdk/effect-protocol-
 
 | Name                 | Type     | Required | Description |
 |:---------------------|:---------|:---------|:------------|
-| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that isn't `ignored` and has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
 | `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
 
 **Example**:
@@ -902,7 +902,7 @@ returning an effect. It can't be used as a [protocol card](/sdk/effect-protocol-
 
 | Name                 | Type     | Required | Description |
 |:---------------------|:---------|:---------|:------------|
-| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that isn't `ignored` and has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
 | `reason_code`        | _[Reason](#denyrefill-reason) enum_ | `false` | The reason for the denial. Must be one of [`DenyRefillCommand.Reason`](#denyrefill-reason). |
 | `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
 
