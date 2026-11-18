@@ -3260,16 +3260,17 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 
 A parameter of this type accepts:
 
-- A `date`.
-- A `datetime` at midnight, which is sent as its date.
-- A string in the form `YYYY` (a year), `YYYY-MM` (a month), or `YYYY-MM-DD` (a day) that names a real date.
+- A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. These are the partial forms the chart's own date field takes.
+- Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, or a `YYYY-MM-DD` string.
 
-Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period. A month is shown in the chart's month form.
+A year or a month stays the string you sent. Any other value becomes a `date`.
+
+Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period.
 
 | Value sent     | Shown in the chart | Date recorded |
 |:---------------|:-------------------|:--------------|
 | `"2023"`       | 2023               | 2023-01-01    |
-| `"2026-09"`    | Sep 2026           | 2026-09-01    |
+| `"09/2026"`    | 09/2026            | 2026-09-01    |
 | `"2026-09-14"` or `date(2026, 9, 14)` | 2026-09-14 | 2026-09-14 |
 
 The commands with `ApproximateDate` parameters are [AddCondition](#addcondition), [Allergy](#allergy), [Assess](#assess), [Diagnose](#diagnose), [FollowUp](#followup), [ImmunizationStatement](#immunizationstatement), [MedicalHistory](#medicalhistory), and [SurgicalHistory](#surgicalhistory). Other date parameters, such as those on Goal, Task, and Immunize, take a full `date`. To annotate your own values with this type, import it from `canvas_sdk.commands.constants`.
@@ -3290,7 +3291,7 @@ surgical_history = PastSurgicalHistoryCommand(
 medical_history = MedicalHistoryCommand(
     note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
     past_medical_history="J0390",
-    approximate_start_date="2026-09",
+    approximate_start_date="09/2026",
     approximate_end_date="2026-10-02"
 )
 ```
