@@ -215,7 +215,7 @@ for test in lab_order.tests.all():
 
 ### Working with Diagnostic Reports
 
-A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), and the `lab` foreign key back to the originating `LabReport`.
+A `LabReport` may be linked to one or more `DiagnosticReport` records. The `DiagnosticReport` model exposes its `id`, `status`, the `subject` (Patient), the `lab` foreign key back to the originating `LabReport`, and its code and category codings.
 
 #### Getting the DiagnosticReport(s) from a LabReport
 
@@ -240,6 +240,23 @@ diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
 lab_report = diagnostic_report.lab
 if lab_report:
     print(f"LabReport ID: {lab_report.id}")
+```
+
+#### Reading a DiagnosticReport's codings
+
+A `DiagnosticReport`'s report codes are available through its `codings` attribute, and its categories through `category_codings`:
+
+```python
+from canvas_sdk.v1.data.diagnostic_report import DiagnosticReport
+from logger import log
+
+diagnostic_report = DiagnosticReport.objects.get(id="diagnostic-report-id")
+
+for coding in diagnostic_report.codings.all():
+    log.info(f"code: {coding.system} {coding.code} {coding.display}")
+
+for category in diagnostic_report.category_codings.all():
+    log.info(f"category: {category.system} {category.code} {category.display}")
 ```
 
 #### Filtering DiagnosticReports by patient
@@ -511,6 +528,36 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | status     | [DiagnosticReportStatus](#diagnosticreportstatus)     |
 | subject    | [Patient](/sdk/data-patient/#patient)                 |
 | lab        | [LabReport](#labreport)                               |
+| codings    | [DiagnosticReportCodeCoding](#diagnosticreportcodecoding)[] |
+| category_codings | [DiagnosticReportCategoryCoding](#diagnosticreportcategorycoding)[] |
+
+### DiagnosticReportCodeCoding
+
+| Field Name        | Type                                  |
+|-------------------|---------------------------------------|
+| dbid              | Integer                               |
+| created           | DateTime                              |
+| modified          | DateTime                              |
+| system            | String                                |
+| version           | String                                |
+| code              | String                                |
+| display           | String                                |
+| user_selected     | Boolean                               |
+| diagnostic_report | [DiagnosticReport](#diagnosticreport) |
+
+### DiagnosticReportCategoryCoding
+
+| Field Name        | Type                                  |
+|-------------------|---------------------------------------|
+| dbid              | Integer                               |
+| created           | DateTime                              |
+| modified          | DateTime                              |
+| system            | String                                |
+| version           | String                                |
+| code              | String                                |
+| display           | String                                |
+| user_selected     | Boolean                               |
+| diagnostic_report | [DiagnosticReport](#diagnosticreport) |
 
 ### LabReview
 
