@@ -530,7 +530,7 @@ diagnosed previously and is still active. See
 |:----------------------------|:---------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_ | `true`   | ICD-10 code of the condition to record. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
 | `background`                | _string_ | `false`  | Background information about the condition.                |
-| `approximate_date_of_onset` | _date_   | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `comments`                  | _string_ | `false`  | Additional comments (max length: 1000 characters).         |
 
 **Example**:
@@ -599,7 +599,7 @@ AdjustPrescriptionCommand(
 | `allergy`          | _[Allergen](#allergy-allergen)_      | `false`  | Represents the allergen. See details in the [Allergen](#allergy-allergen) type below. Search allergens with the [ontologies allergen search](/sdk/utils/#get-fdballergy--full-text-search).                 |
 | `severity`         | _[Severity](#allergy-severity) enum_ | `false`  | The severity of the allergic reaction. Must be one of [`AllergyCommand.Severity`](#allergy-severity). |
 | `narrative`        | _string_        | `false`  | A narrative or free-text description of the allergy (max length: 512 characters). |
-| `approximate_date` | _datetime_      | `false`  | The approximate date the allergy was identified.                                 |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the allergy was identified. Send a year or a month when that's all you know. |
 
 **Enums and Types**:
 
@@ -671,7 +671,7 @@ Entering in error an Assess that changed the status resets the condition's statu
 |:----------------------------|:--------------|:---------|:---------------------------------------------------------------------------|
 | `condition_id`              | _string_      | `true`, unless `icd10_code` is set | The id of the [Condition](/sdk/data-condition/#condition) being assessed. Must be a condition already recorded on that patient's chart. Can't be combined with `icd10_code`. |
 | `icd10_code`                | _string_      | `true`, unless `condition_id` is set | ICD-10 code of the condition being assessed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). Can't be combined with `condition_id`. |
-| `approximate_date_of_onset` | _date_        | `false`  | The approximate date the condition began. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began, or only its year or month. Committing the command saves it as the condition's onset date, replacing any date already recorded. If you leave it unset, the condition's onset date doesn't change. |
 | `show_in_problem_list`      | _boolean_     | `false`  | Whether committing the command puts the condition on the problem list (`True`) or records it as an encounter diagnosis for this visit only (`False`). If you leave it unset or pass `None`, the condition keeps its current status, and a new condition goes on the problem list. |
 | `background`                | _string_      | `false`  | Background information about the diagnosis.                                |
 | `status`                    | _Status enum_ | `false`  | The current status of the diagnosis. Must be one of [`AssessCommand.Status`](#assess-status). |
@@ -880,7 +880,7 @@ already in a note keep working when the setting is turned on or off.
 |:----------------------------|:-----------|:---------|:-----------------------------------------------------------|
 | `icd10_code`                | _string_   | `true`   | ICD-10 code of the condition being diagnosed. Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions).              |
 | `background`                | _string_   | `false`  | Background information about the diagnosis.                |
-| `approximate_date_of_onset` | _datetime_ | `false`  | The approximate date the condition began.                  |
+| `approximate_date_of_onset` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date the condition began. Send a year or a month when that's all you know. |
 | `today_assessment`          | _string_   | `false`  | The narrative for the initial assessment of the condition (max length: 2048 characters). |
 
 **Example**:
@@ -967,7 +967,7 @@ family_history_unstructured = FamilyHistoryCommand(
 | Name             | Type                     | Required to commit        | Description                                                                                                                                                                                                                |
 |:-----------------|:-------------------------|:--------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `structured`     | _boolean_                | `false`                   | Whether the RFV is structured or not. Defaults to False.                                                                                                                                                                   |
-| `requested_date` | _date_                   | `false`                   | The desired follow up date.                                                                                                                                                                                                |
+| `requested_date` | _[ApproximateDate](#approximatedate)_ | `false`                   | The desired follow-up date. Send a year or a month when no specific day is wanted.                                                                                                                                                                                              |
 | `note_type_id`   | _UUID (str)_             | `false`                   | The desired type of appointment. See [NoteType](/sdk/data-note/#notetype).                                                                                                                                                                                           |
 | `coding`         | _[Coding](#coding)_ or _UUID (str)_ | `true` if structured=True | The coding for the structured RFV. Either a full [Coding](#coding) object (with `code`, `system`, `display`) or a UUID string referencing a verified coding record. If a [Coding](#coding) is provided, it is validated against existing [ReasonForVisitSettingCoding](/sdk/data-reason-for-visit/#reasonforvisitsettingcoding) records |
 | `comment`        | _string_                 | `false`                   | Additional commentary on the RFV.                                                                                                                                                                                          |
@@ -1199,7 +1199,7 @@ imaging_review = ImagingReviewCommand(
 | `cpt_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CPT code for the immunization procedure. Used with CVX code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations). |
 | `cvx_code`         | _string_ or _[Coding](#coding)_ | `false`* | The CVX code for the vaccine administered. Used with CPT code to search against ontologies server for validation. Search with the [immunization endpoint](/sdk/utils/#get-cptimmunization--search-immunizations).   |
 | `unstructured`     | _[Coding](#coding)_             | `false`* | Free-text immunization description.                                                                                 |
-| `approximate_date` | _date_               | `false`  | The approximate date when the immunization was administered.                                                        |
+| `approximate_date` | _[ApproximateDate](#approximatedate)_ | `false`  | The approximate date when the immunization was administered. Send a year or a month when that's all you know. |
 | `comments`         | _string_             | `false`  | Additional comments about the immunization (max 255 characters).                                                    |
 
 *Must provide either both `cpt_code` and `cvx_code` together, or `unstructured` alone (cannot mix structured and unstructured).
@@ -1496,8 +1496,8 @@ Backfills a condition the patient had in the past that is not active now. See
 | Name                     | Type      | Required to commit | Description                                                |
 |--------------------------|-----------|----------|------------------------------------------------------------|
 | `past_medical_history`   | _string_  | `true`   | An ICD-10 code or description of the past medical condition. ICD-10 codes are strongly preferred (see note below). Search with the [ICD-10 condition endpoint](/sdk/utils/#get-icdcondition--icd-10-conditions). |
-| `approximate_start_date` | _date_    | `false`  | Approximate start date of the condition.                   |
-| `approximate_end_date`   | _date_    | `false`  | Approximate end date of the condition.                     |
+| `approximate_start_date` | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate start date of the condition. Send a year or a month when that's all you know. |
+| `approximate_end_date`   | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate end date of the condition. Send a year or a month when that's all you know. |
 | `show_on_condition_list` | _boolean_ | `false`  | Whether the condition should appear on the condition list. |
 | `comments`               | _string_  | `false`  | Additional comments (max length: 1000 characters).         |
 
@@ -1686,7 +1686,7 @@ Records a past surgical procedure, coded in SNOMED. See [Recording a condition](
 | Name                    | Type                 | Required to commit | Description                                        |
 |-------------------------|----------------------|----------|----------------------------------------------------|
 | `past_surgical_history` | _string_ or _[Coding](#coding)_ | `true`   | A description of the past surgical procedure. Search with the [procedures endpoint](/sdk/utils/#get-snomedprocedures--surgical-history-procedures).      |
-| `approximate_date`      | _date_               | `false`  | Approximate date of the surgery.                   |
+| `approximate_date`      | _[ApproximateDate](#approximatedate)_ | `false`  | Approximate date of the surgery. Send a year or a month when that's all you know. |
 | `comment`               | _string_             | `false`  | Additional comments (max length: 1000 characters). |
 
 **Coding Support**:
@@ -3253,6 +3253,47 @@ VitalsCommand(
 ## Command Constants
 
 The `canvas_sdk.commands.constants` module provides essential classes and enumerations used across various Canvas SDK command implementations. These constants ensure consistency and provide structured data types for common medical and administrative elements.
+
+### ApproximateDate
+
+`ApproximateDate` is the type of the command parameters Canvas records as approximate dates, such as the onset of a condition or the date of a past surgery. Use it when you know only the year or the month something happened: send `"2023"` rather than inventing January 1, 2023.
+
+A parameter of this type accepts:
+
+- A `date`.
+- A `datetime` at midnight, which is sent as its date.
+- A string in the form `YYYY` (a year), `YYYY-MM` (a month), or `YYYY-MM-DD` (a day) that names a real date.
+
+Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period. A month is shown in the chart's month form.
+
+| Value sent     | Shown in the chart | Date recorded |
+|:---------------|:-------------------|:--------------|
+| `"2023"`       | 2023               | 2023-01-01    |
+| `"2026-09"`    | Sep 2026           | 2026-09-01    |
+| `"2026-09-14"` or `date(2026, 9, 14)` | 2026-09-14 | 2026-09-14 |
+
+The commands with `ApproximateDate` parameters are [AddCondition](#addcondition), [Allergy](#allergy), [Assess](#assess), [Diagnose](#diagnose), [FollowUp](#followup), [ImmunizationStatement](#immunizationstatement), [MedicalHistory](#medicalhistory), and [SurgicalHistory](#surgicalhistory). Other date parameters, such as those on Goal, Task, and Immunize, take a full `date`. To annotate your own values with this type, import it from `canvas_sdk.commands.constants`.
+
+**Usage Example**:
+
+```python
+from canvas_sdk.commands import MedicalHistoryCommand, PastSurgicalHistoryCommand
+
+# Only the year of the surgery is known
+surgical_history = PastSurgicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_surgical_history="Appendectomy",
+    approximate_date="2023"
+)
+
+# The condition started in September 2026 and ended on a known day
+medical_history = MedicalHistoryCommand(
+    note_uuid="8f4b1e2c-9a3d-4c7e-b1f6-2d5a8c0e3b47",
+    past_medical_history="J0390",
+    approximate_start_date="2026-09",
+    approximate_end_date="2026-10-02"
+)
+```
 
 ### ClinicalQuantity
 
