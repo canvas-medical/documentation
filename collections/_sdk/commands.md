@@ -534,7 +534,8 @@ and committing it records nothing. When a plugin commits one, with `commit()` or
 `commit=True` to `originate()`, the command stays staged in the note and the plugin gets no error.
 
 The condition is recorded as a problem list item unless a clinician sets the command's
-**Category Type** field to Health Concern. Clinicians can also pick an optional
+**Category Type** field to Health Concern. When a clinician clears Category Type, the command saves
+Problem List Item back in its data, matching what's recorded. Clinicians can also pick an optional
 **Category Domain**. `AddConditionCommand` has no parameters for either, so a plugin's AddCondition
 records a problem list item with no domain. Plugins can read the choices in the command's data as
 `category_type`, which is `problem-list-item` or `health-concern`, and `category_domain`, which is
