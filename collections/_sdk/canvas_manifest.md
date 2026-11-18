@@ -106,7 +106,7 @@ Use [semantic versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
 - **Bump the version in the commit or pull request that changes the code.** Each merged change then carries its own version, and a reviewer can see what the new number ships.
 - **Tag the commit you release** (for example `git tag v1.5.0`, then `git push origin v1.5.0`). A version seen in the logs or the Admin then leads straight to the source that produced it, `git diff v1.4.1 v1.5.0` shows what changed between two releases, and `canvas deploy <package dir> --ref v1.5.0 --instance <instance>` deploys exactly that tag.
 
-To tell test builds apart without spending release numbers, add a pre-release suffix such as `1.5.0-rc.1` or `1.5.0-dev.3`, and drop the suffix for the build you release.
+A pre-release suffix such as `1.5.0-rc.1` or `1.5.0-dev.3` tells test builds apart without spending release numbers. For a plugin listed in the Canvas Platform catalog, the suffix on `main` also sets the listing's stage (see [Release stages](#release-stages)): a `-rc.1` or `-dev.3` build pushed to `main` lists the plugin as Beta, and other organizations cannot install it. Push test builds of a listed plugin to another branch with `canvas deploy --branch`, and keep `main` at the version other organizations install.
 
 ## Components
 
@@ -364,6 +364,7 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 | `surfaces` | array | Yes | Every place in Canvas the plugin's work shows up, at least one and none repeated: `Note`, `Chart app`, `Command`, `Background`, `Patient portal`, `Waffle`. |
 | `kind` | string | No | `agent` for a plugin that calls a model and acts with latitude, or `plugin` for a deterministic one. Defaults to `plugin`. |
 | `agent` | object | When `kind` is `agent` | The agent's boundary: `does`, `does_not`, `runs_when` (text) and `models` (at least one model name). A `plugin` must leave it out. |
+| `maintainer` | string | No | Who maintains the plugin: `publisher` for the plugin's publisher, or `installer` for each organization that installs it. Defaults to `publisher`. |
 | `keywords` | array | No | Free search terms, separate from [Tags](#tags): lowercase letters, digits and hyphens, up to 32 characters each. |
 | `screenshots` | array | No | Up to eight images, in display order. Each has a `path` ending in `.png`, `.jpg`, `.jpeg` or `.webp` in lowercase, a required `alt` of at most 200 characters, and an optional `caption` of at most 40. |
 | `video` | object | No | A YouTube video that the plugin's page plays first in its screenshot row. It has a `url` (a YouTube watch, `youtu.be` or embed link over `https`, naming the video's 11-character id), a `poster` image shown until the video plays (with the same rules as a screenshot `path`), and an optional `caption` of at most 40 characters. The video must allow embedding, which is YouTube's default for an unlisted upload. |
@@ -376,7 +377,25 @@ See [Additional Configuration](/sdk/layout-effect/#additional-configuration) on 
 
 Every path is inside the package folder: no leading `/`, no `..` anywhere in it, and no backslash. Unknown fields are refused at every level, and optional fields are left out rather than set to `null`.
 
-Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and a patch bump of `plugin_version`, so pull before your next push. The edit is refused unless `plugin_version` on `main` is a plain `MAJOR.MINOR.PATCH` version, so a pre-release suffix such as `1.5.0-rc.1` blocks it.
+Someone holding the Publisher role in the plugin's organization can also edit the listing from the plugin's page in the Canvas Platform catalog, including the `description`. Saving there is a commit to `main` with the listing changed and `plugin_version` bumped within its stage, so pull before your next push. A release takes a patch bump (`1.4.2` to `1.4.3`). A pre-release keeps its suffix and bumps its last number (`1.0.0-beta.2` to `1.0.0-beta.3`), or gains `.1` when it ends in a word (`1.0.0-alpha` to `1.0.0-alpha.1`). Any other version, such as `1.0.0a1` or one with build metadata (`+build.5`), cannot take a bump, and the edit is refused.
+
+### Release stages
+
+The suffix on the highest `plugin_version` that `main` has carried sets the listing's stage in the Canvas Platform catalog:
+
+| `plugin_version` | Stage | Examples |
+|------------------|-------|----------|
+| No pre-release suffix | Generally available | `1.0.0` |
+| A suffix whose first identifier is `alpha` | Coming soon | `1.0.0-alpha`, `1.0.0-alpha.2`, `1.0.0a1` |
+| Any other suffix | Beta | `1.0.0-beta.1`, `1.0.0-rc.1`, `1.0.0b2`, `1.0.0.dev3` |
+
+While a plugin is Coming soon or Beta:
+
+- Other organizations see the plugin's card and page with a Coming soon or Beta label. The page offers **Join the waiting list**, with an optional note, in place of installing it.
+- Every install outside the plugin's organization is refused, and `canvas deploy` names the plugin's catalog page in its refusal. The plugin's own organization installs it as usual, for testing, and so does each practice it manages when that organization is an MSO.
+- The plugin's organization sees each waiting-list request on its own view of the plugin's page, with the requester's note and whether they would test a beta.
+
+To make the plugin generally available, push its release with no suffix, such as `1.0.0` after `1.0.0-rc.1`. A lower release, such as `0.9.1` pushed after `1.0.0-rc.1`, leaves the stage as it is. A listing that shows a released version to other organizations keeps that release when a pre-release is pushed after it, while any instance outside the plugin's organization has the plugin installed, so customers keep installing the release they run.
 
 An `OVERVIEW.md` file beside `CANVAS_MANIFEST.json` in the package folder is the plugin's overview, and needs no field in `catalog`. When it is there, the plugin's page shows it as rendered markdown beside the plugin's pricing and setup. `canvas init` creates one to start from.
 
