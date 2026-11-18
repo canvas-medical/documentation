@@ -656,9 +656,8 @@ allergy = AllergyCommand(
 ### ApproveRefill
 
 Approves a pharmacy's refill request. A plugin starts the Approve Refill command in a note and can
-edit or delete it, and the provider sends the approval to the pharmacy from the command. A refill
-dashboard plugin can use it to set up responses to a batch of requests, so providers don't have to
-open each chart to start one. To decline a request instead, use [DenyRefill](#denyrefill).
+edit or delete it, and the provider sends the approval to the pharmacy from the command. To decline a
+request instead, use [DenyRefill](#denyrefill).
 
 The command takes its medication, quantity, sig, and pharmacy from the
 [RefillRequest](/sdk/data-refill-request/#refillrequest). The plugin names the request and can add a
