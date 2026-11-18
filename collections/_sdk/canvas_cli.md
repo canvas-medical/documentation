@@ -326,7 +326,7 @@ $ canvas deploy paperwork-eviscerator/acme__paperwork_eviscerator --branch try-n
 
 **Plugins built in Canvas Studio**
 
-Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. Its next deploy waits for a Studio user to acknowledge the new commits.
+Canvas Studio keeps a plugin's work in progress on its `canvas-studio` branch on Canvas Platform. When a Studio project is opened, and before any deploy from it, Studio brings in new commits on `main` and `canvas-studio` that it has not synced yet, so changes you push from a `canvas clone` checkout become part of the project. In Test & Iterate, its next deploy waits for a Studio user to acknowledge the new commits. In Final Review or Published, the project keeps its stage: Studio updates its Testing Checklist to the new commits and redeploys them to the Studio test instance, asking a Studio user first unless that user's own open or Publish brought the commits in. A gated project that has been promoted does this only in Promoted, while its pull request is open or after it is merged, as described in [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
 
 - **Gated release:** Studio's changes reach you as a pull request in your organization's repository, and your snapshot deploys on `main` are brought back into the project. See [Working with a monorepo](/guides/working-with-a-monorepo/#with-canvas-studio-and-gated-release).
 - **Direct release:** Studio pushes plugin code to `main` when a Studio user publishes. To work on in-progress changes with Studio users, push to `canvas-studio` with `--branch canvas-studio`, which deploys only to your organization's [test instances](/guides/designating-test-instances/). A `canvas clone` checkout starts on `main`, and `deploy` pushes without force, so the push is rejected while `canvas-studio` holds commits that HEAD lacks. Run `git fetch` and `git checkout canvas-studio` first, then commit your changes and deploy.
@@ -705,6 +705,13 @@ These issues will fail on the instance (sandbox / Custom Data):
 | --- | --- |
 | `custom-model-id-vs-dbid` | `.filter(id=…)` / `.get(id=…)` on a local CustomModel — CustomModels key on `dbid`, not `id`. Use `dbid=…` |
 | `lazy-fk-string-ref` | A `ForeignKey`/`OneToOneField`/`ManyToManyField` with a string reference to a CustomModel defined in this plugin — import the class and pass it directly |
+
+**Request handling (warnings).** This code runs without errors, so a sandbox load doesn't catch it, but it makes the plugin less secure or less reliable:
+
+| Rule code | Flags |
+| --- | --- |
+| `secret-compared-with-eq` | `==` or `!=` between a plugin secret (`self.secrets[...]`, `self.secrets.get(...)`, or a local variable assigned from one) and a value from the request (a `credentials` field, a header, a query parameter, or a path parameter). Compare secrets in constant time instead: use [`APIKeyAuthMixin`](/sdk/handlers-simple-api-http/#authentication-mixins), or `hmac.compare_digest(a.encode(), b.encode())`. A secret compared with a constant isn't flagged. |
+| `requests-no-timeout` | A `requests.get`, `post`, `put`, `patch`, `delete`, `head`, `options`, or `request` call with no `timeout=` argument and no `**kwargs`. Without a timeout, `requests` waits for a slow server indefinitely, and the handler waits with it. Pass `timeout=`, or use [`Http`](/sdk/utils/#making-requests-with-http), which always sets one. |
 
 #### Sandbox-load validation
 

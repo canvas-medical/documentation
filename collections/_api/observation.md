@@ -261,7 +261,9 @@ sections:
                   -  body temperature<br>
                   -  pulse rate<br>
                   -  oxygen saturation<br>
-                  -  respiration rate
+                  -  respiration rate<br><br>
+
+              The value must be a number greater than zero; otherwise the request is rejected with a 422 error. <br><br>
 
               A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
             attributes:
@@ -303,8 +305,8 @@ sections:
 
               Currently supported string values are <br>
               - **note** - this is a free text comment field in the Canvas Vital Command. Maximum length is 150 characters. <br><br>
-              - **pulse rhythm** - This is an enum in the Canvas Vital command. Values supported are **Regular**, **Irregularly Irregular**, **Regulary Irregular**. If one of these values is not provided, a 422 error will occur. <br><br>
-              - **blood pressure** - This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command. 
+              - **pulse rhythm** - This is an enum in the Canvas Vital command. Values supported are **Regular**, **Irregularly Irregular**, **Regularly Irregular**. Any other value is rejected with a 422 error. <br><br>
+              - **blood pressure** - This is a string representation of the systolic and diastolic combined in the format `"100/80"`. A trailing `mmHg` is accepted and removed; a blood pressure valueString in any other format is rejected with a 422 error. 
           - name: valueCodeableConcept
             type: json
             exclude_in: create
