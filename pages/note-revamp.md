@@ -30,10 +30,15 @@ The revamped note is a redesigned note body that organizes commands into clinica
 - A collapsed command is a read-only summary of up to two lines that shows only the fields that have a value. A summary that runs longer ends in an ellipsis.
 - Interaction warnings and failed interaction checks stay in the summary; a clean "no interactions found" result is left out.
 - Select anywhere on a collapsed command to open it. The command's title also opens and collapses it from the keyboard with Enter or Space.
+- Collapsing an Assess Condition command also hides the commands nested under it, and a pill beside its title shows how many there are, such as **2 items**. Expanding it shows them again, each open or collapsed as it was.
+- A committed Assess Condition command opens collapsed, with its nested commands hidden.
+- Dragging a collapsed Assess Condition command moves its nested commands with it.
 
 **Search the note:** Type in the **Search note** box in the note header to narrow the note to the commands that match, with the matching text highlighted.
 - A command matches on its name or on the content the note shows for it, such as a field's text, a selected option's label or a questionnaire answer. Matching ignores case and starts at two characters.
 - In the **Sections** view, each section shows only its matching commands. In the **All** view, only the commands that don't match are hidden; free text stays in place.
+- A matching command nested under an Assess Condition command shows under it, even when the Assess Condition command doesn't match. Commands nested under it that don't match stay hidden. In the **Sections** view, a match in a different section from its Assess Condition command shows at the top level of its own section instead.
+- A collapsed Assess Condition command opens while the search shows a match under it, and collapses again when the search is cleared. If you collapse or expand it during the search, it keeps that state after the search is cleared. If you collapse it and then change the search to text that still matches under it, it opens again.
 - A command added while a search is active stays in view. Commands can't be dragged to a new position until the search is cleared.
 - When nothing matches, the box shows **No matches**. Select the clear button or press Escape to show the whole note again.
 
