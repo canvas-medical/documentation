@@ -3260,7 +3260,7 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 
 A parameter of this type accepts:
 
-- A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. These are the partial forms the chart's own date field takes.
+- A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. A one-digit month, as in `6/2025`, also works. These are the partial forms the chart's own date field takes.
 - Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, or a `YYYY-MM-DD` string.
 
 A year or a month stays the string you sent. Any other value becomes a `date`.
@@ -3271,6 +3271,7 @@ Canvas records the value the way the chart's own approximate-date field does: th
 |:---------------|:-------------------|:--------------|
 | `"2023"`       | 2023               | 2023-01-01    |
 | `"09/2026"`    | 09/2026            | 2026-09-01    |
+| `"6/2025"`     | 6/2025             | 2025-06-01    |
 | `"2026-09-14"` or `date(2026, 9, 14)` | 2026-09-14 | 2026-09-14 |
 
 The commands with `ApproximateDate` parameters are [AddCondition](#addcondition), [Allergy](#allergy), [Assess](#assess), [Diagnose](#diagnose), [FollowUp](#followup), [ImmunizationStatement](#immunizationstatement), [MedicalHistory](#medicalhistory), and [SurgicalHistory](#surgicalhistory). Other date parameters, such as those on Goal, Task, and Immunize, take a full `date`. To annotate your own values with this type, import it from `canvas_sdk.commands.constants`.
