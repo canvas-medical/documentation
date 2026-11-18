@@ -1402,6 +1402,9 @@ data_module:
   - title: "ServiceProvider"
     url: /sdk/data-serviceprovider/
     description: Data associated with Service Providers.
+  - title: "ServiceRequest"
+    url: /sdk/data-service-request/
+    description: The FHIR ServiceRequest over an imaging order, lab order, referral, or procedure.
   - title: "Snapshot"
     url: /sdk/data-snapshot/
     description: Images captured via the Canvas iOS application.
