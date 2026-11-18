@@ -3261,9 +3261,9 @@ The `canvas_sdk.commands.constants` module provides essential classes and enumer
 A parameter of this type accepts:
 
 - A string in the form `YYYY` for a year, or `MM/YYYY` for a month, with a month from `01` to `12`. A one-digit month, as in `6/2025`, also works. These are the partial forms the chart's own date field takes.
-- Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, or a `YYYY-MM-DD` string.
+- Any value a `date` parameter accepts, such as a `date`, a `datetime` at midnight, a Unix timestamp at midnight UTC, or a `YYYY-MM-DD` string.
 
-A year or a month stays the string you sent. Any other value becomes a `date`.
+A year or a month stays the string you sent, and a full date becomes a `date`. Any other value raises a validation error when you create the command. For example, `"2026-09"` puts the year first, `"13/2026"` names a month that doesn't exist, and the number `2023` isn't a string.
 
 Canvas records the value the way the chart's own approximate-date field does: the chart shows the period you sent, and dates it to the first day of that period.
 
