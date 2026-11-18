@@ -78,7 +78,7 @@ Returns an Effect that originates a new command in the note body.
 
 | Name | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill) raise a `ValueError` when it is `True`. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
+| `commit` | `bool` | No | `False` | When `True`, the command is automatically committed after origination. This is a simpler alternative to returning separate `originate()` and `commit()` effects. **Note:** This only applies to command types that support the COMMIT action. Commands that do not support committing (Reason For Visit, Prescribe, Refill, Adjust Prescription, Refer, and Order commands) will ignore this parameter. [ApproveRefill](#approverefill) and [DenyRefill](#denyrefill) don't support `commit=True`. See the [command type table](/sdk/effects/#commands) for which commands support COMMIT. |
 | `line_number` | `int` | No | `-1` | The line number in the note where the command should be inserted. By default the command will insert at the bottom of the note. |
 
 **See also:** For efficiently inserting multiple commands at once, see [Batch Originate Commands](/sdk/effect-batch-originate/).
@@ -664,15 +664,15 @@ The command takes its medication, quantity, sig, and pharmacy from the
 [RefillRequest](/sdk/data-refill-request/#refillrequest). The plugin names the request and can add a
 note to the pharmacist.
 
-Approve Refill supports `originate`, `edit`, and `delete`. It has no `send` method, and `commit`,
-`enter_in_error`, `set_custom_html`, and `originate(commit=True)` raise a `ValueError` instead of
-returning an effect. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+Approve Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+approval from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
 
 **Command-specific parameters**:
 
 | Name                 | Type     | Required | Description |
 |:---------------------|:---------|:---------|:------------|
-| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that isn't `ignored` and has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
 | `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
 
 **Example**:
@@ -894,15 +894,15 @@ a plugin starts the Deny Refill command in a note and can edit or delete it, and
 the denial to the pharmacy from the command. The command takes its medication, quantity, sig, and
 pharmacy from the [RefillRequest](/sdk/data-refill-request/#refillrequest).
 
-Deny Refill supports `originate`, `edit`, and `delete`. It has no `send` method, and `commit`,
-`enter_in_error`, `set_custom_html`, and `originate(commit=True)` raise a `ValueError` instead of
-returning an effect. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
+Deny Refill supports `originate`, `edit`, and `delete`. It has no `send` method. Don't call `commit`,
+`enter_in_error`, `set_custom_html`, or `originate(commit=True)` on it, because the provider sends the
+denial from the command. It can't be used as a [protocol card](/sdk/effect-protocol-cards/) recommendation.
 
 **Command-specific parameters**:
 
 | Name                 | Type     | Required | Description |
 |:---------------------|:---------|:---------|:------------|
-| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Use a request from the chart of the note's patient that isn't `ignored` and has no response yet. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
+| `refill_request_id`  | _string_ | `true`   | The id of the [RefillRequest](/sdk/data-refill-request/#refillrequest) to answer. Required to originate, and can't be changed with `edit`. To answer a different request, delete the command and originate a new one. |
 | `reason_code`        | _[Reason](#denyrefill-reason) enum_ | `false` | The reason for the denial. Must be one of [`DenyRefillCommand.Reason`](#denyrefill-reason). |
 | `note_to_pharmacist` | _string_ | `false`  | A note sent to the pharmacy with the response. Up to 70 printable ASCII characters, on a single line. |
 
