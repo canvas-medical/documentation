@@ -25,7 +25,7 @@ Import from the package that matches the measure versions your plugin implements
 
 Value sets that exist in both `v2026` and `v2027` have the same module and class name in each. To move a plugin to the 2027 measures, change `v2026` to `v2027` in its imports, then check for these differences:
 
-- Some `v2026` classes, such as `condition.Glaucoma`, have no `v2027` class. Keep importing those from `v2026`.
+- Some `v2026` classes have no `v2027` class, because the VSAC release for the 2027 measures retired them or merged them into other value sets. For example, eye-condition value sets such as `condition.Glaucoma` are merged into `condition.SignificantOcularConditions`. Import the merged value set from `v2027`, or keep importing a retired class from `v2026`.
 - In the `individual_characteristic` payer value sets (`PayerType`, `MedicareAdvantagePayer`, and `MedicareFfsPayer`), the payer code attribute is `SOP` in `v2026` and `SOPT` in `v2027`. Change any code that reads `.SOP` to read `.SOPT`.
 
 ## Usage
