@@ -1369,6 +1369,9 @@ data_module:
   - title: "ProtocolOverride"
     url: /sdk/data-protocol-override/
     description: A record of a protocol being snoozed for a patient.
+  - title: "Provenance"
+    url: /sdk/data-provenance/
+    description: Who created or updated a clinical record, and when.
   - title: "Questionnaire"
     url: /sdk/data-questionnaire/
     description: Groups of coded questions and the coded patient responses.

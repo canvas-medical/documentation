@@ -302,7 +302,7 @@ Links a claim to a specific insurance coverage.
 
 ### ClaimComment
 
-Represents a free-text comment made on a Claim.
+Represents a free-text comment made on a Claim. To read only committed comments, use the `committed` method, for example `claim.comments.committed()`.
 
 | Field Name       | Type                               |
 | ---------------- | ---------------------------------- |
