@@ -292,7 +292,9 @@ def compute():
 
 Returns an effect that sets or clears custom HTML content on a command. The HTML is stored on the command and rendered alongside it in the note. In the [revamped note](/product-updates/note-revamp/), the HTML shows only while the command is open, not in a collapsed command's summary.
 
-The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state—calling this method on a committed command will raise a validation error.
+The `command_uuid` field must be set on the command object before calling `set_custom_html`. The command must be in a staged (not committed) state. Calling this method on a committed command raises a validation error.
+
+`set_custom_html` isn't available on [ApproveRefill](#approverefill) or [DenyRefill](#denyrefill) commands. Calling it on one raises a validation error, because the provider reviews and sends the refill response from the command as Canvas shows it.
 
 | Parameter     | Type              | Description                                                      |
 |---------------|-------------------|------------------------------------------------------------------|
