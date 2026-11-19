@@ -751,7 +751,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_ADDED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are added to an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is added to an appointment. Adding several labels at once fires one event per label. <strong>Note:</strong> the target of this event is the <code>TaskLabel</code> that was added, <em>not</em> the appointment. Read the appointment's ID from the context object as <code>appointment.id</code> (for example, <code>Appointment.objects.get(id=self.event.context["appointment"]["id"])</code>). The <code>appointment</code> and <code>patient</code> keys are present only when the appointment has a patient.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -759,11 +759,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
@@ -771,7 +773,7 @@ To keep an external system in sync with appointment changes made in the Canvas U
 <table>
   <thead>
     <tr><th colspan="2">APPOINTMENT_LABEL_REMOVED</th></tr>
-    <tr><td colspan="2">Occurs when one or more labels are removed from an appointment.</td></tr>
+    <tr><td colspan="2">Occurs when a label is removed from an appointment. Removing several labels at once fires one event per label. As with <code>APPOINTMENT_LABEL_ADDED</code>, the target is the <code>TaskLabel</code> that was removed, and the appointment's ID is in the context object as <code>appointment.id</code>.</td></tr>
   </thead>
   <tbody>
     <tr>
@@ -779,11 +781,13 @@ To keep an external system in sync with appointment changes made in the Canvas U
       <td>Context object</td>
     </tr>
     <tr>
-       <td><pre>"id": appointment_id
-"type": None</pre></td>
-      <td><pre>"patient":
-    "id": pt_id
-"label": label_name</pre></td>
+       <td><pre>"id": task_label_id
+"type": <a href='/sdk/data-task/#tasklabel'>TaskLabel</a></pre></td>
+      <td><pre>"label": label_name
+"appointment":  # present only when the appointment has a patient
+    "id": appointment_id
+"patient":  # present only when the appointment has a patient
+    "id": pt_id</pre></td>
     </tr>
   </tbody>
 </table>
