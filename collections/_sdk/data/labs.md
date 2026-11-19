@@ -407,6 +407,23 @@ lab_report = command.anchor_object
 
 To react to new POC Lab Test results, listen for the [POC Lab Test command events](/sdk/events/#poc-lab-test-command), such as `POC_LAB_TEST_COMMAND__POST_COMMIT`.
 
+### Specimens and performing labs
+
+A lab order's collected specimens are [LabOrderSpecimen](#laborderspecimen) records in `specimens`. An [Observation](/sdk/data-observation/#observation) recorded for a specimen points to it through `specimen`.
+
+When a lab result names the lab that performed a value, the [LabValue](#labvalue) points to a [LabValuePerformer](#labvalueperformer) through `performer`. The values on one report that were performed at the same lab share a performer.
+
+```python
+from canvas_sdk.v1.data import LabOrder, LabReport
+
+order = LabOrder.objects.get(id="d2194110-5c9a-4842-8733-ef09ea5ead11")
+specimens = order.specimens.filter(deleted=False)
+
+report = LabReport.objects.get(id="f0e1d2c3-b4a5-4968-8776-655443322110")
+for value in report.values.select_related("performer"):
+    performing_lab = value.performer.name if value.performer else None
+```
+
 ## Delegations
 
 When staff send a lab report to a provider for signature, Canvas records a [DocumentReviewDelegation](/sdk/data-document-review-delegation/). It records another when the provider signs the report and Canvas returns it. The delegations for a lab report are available through two accessors:
@@ -549,7 +566,30 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | comment            | String                              |
 | observation_status | String                              |
 | test               | [LabTest](#labtest)                 |
+| performer          | [LabValuePerformer](#labvalueperformer) (nullable) |
 | codings            | [LabValueCoding](#labvaluecoding)[] |
+
+### LabValuePerformer
+
+The lab that performed a [LabValue](#labvalue).
+
+| Field Name   | Type                    | Notes |
+|--------------|-------------------------|-------|
+| id           | UUID                    |       |
+| dbid         | Integer                 |       |
+| created      | DateTime                |       |
+| modified     | DateTime                |       |
+| name         | String                  |       |
+| ordinal      | Integer                 | The performer's position among the performers on a lab report, for display |
+| line1        | String                  |       |
+| line2        | String                  |       |
+| city         | String                  |       |
+| state_code   | String                  |       |
+| postal_code  | String                  |       |
+| contact_name | String                  |       |
+| phone        | String                  |       |
+| email        | String                  |       |
+| values       | [LabValue](#labvalue)[] | The values this lab performed |
 
 ### LabValueCoding
 
@@ -599,6 +639,32 @@ The `DiagnosticReport` linked to a `LabReport`. The `id` is the DiagnosticReport
 | reports                   | [LabReport](#labreport)[]                         |
 | laborder_set              | [LabOrder](#laborder)[]                           |
 | action_events             | [LabOrderActionEvent](/sdk/data-fax/#laborderactionevent)[] |
+| specimens                 | [LabOrderSpecimen](#laborderspecimen)[]           |
+
+### LabOrderSpecimen
+
+A specimen collected for a [LabOrder](#laborder).
+
+| Field Name           | Type                                                  | Notes |
+|----------------------|-------------------------------------------------------|-------|
+| id                   | UUID                                                  |       |
+| dbid                 | Integer                                               |       |
+| created              | DateTime                                              |       |
+| modified             | DateTime                                              |       |
+| originator           | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| committer            | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| entered_in_error     | [CanvasUser](/sdk/data-canvasuser)                    |       |
+| deleted              | Boolean                                               |       |
+| order                | [LabOrder](#laborder)                                 |       |
+| identifier           | String                                                | Up to two characters |
+| specimen_type        | String                                                |       |
+| quantity             | Float                                                 |       |
+| units                | String                                                |       |
+| source               | String                                                |       |
+| source_additional    | String                                                |       |
+| collection_date_time | DateTime                                              |       |
+| body_site_id         | Integer                                               | The `dbid` of the specimen's body site. Body sites have no SDK model. |
+| observations         | [Observation](/sdk/data-observation/#observation)[]   | Observations recorded for the specimen |
 
 ### LabOrderReason
 
