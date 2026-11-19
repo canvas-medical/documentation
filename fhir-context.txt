@@ -29116,7 +29116,9 @@ Currently supported numeric values are
 \- body temperature  
 \- pulse rate  
 \- oxygen saturation  
-\- respiration rate A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
+\- respiration rate  
+The value must be a number greater than zero; otherwise the request is rejected with a 422 error.   
+A `valueQuantity` can also be used to represent a diagnostic score. Scores will have a unit of 'score'.
 Click to view child attributes
 value 
 number required
@@ -29130,8 +29132,8 @@ Actual result.
 This is used for vital observation that correspond with a string value. If this field is not provided or specifically the value attribute in the json is omitted, Canvas will interpret that as an empty value. A Read/Search of this observation will display the `dataAbsentReason` attribute.   
 Currently supported string values are   
 \- **note** \- this is a free text comment field in the Canvas Vital Command. Maximum length is 150 characters.   
-\- **pulse rhythm** \- This is an enum in the Canvas Vital command. Values supported are **Regular** , **Irregularly Irregular** , **Regulary Irregular**. If one of these values is not provided, a 422 error will occur.   
-\- **blood pressure** \- This is a string reprentation of the systolic and diastolic combined in the format `"100/80"`. If this valueString is not given, it will not appear correctly in the Canvas Vital Command.
+\- **pulse rhythm** \- This is an enum in the Canvas Vital command. Values supported are **Regular** , **Irregularly Irregular** , **Regularly Irregular**. Any other value is rejected with a 422 error.   
+\- **blood pressure** \- This is a string representation of the systolic and diastolic combined in the format `"100/80"`. A trailing `mmHg` is accepted and removed; a blood pressure valueString in any other format is rejected with a 422 error.
 hasMember 
 array[json] 
 Related Observation reference(s) that belongs to the Observation group/panel.  
@@ -47899,7 +47901,7 @@ Here is a payload to create a weight of 176.4 lbs:
 Looking in the Canvas UI, there will now be weight of `176 lbs 6.4 oz` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/weight.png)
 ####  Add Waist Circumference 
-Waist Circumference is denoted by the LOINC code `29463-7`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
+Waist Circumference is denoted by the LOINC code `56086-2`. Since its value is numeric, we will be able to pass the value and units through the `valueQuantity` attribute. By default if no `valueQuantity.unit` is specified, it will default to using centimeters, but `in` is also supported, it will just convert it to `cm` on the UI or when a Read/Search is performed.
 Here is a payload to create a waist circumference of `98.2 cm`:
     ```python
     payload = {
@@ -47977,7 +47979,7 @@ Here is a payload to create a temperature of `98.4 °F`:
 Looking in the Canvas UI, there will now be temperature of `98.4 °F` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/body-temperature.png)
 ####  Add Blood Pressure 
-Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command.
+Blood Pressure is denoted by the LOINC code `85354-9`. In the Vital's command blood pressure is a string value that combines the systolic and diastolic components with a `/`. So the payload will pass the `valueString` component in order for the blood pressure to appear correctly in the Vitals Command. A trailing `mmHg` is accepted and removed; a `valueString` in any other format is rejected with a 422 error.
 Since blood pressure is made up of two values, the payload will also define a `component` attribute list to pass the systolic (LOINC code `8480-6`) and diastolic (LOINC code `8462-4`) values. These two values are numeric, so they will have the `valueQuantity` attributes where the unit will be `mmHg`
 Here is a payload to create a Blood Pressure of `122/68`:
     ```python
@@ -48085,7 +48087,7 @@ Here is a payload to create a pulse rate of `115 bpm`:
 Looking in the Canvas UI, there will now be pulse rate of `115 bpm` added in that Vitals Command:
 ![Protocol framework](/assets/images/vitals/pulse-rate.png)
 ####  Add Pulse Rhythm 
-Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regulary Irregular`. This value will be passed in the `valueString` attribute.
+Pulse Rhythm is denoted by the LOINC code `8884-9`. Canvas accepts only three different string values for pulse rhythm: `Regular`, `Irregularly Irregular`, or `Regularly Irregular`, and rejects any other value with a 422 error. This value will be passed in the `valueString` attribute.
 Here is a payload to create a pulse rhythm of `Regular`:
     ```python
     payload = {
