@@ -703,11 +703,37 @@ Set one or the other, not both. You can originate an Assess with neither, for ex
 
 {% include alert.html type="info" content="If your plugin relies on <a href='/sdk/events/#assess_command__condition_selected'><code>ASSESS_COMMAND__CONDITION_SELECTED</code></a> or <a href='/sdk/events/#assess_command__icd10_code_selected'><code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code></a>, set the condition with <code>edit()</code>. These events fire when an existing Assess command's condition changes, so originating an Assess with <code>condition_id</code> or <code>icd10_code</code> already set sends neither. To trigger them, originate the command without a condition, then <code>edit()</code> it to set one. An <code>edit()</code> with <code>icd10_code</code> sends <code>ASSESS_COMMAND__ICD10_CODE_SELECTED</code> even when the patient already has that condition charted." %}
 
-Entering a committed Assess in error also enters in error the condition its commit recorded, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. The condition stays on the chart while another committed assessment that isn't entered in error still uses it. Conditions the Assess didn't record, such as one already on the chart or one recorded by a Diagnose or AddCondition command, are never changed. You can always enter an Assess in error, even when other assessments use the condition it recorded.
+**Problem list or encounter diagnosis**
 
-Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit. Committing with `False` records the condition as an encounter diagnosis, such as a sore throat that doesn't need tracking. Committing with `True` makes the condition a problem list item, whether it was an encounter diagnosis or a health concern. The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `encounter-diagnosis` or `problem-list-item`. A problem list item keeps its domain, such as `sdoh`, but an encounter diagnosis has no domain, so committing with `False` removes it. Clinicians choose the domain in the Assess command's **Category Domain** field, which is filled in from the condition and can be set only while **Show in problem list** is on. `AssessCommand` has no parameter for the domain, so committing a plugin's Assess with `True` or unset keeps the condition's current domain. Plugins can read the chosen domain as `category_domain` in the command's data: `sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none. An encounter diagnosis is still one assessed condition, not a copy, so Plan commands and billing in the note can use it. The chart's Conditions list shows encounter diagnoses alongside problem list items. Clinicians can pick one in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code. A commit that changes the category or domain sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+Set `show_in_problem_list` to choose whether the condition belongs on the patient's problem list or only to this visit:
 
-Entering in error an Assess that changed the condition's category or domain puts back the ones the condition had before that commit, including a health concern category or a domain the commit removed. The condition keeps its current category and domain instead when another Assess of the condition was committed after this one and isn't entered in error, whether or not it changed them. It also keeps them when something else has changed them since.
+- `True`: the condition becomes a problem list item, whether it was an encounter diagnosis or a health concern.
+- `False`: the condition becomes an encounter diagnosis, such as a sore throat that doesn't need tracking.
+- Unset or `None`: an encounter diagnosis stays one, and any other condition goes on the problem list.
+
+The choice is saved as the condition's category, which the [FHIR Condition](/api/condition/) resource returns as `problem-list-item` or `encounter-diagnosis`. A commit that changes the category or domain sends [`CONDITION_UPDATED`](/sdk/events/#condition_updated).
+
+An encounter diagnosis is still one assessed condition, not a copy:
+
+- Plan commands and billing in the note can use it.
+- The chart's Conditions list shows it alongside problem list items.
+- Clinicians can pick it in Update Diagnosis or Resolve Condition, or as a Prescribe indication, and an [UpdateDiagnosis](#updatediagnosis) command can name it by code.
+
+**Category domain**
+
+A problem list item can have a domain, such as `sdoh`. An encounter diagnosis has none.
+
+- Clinicians choose the domain in the Assess command's **Category Domain** field, which is filled in from the condition and can be set only while **Show in problem list** is on.
+- `AssessCommand` has no parameter for the domain. Committing a plugin's Assess with `show_in_problem_list` set to `True` or unset keeps the condition's current domain, and committing with `False` removes it.
+- Plugins can read the chosen domain as `category_domain` in the command's data: `sdoh`, `functional-status`, `disability-status`, `cognitive-status`, or an empty string for none.
+
+**Entering an Assess in error**
+
+You can always enter a committed Assess in error, even when other assessments use the condition it recorded.
+
+- **A condition the Assess recorded** is entered in error too, so withdrawing the assessment doesn't leave a diagnosis on the chart that no one made. It stays on the chart while another committed assessment that isn't entered in error still uses it.
+- **A condition the Assess didn't record**, such as one already on the chart or one recorded by a Diagnose or AddCondition command, stays on the chart.
+- **Category and domain** the Assess changed go back to what the condition had before that commit, including a health concern category or a domain the commit removed. The condition keeps its current category and domain instead when another Assess of the condition was committed after this one and isn't entered in error, whether or not it changed them, or when something else has changed them since.
 
 **Command-specific parameters**:
 
