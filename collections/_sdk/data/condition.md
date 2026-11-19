@@ -114,6 +114,8 @@ conditions = Condition.objects.find(Diabetes)
 | codings                     | [ConditionCoding](#conditioncoding)[]                                      |
 | category_codings            | [ConditionCategoryCoding](#conditioncategorycoding)[]                      |
 | lab_order_reason_conditions | [LabOrderReasonConditionCoding](/sdk/data-labs/#laborderreasoncondition)[] |
+| service_requests            | [ServiceRequest](/sdk/data-service-request/#servicerequest)[] (the service requests that give this condition as a reason)|
+| service_request_reasons     | [ServiceRequestReasonCondition](/sdk/data-service-request/#servicerequestreasoncondition)[]                              |
 | notes                       | String                                                                     |
 | surgical                    | Boolean                                                                    |
 | assessed_coding_gaps        | [AssessCodingGapEvent](/sdk/data-coding-gap-event/#assesscodinggapevent)[]  |
