@@ -35009,24 +35009,28 @@ Target object | Context object
         "id": pt_id  
 APPOINTMENT_LABEL_ADDED  
 ---  
-Occurs when one or more labels are added to an appointment.  
+Occurs when a label is added to an appointment. Adding several labels at once fires one event per label. **Note:** the target of this event is the `TaskLabel` that was added, _not_ the appointment. Read the appointment's ID from the context object as `appointment.id` (for example, `Appointment.objects.get(id=self.event.context["appointment"]["id"])`). The `appointment` and `patient` keys are present only when the appointment has a patient.  
 Target object | Context object  
-    "id": appointment_id
-    "type": None
+    "id": task_label_id
+    "type": [TaskLabel](/sdk/data-task/#tasklabel)
 | 
-    "patient":
-        "id": pt_id
-    "label": label_name  
+    "label": label_name
+    "appointment":  # present only when the appointment has a patient
+        "id": appointment_id
+    "patient":  # present only when the appointment has a patient
+        "id": pt_id  
 APPOINTMENT_LABEL_REMOVED  
 ---  
-Occurs when one or more labels are removed from an appointment.  
+Occurs when a label is removed from an appointment. Removing several labels at once fires one event per label. As with `APPOINTMENT_LABEL_ADDED`, the target is the `TaskLabel` that was removed, and the appointment's ID is in the context object as `appointment.id`.  
 Target object | Context object  
-    "id": appointment_id
-    "type": None
+    "id": task_label_id
+    "type": [TaskLabel](/sdk/data-task/#tasklabel)
 | 
-    "patient":
-        "id": pt_id
-    "label": label_name  
+    "label": label_name
+    "appointment":  # present only when the appointment has a patient
+        "id": appointment_id
+    "patient":  # present only when the appointment has a patient
+        "id": pt_id  
 APPOINTMENT__SLOTS__POST_SEARCH  
 ---  
 Occurs when requesting slot availability when scheduling an appointment.  
