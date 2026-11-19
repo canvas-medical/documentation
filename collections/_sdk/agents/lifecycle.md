@@ -540,8 +540,12 @@ gateway with another default model. The gateway refuses a model the
 organization has not enabled.
 
 When your code parses the loop's answer, pass `output_schema`, a
-`BaseModelLlmJson` subclass, and `result.text` is JSON that matches it.
-`effort` takes an `Effort` level, or its string value such as
+`BaseModelLlmJson` subclass. When the model ends its turn
+(`result.stopped == "end_turn"`), `result.text` is JSON that matches it.
+When the loop stops for another reason, `result.text` is cut-off JSON,
+the text of a turn that called tools, or empty, and parsing it raises
+pydantic's `ValidationError`. Check `result.stopped` before you parse,
+as the example below does. `effort` takes an `Effort` level, or its string value such as
 `"medium"`, and sets how much the model thinks on each call:
 
 ```python?partial=true
@@ -564,6 +568,13 @@ can't express, or an effort that isn't an `Effort` level, raises
 `ValueError` before the first call. See
 [Structured answers and effort](/sdk/agents-tools/#structured-answers-and-effort)
 for the schema rules and an example schema.
+
+Don't pass `output_schema` to the loop of an agent whose manifest sets
+`progress` to `reply`. That loop streams each model call's text as the
+model writes it (see [Showing a run's progress](#showing-a-runs-progress)),
+and the final call's text is the JSON answer, so the person waiting
+sees raw JSON. Ask a sub-agent for the structured answer instead:
+sub-agent text never streams.
 
 Every tool call gets a context the model never sees, which
 `self.tool_context(gateway)` builds:
