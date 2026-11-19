@@ -165,6 +165,7 @@ observations = Observation.objects.find(Weight)
 | note_id            | Integer                                             |
 | name               | String                                              |
 | effective_datetime | DateTime                                            |
+| specimen           | [LabOrderSpecimen](/sdk/data-labs/#laborderspecimen) (nullable) |
 | codings            | [ObservationCoding](#observationcoding)[]           |
 | members            | [Observation](#observation)[]                       |
 | components         | [ObservationComponent](#observationcomponent)[]     |
