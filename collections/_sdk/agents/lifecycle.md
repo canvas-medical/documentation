@@ -513,7 +513,8 @@ result = self.run_tool_loop(
     gateway,
     system=SYSTEM_PROMPT,
     messages=messages,          # the conversation so far, ending with the turn to answer
-    max_turns=8,                # optional; also max_tokens, model, history_chars, cache_system
+    max_turns=8,                # optional; also max_tokens, model, history_chars, cache_system,
+                                # output_schema, effort
 )
 result.text       # the model's last reply, stripped
 result.messages   # messages plus every new turn, as JSON-safe dicts you can store
@@ -537,6 +538,32 @@ too, so a cheap step stays cheap. A sub-agent takes its own model on
 `SubAgentSpec(model=...)`, and `gateway.with_model(name)` is the run's
 gateway with another default model. The gateway refuses a model the
 organization has not enabled.
+
+When your code parses the loop's answer, pass `output_schema`, a
+`BaseModelLlmJson` subclass, and `result.text` is JSON that matches it.
+`effort` takes an `Effort` level, or its string value such as
+`"medium"`, and sets how much the model thinks on each call:
+
+```python?partial=true
+from canvas_sdk.agents import Effort
+
+result = self.run_tool_loop(
+    gateway,
+    system=SYSTEM_PROMPT,
+    messages=messages,
+    output_schema=AllergyList,
+    effort=Effort.MEDIUM,
+)
+if result.stopped == "end_turn":
+    allergies = AllergyList.model_validate_json(result.text).allergies
+```
+
+Like `model=`, these settings apply to the loop's own model calls, and
+a sub-agent takes its own on `SubAgentSpec`. A schema structured output
+can't express, or an effort that isn't an `Effort` level, raises
+`ValueError` before the first call. See
+[Structured answers and effort](/sdk/agents-tools/#structured-answers-and-effort)
+for the schema rules and an example schema.
 
 Every tool call gets a context the model never sees, which
 `self.tool_context(gateway)` builds:

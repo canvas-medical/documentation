@@ -389,6 +389,79 @@ def chart_overview(arguments, *, ctx):
 - A sub-agent that stops before ending its turn returns `""`. Its text
   is for the parent, so none of it streams to the person waiting.
 
+### Structured answers and effort
+
+When your code parses a sub-agent's answer rather than passing it on,
+as with an extraction whose results become commands, give the spec an
+`output_schema`. The model's final answer is then JSON that matches the
+schema, so you don't need to describe the format in the prompt or
+retry a malformed reply. The schema is a `BaseModelLlmJson` subclass,
+the same class the LLMs client takes for
+[structured JSON output](/sdk/clients-llms/#structured-json-output).
+The model still calls tools on the turns before its answer.
+
+`effort` sets how much the model thinks on each call: `Effort.LOW`,
+`Effort.MEDIUM`, `Effort.HIGH`, `Effort.XHIGH`, or `Effort.MAX`. A
+short extraction can use a lower level than the default. The gateway
+refuses an effort for a model that doesn't support it.
+
+```python?partial=true
+from pydantic import Field
+
+from canvas_sdk.agents import Effort, SubAgentSpec, run_subagents
+from canvas_sdk.clients.llms.structures.base_model_llm_json import BaseModelLlmJson
+
+
+class Allergy(BaseModelLlmJson):
+    allergen: str = Field(description="Name of the allergen")
+    reaction: str = Field(description="The reaction, as the visit describes it")
+
+
+class AllergyList(BaseModelLlmJson):
+    allergies: list[Allergy] = Field(default_factory=list)
+
+
+ALLERGIES = SubAgentSpec(
+    name="allergies",
+    system_prompt="Extract the allergies the visit mentions. Check the chart's allergies first.",
+    allowed_tool_names=frozenset({"find_allergies"}),
+    output_schema=AllergyList,
+    effort=Effort.MEDIUM,
+)
+
+
+def extract_allergies(visit_text, ctx):
+    answer = run_subagents(
+        [ALLERGIES],
+        visit_text,
+        parent_tools=ctx["parent_tools"],
+        parent_ctx=ctx,
+        gateway=ctx["gateway"],
+    )["allergies"]
+    # "" when the sub-agent stopped early, "(sub-agent ... failed: ...)" when it failed
+    if not answer or answer.startswith("(sub-agent"):
+        return []
+    return AllergyList.model_validate_json(answer).allergies
+```
+
+Check for `""` and the failure string before you parse, as the example
+does: neither is JSON.
+
+Both settings are checked when the spec is built, so a module-level
+spec with a bad value fails at import, where `canvas validate` reports
+it. Building the spec raises `ValueError` when:
+
+- `output_schema` is a plain pydantic `BaseModel`, has a nested model
+  that isn't a `BaseModelLlmJson`, or has a field structured output
+  can't express, such as a `dict`;
+- `effort` isn't an `Effort` level. A string such as `"medium"` is
+  accepted and stored as `Effort.MEDIUM`.
+
+Both apply to the sub-agent's own model calls. A tool that makes model
+calls of its own, such as `read_document`, doesn't use them. To use
+them on an agent's own loop, pass them to
+[`run_tool_loop`](/sdk/agents-lifecycle/#running-the-model-with-run_tool_loop).
+
 ## Result size
 
 `run_tool_loop` sends the model at most 50,000 characters of one tool's
